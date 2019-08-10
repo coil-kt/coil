@@ -1,0 +1,72 @@
+# Project information
+site_name: 'Coil'
+site_description: 'An image loading library for Android backed by Kotlin Coroutines'
+site_author: '2019 Coil Contributors'
+site_url: 'https://coil-kt.github.io/coil/'
+remote_branch: gh-pages
+
+# Repository
+repo_name: 'Coil'
+repo_url: 'https://github.com/coil-kt/coil'
+
+# Copyright
+copyright: 'Copyright &copy; 2019 Coil Contributors'
+
+# Configuration
+theme:
+  name: 'material'
+  language: 'en'
+  favicon: 'images/coil_logo_black.ico'
+  logo: 'images/coil_logo_black.svg'
+  palette:
+    primary: 'white'
+    accent: 'white'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+
+# Customization
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/coil-kt/coil'
+
+# Navigation
+nav:
+  - 'Overview': index.md
+  - 'Getting Started': getting_started.md
+  - 'Migrating from Glide/Picasso': migrating.md
+  - 'Image Loaders': image_loaders.md
+  - 'Requests': requests.md
+  - 'Targets': targets.md
+  - 'Transformations': transformations.md
+  - 'Extending the Image Pipeline': image_pipeline.md
+  - 'Java Compatibility': java_compatibility.md
+  - 'GIFs': gifs.md
+  - 'FAQ': faq.md
+  - 'API':
+    - 'coil': api/coil-default/index.md
+    - 'coil-base': api/coil-base/index.md
+    - 'coil-gif': api/coil-gif/index.md
+  - 'Change Log': changelog.md
+  - 'Contributing': contributing.md
+  - 'Code of Conduct': code_of_conduct.md
+
+# CSS
+extra_css:
+  - 'css/site.css'
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - toc:
+      permalink: true
+
+# Plugins
+plugins:
+  - search
+  - minify:
+      minify_html: true
