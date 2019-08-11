@@ -15,7 +15,7 @@ import kotlin.math.max
  */
 class CrossfadeDrawable(
     private var start: Drawable?,
-    private val end: Drawable,
+    val end: Drawable,
     private val duration: Int = DEFAULT_DURATION,
     private val onEnd: (() -> Unit)? = null
 ) : Drawable(), Drawable.Callback, Animatable {
