@@ -1,10 +1,10 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="coil">
+    package="coil.resource">
 
     <application>
         <provider
-            android:name=".util.CoilContentProvider"
+            android:name="coil.util.CoilContentProvider"
             android:authorities="${applicationId}.coil"
             android:exported="false"/>
     </application>
