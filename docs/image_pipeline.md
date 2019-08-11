@@ -1,10 +1,10 @@
 # Extending the Image Pipeline
 
-Android supports many [image types](https://developer.android.com/guide/topics/media/media-formats) out of the box, however what if you need to add support for an unsupported format?
+Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, TIFF, etc.)
 
-Fortunately, `ImageLoader`s support pluggable components to add new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of three main parts: [Mappers](../api/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
+Fortunately, [ImageLoaders](image_loaders.md) support pluggable components to add new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of three main parts: [Mappers](../api/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
 
-Any custom components must be added to the `ImageLoader` when constructing it by its [ComponentRegistry](../api/coil-base/coil/-component-registry):
+Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-base/coil/-component-registry):
 
 ```kotlin
 val imageLoader = ImageLoader(context) {
@@ -43,10 +43,12 @@ After registering it when constructing our `ImageLoader` (see above), we can saf
 imageView.loadAny(item)
 ```
 
+`loadAny` is the type-unsafe version of `load` that accepts any data type.
+
 If you want to know a `Target`'s size when mapping an object, you can extend from [Measured Mapper](../api/coil-base/coil.map/-measured-mapper).
 
 !!! Note
-    Extending from `Measured Mapper` can prevent setting an image request's placeholder and setting cached `Drawable`s synchronously only for that mapper's data type. Prefer extending `Mapper` if you do not need the `Target`'s size.
+    Extending from `Measured Mapper` can prevent setting placeholders and or cached drawables synchronously, as they force Coil to wait for the target to be measured. Prefer extending `Mapper` if you do not need to know the `Target`'s size.
 
 See [Mapper](../api/coil-base/coil.map/-mapper) and [Measured Mapper](../api/coil-base/coil.map/-measured-mapper) for more information.
 

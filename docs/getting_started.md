@@ -64,7 +64,7 @@ suspend fun get(request: GetRequest): Drawable
 
 ## Extension Functions
 
-Coil provides a set of extension functions for `ImageLoader`s, `ImageView`s, and the `Coil` singleton to provide type-safe methods with a clean API. Here's an example for loading a URL into an `ImageView`:
+Coil provides a set of extension functions for `ImageLoader`s, `ImageView`s, and the `Coil` singleton to provide type-safe methods. Here's an example for loading a URL into an `ImageView`:
 
 ```kotlin
 imageView.load("https://www.example.com/image.jpg")

@@ -8,7 +8,7 @@ New instances can be created like so:
 val imageLoader = ImageLoader(context)
 ```
 
-Similar to [Requests](requests.md), `ImageLoader`s can be configured with an optional trailing lambda param:
+Similar to [Requests](requests.md), `Image Loader`s can be configured with an optional trailing lambda param:
 
 ```kotlin
 val imageLoader = ImageLoader(context) {
@@ -44,11 +44,15 @@ The `ImageView` extension function can be called with a specific `ImageLoader` l
 ```kotlin
 imageView.load("https://www.example.com/image.jpg", imageLoader) {
     crossfade(true)
+    placeholder(R.drawable.image)
+    transformations(CircleCropTransformation())
 }
 ```
 
+The default `ImageLoader` is instantiated lazily and can be replaced with `Coil.setDefaultImageLoader`.
+
 !!! Note
-    Use the `coil:coil-base` artifact if you plan to use dependency injection.
+    Use the `io.coil-kt:coil-base` artifact if you are using dependency injection.
 
 ## Testing
 
@@ -69,6 +73,7 @@ val fakeImageLoader = object : ImageLoader {
     override val defaults = DefaultRequestOptions()
 
     override fun load(request: LoadRequest): RequestDisposable {
+        // Always call onStart before onSuccess.
         request.target?.onStart(drawable)
         request.target?.onSuccess(drawable)
         return disposable
