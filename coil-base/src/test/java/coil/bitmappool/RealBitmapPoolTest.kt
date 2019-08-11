@@ -7,14 +7,12 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
-import android.os.Build.VERSION_CODES.KITKAT
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -138,7 +136,6 @@ class RealBitmapPoolTest {
     }
 
     @Test
-    @Config(sdk = [KITKAT])
     fun `bitmaps with null config are not allowed`() {
         pool = RealBitmapPool(MAX_SIZE, strategy = strategy)
 
