@@ -52,8 +52,6 @@ To get an image imperatively, use the `get` [suspend](https://kotlinlang.org/doc
 val drawable = Coil.get("https://www.example.com/image.jpg")
 ```
 
-## Documentation
-
 Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
 
 ## Requirements
