@@ -16,9 +16,9 @@ import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
 import coil.request.CachePolicy
+import coil.resource.test.R
 import coil.size.PixelSize
 import coil.size.Size
-import coil.test.R
 import coil.util.Utils
 import coil.util.createMockWebServer
 import coil.util.getDrawableCompat

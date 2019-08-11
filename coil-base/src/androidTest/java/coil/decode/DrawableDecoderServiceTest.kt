@@ -7,8 +7,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.RealBitmapPool
+import coil.resource.test.R
 import coil.size.PixelSize
-import coil.test.R
 import coil.util.getDrawableCompat
 import org.junit.Before
 import org.junit.Test
