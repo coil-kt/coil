@@ -8,4 +8,4 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability with Coil, please report it at colin[at]colinwhite.me.
+If you discover a security vulnerability with Coil, please report it by sending an email to colin <@> colinwhite.me.
