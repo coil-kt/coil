@@ -130,6 +130,13 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
+     * Set the list of [Transformation]s to be applied to this request.
+     */
+    fun transformations(transformations: List<Transformation>): T = self {
+        this.transformations = transformations
+    }
+
+    /**
      * Set the [CoroutineDispatcher].
      */
     fun dispatcher(dispatcher: CoroutineDispatcher): T = self {
