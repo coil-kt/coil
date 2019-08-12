@@ -55,9 +55,6 @@ allprojects {
             skipDeprecated = true
 
             externalDocumentationLink {
-                url = URL("https://colinwhite.me/coil/api/coil-default/")
-            }
-            externalDocumentationLink {
                 url = URL("https://developer.android.com/reference/androidx/")
             }
             externalDocumentationLink {
