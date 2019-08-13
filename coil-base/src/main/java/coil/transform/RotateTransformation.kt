@@ -5,7 +5,6 @@ package coil.transform
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.graphics.Paint
-import android.graphics.RectF
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
 
@@ -22,7 +21,7 @@ class RotateTransformation(
         val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
         val matrix = Matrix().apply {
-            postRotate(rotateRotationAngle, input.width / 2f, input.height /2f)
+            postRotate(rotateRotationAngle, input.width / 2f, input.height / 2f)
         }
 
         val output = pool.get(input.width, input.height, input.config)
