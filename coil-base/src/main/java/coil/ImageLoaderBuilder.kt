@@ -15,6 +15,7 @@ import coil.util.getDrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Cache
+import okhttp3.Call
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 
@@ -22,8 +23,8 @@ import okhttp3.OkHttpClient
 @BuilderMarker
 class ImageLoaderBuilder(private val context: Context) {
 
-    private var okHttpClient: OkHttpClient? = null
-    private var okHttpClientBuilder: (OkHttpClient.Builder.() -> Unit)? = null
+    private var callFactory: Call.Factory? = null
+    private var canRebuildWithOptimizations: Boolean = false
 
     private var registry: ComponentRegistry? = null
 
@@ -33,24 +34,12 @@ class ImageLoaderBuilder(private val context: Context) {
     private var defaults = DefaultRequestOptions()
 
     /**
-     * Set the [OkHttpClient] to be used for network requests.
+     * Set the [Call.Factory] to be used for network requests.
      *
-     * Prefer `okHttpClient(OkHttpClient.Builder.() -> Unit)` if possible,
-     * as the default [OkHttpClient] instance is optimized for Coil.
+     * If using an [OkHttpClient] instance under the hood, use [applyCoilOptimizations] if possible to optimize it for Coil.
      */
-    fun okHttpClient(client: OkHttpClient) = apply {
-        this.okHttpClient = client
-        this.okHttpClientBuilder = null
-    }
-
-    /**
-     * Set the callback that is invoked when building the default [OkHttpClient].
-     *
-     * @see buildDefaultOkHttpClient
-     */
-    fun okHttpClient(builder: OkHttpClient.Builder.() -> Unit) = apply {
-        this.okHttpClientBuilder = builder
-        this.okHttpClient = null
+    fun callFactory(callFactory: Call.Factory) = apply {
+        this.callFactory = callFactory
     }
 
     /**
@@ -192,26 +181,32 @@ class ImageLoaderBuilder(private val context: Context) {
             defaults = defaults,
             bitmapPoolSize = bitmapPoolSize,
             memoryCacheSize = memoryCacheSize,
-            okHttpClient = okHttpClient ?: buildDefaultOkHttpClient(),
+            callFactory = callFactory ?: buildDefaultOkHttpClient(),
             registry = registry ?: ComponentRegistry()
         )
     }
 
     private fun buildDefaultOkHttpClient(): OkHttpClient {
-        // Create the default image disk cache.
-        val cacheDirectory = Utils.getDefaultCacheDirectory(context)
-        val cacheSize = Utils.calculateDiskCacheSize(cacheDirectory)
-        val cache = Cache(cacheDirectory, cacheSize)
-
-        // Don't limit the number of requests by host.
-        val dispatcher = Dispatcher().apply {
-            maxRequestsPerHost = maxRequests
-        }
-
         return OkHttpClient.Builder()
-            .cache(cache)
-            .dispatcher(dispatcher)
-            .apply { okHttpClientBuilder?.invoke(this) }
+            .applyCoilOptimizations(context)
             .build()
+    }
+
+    companion object {
+        /**
+         * Applies the preferred optimizations for Coil (image loading library) to this given Builder instance.
+         */
+        fun OkHttpClient.Builder.applyCoilOptimizations(context: Context): OkHttpClient.Builder = apply {
+            // Create the default image disk cache.
+            val cacheDirectory = Utils.getDefaultCacheDirectory(context)
+            val cacheSize = Utils.calculateDiskCacheSize(cacheDirectory)
+            cache(Cache(cacheDirectory, cacheSize))
+
+            // Don't limit the number of requests by host.
+            val dispatcher = Dispatcher().apply {
+                maxRequestsPerHost = maxRequests
+            }
+            dispatcher(dispatcher)
+        }
     }
 }
