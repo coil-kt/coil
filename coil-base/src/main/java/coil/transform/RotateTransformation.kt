@@ -24,7 +24,7 @@ class RotateTransformation(
             postRotate(rotateRotationAngle, input.width / 2f, input.height / 2f)
         }
 
-        val output = pool.get(input.width, input.height, input.config)
+        val output = pool.getFromMatrix(input.width, input.height, input.config, matrix)
         output.applyCanvas {
             drawBitmap(input, matrix, bitmapPaint)
         }

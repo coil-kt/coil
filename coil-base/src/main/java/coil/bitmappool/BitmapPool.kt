@@ -2,6 +2,7 @@ package coil.bitmappool
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import androidx.annotation.Px
 
 /**
@@ -28,6 +29,12 @@ interface BitmapPool {
      * [getDirty] will be faster. When in doubt, use this method to ensure correctness.
      */
     fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap
+
+    /**
+     * Identical to [get] except that one [Matrix] is used, but for cases where needs to get a bitmap from an matrix.
+     *
+     */
+    fun getFromMatrix(@Px width: Int, @Px height: Int, config: Bitmap.Config, matrix: Matrix): Bitmap
 
     /**
      * Identical to [get] except that null will be returned if the pool does not contain a usable Bitmap.

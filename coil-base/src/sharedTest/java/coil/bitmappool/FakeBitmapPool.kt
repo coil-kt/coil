@@ -1,6 +1,7 @@
 package coil.bitmappool
 
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import androidx.annotation.Px
 import coil.util.Utils
 import coil.util.getAllocationByteCountCompat
@@ -24,6 +25,11 @@ class FakeBitmapPool : BitmapPool {
 
     override fun getDirty(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap {
         return getDirtyOrNull(width, height, config) ?: Bitmap.createBitmap(width, height, config)
+    }
+
+    override fun getFromMatrix(width: Int, height: Int, config: Bitmap.Config, matrix: Matrix): Bitmap {
+        val inputFakeBitmap = get(width, height, config)
+        return Bitmap.createBitmap(inputFakeBitmap, 0, 0, width, height, matrix, true)
     }
 
     override fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {

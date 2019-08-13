@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Matrix
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.KITKAT
 import android.os.Build.VERSION_CODES.O
@@ -75,6 +76,11 @@ internal class RealBitmapPool(
     override fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap {
         val result = getOrNull(width, height, config)
         return result ?: Bitmap.createBitmap(width, height, config)
+    }
+
+    override fun getFromMatrix(width: Int, height: Int, config: Bitmap.Config, matrix: Matrix): Bitmap {
+        val source = get(width, height, config)
+        return Bitmap.createBitmap(source, 0, 0, width, height, matrix, true)
     }
 
     override fun getOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
