@@ -9,51 +9,31 @@ import coil.bitmappool.BitmapPool
 import coil.bitmappool.FakeBitmapPool
 import coil.size.PixelSize
 import coil.util.createOptions
-import coil.util.createTestMainDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.shadow.api.Shadow
-import org.robolectric.shadows.ShadowContentResolver
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@RunWith(RobolectricTestRunner::class)
 class UriFetcherTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
-    private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var loader: UriFetcher
     private lateinit var pool: BitmapPool
 
     @Before
     fun before() {
-        mainDispatcher = createTestMainDispatcher()
         loader = UriFetcher(context)
         pool = FakeBitmapPool()
     }
 
-    @After
-    fun after() {
-        Dispatchers.resetMain()
-    }
-
     @Test
-    fun `basic asset load`() {
+    fun basicAssetLoad() {
         val uri = Uri.parse("file:///android_asset/normal.jpg")
         assertTrue(loader.handles(uri))
         assertEquals(uri.toString(), loader.key(uri))
-
-        val contentResolver: ShadowContentResolver = Shadow.extract(context.contentResolver)
-        contentResolver.registerInputStream(uri, context.assets.open("normal.jpg"))
 
         val result = runBlocking {
             loader.fetch(pool, uri, PixelSize(100, 100), createOptions())
@@ -61,5 +41,26 @@ class UriFetcherTest {
 
         assertTrue(result is SourceResult)
         assertFalse(result.source.exhausted())
+    }
+
+    @Test
+    fun basicExtractFileName() {
+        val uri = Uri.parse("file:///android_asset/something.jpg")
+        val result = loader.extractAssetFileName(uri)
+        assertEquals("something.jpg", result)
+    }
+
+    @Test
+    fun emptyExtractFileName() {
+        val uri = Uri.parse("file:///android_asset/")
+        val result = loader.extractAssetFileName(uri)
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun nonAssetUriExtractFileName() {
+        val uri = Uri.parse("file:///fake/file/path")
+        val result = loader.extractAssetFileName(uri)
+        assertEquals(null, result)
     }
 }
