@@ -39,11 +39,18 @@ interface ViewSizeResolver<T : View> : SizeResolver {
             val viewTreeObserver = view.viewTreeObserver
 
             val preDrawListener = object : ViewTreeObserver.OnPreDrawListener {
+
+                private var isResumed = false
+
                 override fun onPreDraw(): Boolean {
-                    viewTreeObserver.removePreDrawListenerSafe(this)
-                    val width = max(1, view.width - view.paddingLeft - view.paddingRight)
-                    val height = max(1, view.height - view.paddingTop - view.paddingBottom)
-                    continuation.resume(PixelSize(width, height))
+                    if (!isResumed) {
+                        isResumed = true
+
+                        viewTreeObserver.removePreDrawListenerSafe(this)
+                        val width = max(1, view.width - view.paddingLeft - view.paddingRight)
+                        val height = max(1, view.height - view.paddingTop - view.paddingBottom)
+                        continuation.resume(PixelSize(width, height))
+                    }
                     return true
                 }
             }
