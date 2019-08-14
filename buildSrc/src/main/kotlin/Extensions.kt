@@ -26,6 +26,7 @@ val Project.versionName: String
 val Project.versionCode: Int
     get() {
         return versionName
+            .trimEnd { !it.isDigit() }
             .split('.')
             .map { it.toInt() }
             .reversed()
