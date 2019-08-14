@@ -53,4 +53,23 @@ class ViewSizeResolverTest {
         }
         assertEquals(PixelSize(120, 120), size)
     }
+
+    @Test
+    fun `wrap_content is treated as 1px`() {
+        val view = View(context)
+        val resolver = ViewSizeResolver(view)
+
+        val deferred = GlobalScope.async(Dispatchers.Main.immediate) {
+            resolver.size()
+        }
+
+        view.measure(ViewGroup.LayoutParams.WRAP_CONTENT, 100)
+        view.layout(0, 0, 0, 100)
+        view.viewTreeObserver.dispatchOnPreDraw()
+
+        val size = runBlocking {
+            deferred.await()
+        }
+        assertEquals(PixelSize(1, 100), size)
+    }
 }

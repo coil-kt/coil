@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlin.math.max
 
 /**
  * A [SizeResolver] that measures the size of a [View].
@@ -38,19 +39,11 @@ interface ViewSizeResolver<T : View> : SizeResolver {
             val viewTreeObserver = view.viewTreeObserver
 
             val preDrawListener = object : ViewTreeObserver.OnPreDrawListener {
-
-                private var isResumed = false
-
                 override fun onPreDraw(): Boolean {
-                    if (!isResumed) {
-                        val width = view.width - view.paddingLeft - view.paddingRight
-                        val height = view.height - view.paddingTop - view.paddingBottom
-                        if (width > 0 && height > 0) {
-                            isResumed = true
-                            viewTreeObserver.removePreDrawListenerSafe(this)
-                            continuation.resume(PixelSize(width, height))
-                        }
-                    }
+                    viewTreeObserver.removePreDrawListenerSafe(this)
+                    val width = max(1, view.width - view.paddingLeft - view.paddingRight)
+                    val height = max(1, view.height - view.paddingTop - view.paddingBottom)
+                    continuation.resume(PixelSize(width, height))
                     return true
                 }
             }
