@@ -6,10 +6,12 @@ package coil.drawable
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.Movie
 import android.graphics.Paint
 import android.graphics.PixelFormat
+import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.AnimatedImageDrawable
@@ -62,6 +64,9 @@ class MovieDrawable(
 
         val time = ((SystemClock.uptimeMillis() - startTimeMillis) % movie.duration()).toInt()
         movie.setTime(time)
+
+        // Clear the software canvas.
+        softwareCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
         // Draw onto a software canvas first.
         softwareCanvas.withScale(
