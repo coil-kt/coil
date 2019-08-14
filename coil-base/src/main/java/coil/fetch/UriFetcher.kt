@@ -2,7 +2,9 @@ package coil.fetch
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.res.AssetManager
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
 import androidx.collection.arraySetOf
 import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
@@ -16,6 +18,8 @@ internal class UriFetcher(
 ) : Fetcher<Uri> {
 
     companion object {
+        private const val ASSET_FILE_PATH_SEGMENT = "android_asset"
+
         private val SUPPORTED_SCHEMES = arraySetOf(
             ContentResolver.SCHEME_ANDROID_RESOURCE,
             ContentResolver.SCHEME_CONTENT,
@@ -33,10 +37,34 @@ internal class UriFetcher(
         size: Size,
         options: Options
     ): FetchResult {
+        val assetFileName = extractAssetFileName(data)
+        val inputStream = if (assetFileName != null) {
+            context.assets.open(assetFileName)
+        } else {
+            checkNotNull(context.contentResolver.openInputStream(data))
+        }
+
         return SourceResult(
-            source = checkNotNull(context.contentResolver.openInputStream(data)).source().buffer(),
+            source = inputStream.source().buffer(),
             mimeType = context.contentResolver.getType(data),
             dataSource = DataSource.DISK
         )
+    }
+
+    /** Return the asset's filename if [uri] must be handled by [AssetManager]. Else, return null. */
+    @VisibleForTesting
+    internal fun extractAssetFileName(uri: Uri): String? {
+        if (uri.scheme != ContentResolver.SCHEME_FILE) {
+            return null
+        }
+
+        val segments = uri.pathSegments
+        return if (segments.count() == 2 &&
+            segments[0] == ASSET_FILE_PATH_SEGMENT &&
+            segments[1].isNotBlank()) {
+            segments[1]
+        } else {
+            null
+        }
     }
 }
