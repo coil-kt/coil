@@ -50,7 +50,7 @@ class HttpUrlFetcherTest {
     }
 
     @Test
-    fun `basic network load`() {
+    fun `basic network fetch`() {
         val url = server.url("/normal.jpg")
         assertTrue(fetcher.handles(url))
         assertEquals(url.toString(), fetcher.key(url))
