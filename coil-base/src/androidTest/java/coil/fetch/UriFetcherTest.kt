@@ -108,6 +108,12 @@ class UriFetcherTest {
     }
 
     @Test
+    fun assetCacheKeyWithLastModified() {
+        val uri = Uri.parse("file:///android_asset/normal.jpg")
+        assertEquals("$uri:0", loader.key(uri))
+    }
+
+    @Test
     fun nonfileCacheKeyEqualsUri() {
         val uri = Uri.parse("content://fake/content/path")
         assertEquals(uri.toString(), loader.key(uri))
