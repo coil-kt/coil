@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import android.net.Uri
 import androidx.annotation.VisibleForTesting
 import androidx.collection.arraySetOf
+import androidx.core.net.toFile
 import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
@@ -29,7 +30,11 @@ internal class UriFetcher(
 
     override fun handles(data: Uri) = SUPPORTED_SCHEMES.contains(data.scheme)
 
-    override fun key(data: Uri): String = data.toString()
+    override fun key(data: Uri): String = if (data.scheme == ContentResolver.SCHEME_FILE) {
+        "$data:${data.toFile().lastModified()}"
+    } else {
+        data.toString()
+    }
 
     override suspend fun fetch(
         pool: BitmapPool,
