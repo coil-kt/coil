@@ -120,6 +120,20 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
+    fun fileUrl() {
+        val data = "file://${copyNormalImageAssetToCacheDir().absolutePath}"
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
+    fun filePath() {
+        val data = copyNormalImageAssetToCacheDir().absolutePath
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
     fun drawable() {
         val data = context.getDrawableCompat(R.drawable.normal)
         val expectedSize = PixelSize(1080, 1350)

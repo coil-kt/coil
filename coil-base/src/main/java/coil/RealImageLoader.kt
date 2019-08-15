@@ -26,8 +26,9 @@ import coil.fetch.ResourceFetcher
 import coil.fetch.SourceResult
 import coil.fetch.UriFetcher
 import coil.map.FileMapper
+import coil.map.UriStringMapper
 import coil.map.HttpUriMapper
-import coil.map.StringMapper
+import coil.map.HttpStringMapper
 import coil.memory.BitmapReferenceCounter
 import coil.memory.DelegateService
 import coil.memory.MemoryCache
@@ -94,9 +95,10 @@ internal class RealImageLoader(
     private val networkObserver = NetworkObserver(context)
 
     private val registry = ComponentRegistry(registry) {
-        add(StringMapper())
+        add(HttpStringMapper())
         add(HttpUriMapper())
         add(FileMapper())
+        add(UriStringMapper())
 
         add(HttpUrlFetcher(okHttpClient))
         add(UriFetcher(context))
