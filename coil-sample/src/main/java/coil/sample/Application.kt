@@ -7,6 +7,7 @@ import android.os.Build.VERSION_CODES.LOLLIPOP
 import androidx.multidex.MultiDexApplication
 import coil.Coil
 import coil.ImageLoader
+import coil.decode.SvgDecoder
 import coil.util.CoilLogger
 import coil.util.applyCoilOptimizations
 import okhttp3.OkHttpClient
@@ -33,6 +34,9 @@ class Application : MultiDexApplication() {
                     }
                     .build()
             )
+            componentRegistry {
+                add(SvgDecoder())
+            }
         }
     }
 }

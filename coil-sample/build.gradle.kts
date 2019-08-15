@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation(project(":coil-default"))
+    implementation(project(":coil-svg"))
 
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
 
