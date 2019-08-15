@@ -91,7 +91,7 @@ class UriFetcherTest {
     @Test
     fun fileCacheKeyWithLastModified() {
         val file = File(context.filesDir.absolutePath + File.separator + "file.jpg")
-        val uri = Uri.fromFile(file)
+        val uri = file.toUri()
 
         // Copy the asset to filesDir.
         val source = context.assets.open("normal.jpg").source().buffer()
