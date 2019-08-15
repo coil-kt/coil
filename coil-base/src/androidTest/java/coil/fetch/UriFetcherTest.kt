@@ -19,6 +19,7 @@ import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class UriFetcherTest {
@@ -44,7 +45,6 @@ class UriFetcherTest {
 
         val uri = file.toUri()
         assertTrue(loader.handles(uri))
-        assertEquals(uri.toString(), loader.key(uri))
 
         val result = runBlocking {
             loader.fetch(pool, uri, PixelSize(100, 100), createOptions())
@@ -58,7 +58,6 @@ class UriFetcherTest {
     fun basicAssetFetch() {
         val uri = Uri.parse("file:///android_asset/normal.jpg")
         assertTrue(loader.handles(uri))
-        assertEquals(uri.toString(), loader.key(uri))
 
         val result = runBlocking {
             loader.fetch(pool, uri, PixelSize(100, 100), createOptions())
@@ -87,5 +86,30 @@ class UriFetcherTest {
         val uri = Uri.parse("file:///fake/file/path")
         val result = loader.extractAssetFileName(uri)
         assertEquals(null, result)
+    }
+
+    @Test
+    fun fileCacheKeyWithLastModified() {
+        val file = File(context.filesDir.absolutePath + File.separator + "file.jpg")
+        val uri = Uri.fromFile(file)
+
+        // Copy the asset to filesDir.
+        val source = context.assets.open("normal.jpg").source().buffer()
+        val sink = file.sink().buffer()
+        sink.writeAll(source)
+
+        file.setLastModified(1234L)
+        val firstKey = loader.key(uri)
+
+        file.setLastModified(4321L)
+        val secondKey = loader.key(uri)
+
+        assertNotEquals(secondKey, firstKey)
+    }
+
+    @Test
+    fun nonfileCacheKeyEqualsUri() {
+        val uri = Uri.parse("content://fake/content/path")
+        assertEquals(uri.toString(), loader.key(uri))
     }
 }
