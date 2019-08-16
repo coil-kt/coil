@@ -32,7 +32,11 @@ internal class UriFetcher(
 
     override fun handles(data: Uri) = SUPPORTED_SCHEMES.contains(data.scheme)
 
-    override fun key(data: Uri): String = data.toString()
+    override fun key(data: Uri): String = if (data.scheme == ContentResolver.SCHEME_FILE) {
+        "$data:${data.toFile().lastModified()}"
+    } else {
+        data.toString()
+    }
 
     override suspend fun fetch(
         pool: BitmapPool,
