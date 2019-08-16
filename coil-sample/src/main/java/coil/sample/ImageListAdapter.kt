@@ -22,7 +22,7 @@ class ImageListAdapter(
 
     private val maxColumnWidth = 320.dp(context)
     private val displayWidth = context.getDisplaySize().width
-    private val numColumns = ceil(displayWidth / maxColumnWidth).toInt()
+    val numColumns = ceil(displayWidth / maxColumnWidth).toInt()
     private val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -48,8 +48,6 @@ class ImageListAdapter(
             }
         }
     }
-
-    fun numColumns() = numColumns
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image = itemView as ImageView
