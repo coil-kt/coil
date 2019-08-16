@@ -2,6 +2,7 @@ package coil.fetch
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.res.AssetFileDescriptor
 import android.content.res.AssetManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -47,9 +48,16 @@ internal class UriFetcher(
     ): FetchResult {
         val ext = MimeTypeMap.getFileExtensionFromUrl(data.toString())
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
+        val assetFileName = extractAssetFileName(data)
         return if (mimeType?.startsWith("video/", true) == true) {
-            val retriever = MediaMetadataRetriever()
-            retriever.setDataSource(data.toFile().path)
+            val retriever = MediaMetadataRetriever().apply {
+                if (assetFileName != null) {
+                    val afd: AssetFileDescriptor = context.assets.openFd(assetFileName)
+                    setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                } else {
+                    setDataSource(data.toFile().path)
+                }
+            }
             val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_PREVIOUS_SYNC)
             retriever.release()
             DrawableResult(
@@ -58,7 +66,6 @@ internal class UriFetcher(
                     dataSource = DataSource.MEMORY
             )
         } else {
-            val assetFileName = extractAssetFileName(data)
             val inputStream = if (assetFileName != null) {
                 context.assets.open(assetFileName)
             } else {

@@ -118,4 +118,16 @@ class UriFetcherTest {
         val uri = Uri.parse("content://fake/content/path")
         assertEquals(uri.toString(), loader.key(uri))
     }
+
+    @Test
+    fun extractVideoCover() {
+        val uri = Uri.parse("file:///android_asset/test.mp4")
+        assertTrue(loader.handles(uri))
+
+        val result = runBlocking {
+            loader.fetch(pool, uri, PixelSize(100, 100), createOptions())
+        }
+
+        assertTrue(result is DrawableResult)
+    }
 }
