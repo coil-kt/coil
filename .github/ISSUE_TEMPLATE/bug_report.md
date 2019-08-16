@@ -20,4 +20,4 @@ A clear and concise description of what you expected to happen.
 If applicable, add logs or screenshots to help explain your problem.
 
 **Library version**
-e.g. 0.6.0
+x.y.z
