@@ -108,7 +108,7 @@ class ImageLoaderBuilder(private val context: Context) {
      *
      * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
      *
-     * NOTE: Setting this to false this will reduce performance on Android O+. Avoid disabling this if possible.
+     * NOTE: Setting this to false this will reduce performance on Android O and above. Only disable if necessary.
      *
      * Default: true
      */
