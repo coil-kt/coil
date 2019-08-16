@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         val listAdapter = ImageListAdapter(this, viewModel.screenLiveData::setValue)
         list.apply {
             setHasFixedSize(true)
-            layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns(), StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, StaggeredGridLayoutManager.VERTICAL)
             adapter = listAdapter
         }
 
