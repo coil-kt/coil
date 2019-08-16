@@ -104,6 +104,19 @@ class ImageLoaderBuilder(private val context: Context) {
     }
 
     /**
+     * Allow the use of [Bitmap.Config.HARDWARE].
+     *
+     * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
+     *
+     * NOTE: Setting this to false this will reduce performance on Android O+. Avoid disabling this if possible.
+     *
+     * Default: true
+     */
+    fun allowHardware(enable: Boolean) = apply {
+        this.defaults = this.defaults.copy(allowHardware = enable)
+    }
+
+    /**
      * Allow automatically using [Bitmap.Config.RGB_565] when an image is guaranteed to not have alpha.
      *
      * This will reduce the visual quality of the image, but will also reduce memory usage.

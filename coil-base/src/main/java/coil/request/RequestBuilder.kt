@@ -72,7 +72,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         diskCachePolicy = CachePolicy.ENABLED
         memoryCachePolicy = CachePolicy.ENABLED
 
-        allowHardware = true
+        allowHardware = defaults.allowHardware
         allowRgb565 = defaults.allowRgb565
     }
 
