@@ -18,7 +18,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:3.4.2")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0-SNAPSHOT")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.18")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:8.1.0")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:8.2.0")
         classpath(kotlin("gradle-plugin", version = "1.3.41"))
     }
 }
