@@ -1,7 +1,7 @@
 # Changelog
 
 ## [0.6.1] - August 16, 2019
-- New: Add `transformations(transformations: List<Transformation>)` to RequestBuilder.
+- New: Add `transformations(List<Transformation>)` to RequestBuilder.
 - Fix: Add the last modified date to the cache key for file uris.
 - Fix: Ensure View dimensions are evaluated to at least 1px.
 - Fix: Clear MovieDrawable's canvas between frames.
