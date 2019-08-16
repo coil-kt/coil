@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import androidx.collection.arraySetOf
 import androidx.core.net.toFile
@@ -44,34 +45,30 @@ internal class UriFetcher(
         size: Size,
         options: Options
     ): FetchResult {
-        val assetFileName = extractAssetFileName(data)
-        val mimeType = context.contentResolver.getType(data)
-        return when {
-            assetFileName != null -> {
-                SourceResult(
-                        source = context.assets.open(assetFileName).source().buffer(),
-                        mimeType = context.contentResolver.getType(data),
-                        dataSource = DataSource.DISK
-                )
+        val ext = MimeTypeMap.getFileExtensionFromUrl(data.toString())
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
+        return if (mimeType?.startsWith("video/", true) == true) {
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(data.toFile().path)
+            val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_PREVIOUS_SYNC)
+            retriever.release()
+            DrawableResult(
+                    drawable = bitmap.toDrawable(context),
+                    isSampled = false,
+                    dataSource = DataSource.MEMORY
+            )
+        } else {
+            val assetFileName = extractAssetFileName(data)
+            val inputStream = if (assetFileName != null) {
+                context.assets.open(assetFileName)
+            } else {
+                checkNotNull(context.contentResolver.openInputStream(data))
             }
-            mimeType?.equals("video") == true -> {
-                val retriever = MediaMetadataRetriever()
-                retriever.setDataSource(data.toFile().path)
-                val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_PREVIOUS_SYNC)
-                retriever.release()
-                DrawableResult(
-                        drawable = bitmap.toDrawable(context),
-                        isSampled = false,
-                        dataSource = DataSource.MEMORY
-                )
-            }
-            else -> {
-                SourceResult(
-                        source = checkNotNull(context.contentResolver.openInputStream(data)).source().buffer(),
-                        mimeType = mimeType,
-                        dataSource = DataSource.DISK
-                )
-            }
+            SourceResult(
+                    source = inputStream.source().buffer(),
+                    mimeType = mimeType,
+                    dataSource = DataSource.DISK
+            )
         }
     }
 
