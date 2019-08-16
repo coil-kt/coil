@@ -3,13 +3,16 @@ package coil.fetch
 import android.content.ContentResolver
 import android.content.Context
 import android.content.res.AssetManager
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.annotation.VisibleForTesting
 import androidx.collection.arraySetOf
+import androidx.core.net.toFile
 import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.size.Size
+import coil.util.toDrawable
 import okio.buffer
 import okio.source
 
@@ -38,17 +41,34 @@ internal class UriFetcher(
         options: Options
     ): FetchResult {
         val assetFileName = extractAssetFileName(data)
-        val inputStream = if (assetFileName != null) {
-            context.assets.open(assetFileName)
-        } else {
-            checkNotNull(context.contentResolver.openInputStream(data))
+        val mimeType = context.contentResolver.getType(data)
+        return when {
+            assetFileName != null -> {
+                SourceResult(
+                        source = context.assets.open(assetFileName).source().buffer(),
+                        mimeType = context.contentResolver.getType(data),
+                        dataSource = DataSource.DISK
+                )
+            }
+            mimeType?.equals("video") == true -> {
+                val retriever = MediaMetadataRetriever()
+                retriever.setDataSource(data.toFile().path)
+                val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_PREVIOUS_SYNC)
+                retriever.release()
+                DrawableResult(
+                        drawable = bitmap.toDrawable(context),
+                        isSampled = false,
+                        dataSource = DataSource.MEMORY
+                )
+            }
+            else -> {
+                SourceResult(
+                        source = checkNotNull(context.contentResolver.openInputStream(data)).source().buffer(),
+                        mimeType = mimeType,
+                        dataSource = DataSource.DISK
+                )
+            }
         }
-
-        return SourceResult(
-            source = inputStream.source().buffer(),
-            mimeType = context.contentResolver.getType(data),
-            dataSource = DataSource.DISK
-        )
     }
 
     /** Return the asset's filename if [uri] must be handled by [AssetManager]. Else, return null. */
