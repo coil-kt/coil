@@ -1,59 +1,32 @@
-# Adapted from: https://github.com/kalaspuffar/secure-quick-reliable-login/blob/master/.travis.yml
+# Adapted from: https://github.com/square/leakcanary/blob/50142e8e40a5a7f50f7ab9d973e199aa9812bd66/.travis.yml
 
-sudo: required
+language: android
 dist: trusty
-os: linux
-language: generic
-
-env:
-  global:
-    - EMULATOR_VERSION=25
-    - TARGET_VERSION=28
-    - ABI="google_apis;armeabi-v7a"
-    - ANDROID_BUILD_TOOLS_VERSION=28.0.3
-    - ADB_INSTALL_TIMEOUT=20
-    - QEMU_AUDIO_DRV=none
-    - GRADLE_OPTS='-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Dkotlin.incremental=false -DdisablePreDex'
+android:
+  components:
+    - android-28
+    - build-tools-28.0.3
+    - tools
+    - platform-tools
 
 before_install:
-  - sudo service postgresql stop || true
-  - sudo service mysql stop || true
-  - sudo service memcached stop || true
-  - sudo service bootlogd stop || true
-  - sudo service elasticsearch stop || true
-  - sudo service mongodb stop || true
-  - sudo service cassandra stop || true
-  - sudo service rsync stop || true
-  - sudo service x11-common stop || true
-  - export ANDROID_HOME=~/android-sdk-linux
-  - wget -q "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" -O android-sdk-tools.zip
-  - unzip -q android-sdk-tools.zip -d ${ANDROID_HOME}
-  - rm android-sdk-tools.zip
-  - PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
-  - mkdir -p ~/.android
-  - touch ~/.android/repositories.cfg
-  - yes | sdkmanager --licenses
-  - sdkmanager "emulator" "tools" "platform-tools" > /dev/null
-  - sdkmanager --list | head -15
-  - sdkmanager "build-tools;$ANDROID_BUILD_TOOLS_VERSION" "platforms;android-$TARGET_VERSION" > /dev/null
-  - sdkmanager "platforms;android-$EMULATOR_VERSION" "system-images;android-$EMULATOR_VERSION;$ABI" > /dev/null
-  - sdkmanager --list | head -15
-  - yes | sdkmanager "cmake;3.10.2.4988404"
-  - wget https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip
-  - unzip android-ndk-r20-linux-x86_64.zip -d $HOME > /dev/null
-  - export ANDROID_NDK_HOME=$HOME/android-ndk-r20
-  - export PATH=$PATH:$ANDROID_NDK_HOME
   - mkdir "$ANDROID_HOME/licenses" || true
-  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
-  - echo no | avdmanager create avd --force -n test -k "system-images;android-$EMULATOR_VERSION;$ABI"
+  - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_HOME/licenses/android-sdk-license"
+  - sdkmanager tools
+  - sdkmanager "system-images;android-16;default;armeabi-v7a"
+  - echo no | avdmanager create avd -f -n test -k "system-images;android-16;default;armeabi-v7a"
+  - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window &
+
+install:
+  - ./gradlew clean ktlintCheck assembleDebugUnitTest assembleDebugAndroidTest
+
+before_script:
+  - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window &
+  - ./android_wait_for_emulator.sh
+  - adb shell input keyevent 82
 
 script:
-  - ./gradlew ktlintCheck test assembleAndroidTest
-  - $ANDROID_HOME/emulator/emulator -avd test -no-window &
-  - bash ./android_wait_for_emulator.sh
-  - adb shell input keyevent 82
-  - ./gradlew connectedAndroidTest
+  - ./gradlew connectedDebugAndroidTest
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
