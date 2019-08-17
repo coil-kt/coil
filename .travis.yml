@@ -6,9 +6,17 @@ android:
     - build-tools-28.0.3
     - tools
     - platform-tools
+    - sys-img-x86-android-28
+
+# Emulator Management: Create, Start and Wait
+before_script:
+  - echo no | android create avd -f -n test -c 1G
+  - emulator -avd test -no-audio -no-window &
+  - ./script/android-wait-for-emulator
+  - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew ktlintCheck test
+  - ./test.sh
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
