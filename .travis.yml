@@ -9,7 +9,7 @@ env:
   global:
     - EMULATOR_VERSION=28
     - TARGET_VERSION=28
-    - ABI="google_apis;armeabi-v7a"
+    - ABI="google_apis_playstore;x86_64"
     - ANDROID_BUILD_TOOLS_VERSION=28.0.3
     - ADB_INSTALL_TIMEOUT=20
     - QEMU_AUDIO_DRV=none
