@@ -10,7 +10,7 @@ android:
 
 # Emulator Management: Create, Start and Wait
 before_script:
-  - echo no | android create avd -f -n test -c 1G
+  - echo no | android create avd -f -n test -t android-28 --abi x86 -c 1G
   - emulator -avd test -no-audio -no-window &
   - ./script/android-wait-for-emulator
   - adb shell input keyevent 82 &
