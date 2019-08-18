@@ -46,5 +46,4 @@ class GrayscaleTransformationTest {
         assertTrue(red.contentEquals(green) && green.contentEquals(blue))
         assertTrue(grayscaleBitmap.sameAs(normalGrayscaleBitmap, THRESHOLD))
     }
-
 }
