@@ -26,9 +26,7 @@ class DrawableDecoderServiceTest {
         service = DrawableDecoderService(context, RealBitmapPool(0))
     }
 
-    /**
-     * NOTE: This test will fail on pre-Lollipop since we don't import AppCompatResources in the base library.
-     */
+    /** This test will fail on pre-Lollipop since we don't import AppCompatResources in the base library. */
     @Test
     fun vectorIsConvertedCorrectly() {
         val output = service.convertIfNecessary(
