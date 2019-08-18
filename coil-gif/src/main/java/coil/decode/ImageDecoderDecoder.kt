@@ -13,7 +13,7 @@ import okio.BufferedSource
 import java.nio.ByteBuffer
 
 /**
- * A [Decoder] that uses [ImageDecoder]. This is only used to load GIF and animated WEBP images on Android P and above.
+ * A [Decoder] that uses [ImageDecoder] to decode GIFs and animated WebPs on Android P and above.
  */
 @RequiresApi(P)
 class ImageDecoderDecoder : Decoder {
