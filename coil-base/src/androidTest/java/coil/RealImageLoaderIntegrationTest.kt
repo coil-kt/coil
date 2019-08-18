@@ -56,12 +56,12 @@ class RealImageLoaderIntegrationTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     private lateinit var server: MockWebServer
-    private lateinit var imageLoader: RealImageLoader
+    private lateinit var imageLoader: ImageLoader
 
     @Before
     fun before() {
-        server = createMockWebServer(context, IMAGE_NAME)
-        imageLoader = ImageLoader(context) as RealImageLoader
+        server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
+        imageLoader = ImageLoader(context)
     }
 
     @After
@@ -69,6 +69,8 @@ class RealImageLoaderIntegrationTest {
         server.shutdown()
         imageLoader.shutdown()
     }
+
+    // region Test all the supported data types.
 
     @Test
     fun string() {
@@ -134,6 +136,8 @@ class RealImageLoaderIntegrationTest {
         testLoad(data, expectedSize)
         testGet(data, expectedSize)
     }
+
+    // endregion
 
     @Test
     fun unsupportedDataThrows() {
