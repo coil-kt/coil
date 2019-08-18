@@ -37,6 +37,8 @@ fun Bitmap.getPixels(): Array<IntArray> {
  * and their alpha channels match exactly.
  */
 fun Bitmap.sameAs(other: Bitmap, @FloatRange(from = -1.0, to = 1.0) threshold: Double): Boolean {
+    require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
+
     if (width != other.width || height != other.height) {
         return false
     }
