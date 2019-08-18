@@ -11,7 +11,6 @@ import coil.resource.test.R
 import coil.size.PixelSize
 import coil.util.getDrawableCompat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -28,7 +27,6 @@ class DrawableDecoderServiceTest {
     }
 
     /** This test will fail on pre-Lollipop since we don't import AppCompatResources in the base library. */
-    @Ignore("Requires emulator 21+.")
     @Test
     fun vectorIsConvertedCorrectly() {
         val output = service.convertIfNecessary(
