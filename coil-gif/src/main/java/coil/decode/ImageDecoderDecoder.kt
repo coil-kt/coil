@@ -34,7 +34,7 @@ class ImageDecoderDecoder : Decoder {
         }
         val drawable = decoderSource.decodeDrawable { info, _ ->
             // Set the target size if the source image is larger than the target.
-            if (size is PixelSize && (info.size.width > size.width || info.size.height > size.height)) {
+            if (size is PixelSize && info.size.run { width > size.width || height > size.height }) {
                 isSampled = true
                 setTargetSize(size.width, size.height)
             }
