@@ -62,7 +62,8 @@ class MovieDrawable(
         val softwareCanvas = checkNotNull(softwareCanvas)
         val softwareBitmap = checkNotNull(softwareBitmap)
 
-        val time = ((SystemClock.uptimeMillis() - startTimeMillis) % movie.duration()).toInt()
+        val duration = movie.duration()
+        val time = if (duration == 0) 0 else ((SystemClock.uptimeMillis() - startTimeMillis) % duration).toInt()
         movie.setTime(time)
 
         // Clear the software canvas.
