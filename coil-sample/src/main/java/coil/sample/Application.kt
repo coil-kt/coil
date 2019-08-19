@@ -8,7 +8,7 @@ import androidx.multidex.MultiDexApplication
 import coil.Coil
 import coil.ImageLoader
 import coil.util.CoilLogger
-import coil.util.OkHttpClients.applyCoilOptimizations
+import coil.util.applyCoilOptimizations
 import okhttp3.OkHttpClient
 
 class Application : MultiDexApplication() {

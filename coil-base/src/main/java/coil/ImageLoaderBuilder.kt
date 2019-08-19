@@ -10,7 +10,7 @@ import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
 import coil.drawable.CrossfadeDrawable
 import coil.target.ImageViewTarget
-import coil.util.OkHttpClients.applyCoilOptimizations
+import coil.util.applyCoilOptimizations
 import coil.util.Utils
 import coil.util.getDrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
