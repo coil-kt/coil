@@ -33,10 +33,21 @@ class ImageLoaderBuilder(private val context: Context) {
     private var defaults = DefaultRequestOptions()
 
     /**
-     * Set the [Call.Factory] to be used for network requests.
+     * The HTTP client used for requests.
+     *
+     * This is a convenience method for calling [callFactory].
+     *
+     * Use [Utils.applyOkHttpClientOptimizations] if possible during its construction to optimize it for Coil.
+     */
+    fun okHttpClient(okHttpClient: OkHttpClient) = callFactory(okHttpClient)
+
+    /**
+     * Specify a custom call factory for creating [Call] instances.
      *
      * If using an [OkHttpClient] instance under the hood, use [Utils.applyOkHttpClientOptimizations] if possible to optimize it
      * for Coil.
+     *
+     * Note: Calling [okHttpClient] automatically sets this value.
      */
     fun callFactory(callFactory: Call.Factory) = apply {
         this.callFactory = callFactory

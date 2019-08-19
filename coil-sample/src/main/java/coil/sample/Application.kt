@@ -7,8 +7,8 @@ import android.os.Build.VERSION_CODES.LOLLIPOP
 import androidx.multidex.MultiDexApplication
 import coil.Coil
 import coil.ImageLoader
-import coil.util.Utils.applyOkHttpClientOptimizations
 import coil.util.CoilLogger
+import coil.util.Utils.applyOkHttpClientOptimizations
 import okhttp3.OkHttpClient
 
 class Application : MultiDexApplication() {
@@ -24,7 +24,7 @@ class Application : MultiDexApplication() {
             availableMemoryPercentage(0.5)
             bitmapPoolPercentage(0.5)
             crossfade(true)
-            callFactory(
+            okHttpClient(
                 OkHttpClient.Builder()
                     .applyOkHttpClientOptimizations(this@Application)
                     .apply {
