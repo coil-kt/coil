@@ -11,12 +11,11 @@ import coil.annotation.BuilderMarker
 import coil.drawable.CrossfadeDrawable
 import coil.target.ImageViewTarget
 import coil.util.Utils
+import coil.util.Utils.applyOkHttpClientOptimizations
 import coil.util.getDrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import okhttp3.Cache
 import okhttp3.Call
-import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 
 /** Builder for an [ImageLoader]. */
@@ -36,7 +35,8 @@ class ImageLoaderBuilder(private val context: Context) {
     /**
      * Set the [Call.Factory] to be used for network requests.
      *
-     * If using an [OkHttpClient] instance under the hood, use [applyCoilOptimizations] if possible to optimize it for Coil.
+     * If using an [OkHttpClient] instance under the hood, use [Utils.applyOkHttpClientOptimizations] if possible to optimize it
+     * for Coil.
      */
     fun callFactory(callFactory: Call.Factory) = apply {
         this.callFactory = callFactory
@@ -188,25 +188,7 @@ class ImageLoaderBuilder(private val context: Context) {
 
     private fun buildDefaultOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .applyCoilOptimizations(context)
+            .applyOkHttpClientOptimizations(context)
             .build()
-    }
-
-    companion object {
-        /**
-         * Applies the preferred optimizations for Coil (image loading library) to this given Builder instance.
-         */
-        fun OkHttpClient.Builder.applyCoilOptimizations(context: Context): OkHttpClient.Builder = apply {
-            // Create the default image disk cache.
-            val cacheDirectory = Utils.getDefaultCacheDirectory(context)
-            val cacheSize = Utils.calculateDiskCacheSize(cacheDirectory)
-            cache(Cache(cacheDirectory, cacheSize))
-
-            // Don't limit the number of requests by host.
-            val dispatcher = Dispatcher().apply {
-                maxRequestsPerHost = maxRequests
-            }
-            dispatcher(dispatcher)
-        }
     }
 }
