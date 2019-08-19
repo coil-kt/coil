@@ -10,12 +10,9 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.StatFs
 import androidx.annotation.Px
-import okhttp3.Cache
-import okhttp3.Dispatcher
-import okhttp3.OkHttpClient
 import java.io.File
 
-object Utils {
+internal object Utils {
 
     private const val CACHE_DIRECTORY_NAME = "image_cache"
 
@@ -28,16 +25,16 @@ object Utils {
     private const val LOW_MEMORY_MULTIPLIER = 0.15
 
     /** Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config]. */
-    internal fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
+    fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
         return width * height * config.getBytesPerPixel()
     }
 
-    internal fun getDefaultCacheDirectory(context: Context): File {
+    fun getDefaultCacheDirectory(context: Context): File {
         return File(context.cacheDir, CACHE_DIRECTORY_NAME).apply { mkdirs() }
     }
 
     /** Modified from Picasso. */
-    private fun calculateDiskCacheSize(cacheDirectory: File): Long {
+    fun calculateDiskCacheSize(cacheDirectory: File): Long {
         return try {
             val cacheDir = StatFs(cacheDirectory.absolutePath)
             val size = DISK_CACHE_PERCENTAGE * cacheDir.getBlockCountCompat() * cacheDir.getBlockSizeCompat()
@@ -48,43 +45,27 @@ object Utils {
     }
 
     /** Modified from Picasso. */
-    internal fun calculateAvailableMemorySize(context: Context, percentage: Double): Long {
+    fun calculateAvailableMemorySize(context: Context, percentage: Double): Long {
         val activityManager: ActivityManager = context.requireSystemService()
         val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
         val memoryClassMegabytes = if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
         return (percentage * memoryClassMegabytes * 1024 * 1024).toLong()
     }
 
-    internal fun getDefaultAvailableMemoryPercentage(context: Context): Double {
+    fun getDefaultAvailableMemoryPercentage(context: Context): Double {
         val activityManager: ActivityManager = context.requireSystemService()
         return if (activityManager.isLowRawDeviceCompat()) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
     }
 
-    internal fun getDefaultBitmapPoolPercentage(): Double {
+    fun getDefaultBitmapPoolPercentage(): Double {
         // Allocate less memory for bitmap pooling on Android O and above since we default to
         // hardware bitmaps, which cannot be added to the pool.
         return if (SDK_INT >= O) 0.25 else 0.5
     }
 
-    internal fun getDefaultBitmapConfig(): Bitmap.Config {
+    fun getDefaultBitmapConfig(): Bitmap.Config {
         // Prefer hardware bitmaps on Android O and above since they are optimized for drawing
         // without transformations.
         return if (SDK_INT >= O) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
-    }
-
-    /**
-     * Applies the preferred optimizations for Coil (image loading library) to this given Builder instance.
-     */
-    fun OkHttpClient.Builder.applyOkHttpClientOptimizations(context: Context): OkHttpClient.Builder = apply {
-        // Create the default image disk cache.
-        val cacheDirectory = getDefaultCacheDirectory(context)
-        val cacheSize = calculateDiskCacheSize(cacheDirectory)
-        cache(Cache(cacheDirectory, cacheSize))
-
-        // Don't limit the number of requests by host.
-        val dispatcher = Dispatcher().apply {
-            maxRequestsPerHost = maxRequests
-        }
-        dispatcher(dispatcher)
     }
 }

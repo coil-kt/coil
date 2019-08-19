@@ -8,7 +8,7 @@ import androidx.multidex.MultiDexApplication
 import coil.Coil
 import coil.ImageLoader
 import coil.util.CoilLogger
-import coil.util.Utils.applyOkHttpClientOptimizations
+import coil.util.OkHttpClients.applyCoilOptimizations
 import okhttp3.OkHttpClient
 
 class Application : MultiDexApplication() {
@@ -26,7 +26,7 @@ class Application : MultiDexApplication() {
             crossfade(true)
             okHttpClient(
                 OkHttpClient.Builder()
-                    .applyOkHttpClientOptimizations(this@Application)
+                    .applyCoilOptimizations(this@Application)
                     .apply {
                         // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
                         if (SDK_INT < LOLLIPOP) forceTls12()

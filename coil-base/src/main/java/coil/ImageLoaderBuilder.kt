@@ -10,8 +10,8 @@ import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
 import coil.drawable.CrossfadeDrawable
 import coil.target.ImageViewTarget
+import coil.util.OkHttpClients.applyCoilOptimizations
 import coil.util.Utils
-import coil.util.Utils.applyOkHttpClientOptimizations
 import coil.util.getDrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -36,14 +36,14 @@ class ImageLoaderBuilder(private val context: Context) {
      *
      * This is a convenience method for calling [callFactory].
      *
-     * Use [Utils.applyOkHttpClientOptimizations] if possible during its construction to optimize it for Coil.
+     * Use [applyCoilOptimizations] if possible during its construction to optimize it for Coil.
      */
     fun okHttpClient(okHttpClient: OkHttpClient) = callFactory(okHttpClient)
 
     /**
      * Specify a custom call factory for creating [Call] instances.
      *
-     * If using an [OkHttpClient] instance under the hood, use [Utils.applyOkHttpClientOptimizations] if possible to optimize it
+     * If using an [OkHttpClient] instance under the hood, use [applyCoilOptimizations] if possible to optimize it
      * for Coil.
      *
      * Note: Calling [okHttpClient] automatically sets this value.
@@ -198,7 +198,7 @@ class ImageLoaderBuilder(private val context: Context) {
 
     private fun buildDefaultOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .applyOkHttpClientOptimizations(context)
+            .applyCoilOptimizations(context)
             .build()
     }
 }
