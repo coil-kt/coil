@@ -23,7 +23,6 @@ import okhttp3.OkHttpClient
 class ImageLoaderBuilder(private val context: Context) {
 
     private var callFactory: Call.Factory? = null
-    private var canRebuildWithOptimizations: Boolean = false
 
     private var registry: ComponentRegistry? = null
 
