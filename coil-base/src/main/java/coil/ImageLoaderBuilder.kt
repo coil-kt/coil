@@ -13,7 +13,6 @@ import coil.target.ImageViewTarget
 import coil.util.CoilUtils
 import coil.util.Utils
 import coil.util.getDrawableCompat
-import coil.util.lazyCallFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Call
@@ -23,7 +22,7 @@ import okhttp3.OkHttpClient
 @BuilderMarker
 class ImageLoaderBuilder(private val context: Context) {
 
-    private var callFactory: Call.Factory? = null
+    private var callFactory: Lazy<Call.Factory>? = null
 
     private var registry: ComponentRegistry? = null
 
@@ -52,7 +51,7 @@ class ImageLoaderBuilder(private val context: Context) {
      * Note: Calling [okHttpClient] automatically sets this value.
      */
     fun callFactory(callFactory: Call.Factory) = apply {
-        this.callFactory = callFactory
+        this.callFactory = lazyOf(callFactory)
     }
 
     /**
@@ -64,7 +63,7 @@ class ImageLoaderBuilder(private val context: Context) {
      * Note: Calling [okHttpClient] automatically sets this value.
      */
     fun callFactory(factory: () -> Call.Factory) = apply {
-        this.callFactory = lazyCallFactory(factory)
+        this.callFactory = lazy(factory)
     }
 
     /**
@@ -211,7 +210,7 @@ class ImageLoaderBuilder(private val context: Context) {
         )
     }
 
-    private fun buildDefaultCallFactory() = lazyCallFactory {
+    private fun buildDefaultCallFactory() = lazy {
         OkHttpClient.Builder()
             .cache(CoilUtils.createDefaultCache(context))
             .build()
