@@ -12,7 +12,7 @@ import okhttp3.HttpUrl
 import okhttp3.Request
 
 internal class HttpUrlFetcher(
-    private val callFactory: Call.Factory
+    private val callFactory: Lazy<Call.Factory>
 ) : Fetcher<HttpUrl> {
 
     companion object {
@@ -47,7 +47,7 @@ internal class HttpUrlFetcher(
             }
         }
 
-        val response = callFactory.newCall(request.build()).await()
+        val response = callFactory.value.newCall(request.build()).await()
         if (!response.isSuccessful) {
             throw HttpException(response)
         }
