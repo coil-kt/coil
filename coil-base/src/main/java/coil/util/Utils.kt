@@ -6,11 +6,19 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.StatFs
 import androidx.annotation.Px
+import coil.size.PixelSize
+import coil.size.Size
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.InputStream
 
 /** Private utility methods for Coil. */
 internal object Utils {
@@ -68,5 +76,48 @@ internal object Utils {
         // Prefer hardware bitmaps on Android O and above since they are optimized for drawing
         // without transformations.
         return if (SDK_INT >= O) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
+    }
+
+    /** Return bitmap from drawable. */
+    fun getBitmapFromDrawable(drawable: Drawable, size: Size? = null): Bitmap {
+        if (drawable is BitmapDrawable) {
+            return if (size is PixelSize) getScaledBitmap(drawable.bitmap, size.width, size.height) else drawable.bitmap
+        }
+
+        val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return if (size is PixelSize) getScaledBitmap(bitmap, size.width, size.height) else bitmap
+    }
+
+    /** Return InputStream from bitmap. */
+    fun getInputStreamFromBitmap(bitmap: Bitmap): InputStream {
+        val bos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
+        return ByteArrayInputStream(bos.toByteArray())
+    }
+
+    /** Return scaled bitmap from bitmap. */
+    fun getScaledBitmap(source: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+        var image = source
+        if (maxHeight > 0 && maxWidth > 0) {
+            val width = image.width
+            val height = image.height
+            val ratioBitmap = width.toFloat() / height.toFloat()
+            val ratioMax = maxWidth.toFloat() / maxHeight.toFloat()
+
+            var finalWidth = maxWidth
+            var finalHeight = maxHeight
+            if (ratioMax > 1) {
+                finalWidth = (maxHeight.toFloat() * ratioBitmap).toInt()
+            } else {
+                finalHeight = (maxWidth.toFloat() / ratioBitmap).toInt()
+            }
+            image = Bitmap.createScaledBitmap(image, finalWidth, finalHeight, true)
+            return image
+        } else {
+            return image
+        }
     }
 }

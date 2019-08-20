@@ -108,6 +108,22 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
+    fun resourceUriVectorSamePackage() {
+        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.ic_android}")
+        val expectedSize = PixelSize(100, 100)
+        testLoad(data, expectedSize)
+        testGet(data, expectedSize)
+    }
+
+    @Test
+    fun resourceUriVectorDifferentPackage() {
+        val data = Uri.parse("android.resource://com.android.messaging/drawable/abc_ic_ab_back_material")
+        val expectedSize = PixelSize(100, 100)
+        testLoad(data, expectedSize)
+        testGet(data, expectedSize)
+    }
+
+    @Test
     fun file() {
         val data = copyNormalImageAssetToCacheDir()
         testLoad(data)
