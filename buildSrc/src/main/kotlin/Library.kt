@@ -26,6 +26,8 @@ object Library {
 
     const val MATERIAL = "com.google.android.material:material:1.0.0"
 
+    const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
+
     private const val OKHTTP_VERSION = "3.12.3"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
