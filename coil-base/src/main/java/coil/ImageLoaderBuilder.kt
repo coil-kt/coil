@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package coil
 
@@ -10,7 +10,7 @@ import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
 import coil.drawable.CrossfadeDrawable
 import coil.target.ImageViewTarget
-import coil.util.applyCoilOptimizations
+import coil.util.CoilUtils
 import coil.util.Utils
 import coil.util.getDrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,7 +22,7 @@ import okhttp3.OkHttpClient
 @BuilderMarker
 class ImageLoaderBuilder(private val context: Context) {
 
-    private var callFactory: Call.Factory? = null
+    private var callFactory: Lazy<Call.Factory>? = null
 
     private var registry: ComponentRegistry? = null
 
@@ -32,32 +32,48 @@ class ImageLoaderBuilder(private val context: Context) {
     private var defaults = DefaultRequestOptions()
 
     /**
-     * The HTTP client used for requests.
+     * Set the [OkHttpClient] used for network requests.
      *
-     * This is a convenience method for calling [callFactory].
-     *
-     * Use [applyCoilOptimizations] if possible during its construction to optimize it for Coil.
+     * This is a convenience function for calling `callFactory(Call.Factory)`.
      */
     fun okHttpClient(okHttpClient: OkHttpClient) = callFactory(okHttpClient)
 
     /**
-     * Specify a custom call factory for creating [Call] instances.
+     * Set a lazy callback to create the [OkHttpClient] used for network requests.
      *
-     * If using an [OkHttpClient] instance under the hood, use [applyCoilOptimizations] if possible to optimize it
-     * for Coil.
+     * This is a convenience function for calling `callFactory(() -> Call.Factory)`.
+     */
+    fun okHttpClient(initializer: () -> OkHttpClient) = callFactory(initializer)
+
+    /**
+     * Set the [Call.Factory] used for network requests.
      *
      * Note: Calling [okHttpClient] automatically sets this value.
      */
     fun callFactory(callFactory: Call.Factory) = apply {
-        this.callFactory = callFactory
+        this.callFactory = lazyOf(callFactory)
+    }
+
+    /**
+     * Set a lazy callback to create the [Call.Factory] used for network requests.
+     *
+     * This allows lazy creation of the [Call.Factory] on a background thread.
+     * [initializer] is guaranteed to be called at most once.
+     *
+     * Prefer using this instead of `callFactory(Call.Factory)`.
+     *
+     * Note: Calling [okHttpClient] automatically sets this value.
+     */
+    fun callFactory(initializer: () -> Call.Factory) = apply {
+        this.callFactory = lazy(initializer)
     }
 
     /**
      * Build and set the [ComponentRegistry].
      */
-    inline fun componentRegistry(builder: ComponentRegistry.Builder.() -> Unit) = apply {
-        componentRegistry(ComponentRegistry(builder))
-    }
+    inline fun componentRegistry(
+        builder: ComponentRegistry.Builder.() -> Unit
+    ) = componentRegistry(ComponentRegistry(builder))
 
     /**
      * Set the [ComponentRegistry].
@@ -191,14 +207,14 @@ class ImageLoaderBuilder(private val context: Context) {
             defaults = defaults,
             bitmapPoolSize = bitmapPoolSize,
             memoryCacheSize = memoryCacheSize,
-            callFactory = callFactory ?: buildDefaultOkHttpClient(),
+            callFactory = callFactory ?: buildDefaultCallFactory(),
             registry = registry ?: ComponentRegistry()
         )
     }
 
-    private fun buildDefaultOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .applyCoilOptimizations(context)
+    private fun buildDefaultCallFactory() = lazy {
+        OkHttpClient.Builder()
+            .cache(CoilUtils.createDefaultCache(context))
             .build()
     }
 }
