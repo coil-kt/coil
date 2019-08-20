@@ -43,7 +43,7 @@ class ImageLoaderBuilder(private val context: Context) {
      *
      * This is a convenience function for calling `callFactory(() -> Call.Factory)`.
      */
-    fun okHttpClient(factory: () -> OkHttpClient) = callFactory(factory)
+    fun okHttpClient(initializer: () -> OkHttpClient) = callFactory(initializer)
 
     /**
      * Set the [Call.Factory] used for network requests.
@@ -58,14 +58,14 @@ class ImageLoaderBuilder(private val context: Context) {
      * Set a lazy callback to create the [Call.Factory] used for network requests.
      *
      * This allows lazy creation of the [Call.Factory] on a background thread.
-     * [factory] is guaranteed to be called at most once.
+     * [initializer] is guaranteed to be called at most once.
      *
      * Prefer using this instead of `callFactory(Call.Factory)`.
      *
      * Note: Calling [okHttpClient] automatically sets this value.
      */
-    fun callFactory(factory: () -> Call.Factory) = apply {
-        this.callFactory = lazy(factory)
+    fun callFactory(initializer: () -> Call.Factory) = apply {
+        this.callFactory = lazy(initializer)
     }
 
     /**
