@@ -37,13 +37,20 @@ internal interface NetworkObserverStrategy {
          */
         operator fun invoke(context: Context, listener: Listener): NetworkObserverStrategy {
             val connectivityManager: ConnectivityManager? = context.getSystemService()
-            return if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
+            if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
                 log(TAG, Log.WARN) { "Unable to register network observer." }
+                return EmptyNetworkObserverStrategy
+            }
+
+            return try {
+                if (SDK_INT >= LOLLIPOP) {
+                    NetworkObserverStrategyApi21(connectivityManager, listener)
+                } else {
+                    NetworkObserverStrategyApi14(context, connectivityManager, listener)
+                }
+            } catch (e: Exception) {
+                log(TAG, RuntimeException("Failed to register network observer.", e))
                 EmptyNetworkObserverStrategy
-            } else if (SDK_INT >= LOLLIPOP) {
-                NetworkObserverStrategyApi21(connectivityManager, listener)
-            } else {
-                NetworkObserverStrategyApi14(context, connectivityManager, listener)
             }
         }
     }
