@@ -5,9 +5,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.annotation.MainThread
 import coil.ImageLoader
+import coil.base.R
 import coil.drawable.CrossfadeDrawable
 import coil.request.Request
-import coil.resource.R
 import coil.target.ImageViewTarget
 import coil.target.PoolableViewTarget
 import coil.target.Target
