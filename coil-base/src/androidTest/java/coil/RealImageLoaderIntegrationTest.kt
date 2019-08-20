@@ -10,13 +10,13 @@ import coil.api.get
 import coil.api.getAny
 import coil.api.load
 import coil.api.loadAny
+import coil.base.test.R
 import coil.bitmappool.BitmapPool
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
 import coil.request.CachePolicy
-import coil.resource.test.R
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.Utils
