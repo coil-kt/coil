@@ -19,10 +19,10 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.collection.arraySetOf
 import androidx.core.graphics.drawable.toDrawable
+import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
 import coil.memory.ViewTargetRequestManager
-import coil.resource.R
 import coil.size.Scale
 import coil.target.ViewTarget
 import kotlinx.coroutines.suspendCancellableCoroutine
