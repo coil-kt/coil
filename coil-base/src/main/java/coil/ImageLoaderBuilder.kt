@@ -60,6 +60,8 @@ class ImageLoaderBuilder(private val context: Context) {
      * This allows lazy creation of the [Call.Factory] on a background thread.
      * [factory] is guaranteed to be called at most once.
      *
+     * Prefer using this instead of `callFactory(Call.Factory)`.
+     *
      * Note: Calling [okHttpClient] automatically sets this value.
      */
     fun callFactory(factory: () -> Call.Factory) = apply {
