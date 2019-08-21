@@ -7,9 +7,13 @@
 
 SLUG="coil-kt/coil"
 JDK="oraclejdk8"
-BRANCH="colin/snapshots"
+BRANCH="master"
 
 set -e
+
+echo "Deploying snapshot..."
+./gradlew clean uploadArchives --no-daemon --no-parallel
+echo "Snapshot deployed!"
 
 if [ "$TRAVIS_REPO_SLUG" != "$SLUG" ]; then
   echo "Skipping snapshot deployment: wrong repository. Expected '$SLUG' but was '$TRAVIS_REPO_SLUG'."
