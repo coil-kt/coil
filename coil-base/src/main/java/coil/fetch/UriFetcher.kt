@@ -42,9 +42,9 @@ internal class UriFetcher(
         size: Size,
         options: Options
     ): FetchResult {
-        val assetFileName = extractAssetFileName(data)
-        val inputStream = if (assetFileName != null) {
-            context.assets.open(assetFileName)
+        val assetPath = extractAssetPath(data)
+        val inputStream = if (assetPath != null) {
+            context.assets.open(assetPath)
         } else {
             checkNotNull(context.contentResolver.openInputStream(data))
         }
@@ -56,20 +56,26 @@ internal class UriFetcher(
         )
     }
 
-    /** Return the asset's filename if [uri] must be handled by [AssetManager]. Else, return null. */
+    /** Return the asset's path if [uri] must be handled by [AssetManager]. Else, return null. */
     @VisibleForTesting
-    internal fun extractAssetFileName(uri: Uri): String? {
+    internal fun extractAssetPath(uri: Uri): String? {
         if (uri.scheme != ContentResolver.SCHEME_FILE) {
             return null
         }
 
         val segments = uri.pathSegments
-        return if (segments.count() == 2 &&
-            segments[0] == ASSET_FILE_PATH_SEGMENT &&
-            segments[1].isNotBlank()) {
-            segments[1]
-        } else {
-            null
+        if (segments.count() < 2 || segments[0] != ASSET_FILE_PATH_SEGMENT) {
+            return null
         }
+
+        val path = segments
+                .drop(1)
+                .joinToString("/")
+
+        if (path.isBlank()) {
+            return null
+        }
+
+        return path
     }
 }

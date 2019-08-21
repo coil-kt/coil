@@ -68,23 +68,30 @@ class UriFetcherTest {
     }
 
     @Test
-    fun basicExtractFileName() {
+    fun basicExtractPath() {
         val uri = Uri.parse("file:///android_asset/something.jpg")
-        val result = loader.extractAssetFileName(uri)
+        val result = loader.extractAssetPath(uri)
         assertEquals("something.jpg", result)
     }
 
     @Test
-    fun emptyExtractFileName() {
+    fun nestedDirectoriesExtractPath() {
+        val uri = Uri.parse("file:///android_asset/img/foo/bar/test.jpg")
+        val result = loader.extractAssetPath(uri)
+        assertEquals("img/foo/bar/test.jpg", result)
+    }
+
+    @Test
+    fun emptyExtractPath() {
         val uri = Uri.parse("file:///android_asset/")
-        val result = loader.extractAssetFileName(uri)
+        val result = loader.extractAssetPath(uri)
         assertEquals(null, result)
     }
 
     @Test
-    fun nonAssetUriExtractFileName() {
+    fun nonAssetUriExtractPath() {
         val uri = Uri.parse("file:///fake/file/path")
-        val result = loader.extractAssetFileName(uri)
+        val result = loader.extractAssetPath(uri)
         assertEquals(null, result)
     }
 
