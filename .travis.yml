@@ -26,7 +26,7 @@ before_script:
   # Create and start the emulator.
   - echo no | avdmanager create avd -f -n test -k "system-images;android-24;default;armeabi-v7a"
   - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window &
-  - ./buildscript/android_wait_for_emulator.sh
+  - ./.buildscript/android_wait_for_emulator.sh
   - adb shell input keyevent 82
 
 script:
@@ -34,7 +34,7 @@ script:
   - ./gradlew connectedDebugAndroidTest
 
 after_success:
-  - ./buildscript/deploy_snapshot.sh
+  - ./.buildscript/deploy_snapshot.sh
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
