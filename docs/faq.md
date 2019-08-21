@@ -31,3 +31,32 @@ If you're using the Coil singleton, you can then replace its `ImageLoader` insta
 ```kotlin
 Coil.setDefaultImageLoader(imageLoader)
 ```
+
+## How do I get development snapshots?
+
+Add the snapshots repository to your list of repositories:
+
+Gradle (`.gradle`):
+
+```
+allprojects {
+    repositories {
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+}
+```
+
+Gradle Kotlin DSL (`.gradle.kts`):
+
+```
+allprojects {
+    repositories {
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
+```
+
+Then depend on the same artifacts with [the latest snapshot version](https://github.com/coil-kt/coil/blob/master/gradle.properties#L16).
+
+!!! Note
+    Snapshots are deployed for each new commit on `master` that passes CI. They can potentially contain breaking changes or may be unstable. Use at your own risk.
