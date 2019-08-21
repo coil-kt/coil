@@ -12,7 +12,7 @@ BRANCH="master"
 set -e
 
 echo "Deploying snapshot..."
-./gradlew clean uploadArchives --no-daemon --no-parallel
+./upload_archives.sh
 echo "Snapshot deployed!"
 
 if [ "$TRAVIS_REPO_SLUG" != "$SLUG" ]; then
@@ -25,6 +25,6 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   echo "Skipping snapshot deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
 else
   echo "Deploying snapshot..."
-  ./gradlew clean uploadArchives --no-daemon --no-parallel
+  ./upload_archives.sh
   echo "Snapshot deployed!"
 fi
