@@ -39,7 +39,7 @@ class HttpUrlFetcherTest {
     fun before() {
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg")
-        fetcher = HttpUrlFetcher(lazyOf(OkHttpClient()))
+        fetcher = HttpUrlFetcher(OkHttpClient())
         pool = FakeBitmapPool()
     }
 

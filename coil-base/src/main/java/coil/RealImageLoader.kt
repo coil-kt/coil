@@ -74,7 +74,7 @@ internal class RealImageLoader(
     override val defaults: DefaultRequestOptions,
     bitmapPoolSize: Long,
     memoryCacheSize: Int,
-    callFactory: Lazy<Call.Factory>,
+    callFactory: Call.Factory,
     registry: ComponentRegistry
 ) : ImageLoader, ComponentCallbacks {
 
