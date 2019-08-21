@@ -9,7 +9,6 @@ plugins {
     id("com.vanniktech.maven.publish")
     id("kotlin-android")
     id("org.jetbrains.dokka-android")
-    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
