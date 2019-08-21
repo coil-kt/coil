@@ -38,7 +38,7 @@ Add the snapshots repository to your list of repositories:
 
 Gradle (`.gradle`):
 
-```
+```groovy
 allprojects {
     repositories {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
@@ -48,7 +48,7 @@ allprojects {
 
 Gradle Kotlin DSL (`.gradle.kts`):
 
-```
+```kotlin
 allprojects {
     repositories {
         maven("https://oss.sonatype.org/content/repositories/snapshots")
