@@ -366,6 +366,8 @@ internal class RealImageLoader(
 
     override fun clearMemory() = onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
 
+    override fun clearMemory(key: String) = memoryCache.clearMemory(key)
+
     @Synchronized
     override fun shutdown() {
         if (isShutdown) {

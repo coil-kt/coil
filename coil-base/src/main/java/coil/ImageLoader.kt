@@ -60,6 +60,11 @@ interface ImageLoader {
     fun clearMemory()
 
     /**
+     * Remove a single item from memory cache.
+     */
+    fun clearMemory(key: String)
+
+    /**
      * Shutdown this image loader.
      *
      * All associated resources will be freed and any new requests will fail before starting.

@@ -57,6 +57,11 @@ internal class MemoryCache(
         cache.trimToSize(-1)
     }
 
+    fun clearMemory(key: String) {
+        log(TAG, Log.DEBUG) { "clearMemory($key)" }
+        cache.remove(key)
+    }
+
     fun trimMemory(level: Int) {
         log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
