@@ -45,4 +45,13 @@ class MemoryCacheTest {
 
         assertNull(cache["1"])
     }
+
+    @Test
+    fun `value is gone after clearMemory(key) is called`() {
+        val cache = MemoryCache(counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
+        val bitmap = createBitmap()
+        cache.set("1", bitmap, false)
+        cache.clearMemory("1")
+        assertNull(cache["1"])
+    }
 }
