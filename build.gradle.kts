@@ -4,6 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.dokka.gradle.DokkaAndroidTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
@@ -30,8 +31,16 @@ allprojects {
         jcenter()
     }
 
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
     group = project.groupId
     version = project.versionName
+
+    @Suppress("UnstableApiUsage")
+    extensions.configure<KtlintExtension>("ktlint") {
+        version.set("0.34.2")
+        enableExperimentalRules.set(true)
+    }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {

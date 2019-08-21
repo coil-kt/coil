@@ -39,7 +39,6 @@ interface ViewSizeResolver<T : View> : SizeResolver {
             val viewTreeObserver = view.viewTreeObserver
 
             val preDrawListener = object : ViewTreeObserver.OnPreDrawListener {
-
                 private var isResumed = false
 
                 override fun onPreDraw(): Boolean {
