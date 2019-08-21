@@ -69,8 +69,8 @@ internal class UriFetcher(
         }
 
         val path = segments
-                .drop(1)
-                .joinToString("/")
+            .drop(1)
+            .joinToString("/")
 
         if (path.isBlank()) {
             return null
