@@ -22,6 +22,7 @@ import okio.BufferedSource
 import okio.ForwardingSource
 import okio.Source
 import okio.buffer
+import java.io.InputStream
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -58,7 +59,7 @@ internal class BitmapFactoryDecoder(
         inJustDecodeBounds = false
 
         // Read the image's EXIF data.
-        val exifInterface = ExifInterface(safeBufferedSource.peek().inputStream())
+        val exifInterface = ExifInterface(AvailableInputStream(safeBufferedSource.peek().inputStream()))
         val isFlipped = exifInterface.isFlipped
         val rotationDegrees = exifInterface.rotationDegrees
         val isRotated = rotationDegrees > 0
@@ -226,5 +227,27 @@ internal class BitmapFactoryDecoder(
                 throw e
             }
         }
+    }
+
+    /** Wrap [delegate] so that it always returns [Int.MAX_VALUE] for [available]. */
+    private class AvailableInputStream(private val delegate: InputStream) : InputStream() {
+
+        override fun read() = delegate.read()
+
+        override fun read(b: ByteArray) = delegate.read(b)
+
+        override fun read(b: ByteArray, off: Int, len: Int) = delegate.read(b, off, len)
+
+        override fun skip(n: Long) = delegate.skip(n)
+
+        override fun available() = Int.MAX_VALUE
+
+        override fun close() = delegate.close()
+
+        override fun mark(readlimit: Int) = delegate.mark(readlimit)
+
+        override fun reset() = delegate.reset()
+
+        override fun markSupported() = delegate.markSupported()
     }
 }
