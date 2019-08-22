@@ -59,7 +59,7 @@ internal class BitmapFactoryDecoder(
         inJustDecodeBounds = false
 
         // Read the image's EXIF data.
-        val exifInterface = ExifInterface(AvailableInputStream(safeBufferedSource.peek().inputStream()))
+        val exifInterface = ExifInterface(AlwaysAvailableInputStream(safeBufferedSource.peek().inputStream()))
         val isFlipped = exifInterface.isFlipped
         val rotationDegrees = exifInterface.rotationDegrees
         val isRotated = rotationDegrees > 0
@@ -230,7 +230,7 @@ internal class BitmapFactoryDecoder(
     }
 
     /** Wrap [delegate] so that it always returns [Int.MAX_VALUE] for [available]. */
-    private class AvailableInputStream(private val delegate: InputStream) : InputStream() {
+    private class AlwaysAvailableInputStream(private val delegate: InputStream) : InputStream() {
 
         override fun read() = delegate.read()
 
