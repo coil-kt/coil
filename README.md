@@ -19,6 +19,22 @@ Coil is available on `mavenCentral()`.
 implementation("io.coil-kt:coil:0.6.1")
 ```
 
+Ensure you have the following in your `app/build.gradle` file:
+
+```kotlin
+android {
+  ...
+  compileOptions {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+  }
+
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+}
+```
+
 ## Quick Start
 
 To load an image into an `ImageView`, use the `load` extension function:
