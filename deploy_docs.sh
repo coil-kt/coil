@@ -10,6 +10,8 @@ rm -rf docs/api
 sed -e '/full documentation here/ { N; d; }' < README.md > docs/index.md
 cp CONTRIBUTING.md docs/contributing.md
 cp CHANGELOG.md docs/changelog.md
+cp coil-gif/README.md docs/gifs.md
+cp coil-svg/README.md docs/svgs.md
 cp logo.svg docs/logo.svg
 
 # Deploy to Github pages.

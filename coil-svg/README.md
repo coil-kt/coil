@@ -1,24 +1,19 @@
-# coil-svg
+# SVGs
 
-Adds SVG decoding support to Coil.
+To add SVG support, import the extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-svg:latest.version.here")
+implementation("io.coil-kt:coil-svg:0.6.1")
 ```
-Note that this imports [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) as well.
 
-## Quick Start
-
-Add the decoders to your component registry when constructing your ImageLoader:
+And add the decoders to your component registry when constructing your `ImageLoader`:
 
 ```kotlin
-// within a global place, like your Application.onCreate()
 val imageLoader = ImageLoader(context) {
     componentRegistry {
         add(SvgDecoder())
     }
 }
-Coil.setDefaultImageLoader(imageLoader)
 ```
 
-And that's it! The ImageLoader will automatically detect any SVGs using their file headers and decode them correctly.
+And that's it! The `ImageLoader` will automatically detect any SVGs using their file headers and decode them correctly.
