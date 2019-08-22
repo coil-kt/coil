@@ -18,4 +18,4 @@ cp logo.svg docs/logo.svg
 mkdocs gh-deploy
 
 # Clean up.
-rm docs/index.md docs/contributing.md docs/changelog.md docs/logo.svg
+rm docs/index.md docs/contributing.md docs/changelog.md docs/logo.svg docs/gifs.md docs/svgs.md
