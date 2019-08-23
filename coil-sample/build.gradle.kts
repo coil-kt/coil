@@ -8,7 +8,6 @@ import org.jetbrains.kotlin.config.KotlinCompilerVersion
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {

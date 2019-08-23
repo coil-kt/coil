@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
  */
 data class DefaultRequestOptions(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    val allowHardware: Boolean = true,
     val allowRgb565: Boolean = false,
     val crossfadeMillis: Int = 0,
     val placeholder: Drawable? = null,

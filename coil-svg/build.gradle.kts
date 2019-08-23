@@ -1,3 +1,4 @@
+import coil.Library
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
@@ -38,4 +39,7 @@ afterEvaluate {
 
 dependencies {
     api(project(":coil-base"))
+
+    implementation(Library.ANDROIDX_CORE)
+    implementation(Library.ANDROID_SVG)
 }

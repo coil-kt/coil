@@ -2,12 +2,12 @@
 
 package coil.sample
 
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.LOLLIPOP
 import androidx.multidex.MultiDexApplication
 import coil.Coil
 import coil.ImageLoader
 import coil.util.CoilLogger
+import coil.util.CoilUtils
+import okhttp3.OkHttpClient
 
 class Application : MultiDexApplication() {
 
@@ -23,8 +23,10 @@ class Application : MultiDexApplication() {
             bitmapPoolPercentage(0.5)
             crossfade(true)
             okHttpClient {
-                // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
-                if (SDK_INT < LOLLIPOP) forceTls12()
+                OkHttpClient.Builder()
+                    .cache(CoilUtils.createDefaultCache(this@Application))
+                    .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
+                    .build()
             }
         }
     }

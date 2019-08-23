@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package coil
 
@@ -10,20 +10,20 @@ import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
 import coil.drawable.CrossfadeDrawable
 import coil.target.ImageViewTarget
+import coil.util.CoilUtils
 import coil.util.Utils
 import coil.util.getDrawableCompat
+import coil.util.lazyCallFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import okhttp3.Cache
-import okhttp3.Dispatcher
+import okhttp3.Call
 import okhttp3.OkHttpClient
 
 /** Builder for an [ImageLoader]. */
 @BuilderMarker
 class ImageLoaderBuilder(private val context: Context) {
 
-    private var okHttpClient: OkHttpClient? = null
-    private var okHttpClientBuilder: (OkHttpClient.Builder.() -> Unit)? = null
+    private var callFactory: Call.Factory? = null
 
     private var registry: ComponentRegistry? = null
 
@@ -33,32 +33,48 @@ class ImageLoaderBuilder(private val context: Context) {
     private var defaults = DefaultRequestOptions()
 
     /**
-     * Set the [OkHttpClient] to be used for network requests.
+     * Set the [OkHttpClient] used for network requests.
      *
-     * Prefer `okHttpClient(OkHttpClient.Builder.() -> Unit)` if possible,
-     * as the default [OkHttpClient] instance is optimized for Coil.
+     * This is a convenience function for calling `callFactory(Call.Factory)`.
      */
-    fun okHttpClient(client: OkHttpClient) = apply {
-        this.okHttpClient = client
-        this.okHttpClientBuilder = null
+    fun okHttpClient(okHttpClient: OkHttpClient) = callFactory(okHttpClient)
+
+    /**
+     * Set a lazy callback to create the [OkHttpClient] used for network requests.
+     *
+     * This is a convenience function for calling `callFactory(() -> Call.Factory)`.
+     */
+    fun okHttpClient(initializer: () -> OkHttpClient) = callFactory(initializer)
+
+    /**
+     * Set the [Call.Factory] used for network requests.
+     *
+     * Note: Calling [okHttpClient] automatically sets this value.
+     */
+    fun callFactory(callFactory: Call.Factory) = apply {
+        this.callFactory = callFactory
     }
 
     /**
-     * Set the callback that is invoked when building the default [OkHttpClient].
+     * Set a lazy callback to create the [Call.Factory] used for network requests.
      *
-     * @see buildDefaultOkHttpClient
+     * This allows lazy creation of the [Call.Factory] on a background thread.
+     * [initializer] is guaranteed to be called at most once.
+     *
+     * Prefer using this instead of `callFactory(Call.Factory)`.
+     *
+     * Note: Calling [okHttpClient] automatically sets this value.
      */
-    fun okHttpClient(builder: OkHttpClient.Builder.() -> Unit) = apply {
-        this.okHttpClientBuilder = builder
-        this.okHttpClient = null
+    fun callFactory(initializer: () -> Call.Factory) = apply {
+        this.callFactory = lazyCallFactory(initializer)
     }
 
     /**
      * Build and set the [ComponentRegistry].
      */
-    inline fun componentRegistry(builder: ComponentRegistry.Builder.() -> Unit) = apply {
-        componentRegistry(ComponentRegistry(builder))
-    }
+    inline fun componentRegistry(
+        builder: ComponentRegistry.Builder.() -> Unit
+    ) = componentRegistry(ComponentRegistry(builder))
 
     /**
      * Set the [ComponentRegistry].
@@ -101,6 +117,19 @@ class ImageLoaderBuilder(private val context: Context) {
      */
     fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
         this.defaults = this.defaults.copy(dispatcher = dispatcher)
+    }
+
+    /**
+     * Allow the use of [Bitmap.Config.HARDWARE].
+     *
+     * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
+     *
+     * NOTE: Setting this to false this will reduce performance on Android O and above. Only disable if necessary.
+     *
+     * Default: true
+     */
+    fun allowHardware(enable: Boolean) = apply {
+        this.defaults = this.defaults.copy(allowHardware = enable)
     }
 
     /**
@@ -179,26 +208,14 @@ class ImageLoaderBuilder(private val context: Context) {
             defaults = defaults,
             bitmapPoolSize = bitmapPoolSize,
             memoryCacheSize = memoryCacheSize,
-            okHttpClient = okHttpClient ?: buildDefaultOkHttpClient(),
+            callFactory = callFactory ?: buildDefaultCallFactory(),
             registry = registry ?: ComponentRegistry()
         )
     }
 
-    private fun buildDefaultOkHttpClient(): OkHttpClient {
-        // Create the default image disk cache.
-        val cacheDirectory = Utils.getDefaultCacheDirectory(context)
-        val cacheSize = Utils.calculateDiskCacheSize(cacheDirectory)
-        val cache = Cache(cacheDirectory, cacheSize)
-
-        // Don't limit the number of requests by host.
-        val dispatcher = Dispatcher().apply {
-            maxRequestsPerHost = maxRequests
-        }
-
-        return OkHttpClient.Builder()
-            .cache(cache)
-            .dispatcher(dispatcher)
-            .apply { okHttpClientBuilder?.invoke(this) }
+    private fun buildDefaultCallFactory() = lazyCallFactory {
+        OkHttpClient.Builder()
+            .cache(CoilUtils.createDefaultCache(context))
             .build()
     }
 }

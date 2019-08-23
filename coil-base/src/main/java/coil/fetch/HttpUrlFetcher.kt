@@ -7,12 +7,12 @@ import coil.network.HttpException
 import coil.size.Size
 import coil.util.await
 import okhttp3.CacheControl
+import okhttp3.Call
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class HttpUrlFetcher(
-    private val okHttp: OkHttpClient
+    private val callFactory: Call.Factory
 ) : Fetcher<HttpUrl> {
 
     companion object {
@@ -47,7 +47,7 @@ internal class HttpUrlFetcher(
             }
         }
 
-        val response = okHttp.newCall(request.build()).await()
+        val response = callFactory.newCall(request.build()).await()
         if (!response.isSuccessful) {
             throw HttpException(response)
         }

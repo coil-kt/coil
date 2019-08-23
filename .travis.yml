@@ -1,14 +1,40 @@
 language: android
 dist: trusty
+jdk: oraclejdk8
 android:
   components:
     - android-28
     - build-tools-28.0.3
-    - tools
-    - platform-tools
+branches:
+  only:
+    - master
+
+env:
+  global:
+    - secure: "bjK22Ivdcgz0gifFOuUsyvKocyeQoZRRIA+aHyaGGdtXpa3SE/2yeVw4ZrXE/9NnUaaiUvTTCYw0Huyx3AeoRsoTlWqIj54O3yElvCtJXgP1OptbJWxGTrhTdqzfuWoHo4cKAGTTUCAW2JwfiXWh/QM2Wd75fuQn3Bq1v3kCylKzRBy6ADFoPuPdEZ8aioUP6U0nxPh5kuSHcPk2516s1W7DtddPLVXq35Ve0G/e8mMT5A0ap0dH12Sp6d9l67KMpqxQaoSmkGhk0npvQb0/pKukL3RD7UxX+qSiXBg9v8tHDlKcxnzB34T5CBlcukhZi1V3eBSRrrFCz1EjSQdBcJTZtufRGcAuerTBO24hNSsGf3X/YWaPht9Ok1oK58BtZsiDUYHXxEpndVFRCk34U1RfzE1yemfY5K+3Ubc28PTy0awLU90duh2dg+Hm7+iezEoiEC/nkGqrznsqWjLAijvJS1FN8MxwqdYczIag525/Wb1Dnz2EMkK0hRxEm3P+2LvrVI3ofnwp9DbFk/5n/Y4LB3cmMMTy+WB8DUJOBH6XiR6OUlJ8yv2hJ7cYOYcJP0IEyOg55gv7hbAV4UgFVOOHbv86D6DETzPIlzmeajt3TO8jYgUVF354KESPIWVct+CvowB30yJL0K8gzWv0f8Y5yrIlwGwPkHuAJjOILG8="
+    - secure: "dzTNZ5AFTEVQNgSN8WGogHCbh1lTebSYbRkqhqHZsghH7TA9X+i5+xj07hC5E9PZUNrPhn0fMrWF7T2j4uKm0mMSI27vazSSFxwxZGYchsdZXRG4xCcHqroG9QdB2QNeuX7k9nrufWlShWOeU9dB3oYHoHYjqNUx1GLLGIbfbAv0rgphs5tOtqMqyvRuik6M6SKdf/uWjGJ+t6sdmck7yMwzSUPRmSAp9d/wWCP+5lEP3DkqAhCBAWSDVChkYHQXq26Lx66DAHMke8Naw1/Xt2TbPGaVkkmxCYV2QRIRcX3kRtl7jNLHCqKKeWp+ZNgNmI2lY2WudQe29uklPFO+JJlPqZ7mAODn0A2102g31ZEMcuodIzUzQ7I+mHkPhQ/i6xHZl3mLFAuIk/zCW6E+3DDLO3OXXywA4uzSyNy2x6IRpJATW6VIqZfMuTwcNhfmxWpBN5Srwfy0aw/+F8phdKwdtGxaV96UpgjB7w0DjanMgpIJ11UIEzlhdqrnjyc2K08sSf/WoHhhyMK485I3Q/Ev2soYccZLMdPVVqIdB3SLdEPoWB+g4cNoCtX86jHqlfCinM5mzF/3Sk54MT2svlsQuERuivRGf7lelO22alvI3StRiKiqSq5U9ONBQyteB3lFVN/Bzb+iJrw47F/eosgHEpJV3NQwlYNKNQbv+DA="
+
+install:
+  # Accept Android licenses.
+  - touch ~/.android/repositories.cfg
+  - echo yes | sdkmanager "tools" "system-images;android-24;default;armeabi-v7a" > /dev/null
+  - export ANDROID_SDK_ROOT="$ANDROID_HOME"
+
+before_script:
+  # Check syntax and run unit tests first since they're fast.
+  - ./gradlew ktlintCheck testDebugUnitTest
+  # Create and start the emulator.
+  - echo no | avdmanager create avd -f -n test -k "system-images;android-24;default;armeabi-v7a"
+  - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window &
+  - ./.buildscript/android_wait_for_emulator.sh
+  - adb shell input keyevent 82
 
 script:
-  - ./gradlew ktlintCheck test
+  # Run the instrumentation tests.
+  - ./gradlew connectedDebugAndroidTest
+
+after_success:
+  - ./.buildscript/deploy_snapshot.sh
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

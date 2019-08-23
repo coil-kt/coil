@@ -6,8 +6,8 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
+import coil.base.test.R
 import coil.bitmappool.RealBitmapPool
-import coil.resource.test.R
 import coil.size.PixelSize
 import coil.util.getDrawableCompat
 import org.junit.Before
@@ -26,9 +26,7 @@ class DrawableDecoderServiceTest {
         service = DrawableDecoderService(context, RealBitmapPool(0))
     }
 
-    /**
-     * NOTE: This test will fail on pre-Lollipop since we don't import AppCompatResources in the base library.
-     */
+    /** This test will fail on pre-Lollipop since we don't import AppCompatResources in the base library. */
     @Test
     fun vectorIsConvertedCorrectly() {
         val output = service.convertIfNecessary(

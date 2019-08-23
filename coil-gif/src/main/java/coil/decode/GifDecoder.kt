@@ -12,7 +12,7 @@ import coil.size.Size
 import okio.BufferedSource
 
 /**
- * A [Decoder] that uses [Movie] to load GIFs.
+ * A [Decoder] that uses [Movie] to decode GIFs.
  *
  * NOTE: Prefer using [ImageDecoderDecoder] on Android P and above.
  */

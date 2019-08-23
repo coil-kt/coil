@@ -28,7 +28,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
- * The base [Decoder] that uses [BitmapFactory] to attempt to decode the given [BufferedSource].
+ * The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource].
  */
 internal class BitmapFactoryDecoder(
     private val context: Context

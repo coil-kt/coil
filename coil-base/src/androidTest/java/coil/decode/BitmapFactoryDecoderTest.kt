@@ -10,7 +10,7 @@ import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.createOptions
-import coil.util.sameAs
+import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.source
@@ -21,10 +21,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class BitmapFactoryDecoderTest {
-
-    companion object {
-        private const val MIN_CORRELATION = 0.99
-    }
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
@@ -100,7 +96,7 @@ class BitmapFactoryDecoderTest {
 
         for (index in 1..8) {
             val other = decode("exif/$index.jpg", size)
-            assertTrue(normal.sameAs(other, MIN_CORRELATION), "Image with index $index is incorrect.")
+            assertTrue(normal.isSimilarTo(other), "Image with index $index is incorrect.")
         }
     }
 

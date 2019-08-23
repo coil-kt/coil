@@ -36,7 +36,9 @@ fun Bitmap.getPixels(): Array<IntArray> {
  * Compares two [Bitmap]s by ensuring the cross correlation of their RGB channels is above [threshold]
  * and their alpha channels match exactly.
  */
-fun Bitmap.sameAs(other: Bitmap, @FloatRange(from = -1.0, to = 1.0) threshold: Double): Boolean {
+fun Bitmap.isSimilarTo(other: Bitmap, @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99): Boolean {
+    require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
+
     if (width != other.width || height != other.height) {
         return false
     }

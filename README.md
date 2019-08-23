@@ -16,7 +16,7 @@ Made with ❤️ at [Instacart](https://www.instacart.com).
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.6.0")
+implementation("io.coil-kt:coil:0.6.1")
 ```
 
 ## Quick Start

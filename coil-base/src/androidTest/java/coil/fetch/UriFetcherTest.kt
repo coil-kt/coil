@@ -68,23 +68,30 @@ class UriFetcherTest {
     }
 
     @Test
-    fun basicExtractFileName() {
+    fun basicExtractPath() {
         val uri = Uri.parse("file:///android_asset/something.jpg")
-        val result = loader.extractAssetFileName(uri)
+        val result = loader.extractAssetPath(uri)
         assertEquals("something.jpg", result)
     }
 
+    @Testg
+    fun nestedDirectoriesExtractPath() {
+        val uri = Uri.parse("file:///android_asset/img/foo/bar/test.jpg")
+        val result = loader.extractAssetPath(uri)
+        assertEquals("img/foo/bar/test.jpg", result)
+    }
+
     @Test
-    fun emptyExtractFileName() {
+    fun emptyExtractPath() {
         val uri = Uri.parse("file:///android_asset/")
-        val result = loader.extractAssetFileName(uri)
+        val result = loader.extractAssetPath(uri)
         assertEquals(null, result)
     }
 
     @Test
-    fun nonAssetUriExtractFileName() {
+    fun nonAssetUriExtractPath() {
         val uri = Uri.parse("file:///fake/file/path")
-        val result = loader.extractAssetFileName(uri)
+        val result = loader.extractAssetPath(uri)
         assertEquals(null, result)
     }
 
@@ -117,17 +124,5 @@ class UriFetcherTest {
     fun nonfileCacheKeyEqualsUri() {
         val uri = Uri.parse("content://fake/content/path")
         assertEquals(uri.toString(), loader.key(uri))
-    }
-
-    @Test
-    fun extractVideoCover() {
-        val uri = Uri.parse("file:///android_asset/test.mp4")
-        assertTrue(loader.handles(uri))
-
-        val result = runBlocking {
-            loader.fetch(pool, uri, PixelSize(100, 100), createOptions())
-        }
-
-        assertTrue(result is DrawableResult)
     }
 }

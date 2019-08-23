@@ -67,14 +67,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
+import okhttp3.Call
 
 internal class RealImageLoader(
     private val context: Context,
     override val defaults: DefaultRequestOptions,
     bitmapPoolSize: Long,
     memoryCacheSize: Int,
-    okHttpClient: OkHttpClient,
+    callFactory: Call.Factory,
     registry: ComponentRegistry
 ) : ImageLoader, ComponentCallbacks {
 
@@ -98,7 +98,7 @@ internal class RealImageLoader(
         add(HttpUriMapper())
         add(FileMapper())
 
-        add(HttpUrlFetcher(okHttpClient))
+        add(HttpUrlFetcher(callFactory))
         add(UriFetcher(context))
         add(ResourceFetcher(context, drawableDecoder))
         add(DrawableFetcher(drawableDecoder))

@@ -19,10 +19,10 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.collection.arraySetOf
 import androidx.core.graphics.drawable.toDrawable
+import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
 import coil.memory.ViewTargetRequestManager
-import coil.resource.R
 import coil.size.Scale
 import coil.target.ViewTarget
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -165,4 +165,13 @@ internal inline fun <T> Any.self(block: T.() -> Unit): T {
     this as T
     block()
     return this
+}
+
+/**
+ * Wrap a [Call.Factory] factory as a [Call.Factory] instance.
+ * [initializer] is called only once the first time [Call.Factory.newCall] is called.
+ */
+internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
+    val lazy: Lazy<Call.Factory> = lazy(initializer)
+    return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
 }
