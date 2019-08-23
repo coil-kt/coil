@@ -101,11 +101,11 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun largeExifData() {
+    fun largeExifMetadata() {
         val size = PixelSize(500, 500)
         val normal = decode("exif/large_metadata_normalized.jpg", size)
-        val largeExifData = decode("exif/large_metadata_normalized.jpg", size)
-        assertTrue(normal.isSimilarTo(largeExifData))
+        val largeExifMetadata = decode("exif/large_metadata_normalized.jpg", size)
+        assertTrue(normal.isSimilarTo(largeExifMetadata))
     }
 
     private fun decode(fileName: String, size: Size): Bitmap = runBlocking {
