@@ -169,14 +169,7 @@ class CrossfadeDrawable(
         val width = drawable.intrinsicWidth
         val height = drawable.intrinsicHeight
         if (width <= 0 || height <= 0) {
-            if (isStart) {
-                startOffsetX = 0f
-                startOffsetY = 0f
-            } else {
-                endOffsetX = 0f
-                endOffsetY = 0f
-            }
-
+            updateOffset(isStart, 0f, 0f)
             drawable.bounds = targetBounds
             return
         }
@@ -192,7 +185,10 @@ class CrossfadeDrawable(
         boundsRect.set(targetBounds)
         boundsRect.inset(dx.roundToInt(), dy.roundToInt())
         drawable.bounds = boundsRect
+        updateOffset(isStart, dx, dy)
+    }
 
+    private fun updateOffset(isStart: Boolean, dx: Float, dy: Float) {
         if (isStart) {
             startOffsetX = dx
             startOffsetY = dy
