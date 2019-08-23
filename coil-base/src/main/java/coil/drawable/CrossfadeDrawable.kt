@@ -34,11 +34,11 @@ class CrossfadeDrawable(
     private var isDone = false
     private var isRunning = false
 
-    private var startPaddingLeft = 0f
-    private var startPaddingTop = 0f
+    private var startOffsetX = 0f
+    private var startOffsetY = 0f
 
-    private var endPaddingLeft = 0f
-    private var endPaddingTop = 0f
+    private var endOffsetX = 0f
+    private var endOffsetY = 0f
 
     init {
         start?.callback = this
@@ -60,8 +60,8 @@ class CrossfadeDrawable(
         if (!isDone) {
             start?.let { start ->
                 canvas.withTranslation(
-                    x = startPaddingLeft,
-                    y = startPaddingTop
+                    x = startOffsetX,
+                    y = startOffsetY
                 ) {
                     start.alpha = maxAlpha
                     start.draw(canvas)
@@ -71,8 +71,8 @@ class CrossfadeDrawable(
 
         // Draw the end Drawable.
         canvas.withTranslation(
-            x = endPaddingLeft,
-            y = endPaddingTop
+            x = endOffsetX,
+            y = endOffsetY
         ) {
             end.alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
             end.draw(canvas)
@@ -106,36 +106,6 @@ class CrossfadeDrawable(
     override fun onBoundsChange(bounds: Rect) {
         start?.let { updateBounds(it, bounds, true) }
         updateBounds(end, bounds, false)
-    }
-
-    /** Scale and fill the [Drawable] inside [targetBounds] preserving aspect ratio. */
-    private fun updateBounds(drawable: Drawable, targetBounds: Rect, isStart: Boolean) {
-        val width = drawable.intrinsicWidth
-        val height = drawable.intrinsicHeight
-        if (width <= 0 || height <= 0) {
-            drawable.bounds = targetBounds
-            return
-        }
-
-        val targetWidth = targetBounds.width()
-        val targetHeight = targetBounds.height()
-        val widthPercent = targetWidth / width.toFloat()
-        val heightPercent = targetHeight / height.toFloat()
-        val scale = min(widthPercent, heightPercent)
-        val dx = (targetWidth - scale * width) / 2
-        val dy = (targetHeight - scale * height) / 2
-
-        boundsRect.set(targetBounds)
-        boundsRect.inset(dx.roundToInt(), dy.roundToInt())
-        drawable.bounds = boundsRect
-
-        if (isStart) {
-            startPaddingLeft = dx
-            startPaddingTop = dy
-        } else {
-            endPaddingLeft = dx
-            endPaddingTop = dy
-        }
     }
 
     override fun getIntrinsicWidth(): Int {
@@ -192,5 +162,43 @@ class CrossfadeDrawable(
         isRunning = false
         start = null
         onEnd?.invoke()
+    }
+
+    /** Scale and fit the [Drawable] inside [targetBounds] preserving aspect ratio. */
+    private fun updateBounds(drawable: Drawable, targetBounds: Rect, isStart: Boolean) {
+        val width = drawable.intrinsicWidth
+        val height = drawable.intrinsicHeight
+        if (width <= 0 || height <= 0) {
+            if (isStart) {
+                startOffsetX = 0f
+                startOffsetY = 0f
+            } else {
+                endOffsetX = 0f
+                endOffsetY = 0f
+            }
+
+            drawable.bounds = targetBounds
+            return
+        }
+
+        val targetWidth = targetBounds.width()
+        val targetHeight = targetBounds.height()
+        val widthPercent = targetWidth / width.toFloat()
+        val heightPercent = targetHeight / height.toFloat()
+        val scale = min(widthPercent, heightPercent)
+        val dx = (targetWidth - scale * width) / 2
+        val dy = (targetHeight - scale * height) / 2
+
+        boundsRect.set(targetBounds)
+        boundsRect.inset(dx.roundToInt(), dy.roundToInt())
+        drawable.bounds = boundsRect
+
+        if (isStart) {
+            startOffsetX = dx
+            startOffsetY = dy
+        } else {
+            endOffsetX = dx
+            endOffsetY = dy
+        }
     }
 }
