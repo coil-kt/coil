@@ -11,7 +11,7 @@ import coil.util.CoilContentProvider
 object Coil {
 
     private var imageLoader: ImageLoader? = null
-    private var imageLoaderFactory: (() -> ImageLoader)? = null
+    private var imageLoaderInitializer: (() -> ImageLoader)? = null
 
     /**
      * Get the default [ImageLoader] instance. Creates a new instance if none has been set.
@@ -26,18 +26,18 @@ object Coil {
     fun setDefaultImageLoader(loader: ImageLoader) {
         imageLoader?.shutdown()
         imageLoader = loader
-        imageLoaderFactory = null
+        imageLoaderInitializer = null
     }
 
     /**
-     * Set the factory for the default [ImageLoader] instance. Shutdown the current instance.
+     * Set a lazy callback to create the default [ImageLoader] instance. Shutdown the current instance.
      *
-     * The [factory] is guaranteed to only be called once. This enables lazy instantiation of the default [ImageLoader].
+     * The [initializer] is guaranteed to only be called once. This enables lazy instantiation of the default [ImageLoader].
      */
     @JvmStatic
-    fun setDefaultImageLoader(factory: () -> ImageLoader) {
+    fun setDefaultImageLoader(initializer: () -> ImageLoader) {
         imageLoader?.shutdown()
-        imageLoaderFactory = factory
+        imageLoaderInitializer = initializer
         imageLoader = null
     }
 
@@ -45,8 +45,8 @@ object Coil {
     private fun buildDefaultImageLoader(): ImageLoader {
         // Check again in case imageLoader was just set.
         return imageLoader ?: run {
-            val loader = imageLoaderFactory?.invoke() ?: ImageLoader(CoilContentProvider.context)
-            imageLoaderFactory = null
+            val loader = imageLoaderInitializer?.invoke() ?: ImageLoader(CoilContentProvider.context)
+            imageLoaderInitializer = null
             setDefaultImageLoader(loader)
             loader
         }
