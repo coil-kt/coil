@@ -52,6 +52,8 @@ To get an image imperatively, use the `get` [suspend](https://kotlinlang.org/doc
 val drawable = Coil.get("https://www.example.com/image.jpg")
 ```
 
+Coil requires Java 8 bytecode. [Here's how to enable it](https://coil-kt.github.io/coil/getting_started/#java-8). 
+
 Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
 
 ## Requirements
