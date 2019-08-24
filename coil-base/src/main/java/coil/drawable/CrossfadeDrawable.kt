@@ -6,9 +6,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
-import androidx.core.graphics.withTranslation
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -27,18 +25,10 @@ class CrossfadeDrawable(
         const val DEFAULT_DURATION = 100
     }
 
-    private val boundsRect = Rect()
-
     private var startTimeMillis = 0L
     private var maxAlpha = 255
     private var isDone = false
     private var isRunning = false
-
-    private var startOffsetX = 0f
-    private var startOffsetY = 0f
-
-    private var endOffsetX = 0f
-    private var endOffsetY = 0f
 
     init {
         start?.callback = this
@@ -58,25 +48,15 @@ class CrossfadeDrawable(
 
         // Draw the start Drawable.
         if (!isDone) {
-            start?.let { start ->
-                canvas.withTranslation(
-                    x = startOffsetX,
-                    y = startOffsetY
-                ) {
-                    start.alpha = maxAlpha
-                    start.draw(canvas)
-                }
+            start?.apply {
+                alpha = maxAlpha
+                draw(canvas)
             }
         }
 
         // Draw the end Drawable.
-        canvas.withTranslation(
-            x = endOffsetX,
-            y = endOffsetY
-        ) {
-            end.alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
-            end.draw(canvas)
-        }
+        end.alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
+        end.draw(canvas)
 
         if (isDone) {
             markDone()
@@ -104,8 +84,8 @@ class CrossfadeDrawable(
     }
 
     override fun onBoundsChange(bounds: Rect) {
-        start?.let { updateBounds(it, bounds, true) }
-        updateBounds(end, bounds, false)
+        start?.let { updateBounds(it, bounds) }
+        updateBounds(end, bounds)
     }
 
     override fun getIntrinsicWidth(): Int {
@@ -157,19 +137,11 @@ class CrossfadeDrawable(
         }
     }
 
-    private fun markDone() {
-        isDone = true
-        isRunning = false
-        start = null
-        onEnd?.invoke()
-    }
-
-    /** Scale and fit the [Drawable] inside [targetBounds] preserving aspect ratio. */
-    private fun updateBounds(drawable: Drawable, targetBounds: Rect, isStart: Boolean) {
+    /** Scale and fill the [Drawable] inside [targetBounds] preserving aspect ratio. */
+    private fun updateBounds(drawable: Drawable, targetBounds: Rect) {
         val width = drawable.intrinsicWidth
         val height = drawable.intrinsicHeight
         if (width <= 0 || height <= 0) {
-            updateOffset(isStart, 0f, 0f)
             drawable.bounds = targetBounds
             return
         }
@@ -178,23 +150,21 @@ class CrossfadeDrawable(
         val targetHeight = targetBounds.height()
         val widthPercent = targetWidth / width.toFloat()
         val heightPercent = targetHeight / height.toFloat()
-        val scale = min(widthPercent, heightPercent)
-        val dx = (targetWidth - scale * width) / 2
-        val dy = (targetHeight - scale * height) / 2
+        val scale = max(widthPercent, heightPercent)
+        val dx = ((targetWidth - scale * width) / 2).roundToInt()
+        val dy = ((targetHeight - scale * height) / 2).roundToInt()
 
-        boundsRect.set(targetBounds)
-        boundsRect.inset(dx.roundToInt(), dy.roundToInt())
-        drawable.bounds = boundsRect
-        updateOffset(isStart, dx, dy)
+        val left = targetBounds.left + dx
+        val top = targetBounds.top + dy
+        val right = targetBounds.right - dx
+        val bottom = targetBounds.bottom - dy
+        drawable.setBounds(left, top, right, bottom)
     }
 
-    private fun updateOffset(isStart: Boolean, dx: Float, dy: Float) {
-        if (isStart) {
-            startOffsetX = dx
-            startOffsetY = dy
-        } else {
-            endOffsetX = dx
-            endOffsetY = dy
-        }
+    private fun markDone() {
+        isDone = true
+        isRunning = false
+        start = null
+        onEnd?.invoke()
     }
 }
