@@ -6,17 +6,26 @@ import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
+import coil.size.Scale
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
  * A [Drawable] that crossfades from [start] to [end].
  *
  * NOTE: The transition can only be executed once as the [start] drawable is dereferenced at the end of the transition.
+ *
+ * @param start The Drawable to crossfade from.
+ * @param end The Drawable to crossfade to.
+ * @param scale The scaling algorithm for [start] and [end].
+ * @param duration The duration of the crossfade animation.
+ * @param onEnd A callback for when the animation completes.
  */
 class CrossfadeDrawable(
     private var start: Drawable?,
     val end: Drawable,
+    private val scale: Scale = Scale.FIT,
     private val duration: Int = DEFAULT_DURATION,
     private val onEnd: (() -> Unit)? = null
 ) : Drawable(), Drawable.Callback, Animatable {
@@ -137,7 +146,7 @@ class CrossfadeDrawable(
         }
     }
 
-    /** Scale and fill the [Drawable] inside [targetBounds] preserving aspect ratio. */
+    /** Scale and position the [Drawable] inside [targetBounds] preserving aspect ratio. */
     private fun updateBounds(drawable: Drawable, targetBounds: Rect) {
         val width = drawable.intrinsicWidth
         val height = drawable.intrinsicHeight
@@ -150,7 +159,10 @@ class CrossfadeDrawable(
         val targetHeight = targetBounds.height()
         val widthPercent = targetWidth / width.toFloat()
         val heightPercent = targetHeight / height.toFloat()
-        val scale = max(widthPercent, heightPercent)
+        val scale = when (scale) {
+            Scale.FIT -> min(widthPercent, heightPercent)
+            Scale.FILL -> max(widthPercent, heightPercent)
+        }
         val dx = ((targetWidth - scale * width) / 2).roundToInt()
         val dy = ((targetHeight - scale * height) / 2).roundToInt()
 

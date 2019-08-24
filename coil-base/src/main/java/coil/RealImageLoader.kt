@@ -41,6 +41,7 @@ import coil.request.Request
 import coil.request.RequestDisposable
 import coil.request.ViewTargetRequestDisposable
 import coil.size.PixelSize
+import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.target.ViewTarget
@@ -198,16 +199,19 @@ internal class RealImageLoader(
                 size = sizeResolver.size().also { ensureActive() }
             }
 
+            // Resolve the scale.
+            val scale = requestService.scale(request, sizeResolver)
+
             // Short circuit if the cached drawable is valid for the target.
             if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, request)) {
                 log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                targetDelegate.success(cachedDrawable, 0)
+                targetDelegate.success(cachedDrawable, scale, 0)
                 request.listener?.onSuccess(data, DataSource.MEMORY)
                 return@innerJob cachedDrawable
             }
 
             // Load the image.
-            val (drawable, isSampled, source) = loadData(data, request, sizeResolver, fetcher, mappedData, size)
+            val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale)
 
             // Cache the result.
             if (request.memoryCachePolicy.writeEnabled) {
@@ -216,7 +220,7 @@ internal class RealImageLoader(
 
             // Set the final result on the target.
             log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            targetDelegate.success(drawable, request.crossfadeMillis)
+            targetDelegate.success(drawable, scale, request.crossfadeMillis)
             request.listener?.onSuccess(data, source)
 
             return@innerJob drawable
@@ -236,7 +240,9 @@ internal class RealImageLoader(
                     request.listener?.onCancel(data)
                 } else {
                     log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
-                    targetDelegate.error(request.error, request.crossfadeMillis)
+                    val sizeResolver = requestService.sizeResolver(request, context)
+                    val scale = requestService.scale(request, sizeResolver)
+                    targetDelegate.error(request.error, scale, request.crossfadeMillis)
                     request.listener?.onError(data, throwable)
                 }
             }
@@ -300,13 +306,12 @@ internal class RealImageLoader(
     private suspend inline fun loadData(
         data: Any,
         request: Request,
-        sizeResolver: SizeResolver,
         fetcher: Fetcher<Any>,
         mappedData: Any,
-        size: Size
+        size: Size,
+        scale: Scale
     ): DrawableResult = withContext(request.dispatcher) {
         // Convert the data into a Drawable.
-        val scale = requestService.scale(request, sizeResolver)
         val options = requestService.options(request, scale, networkObserver.isOnline())
         val result = when (val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)) {
             is SourceResult -> {

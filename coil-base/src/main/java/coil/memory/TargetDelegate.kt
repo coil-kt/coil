@@ -8,6 +8,7 @@ import coil.ImageLoader
 import coil.base.R
 import coil.drawable.CrossfadeDrawable
 import coil.request.Request
+import coil.size.Scale
 import coil.target.ImageViewTarget
 import coil.target.PoolableViewTarget
 import coil.target.Target
@@ -23,10 +24,10 @@ internal sealed class TargetDelegate {
     open fun start(cached: BitmapDrawable?, placeholder: Drawable?) {}
 
     @MainThread
-    open suspend fun success(result: Drawable, crossfadeMillis: Int) {}
+    open suspend fun success(result: Drawable, scale: Scale, crossfadeMillis: Int) {}
 
     @MainThread
-    open fun error(error: Drawable?, crossfadeMillis: Int) {}
+    open fun error(error: Drawable?, scale: Scale, crossfadeMillis: Int) {}
 
     @MainThread
     open fun clear() {}
@@ -48,7 +49,7 @@ internal class InvalidatableEmptyTargetDelegate(
     override val referenceCounter: BitmapReferenceCounter
 ) : TargetDelegate(), Invalidable {
 
-    override suspend fun success(result: Drawable, crossfadeMillis: Int) {
+    override suspend fun success(result: Drawable, scale: Scale, crossfadeMillis: Int) {
         invalidate(result.bitmap)
     }
 }
@@ -66,12 +67,12 @@ internal class InvalidatableTargetDelegate(
         target.onStart(placeholder)
     }
 
-    override suspend fun success(result: Drawable, crossfadeMillis: Int) {
+    override suspend fun success(result: Drawable, scale: Scale, crossfadeMillis: Int) {
         invalidate(result.bitmap)
         target.onSuccess(result)
     }
 
-    override fun error(error: Drawable?, crossfadeMillis: Int) {
+    override fun error(error: Drawable?, scale: Scale, crossfadeMillis: Int) {
         target.onError(error)
     }
 }
@@ -88,12 +89,12 @@ internal class PoolableTargetDelegate(
         instrument(cached?.bitmap) { onStart(placeholder) }
     }
 
-    override suspend fun success(result: Drawable, crossfadeMillis: Int) {
-        instrument(result.bitmap) { onSuccess(result, crossfadeMillis) }
+    override suspend fun success(result: Drawable, scale: Scale, crossfadeMillis: Int) {
+        instrument(result.bitmap) { onSuccess(result, scale, crossfadeMillis) }
     }
 
-    override fun error(error: Drawable?, crossfadeMillis: Int) {
-        instrument(null) { onError(error, crossfadeMillis) }
+    override fun error(error: Drawable?, scale: Scale, crossfadeMillis: Int) {
+        instrument(null) { onError(error, scale, crossfadeMillis) }
     }
 
     override fun clear() {
@@ -144,19 +145,25 @@ private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarg
     decrement(bitmap)
 }
 
-private suspend inline fun Poolable.onSuccess(result: Drawable, crossfadeMillis: Int) {
+private suspend inline fun Poolable.onSuccess(result: Drawable, scale: Scale, crossfadeMillis: Int) {
     val target = target
     if (crossfadeMillis > 0 && target is ImageViewTarget) {
-        target.onSuccessCrossfade(result, crossfadeMillis)
+        target.onSuccessCrossfade(result, scale, crossfadeMillis)
     } else {
         target.onSuccess(result)
     }
 }
 
-private fun Poolable.onError(error: Drawable?, crossfadeMillis: Int) {
+private fun Poolable.onError(error: Drawable?, scale: Scale, crossfadeMillis: Int) {
     val target = target
     if (crossfadeMillis > 0 && error != null && target is ImageViewTarget) {
-        target.onError(CrossfadeDrawable(target.view.drawable, error))
+        val crossfade = CrossfadeDrawable(
+            start = target.view.drawable,
+            end = error,
+            scale = scale,
+            duration = crossfadeMillis
+        )
+        target.onError(crossfade)
     } else {
         target.onError(error)
     }
