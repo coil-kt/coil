@@ -1,5 +1,6 @@
 package coil.sample
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -43,8 +44,8 @@ class MainActivity : AppCompatActivity() {
             is Screen.Detail -> {
                 list.isVisible = false
                 detail.isVisible = true
-                detail.load("https://placekitten.com/1280/207") {
-                    placeholder(R.drawable.placeholder)
+                detail.load(screen.image.url) {
+                    placeholder(ColorDrawable(screen.image.color))
                 }
             }
         }

@@ -9,6 +9,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.api.load
 import coil.sample.ImageListAdapter.ViewHolder
 import kotlin.math.ceil
 import kotlin.math.min
@@ -38,7 +39,9 @@ class ImageListAdapter(
                 width = columnWidth
             }
 
-            setImageDrawable(ColorDrawable(item.color))
+            load(item.url) {
+                placeholder(ColorDrawable(item.color))
+            }
 
             setOnClickListener {
                 setScreen(Screen.Detail(item))
