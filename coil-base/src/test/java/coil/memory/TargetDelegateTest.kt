@@ -7,7 +7,6 @@ import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.bitmappool.FakeBitmapPool
-import coil.size.Scale
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
 import coil.util.createBitmap
@@ -67,7 +66,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), Scale.FILL, 0)
+            delegate.success(bitmap.toDrawable(context), 0)
             assertFalse(counter.invalid(bitmap))
         }
     }
@@ -79,7 +78,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), Scale.FILL, 0)
+            delegate.success(bitmap.toDrawable(context), 0)
             assertTrue(counter.invalid(bitmap))
         }
     }
@@ -102,14 +101,14 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), Scale.FILL, 0)
+            delegate.success(bitmap.toDrawable(context), 0)
             assertTrue(target.success)
             assertTrue(counter.invalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.error(bitmap.toDrawable(context), Scale.FILL, 0)
+            delegate.error(bitmap.toDrawable(context), 0)
             assertTrue(target.error)
             assertFalse(counter.invalid(bitmap))
         }
@@ -131,7 +130,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), Scale.FILL, 0)
+            delegate.success(bitmap.toDrawable(context), 0)
             assertFalse(counter.invalid(bitmap))
         }
 

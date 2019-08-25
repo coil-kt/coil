@@ -199,16 +199,16 @@ internal class RealImageLoader(
                 size = sizeResolver.size().also { ensureActive() }
             }
 
-            // Resolve the scale.
-            val scale = requestService.scale(request, sizeResolver)
-
             // Short circuit if the cached drawable is valid for the target.
             if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, request)) {
                 log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                targetDelegate.success(cachedDrawable, scale, 0)
+                targetDelegate.success(cachedDrawable, 0)
                 request.listener?.onSuccess(data, DataSource.MEMORY)
                 return@innerJob cachedDrawable
             }
+
+            // Resolve the scale.
+            val scale = requestService.scale(request, sizeResolver)
 
             // Load the image.
             val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale)
@@ -220,7 +220,7 @@ internal class RealImageLoader(
 
             // Set the final result on the target.
             log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            targetDelegate.success(drawable, scale, request.crossfadeMillis)
+            targetDelegate.success(drawable, request.crossfadeMillis)
             request.listener?.onSuccess(data, source)
 
             return@innerJob drawable
@@ -240,9 +240,7 @@ internal class RealImageLoader(
                     request.listener?.onCancel(data)
                 } else {
                     log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
-                    val sizeResolver = requestService.sizeResolver(request, context)
-                    val scale = requestService.scale(request, sizeResolver)
-                    targetDelegate.error(request.error, scale, request.crossfadeMillis)
+                    targetDelegate.error(request.error, request.crossfadeMillis)
                     request.listener?.onError(data, throwable)
                 }
             }
