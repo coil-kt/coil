@@ -73,8 +73,9 @@ class CrossfadeDrawable(
 
         if (isDone) {
             markDone()
+        } else {
+            invalidateSelf()
         }
-        invalidateSelf()
     }
 
     override fun setAlpha(alpha: Int) {
