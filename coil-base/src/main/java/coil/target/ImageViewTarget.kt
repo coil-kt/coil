@@ -48,8 +48,6 @@ class ImageViewTarget(override val view: ImageView) : PoolableViewTarget<ImageVi
         result: Drawable,
         duration: Int
     ) = suspendCancellableCoroutine<Unit> { continuation ->
-        // Ignore any explicit scale provided by the request.
-        // This is to ensure proper scaling inside the CrossfadeDrawable.
         val drawable = CrossfadeDrawable(
             start = view.drawable,
             end = result,

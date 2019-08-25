@@ -160,8 +160,6 @@ private suspend inline fun Poolable.onSuccess(result: Drawable, crossfadeMillis:
 private fun Poolable.onError(error: Drawable?, crossfadeMillis: Int) {
     val target = target
     if (crossfadeMillis > 0 && error != null && target is ImageViewTarget) {
-        // Ignore any explicit scale provided by the request.
-        // This is to ensure proper scaling inside the CrossfadeDrawable.
         val crossfade = CrossfadeDrawable(
             start = target.view.drawable,
             end = error,
