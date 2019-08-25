@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
+import androidx.annotation.VisibleForTesting
 import coil.size.Scale
 import kotlin.math.max
 import kotlin.math.min
@@ -33,6 +34,9 @@ class CrossfadeDrawable(
     companion object {
         const val DEFAULT_DURATION = 100
     }
+
+    private val width = max(start?.intrinsicWidth ?: -1, end.intrinsicWidth)
+    private val height = max(start?.intrinsicHeight ?: -1, end.intrinsicHeight)
 
     private var startTimeMillis = 0L
     private var maxAlpha = 255
@@ -97,23 +101,9 @@ class CrossfadeDrawable(
         updateBounds(end, bounds)
     }
 
-    override fun getIntrinsicWidth(): Int {
-        val start = start
-        return if (isRunning && start != null) {
-            max(start.intrinsicWidth, end.intrinsicWidth)
-        } else {
-            end.intrinsicWidth
-        }
-    }
+    override fun getIntrinsicWidth() = width
 
-    override fun getIntrinsicHeight(): Int {
-        val start = start
-        return if (isRunning && start != null) {
-            max(start.intrinsicHeight, end.intrinsicHeight)
-        } else {
-            end.intrinsicHeight
-        }
-    }
+    override fun getIntrinsicHeight() = height
 
     override fun unscheduleDrawable(who: Drawable, what: Runnable) = unscheduleSelf(what)
 
@@ -147,7 +137,8 @@ class CrossfadeDrawable(
     }
 
     /** Scale and position the [Drawable] inside [targetBounds] preserving aspect ratio. */
-    private fun updateBounds(drawable: Drawable, targetBounds: Rect) {
+    @VisibleForTesting
+    internal fun updateBounds(drawable: Drawable, targetBounds: Rect) {
         val width = drawable.intrinsicWidth
         val height = drawable.intrinsicHeight
         if (width <= 0 || height <= 0) {
