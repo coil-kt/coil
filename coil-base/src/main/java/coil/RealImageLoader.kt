@@ -41,6 +41,7 @@ import coil.request.Request
 import coil.request.RequestDisposable
 import coil.request.ViewTargetRequestDisposable
 import coil.size.PixelSize
+import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.target.ViewTarget
@@ -206,8 +207,11 @@ internal class RealImageLoader(
                 return@innerJob cachedDrawable
             }
 
+            // Resolve the scale.
+            val scale = requestService.scale(request, sizeResolver)
+
             // Load the image.
-            val (drawable, isSampled, source) = loadData(data, request, sizeResolver, fetcher, mappedData, size)
+            val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale)
 
             // Cache the result.
             if (request.memoryCachePolicy.writeEnabled) {
@@ -300,13 +304,12 @@ internal class RealImageLoader(
     private suspend inline fun loadData(
         data: Any,
         request: Request,
-        sizeResolver: SizeResolver,
         fetcher: Fetcher<Any>,
         mappedData: Any,
-        size: Size
+        size: Size,
+        scale: Scale
     ): DrawableResult = withContext(request.dispatcher) {
         // Convert the data into a Drawable.
-        val scale = requestService.scale(request, sizeResolver)
         val options = requestService.options(request, scale, networkObserver.isOnline())
         val result = when (val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)) {
             is SourceResult -> {

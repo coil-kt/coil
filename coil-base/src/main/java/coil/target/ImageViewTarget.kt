@@ -7,6 +7,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.drawable.CrossfadeDrawable
 import coil.request.Request
+import coil.util.scale
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -50,6 +51,7 @@ class ImageViewTarget(override val view: ImageView) : PoolableViewTarget<ImageVi
         val drawable = CrossfadeDrawable(
             start = view.drawable,
             end = result,
+            scale = view.scale,
             duration = duration,
             onEnd = { continuation.resume(Unit) }
         )

@@ -11,6 +11,7 @@ import coil.request.Request
 import coil.target.ImageViewTarget
 import coil.target.PoolableViewTarget
 import coil.target.Target
+import coil.util.scale
 
 /**
  * Wrap a [Target] to support [Bitmap] pooling.
@@ -147,7 +148,10 @@ private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarg
 private suspend inline fun Poolable.onSuccess(result: Drawable, crossfadeMillis: Int) {
     val target = target
     if (crossfadeMillis > 0 && target is ImageViewTarget) {
-        target.onSuccessCrossfade(result, crossfadeMillis)
+        target.onSuccessCrossfade(
+            result = result,
+            duration = crossfadeMillis
+        )
     } else {
         target.onSuccess(result)
     }
@@ -156,7 +160,13 @@ private suspend inline fun Poolable.onSuccess(result: Drawable, crossfadeMillis:
 private fun Poolable.onError(error: Drawable?, crossfadeMillis: Int) {
     val target = target
     if (crossfadeMillis > 0 && error != null && target is ImageViewTarget) {
-        target.onError(CrossfadeDrawable(target.view.drawable, error))
+        val crossfade = CrossfadeDrawable(
+            start = target.view.drawable,
+            end = error,
+            scale = target.view.scale,
+            duration = crossfadeMillis
+        )
+        target.onError(crossfade)
     } else {
         target.onError(error)
     }
