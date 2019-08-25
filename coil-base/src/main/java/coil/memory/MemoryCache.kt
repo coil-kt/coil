@@ -36,8 +36,7 @@ internal class MemoryCache(
 
     fun set(key: String, value: Bitmap, isSampled: Boolean) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
-        // the cache to be cleared. Instead just evict an existing element with the same key if it
-        // exists.
+        // the cache to be cleared. Instead just evict an existing element with the same key if it exists.
         val size = value.getAllocationByteCountCompat()
         if (size > maxSize()) {
             cache.remove(key)
