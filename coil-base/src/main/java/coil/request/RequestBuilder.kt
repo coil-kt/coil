@@ -38,7 +38,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
 
     protected var data: Any?
 
-    protected var keyOverride: String?
+    protected var key: String?
     protected var listener: Request.Listener?
     protected var sizeResolver: SizeResolver?
     protected var scale: Scale?
@@ -57,7 +57,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     constructor(defaults: DefaultRequestOptions) {
         data = null
 
-        keyOverride = null
+        key = null
         listener = null
         sizeResolver = null
         scale = null
@@ -79,7 +79,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     constructor(request: Request) {
         data = request.data
 
-        keyOverride = request.keyOverride
+        key = request.key
         listener = request.listener
         sizeResolver = request.sizeResolver
         scale = request.scale
@@ -225,7 +225,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * By default, the cache key is computed by the [Fetcher] and any [Transformation]s.
      */
     fun key(key: String?): T = self {
-        this.keyOverride = key
+        this.key = key
     }
 
     /**
@@ -403,7 +403,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             target,
             lifecycle,
             crossfadeMillis,
-            keyOverride,
+            key,
             listener,
             sizeResolver,
             scale,
@@ -442,7 +442,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
     fun build(): GetRequest {
         return GetRequest(
             checkNotNull(data) { "data == null" },
-            keyOverride,
+            key,
             listener,
             sizeResolver,
             scale,
