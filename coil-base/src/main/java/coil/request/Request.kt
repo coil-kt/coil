@@ -32,7 +32,7 @@ sealed class Request {
     abstract val lifecycle: Lifecycle?
     abstract val crossfadeMillis: Int
 
-    abstract val keyOverride: String?
+    abstract val key: String?
     abstract val listener: Listener?
     abstract val sizeResolver: SizeResolver?
     abstract val scale: Scale?
@@ -108,7 +108,7 @@ class LoadRequest internal constructor(
     override val target: Target?,
     override val lifecycle: Lifecycle?,
     override val crossfadeMillis: Int,
-    override val keyOverride: String?,
+    override val key: String?,
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
@@ -182,7 +182,7 @@ class LoadRequest internal constructor(
  */
 class GetRequest internal constructor(
     override val data: Any,
-    override val keyOverride: String?,
+    override val key: String?,
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
