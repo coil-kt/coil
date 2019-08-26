@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.decode.DataSource
+import coil.decode.Decoder
 import coil.size.Scale
 import coil.size.SizeResolver
 import coil.target.Target
@@ -36,6 +37,7 @@ sealed class Request {
     abstract val listener: Listener?
     abstract val sizeResolver: SizeResolver?
     abstract val scale: Scale?
+    abstract val decoder: Decoder?
     abstract val dispatcher: CoroutineDispatcher
     abstract val transformations: List<Transformation>
     abstract val bitmapConfig: Bitmap.Config
@@ -112,6 +114,7 @@ class LoadRequest internal constructor(
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
+    override val decoder: Decoder?,
     override val dispatcher: CoroutineDispatcher,
     override val transformations: List<Transformation>,
     override val bitmapConfig: Bitmap.Config,
@@ -186,6 +189,7 @@ class GetRequest internal constructor(
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
+    override val decoder: Decoder?,
     override val dispatcher: CoroutineDispatcher,
     override val transformations: List<Transformation>,
     override val bitmapConfig: Bitmap.Config,
