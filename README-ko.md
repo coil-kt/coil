@@ -2,7 +2,7 @@
 
 Coil은 Android 백앤드를 위해 Kotlin Coroutines으로 만들어진 이미지 로딩 라이브러리입니다. Coil 은:
 
-- **빠르다**: Coil performs a number of optimizations including memory and disk caching, downsampling the image in memory, re-using Bitmaps, automatically pausing/cancelling requests, and more.
+- **빠르다**: Coil은 메모리와 디스크 캐싱, 메모리의 이미지 다운 샘플링, Bitmap 재사용, 자동 요청사항 일시정지/취소 등의 수많은 최적화를 수행합니다.
 - **가볍다**: Coil adds ~1500 methods to your APK (for apps that already use OkHttp and Coroutines), which is comparable to Picasso and significantly less than Glide and Fresco.
 - **사용하기 쉽다**: Coil's API leverages Kotlin's language features for simplicity and minimal boilerplate.
 - **현대적이다**: Coil is Kotlin-first and uses modern libraries including Coroutines, OkHttp, Okio, and AndroidX Lifecycles.
