@@ -323,7 +323,7 @@ internal class RealImageLoader(
                         // Instead, we exhaust the source and return an empty result.
                         EmptyDecoder
                     } else {
-                        registry.requireDecoder(data, fetchResult.source, fetchResult.mimeType)
+                        request.decoder ?: registry.requireDecoder(data, fetchResult.source, fetchResult.mimeType)
                     }
 
                     // Decode the stream.
