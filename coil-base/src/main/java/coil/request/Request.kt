@@ -103,7 +103,7 @@ sealed class Request {
  * @see ImageLoader.load
  */
 class LoadRequest internal constructor(
-    val context: Context,
+    private val context: Context,
     override val data: Any?,
     override val target: Target?,
     override val lifecycle: Lifecycle?,

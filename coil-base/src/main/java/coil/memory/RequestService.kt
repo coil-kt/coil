@@ -27,7 +27,7 @@ import kotlinx.coroutines.Dispatchers
 /**
  * Handles operations that act on [Request]s.
  */
-internal class RequestService {
+internal class RequestService(private val context: Context) {
 
     @MainThread
     fun lifecycleInfo(request: Request): LifecycleInfo {
