@@ -18,13 +18,14 @@ class Application : MultiDexApplication() {
     }
 
     private fun buildDefaultImageLoader(): ImageLoader {
-        return ImageLoader(this) {
+        val context = this
+        return ImageLoader(context) {
             availableMemoryPercentage(0.5)
             bitmapPoolPercentage(0.5)
             crossfade(true)
             okHttpClient {
                 OkHttpClient.Builder()
-                    .cache(CoilUtils.createDefaultCache(this@Application))
+                    .cache(CoilUtils.createDefaultCache(context))
                     .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
                     .build()
             }
