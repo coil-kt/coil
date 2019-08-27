@@ -4,7 +4,7 @@ Coil은 Android 백앤드를 위해 Kotlin Coroutines으로 만들어진 이미�
 
 - **빠르다**: Coil은 메모리와 디스크 캐싱, 메모리의 이미지 다운 샘플링, Bitmap 재사용, 자동 요청사항 일시정지/취소 등의 수많은 최적화를 수행합니다.
 - **가볍다**: Coil은 최댁 1500개의 method들을 APK에 추가합니다 OkHttp와 Coroutines을 이미 사용 중인 앱), 이는 Picasso 비슷한 수준이며 Glide와 Fresco. 보다는 적습니다.
-- **사용하기 쉽다**: Coil's API leverages Kotlin's language features for simplicity and minimal boilerplate.
+- **사용하기 쉽다**: Coil의 API는 leverages Kotlin's language features for simplicity and minimal boilerplate.
 - **현대적이다**: Coil is Kotlin-first and uses modern libraries including Coroutines, OkHttp, Okio, and AndroidX Lifecycles.
 
 Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
