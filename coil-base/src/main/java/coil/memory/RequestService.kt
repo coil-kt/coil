@@ -2,7 +2,8 @@ package coil.memory
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.O
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
@@ -15,6 +16,7 @@ import coil.request.LoadRequest
 import coil.request.Request
 import coil.size.DisplaySizeResolver
 import coil.size.Scale
+import coil.size.Size
 import coil.size.SizeResolver
 import coil.size.ViewSizeResolver
 import coil.target.ViewTarget
@@ -24,10 +26,10 @@ import coil.util.scale
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
-/**
- * Handles operations that act on [Request]s.
- */
+/** Handles operations that act on [Request]s. */
 internal class RequestService {
+
+    private val hardwareBitmapService = HardwareBitmapService()
 
     @MainThread
     fun lifecycleInfo(request: Request): LifecycleInfo {
@@ -82,21 +84,23 @@ internal class RequestService {
         return Scale.FILL
     }
 
-    fun options(request: Request, scale: Scale, isOnline: Boolean): Options {
-        val isValidBitmapConfig = request.isConfigValidForTransformations() && request.isConfigValidForAllowHardware()
+    fun options(
+        request: Request,
+        size: Size,
+        scale: Scale,
+        isOnline: Boolean
+    ): Options {
+        val isValidBitmapConfig = request.isConfigValidForTransformations() &&
+            request.isConfigValidForAllowHardware() &&
+            request.isConfigValidForFileDescriptorLimit(size)
         val bitmapConfig = if (isValidBitmapConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
-        val allowRgb565 = isValidBitmapConfig && request.allowRgb565
-        val networkCachePolicy = if (!isOnline && request.networkCachePolicy.readEnabled) {
-            CachePolicy.DISABLED
-        } else {
-            request.networkCachePolicy
-        }
+        val networkCachePolicy = if (!isOnline) CachePolicy.DISABLED else request.networkCachePolicy
 
         return Options(
             config = bitmapConfig,
             colorSpace = request.colorSpace,
             scale = scale,
-            allowRgb565 = allowRgb565,
+            allowRgb565 = request.allowRgb565,
             diskCachePolicy = request.diskCachePolicy,
             networkCachePolicy = networkCachePolicy
         )
@@ -115,7 +119,11 @@ internal class RequestService {
     }
 
     private fun Request.isConfigValidForAllowHardware(): Boolean {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.O || allowHardware || bitmapConfig != Bitmap.Config.HARDWARE
+        return SDK_INT < O || allowHardware || bitmapConfig != Bitmap.Config.HARDWARE
+    }
+
+    private fun Request.isConfigValidForFileDescriptorLimit(size: Size): Boolean {
+        return SDK_INT < O || bitmapConfig != Bitmap.Config.HARDWARE || hardwareBitmapService.allowHardware(size)
     }
 
     data class LifecycleInfo(
