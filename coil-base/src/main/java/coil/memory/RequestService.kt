@@ -90,9 +90,7 @@ internal class RequestService {
         scale: Scale,
         isOnline: Boolean
     ): Options {
-        val isValidBitmapConfig = request.isConfigValidForTransformations() &&
-            request.isConfigValidForAllowHardware() &&
-            request.isConfigValidForFileDescriptorLimit(size)
+        val isValidBitmapConfig = request.isConfigValidForTransformations() && request.isConfigValidForHardware(size)
         val bitmapConfig = if (isValidBitmapConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
         val networkCachePolicy = if (!isOnline) CachePolicy.DISABLED else request.networkCachePolicy
 
@@ -118,12 +116,10 @@ internal class RequestService {
         return transformations.isEmpty() || Transformation.VALID_CONFIGS.contains(bitmapConfig)
     }
 
-    private fun Request.isConfigValidForAllowHardware(): Boolean {
-        return SDK_INT < O || allowHardware || bitmapConfig != Bitmap.Config.HARDWARE
-    }
-
-    private fun Request.isConfigValidForFileDescriptorLimit(size: Size): Boolean {
-        return SDK_INT < O || bitmapConfig != Bitmap.Config.HARDWARE || hardwareBitmapService.allowHardware(size)
+    private fun Request.isConfigValidForHardware(size: Size): Boolean {
+        if (SDK_INT < O) return true
+        if (bitmapConfig != Bitmap.Config.HARDWARE) return true
+        return allowHardware && hardwareBitmapService.allowHardware(size)
     }
 
     data class LifecycleInfo(
