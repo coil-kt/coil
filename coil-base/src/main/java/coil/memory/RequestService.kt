@@ -90,15 +90,21 @@ internal class RequestService {
         scale: Scale,
         isOnline: Boolean
     ): Options {
-        val isValidBitmapConfig = request.isConfigValidForTransformations() && request.isConfigValidForHardware(size)
-        val bitmapConfig = if (isValidBitmapConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
+        // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
+        val isValidConfig = request.isConfigValidForTransformations() && request.isConfigValidForHardware(size)
+        val bitmapConfig = if (isValidConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
+
+        // Disable fetching from the network if we know it's offline.
         val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
+
+        // Disable allowRgb565 if there are transformations.
+        val allowRgb565 = request.transformations.isEmpty() && request.allowRgb565
 
         return Options(
             config = bitmapConfig,
             colorSpace = request.colorSpace,
             scale = scale,
-            allowRgb565 = request.allowRgb565,
+            allowRgb565 = allowRgb565,
             diskCachePolicy = request.diskCachePolicy,
             networkCachePolicy = networkCachePolicy
         )
