@@ -56,8 +56,8 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
 
     private val fileDescriptorList = File("/proc/self/fd")
 
-    private var decodesSinceLastFileDescriptorCheck = 0
-    private var hasAvailableFileDescriptors = true
+    @Volatile private var decodesSinceLastFileDescriptorCheck = 0
+    @Volatile private var hasAvailableFileDescriptors = true
 
     override fun allowHardware(size: Size): Boolean {
         // Don't use up file descriptors on small bitmaps.
