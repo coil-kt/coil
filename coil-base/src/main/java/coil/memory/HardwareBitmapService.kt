@@ -5,6 +5,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.Build.VERSION_CODES.O_MR1
 import android.util.Log
+import androidx.annotation.WorkerThread
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.log
@@ -68,6 +69,7 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
     }
 
     @Synchronized
+    @WorkerThread
     private fun hasAvailableFileDescriptors(): Boolean {
         // Only check if we have available file descriptors after a
         // set amount of decodes since it's expensive (1-2 milliseconds).

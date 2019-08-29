@@ -6,6 +6,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.widget.ImageView
 import androidx.annotation.MainThread
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.Lifecycle
 import coil.decode.Options
 import coil.lifecycle.GlobalLifecycle
@@ -84,6 +85,7 @@ internal class RequestService {
         return Scale.FILL
     }
 
+    @WorkerThread
     fun options(
         request: Request,
         size: Size,
