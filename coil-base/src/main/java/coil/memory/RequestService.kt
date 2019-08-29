@@ -92,7 +92,7 @@ internal class RequestService {
     ): Options {
         val isValidBitmapConfig = request.isConfigValidForTransformations() && request.isConfigValidForHardware(size)
         val bitmapConfig = if (isValidBitmapConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
-        val networkCachePolicy = if (!isOnline) CachePolicy.DISABLED else request.networkCachePolicy
+        val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
 
         return Options(
             config = bitmapConfig,
