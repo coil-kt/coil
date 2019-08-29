@@ -310,7 +310,7 @@ internal class RealImageLoader(
         scale: Scale
     ): DrawableResult = withContext(request.dispatcher) {
         // Convert the data into a Drawable.
-        val options = requestService.options(request, scale, networkObserver.isOnline())
+        val options = requestService.options(request, size, scale, networkObserver.isOnline())
         val result = when (val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)) {
             is SourceResult -> {
                 val decodeResult = try {
