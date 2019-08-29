@@ -8,6 +8,7 @@ import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.size.Size
+import coil.util.firstPathSegment
 import coil.util.getMimeTypeFromUrl
 import okio.buffer
 import okio.source
@@ -21,8 +22,7 @@ internal class AssetUriFetcher(
     }
 
     override fun handles(data: Uri): Boolean {
-        return data.scheme == ContentResolver.SCHEME_FILE &&
-            data.path.let { it != null && it.startsWith(ASSET_FILE_PATH_ROOT) }
+        return data.scheme == ContentResolver.SCHEME_FILE && data.firstPathSegment == ASSET_FILE_PATH_ROOT
     }
 
     override fun key(data: Uri) = data.toString()
