@@ -21,7 +21,7 @@ internal class ResourceFetcher(
 ) : Fetcher<@DrawableRes Int> {
 
     companion object {
-        private const val XML_MIME_TYPE = "text/xml"
+        private const val MIME_TYPE_XML = "text/xml"
     }
 
     override fun handles(@DrawableRes data: Int) = try {
@@ -42,7 +42,7 @@ internal class ResourceFetcher(
         val entryName = context.resources.getResourceEntryName(data)
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(entryName)
 
-        return if (mimeType == XML_MIME_TYPE) {
+        return if (mimeType == MIME_TYPE_XML) {
             DrawableResult(
                 drawable = drawableDecoder.convertIfNecessary(
                     drawable = context.getDrawableCompat(data),
