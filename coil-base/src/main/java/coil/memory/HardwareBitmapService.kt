@@ -69,7 +69,8 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
 
     @Synchronized
     private fun hasAvailableFileDescriptors(): Boolean {
-        // Only check if we have available file descriptors after a set amount of decodes since it's expensive.
+        // Only check if we have available file descriptors after a
+        // set amount of decodes since it's expensive (1-2 milliseconds).
         if (decodesSinceLastFileDescriptorCheck++ >= FILE_DESCRIPTOR_CHECK_INTERVAL) {
             decodesSinceLastFileDescriptorCheck = 0
 
