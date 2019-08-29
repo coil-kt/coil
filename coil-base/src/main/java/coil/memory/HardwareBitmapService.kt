@@ -34,14 +34,14 @@ private object EmptyHardwareBitmapService : HardwareBitmapService() {
 }
 
 /**
- * Android O and O_MR1 have a limited number of file descriptors (often 1024) per-process.
+ * Android O and O_MR1 have a limited number of file descriptors (1024) per-process.
  * This limit was increased to a safe number in Android P (32768). Each hardware bitmap
  * allocation consumes, on average, 2 file descriptors. In addition, other non-image loading
  * operations can use file descriptors, which increases competition for these resources.
  * This class exists to disable [Bitmap.Config.HARDWARE] allocation if this process gets
  * too close to the limit, as passing the limit can cause crashes and/or rendering issues.
  *
- * NOTE: This must be a singleton since it tracks global file descriptor usage state.
+ * NOTE: This must be a singleton since it tracks global file descriptor usage state for the entire process.
  *
  * Modified from Glide's HardwareConfigState.
  */
@@ -49,8 +49,8 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
 
     private const val TAG = "LimitedFileDescriptorHardwareBitmapService"
 
-    private const val MIN_SIZE_DIMENSION = 128
-    private const val FILE_DESCRIPTOR_LIMIT = 700
+    private const val MIN_SIZE_DIMENSION = 100
+    private const val FILE_DESCRIPTOR_LIMIT = 750
     private const val FILE_DESCRIPTOR_CHECK_INTERVAL = 50
 
     private val fileDescriptorList = File("/proc/self/fd")
@@ -59,10 +59,11 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
     private var hasAvailableFileDescriptors = true
 
     override fun allowHardware(size: Size): Boolean {
-        // Don't use up file descriptors on small Bitmaps.
-        if (size is PixelSize && size.run { width < MIN_SIZE_DIMENSION || size.height < MIN_SIZE_DIMENSION }) {
+        // Don't use up file descriptors on small bitmaps.
+        if (size is PixelSize && (size.width < MIN_SIZE_DIMENSION || size.height < MIN_SIZE_DIMENSION)) {
             return false
         }
+
         return hasAvailableFileDescriptors()
     }
 
