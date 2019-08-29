@@ -20,7 +20,7 @@ internal class HttpUrlFetcher(
         private val CACHE_CONTROL_NO_NETWORK_NO_CACHE = CacheControl.Builder().noCache().onlyIfCached().build()
     }
 
-    override fun key(data: HttpUrl): String = data.toString()
+    override fun key(data: HttpUrl) = data.toString()
 
     override suspend fun fetch(
         pool: BitmapPool,

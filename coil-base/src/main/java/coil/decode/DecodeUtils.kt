@@ -9,9 +9,7 @@ import kotlin.experimental.and
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * A collection of useful utility methods for decoding images.
- */
+/** A collection of useful utility methods for decoding images. */
 object DecodeUtils {
 
     // https://www.onicos.com/staff/iz/formats/gif.html

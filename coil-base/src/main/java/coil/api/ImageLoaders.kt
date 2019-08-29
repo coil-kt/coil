@@ -29,14 +29,14 @@ import java.io.File
 
 inline fun ImageLoader.load(
     context: Context,
-    url: String?,
+    uri: String?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = load(LoadRequestBuilder(context, defaults).data(url).apply(builder).build())
+): RequestDisposable = load(LoadRequestBuilder(context, defaults).data(uri).apply(builder).build())
 
 suspend inline fun ImageLoader.get(
-    url: String,
+    uri: String,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequestBuilder(defaults).data(url).apply(builder).build())
+): Drawable = get(GetRequestBuilder(defaults).data(uri).apply(builder).build())
 
 // endregion
 // region URL (HttpUrl)

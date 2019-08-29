@@ -1,8 +1,9 @@
 package coil.map
 
-import okhttp3.HttpUrl
+import android.net.Uri
+import androidx.core.net.toUri
 
-internal class StringMapper : Mapper<String, HttpUrl> {
+internal class StringMapper : Mapper<String, Uri> {
 
-    override fun map(data: String): HttpUrl = HttpUrl.get(data)
+    override fun map(data: String) = data.toUri()
 }

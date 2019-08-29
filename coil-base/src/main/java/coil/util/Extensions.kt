@@ -12,6 +12,7 @@ import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
 import android.os.Build.VERSION_CODES.KITKAT
 import android.os.Build.VERSION_CODES.O
 import android.os.StatFs
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
@@ -174,4 +175,8 @@ internal inline fun <T> Any.self(block: T.() -> Unit): T {
 internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
     val lazy: Lazy<Call.Factory> = lazy(initializer)
     return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
+}
+
+internal inline fun MimeTypeMap.getMimeTypeFromUrl(url: String): String? {
+    return getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(url))
 }

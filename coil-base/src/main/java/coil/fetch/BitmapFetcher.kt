@@ -12,6 +12,8 @@ internal class BitmapFetcher(
     private val context: Context
 ) : Fetcher<Bitmap> {
 
+    override fun key(data: Bitmap): String? = null
+
     override suspend fun fetch(
         pool: BitmapPool,
         data: Bitmap,
