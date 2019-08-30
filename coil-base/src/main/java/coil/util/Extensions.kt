@@ -178,7 +178,7 @@ internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
     return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
 }
 
-internal fun MimeTypeMap.getMimeTypeFromUrl(url: String): String? {
+internal fun MimeTypeMap.getMimeTypeFromUrl(url: String?): String? {
     return getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(url))
 }
 

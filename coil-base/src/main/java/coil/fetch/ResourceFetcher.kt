@@ -3,6 +3,7 @@ package coil.fetch
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
+import android.util.TypedValue
 import android.webkit.MimeTypeMap
 import androidx.annotation.DrawableRes
 import coil.bitmappool.BitmapPool
@@ -39,7 +40,8 @@ internal class ResourceFetcher(
         size: Size,
         options: Options
     ): FetchResult {
-        val entryName = context.resources.getResourceEntryName(data)
+        val path = TypedValue().apply { context.resources.getValue(data, this, true) }.string
+        val entryName = path.substring(path.lastIndexOf('/'))
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(entryName)
 
         return if (mimeType == MIME_TYPE_XML) {
