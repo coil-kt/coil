@@ -20,7 +20,7 @@ class FileUriMapperTest {
     }
 
     @Test
-    fun basicFileUri() {
+    fun basic() {
         val uri = Uri.parse("${ContentResolver.SCHEME_FILE}:///path/to/file")
 
         assertTrue(mapper.handles(uri))

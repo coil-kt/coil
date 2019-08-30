@@ -29,8 +29,20 @@ class AssetUriFetcherTest {
     @Test
     fun basic() {
         val uri = Uri.parse("file:///android_asset/normal.jpg")
-        assertTrue(fetcher.handles(uri))
 
+        assertTrue(fetcher.handles(uri))
+        assertUriFetchesCorrectly(uri)
+    }
+
+    @Test
+    fun nestedPath() {
+        val uri = Uri.parse("file:///android_asset/exif/large_metadata.jpg")
+
+        assertTrue(fetcher.handles(uri))
+        assertUriFetchesCorrectly(uri)
+    }
+
+    private fun assertUriFetchesCorrectly(uri: Uri) {
         val result = runBlocking {
             fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
         }
