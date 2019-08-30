@@ -13,9 +13,7 @@ import coil.util.getMimeTypeFromUrl
 import okio.buffer
 import okio.source
 
-internal class AssetUriFetcher(
-    private val context: Context
-) : Fetcher<Uri> {
+internal class AssetUriFetcher(private val context: Context) : Fetcher<Uri> {
 
     companion object {
         const val ASSET_FILE_PATH_ROOT = "android_asset"

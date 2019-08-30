@@ -10,9 +10,7 @@ import coil.size.Size
 import okio.buffer
 import okio.source
 
-internal class ContentUriFetcher(
-    private val context: Context
-) : Fetcher<Uri> {
+internal class ContentUriFetcher(private val context: Context) : Fetcher<Uri> {
 
     override fun handles(data: Uri) = data.scheme == ContentResolver.SCHEME_CONTENT
 

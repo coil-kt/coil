@@ -31,9 +31,7 @@ import kotlin.math.roundToInt
 /**
  * The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource].
  */
-internal class BitmapFactoryDecoder(
-    private val context: Context
-) : Decoder {
+internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
     companion object {
         private const val MIME_TYPE_JPEG = "image/jpeg"

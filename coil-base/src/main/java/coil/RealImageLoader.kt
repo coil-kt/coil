@@ -103,7 +103,7 @@ internal class RealImageLoader(
         add(StringMapper())
         add(HttpUriMapper())
         add(FileUriMapper())
-        add(ResourceUriMapper())
+        add(ResourceUriMapper(context))
 
         add(HttpUrlFetcher(callFactory))
         add(FileFetcher())
