@@ -1,5 +1,6 @@
-![Coil](logo.svg)
+﻿![Coil](logo.svg)
 
+[한국어](README-ko.md)
 An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
 - **Fast**: Coil performs a number of optimizations including memory and disk caching, downsampling the image in memory, re-using Bitmaps, automatically pausing/cancelling requests, and more.
