@@ -82,28 +82,7 @@ class RealImageLoaderIntegrationTest {
 
     @Test
     fun httpUri() {
-        val data = Uri.parse(server.url(IMAGE_NAME).uri().toString())
-        testLoad(data)
-        testGet(data)
-    }
-
-    @Test
-    fun resourceUri() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
-        testLoad(data)
-        testGet(data)
-    }
-
-    @Test
-    fun assetUri() {
-        val data = Uri.parse("${ContentResolver.SCHEME_FILE}:///${AssetUriFetcher.ASSET_FILE_PATH_ROOT}/exif/large_metadata.jpg")
-        testLoad(data, PixelSize(75, 100))
-        testGet(data, PixelSize(100, 133))
-    }
-
-    @Test
-    fun fileUri() {
-        val data = Uri.fromFile(copyNormalImageAssetToCacheDir())
+        val data = Uri.parse(server.url(IMAGE_NAME).toString())
         testLoad(data)
         testGet(data)
     }
@@ -116,8 +95,22 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
-    fun resource() {
+    fun resourceInt() {
         val data = R.drawable.normal
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
+    fun resourceUriInt() {
+        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
+    fun resourceUriString() {
+        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal")
         testLoad(data)
         testGet(data)
     }
@@ -125,6 +118,27 @@ class RealImageLoaderIntegrationTest {
     @Test
     fun file() {
         val data = copyNormalImageAssetToCacheDir()
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
+    fun fileUri() {
+        val data = Uri.fromFile(copyNormalImageAssetToCacheDir())
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
+    fun assetUri() {
+        val data = Uri.parse("${ContentResolver.SCHEME_FILE}:///${AssetUriFetcher.ASSET_FILE_PATH_ROOT}/exif/large_metadata.jpg")
+        testLoad(data, PixelSize(75, 100))
+        testGet(data, PixelSize(100, 133))
+    }
+
+    @Test
+    fun contentUri() {
+        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/$IMAGE_NAME")
         testLoad(data)
         testGet(data)
     }
