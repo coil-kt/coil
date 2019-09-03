@@ -10,6 +10,7 @@ import coil.util.createOptions
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -48,6 +49,7 @@ class AssetUriFetcherTest {
         }
 
         assertTrue(result is SourceResult)
+        assertEquals("image/jpeg", result.mimeType)
         assertFalse(result.source.exhausted())
     }
 }

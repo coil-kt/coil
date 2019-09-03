@@ -13,6 +13,7 @@ import okio.source
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
@@ -45,6 +46,7 @@ class FileFetcherTest {
         }
 
         assertTrue(result is SourceResult)
+        assertEquals("image/jpeg", result.mimeType)
         assertFalse(result.source.exhausted())
     }
 
