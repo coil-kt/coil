@@ -11,6 +11,8 @@ internal class DrawableFetcher(
     private val drawableDecoder: DrawableDecoderService
 ) : Fetcher<Drawable> {
 
+    override fun key(data: Drawable): String? = null
+
     override suspend fun fetch(
         pool: BitmapPool,
         data: Drawable,

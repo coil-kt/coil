@@ -16,6 +16,7 @@ import coil.decode.BitmapFactoryDecoder
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
+import coil.fetch.AssetUriFetcher
 import coil.request.CachePolicy
 import coil.size.PixelSize
 import coil.size.Size
@@ -80,6 +81,13 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
+    fun httpUri() {
+        val data = Uri.parse(server.url(IMAGE_NAME).toString())
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
     fun httpUrl() {
         val data = server.url(IMAGE_NAME)
         testLoad(data)
@@ -87,22 +95,22 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
-    fun httpUri() {
-        val data = Uri.parse(server.url(IMAGE_NAME).uri().toString())
-        testLoad(data)
-        testGet(data)
-    }
-
-    @Test
-    fun resource() {
+    fun resourceInt() {
         val data = R.drawable.normal
         testLoad(data)
         testGet(data)
     }
 
     @Test
-    fun resourceUri() {
+    fun resourceUriInt() {
         val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
+    fun resourceUriString() {
+        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal")
         testLoad(data)
         testGet(data)
     }
@@ -117,6 +125,20 @@ class RealImageLoaderIntegrationTest {
     @Test
     fun fileUri() {
         val data = Uri.fromFile(copyNormalImageAssetToCacheDir())
+        testLoad(data)
+        testGet(data)
+    }
+
+    @Test
+    fun assetUri() {
+        val data = Uri.parse("${ContentResolver.SCHEME_FILE}:///${AssetUriFetcher.ASSET_FILE_PATH_ROOT}/exif/large_metadata.jpg")
+        testLoad(data, PixelSize(75, 100))
+        testGet(data, PixelSize(100, 133))
+    }
+
+    @Test
+    fun contentUri() {
+        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/$IMAGE_NAME")
         testLoad(data)
         testGet(data)
     }
