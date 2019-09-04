@@ -54,16 +54,11 @@ class SvgDrawable(
         }
     }
 
-    override fun setAlpha(alpha: Int) {
-        require(alpha in 0..255) { "Invalid alpha: $alpha" }
-        paint.alpha = alpha
-    }
+    override fun setAlpha(alpha: Int) {}
 
     override fun getOpacity() = PixelFormat.TRANSLUCENT
 
-    override fun setColorFilter(colorFilter: ColorFilter?) {
-        paint.colorFilter = colorFilter
-    }
+    override fun setColorFilter(colorFilter: ColorFilter?) {}
 
     override fun onBoundsChange(bounds: Rect) {
         if (currentBounds == bounds) {
