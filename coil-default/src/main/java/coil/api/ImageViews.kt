@@ -28,11 +28,11 @@ import java.io.File
 // region URL (String)
 
 inline fun ImageView.load(
-    url: String?,
+    uri: String?,
     imageLoader: ImageLoader = Coil.loader(),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
-    return imageLoader.load(context, url) {
+    return imageLoader.load(context, uri) {
         target(this@load)
         builder()
     }

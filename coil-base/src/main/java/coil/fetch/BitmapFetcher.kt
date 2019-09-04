@@ -8,9 +8,9 @@ import coil.decode.Options
 import coil.size.Size
 import coil.util.toDrawable
 
-internal class BitmapFetcher(
-    private val context: Context
-) : Fetcher<Bitmap> {
+internal class BitmapFetcher(private val context: Context) : Fetcher<Bitmap> {
+
+    override fun key(data: Bitmap): String? = null
 
     override suspend fun fetch(
         pool: BitmapPool,

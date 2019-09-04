@@ -29,14 +29,14 @@ import java.io.File
 
 inline fun Coil.load(
     context: Context,
-    url: String?,
+    uri: String?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, url, builder)
+): RequestDisposable = loader().load(context, uri, builder)
 
 suspend inline fun Coil.get(
-    url: String,
+    uri: String,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader().get(url, builder)
+): Drawable = loader().get(uri, builder)
 
 // endregion
 // region URL (HttpUrl)

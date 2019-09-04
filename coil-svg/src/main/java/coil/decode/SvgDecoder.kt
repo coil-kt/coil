@@ -14,10 +14,10 @@ import okio.BufferedSource
 class SvgDecoder : Decoder {
 
     companion object {
-        private const val SVG_MIME_TYPE = "image/svg+xml"
+        private const val MIME_TYPE_SVG = "image/svg+xml"
     }
 
-    override fun handles(source: BufferedSource, mimeType: String?) = mimeType == SVG_MIME_TYPE
+    override fun handles(source: BufferedSource, mimeType: String?) = mimeType == MIME_TYPE_SVG
 
     override suspend fun decode(
         pool: BitmapPool,

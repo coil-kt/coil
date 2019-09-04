@@ -17,10 +17,10 @@ import okio.BufferedSource
  * Use this class to register support for custom [Mapper]s, [MeasuredMapper]s, [Fetcher]s, and [Decoder]s.
  */
 class ComponentRegistry private constructor(
-    private val mappers: MultiList<Class<*>, Mapper<*, *>>,
-    private val measuredMappers: MultiList<Class<*>, MeasuredMapper<*, *>>,
-    private val fetchers: MultiList<Class<*>, Fetcher<*>>,
-    private val decoders: List<Decoder>
+    internal val mappers: MultiList<Class<out Any>, Mapper<out Any, *>>,
+    internal val measuredMappers: MultiList<Class<out Any>, MeasuredMapper<out Any, *>>,
+    internal val fetchers: MultiList<Class<out Any>, Fetcher<out Any>>,
+    internal val decoders: List<Decoder>
 ) {
 
     companion object {
@@ -47,24 +47,24 @@ class ComponentRegistry private constructor(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getMapper(data: T): Mapper<T, *>? {
-        val result = mappers.find { (type, converter) ->
-            type.isAssignableFrom(data::class.java) && (converter as Mapper<Any, *>).handles(data)
+        val result = mappers.find { (type, mapper) ->
+            type.isAssignableFrom(data::class.java) && (mapper as Mapper<Any, *>).handles(data)
         }
         return result?.second as Mapper<T, *>?
     }
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getMeasuredMapper(data: T): MeasuredMapper<T, *>? {
-        val result = measuredMappers.find { (type, converter) ->
-            type.isAssignableFrom(data::class.java) && (converter as MeasuredMapper<Any, *>).handles(data)
+        val result = measuredMappers.find { (type, mapper) ->
+            type.isAssignableFrom(data::class.java) && (mapper as MeasuredMapper<Any, *>).handles(data)
         }
         return result?.second as MeasuredMapper<T, *>?
     }
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> requireFetcher(data: T): Fetcher<T> {
-        val result = fetchers.find { (type, loader) ->
-            type.isAssignableFrom(data::class.java) && (loader as Fetcher<Any>).handles(data)
+        val result = fetchers.find { (type, fetcher) ->
+            type.isAssignableFrom(data::class.java) && (fetcher as Fetcher<Any>).handles(data)
         }
         checkNotNull(result) { "Unable to fetch data. No fetcher supports: $data" }
         return result.second as Fetcher<T>
@@ -84,9 +84,9 @@ class ComponentRegistry private constructor(
     @BuilderMarker
     class Builder {
 
-        private val mappers: MultiMutableList<Class<*>, Mapper<*, *>>
-        private val measuredMappers: MultiMutableList<Class<*>, MeasuredMapper<*, *>>
-        private val fetchers: MultiMutableList<Class<*>, Fetcher<*>>
+        private val mappers: MultiMutableList<Class<out Any>, Mapper<out Any, *>>
+        private val measuredMappers: MultiMutableList<Class<out Any>, MeasuredMapper<out Any, *>>
+        private val fetchers: MultiMutableList<Class<out Any>, Fetcher<out Any>>
         private val decoders: MutableList<Decoder>
 
         constructor() {

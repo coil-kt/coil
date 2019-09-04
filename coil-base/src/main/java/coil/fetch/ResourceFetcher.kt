@@ -1,11 +1,10 @@
 package coil.fetch
 
 import android.annotation.SuppressLint
-import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Resources
-import android.net.Uri
 import android.util.TypedValue
+import android.webkit.MimeTypeMap
 import androidx.annotation.DrawableRes
 import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
@@ -13,6 +12,7 @@ import coil.decode.DrawableDecoderService
 import coil.decode.Options
 import coil.size.Size
 import coil.util.getDrawableCompat
+import coil.util.getMimeTypeFromUrl
 import okio.buffer
 import okio.source
 
@@ -21,13 +21,17 @@ internal class ResourceFetcher(
     private val drawableDecoder: DrawableDecoderService
 ) : Fetcher<@DrawableRes Int> {
 
+    companion object {
+        private const val MIME_TYPE_XML = "text/xml"
+    }
+
     override fun handles(@DrawableRes data: Int) = try {
-        context.resources.getResourceName(data) != null
+        context.resources.getResourceEntryName(data) != null
     } catch (e: Resources.NotFoundException) {
         false
     }
 
-    override fun key(@DrawableRes data: Int) = "res_$data"
+    override fun key(@DrawableRes data: Int) = "res:$data"
 
     @SuppressLint("ResourceType")
     override suspend fun fetch(
@@ -36,36 +40,26 @@ internal class ResourceFetcher(
         size: Size,
         options: Options
     ): FetchResult {
-        return if (context.resources.isXmlResource(data)) {
+        val path = TypedValue().apply { context.resources.getValue(data, this, true) }.string
+        val entryName = path.substring(path.lastIndexOf('/'))
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(entryName)
+
+        return if (mimeType == MIME_TYPE_XML) {
             DrawableResult(
-                drawable = drawableDecoder.convertIfNecessary(context.getDrawableCompat(data), size, options.config),
+                drawable = drawableDecoder.convertIfNecessary(
+                    drawable = context.getDrawableCompat(data),
+                    size = size,
+                    config = options.config
+                ),
                 isSampled = false,
                 dataSource = DataSource.MEMORY
             )
         } else {
             SourceResult(
                 source = context.resources.openRawResource(data).source().buffer(),
-                mimeType = context.getType(data),
+                mimeType = mimeType,
                 dataSource = DataSource.MEMORY
             )
         }
-    }
-
-    private fun Context.getType(@DrawableRes resId: Int): String? {
-        return contentResolver.getType(resources.resIdToUri(resId))
-    }
-
-    private fun Resources.resIdToUri(@DrawableRes resId: Int): Uri {
-        return Uri.Builder()
-            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-            .authority(getResourcePackageName(resId))
-            .appendPath(getResourceTypeName(resId))
-            .appendPath(getResourceEntryName(resId))
-            .build()
-    }
-
-    private fun Resources.isXmlResource(@DrawableRes resId: Int): Boolean {
-        val fileName = TypedValue().apply { getValue(resId, this, true) }.string
-        return fileName?.endsWith(".xml") == true
     }
 }

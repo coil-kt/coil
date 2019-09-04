@@ -86,10 +86,10 @@ See the docs [here](../api/coil-default/coil.api/) and [here](../api/coil-base/c
 
 The base data types that are supported by all `ImageLoader` instances are:
 
-* String (mapped to HttpUrl)
+* String (mapped to a Uri)
 * HttpUrl
 * Uri (`android.resource`, `content`, `file`, `http`, and `https` schemes only)
-* File (mapped to `file` Uri)
+* File
 * @DrawableRes Int
 * Drawable
 * Bitmap
