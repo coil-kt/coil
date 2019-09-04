@@ -31,9 +31,7 @@ internal class AssetUriFetcher(private val context: Context) : Fetcher<Uri> {
         size: Size,
         options: Options
     ): FetchResult {
-        val path = data.pathSegments
-            .drop(1)
-            .joinToString("/")
+        val path = data.pathSegments.drop(1).joinToString("/")
 
         return SourceResult(
             source = context.assets.open(path).source().buffer(),
