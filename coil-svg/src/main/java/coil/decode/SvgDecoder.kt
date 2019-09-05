@@ -2,8 +2,11 @@
 
 package coil.decode
 
-import android.graphics.drawable.PictureDrawable
+import android.graphics.Bitmap
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.O
 import coil.bitmappool.BitmapPool
+import coil.drawable.SvgDrawable
 import coil.size.Size
 import com.caverock.androidsvg.SVG
 import okio.BufferedSource
@@ -25,9 +28,16 @@ class SvgDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
-        val svg = source.use { SVG.getFromInputStream(it.inputStream()) }
         return DecodeResult(
-            drawable = PictureDrawable(svg.renderToPicture()),
+            drawable = SvgDrawable(
+                svg = source.use { SVG.getFromInputStream(it.inputStream()) },
+                config = when {
+                    options.allowRgb565 -> Bitmap.Config.RGB_565
+                    SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+                    else -> options.config
+                },
+                pool = pool
+            ),
             isSampled = false
         )
     }
