@@ -11,7 +11,6 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.M
 import android.os.Build.VERSION_CODES.O
 import coil.bitmappool.BitmapPool
 import com.caverock.androidsvg.SVG
@@ -36,29 +35,38 @@ class SvgDrawable(
     private var softwareBitmap: Bitmap? = null
 
     override fun draw(canvas: Canvas) {
-        // Lazily render a new picture.
         val bounds = checkNotNull(currentBounds)
-        val picture = picture ?: svg.renderToPicture(bounds.width(), bounds.height()).also { picture = it }
+        val width = bounds.width()
+        val height = bounds.height()
 
-        // Hardware canvases don't support rendering pictures before API 23.
-        // If we're on pre-23, render the picture on a software canvas first.
-        if (SDK_INT >= M) {
+        // Lazily render a new picture.
+        val picture = picture ?: svg.renderToPicture(width, height).also { picture = it }
+
+        if (!canvas.isHardwareAccelerated && paint.alpha == 255 && paint.colorFilter == null) {
+            // Fast path: draw directly on the given software canvas.
             picture.draw(canvas)
         } else {
-            val softwareCanvas = checkNotNull(softwareCanvas)
-            val softwareBitmap = checkNotNull(softwareBitmap)
+            // Slow path: lazily create a new software canvas.
+            val softwareBitmap = softwareBitmap ?: pool.get(width, height, config).also { softwareBitmap = it }
+            val softwareCanvas = softwareCanvas ?: Canvas(softwareBitmap).also { softwareCanvas = it }
 
+            // Draw the SVG on the private software canvas first.
             softwareCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
             picture.draw(softwareCanvas)
             canvas.drawBitmap(softwareBitmap, 0f, 0f, paint)
         }
     }
 
-    override fun setAlpha(alpha: Int) {}
+    override fun setAlpha(alpha: Int) {
+        require(alpha in 0..255) { "Invalid alpha: $alpha" }
+        paint.alpha = alpha
+    }
 
     override fun getOpacity() = PixelFormat.TRANSLUCENT
 
-    override fun setColorFilter(colorFilter: ColorFilter?) {}
+    override fun setColorFilter(colorFilter: ColorFilter?) {
+        paint.colorFilter = colorFilter
+    }
 
     override fun onBoundsChange(bounds: Rect) {
         if (currentBounds == bounds) {
@@ -66,19 +74,13 @@ class SvgDrawable(
         }
         currentBounds = bounds
 
-        val width = bounds.width()
-        val height = bounds.height()
+        // Pool the current bitmap.
+        softwareBitmap?.let(pool::put)
 
-        // Invalidate the current picture.
+        // Invalidate everything.
         picture = null
-
-        // We don't need to allocate a software canvas pre-23.
-        if (SDK_INT >= M) {
-            val bitmap = pool.get(width, height, config)
-            softwareBitmap?.let(pool::put)
-            softwareBitmap = bitmap
-            softwareCanvas = Canvas(bitmap)
-        }
+        softwareBitmap = null
+        softwareCanvas = null
     }
 
     override fun getIntrinsicWidth() = svg.documentWidth.toInt()
