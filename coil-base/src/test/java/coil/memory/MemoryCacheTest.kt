@@ -45,4 +45,14 @@ class MemoryCacheTest {
 
         assertNull(cache["1"])
     }
+
+    @Test
+    fun `maxSize 0 disables memory cache`() {
+        val cache = MemoryCache(counter, 0)
+
+        val bitmap = createBitmap()
+        cache.set("1", bitmap, false)
+
+        assertNull(cache["1"])
+    }
 }
