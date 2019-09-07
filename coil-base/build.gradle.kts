@@ -62,7 +62,7 @@ dependencies {
     api(Library.ANDROIDX_LIFECYCLE_COMMON)
 
     // Optional: only use this dependency if it is present in the classpath at runtime.
-    compileOnly(Library.ANDROIDX_APPCOMPAT)
+    compileOnly(Library.ANDROIDX_APPCOMPAT_RESOURCES)
 
     api(Library.OKHTTP)
     api(Library.OKIO)
