@@ -27,6 +27,8 @@ class FakeBitmapPool : BitmapPool {
     }
 
     override fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
+        require(config != Bitmap.Config.HARDWARE)
+
         gets += Get(width, height, config)
 
         val size = Utils.calculateAllocationByteCount(width, height, config)

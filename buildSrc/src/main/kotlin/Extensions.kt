@@ -65,6 +65,8 @@ fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
     testImplementation(kotlin("test-junit", kotlinVersion))
     testImplementation(Library.KOTLINX_COROUTINES_TEST)
 
+    testImplementation(Library.ANDROIDX_APPCOMPAT_RESOURCES)
+
     testImplementation(Library.ANDROIDX_TEST_CORE)
     testImplementation(Library.ANDROIDX_TEST_JUNIT)
     testImplementation(Library.ANDROIDX_TEST_RULES)
@@ -76,6 +78,8 @@ fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
 
 fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String) {
     androidTestImplementation(kotlin("test-junit", kotlinVersion))
+
+    androidTestImplementation(Library.ANDROIDX_APPCOMPAT_RESOURCES)
 
     androidTestImplementation(Library.ANDROIDX_TEST_CORE)
     androidTestImplementation(Library.ANDROIDX_TEST_JUNIT)
