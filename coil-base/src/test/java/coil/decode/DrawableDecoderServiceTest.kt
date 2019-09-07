@@ -5,16 +5,18 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.VectorDrawable
 import androidx.test.core.app.ApplicationProvider
-import coil.base.test.R
 import coil.bitmappool.RealBitmapPool
 import coil.size.PixelSize
-import coil.util.getDrawableCompat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@RunWith(RobolectricTestRunner::class)
 class DrawableDecoderServiceTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
@@ -26,13 +28,13 @@ class DrawableDecoderServiceTest {
         service = DrawableDecoderService(context, RealBitmapPool(0))
     }
 
-    /** This test will fail on pre-Lollipop since we don't import AppCompatResources in the base library. */
     @Test
-    fun vectorIsConvertedCorrectly() {
+    fun `vector with hardware config is converted correctly`() {
+        val input = VectorDrawable()
         val output = service.convertIfNecessary(
-            drawable = context.getDrawableCompat(R.drawable.ic_android),
+            drawable = input,
             size = PixelSize(200, 200),
-            config = Bitmap.Config.ARGB_8888
+            config = Bitmap.Config.HARDWARE
         )
 
         assertTrue(output is BitmapDrawable)
@@ -40,7 +42,7 @@ class DrawableDecoderServiceTest {
     }
 
     @Test
-    fun colorIsNotConverted() {
+    fun `color is not converted`() {
         val input = ColorDrawable(Color.BLACK)
         val output = service.convertIfNecessary(
             drawable = input,

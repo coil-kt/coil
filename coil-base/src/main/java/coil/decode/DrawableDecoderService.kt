@@ -20,6 +20,7 @@ import coil.size.PixelSize
 import coil.size.Size
 import coil.util.HAS_APPCOMPAT_RESOURCES
 import coil.util.height
+import coil.util.normalize
 import coil.util.toDrawable
 import coil.util.width
 
@@ -41,19 +42,20 @@ internal class DrawableDecoderService(
         }
     }
 
-    /**
-     * Convert the provided [Drawable] into a [Bitmap].
-     */
+    /** Convert the provided [Drawable] into a [Bitmap]. */
     @WorkerThread
     fun convert(
         drawable: Drawable,
         size: Size,
         config: Bitmap.Config
     ): Bitmap {
+        // Treat HARDWARE configs as ARGB_8888.
+        val safeConfig = config.normalize()
+
         // Fast path to return the Bitmap.
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
-            if (bitmap.config == config) {
+            if (bitmap.config.normalize() == safeConfig) {
                 return bitmap
             }
         }
@@ -65,7 +67,8 @@ internal class DrawableDecoderService(
 
         val (oldLeft, oldTop, oldRight, oldBottom) = drawable.bounds
 
-        val bitmap = bitmapPool.get(width, height, config)
+        // Draw the drawable on the bitmap.
+        val bitmap = bitmapPool.get(width, height, safeConfig)
         drawable.apply {
             setBounds(0, 0, width, height)
             draw(Canvas(bitmap))

@@ -102,6 +102,13 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
+    fun resourceIntVector() {
+        val data = R.drawable.ic_android
+        testLoad(data, PixelSize(100, 100))
+        testGet(data, PixelSize(100, 100))
+    }
+
+    @Test
     fun resourceUriInt() {
         val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
         testLoad(data)
@@ -109,10 +116,24 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
+    fun resourceUriIntVector() {
+        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.ic_android}")
+        testLoad(data, PixelSize(100, 100))
+        testGet(data, PixelSize(100, 100))
+    }
+
+    @Test
     fun resourceUriString() {
         val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal")
         testLoad(data)
         testGet(data)
+    }
+
+    @Test
+    fun resourceUriStringVector() {
+        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/ic_android")
+        testLoad(data, PixelSize(100, 100))
+        testGet(data, PixelSize(100, 100))
     }
 
     @Test
