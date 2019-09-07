@@ -44,7 +44,7 @@ internal interface MemoryCache {
     )
 }
 
-/** A [MemoryCache] implementation that stores nothing. */
+/** A [MemoryCache] implementation that caches nothing. */
 private object EmptyMemoryCache : MemoryCache {
 
     override fun get(key: String): MemoryCache.Value? = null
