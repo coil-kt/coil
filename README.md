@@ -1,4 +1,6 @@
-![Coil](logo.svg)
+﻿![Coil](logo.svg)
+
+[한국어](README-ko.md)
 
 An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
