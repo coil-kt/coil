@@ -51,9 +51,9 @@ private object EmptyMemoryCache : MemoryCache {
 
     override fun set(key: String, value: Bitmap, isSampled: Boolean) {}
 
-    override fun size() = 0
+    override fun size(): Int = 0
 
-    override fun maxSize() = 0
+    override fun maxSize(): Int = 0
 
     override fun clearMemory() {}
 
