@@ -9,32 +9,81 @@ import androidx.collection.LruCache
 import coil.util.getAllocationByteCountCompat
 import coil.util.log
 
-/**
- * An LRU cache for [Bitmap]s that were recently loaded into memory.
- */
-internal class MemoryCache(
-    private val referenceCounter: BitmapReferenceCounter,
-    maxSize: Int
-) {
+/** A memory cache for [Bitmap]s. */
+internal interface MemoryCache {
 
     companion object {
-        private const val TAG = "MemoryCache"
+        operator fun invoke(
+            referenceCounter: BitmapReferenceCounter,
+            maxSize: Int
+        ): MemoryCache {
+            return if (maxSize > 0) {
+                RealMemoryCache(referenceCounter, maxSize)
+            } else {
+                EmptyMemoryCache
+            }
+        }
     }
 
-    private val cache = object : LruCache<String, Value>(maxSize) {
+    fun get(key: String): Value?
+
+    fun set(key: String, value: Bitmap, isSampled: Boolean)
+
+    fun size(): Int
+
+    fun maxSize(): Int
+
+    fun clearMemory()
+
+    fun trimMemory(level: Int)
+
+    data class Value(
+        val bitmap: Bitmap,
+        val isSampled: Boolean,
+        val size: Int
+    )
+}
+
+/** A [MemoryCache] implementation that stores nothing. */
+private object EmptyMemoryCache : MemoryCache {
+
+    override fun get(key: String): MemoryCache.Value? = null
+
+    override fun set(key: String, value: Bitmap, isSampled: Boolean) {}
+
+    override fun size() = 0
+
+    override fun maxSize() = 0
+
+    override fun clearMemory() {}
+
+    override fun trimMemory(level: Int) {}
+}
+
+/** A [MemoryCache] implementation backed by an [LruCache]. */
+private class RealMemoryCache(
+    private val referenceCounter: BitmapReferenceCounter,
+    maxSize: Int
+) : MemoryCache {
+
+    companion object {
+        private const val TAG = "RealMemoryCache"
+    }
+
+    private val cache = object : LruCache<String, MemoryCache.Value>(maxSize) {
         override fun entryRemoved(
             evicted: Boolean,
             key: String,
-            oldValue: Value,
-            newValue: Value?
+            oldValue: MemoryCache.Value,
+            newValue: MemoryCache.Value?
         ) = referenceCounter.decrement(oldValue.bitmap)
 
-        override fun sizeOf(key: String, value: Value) = value.size
+        override fun sizeOf(key: String, value: MemoryCache.Value) = value.size
     }
 
-    operator fun get(key: String): Value? = cache.get(key)
+    override fun get(key: String): MemoryCache.Value? = cache.get(key)
 
-    fun set(key: String, value: Bitmap, isSampled: Boolean) {
+    override fun set(key: String, value: Bitmap, isSampled: Boolean) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
         // the cache to be cleared. Instead just evict an existing element with the same key if it exists.
         val size = value.getAllocationByteCountCompat()
@@ -44,19 +93,19 @@ internal class MemoryCache(
         }
 
         referenceCounter.increment(value)
-        cache.put(key, Value(value, isSampled, size))
+        cache.put(key, MemoryCache.Value(value, isSampled, size))
     }
 
-    fun size(): Int = cache.size()
+    override fun size(): Int = cache.size()
 
-    fun maxSize(): Int = cache.maxSize()
+    override fun maxSize(): Int = cache.maxSize()
 
-    fun clearMemory() {
+    override fun clearMemory() {
         log(TAG, Log.DEBUG) { "clearMemory" }
         cache.trimToSize(-1)
     }
 
-    fun trimMemory(level: Int) {
+    override fun trimMemory(level: Int) {
         log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
@@ -64,10 +113,4 @@ internal class MemoryCache(
             cache.trimToSize(size() / 2)
         }
     }
-
-    data class Value(
-        val bitmap: Bitmap,
-        val isSampled: Boolean,
-        val size: Int
-    )
 }
