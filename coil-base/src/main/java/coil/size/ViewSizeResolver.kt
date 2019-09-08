@@ -105,7 +105,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
             return insetViewSize
         }
 
-        // If the dimension is set to WRAP_CONTENT and is fully laid out, fallback to the largest dimension of the display.
+        // If the dimension is set to WRAP_CONTENT and the View is fully laid out, fallback to the size of the display.
         if (!isLayoutRequested && paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
             log(TAG, Log.INFO) { "A View's width and/or height is set to WRAP_CONTENT. Falling back to the size of the display." }
             return view.context.resources.displayMetrics.run { max(widthPixels, heightPixels) }
