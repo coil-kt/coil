@@ -19,9 +19,9 @@
 
 ---
 
-- **New**: `coil-svg` artifact, which has an `SvgDecoder` that supports automatically decoding SVGs. Powered by [AndroidSVG](https://github.com/BigBadaboom/androidsvg).
+- **New**: `coil-svg` artifact, which has an `SvgDecoder` that supports automatically decoding SVGs. Powered by [AndroidSVG](https://github.com/BigBadaboom/androidsvg). Thanks @rharter.
 - **New**: `load(String)` and `get(String)` now accept any of the supported Uri schemes. e.g. You can now do `imageView.load("file:///path/to/file.jpg")`.
-- **New**: Refactor ImageLoader to use `Call.Factory` instead of `OkHttpClient`. This allows lazy initialization of the networking resources using `ImageLoaderBuilder.okHttpClient { OkHttpClient() }`.
+- **New**: Refactor ImageLoader to use `Call.Factory` instead of `OkHttpClient`. This allows lazy initialization of the networking resources using `ImageLoaderBuilder.okHttpClient { OkHttpClient() }`. Thanks @ZacSweers.
 - **New**: `RequestBuilder.decoder` to explicitly set the decoder for a request.
 - **New**: `ImageLoaderBuilder.allowHardware` to enable/disable hardware bitmaps by default for an ImageLoader.
 - **New**: Support software rendering in ImageDecoderDecoder.
@@ -33,10 +33,10 @@
 - Fix: Support parsing EXIF data longer than 8192 bytes.
 - Fix: Don't stretch drawables with different aspect ratios when crossfading.
 - Fix: Guard against network observer failing to register due to exception.
-- Fix: Fix divide by zero error in MovieDrawable.
-- Fix: Support nested Android asset files.
+- Fix: Fix divide by zero error in MovieDrawable. Thanks @R12rus.
+- Fix: Support nested Android asset files. Thanks @JaCzekanski.
 - Fix: Guard against running out of file descriptors on Android O and O_MR1.
-- Fix: Don't crash when disabling memory cache.
+- Fix: Don't crash when disabling memory cache. Thanks @hansenji.
 
 ---
 
