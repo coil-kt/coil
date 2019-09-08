@@ -4,7 +4,7 @@
 rm -rf docs/api
 
 # Build the Dokka docs.
-./gradlew clean :coil-base:dokka :coil-default:dokka :coil-gif:dokka
+./gradlew clean :coil-base:dokka :coil-default:dokka :coil-gif:dokka :coil-svg:dokka
 
 # Copy outside files into the docs folder.
 sed -e '/full documentation here/ { N; d; }' < README.md > docs/index.md

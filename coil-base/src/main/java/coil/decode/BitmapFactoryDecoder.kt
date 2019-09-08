@@ -159,7 +159,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         )
     }
 
-    /** TODO: Peek the source to figure out its data type (and if it has alpha) instead of relying on the MIME type. */
+    /** TODO: Peek the source to figure out its format (and if it has alpha) instead of relying on the MIME type. */
     private fun allowRgb565(
         allowRgb565: Boolean,
         config: Bitmap.Config,
