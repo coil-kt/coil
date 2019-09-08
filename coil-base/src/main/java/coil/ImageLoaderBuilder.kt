@@ -36,6 +36,9 @@ class ImageLoaderBuilder(private val context: Context) {
      * Set the [OkHttpClient] used for network requests.
      *
      * This is a convenience function for calling `callFactory(Call.Factory)`.
+     *
+     * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
+     * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
      */
     fun okHttpClient(okHttpClient: OkHttpClient) = callFactory(okHttpClient)
 
@@ -43,13 +46,19 @@ class ImageLoaderBuilder(private val context: Context) {
      * Set a lazy callback to create the [OkHttpClient] used for network requests.
      *
      * This is a convenience function for calling `callFactory(() -> Call.Factory)`.
+     *
+     * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
+     * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
      */
     fun okHttpClient(initializer: () -> OkHttpClient) = callFactory(initializer)
 
     /**
      * Set the [Call.Factory] used for network requests.
      *
-     * Note: Calling [okHttpClient] automatically sets this value.
+     * Calling [okHttpClient] automatically sets this value.
+     *
+     * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
+     * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
      */
     fun callFactory(callFactory: Call.Factory) = apply {
         this.callFactory = callFactory
@@ -63,7 +72,10 @@ class ImageLoaderBuilder(private val context: Context) {
      *
      * Prefer using this instead of `callFactory(Call.Factory)`.
      *
-     * Note: Calling [okHttpClient] automatically sets this value.
+     * Calling [okHttpClient] automatically sets this value.
+     *
+     * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
+     * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
      */
     fun callFactory(initializer: () -> Call.Factory) = apply {
         this.callFactory = lazyCallFactory(initializer)

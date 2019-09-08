@@ -20,8 +20,8 @@ import java.io.File
 // Example:
 // ```
 // imageView.load("https://www.example.com/image.jpg") {
-//     memoryCachePolicy(CachePolicy.DISABLED)
-//     size(1080, 1920)
+//     networkCachePolicy(CachePolicy.DISABLED)
+//     transformations(CircleCropTransformation())
 // }
 // ```
 
