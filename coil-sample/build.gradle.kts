@@ -1,4 +1,5 @@
 import coil.Library
+import coil.Library.Kotlin.Coroutines.android
 import coil.compileSdk
 import coil.targetSdk
 import coil.versionCode
@@ -44,14 +45,14 @@ dependencies {
 
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
 
-    implementation(Library.ANDROIDX_APPCOMPAT)
-    implementation(Library.ANDROIDX_CONSTRAINT_LAYOUT)
-    implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_LIFECYCLE_EXTENSIONS)
-    implementation(Library.ANDROIDX_LIFECYCLE_LIVE_DATA)
-    implementation(Library.ANDROIDX_LIFECYCLE_VIEW_MODEL)
-    implementation(Library.ANDROIDX_MULTIDEX)
-    implementation(Library.ANDROIDX_RECYCLER_VIEW)
+    implementation(Library.AndroidX.appCompat)
+    implementation(Library.AndroidX.constraintLayout)
+    implementation(Library.AndroidX.coreKtx)
+    implementation(Library.AndroidX.LifeCycle.extensions)
+    implementation(Library.AndroidX.LifeCycle.liveData)
+    implementation(Library.AndroidX.LifeCycle.viewModel)
+    implementation(Library.AndroidX.multiDex)
+    implementation(Library.AndroidX.recyclerView)
 
-    implementation(Library.MATERIAL)
+    implementation(Library.AndroidX.Material.material)
 }

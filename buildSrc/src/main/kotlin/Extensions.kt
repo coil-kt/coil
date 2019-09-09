@@ -63,24 +63,24 @@ fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Depend
 
 fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
     testImplementation(kotlin("test-junit", kotlinVersion))
-    testImplementation(Library.KOTLINX_COROUTINES_TEST)
+    testImplementation(Library.Kotlin.Coroutines.test)
 
-    testImplementation(Library.ANDROIDX_TEST_CORE)
-    testImplementation(Library.ANDROIDX_TEST_JUNIT)
-    testImplementation(Library.ANDROIDX_TEST_RULES)
-    testImplementation(Library.ANDROIDX_TEST_RUNNER)
+    testImplementation(Library.AndroidX.Test.core)
+    testImplementation(Library.AndroidX.Test.junit)
+    testImplementation(Library.AndroidX.Test.rules)
+    testImplementation(Library.AndroidX.Test.runner)
 
-    testImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
-    testImplementation(Library.ROBOLECTRIC)
+    testImplementation(Library.Square.OkHttp.mockWebServer)
+    testImplementation(Library.Robolectric.robolectric)
 }
 
 fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String) {
     androidTestImplementation(kotlin("test-junit", kotlinVersion))
 
-    androidTestImplementation(Library.ANDROIDX_TEST_CORE)
-    androidTestImplementation(Library.ANDROIDX_TEST_JUNIT)
-    androidTestImplementation(Library.ANDROIDX_TEST_RULES)
-    androidTestImplementation(Library.ANDROIDX_TEST_RUNNER)
+    androidTestImplementation(Library.AndroidX.Test.core)
+    androidTestImplementation(Library.AndroidX.Test.junit)
+    androidTestImplementation(Library.AndroidX.Test.rules)
+    androidTestImplementation(Library.AndroidX.Test.runner)
 
-    androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
+    androidTestImplementation(Library.Square.OkHttp.mockWebServer)
 }

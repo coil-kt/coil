@@ -40,6 +40,6 @@ afterEvaluate {
 dependencies {
     api(project(":coil-base"))
 
-    implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROID_SVG)
+    implementation(Library.AndroidX.coreKtx)
+    implementation(Library.Other.androidSvg)
 }

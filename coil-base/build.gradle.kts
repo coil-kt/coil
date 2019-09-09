@@ -52,20 +52,20 @@ afterEvaluate {
 
 dependencies {
     api(kotlin("stdlib", KotlinCompilerVersion.VERSION))
-    api(Library.KOTLINX_COROUTINES_ANDROID)
+    api(Library.Kotlin.Coroutines.android)
 
-    implementation(Library.ANDROIDX_ANNOTATION)
-    implementation(Library.ANDROIDX_COLLECTION)
-    implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_EXIF_INTERFACE)
+    implementation(Library.AndroidX.annotation)
+    implementation(Library.AndroidX.collectionKtx)
+    implementation(Library.AndroidX.coreKtx)
+    implementation(Library.AndroidX.exifInterface)
 
-    api(Library.ANDROIDX_LIFECYCLE_COMMON)
+    api(Library.AndroidX.LifeCycle.common)
 
     // Optional: only use this dependency if it is present in the classpath at runtime.
-    compileOnly(Library.ANDROIDX_APPCOMPAT_RESOURCES)
+    compileOnly(Library.AndroidX.appCompatResources)
 
-    api(Library.OKHTTP)
-    api(Library.OKIO)
+    api(Library.Square.OkHttp.okHttp)
+    api(Library.Square.OkIo.okIo)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
