@@ -27,7 +27,7 @@ class MemoryCacheTest {
         val bitmap = createBitmap()
         cache.set("1", bitmap, false)
 
-        assertEquals(bitmap, cache["1"]?.bitmap)
+        assertEquals(bitmap, cache.get("1")?.bitmap)
     }
 
     @Test
@@ -43,7 +43,17 @@ class MemoryCacheTest {
         val third = createBitmap()
         cache.set("3", third, false)
 
-        assertNull(cache["1"])
+        assertNull(cache.get("1"))
+    }
+
+    @Test
+    fun `maxSize 0 disables memory cache`() {
+        val cache = MemoryCache(counter, 0)
+
+        val bitmap = createBitmap()
+        cache.set("1", bitmap, false)
+
+        assertNull(cache.get("1"))
     }
 
     @Test
@@ -52,6 +62,6 @@ class MemoryCacheTest {
         val bitmap = createBitmap()
         cache.set("1", bitmap, false)
         cache.clearMemory("1")
-        assertNull(cache["1"])
+        assertNull(cache.get("1"))
     }
 }

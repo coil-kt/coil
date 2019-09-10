@@ -7,11 +7,13 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
 import android.os.Build.VERSION_CODES.KITKAT
 import android.os.Build.VERSION_CODES.O
 import android.os.StatFs
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
@@ -166,3 +168,19 @@ internal inline fun <T> Any.self(block: T.() -> Unit): T {
     block()
     return this
 }
+
+/**
+ * Wrap a [Call.Factory] factory as a [Call.Factory] instance.
+ * [initializer] is called only once the first time [Call.Factory.newCall] is called.
+ */
+internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
+    val lazy: Lazy<Call.Factory> = lazy(initializer)
+    return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
+}
+
+internal fun MimeTypeMap.getMimeTypeFromUrl(url: String?): String? {
+    return getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(url))
+}
+
+internal val Uri.firstPathSegment: String?
+    get() = pathSegments.firstOrNull()

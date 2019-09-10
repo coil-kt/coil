@@ -17,16 +17,21 @@ import coil.decode.BitmapFactoryDecoder
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.EmptyDecoder
+import coil.fetch.AssetUriFetcher
 import coil.fetch.BitmapFetcher
+import coil.fetch.ContentUriFetcher
 import coil.fetch.DrawableFetcher
 import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
+import coil.fetch.FileFetcher
 import coil.fetch.HttpUrlFetcher
 import coil.fetch.ResourceFetcher
 import coil.fetch.SourceResult
-import coil.fetch.UriFetcher
-import coil.map.FileMapper
+import coil.map.FileUriMapper
 import coil.map.HttpUriMapper
+import coil.map.Mapper
+import coil.map.MeasuredMapper
+import coil.map.ResourceUriMapper
 import coil.map.StringMapper
 import coil.memory.BitmapReferenceCounter
 import coil.memory.DelegateService
@@ -41,6 +46,7 @@ import coil.request.Request
 import coil.request.RequestDisposable
 import coil.request.ViewTargetRequestDisposable
 import coil.size.PixelSize
+import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.target.ViewTarget
@@ -74,7 +80,7 @@ internal class RealImageLoader(
     override val defaults: DefaultRequestOptions,
     bitmapPoolSize: Long,
     memoryCacheSize: Int,
-    callFactory: Lazy<Call.Factory>,
+    callFactory: Call.Factory,
     registry: ComponentRegistry
 ) : ImageLoader, ComponentCallbacks {
 
@@ -96,10 +102,13 @@ internal class RealImageLoader(
     private val registry = ComponentRegistry(registry) {
         add(StringMapper())
         add(HttpUriMapper())
-        add(FileMapper())
+        add(FileUriMapper())
+        add(ResourceUriMapper(context))
 
         add(HttpUrlFetcher(callFactory))
-        add(UriFetcher(context))
+        add(FileFetcher())
+        add(AssetUriFetcher(context))
+        add(ContentUriFetcher(context))
         add(ResourceFetcher(context, drawableDecoder))
         add(DrawableFetcher(drawableDecoder))
         add(BitmapFetcher(context))
@@ -138,6 +147,7 @@ internal class RealImageLoader(
 
     override suspend fun get(request: GetRequest): Drawable = execute(request.data, request)
 
+    @Suppress("UNCHECKED_CAST")
     private suspend fun execute(
         data: Any,
         request: Request
@@ -170,20 +180,26 @@ internal class RealImageLoader(
             var size: Size? = null
 
             // Perform any data conversions and resolve the size early, if necessary.
-            val measuredMapper = registry.getMeasuredMapper(data)
-            val mappedData = if (measuredMapper != null) {
-                targetDelegate.start(null, request.placeholder)
-                sizeResolver = requestService.sizeResolver(request, context)
-                size = sizeResolver.size().also { ensureActive() }
-
-                measuredMapper.map(data, size)
-            } else {
-                registry.getMapper(data)?.map(data) ?: data
+            var mappedData = data
+            for ((type, mapper) in registry.measuredMappers) {
+                if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
+                    if (sizeResolver == null || size == null) {
+                        targetDelegate.start(null, request.placeholder)
+                        sizeResolver = requestService.sizeResolver(request, context)
+                        size = sizeResolver.size().also { ensureActive() }
+                    }
+                    mappedData = mapper.map(mappedData, size)
+                }
+            }
+            for ((type, mapper) in registry.mappers) {
+                if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
+                    mappedData = mapper.map(mappedData)
+                }
             }
 
             // Compute the cache key.
             val fetcher = registry.requireFetcher(mappedData)
-            val cacheKey = request.keyOverride ?: computeCacheKey(fetcher, mappedData, request.transformations)
+            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.transformations)
 
             // Check the memory cache and set the placeholder.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
@@ -206,8 +222,11 @@ internal class RealImageLoader(
                 return@innerJob cachedDrawable
             }
 
+            // Resolve the scale.
+            val scale = requestService.scale(request, sizeResolver)
+
             // Load the image.
-            val (drawable, isSampled, source) = loadData(data, request, sizeResolver, fetcher, mappedData, size)
+            val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale)
 
             // Cache the result.
             if (request.memoryCachePolicy.writeEnabled) {
@@ -300,14 +319,13 @@ internal class RealImageLoader(
     private suspend inline fun loadData(
         data: Any,
         request: Request,
-        sizeResolver: SizeResolver,
         fetcher: Fetcher<Any>,
         mappedData: Any,
-        size: Size
+        size: Size,
+        scale: Scale
     ): DrawableResult = withContext(request.dispatcher) {
         // Convert the data into a Drawable.
-        val scale = requestService.scale(request, sizeResolver)
-        val options = requestService.options(request, scale, networkObserver.isOnline())
+        val options = requestService.options(request, size, scale, networkObserver.isOnline())
         val result = when (val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)) {
             is SourceResult -> {
                 val decodeResult = try {
@@ -320,7 +338,7 @@ internal class RealImageLoader(
                         // Instead, we exhaust the source and return an empty result.
                         EmptyDecoder
                     } else {
-                        registry.requireDecoder(data, fetchResult.source, fetchResult.mimeType)
+                        request.decoder ?: registry.requireDecoder(data, fetchResult.source, fetchResult.mimeType)
                     }
 
                     // Decode the stream.

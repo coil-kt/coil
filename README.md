@@ -1,4 +1,4 @@
-![Coil](logo.svg)
+﻿![Coil](logo.svg)
 
 An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
@@ -9,14 +9,14 @@ An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
 Coil is an acronym for: **Co**routine **I**mage **L**oader.
 
-Made with ❤️ at [Instacart](https://www.instacart.com).
+Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한국어](README-ko.md)
 
 ## Download
 
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.6.1")
+implementation("io.coil-kt:coil:0.7.0")
 ```
 
 ## Quick Start
@@ -51,6 +51,8 @@ To get an image imperatively, use the `get` [suspend](https://kotlinlang.org/doc
 ```kotlin
 val drawable = Coil.get("https://www.example.com/image.jpg")
 ```
+
+Coil requires Java 8 bytecode. [Here's how to enable it](https://coil-kt.github.io/coil/getting_started/#java-8). 
 
 Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
 

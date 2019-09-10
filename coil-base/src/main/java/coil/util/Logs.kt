@@ -7,7 +7,7 @@ import java.io.StringWriter
 /**
  * Emojis for use in internal logging.
  *
- * TODO: Some emojis require an extra space to display correctly in the logs. Figure out why.
+ * TODO: Some emojis require an extra space to display correctly in logcat. Figure out why.
  */
 internal object Emoji {
     const val BRAIN = "🧠" + " "

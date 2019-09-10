@@ -1,5 +1,3 @@
-@file:JvmName("CoilUtils")
-
 package coil.util
 
 import android.app.ActivityManager

@@ -1,6 +1,5 @@
 package coil.decode
 
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import coil.ComponentRegistry
 import coil.bitmappool.BitmapPool
@@ -17,7 +16,7 @@ import okio.blackholeSink
 internal object EmptyDecoder : Decoder {
 
     private val result = DecodeResult(
-        drawable = ColorDrawable(Color.TRANSPARENT),
+        drawable = ColorDrawable(),
         isSampled = false
     )
     private val sink = blackholeSink()

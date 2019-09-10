@@ -20,19 +20,19 @@ import java.io.File
 // Example:
 // ```
 // imageView.load("https://www.example.com/image.jpg") {
-//     memoryCachePolicy(CachePolicy.DISABLED)
-//     size(1080, 1920)
+//     networkCachePolicy(CachePolicy.DISABLED)
+//     transformations(CircleCropTransformation())
 // }
 // ```
 
 // region URL (String)
 
 inline fun ImageView.load(
-    url: String?,
+    uri: String?,
     imageLoader: ImageLoader = Coil.loader(),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
-    return imageLoader.load(context, url) {
+    return imageLoader.load(context, uri) {
         target(this@load)
         builder()
     }

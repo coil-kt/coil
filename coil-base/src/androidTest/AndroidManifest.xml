@@ -5,5 +5,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application android:usesCleartextTraffic="true"/>
+    <application android:usesCleartextTraffic="true">
+        <provider
+            android:name="coil.util.AssetContentProvider"
+            android:authorities="coil"
+            android:exported="false"/>
+    </application>
 </manifest>

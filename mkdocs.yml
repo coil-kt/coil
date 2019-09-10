@@ -43,11 +43,13 @@ nav:
   - 'Extending the Image Pipeline': image_pipeline.md
   - 'Java Compatibility': java_compatibility.md
   - 'GIFs': gifs.md
+  - 'SVGs': svgs.md
   - 'FAQ': faq.md
   - 'API':
     - 'coil': api/coil-default/index.md
     - 'coil-base': api/coil-base/index.md
     - 'coil-gif': api/coil-gif/index.md
+    - 'coil-svg': api/coil-svg/index.md
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md

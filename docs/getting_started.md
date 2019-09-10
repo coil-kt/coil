@@ -2,11 +2,14 @@
 
 ## Artifacts
 
-Coil has 3 artifacts published to `mavenCentral()`:
+Coil has 4 artifacts published to `mavenCentral()`:
 
 * `io.coil-kt:coil`: The default artifact, which includes the `Coil` singleton.
 * `io.coil-kt:coil-base`: The base artifact, which **does not** include the `Coil` singleton. Prefer this artifact if you want to use dependency injection to inject your [ImageLoader](image_loaders.md) instance(s).
 * `io.coil-kt:coil-gif`: Includes a set of [decoders](../api/coil-base/coil.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
+* `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
+
+If you need [transformations](transformations.md) that aren't part of the base Coil artifacts, check out the 3rd-party `coil-transformations` artifact hosted [here](https://github.com/Commit451/coil-transformations).
 
 ## Java 8
 
@@ -48,7 +51,7 @@ tasks.withType<KotlinCompile> {
 
 ## API
 
-The heart of Coil's API is the [ImageLoader](image_loaders.md). `ImageLoader` exposes two methods for image loading:
+The heart of Coil's API is the [ImageLoader](image_loaders.md). `ImageLoader`s are service classes that execute `Request` objects that are passed to them. `ImageLoader`s expose two methods for image loading:
 
 * `load`: Starts an asynchronous request to load the data into the [Target](targets.md).
 
@@ -61,6 +64,32 @@ fun load(request: LoadRequest): RequestDisposable
 ```kotlin
 suspend fun get(request: GetRequest): Drawable
 ```
+
+## ImageLoaders
+
+If you're using the `io.coil-kt:coil` artifact, you can set a default [ImageLoader](image_loaders.md) instance like so:
+
+```kotlin
+Coil.setDefaultImageLoader {
+    ImageLoader(context) {
+        crossfade(true)
+        okHttpClient {
+            OkHttpClient.Builder()
+                .cache(CoilUtils.createDefaultCache(context))
+                .build()
+        }
+    }
+}
+```
+
+The default `ImageLoader` is used for any `ImageView.load` calls. The best place to call `setDefaultImageLoader` is in your `Application` class.
+
+Setting a default `ImageLoader` is optional. If you don't set one, Coil will lazily create a default `ImageLoader` when needed.
+
+If you're using the `io.coil-kt:coil-base` artifact, you should create your own `ImageLoader` instance(s) and inject them throughout your app with dependency injection. [Read more about dependency injection here](../image_loaders/#singleton-vs-dependency-injection).
+
+!!! Note
+    If you set a custom `OkHttpClient`, you must set a `cache` implementation or the `ImageLoader` will have no disk cache. A default Coil cache instance can be created using [`CoilUtils.createDefaultCache`](../api/coil-base/coil.util/-coil-utils/create-default-cache/).
 
 ## Extension Functions
 
@@ -86,10 +115,10 @@ See the docs [here](../api/coil-default/coil.api/) and [here](../api/coil-base/c
 
 The base data types that are supported by all `ImageLoader` instances are:
 
-* String (mapped to HttpUrl)
+* String (mapped to a Uri)
 * HttpUrl
 * Uri (`android.resource`, `content`, `file`, `http`, and `https` schemes only)
-* File (mapped to `file` Uri)
+* File
 * @DrawableRes Int
 * Drawable
 * Bitmap

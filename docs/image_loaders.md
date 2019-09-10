@@ -20,6 +20,26 @@ val imageLoader = ImageLoader(context) {
 
 Internally, this constructs a `RealImageLoader` using [ImageLoaderBuilder](../api/coil-base/coil/-image-loader-builder).
 
+If you're using the Coil singleton, you can then replace its `ImageLoader` instance with `Coil.setDefaultImageLoader`. The best place to set the default `ImageLoader` is in your `Application` class.
+
+## Caching
+
+Each Image Loader keeps a memory cache of recently loaded `BitmapDrawable`s as well as a reusable pool of `Bitmap`s.
+
+Coil relies on `OkHttpClient` to handle disk caching. **By default, every `ImageLoader` is already set up for disk caching** and will set a max cache size of between 10-250MB depending on the remaining space on the user's device.
+
+However, if you set a custom `OkHttpClient`, you'll need to add the disk cache yourself. To get a `Cache` instance that's optimized for Coil, you can use [`CoilUtils.createDefaultCache`](../api/coil-base/coil.util/-coil-utils/create-default-cache/). Optionally, you can create your own `Cache` instance with a different size + location. Here's an example:
+
+```kotlin
+val imageLoader = ImageLoader(context) {
+    okHttpClient {
+        OkHttpClient.Builder()
+            .cache(CoilUtils.createDefaultCache(context))
+            .build()
+    }
+}
+```
+
 ## Singleton vs. Dependency Injection
 
 Ideally, you should construct and inject your `ImageLoader` instance(s) using dependency injection. This will scale well as your app grows and it is the best way to manage multiple `ImageLoader` instances.

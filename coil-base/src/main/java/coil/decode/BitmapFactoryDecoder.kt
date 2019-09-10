@@ -22,6 +22,7 @@ import okio.BufferedSource
 import okio.ForwardingSource
 import okio.Source
 import okio.buffer
+import java.io.InputStream
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -30,9 +31,7 @@ import kotlin.math.roundToInt
 /**
  * The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource].
  */
-internal class BitmapFactoryDecoder(
-    private val context: Context
-) : Decoder {
+internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
     companion object {
         private const val MIME_TYPE_JPEG = "image/jpeg"
@@ -58,7 +57,7 @@ internal class BitmapFactoryDecoder(
         inJustDecodeBounds = false
 
         // Read the image's EXIF data.
-        val exifInterface = ExifInterface(safeBufferedSource.peek().inputStream())
+        val exifInterface = ExifInterface(AlwaysAvailableInputStream(safeBufferedSource.peek().inputStream()))
         val isFlipped = exifInterface.isFlipped
         val rotationDegrees = exifInterface.rotationDegrees
         val isRotated = rotationDegrees > 0
@@ -160,7 +159,7 @@ internal class BitmapFactoryDecoder(
         )
     }
 
-    /** TODO: Peek the source to figure out its data type (and if it has alpha) instead of relying on the MIME type. */
+    /** TODO: Peek the source to figure out its format (and if it has alpha) instead of relying on the MIME type. */
     private fun allowRgb565(
         allowRgb565: Boolean,
         config: Bitmap.Config,
@@ -226,5 +225,27 @@ internal class BitmapFactoryDecoder(
                 throw e
             }
         }
+    }
+
+    /** Wrap [delegate] so that it always returns [Int.MAX_VALUE] for [available]. */
+    private class AlwaysAvailableInputStream(private val delegate: InputStream) : InputStream() {
+
+        override fun read() = delegate.read()
+
+        override fun read(b: ByteArray) = delegate.read(b)
+
+        override fun read(b: ByteArray, off: Int, len: Int) = delegate.read(b, off, len)
+
+        override fun skip(n: Long) = delegate.skip(n)
+
+        override fun available() = Int.MAX_VALUE
+
+        override fun close() = delegate.close()
+
+        override fun mark(readlimit: Int) = delegate.mark(readlimit)
+
+        override fun reset() = delegate.reset()
+
+        override fun markSupported() = delegate.markSupported()
     }
 }

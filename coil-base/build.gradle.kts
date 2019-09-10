@@ -12,7 +12,6 @@ plugins {
     id("com.vanniktech.maven.publish")
     id("kotlin-android")
     id("org.jetbrains.dokka-android")
-    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -63,7 +62,7 @@ dependencies {
     api(Library.ANDROIDX_LIFECYCLE_COMMON)
 
     // Optional: only use this dependency if it is present in the classpath at runtime.
-    compileOnly(Library.ANDROIDX_APPCOMPAT)
+    compileOnly(Library.ANDROIDX_APPCOMPAT_RESOURCES)
 
     api(Library.OKHTTP)
     api(Library.OKIO)

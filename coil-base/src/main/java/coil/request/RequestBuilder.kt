@@ -14,10 +14,13 @@ import androidx.annotation.Px
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import coil.ComponentRegistry
 import coil.DefaultRequestOptions
+import coil.ImageLoader
 import coil.ImageLoaderBuilder
 import coil.annotation.BuilderMarker
 import coil.decode.DataSource
+import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.memory.RequestService
@@ -31,6 +34,7 @@ import coil.transform.Transformation
 import coil.util.Utils
 import coil.util.self
 import kotlinx.coroutines.CoroutineDispatcher
+import okio.BufferedSource
 
 /** Base class for [LoadRequestBuilder] and [GetRequestBuilder]. */
 @BuilderMarker
@@ -38,10 +42,11 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
 
     protected var data: Any?
 
-    protected var keyOverride: String?
+    protected var key: String?
     protected var listener: Request.Listener?
     protected var sizeResolver: SizeResolver?
     protected var scale: Scale?
+    protected var decoder: Decoder?
     protected var dispatcher: CoroutineDispatcher
     protected var transformations: List<Transformation>
     protected var bitmapConfig: Bitmap.Config
@@ -57,10 +62,11 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     constructor(defaults: DefaultRequestOptions) {
         data = null
 
-        keyOverride = null
+        key = null
         listener = null
         sizeResolver = null
         scale = null
+        decoder = null
         dispatcher = defaults.dispatcher
         transformations = emptyList()
         bitmapConfig = Utils.getDefaultBitmapConfig()
@@ -79,10 +85,11 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     constructor(request: Request) {
         data = request.data
 
-        keyOverride = request.keyOverride
+        key = request.key
         listener = request.listener
         sizeResolver = request.sizeResolver
         scale = request.scale
+        decoder = request.decoder
         dispatcher = request.dispatcher
         transformations = request.transformations
         bitmapConfig = request.bitmapConfig
@@ -185,6 +192,19 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
+     * Set the [Decoder] to handle decoding any image data.
+     *
+     * Use this to force the given [Decoder] to handle decoding any [BufferedSource]s returned by [Fetcher.fetch].
+     *
+     * If this isn't set, the [ImageLoader] will find an applicable [Decoder] that's registered in its [ComponentRegistry].
+     *
+     * NOTE: This skips calling [Decoder.handles] for [decoder].
+     */
+    fun decoder(decoder: Decoder): T = self {
+        this.decoder = decoder
+    }
+
+    /**
      * Enable/disable the use of [Bitmap.Config.HARDWARE] for this request.
      *
      * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
@@ -225,7 +245,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * By default, the cache key is computed by the [Fetcher] and any [Transformation]s.
      */
     fun key(key: String?): T = self {
-        this.keyOverride = key
+        this.key = key
     }
 
     /**
@@ -403,10 +423,11 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             target,
             lifecycle,
             crossfadeMillis,
-            keyOverride,
+            key,
             listener,
             sizeResolver,
             scale,
+            decoder,
             dispatcher,
             transformations,
             bitmapConfig,
@@ -442,10 +463,11 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
     fun build(): GetRequest {
         return GetRequest(
             checkNotNull(data) { "data == null" },
-            keyOverride,
+            key,
             listener,
             sizeResolver,
             scale,
+            decoder,
             dispatcher,
             transformations,
             bitmapConfig,

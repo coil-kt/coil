@@ -13,18 +13,19 @@ class Application : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        CoilLogger.setEnabled(true)
-        Coil.setDefaultImageLoader(::buildDefaultImageLoader)
+        CoilLogger.setEnabled(true) // Enable logging to the standard Android log.
+        Coil.setDefaultImageLoader(::buildDefaultImageLoader) // Set a callback to lazily initialize the default ImageLoader.
     }
 
     private fun buildDefaultImageLoader(): ImageLoader {
-        return ImageLoader(this) {
-            availableMemoryPercentage(0.5)
-            bitmapPoolPercentage(0.5)
-            crossfade(true)
+        return ImageLoader(applicationContext) {
+            availableMemoryPercentage(0.5) // Use 50% of the application's available memory.
+            bitmapPoolPercentage(0.5) // Use 50% of the memory allocated to this ImageLoader for the bitmap pool.
+            crossfade(true) // Show a short crossfade when loading images from network or disk into an ImageView.
             okHttpClient {
+                // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
-                    .cache(CoilUtils.createDefaultCache(this@Application))
+                    .cache(CoilUtils.createDefaultCache(applicationContext))
                     .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
                     .build()
             }

@@ -2,6 +2,7 @@
 
 package coil.decode
 
+import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
@@ -37,6 +38,10 @@ class ImageDecoderDecoder : Decoder {
             if (size is PixelSize && info.size.run { width > size.width || height > size.height }) {
                 isSampled = true
                 setTargetSize(size.width, size.height)
+            }
+
+            if (options.config != Bitmap.Config.HARDWARE) {
+                allocator = ImageDecoder.ALLOCATOR_SOFTWARE
             }
 
             if (options.colorSpace != null) {

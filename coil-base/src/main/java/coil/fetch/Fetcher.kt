@@ -33,7 +33,7 @@ interface Fetcher<T : Any> {
      *
      * Returning null will prevent the result of [fetch] from being added to the memory cache.
      */
-    fun key(data: T): String? = null
+    fun key(data: T): String?
 
     /**
      * Load the [data] into memory. Perform any necessary fetching operations.

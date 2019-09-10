@@ -20,8 +20,9 @@ import java.io.File
 // Example:
 // ```
 // Coil.load(context, "https://www.example.com/image.jpg") {
-//     memoryCachePolicy(CachePolicy.DISABLED)
-//     size(1080, 1920)
+//     networkCachePolicy(CachePolicy.DISABLED)
+//     transformations(CircleCropTransformation())
+//     target(imageView)
 // }
 // ```
 
@@ -29,14 +30,14 @@ import java.io.File
 
 inline fun Coil.load(
     context: Context,
-    url: String?,
+    uri: String?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, url, builder)
+): RequestDisposable = loader().load(context, uri, builder)
 
 suspend inline fun Coil.get(
-    url: String,
+    uri: String,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader().get(url, builder)
+): Drawable = loader().get(uri, builder)
 
 // endregion
 // region URL (HttpUrl)

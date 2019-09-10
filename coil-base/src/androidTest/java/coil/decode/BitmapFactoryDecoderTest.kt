@@ -100,6 +100,14 @@ class BitmapFactoryDecoderTest {
         }
     }
 
+    @Test
+    fun largeExifMetadata() {
+        val size = PixelSize(500, 500)
+        val normal = decode("exif/large_metadata_normalized.jpg", size)
+        val largeExifMetadata = decode("exif/large_metadata_normalized.jpg", size)
+        assertTrue(normal.isSimilarTo(largeExifMetadata))
+    }
+
     private fun decode(fileName: String, size: Size): Bitmap = runBlocking {
         val result = service.decode(
             pool = pool,

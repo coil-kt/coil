@@ -12,7 +12,7 @@ import okhttp3.HttpUrl
 import okhttp3.Request
 
 internal class HttpUrlFetcher(
-    private val callFactory: Lazy<Call.Factory>
+    private val callFactory: Call.Factory
 ) : Fetcher<HttpUrl> {
 
     companion object {
@@ -20,7 +20,7 @@ internal class HttpUrlFetcher(
         private val CACHE_CONTROL_NO_NETWORK_NO_CACHE = CacheControl.Builder().noCache().onlyIfCached().build()
     }
 
-    override fun key(data: HttpUrl): String = data.toString()
+    override fun key(data: HttpUrl) = data.toString()
 
     override suspend fun fetch(
         pool: BitmapPool,
@@ -47,7 +47,7 @@ internal class HttpUrlFetcher(
             }
         }
 
-        val response = callFactory.value.newCall(request.build()).await()
+        val response = callFactory.newCall(request.build()).await()
         if (!response.isSuccessful) {
             throw HttpException(response)
         }
