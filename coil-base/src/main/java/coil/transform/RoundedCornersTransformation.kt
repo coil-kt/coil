@@ -16,14 +16,20 @@ import coil.bitmappool.BitmapPool
 /**
  * A [Transformation] that rounds the corners of an image.
  */
-class RoundedCornersTransformation(private vararg val radii: Float) : Transformation {
+class RoundedCornersTransformation(
+    private val topLeft: Float,
+    private val topRight: Float,
+    private val bottomRight: Float,
+    private val bottomLeft: Float
+) : Transformation {
+
+    constructor(radius: Float) : this(radius, radius, radius, radius)
 
     init {
-        require(radii.size == 1 || radii.size == 4) { "Radii size has to be either 1 or 4" }
-        require(radii.all { it >= 0 }) { "All radius must be >= 0." }
+        require(topLeft >= 0 && topRight >= 0 && bottomRight >= 0 && bottomLeft >= 0) { "All radii must be >= 0." }
     }
 
-    override fun key() = "${RoundedCornersTransformation::class.java}-${radii.joinToString(",")}"
+    override fun key() = "${RoundedCornersTransformation::class.java}-${topLeft},${topRight},${bottomLeft},${bottomRight}"
 
     override suspend fun transform(pool: BitmapPool, input: Bitmap): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -33,17 +39,17 @@ class RoundedCornersTransformation(private vararg val radii: Float) : Transforma
         val rect = RectF(0f, 0f, output.width.toFloat(), output.height.toFloat())
         output.applyCanvas {
             drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-            when (radii.size) {
-                1 -> drawRoundRect(rect, radii[0], radii[0], paint)
-                else -> drawPath(Path().apply {
-                    addRoundRect(
-                        rect,
-                        floatArrayOf(radii[0], radii[0], radii[1], radii[1], radii[2], radii[2], radii[3], radii[3]),
-                        Path.Direction.CW
-                    )
-                }, paint)
-            }
+            drawPath(Path().apply {
+                addRoundRect(
+                    rect,
+                    floatArrayOf(
+                        topLeft, topLeft, topRight, topRight, bottomLeft, bottomLeft, bottomRight, bottomRight
+                    ),
+                    Path.Direction.CW
+                )
+            }, paint)
         }
+
         pool.put(input)
         return output
     }
