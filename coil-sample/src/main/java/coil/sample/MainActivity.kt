@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import coil.api.load
+import coil.transform.RoundedCornersTransformation
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
                 list.isVisible = false
                 detail.isVisible = true
                 detail.load(screen.image.url) {
+                    transformations(RoundedCornersTransformation(20f,10f,50f, 40f))
                     placeholder(ColorDrawable(screen.image.color))
                 }
             }

@@ -2,26 +2,21 @@
 
 package coil.transform
 
-import android.graphics.Bitmap
-import android.graphics.BitmapShader
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.RectF
-import android.graphics.Shader
+import android.graphics.*
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
 
 /**
  * A [Transformation] that rounds the corners of an image.
  */
-class RoundedCornersTransformation(private val radius: Float) : Transformation {
+class RoundedCornersTransformation(private vararg val radii: Float) : Transformation {
 
     init {
-        require(radius >= 0) { "Radius must be >= 0." }
+        require(radii.size == 1 || radii.size == 4) { "Radii size has to be either 1 or 4" }
+        require(radii.all { it >= 0 }) { "All radius must be >= 0." }
     }
 
-    override fun key() = "${RoundedCornersTransformation::class.java}-$radius"
+    override fun key() = "${RoundedCornersTransformation::class.java}-${radii.joinToString(",")}"
 
     override suspend fun transform(pool: BitmapPool, input: Bitmap): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -31,7 +26,12 @@ class RoundedCornersTransformation(private val radius: Float) : Transformation {
         val rect = RectF(0f, 0f, output.width.toFloat(), output.height.toFloat())
         output.applyCanvas {
             drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-            drawRoundRect(rect, radius, radius, paint)
+            when (radii.size) {
+                1 -> drawRoundRect(rect, radii[0], radii[0], paint)
+                else -> drawPath(Path().apply {
+                    addRoundRect(rect, floatArrayOf(radii[0], radii[0], radii[1], radii[1], radii[2], radii[2], radii[3], radii[3]), Path.Direction.CW)
+                }, paint)
+            }
         }
         pool.put(input)
         return output
