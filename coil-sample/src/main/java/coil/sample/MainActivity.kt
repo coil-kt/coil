@@ -28,7 +28,10 @@ class MainActivity : AppCompatActivity() {
         val listAdapter = ImageListAdapter(this, viewModel.screenLiveData::setValue)
         list.apply {
             setHasFixedSize(true)
-            layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(
+                listAdapter.numColumns,
+                StaggeredGridLayoutManager.VERTICAL
+            )
             adapter = listAdapter
         }
 
@@ -46,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 list.isVisible = false
                 detail.isVisible = true
                 detail.load(screen.image.url) {
-                    transformations(RoundedCornersTransformation(20f,10f,50f, 40f))
+                    transformations(RoundedCornersTransformation(20f, 10f, 50f, 40f))
                     placeholder(ColorDrawable(screen.image.color))
                 }
             }

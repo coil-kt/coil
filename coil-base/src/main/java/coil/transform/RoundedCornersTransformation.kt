@@ -2,7 +2,14 @@
 
 package coil.transform
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapShader
+import android.graphics.Paint
+import android.graphics.Shader
+import android.graphics.RectF
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.Path
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
 
@@ -29,7 +36,20 @@ class RoundedCornersTransformation(private vararg val radii: Float) : Transforma
             when (radii.size) {
                 1 -> drawRoundRect(rect, radii[0], radii[0], paint)
                 else -> drawPath(Path().apply {
-                    addRoundRect(rect, floatArrayOf(radii[0], radii[0], radii[1], radii[1], radii[2], radii[2], radii[3], radii[3]), Path.Direction.CW)
+                    addRoundRect(
+                        rect,
+                        floatArrayOf(
+                            radii[0],
+                            radii[0],
+                            radii[1],
+                            radii[1],
+                            radii[2],
+                            radii[2],
+                            radii[3],
+                            radii[3]
+                        ),
+                        Path.Direction.CW
+                    )
                 }, paint)
             }
         }
