@@ -38,16 +38,7 @@ class RoundedCornersTransformation(private vararg val radii: Float) : Transforma
                 else -> drawPath(Path().apply {
                     addRoundRect(
                         rect,
-                        floatArrayOf(
-                            radii[0],
-                            radii[0],
-                            radii[1],
-                            radii[1],
-                            radii[2],
-                            radii[2],
-                            radii[3],
-                            radii[3]
-                        ),
+                        floatArrayOf(radii[0], radii[0], radii[1], radii[1], radii[2], radii[2], radii[3], radii[3]),
                         Path.Direction.CW
                     )
                 }, paint)
