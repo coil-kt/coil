@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
 import coil.Coil
 
@@ -27,7 +28,7 @@ internal class CoilContentProvider : ContentProvider() {
     override fun insert(
         uri: Uri,
         values: ContentValues?
-    ) = null
+    ): Uri? = null
 
     override fun query(
         uri: Uri,
@@ -35,7 +36,7 @@ internal class CoilContentProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<String>?,
         sortOrder: String?
-    ) = null
+    ): Cursor? = null
 
     override fun update(
         uri: Uri,
@@ -50,5 +51,5 @@ internal class CoilContentProvider : ContentProvider() {
         selectionArgs: Array<String>?
     ) = 0
 
-    override fun getType(uri: Uri) = null
+    override fun getType(uri: Uri): String? = null
 }
