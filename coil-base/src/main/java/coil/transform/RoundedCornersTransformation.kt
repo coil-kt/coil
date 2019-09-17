@@ -4,12 +4,12 @@ package coil.transform
 
 import android.graphics.Bitmap
 import android.graphics.BitmapShader
-import android.graphics.Paint
-import android.graphics.Shader
-import android.graphics.RectF
 import android.graphics.Color
-import android.graphics.PorterDuff
+import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.RectF
+import android.graphics.Shader
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
 
@@ -17,10 +17,10 @@ import coil.bitmappool.BitmapPool
  * A [Transformation] that rounds the corners of an image.
  */
 class RoundedCornersTransformation(
-    private val topLeft: Float,
-    private val topRight: Float,
-    private val bottomRight: Float,
-    private val bottomLeft: Float
+    private val topLeft: Float = 0f,
+    private val topRight: Float = 0f,
+    private val bottomRight: Float = 0f,
+    private val bottomLeft: Float = 0f
 ) : Transformation {
 
     constructor(radius: Float) : this(radius, radius, radius, radius)
@@ -39,17 +39,11 @@ class RoundedCornersTransformation(
         val rect = RectF(0f, 0f, output.width.toFloat(), output.height.toFloat())
         output.applyCanvas {
             drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-            drawPath(Path().apply {
-                addRoundRect(
-                    rect,
-                    floatArrayOf(
-                        topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft
-                    ),
-                    Path.Direction.CW
-                )
-            }, paint)
-        }
 
+            val radii = floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft)
+            val path = Path().apply { addRoundRect(rect, radii, Path.Direction.CW) }
+            drawPath(path, paint)
+        }
         pool.put(input)
         return output
     }
