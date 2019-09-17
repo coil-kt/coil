@@ -43,7 +43,7 @@ class RoundedCornersTransformation(
                 addRoundRect(
                     rect,
                     floatArrayOf(
-                        topLeft, topLeft, topRight, topRight, bottomLeft, bottomLeft, bottomRight, bottomRight
+                        topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft
                     ),
                     Path.Direction.CW
                 )
