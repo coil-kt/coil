@@ -23,7 +23,7 @@ class AssetContentProvider : ContentProvider() {
     override fun insert(
         uri: Uri,
         values: ContentValues?
-    ) = null
+    ): Uri? = null
 
     override fun query(
         uri: Uri,
