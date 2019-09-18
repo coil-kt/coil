@@ -74,7 +74,7 @@ internal fun Bitmap.getAllocationByteCountCompat(): Int {
         } else {
             rowBytes * height
         }
-    } catch (ignored: Exception) {
+    } catch (_: Exception) {
         Utils.calculateAllocationByteCount(width, height, config)
     }
 }
@@ -151,7 +151,7 @@ internal fun Closeable.closeQuietly() {
         close()
     } catch (rethrown: RuntimeException) {
         throw rethrown
-    } catch (ignored: Exception) {}
+    } catch (_: Exception) {}
 }
 
 internal val ImageView.scale: Scale
