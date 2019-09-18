@@ -51,7 +51,7 @@ fun OkHttpClient.Builder.forceTls12(): OkHttpClient.Builder {
         }
 
         connectionSpecs(listOf(CONNECTION_SPEC_TLS_1_2_ONLY))
-    } catch (ignored: Exception) {}
+    } catch (_: Exception) {}
 
     return this
 }

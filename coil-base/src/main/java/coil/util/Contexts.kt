@@ -16,7 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 internal val HAS_APPCOMPAT_RESOURCES = try {
     Class.forName(AppCompatResources::class.java.name)
     true
-} catch (ignored: Throwable) {
+} catch (_: Throwable) {
     false
 }
 

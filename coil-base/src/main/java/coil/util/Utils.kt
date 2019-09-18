@@ -38,7 +38,7 @@ internal object Utils {
             val cacheDir = StatFs(cacheDirectory.absolutePath)
             val size = DISK_CACHE_PERCENTAGE * cacheDir.getBlockCountCompat() * cacheDir.getBlockSizeCompat()
             return size.toLong().coerceIn(MIN_DISK_CACHE_SIZE, MAX_DISK_CACHE_SIZE)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             MIN_DISK_CACHE_SIZE
         }
     }
