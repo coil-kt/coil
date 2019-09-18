@@ -28,6 +28,7 @@ class GrayscaleTransformation : Transformation {
             drawBitmap(input, 0f, 0f, paint)
         }
         pool.put(input)
+
         return output
     }
 }

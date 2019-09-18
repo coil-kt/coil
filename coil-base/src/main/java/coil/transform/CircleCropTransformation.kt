@@ -33,6 +33,7 @@ class CircleCropTransformation : Transformation {
             drawBitmap(input, 0f, 0f, bitmapPaint)
         }
         pool.put(input)
+
         return output
     }
 }
