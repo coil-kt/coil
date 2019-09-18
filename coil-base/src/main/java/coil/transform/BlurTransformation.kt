@@ -16,6 +16,11 @@ import coil.bitmappool.BitmapPool
 
 /**
  * A [Transformation] that applies a Gaussian blur to an image.
+ *
+ * @param context The [Context] used to create a [RenderScript] instance.
+ * @param radius The radius of the blur.
+ * @param sampling The sampling multiplier used to scale the image. Values > 1
+ *  will downscale the image. Values between 0 and 1 will upscale the image.
  */
 @RequiresApi(JELLY_BEAN_MR2)
 class BlurTransformation(
@@ -39,9 +44,9 @@ class BlurTransformation(
     override suspend fun transform(pool: BitmapPool, input: Bitmap): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-        val scaledWidth = input.width / sampling
-        val scaledHeight = input.height / sampling
-        val output = pool.get(scaledWidth.toInt(), scaledHeight.toInt(), input.config)
+        val scaledWidth = (input.width / sampling).toInt()
+        val scaledHeight = (input.height / sampling).toInt()
+        val output = pool.get(scaledWidth, scaledHeight, input.config)
         output.applyCanvas {
             scale(1 / sampling, 1 / sampling)
             drawBitmap(input, 0f, 0f, paint)

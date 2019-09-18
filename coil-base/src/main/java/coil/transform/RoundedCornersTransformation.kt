@@ -15,18 +15,23 @@ import coil.bitmappool.BitmapPool
 
 /**
  * A [Transformation] that rounds the corners of an image.
+ *
+ * @param topLeft The radius for the top left corner.
+ * @param topRight The radius for the top right corner.
+ * @param bottomLeft The radius for the bottom left corner.
+ * @param bottomRight The radius for the bottom right corner.
  */
 class RoundedCornersTransformation(
     private val topLeft: Float = 0f,
     private val topRight: Float = 0f,
-    private val bottomRight: Float = 0f,
-    private val bottomLeft: Float = 0f
+    private val bottomLeft: Float = 0f,
+    private val bottomRight: Float = 0f
 ) : Transformation {
 
     constructor(radius: Float) : this(radius, radius, radius, radius)
 
     init {
-        require(topLeft >= 0 && topRight >= 0 && bottomRight >= 0 && bottomLeft >= 0) { "All radii must be >= 0." }
+        require(topLeft >= 0 && topRight >= 0 && bottomLeft >= 0 && bottomRight >= 0) { "All radii must be >= 0." }
     }
 
     override fun key() = "${RoundedCornersTransformation::class.java}-$topLeft,$topRight,$bottomLeft,$bottomRight"
@@ -45,6 +50,7 @@ class RoundedCornersTransformation(
             drawPath(path, paint)
         }
         pool.put(input)
+
         return output
     }
 }
