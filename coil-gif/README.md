@@ -8,21 +8,17 @@ To add GIF support, import the extension library:
 implementation("io.coil-kt:coil-gif:0.7.0")
 ```
 
-And add the decoders to your component registry when constructing your `ImageLoader`:
+And add the decoder to your component registry when constructing your `ImageLoader`:
 
 ```kotlin
 val imageLoader = ImageLoader(context) {
     componentRegistry {
-        if (SDK_INT >= P) {
-            add(ImageDecoderDecoder())
-        } else {
-            add(GifDecoder())
-        }
+        add(GifDecoder())
     }
 }
 ```
 
 !!! Note
-    Prefer using `ImageDecoderDecoder` on Android P and above, as it's backed by Android P's new [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API. This provides native support for GIFs **and Animated WebPs**.
+    `coil-gif` also includes an `ImageDecoderDecoder`, which is backed by Android P's new [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API. However, **it is not currently recommended to use `ImageDecoderDecoder` due to a bug in the Android framework**. You can track the status of the bug [here](https://issuetracker.google.com/issues/139371066).
 
 And that's it! The `ImageLoader` will automatically detect any GIFs using their file headers and decode them correctly.
