@@ -4,6 +4,7 @@ package coil.util
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -19,7 +20,9 @@ import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
 import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
+import androidx.annotation.DrawableRes
 import androidx.collection.arraySetOf
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
 import coil.base.R
 import coil.decode.DataSource
@@ -184,3 +187,7 @@ internal fun MimeTypeMap.getMimeTypeFromUrl(url: String?): String? {
 
 internal val Uri.firstPathSegment: String?
     get() = pathSegments.firstOrNull()
+
+internal fun Resources.getDrawableCompat(@DrawableRes resId: Int, theme: Resources.Theme?): Drawable {
+    return checkNotNull(ResourcesCompat.getDrawable(this, resId, theme))
+}
