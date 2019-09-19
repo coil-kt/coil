@@ -35,6 +35,21 @@ class ResourceUriMapperTest {
     }
 
     @Test
+    fun externalResourceNameUri() {
+        // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/regulatory_info.png
+        val packageName = "com.android.settings"
+        val input = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/drawable/regulatory_info")
+
+        assertTrue(mapper.handles(input))
+
+        val output = mapper.map(input)
+
+        assertEquals(ContentResolver.SCHEME_ANDROID_RESOURCE, output.scheme)
+        assertEquals(packageName, output.authority)
+        assertTrue(output.pathSegments[0].toInt() > 0)
+    }
+
+    @Test
     fun resourceIntUri() {
         val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
 
