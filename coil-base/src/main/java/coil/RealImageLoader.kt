@@ -25,12 +25,13 @@ import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
 import coil.fetch.FileFetcher
 import coil.fetch.HttpUrlFetcher
-import coil.fetch.ResourceFetcher
+import coil.fetch.ResourceUriFetcher
 import coil.fetch.SourceResult
 import coil.map.FileUriMapper
 import coil.map.HttpUriMapper
 import coil.map.Mapper
 import coil.map.MeasuredMapper
+import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.map.StringMapper
 import coil.memory.BitmapReferenceCounter
@@ -104,12 +105,13 @@ internal class RealImageLoader(
         add(HttpUriMapper())
         add(FileUriMapper())
         add(ResourceUriMapper(context))
+        add(ResourceIntMapper(context))
 
         add(HttpUrlFetcher(callFactory))
         add(FileFetcher())
         add(AssetUriFetcher(context))
         add(ContentUriFetcher(context))
-        add(ResourceFetcher(context, drawableDecoder))
+        add(ResourceUriFetcher(context, drawableDecoder))
         add(DrawableFetcher(drawableDecoder))
         add(BitmapFetcher(context))
 
