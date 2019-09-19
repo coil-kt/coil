@@ -8,7 +8,8 @@ import coil.base.test.R
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ResourceUriMapperTest {
 
@@ -22,25 +23,21 @@ class ResourceUriMapperTest {
     }
 
     @Test
-    fun resourceIntUri() {
-        val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
-        val resId = mapper.map(uri)
-
-        assertEquals(R.drawable.normal, resId)
-    }
-
-    @Test
     fun resourceNameUri() {
         val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal")
-        val resId = mapper.map(uri)
+        val expected = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
 
-        assertEquals(R.drawable.normal, resId)
+        assertTrue(mapper.handles(uri))
+
+        val actual = mapper.map(uri)
+
+        assertEquals(expected, actual)
     }
 
     @Test
-    fun invalidResourceUri() {
-        val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/invalid_image")
+    fun resourceIntUri() {
+        val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
 
-        assertFailsWith<IllegalStateException> { mapper.map(uri) }
+        assertFalse(mapper.handles(uri))
     }
 }
