@@ -11,6 +11,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import coil.size.PixelSize
@@ -29,6 +30,8 @@ inline fun <reified R : Any> Array<*>.findInstance(): R? = find { it is R } as R
 
 inline val AndroidViewModel.context: Context
     get() = getApplication()
+
+inline fun <T> LiveData<T>.requireValue(): T = value!!
 
 fun <V : View> Activity.bindView(@IdRes id: Int) = unsafeLazy { findViewById<V>(id) }
 

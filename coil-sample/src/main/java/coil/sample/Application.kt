@@ -5,9 +5,12 @@ package coil.sample
 import androidx.multidex.MultiDexApplication
 import coil.Coil
 import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.SvgDecoder
 import coil.util.CoilLogger
-import coil.util.CoilUtils
+import okhttp3.Cache
 import okhttp3.OkHttpClient
+import java.io.File
 
 class Application : MultiDexApplication() {
 
@@ -20,12 +23,20 @@ class Application : MultiDexApplication() {
     private fun buildDefaultImageLoader(): ImageLoader {
         return ImageLoader(applicationContext) {
             availableMemoryPercentage(0.5) // Use 50% of the application's available memory.
-            bitmapPoolPercentage(0.5) // Use 50% of the memory allocated to this ImageLoader for the bitmap pool.
             crossfade(true) // Show a short crossfade when loading images from network or disk into an ImageView.
+            componentRegistry {
+                add(GifDecoder())
+                add(SvgDecoder())
+            }
             okHttpClient {
+                // Create a cache with "unlimited" size. Don't do this in production.
+                // To create the an optimized Coil disk cache, use CoilUtils.createDefaultCache(context).
+                val cacheDirectory = File(filesDir, "image_cache").apply { mkdirs() }
+                val cache = Cache(cacheDirectory, Long.MAX_VALUE)
+
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
-                    .cache(CoilUtils.createDefaultCache(applicationContext))
+                    .cache(cache)
                     .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
                     .build()
             }
