@@ -6,12 +6,15 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting.PACKAGE_PRIVATE
 import coil.Coil
 
 /**
  * A [ContentProvider] whose [Context] is used to initialize the [Coil] singleton.
  */
-internal class CoilContentProvider : ContentProvider() {
+@VisibleForTesting(otherwise = PACKAGE_PRIVATE)
+class CoilContentProvider : ContentProvider() {
 
     companion object {
         @SuppressLint("StaticFieldLeak")
