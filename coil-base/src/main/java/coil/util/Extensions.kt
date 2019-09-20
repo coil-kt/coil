@@ -181,8 +181,19 @@ internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
     return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
 }
 
+/** Modified from [MimeTypeMap.getFileExtensionFromUrl] to be more permissive with special characters. */
 internal fun MimeTypeMap.getMimeTypeFromUrl(url: String?): String? {
-    return getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(url))
+    if (url.isNullOrBlank()) {
+        return null
+    }
+
+    val extension = url
+        .substringBeforeLast('#') // Strip the fragment.
+        .substringBeforeLast('?') // Strip the query.
+        .substringAfterLast('/') // Get the last path segment.
+        .substringAfterLast('.', missingDelimiterValue =  "") // Get the file extension.
+
+    return getMimeTypeFromExtension(extension)
 }
 
 internal val Uri.firstPathSegment: String?
