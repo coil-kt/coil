@@ -36,7 +36,7 @@ class Application : MultiDexApplication() {
                 add(SvgDecoder())
             }
             okHttpClient {
-                // Create a cache with "unlimited" size. Don't do this in production.
+                // Create a disk cache with "unlimited" size. Don't do this in production.
                 // To create the an optimized Coil disk cache, use CoilUtils.createDefaultCache(context).
                 val cacheDirectory = File(filesDir, "image_cache").apply { mkdirs() }
                 val cache = Cache(cacheDirectory, Long.MAX_VALUE)
