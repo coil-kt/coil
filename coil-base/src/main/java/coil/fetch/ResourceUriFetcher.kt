@@ -13,6 +13,7 @@ import coil.size.Size
 import coil.util.getDrawableCompat
 import coil.util.getMimeTypeFromUrl
 import coil.util.getXmlDrawableCompat
+import coil.util.nightMode
 import okio.buffer
 import okio.source
 
@@ -27,7 +28,7 @@ internal class ResourceUriFetcher(
 
     override fun handles(data: Uri) = data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE
 
-    override fun key(data: Uri) = data.toString()
+    override fun key(data: Uri) = "$data-${context.resources.configuration.nightMode}"
 
     override suspend fun fetch(
         pool: BitmapPool,

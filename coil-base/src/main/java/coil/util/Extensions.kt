@@ -4,6 +4,7 @@ package coil.util
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -191,3 +192,6 @@ internal val Uri.firstPathSegment: String?
 internal fun Resources.getDrawableCompat(@DrawableRes resId: Int, theme: Resources.Theme?): Drawable {
     return checkNotNull(ResourcesCompat.getDrawable(this, resId, theme))
 }
+
+internal val Configuration.nightMode: Int
+    get() = uiMode and Configuration.UI_MODE_NIGHT_MASK
