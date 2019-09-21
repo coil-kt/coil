@@ -191,7 +191,7 @@ internal fun MimeTypeMap.getMimeTypeFromUrl(url: String?): String? {
         .substringBeforeLast('#') // Strip the fragment.
         .substringBeforeLast('?') // Strip the query.
         .substringAfterLast('/') // Get the last path segment.
-        .substringAfterLast('.', missingDelimiterValue =  "") // Get the file extension.
+        .substringAfterLast('.', missingDelimiterValue = "") // Get the file extension.
 
     return getMimeTypeFromExtension(extension)
 }
