@@ -2,10 +2,13 @@
 
 package coil.sample
 
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.P
 import androidx.multidex.MultiDexApplication
 import coil.Coil
 import coil.ImageLoader
 import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.util.CoilLogger
 import okhttp3.Cache
@@ -25,7 +28,11 @@ class Application : MultiDexApplication() {
             availableMemoryPercentage(0.5) // Use 50% of the application's available memory.
             crossfade(true) // Show a short crossfade when loading images from network or disk into an ImageView.
             componentRegistry {
-                add(GifDecoder())
+                if (SDK_INT >= P) {
+                    add(ImageDecoderDecoder())
+                } else {
+                    add(GifDecoder())
+                }
                 add(SvgDecoder())
             }
             okHttpClient {
