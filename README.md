@@ -60,7 +60,7 @@ Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
 
 - AndroidX
 - Min SDK 14+
-- Compile SDK: 28+
+- Compile SDK: 29+
 - Java 8+
 
 ## R8 / Proguard
