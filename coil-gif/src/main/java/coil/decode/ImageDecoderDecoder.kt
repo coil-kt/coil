@@ -2,9 +2,9 @@
 
 package coil.decode
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -19,7 +19,7 @@ import okio.sink
  * A [Decoder] that uses [ImageDecoder] to decode GIFs and animated WebPs on Android P and above.
  */
 @RequiresApi(P)
-class ImageDecoderDecoder(private val context: Context) : Decoder {
+class ImageDecoderDecoder : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) || DecodeUtils.isAnimatedWebP(source)
@@ -31,7 +31,7 @@ class ImageDecoderDecoder(private val context: Context) : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
-        val tempFile = createTempFile(directory = context.cacheDir)
+        val tempFile = createTempFile()
 
         try {
             var isSampled = false
@@ -63,6 +63,11 @@ class ImageDecoderDecoder(private val context: Context) : Decoder {
                 } else {
                     ImageDecoder.MEMORY_POLICY_DEFAULT
                 }
+            }
+
+            // Loop infinitely by default.
+            if (drawable is AnimatedImageDrawable) {
+                drawable.repeatCount = AnimatedImageDrawable.REPEAT_INFINITE
             }
 
             return DecodeResult(
