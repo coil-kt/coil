@@ -34,6 +34,7 @@ import coil.transform.Transformation
 import coil.util.Utils
 import coil.util.self
 import kotlinx.coroutines.CoroutineDispatcher
+import okhttp3.Headers
 import okio.BufferedSource
 
 /** Base class for [LoadRequestBuilder] and [GetRequestBuilder]. */
@@ -51,6 +52,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var transformations: List<Transformation>
     protected var bitmapConfig: Bitmap.Config
     protected var colorSpace: ColorSpace? = null
+    protected var headers: Headers.Builder?
 
     protected var networkCachePolicy: CachePolicy
     protected var diskCachePolicy: CachePolicy
@@ -73,6 +75,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         if (SDK_INT >= O) {
             colorSpace = null
         }
+        headers = null
 
         networkCachePolicy = CachePolicy.ENABLED
         diskCachePolicy = CachePolicy.ENABLED
@@ -96,6 +99,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         if (SDK_INT >= O) {
             colorSpace = request.colorSpace
         }
+        headers = null
 
         networkCachePolicy = request.networkCachePolicy
         diskCachePolicy = request.diskCachePolicy
@@ -270,6 +274,38 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     fun memoryCachePolicy(policy: CachePolicy): T = self {
         this.memoryCachePolicy = policy
     }
+
+    /**
+     * Set the [Headers] for any network operations performed by this request.
+     */
+    fun headers(headers: Headers): T = self {
+        this.headers = headers.newBuilder()
+    }
+
+    /**
+     * Add a header for any network operations performed by this request.
+     *
+     * @see Headers.Builder.add
+     */
+    fun addHeader(name: String, value: String): T = self {
+        this.headers = (this.headers ?: Headers.Builder()).add(name, value)
+    }
+
+    /**
+     * Set a header for any network operations performed by this request.
+     *
+     * @see Headers.Builder.set
+     */
+    fun setHeader(name: String, value: String): T = self {
+        this.headers = (this.headers ?: Headers.Builder()).add(name, value)
+    }
+
+    /**
+     * Remove all network headers with the key [name].
+     */
+    fun removeHeader(name: String): T = self {
+        this.headers = this.headers?.removeAll(name)
+    }
 }
 
 /** Builder for a [LoadRequest]. */
@@ -432,6 +468,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             transformations,
             bitmapConfig,
             colorSpace,
+            headers?.build(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,
@@ -472,6 +509,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             transformations,
             bitmapConfig,
             colorSpace,
+            headers?.build(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,

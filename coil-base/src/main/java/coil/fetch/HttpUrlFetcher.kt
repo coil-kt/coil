@@ -33,7 +33,7 @@ internal class HttpUrlFetcher(
         size: Size,
         options: Options
     ): FetchResult {
-        val request = Request.Builder().url(data)
+        val request = Request.Builder().url(data).headers(options.headers)
 
         val networkRead = options.networkCachePolicy.readEnabled
         val diskRead = options.diskCachePolicy.readEnabled
