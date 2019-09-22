@@ -13,7 +13,6 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.Rect
-import android.graphics.drawable.Animatable
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
@@ -21,6 +20,7 @@ import android.os.Build.VERSION_CODES.O
 import android.os.SystemClock
 import androidx.annotation.Px
 import androidx.core.graphics.withScale
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.bitmappool.BitmapPool
 import coil.decode.ImageDecoderDecoder
 import coil.size.Scale
@@ -38,13 +38,15 @@ class MovieDrawable(
     private val config: Bitmap.Config,
     private val scale: Scale,
     private val pool: BitmapPool
-) : Drawable(), Animatable {
+) : Drawable(), Animatable2Compat {
 
     init {
         require(SDK_INT < O || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+
+    private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
     private var currentBounds: Rect? = null
     private var softwareCanvas: Canvas? = null
@@ -162,11 +164,27 @@ class MovieDrawable(
 
         isRunning = true
         startTimeMillis = SystemClock.uptimeMillis()
+        callbacks.forEach { it.onAnimationStart(this) }
 
         invalidateSelf()
     }
 
     override fun stop() {
+        if (!isRunning) {
+            return
+        }
+
         isRunning = false
+        callbacks.forEach { it.onAnimationEnd(this) }
     }
+
+    override fun registerAnimationCallback(callback: Animatable2Compat.AnimationCallback) {
+        callbacks.add(callback)
+    }
+
+    override fun unregisterAnimationCallback(callback: Animatable2Compat.AnimationCallback): Boolean {
+        return callbacks.remove(callback)
+    }
+
+    override fun clearAnimationCallbacks() = callbacks.clear()
 }

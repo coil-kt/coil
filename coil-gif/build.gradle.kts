@@ -41,4 +41,5 @@ dependencies {
     api(project(":coil-base"))
 
     implementation(Library.ANDROIDX_CORE)
+    implementation(Library.ANDROIDX_VECTOR_DRAWABLE_ANIMATED)
 }
