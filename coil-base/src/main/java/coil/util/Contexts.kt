@@ -30,6 +30,20 @@ internal val HAS_APPCOMPAT_RESOURCES = try {
     false
 }
 
+internal val HAS_VECTOR_DRAWABLE_COMPAT = try {
+    Class.forName(VectorDrawableCompat::class.java.name)
+    true
+} catch (_: Throwable) {
+    false
+}
+
+internal val HAS_ANIMATED_VECTOR_DRAWABLE_COMPAT = try {
+    Class.forName(AnimatedVectorDrawableCompat::class.java.name)
+    true
+} catch (_: Throwable) {
+    false
+}
+
 internal fun Context.getDrawableCompat(@DrawableRes resId: Int): Drawable {
     val drawable = if (HAS_APPCOMPAT_RESOURCES) {
         AppCompatResources.getDrawable(this, resId)
@@ -60,12 +74,16 @@ internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes resId: I
     if (SDK_INT < N) {
         when (parser.name) {
             "vector" -> {
-                val attrs = Xml.asAttributeSet(parser)
-                return VectorDrawableCompat.createFromXmlInner(resources, parser, attrs, theme)
+                if (HAS_VECTOR_DRAWABLE_COMPAT) {
+                    val attrs = Xml.asAttributeSet(parser)
+                    return VectorDrawableCompat.createFromXmlInner(resources, parser, attrs, theme)
+                }
             }
             "animated-vector" -> {
-                val attrs = Xml.asAttributeSet(parser)
-                return AnimatedVectorDrawableCompat.createFromXmlInner(this, resources, parser, attrs, theme)
+                if (HAS_ANIMATED_VECTOR_DRAWABLE_COMPAT) {
+                    val attrs = Xml.asAttributeSet(parser)
+                    return AnimatedVectorDrawableCompat.createFromXmlInner(this, resources, parser, attrs, theme)
+                }
             }
         }
     }
