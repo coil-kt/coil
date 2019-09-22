@@ -32,6 +32,7 @@ import coil.target.ImageViewTarget
 import coil.target.Target
 import coil.transform.Transformation
 import coil.util.Utils
+import coil.util.orEmpty
 import coil.util.self
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
@@ -468,7 +469,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             transformations,
             bitmapConfig,
             colorSpace,
-            headers?.build(),
+            headers?.build().orEmpty(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,
@@ -509,7 +510,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             transformations,
             bitmapConfig,
             colorSpace,
-            headers?.build(),
+            headers?.build().orEmpty(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,

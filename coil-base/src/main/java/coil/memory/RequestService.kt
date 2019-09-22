@@ -22,7 +22,6 @@ import coil.size.SizeResolver
 import coil.size.ViewSizeResolver
 import coil.target.ViewTarget
 import coil.transform.Transformation
-import coil.util.Utils
 import coil.util.getLifecycle
 import coil.util.scale
 import kotlinx.coroutines.CoroutineDispatcher
@@ -108,7 +107,7 @@ internal class RequestService {
             colorSpace = request.colorSpace,
             scale = scale,
             allowRgb565 = allowRgb565,
-            headers = request.headers ?: Utils.EMPTY_HEADERS,
+            headers = request.headers,
             diskCachePolicy = request.diskCachePolicy,
             networkCachePolicy = networkCachePolicy
         )

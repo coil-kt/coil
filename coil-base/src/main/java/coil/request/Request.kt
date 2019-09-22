@@ -43,7 +43,7 @@ sealed class Request {
     abstract val transformations: List<Transformation>
     abstract val bitmapConfig: Bitmap.Config
     abstract val colorSpace: ColorSpace?
-    abstract val headers: Headers?
+    abstract val headers: Headers
 
     abstract val networkCachePolicy: CachePolicy
     abstract val diskCachePolicy: CachePolicy
@@ -121,7 +121,7 @@ class LoadRequest internal constructor(
     override val transformations: List<Transformation>,
     override val bitmapConfig: Bitmap.Config,
     override val colorSpace: ColorSpace?,
-    override val headers: Headers?,
+    override val headers: Headers,
     override val networkCachePolicy: CachePolicy,
     override val diskCachePolicy: CachePolicy,
     override val memoryCachePolicy: CachePolicy,
@@ -197,7 +197,7 @@ class GetRequest internal constructor(
     override val transformations: List<Transformation>,
     override val bitmapConfig: Bitmap.Config,
     override val colorSpace: ColorSpace?,
-    override val headers: Headers?,
+    override val headers: Headers,
     override val networkCachePolicy: CachePolicy,
     override val diskCachePolicy: CachePolicy,
     override val memoryCachePolicy: CachePolicy,
