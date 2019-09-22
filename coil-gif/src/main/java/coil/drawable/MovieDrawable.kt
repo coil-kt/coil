@@ -101,11 +101,6 @@ class MovieDrawable(
     }
 
     override fun getOpacity(): Int {
-        // This method is no longer used in graphics optimizations on Q and above.
-        if (SDK_INT >= Q) {
-            return PixelFormat.TRANSLUCENT
-        }
-
         return if (paint.alpha == 255 && movie.isOpaque) {
             PixelFormat.OPAQUE
         } else {

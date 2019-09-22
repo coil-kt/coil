@@ -88,11 +88,6 @@ class CrossfadeDrawable(
 
     @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
-        // This method is no longer used in graphics optimizations on Q and above.
-        if (SDK_INT >= Q) {
-            return PixelFormat.TRANSLUCENT
-        }
-
         val start = start
         return if (isRunning && start != null) {
             resolveOpacity(start.opacity, end.opacity)
