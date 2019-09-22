@@ -17,6 +17,7 @@ import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
+import android.os.Build.VERSION_CODES.Q
 import android.os.SystemClock
 import androidx.annotation.Px
 import androidx.core.graphics.withScale
@@ -100,6 +101,11 @@ class MovieDrawable(
     }
 
     override fun getOpacity(): Int {
+        // This method is no longer used in graphics optimizations on Q and above.
+        if (SDK_INT >= Q) {
+            return PixelFormat.TRANSLUCENT
+        }
+
         return if (paint.alpha == 255 && movie.isOpaque) {
             PixelFormat.OPAQUE
         } else {

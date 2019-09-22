@@ -2,9 +2,12 @@ package coil.drawable
 
 import android.graphics.Canvas
 import android.graphics.ColorFilter
+import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.Q
 import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import coil.size.Scale
@@ -83,7 +86,13 @@ class CrossfadeDrawable(
         maxAlpha = alpha
     }
 
+    @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
+        // This method is no longer used in graphics optimizations on Q and above.
+        if (SDK_INT >= Q) {
+            return PixelFormat.TRANSLUCENT
+        }
+
         val start = start
         return if (isRunning && start != null) {
             resolveOpacity(start.opacity, end.opacity)

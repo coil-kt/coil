@@ -44,6 +44,7 @@ internal suspend inline fun Call.await(): Response {
     }
 }
 
+@Suppress("DEPRECATION")
 internal fun Bitmap.Config?.getBytesPerPixel(): Int {
     return when {
         this == Bitmap.Config.ALPHA_8 -> 1
