@@ -4,6 +4,7 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -11,7 +12,8 @@ import coil.bitmappool.BitmapPool
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
-import java.nio.ByteBuffer
+import okio.buffer
+import okio.sink
 
 /**
  * A [Decoder] that uses [ImageDecoder] to decode GIFs and animated WebPs on Android P and above.
@@ -29,34 +31,51 @@ class ImageDecoderDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
-        var isSampled = false
-        val decoderSource = source.use {
-            ImageDecoder.createSource(ByteBuffer.wrap(it.readByteArray()))
+        val tempFile = createTempFile()
+
+        try {
+            var isSampled = false
+
+            // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
+            source.use { tempFile.sink().buffer().writeAll(it) }
+            val decoderSource = ImageDecoder.createSource(tempFile)
+
+            val drawable = decoderSource.decodeDrawable { info, _ ->
+                // It's safe to delete the temp file here.
+                tempFile.delete()
+
+                // Set the target size if the source image is larger than the target.
+                if (size is PixelSize && info.size.run { width > size.width || height > size.height }) {
+                    isSampled = true
+                    setTargetSize(size.width, size.height)
+                }
+
+                if (options.config != Bitmap.Config.HARDWARE) {
+                    allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                }
+
+                if (options.colorSpace != null) {
+                    setTargetColorSpace(options.colorSpace)
+                }
+
+                memorySizePolicy = if (options.allowRgb565) {
+                    ImageDecoder.MEMORY_POLICY_LOW_RAM
+                } else {
+                    ImageDecoder.MEMORY_POLICY_DEFAULT
+                }
+            }
+
+            // Loop infinitely by default.
+            if (drawable is AnimatedImageDrawable) {
+                drawable.repeatCount = AnimatedImageDrawable.REPEAT_INFINITE
+            }
+
+            return DecodeResult(
+                drawable = drawable,
+                isSampled = isSampled
+            )
+        } finally {
+            tempFile.delete()
         }
-        val drawable = decoderSource.decodeDrawable { info, _ ->
-            // Set the target size if the source image is larger than the target.
-            if (size is PixelSize && info.size.run { width > size.width || height > size.height }) {
-                isSampled = true
-                setTargetSize(size.width, size.height)
-            }
-
-            if (options.config != Bitmap.Config.HARDWARE) {
-                allocator = ImageDecoder.ALLOCATOR_SOFTWARE
-            }
-
-            if (options.colorSpace != null) {
-                setTargetColorSpace(options.colorSpace)
-            }
-
-            memorySizePolicy = if (options.allowRgb565) {
-                ImageDecoder.MEMORY_POLICY_LOW_RAM
-            } else {
-                ImageDecoder.MEMORY_POLICY_DEFAULT
-            }
-        }
-        return DecodeResult(
-            drawable = drawable,
-            isSampled = isSampled
-        )
     }
 }
