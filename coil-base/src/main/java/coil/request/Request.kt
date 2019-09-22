@@ -52,6 +52,8 @@ sealed class Request {
     abstract val allowHardware: Boolean
     abstract val allowRgb565: Boolean
 
+    abstract val parameters: Map<String, Any>
+
     abstract val placeholder: Drawable?
     abstract val error: Drawable?
 
@@ -127,6 +129,7 @@ class LoadRequest internal constructor(
     override val memoryCachePolicy: CachePolicy,
     override val allowHardware: Boolean,
     override val allowRgb565: Boolean,
+    override val parameters: Map<String, Any>,
     @DrawableRes internal val placeholderResId: Int,
     @DrawableRes internal val errorResId: Int,
     internal val placeholderDrawable: Drawable?,
@@ -202,7 +205,8 @@ class GetRequest internal constructor(
     override val diskCachePolicy: CachePolicy,
     override val memoryCachePolicy: CachePolicy,
     override val allowHardware: Boolean,
-    override val allowRgb565: Boolean
+    override val allowRgb565: Boolean,
+    override val parameters: Map<String, Any>
 ) : Request() {
 
     companion object {

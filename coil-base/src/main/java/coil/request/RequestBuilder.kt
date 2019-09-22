@@ -33,6 +33,8 @@ import coil.target.Target
 import coil.transform.Transformation
 import coil.util.Utils
 import coil.util.orEmpty
+import coil.util.minus
+import coil.util.plus
 import coil.util.self
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
@@ -62,6 +64,8 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var allowHardware: Boolean
     protected var allowRgb565: Boolean
 
+    protected var parameters: Map<String, Any>
+
     constructor(defaults: DefaultRequestOptions) {
         data = null
 
@@ -84,6 +88,8 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
 
         allowHardware = defaults.allowHardware
         allowRgb565 = defaults.allowRgb565
+
+        parameters = emptyMap()
     }
 
     constructor(request: Request) {
@@ -108,6 +114,8 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
 
         allowHardware = request.allowHardware
         allowRgb565 = request.allowRgb565
+
+        parameters = request.parameters
     }
 
     /**
@@ -145,7 +153,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * Set the list of [Transformation]s to be applied to this request.
      */
     fun transformations(transformations: List<Transformation>): T = self {
-        this.transformations = transformations
+        this.transformations = transformations.toList()
     }
 
     /**
@@ -254,7 +262,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Enable/disable reading/writing from/to the network.
+     * Enable/disable reading from the network.
      *
      * NOTE: Disabling writes has no effect.
      */
@@ -270,7 +278,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Enable/disable reading/writing from/to the memory.
+     * Enable/disable reading/writing from/to the memory cache.
      */
     fun memoryCachePolicy(policy: CachePolicy): T = self {
         this.memoryCachePolicy = policy
@@ -306,6 +314,33 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun removeHeader(name: String): T = self {
         this.headers = this.headers?.removeAll(name)
+    }
+
+    /**
+     * Set the parameters for this request.
+     *
+     * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
+     */
+    fun parameters(parameters: Map<String, Any>) {
+        this.parameters = parameters.toMap()
+    }
+
+    /**
+     * Add a parameter to this request.
+     *
+     * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
+     */
+    fun addParameter(key: String, value: Any): T = self {
+        this.parameters = this.parameters.plus(key, value)
+    }
+
+    /**
+     * Remove a parameter from this request.
+     *
+     * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
+     */
+    fun removeParameter(key: String): T = self {
+        this.parameters = this.parameters.minus(key)
     }
 }
 
@@ -475,6 +510,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             memoryCachePolicy,
             allowHardware,
             allowRgb565,
+            parameters,
             placeholderResId,
             errorResId,
             placeholderDrawable,
@@ -515,7 +551,8 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             diskCachePolicy,
             memoryCachePolicy,
             allowHardware,
-            allowRgb565
+            allowRgb565,
+            parameters
         )
     }
 }

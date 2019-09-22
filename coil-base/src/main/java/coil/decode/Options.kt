@@ -19,6 +19,7 @@ import okhttp3.Headers
  * @param headers The headers for any network operations.
  * @param networkCachePolicy Used to determine if this request is allowed to read from the network.
  * @param diskCachePolicy Used to determine if this request is allowed to read/write from/to disk.
+ * @param parameters A map of custom parameters. These are used to pass custom data to [Fetcher]s and [Decoder]s.
  */
 data class Options(
     val config: Bitmap.Config,
@@ -27,5 +28,6 @@ data class Options(
     val allowRgb565: Boolean,
     val headers: Headers,
     val networkCachePolicy: CachePolicy,
-    val diskCachePolicy: CachePolicy
+    val diskCachePolicy: CachePolicy,
+    val parameters: Map<String, Any>
 )
