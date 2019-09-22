@@ -1,5 +1,5 @@
 @file:JvmName("ImageViews")
-@file:Suppress("unused")
+@file:Suppress("unused", "NOTHING_TO_INLINE")
 
 package coil.api
 
@@ -15,7 +15,7 @@ import coil.request.RequestDisposable
 import okhttp3.HttpUrl
 import java.io.File
 
-// This file defines a collection of type-safe load and get extension functions for ImageView.
+// This file defines a collection of type-safe load and get extension functions for ImageViews.
 //
 // Example:
 // ```
@@ -134,6 +134,20 @@ inline fun ImageView.loadAny(
         target(this@loadAny)
         builder()
     }
+}
+
+// endregion
+// region Other
+
+/**
+ * Cancel any in progress requests and clear any resources associated with this [ImageView].
+ *
+ * @param imageLoader The [ImageLoader] to return the resources to.
+ */
+inline fun ImageView.clear(
+    imageLoader: ImageLoader = Coil.loader()
+) {
+    loadAny(null, imageLoader)
 }
 
 // endregion
