@@ -126,7 +126,7 @@ class RealBitmapPoolTest {
 
     @Test
     fun `bitmaps with disallowed configs are ignored and recycled`() {
-        pool = RealBitmapPool(MAX_SIZE, setOf(Bitmap.Config.ARGB_4444), strategy)
+        pool = RealBitmapPool(MAX_SIZE, setOf(Bitmap.Config.ARGB_8888), strategy)
 
         val bitmap = createBitmap(config = Bitmap.Config.RGB_565)
         pool.put(bitmap)

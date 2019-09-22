@@ -212,7 +212,7 @@ class RealImageLoaderIntegrationTest {
             mkdirs()
         }
 
-        assertTrue(cacheFolder.listFiles().isEmpty())
+        assertTrue(cacheFolder.listFiles().orEmpty().isEmpty())
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
@@ -227,7 +227,7 @@ class RealImageLoaderIntegrationTest {
             }
         }
 
-        val cacheFile = cacheFolder.listFiles().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
+        val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
         assertNotNull(cacheFile, "Did not find the image file in the disk cache.")
     }
 
@@ -260,7 +260,7 @@ class RealImageLoaderIntegrationTest {
             mkdirs()
         }
 
-        assertTrue(cacheFolder.listFiles().isEmpty())
+        assertTrue(cacheFolder.listFiles().orEmpty().isEmpty())
 
         runBlocking {
             imageLoader.get(url) {
@@ -268,7 +268,7 @@ class RealImageLoaderIntegrationTest {
             }
         }
 
-        val cacheFile = cacheFolder.listFiles().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
+        val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
         assertNotNull(cacheFile, "Did not find the image file in the disk cache.")
         assertEquals(1, numDecodes)
     }

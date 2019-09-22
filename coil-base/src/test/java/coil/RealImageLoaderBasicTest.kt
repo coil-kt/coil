@@ -74,7 +74,7 @@ class RealImageLoaderBasicTest {
         assertTrue(isBitmapConfigValid(Bitmap.Config.HARDWARE))
         assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888))
         assertFalse(isBitmapConfigValid(Bitmap.Config.RGB_565))
-        assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_4444))
+        assertFalse(isBitmapConfigValid(Bitmap.Config.ALPHA_8))
     }
 
     @Test

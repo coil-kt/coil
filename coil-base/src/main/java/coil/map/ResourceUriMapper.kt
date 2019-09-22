@@ -18,7 +18,7 @@ internal class ResourceUriMapper(private val context: Context) : Mapper<Uri, Uri
     }
 
     override fun map(data: Uri): Uri {
-        val packageName = data.authority
+        val packageName = data.authority.orEmpty()
         val resources = context.packageManager.getResourcesForApplication(packageName)
         val (type, name) = data.pathSegments
         val id = resources.getIdentifier(name, type, packageName)

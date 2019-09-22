@@ -83,6 +83,7 @@ class CrossfadeDrawable(
         maxAlpha = alpha
     }
 
+    @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
         val start = start
         return if (isRunning && start != null) {

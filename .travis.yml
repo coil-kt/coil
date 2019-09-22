@@ -3,8 +3,8 @@ dist: trusty
 jdk: oraclejdk8
 android:
   components:
-    - android-28
-    - build-tools-28.0.3
+    - android-29
+    - build-tools-29.0.2
 branches:
   only:
     - master
