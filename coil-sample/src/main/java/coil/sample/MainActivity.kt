@@ -2,6 +2,8 @@ package coil.sample
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -24,15 +26,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val listAdapter = ImageListAdapter(this, viewModel.screenLiveData::setValue)
+        val listAdapter = ImageListAdapter(this, viewModel::setScreen)
         list.apply {
             setHasFixedSize(true)
             layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, StaggeredGridLayoutManager.VERTICAL)
             adapter = listAdapter
         }
 
-        viewModel.screenLiveData.observe(this, Observer(::setScreen))
-        viewModel.imagesLiveData.observe(this, Observer(listAdapter::submitList))
+        viewModel.screens().observe(this, Observer(::setScreen))
+        viewModel.images().observe(this, Observer(listAdapter::submitList))
+        viewModel.assetTypes().observe(this, Observer { invalidateOptionsMenu() })
     }
 
     private fun setScreen(screen: Screen) {
@@ -49,6 +52,26 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val title = viewModel.assetTypes().requireValue().name
+        val item = menu.add(Menu.NONE, R.id.action_toggle_asset_type, Menu.NONE, title)
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_toggle_asset_type -> {
+                val values = AssetType.values()
+                val currentAssetType = viewModel.assetTypes().requireValue()
+                val newAssetType = values[(values.indexOf(currentAssetType) + 1) % values.count()]
+                viewModel.setAssetType(newAssetType)
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
     }
 
     override fun onBackPressed() {
