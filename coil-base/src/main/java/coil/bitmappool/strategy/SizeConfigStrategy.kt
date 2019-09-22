@@ -22,6 +22,7 @@ import java.util.TreeMap
 @RequiresApi(KITKAT)
 internal class SizeConfigStrategy : BitmapPoolStrategy {
 
+    @Suppress("DEPRECATION")
     companion object {
         private const val MAX_SIZE_MULTIPLE = 8
 
@@ -30,10 +31,10 @@ internal class SizeConfigStrategy : BitmapPoolStrategy {
         } else {
             arrayOf(Bitmap.Config.ARGB_8888)
         }
-        private val RGBA_F16_IN_CONFIGS: Array<Bitmap.Config> = ARGB_8888_IN_CONFIGS
-        private val RGB_565_IN_CONFIGS: Array<Bitmap.Config> = arrayOf(Bitmap.Config.RGB_565)
-        private val ARGB_4444_IN_CONFIGS: Array<Bitmap.Config> = arrayOf(Bitmap.Config.ARGB_4444)
-        private val ALPHA_8_IN_CONFIGS: Array<Bitmap.Config> = arrayOf(Bitmap.Config.ALPHA_8)
+        private val RGBA_F16_IN_CONFIGS = ARGB_8888_IN_CONFIGS
+        private val RGB_565_IN_CONFIGS = arrayOf(Bitmap.Config.RGB_565)
+        private val ARGB_4444_IN_CONFIGS = arrayOf(Bitmap.Config.ARGB_4444)
+        private val ALPHA_8_IN_CONFIGS = arrayOf(Bitmap.Config.ALPHA_8)
 
         @Suppress("NOTHING_TO_INLINE")
         private inline fun getBitmapString(size: Int, config: Bitmap.Config) = "[$size]($config)"
@@ -100,6 +101,7 @@ internal class SizeConfigStrategy : BitmapPoolStrategy {
         return sortedSizes.getOrPut(config) { TreeMap() }
     }
 
+    @Suppress("DEPRECATION")
     private fun getInConfigs(requested: Bitmap.Config): Array<Bitmap.Config> {
         return when {
             SDK_INT >= O && Bitmap.Config.RGBA_F16 == requested -> RGBA_F16_IN_CONFIGS

@@ -76,7 +76,7 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
         if (decodesSinceLastFileDescriptorCheck++ >= FILE_DESCRIPTOR_CHECK_INTERVAL) {
             decodesSinceLastFileDescriptorCheck = 0
 
-            val numUsedFileDescriptors = fileDescriptorList.list().count()
+            val numUsedFileDescriptors = fileDescriptorList.list().orEmpty().count()
             hasAvailableFileDescriptors = numUsedFileDescriptors < FILE_DESCRIPTOR_LIMIT
 
             if (hasAvailableFileDescriptors) {
