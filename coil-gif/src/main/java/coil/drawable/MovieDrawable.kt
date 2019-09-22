@@ -17,7 +17,6 @@ import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
-import android.os.Build.VERSION_CODES.Q
 import android.os.SystemClock
 import androidx.annotation.Px
 import androidx.core.graphics.withScale
