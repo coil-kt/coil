@@ -12,6 +12,7 @@ import coil.request.GetRequestBuilder
 import coil.request.LoadRequest
 import coil.request.LoadRequestBuilder
 import coil.size.Scale
+import okhttp3.Headers
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -35,6 +36,7 @@ fun createOptions(): Options {
         colorSpace = null,
         scale = Scale.FILL,
         allowRgb565 = false,
+        headers = Headers.Builder().build(),
         networkCachePolicy = CachePolicy.ENABLED,
         diskCachePolicy = CachePolicy.ENABLED
     )
