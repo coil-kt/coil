@@ -4,7 +4,7 @@ jdk: oraclejdk9
 android:
   components:
     - android-29
-    - build-tools-29.0.4
+    - build-tools-29.0.2
 branches:
   only:
     - master
