@@ -41,6 +41,8 @@ android {
 
 dependencies {
     implementation(project(":coil-default"))
+    implementation(project(":coil-gif"))
+    implementation(project(":coil-svg"))
 
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
 

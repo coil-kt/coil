@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import coil.sample.ImageListAdapter.ViewHolder
 import kotlin.math.ceil
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class ImageListAdapter(
@@ -34,7 +33,7 @@ class ImageListAdapter(
             val item = getItem(position)
 
             updateLayoutParams {
-                val scale = min(1.0, columnWidth / item.width.toDouble())
+                val scale = columnWidth / item.width.toDouble()
                 height = (scale * item.height).roundToInt()
                 width = columnWidth
             }
