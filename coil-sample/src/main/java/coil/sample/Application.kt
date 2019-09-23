@@ -33,7 +33,7 @@ class Application : MultiDexApplication() {
                 } else {
                     add(GifDecoder())
                 }
-                add(SvgDecoder())
+                add(SvgDecoder(applicationContext))
             }
             okHttpClient {
                 // Create a disk cache with "unlimited" size. Don't do this in production.
