@@ -41,7 +41,7 @@ class Application : MultiDexApplication() {
                 val cacheDirectory = File(filesDir, "image_cache").apply { mkdirs() }
                 val cache = Cache(cacheDirectory, Long.MAX_VALUE)
 
-                // Ignore the Cache-Control header for every request. Instead, cache all responses for a year.
+                // Rewrite the Cache-Control header to cache all responses for a year.
                 val cacheControlInterceptor = ResponseHeaderInterceptor("Cache-Control", "max-age=31536000,public")
 
                 // Lazily create the OkHttpClient that is used for network operations.
