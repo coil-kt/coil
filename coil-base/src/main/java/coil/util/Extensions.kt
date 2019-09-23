@@ -22,6 +22,7 @@ import android.widget.ImageView.ScaleType.FIT_CENTER
 import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
+import androidx.collection.ArrayMap
 import androidx.collection.arraySetOf
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
@@ -59,6 +60,12 @@ internal fun Bitmap.Config?.getBytesPerPixel(): Int {
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
 internal inline fun <T> arraySetOf(builder: MutableSet<T>.() -> Unit): Set<T> = arraySetOf<T>().apply(builder)
+
+internal fun <K, V> Map<out K, V>.toArrayMap(): ArrayMap<K, V> {
+    val map = ArrayMap<K, V>(count())
+    map.putAll(this)
+    return map
+}
 
 internal inline fun ActivityManager.isLowRawDeviceCompat(): Boolean {
     return SDK_INT < KITKAT || isLowRamDevice

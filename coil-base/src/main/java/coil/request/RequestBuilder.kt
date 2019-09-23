@@ -12,6 +12,7 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
 import androidx.annotation.RequiresApi
+import androidx.collection.arrayMapOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
@@ -34,6 +35,7 @@ import coil.transform.Transformation
 import coil.util.Utils
 import coil.util.orEmpty
 import coil.util.self
+import coil.util.toArrayMap
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okio.BufferedSource
@@ -319,7 +321,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * NOTE: Parameters are added to the cache key.
      */
     fun parameters(parameters: Map<String, Any>) {
-        this.parameters = parameters.toMutableMap()
+        this.parameters = parameters.toArrayMap()
     }
 
     /**
@@ -330,7 +332,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * NOTE: Parameters are added to the cache key.
      */
     fun setParameter(key: String, value: Any): T = self {
-        this.parameters = (this.parameters ?: mutableMapOf()).apply { set(key, value) }
+        this.parameters = (this.parameters ?: arrayMapOf()).apply { set(key, value) }
     }
 
     /**
@@ -341,7 +343,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * NOTE: Parameters are added to the cache key.
      */
     fun removeParameter(key: String): T = self {
-        this.parameters = (this.parameters ?: mutableMapOf()).apply { remove(key) }
+        this.parameters = (this.parameters ?: arrayMapOf()).apply { remove(key) }
     }
 }
 
