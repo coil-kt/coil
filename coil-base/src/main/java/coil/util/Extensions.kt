@@ -33,6 +33,7 @@ import coil.size.Scale
 import coil.target.ViewTarget
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
+import okhttp3.Headers
 import okhttp3.Response
 import java.io.Closeable
 
@@ -207,3 +208,7 @@ internal fun Resources.getDrawableCompat(@DrawableRes resId: Int, theme: Resourc
 
 internal val Configuration.nightMode: Int
     get() = uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+private val EMPTY_HEADERS = Headers.Builder().build()
+
+internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
