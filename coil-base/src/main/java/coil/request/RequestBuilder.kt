@@ -33,8 +33,6 @@ import coil.target.Target
 import coil.transform.Transformation
 import coil.util.Utils
 import coil.util.orEmpty
-import coil.util.minus
-import coil.util.plus
 import coil.util.self
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
@@ -56,6 +54,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var bitmapConfig: Bitmap.Config
     protected var colorSpace: ColorSpace? = null
     protected var headers: Headers.Builder?
+    protected var parameters: MutableMap<String, Any>?
 
     protected var networkCachePolicy: CachePolicy
     protected var diskCachePolicy: CachePolicy
@@ -63,8 +62,6 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
 
     protected var allowHardware: Boolean
     protected var allowRgb565: Boolean
-
-    protected var parameters: Map<String, Any>
 
     constructor(defaults: DefaultRequestOptions) {
         data = null
@@ -81,6 +78,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
             colorSpace = null
         }
         headers = null
+        parameters = null
 
         networkCachePolicy = CachePolicy.ENABLED
         diskCachePolicy = CachePolicy.ENABLED
@@ -88,8 +86,6 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
 
         allowHardware = defaults.allowHardware
         allowRgb565 = defaults.allowRgb565
-
-        parameters = emptyMap()
     }
 
     constructor(request: Request) {
@@ -107,6 +103,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
             colorSpace = request.colorSpace
         }
         headers = request.headers.newBuilder()
+        parameters = request.parameters.toMutableMap()
 
         networkCachePolicy = request.networkCachePolicy
         diskCachePolicy = request.diskCachePolicy
@@ -114,8 +111,6 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
 
         allowHardware = request.allowHardware
         allowRgb565 = request.allowRgb565
-
-        parameters = request.parameters
     }
 
     /**
@@ -322,16 +317,16 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
      */
     fun parameters(parameters: Map<String, Any>) {
-        this.parameters = parameters.toMap()
+        this.parameters = parameters.toMutableMap()
     }
 
     /**
-     * Add a parameter to this request.
+     * Set a parameter for this request.
      *
      * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
      */
-    fun addParameter(key: String, value: Any): T = self {
-        this.parameters = this.parameters.plus(key, value)
+    fun setParameter(key: String, value: Any): T = self {
+        this.parameters = (this.parameters ?: mutableMapOf()).apply { set(key, value) }
     }
 
     /**
@@ -340,7 +335,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
      */
     fun removeParameter(key: String): T = self {
-        this.parameters = this.parameters.minus(key)
+        this.parameters = (this.parameters ?: mutableMapOf()).apply { remove(key) }
     }
 }
 
@@ -505,12 +500,12 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             bitmapConfig,
             colorSpace,
             headers?.build().orEmpty(),
+            parameters.orEmpty(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,
             allowHardware,
             allowRgb565,
-            parameters,
             placeholderResId,
             errorResId,
             placeholderDrawable,
@@ -547,12 +542,12 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             bitmapConfig,
             colorSpace,
             headers?.build().orEmpty(),
+            parameters.orEmpty(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,
             allowHardware,
-            allowRgb565,
-            parameters
+            allowRgb565
         )
     }
 }

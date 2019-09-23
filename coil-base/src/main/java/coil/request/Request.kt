@@ -44,6 +44,7 @@ sealed class Request {
     abstract val bitmapConfig: Bitmap.Config
     abstract val colorSpace: ColorSpace?
     abstract val headers: Headers
+    abstract val parameters: Map<String, Any>
 
     abstract val networkCachePolicy: CachePolicy
     abstract val diskCachePolicy: CachePolicy
@@ -51,8 +52,6 @@ sealed class Request {
 
     abstract val allowHardware: Boolean
     abstract val allowRgb565: Boolean
-
-    abstract val parameters: Map<String, Any>
 
     abstract val placeholder: Drawable?
     abstract val error: Drawable?
@@ -124,12 +123,12 @@ class LoadRequest internal constructor(
     override val bitmapConfig: Bitmap.Config,
     override val colorSpace: ColorSpace?,
     override val headers: Headers,
+    override val parameters: Map<String, Any>,
     override val networkCachePolicy: CachePolicy,
     override val diskCachePolicy: CachePolicy,
     override val memoryCachePolicy: CachePolicy,
     override val allowHardware: Boolean,
     override val allowRgb565: Boolean,
-    override val parameters: Map<String, Any>,
     @DrawableRes internal val placeholderResId: Int,
     @DrawableRes internal val errorResId: Int,
     internal val placeholderDrawable: Drawable?,
@@ -201,12 +200,12 @@ class GetRequest internal constructor(
     override val bitmapConfig: Bitmap.Config,
     override val colorSpace: ColorSpace?,
     override val headers: Headers,
+    override val parameters: Map<String, Any>,
     override val networkCachePolicy: CachePolicy,
     override val diskCachePolicy: CachePolicy,
     override val memoryCachePolicy: CachePolicy,
     override val allowHardware: Boolean,
-    override val allowRgb565: Boolean,
-    override val parameters: Map<String, Any>
+    override val allowRgb565: Boolean
 ) : Request() {
 
     companion object {

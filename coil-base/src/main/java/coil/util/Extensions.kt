@@ -36,7 +36,6 @@ import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Response
 import java.io.Closeable
-import java.util.Collections
 
 internal suspend inline fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
@@ -56,8 +55,6 @@ internal fun Bitmap.Config?.getBytesPerPixel(): Int {
         else -> 4
     }
 }
-
-internal inline fun <T> MutableList<T>?.orEmpty(): MutableList<T> = this ?: mutableListOf()
 
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
@@ -213,22 +210,3 @@ internal val Configuration.nightMode: Int
 private val EMPTY_HEADERS = Headers.Builder().build()
 
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
-
-internal inline fun <K, V> mapOf(key: K, value: V): Map<K, V> = Collections.singletonMap(key, value)
-
-/** NOTE: This method can return the same [Map] instance if [this] is a [MutableMap]. */
-internal fun <K, V> Map<K, V>.plus(key: K, value: V): Map<K, V> {
-    return when {
-        this is MutableMap -> this.apply { put(key, value) }
-        isEmpty() -> mapOf(key, value)
-        else -> LinkedHashMap(this).apply { put(key, value) }
-    }
-}
-
-/** NOTE: This method can return the same [Map] instance if [this] is a [MutableMap]. */
-internal fun <K, V> Map<K, V>.minus(key: K): Map<K, V> {
-    return when (this) {
-        is MutableMap -> this.apply { remove(key) }
-        else -> LinkedHashMap<K, V>(this).apply { remove(key) }
-    }
-}
