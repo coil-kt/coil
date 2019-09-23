@@ -298,7 +298,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * @see Headers.Builder.set
      */
     fun setHeader(name: String, value: String): T = self {
-        this.headers = (this.headers ?: Headers.Builder()).add(name, value)
+        this.headers = (this.headers ?: Headers.Builder()).set(name, value)
     }
 
     /**
