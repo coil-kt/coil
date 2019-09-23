@@ -12,6 +12,7 @@ import android.os.Build.VERSION_CODES.M
 import android.os.Build.VERSION_CODES.O_MR1
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
+import coil.request.videoFrame
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
@@ -19,6 +20,9 @@ import okio.buffer
 import okio.sink
 import java.io.File
 
+/**
+ * A [Decoder] that decodes a frame from a video. Use [videoFrame] to specify the time of the frame to extract.
+ */
 class VideoFrameDecoder(private val context: Context) : Decoder {
 
     companion object {
