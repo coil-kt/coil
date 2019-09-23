@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.ColorSpace
 import coil.fetch.Fetcher
 import coil.request.CachePolicy
+import coil.request.Parameters
 import coil.size.Scale
 import okhttp3.Headers
 
@@ -17,9 +18,9 @@ import okhttp3.Headers
  * @param scale Determines if the image should be loaded to fit or fill the target's dimensions.
  * @param allowRgb565 True if the [Fetcher] is allowed to use [Bitmap.Config.RGB_565] as an optimization.
  * @param headers The headers for any network operations.
+ * @param parameters A map of custom parameters. These are used to pass custom data to [Fetcher]s and [Decoder]s.
  * @param networkCachePolicy Used to determine if this request is allowed to read from the network.
  * @param diskCachePolicy Used to determine if this request is allowed to read/write from/to disk.
- * @param parameters A map of custom parameters. These are used to pass custom data to [Fetcher]s and [Decoder]s.
  */
 data class Options(
     val config: Bitmap.Config,
@@ -27,7 +28,7 @@ data class Options(
     val scale: Scale,
     val allowRgb565: Boolean,
     val headers: Headers,
-    val parameters: Map<String, Any>,
+    val parameters: Parameters,
     val networkCachePolicy: CachePolicy,
     val diskCachePolicy: CachePolicy
 )

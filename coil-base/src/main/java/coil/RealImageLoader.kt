@@ -43,6 +43,7 @@ import coil.request.BaseTargetRequestDisposable
 import coil.request.EmptyRequestDisposable
 import coil.request.GetRequest
 import coil.request.LoadRequest
+import coil.request.Parameters
 import coil.request.Request
 import coil.request.RequestDisposable
 import coil.request.ViewTargetRequestDisposable
@@ -273,21 +274,25 @@ internal class RealImageLoader(
     private fun <T : Any> computeCacheKey(
         fetcher: Fetcher<T>,
         data: T,
-        parameters: Map<String, Any>,
+        parameters: Parameters,
         transformations: List<Transformation>
     ): String? {
         val baseCacheKey = fetcher.key(data) ?: return null
+
         return buildString {
             append(baseCacheKey)
+
             if (parameters.isNotEmpty()) {
-                parameters.forEach { (key, value) ->
-                    append(';')
+                for ((key, entry) in parameters) {
+                    val cacheKey = entry.cacheKey ?: continue
+                    append('#')
                     append(key)
-                    append(',')
-                    append(value)
+                    append('=')
+                    append(cacheKey)
                 }
-                append(';')
+                append('#')
             }
+
             transformations.forEach { append(it.key()) }
         }
     }

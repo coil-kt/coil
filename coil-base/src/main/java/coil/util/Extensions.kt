@@ -30,6 +30,7 @@ import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
 import coil.memory.ViewTargetRequestManager
+import coil.request.Parameters
 import coil.size.Scale
 import coil.target.ViewTarget
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -217,3 +218,5 @@ internal val Configuration.nightMode: Int
 private val EMPTY_HEADERS = Headers.Builder().build()
 
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
+
+internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY

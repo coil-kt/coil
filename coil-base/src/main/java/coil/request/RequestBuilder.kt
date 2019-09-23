@@ -12,7 +12,6 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
 import androidx.annotation.RequiresApi
-import androidx.collection.arrayMapOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
@@ -35,7 +34,6 @@ import coil.transform.Transformation
 import coil.util.Utils
 import coil.util.orEmpty
 import coil.util.self
-import coil.util.toArrayMap
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okio.BufferedSource
@@ -56,7 +54,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var bitmapConfig: Bitmap.Config
     protected var colorSpace: ColorSpace? = null
     protected var headers: Headers.Builder?
-    protected var parameters: MutableMap<String, Any>?
+    protected var parameters: Parameters.Builder?
 
     protected var networkCachePolicy: CachePolicy
     protected var diskCachePolicy: CachePolicy
@@ -105,7 +103,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
             colorSpace = request.colorSpace
         }
         headers = request.headers.newBuilder()
-        parameters = request.parameters.toMutableMap()
+        parameters = request.parameters.newBuilder()
 
         networkCachePolicy = request.networkCachePolicy
         diskCachePolicy = request.diskCachePolicy
@@ -315,32 +313,24 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
 
     /**
      * Set the parameters for this request.
-     *
-     * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
-     *
-     * NOTE: Parameters are added to the cache key.
      */
-    fun parameters(parameters: Map<String, Any>) {
-        this.parameters = parameters.toArrayMap()
+    fun parameters(parameters: Parameters) {
+        this.parameters = parameters.newBuilder()
     }
 
     /**
      * Set a parameter for this request.
      *
-     * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
-     *
-     * NOTE: Parameters are added to the cache key.
+     * @see Parameters.Builder.set
      */
-    fun setParameter(key: String, value: Any): T = self {
-        this.parameters = (this.parameters ?: arrayMapOf()).apply { set(key, value) }
+    fun setParameter(key: String, value: Any, cacheKey: String? = null): T = self {
+        this.parameters = (this.parameters ?: Parameters.Builder()).apply { set(key, value, cacheKey) }
     }
 
     /**
      * Remove a parameter from this request.
      *
-     * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
-     *
-     * NOTE: Parameters are added to the cache key.
+     * @see Parameters.Builder.remove
      */
     fun removeParameter(key: String): T = self {
         this.parameters?.remove(key)
@@ -508,7 +498,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             bitmapConfig,
             colorSpace,
             headers?.build().orEmpty(),
-            parameters.orEmpty(),
+            parameters?.build().orEmpty(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,
@@ -550,7 +540,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             bitmapConfig,
             colorSpace,
             headers?.build().orEmpty(),
-            parameters.orEmpty(),
+            parameters?.build().orEmpty(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,
