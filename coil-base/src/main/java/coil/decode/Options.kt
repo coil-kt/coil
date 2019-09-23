@@ -27,7 +27,7 @@ data class Options(
     val scale: Scale,
     val allowRgb565: Boolean,
     val headers: Headers,
+    val parameters: Map<String, Any>,
     val networkCachePolicy: CachePolicy,
-    val diskCachePolicy: CachePolicy,
-    val parameters: Map<String, Any>
+    val diskCachePolicy: CachePolicy
 )

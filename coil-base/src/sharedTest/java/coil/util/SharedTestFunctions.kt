@@ -37,9 +37,9 @@ fun createOptions(): Options {
         scale = Scale.FILL,
         allowRgb565 = false,
         headers = Headers.Builder().build(),
+        parameters = emptyMap(),
         networkCachePolicy = CachePolicy.ENABLED,
-        diskCachePolicy = CachePolicy.ENABLED,
-        parameters = emptyMap()
+        diskCachePolicy = CachePolicy.ENABLED
     )
 }
 
