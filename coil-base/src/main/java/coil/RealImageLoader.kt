@@ -201,7 +201,7 @@ internal class RealImageLoader(
 
             // Compute the cache key.
             val fetcher = registry.requireFetcher(mappedData)
-            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.transformations)
+            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations)
 
             // Check the memory cache and set the placeholder.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
@@ -268,16 +268,26 @@ internal class RealImageLoader(
     }
 
     /**
-     * Compute the cache key for the [data] + [transformations].
+     * Compute the cache key for the [data] + [parameters] + [transformations].
      */
     private fun <T : Any> computeCacheKey(
         fetcher: Fetcher<T>,
         data: T,
+        parameters: Map<String, Any>,
         transformations: List<Transformation>
     ): String? {
         val baseCacheKey = fetcher.key(data) ?: return null
         return buildString {
             append(baseCacheKey)
+            if (parameters.isNotEmpty()) {
+                parameters.forEach { (key, value) ->
+                    append(';')
+                    append(key)
+                    append(',')
+                    append(value)
+                }
+                append(';')
+            }
             transformations.forEach { append(it.key()) }
         }
     }

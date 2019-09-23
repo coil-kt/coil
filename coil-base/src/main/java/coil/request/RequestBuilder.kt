@@ -250,7 +250,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     /**
      * Set the cache key for this request.
      *
-     * By default, the cache key is computed by the [Fetcher] and any [Transformation]s.
+     * By default, the cache key is computed by the [Fetcher], any [parameters], and any [Transformation]s.
      */
     fun key(key: String?): T = self {
         this.key = key
