@@ -100,7 +100,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         if (SDK_INT >= O) {
             colorSpace = request.colorSpace
         }
-        headers = null
+        headers = request.headers.newBuilder()
 
         networkCachePolicy = request.networkCachePolicy
         diskCachePolicy = request.diskCachePolicy
