@@ -343,7 +343,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * NOTE: Parameters are added to the cache key.
      */
     fun removeParameter(key: String): T = self {
-        this.parameters = (this.parameters ?: arrayMapOf()).apply { remove(key) }
+        this.parameters?.remove(key)
     }
 }
 
