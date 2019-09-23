@@ -315,6 +315,8 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * Set the parameters for this request.
      *
      * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
+     *
+     * NOTE: Parameters are added to the cache key.
      */
     fun parameters(parameters: Map<String, Any>) {
         this.parameters = parameters.toMutableMap()
@@ -324,6 +326,8 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * Set a parameter for this request.
      *
      * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
+     *
+     * NOTE: Parameters are added to the cache key.
      */
     fun setParameter(key: String, value: Any): T = self {
         this.parameters = (this.parameters ?: mutableMapOf()).apply { set(key, value) }
@@ -333,6 +337,8 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * Remove a parameter from this request.
      *
      * Parameters can be used to pass custom data to [Fetcher]s and [Decoder]s.
+     *
+     * NOTE: Parameters are added to the cache key.
      */
     fun removeParameter(key: String): T = self {
         this.parameters = (this.parameters ?: mutableMapOf()).apply { remove(key) }
