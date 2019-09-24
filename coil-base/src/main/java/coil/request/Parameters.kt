@@ -8,7 +8,7 @@ import coil.util.toArrayMap
 /** A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s. */
 class Parameters private constructor(
     private val map: Map<String, Entry>
-): Map<String, Parameters.Entry> by map {
+) : Map<String, Parameters.Entry> by map {
 
     companion object {
         @JvmField
