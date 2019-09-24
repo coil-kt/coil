@@ -54,6 +54,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var bitmapConfig: Bitmap.Config
     protected var colorSpace: ColorSpace? = null
     protected var headers: Headers.Builder?
+    protected var parameters: Parameters.Builder?
 
     protected var networkCachePolicy: CachePolicy
     protected var diskCachePolicy: CachePolicy
@@ -77,6 +78,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
             colorSpace = null
         }
         headers = null
+        parameters = null
 
         networkCachePolicy = CachePolicy.ENABLED
         diskCachePolicy = CachePolicy.ENABLED
@@ -101,6 +103,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
             colorSpace = request.colorSpace
         }
         headers = request.headers.newBuilder()
+        parameters = request.parameters.newBuilder()
 
         networkCachePolicy = request.networkCachePolicy
         diskCachePolicy = request.diskCachePolicy
@@ -145,7 +148,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * Set the list of [Transformation]s to be applied to this request.
      */
     fun transformations(transformations: List<Transformation>): T = self {
-        this.transformations = transformations
+        this.transformations = transformations.toList()
     }
 
     /**
@@ -247,14 +250,14 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     /**
      * Set the cache key for this request.
      *
-     * By default, the cache key is computed by the [Fetcher] and any [Transformation]s.
+     * By default, the cache key is computed by the [Fetcher], any [Parameters], and any [Transformation]s.
      */
     fun key(key: String?): T = self {
         this.key = key
     }
 
     /**
-     * Enable/disable reading/writing from/to the network.
+     * Enable/disable reading from the network.
      *
      * NOTE: Disabling writes has no effect.
      */
@@ -270,7 +273,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Enable/disable reading/writing from/to the memory.
+     * Enable/disable reading/writing from/to the memory cache.
      */
     fun memoryCachePolicy(policy: CachePolicy): T = self {
         this.memoryCachePolicy = policy
@@ -306,6 +309,31 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun removeHeader(name: String): T = self {
         this.headers = this.headers?.removeAll(name)
+    }
+
+    /**
+     * Set the parameters for this request.
+     */
+    fun parameters(parameters: Parameters) {
+        this.parameters = parameters.newBuilder()
+    }
+
+    /**
+     * Set a parameter for this request.
+     *
+     * @see Parameters.Builder.set
+     */
+    fun setParameter(key: String, value: Any?, cacheKey: String? = null): T = self {
+        this.parameters = (this.parameters ?: Parameters.Builder()).apply { set(key, value, cacheKey) }
+    }
+
+    /**
+     * Remove a parameter from this request.
+     *
+     * @see Parameters.Builder.remove
+     */
+    fun removeParameter(key: String): T = self {
+        this.parameters?.remove(key)
     }
 }
 
@@ -470,6 +498,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             bitmapConfig,
             colorSpace,
             headers?.build().orEmpty(),
+            parameters?.build().orEmpty(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,
@@ -511,6 +540,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             bitmapConfig,
             colorSpace,
             headers?.build().orEmpty(),
+            parameters?.build().orEmpty(),
             networkCachePolicy,
             diskCachePolicy,
             memoryCachePolicy,
