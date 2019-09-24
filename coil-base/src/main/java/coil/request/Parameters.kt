@@ -20,6 +20,12 @@ class Parameters private constructor(
         ): Parameters = Builder().apply(builder).build()
     }
 
+    override fun equals(other: Any?) = map == other
+
+    override fun hashCode() = map.hashCode()
+
+    override fun toString() = map.toString()
+
     fun newBuilder() = Builder(this)
 
     /**
