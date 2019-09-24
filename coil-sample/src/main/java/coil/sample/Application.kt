@@ -41,10 +41,14 @@ class Application : MultiDexApplication() {
                 val cacheDirectory = File(filesDir, "image_cache").apply { mkdirs() }
                 val cache = Cache(cacheDirectory, Long.MAX_VALUE)
 
+                // Rewrite the Cache-Control header to cache all responses for a year.
+                val cacheControlInterceptor = ResponseHeaderInterceptor("Cache-Control", "max-age=31536000,public")
+
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
                     .cache(cache)
                     .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
+                    .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
             }
         }
