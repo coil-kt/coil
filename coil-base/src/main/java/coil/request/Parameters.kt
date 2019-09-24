@@ -33,7 +33,7 @@ class Parameters private constructor(
      * @param cacheKey The parameter's cache key. If not null, this value will be added to a request's cache key.
      */
     data class Entry(
-        val value: Any,
+        val value: Any?,
         val cacheKey: String?
     )
 
@@ -57,7 +57,7 @@ class Parameters private constructor(
          * @param cacheKey The parameter's cache key. If not null, this value will be added to a request's cache key.
          */
         @JvmOverloads
-        fun set(key: String, value: Any, cacheKey: String? = null) = apply {
+        fun set(key: String, value: Any?, cacheKey: String? = null) = apply {
             this.map[key] = Entry(value, cacheKey)
         }
 
