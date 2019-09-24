@@ -1,6 +1,5 @@
 package coil.collection
 
-import coil.util.orEmpty
 import coil.util.removeLast
 import java.util.HashMap
 
@@ -111,7 +110,7 @@ internal class GroupedLinkedMap<K, V> {
         fun size(): Int = values?.count() ?: 0
 
         fun add(value: V) {
-            values = values.orEmpty().apply { add(value) }
+            values = (values ?: mutableListOf()).apply { add(value) }
         }
     }
 }

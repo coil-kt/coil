@@ -43,6 +43,7 @@ import coil.request.BaseTargetRequestDisposable
 import coil.request.EmptyRequestDisposable
 import coil.request.GetRequest
 import coil.request.LoadRequest
+import coil.request.Parameters
 import coil.request.Request
 import coil.request.RequestDisposable
 import coil.request.ViewTargetRequestDisposable
@@ -201,7 +202,7 @@ internal class RealImageLoader(
 
             // Compute the cache key.
             val fetcher = registry.requireFetcher(mappedData)
-            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.transformations)
+            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations)
 
             // Check the memory cache and set the placeholder.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
@@ -268,16 +269,30 @@ internal class RealImageLoader(
     }
 
     /**
-     * Compute the cache key for the [data] + [transformations].
+     * Compute the cache key for the [data] + [parameters] + [transformations].
      */
     private fun <T : Any> computeCacheKey(
         fetcher: Fetcher<T>,
         data: T,
+        parameters: Parameters,
         transformations: List<Transformation>
     ): String? {
         val baseCacheKey = fetcher.key(data) ?: return null
+
         return buildString {
             append(baseCacheKey)
+
+            if (parameters.isNotEmpty()) {
+                for ((key, entry) in parameters) {
+                    val cacheKey = entry.cacheKey ?: continue
+                    append('#')
+                    append(key)
+                    append('=')
+                    append(cacheKey)
+                }
+                append('#')
+            }
+
             transformations.forEach { append(it.key()) }
         }
     }
