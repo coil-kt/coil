@@ -12,7 +12,9 @@ import android.os.Build.VERSION_CODES.M
 import android.os.Build.VERSION_CODES.O_MR1
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
-import coil.request.videoFrame
+import coil.extension.get
+import coil.extension.videoFrameMicros
+import coil.extension.videoFrameMillis
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
@@ -21,12 +23,13 @@ import okio.sink
 import java.io.File
 
 /**
- * A [Decoder] that decodes a frame from a video. Use [videoFrame] to specify the time of the frame to extract.
+ * A [Decoder] that decodes a frame from a video.
+ * Use [videoFrameMillis] or [videoFrameMicros] to specify the time of the frame to extract.
  */
 class VideoFrameDecoder(private val context: Context) : Decoder {
 
     companion object {
-        internal const val VIDEO_FRAME_MILLIS_KEY = "coil.decode.VideoFrameDecoder#video_frame_millis"
+        internal const val VIDEO_FRAME_MICROS_KEY = "coil.decode.VideoFrameDecoder#video_frame_micros"
     }
 
     /** TODO: Check the file headers for any of Android's supported video formats instead of relying on the MIME type. */
@@ -52,7 +55,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                 retriever.setDataSource(tempFile.path)
             }
 
-            val frameMicros = TODO()
+            val frameMicros = (options.parameters[VIDEO_FRAME_MICROS_KEY] as? Number)?.toLong() ?: 0L
 
             // Frame sampling is only supported on O_MR1 and above.
             if (SDK_INT >= O_MR1 && size is PixelSize) {
@@ -70,7 +73,9 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
             }
 
             // Read the frame at its full size.
-            val bitmap = checkNotNull(retriever.getFrameAtTime(frameMicros, OPTION_CLOSEST_SYNC)) { "Failed to decode frame." }
+            val bitmap = checkNotNull(retriever.getFrameAtTime(frameMicros, OPTION_CLOSEST_SYNC)) {
+                "Failed to decode frame at $frameMicros microseconds."
+            }
 
             return DecodeResult(
                 drawable = bitmap.toDrawable(context.resources),
