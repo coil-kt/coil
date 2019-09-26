@@ -10,7 +10,7 @@ import coil.util.toArrayMap
 /** A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s. */
 class Parameters private constructor(
     private val map: Map<String, Entry>
-): Iterable<Map.Entry<String, Parameters.Entry>> {
+) : Iterable<Map.Entry<String, Parameters.Entry>> {
 
     companion object {
         @JvmField
