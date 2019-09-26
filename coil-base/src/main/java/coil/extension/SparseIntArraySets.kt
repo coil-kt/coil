@@ -1,7 +1,9 @@
 @file:JvmName("SparseIntArraySets")
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
-package coil.collection
+package coil.extension
+
+import coil.collection.SparseIntArraySet
 
 inline operator fun SparseIntArraySet.plusAssign(element: Int) {
     add(element)

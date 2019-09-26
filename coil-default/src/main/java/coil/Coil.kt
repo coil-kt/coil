@@ -1,4 +1,3 @@
-@file:JvmName("Coil")
 @file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package coil
