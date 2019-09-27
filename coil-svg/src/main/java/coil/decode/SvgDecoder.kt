@@ -2,22 +2,28 @@
 
 package coil.decode
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
+import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
-import coil.drawable.SvgDrawable
+import coil.size.OriginalSize
+import coil.size.PixelSize
 import coil.size.Size
 import com.caverock.androidsvg.SVG
 import okio.BufferedSource
+import kotlin.math.ceil
 
 /**
  * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG files.
  */
-class SvgDecoder : Decoder {
+class SvgDecoder(private val context: Context) : Decoder {
 
     companion object {
         private const val MIME_TYPE_SVG = "image/svg+xml"
+        private const val DEFAULT_SIZE = 512
     }
 
     override fun handles(source: BufferedSource, mimeType: String?) = mimeType == MIME_TYPE_SVG
@@ -28,17 +34,55 @@ class SvgDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
+        val svg = source.use { SVG.getFromInputStream(it.inputStream()) }
+
+        val svgWidth = svg.documentWidth
+        val svgHeight = svg.documentHeight
+
+        val bitmapWidth: Int
+        val bitmapHeight: Int
+        when (size) {
+            is PixelSize -> {
+                if (svgWidth > 0 && svgHeight > 0) {
+                    val multiplier = DecodeUtils.computeSizeMultiplier(
+                        srcWidth = svgWidth,
+                        srcHeight = svgHeight,
+                        destWidth = size.width.toFloat(),
+                        destHeight = size.height.toFloat(),
+                        scale = options.scale
+                    )
+                    bitmapWidth = ceil(multiplier * svgWidth).toInt()
+                    bitmapHeight = ceil(multiplier * svgHeight).toInt()
+                } else {
+                    bitmapWidth = size.width
+                    bitmapHeight = size.height
+                }
+            }
+            is OriginalSize -> {
+                if (svgWidth > 0 && svgHeight > 0) {
+                    bitmapWidth = ceil(svgWidth).toInt()
+                    bitmapHeight = ceil(svgHeight).toInt()
+                } else {
+                    bitmapWidth = DEFAULT_SIZE
+                    bitmapHeight = DEFAULT_SIZE
+                }
+            }
+        }
+
+        val config = when {
+            options.allowRgb565 -> Bitmap.Config.RGB_565
+            SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+            else -> options.config
+        }
+        val bitmap = pool.get(bitmapWidth, bitmapHeight, config)
+
+        svg.setDocumentWidth("100%")
+        svg.setDocumentHeight("100%")
+        svg.renderToCanvas(Canvas(bitmap))
+
         return DecodeResult(
-            drawable = SvgDrawable(
-                svg = source.use { SVG.getFromInputStream(it.inputStream()) },
-                config = when {
-                    options.allowRgb565 -> Bitmap.Config.RGB_565
-                    SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
-                    else -> options.config
-                },
-                pool = pool
-            ),
-            isSampled = false
+            drawable = bitmap.toDrawable(context.resources),
+            isSampled = true // SVGs can always be re-decoded at a higher resolution.
         )
     }
 }

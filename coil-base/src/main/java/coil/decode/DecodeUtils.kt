@@ -42,22 +42,42 @@ object DecodeUtils {
     }
 
     /**
-     * Calculate the [BitmapFactory.Options.inSampleSize] given the source dimensions of the image ([inWidth] and [inHeight]),
-     * the output dimensions ([outWidth], [outHeight]), and the [scale].
+     * Calculate the [BitmapFactory.Options.inSampleSize] given the source dimensions of the image
+     * ([srcWidth] and [srcHeight]), the output dimensions ([destWidth], [destHeight]), and the [scale].
      */
     @JvmStatic
     fun calculateInSampleSize(
-        @Px inWidth: Int,
-        @Px inHeight: Int,
-        @Px outWidth: Int,
-        @Px outHeight: Int,
+        @Px srcWidth: Int,
+        @Px srcHeight: Int,
+        @Px destWidth: Int,
+        @Px destHeight: Int,
         scale: Scale
     ): Int {
-        val widthInSampleSize = max(1, Integer.highestOneBit(inWidth / outWidth))
-        val heightInSampleSize = max(1, Integer.highestOneBit(inHeight / outHeight))
+        val widthInSampleSize = max(1, Integer.highestOneBit(srcWidth / destWidth))
+        val heightInSampleSize = max(1, Integer.highestOneBit(srcHeight / destHeight))
         return when (scale) {
             Scale.FILL -> min(widthInSampleSize, heightInSampleSize)
             Scale.FIT -> max(widthInSampleSize, heightInSampleSize)
+        }
+    }
+
+    /**
+     * Calculate the percentage to multiply the source dimensions by to fit/fill the
+     * destination dimensions while preserving aspect ratio.
+     */
+    @JvmStatic
+    fun computeSizeMultiplier(
+        @Px srcWidth: Float,
+        @Px srcHeight: Float,
+        @Px destWidth: Float,
+        @Px destHeight: Float,
+        scale: Scale
+    ): Float {
+        val widthPercent = destWidth / srcWidth
+        val heightPercent = destHeight / srcHeight
+        return when (scale) {
+            Scale.FILL -> max(widthPercent, heightPercent)
+            Scale.FIT -> min(widthPercent, heightPercent)
         }
     }
 }
