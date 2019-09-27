@@ -15,7 +15,7 @@ import coil.request.RequestDisposable
 import okhttp3.HttpUrl
 import java.io.File
 
-// This file defines a collection of type-safe load and get extension functions for ImageLoader.
+// This file defines a collection of type-safe load and get extension functions for ImageLoaders.
 //
 // Example:
 // ```
