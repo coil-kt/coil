@@ -44,15 +44,15 @@ class SvgDecoder(private val context: Context) : Decoder {
         when (size) {
             is PixelSize -> {
                 if (svgWidth > 0 && svgHeight > 0) {
-                    val scale = DecodeUtils.computeSizeMultiplier(
+                    val multiplier = DecodeUtils.computeSizeMultiplier(
                         srcWidth = svgWidth,
                         srcHeight = svgHeight,
                         destWidth = size.width.toFloat(),
                         destHeight = size.height.toFloat(),
                         scale = options.scale
                     )
-                    bitmapWidth = ceil(scale * svgWidth).toInt()
-                    bitmapHeight = ceil(scale * svgHeight).toInt()
+                    bitmapWidth = ceil(multiplier * svgWidth).toInt()
+                    bitmapHeight = ceil(multiplier * svgHeight).toInt()
                 } else {
                     bitmapWidth = size.width
                     bitmapHeight = size.height
