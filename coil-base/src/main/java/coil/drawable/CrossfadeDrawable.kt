@@ -7,9 +7,9 @@ import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
+import coil.decode.DecodeUtils
 import coil.size.Scale
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -150,14 +150,15 @@ class CrossfadeDrawable(
 
         val targetWidth = targetBounds.width()
         val targetHeight = targetBounds.height()
-        val widthPercent = targetWidth / width.toFloat()
-        val heightPercent = targetHeight / height.toFloat()
-        val scale = when (scale) {
-            Scale.FIT -> min(widthPercent, heightPercent)
-            Scale.FILL -> max(widthPercent, heightPercent)
-        }
-        val dx = ((targetWidth - scale * width) / 2).roundToInt()
-        val dy = ((targetHeight - scale * height) / 2).roundToInt()
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = width.toFloat(),
+            srcHeight = height.toFloat(),
+            destWidth = targetWidth.toFloat(),
+            destHeight = targetHeight.toFloat(),
+            scale = scale
+        )
+        val dx = ((targetWidth - multiplier * width) / 2).roundToInt()
+        val dy = ((targetHeight - multiplier * height) / 2).roundToInt()
 
         val left = targetBounds.left + dx
         val top = targetBounds.top + dy
