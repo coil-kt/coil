@@ -17,6 +17,7 @@ import coil.decode.BitmapFactoryDecoder
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.EmptyDecoder
+import coil.extension.isNotEmpty
 import coil.fetch.AssetUriFetcher
 import coil.fetch.BitmapFetcher
 import coil.fetch.ContentUriFetcher
@@ -268,10 +269,9 @@ internal class RealImageLoader(
         return@outerJob deferred.await()
     }
 
-    /**
-     * Compute the cache key for the [data] + [parameters] + [transformations].
-     */
-    private fun <T : Any> computeCacheKey(
+    /** Compute the cache key for the [data] + [parameters] + [transformations]. */
+    @VisibleForTesting
+    internal fun <T : Any> computeCacheKey(
         fetcher: Fetcher<T>,
         data: T,
         parameters: Parameters,
@@ -282,24 +282,19 @@ internal class RealImageLoader(
         return buildString {
             append(baseCacheKey)
 
+            // Check isNotEmpty first to avoid allocating an Iterator.
             if (parameters.isNotEmpty()) {
                 for ((key, entry) in parameters) {
                     val cacheKey = entry.cacheKey ?: continue
-                    append('#')
-                    append(key)
-                    append('=')
-                    append(cacheKey)
+                    append('#').append(key).append('=').append(cacheKey)
                 }
-                append('#')
             }
 
-            transformations.forEach { append(it.key()) }
+            transformations.forEach { append('#').append(it.key()) }
         }
     }
 
-    /**
-     * Return true if the [Bitmap] returned from [MemoryCache] satisfies the [Request].
-     */
+    /** Return true if the [Bitmap] returned from [MemoryCache] satisfies the [Request]. */
     @VisibleForTesting
     internal fun isCachedDrawableValid(
         cached: BitmapDrawable,
@@ -330,9 +325,7 @@ internal class RealImageLoader(
         return false
     }
 
-    /**
-     * Load the [data] as a [Drawable]. Apply any [Transformation]s.
-     */
+    /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
     private suspend inline fun loadData(
         data: Any,
         request: Request,
