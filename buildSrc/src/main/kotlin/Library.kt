@@ -6,7 +6,7 @@ object Library {
 
     // CORE
 
-    private const val COROUTINES_VERSION = "1.3.1"
+    private const val COROUTINES_VERSION = "1.3.2"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.1.0"
@@ -30,7 +30,7 @@ object Library {
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
-    private const val OKHTTP_VERSION = "3.12.4"
+    private const val OKHTTP_VERSION = "3.12.5"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
     const val OKIO = "com.squareup.okio:okio:2.4.0"
