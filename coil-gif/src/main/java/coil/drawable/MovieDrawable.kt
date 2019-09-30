@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "unused")
 @file:SuppressLint("SupportAnnotationUsage")
 
 package coil.drawable
@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.SystemClock
+import androidx.annotation.IntRange
 import androidx.annotation.Px
 import androidx.core.graphics.withScale
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -58,6 +59,7 @@ class MovieDrawable(
     private var hardwareDy = 0f
 
     private var isRunning = false
+    private var repeatCount = REPEAT_INFINITE
     private var startTimeMillis = 0L
 
     override fun draw(canvas: Canvas) {
@@ -89,9 +91,19 @@ class MovieDrawable(
             drawBitmap(softwareBitmap, 0f, 0f, paint)
         }
 
-        if (isRunning) {
+        if (isRunning && (repeatCount == REPEAT_INFINITE || repeatCount-- > 0)) {
             invalidateSelf()
         }
+    }
+
+    /**
+     * Set the number of times to repeat the animation.
+     *
+     * Default: [REPEAT_INFINITE]
+     */
+    fun setRepeatCount(@IntRange(from = REPEAT_INFINITE.toLong()) repeatCount: Int) {
+        require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+        this.repeatCount = repeatCount
     }
 
     override fun setAlpha(alpha: Int) {
@@ -187,4 +199,9 @@ class MovieDrawable(
     }
 
     override fun clearAnimationCallbacks() = callbacks.clear()
+
+    companion object {
+        /** Pass this to [setRepeatCount] to repeat infinitely. */
+        const val REPEAT_INFINITE = -1
+    }
 }
