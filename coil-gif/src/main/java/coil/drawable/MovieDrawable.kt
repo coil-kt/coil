@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "unused")
 @file:SuppressLint("SupportAnnotationUsage")
 
 package coil.drawable
@@ -60,12 +60,25 @@ class MovieDrawable(
     private var isRunning = false
     private var startTimeMillis = 0L
 
+    private var repeatCount = REPEAT_INFINITE
+    private var loopIteration = 0
+
     override fun draw(canvas: Canvas) {
         val softwareCanvas = checkNotNull(softwareCanvas)
         val softwareBitmap = checkNotNull(softwareBitmap)
 
+        val invalidate: Boolean
+        val time: Int
         val duration = movie.duration()
-        val time = if (duration == 0) 0 else ((SystemClock.uptimeMillis() - startTimeMillis) % duration).toInt()
+        if (duration == 0) {
+            invalidate = false
+            time = 0
+        } else {
+            val elapsedTime = (SystemClock.uptimeMillis() - startTimeMillis).toInt()
+            loopIteration = elapsedTime / duration
+            invalidate = repeatCount == REPEAT_INFINITE || loopIteration <= repeatCount
+            time = if (invalidate) elapsedTime - loopIteration * duration else duration
+        }
         movie.setTime(time)
 
         // Clear the software canvas.
@@ -89,10 +102,30 @@ class MovieDrawable(
             drawBitmap(softwareBitmap, 0f, 0f, paint)
         }
 
-        if (isRunning) {
+        if (isRunning && invalidate) {
             invalidateSelf()
+        } else {
+            stop()
         }
     }
+
+    /**
+     * Set the number of times to repeat the animation.
+     *
+     * If the animation is already running, any iterations that have already occurred will count towards the new count.
+     *
+     * NOTE: This method matches the behavior of [AnimatedImageDrawable.setRepeatCount]. i.e. setting [repeatCount] to 2 will
+     * result in the animation playing 3 times. Setting [repeatCount] to 0 will result in the animation playing once.
+     *
+     * Default: [REPEAT_INFINITE]
+     */
+    fun setRepeatCount(repeatCount: Int) {
+        require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+        this.repeatCount = repeatCount
+    }
+
+    /** Retrieve the number of times the animation will repeat. */
+    fun getRepeatCount(): Int = repeatCount
 
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }
@@ -163,6 +196,7 @@ class MovieDrawable(
         }
 
         isRunning = true
+        loopIteration = 0
         startTimeMillis = SystemClock.uptimeMillis()
         callbacks.forEach { it.onAnimationStart(this) }
 
@@ -187,4 +221,9 @@ class MovieDrawable(
     }
 
     override fun clearAnimationCallbacks() = callbacks.clear()
+
+    companion object {
+        /** Pass this to [setRepeatCount] to repeat infinitely. */
+        const val REPEAT_INFINITE = -1
+    }
 }
