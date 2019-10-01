@@ -18,7 +18,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.SystemClock
-import androidx.annotation.IntRange
 import androidx.annotation.Px
 import androidx.core.graphics.withScale
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -101,7 +100,7 @@ class MovieDrawable(
      *
      * Default: [REPEAT_INFINITE]
      */
-    fun setRepeatCount(@IntRange(from = REPEAT_INFINITE.toLong()) repeatCount: Int) {
+    fun setRepeatCount(repeatCount: Int) {
         require(repeatCount >= 0 || repeatCount == REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
         this.repeatCount = repeatCount
     }
