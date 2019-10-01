@@ -43,6 +43,19 @@ class ViewSizeResolverTest {
     }
 
     @Test
+    fun `view padding is ignored`() {
+        resolver = ViewSizeResolver(view, includePadding = false)
+        view.layoutParams = ViewGroup.LayoutParams(100, 100)
+        view.setPadding(10)
+
+        val size = runBlocking {
+            resolver.size()
+        }
+
+        assertEquals(PixelSize(100, 100), size)
+    }
+
+    @Test
     fun `suspend until view is measured`() {
         val deferred = GlobalScope.async(Dispatchers.Main.immediate) {
             resolver.size()
