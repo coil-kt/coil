@@ -102,12 +102,10 @@ class MovieDrawable(
             drawBitmap(softwareBitmap, 0f, 0f, paint)
         }
 
-        if (isRunning) {
-            if (invalidate) {
-                invalidateSelf()
-            } else {
-                stop()
-            }
+        if (isRunning && invalidate) {
+            invalidateSelf()
+        } else {
+            stop()
         }
     }
 
