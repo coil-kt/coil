@@ -102,7 +102,7 @@ class MovieDrawable(
      * Default: [REPEAT_INFINITE]
      */
     fun setRepeatCount(@IntRange(from = REPEAT_INFINITE.toLong()) repeatCount: Int) {
-        require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+        require(repeatCount >= 0 || repeatCount == REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
         this.repeatCount = repeatCount
     }
 
@@ -202,6 +202,6 @@ class MovieDrawable(
 
     companion object {
         /** Pass this to [setRepeatCount] to repeat infinitely. */
-        const val REPEAT_INFINITE = -1
+        const val REPEAT_INFINITE = Int.MIN_VALUE
     }
 }
