@@ -20,14 +20,23 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         /**
          * Construct a [ViewSizeResolver] instance using the default [View] measurement implementation.
          */
-        operator fun <T : View> invoke(view: T): ViewSizeResolver<T> {
+        operator fun <T : View> invoke(
+            view: T,
+            includePadding: Boolean = true
+        ): ViewSizeResolver<T> {
             return object : ViewSizeResolver<T> {
                 override val view = view
+                override val includePadding = includePadding
             }
         }
     }
 
+    /** The [View] to measure. */
     val view: T
+
+    /** If true, the [view]'s padding will be subtracted from its size. */
+    val includePadding: Boolean
+        get() = true
 
     override suspend fun size(): Size {
         // Fast path: we don't need to wait for the view to be measured.
@@ -72,7 +81,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         return getDimension(
             paramSize = view.layoutParams?.width ?: -1,
             viewSize = view.width,
-            paddingSize = view.paddingLeft + view.paddingRight,
+            paddingSize = if (includePadding) view.paddingLeft + view.paddingRight else 0,
             isLayoutRequested = isLayoutRequested
         )
     }
@@ -81,7 +90,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         return getDimension(
             paramSize = view.layoutParams?.height ?: -1,
             viewSize = view.height,
-            paddingSize = view.paddingTop + view.paddingBottom,
+            paddingSize = if (includePadding) view.paddingTop + view.paddingBottom else 0,
             isLayoutRequested = isLayoutRequested
         )
     }
