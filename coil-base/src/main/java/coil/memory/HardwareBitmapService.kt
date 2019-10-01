@@ -1,11 +1,13 @@
 package coil.memory
 
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.Build.VERSION_CODES.O_MR1
 import android.util.Log
 import androidx.annotation.WorkerThread
+import coil.memory.HardwareBitmapBlacklist.IS_BLACKLISTED
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.log
@@ -15,12 +17,11 @@ import java.io.File
 internal sealed class HardwareBitmapService {
 
     companion object {
-        operator fun invoke(): HardwareBitmapService {
-            return if (SDK_INT == O || SDK_INT == O_MR1) {
-                LimitedFileDescriptorHardwareBitmapService
-            } else {
-                EmptyHardwareBitmapService
-            }
+        operator fun invoke() = when {
+            SDK_INT < O -> ImmutableHardwareBitmapService(true)
+            IS_BLACKLISTED -> ImmutableHardwareBitmapService(false)
+            SDK_INT == O || SDK_INT == O_MR1 -> LimitedFileDescriptorHardwareBitmapService
+            else -> ImmutableHardwareBitmapService(true)
         }
     }
 
@@ -28,10 +29,10 @@ internal sealed class HardwareBitmapService {
     abstract fun allowHardware(size: Size): Boolean
 }
 
-/** A no-op [HardwareBitmapService], which always returns true. */
-private object EmptyHardwareBitmapService : HardwareBitmapService() {
+/** Returns a fixed value for [allowHardware]. */
+private class ImmutableHardwareBitmapService(private val allowHardware: Boolean) : HardwareBitmapService() {
 
-    override fun allowHardware(size: Size) = true
+    override fun allowHardware(size: Size) = allowHardware
 }
 
 /**
@@ -87,5 +88,30 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
         }
 
         return hasAvailableFileDescriptors
+    }
+}
+
+/** Maintains a list of devices with broken/incomplete hardware bitmap implementations. */
+private object HardwareBitmapBlacklist {
+
+    val IS_BLACKLISTED = isBlacklisted()
+
+    /** Modified from Glide's HardwareConfigState. */
+    private fun isBlacklisted(): Boolean {
+        val model = Build.MODEL
+            ?.takeIf { it.count() >= 7 }
+            ?.substring(0, 7)
+            ?: return false
+
+        if (model == "LG-Q710") {
+            return true
+        }
+
+        if (SDK_INT == O) {
+            val models = arrayOf("SM-N935", "SM-J720", "SM-G960", "SM-G965", "SM-G935", "SM-G930", "SM-A520")
+            return models.contains(model)
+        }
+
+        return false
     }
 }
