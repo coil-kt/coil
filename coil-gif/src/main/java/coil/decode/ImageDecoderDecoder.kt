@@ -9,6 +9,7 @@ import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
 import coil.bitmappool.BitmapPool
+import coil.extension.get
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
@@ -67,7 +68,8 @@ class ImageDecoderDecoder : Decoder {
 
             // Loop infinitely by default.
             if (drawable is AnimatedImageDrawable) {
-                drawable.repeatCount = AnimatedImageDrawable.REPEAT_INFINITE
+                val repeatCount = options.parameters[GifDecoder.REPEAT_COUNT_KEY] as? Int
+                drawable.repeatCount = repeatCount ?: AnimatedImageDrawable.REPEAT_INFINITE
             }
 
             return DecodeResult(
