@@ -40,7 +40,8 @@ class GifDecoder : Decoder {
             pool = pool
         )
 
-        drawable.setRepeatCount(options.parameters[REPEAT_COUNT_KEY] as? Int ?: MovieDrawable.REPEAT_INFINITE)
+        val repeatCount = options.parameters[REPEAT_COUNT_KEY] as? Int
+        drawable.setRepeatCount(repeatCount ?: MovieDrawable.REPEAT_INFINITE)
 
         return DecodeResult(
             drawable = drawable,
