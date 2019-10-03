@@ -25,7 +25,7 @@ before_script:
   - ./gradlew ktlintCheck testDebugUnitTest
   # Create and start the emulator.
   - echo no | avdmanager create avd -f -n test -k "system-images;android-25;default;x86"
-  - $ANDROID_HOME/emulator/emulator -avd test -accel auto -no-audio -no-window &
+  - $ANDROID_HOME/emulator/emulator -avd test -accel off -no-audio -no-window &
   - ./.buildscript/android_wait_for_emulator.sh
   - adb shell input keyevent 82
 
