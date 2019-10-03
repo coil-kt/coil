@@ -124,7 +124,7 @@ class MovieDrawable(
         this.repeatCount = repeatCount
     }
 
-    /** Retrieve the number of times the animation will repeat. */
+    /** Get the number of times the animation will repeat. */
     fun getRepeatCount(): Int = repeatCount
 
     override fun setAlpha(alpha: Int) {

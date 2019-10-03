@@ -8,6 +8,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import coil.bitmappool.BitmapPool
 import coil.drawable.MovieDrawable
+import coil.extension.repeatCount
 import coil.size.Size
 import okio.BufferedSource
 
@@ -28,17 +29,21 @@ class GifDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
+        val drawable = MovieDrawable(
+            movie = source.use { checkNotNull(Movie.decodeStream(it.inputStream())) },
+            config = when {
+                options.allowRgb565 -> Bitmap.Config.RGB_565
+                SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+                else -> options.config
+            },
+            scale = options.scale,
+            pool = pool
+        )
+
+        drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
+
         return DecodeResult(
-            drawable = MovieDrawable(
-                movie = source.use { checkNotNull(Movie.decodeStream(it.inputStream())) },
-                config = when {
-                    options.allowRgb565 -> Bitmap.Config.RGB_565
-                    SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
-                    else -> options.config
-                },
-                scale = options.scale,
-                pool = pool
-            ),
+            drawable = drawable,
             isSampled = false
         )
     }
