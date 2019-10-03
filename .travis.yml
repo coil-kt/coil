@@ -17,15 +17,15 @@ env:
 install:
   # Accept Android licenses.
   - touch ~/.android/repositories.cfg
-  - echo yes | sdkmanager "tools" "system-images;android-24;default;armeabi-v7a" > /dev/null
+  - echo yes | sdkmanager "tools" "system-images;android-25;default;x86" > /dev/null
   - export ANDROID_SDK_ROOT="$ANDROID_HOME"
 
 before_script:
   # Check syntax and run unit tests first since they're fast.
   - ./gradlew ktlintCheck testDebugUnitTest
   # Create and start the emulator.
-  - echo no | avdmanager create avd -f -n test -k "system-images;android-24;default;armeabi-v7a"
-  - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window &
+  - echo no | avdmanager create avd -f -n test -k "system-images;android-25;default;x86"
+  - $ANDROID_HOME/emulator/emulator -avd test -accel auto -no-audio -no-window &
   - ./.buildscript/android_wait_for_emulator.sh
   - adb shell input keyevent 82
 
