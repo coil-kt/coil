@@ -8,7 +8,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import coil.bitmappool.BitmapPool
 import coil.drawable.MovieDrawable
-import coil.extension.get
+import coil.extension.repeatCount
 import coil.size.Size
 import okio.BufferedSource
 
@@ -40,16 +40,11 @@ class GifDecoder : Decoder {
             pool = pool
         )
 
-        val repeatCount = options.parameters[REPEAT_COUNT_KEY] as? Int
-        drawable.setRepeatCount(repeatCount ?: MovieDrawable.REPEAT_INFINITE)
+        drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
 
         return DecodeResult(
             drawable = drawable,
             isSampled = false
         )
-    }
-
-    companion object {
-        internal const val REPEAT_COUNT_KEY = "coil.decode.GifDecoder#repeat_count"
     }
 }
