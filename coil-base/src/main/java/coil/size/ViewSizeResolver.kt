@@ -19,15 +19,15 @@ interface ViewSizeResolver<T : View> : SizeResolver {
          * Construct a [ViewSizeResolver] instance using the default [View] measurement implementation.
          *
          * @param view The [View] to measure.
-         * @param includePadding If true, the [view]'s padding will be subtracted from its size.
+         * @param subtractPadding If true, the [view]'s padding will be subtracted from its size.
          */
         operator fun <T : View> invoke(
             view: T,
-            includePadding: Boolean = true
+            subtractPadding: Boolean = true
         ): ViewSizeResolver<T> {
             return object : ViewSizeResolver<T> {
                 override val view = view
-                override val includePadding = includePadding
+                override val subtractPadding = subtractPadding
             }
         }
     }
@@ -36,7 +36,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
     val view: T
 
     /** If true, the [view]'s padding will be subtracted from its size. */
-    val includePadding: Boolean
+    val subtractPadding: Boolean
         get() = true
 
     override suspend fun size(): Size {
@@ -82,7 +82,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         return getDimension(
             paramSize = view.layoutParams?.width ?: -1,
             viewSize = view.width,
-            paddingSize = if (includePadding) view.paddingLeft + view.paddingRight else 0,
+            paddingSize = if (subtractPadding) view.paddingLeft + view.paddingRight else 0,
             isLayoutRequested = isLayoutRequested
         )
     }
@@ -91,7 +91,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         return getDimension(
             paramSize = view.layoutParams?.height ?: -1,
             viewSize = view.height,
-            paddingSize = if (includePadding) view.paddingTop + view.paddingBottom else 0,
+            paddingSize = if (subtractPadding) view.paddingTop + view.paddingBottom else 0,
             isLayoutRequested = isLayoutRequested
         )
     }
