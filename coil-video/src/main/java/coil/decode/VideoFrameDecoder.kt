@@ -12,7 +12,6 @@ import android.os.Build.VERSION_CODES.M
 import android.os.Build.VERSION_CODES.O_MR1
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
-import coil.extension.get
 import coil.extension.videoFrameMicros
 import coil.extension.videoFrameMillis
 import coil.size.PixelSize
@@ -27,10 +26,6 @@ import java.io.File
  * Use [videoFrameMillis] or [videoFrameMicros] to specify the time of the frame to extract.
  */
 class VideoFrameDecoder(private val context: Context) : Decoder {
-
-    companion object {
-        internal const val VIDEO_FRAME_MICROS_KEY = "coil.decode.VideoFrameDecoder#video_frame_micros"
-    }
 
     /** TODO: Check the file headers for any of Android's supported video formats instead of relying on the MIME type. */
     override fun handles(source: BufferedSource, mimeType: String?) = mimeType?.startsWith("video") == true
@@ -55,7 +50,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                 retriever.setDataSource(tempFile.path)
             }
 
-            val frameMicros = (options.parameters[VIDEO_FRAME_MICROS_KEY] as? Number)?.toLong() ?: 0L
+            val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
             // Frame sampling is only supported on O_MR1 and above.
             if (SDK_INT >= O_MR1 && size is PixelSize) {
