@@ -11,30 +11,20 @@ import kotlinx.coroutines.Job
 
 internal sealed class RequestDelegate : DefaultLifecycleObserver {
 
-    /**
-     * Repeat this request with the same params.
-     */
+    /** Repeat this request with the same params. */
     open fun restart() {}
 
-    /**
-     * Free resources associated with this delegate.
-     */
+    /** Free resources associated with this delegate. */
     open fun dispose() {}
 
-    /**
-     * Called when the load completes.
-     */
+    /** Called when the load completes. */
     open fun onComplete() {}
 }
 
-/**
- * An empty request delegate.
- */
+/** An empty request delegate. */
 internal object EmptyRequestDelegate : RequestDelegate()
 
-/**
- * A simple request delegate that does not support restarting.
- */
+/** A simple request delegate that does not support restarting. */
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
     private val dispatcher: CoroutineDispatcher,

@@ -32,9 +32,7 @@ internal interface NetworkObserverStrategy {
     companion object {
         private const val TAG = "NetworkObserverStrategy"
 
-        /**
-         * Create a new [NetworkObserverStrategy] instance.
-         */
+        /** Create a new [NetworkObserverStrategy] instance. */
         operator fun invoke(context: Context, listener: Listener): NetworkObserverStrategy {
             val connectivityManager: ConnectivityManager? = context.getSystemService()
             if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
@@ -55,26 +53,18 @@ internal interface NetworkObserverStrategy {
         }
     }
 
-    /**
-     * Calls [onConnectivityChange] when a connectivity change event occurs.
-     */
+    /** Calls [onConnectivityChange] when a connectivity change event occurs. */
     interface Listener {
         fun onConnectivityChange(isOnline: Boolean)
     }
 
-    /**
-     * Start observing network changes.
-     */
+    /** Start observing network changes. */
     fun start()
 
-    /**
-     * Stop observing network changes.
-     */
+    /** Stop observing network changes. */
     fun stop()
 
-    /**
-     * Synchronously checks if the device is online.
-     */
+    /** Synchronously checks if the device is online. */
     fun isOnline(): Boolean
 }
 

@@ -11,14 +11,10 @@ import coil.request.RequestBuilder
  */
 sealed class Size
 
-/**
- * Represents the width and height of the source image.
- */
+/** Represents the width and height of the source image. */
 object OriginalSize : Size()
 
-/**
- * A non-zero width and height in pixels.
- */
+/** A positive width and height in pixels. */
 data class PixelSize(
     @Px val width: Int,
     @Px val height: Int

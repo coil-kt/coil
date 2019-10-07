@@ -10,9 +10,7 @@ import coil.request.RequestBuilder
 interface SizeResolver {
 
     companion object {
-        /**
-         * Construct a [SizeResolver] instance with a fixed [size].
-         */
+        /** Construct a [SizeResolver] instance with a fixed [size]. */
         operator fun invoke(size: Size): SizeResolver {
             return object : SizeResolver {
                 override suspend fun size() = size
@@ -20,8 +18,6 @@ interface SizeResolver {
         }
     }
 
-    /**
-     * Return the [Size] that the image should be loaded at.
-     */
+    /** Return the [Size] that the image should be loaded at. */
     suspend fun size(): Size
 }

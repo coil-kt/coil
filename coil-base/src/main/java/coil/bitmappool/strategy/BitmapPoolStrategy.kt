@@ -18,9 +18,7 @@ internal interface BitmapPoolStrategy {
         }
     }
 
-    /**
-     * Store [bitmap] in the LRU cache.
-     */
+    /** Store [bitmap] in the LRU cache. */
     fun put(bitmap: Bitmap)
 
     /**
@@ -29,18 +27,12 @@ internal interface BitmapPoolStrategy {
      */
     fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap?
 
-    /**
-     * Remove the least recently used Bitmap from the cache and return it.
-     */
+    /** Remove the least recently used Bitmap from the cache and return it. */
     fun removeLast(): Bitmap?
 
-    /**
-     * Log [bitmap].
-     */
+    /** Log [bitmap]. */
     fun logBitmap(bitmap: Bitmap): String
 
-    /**
-     * Log the given attributes.
-     */
+    /** Log the given attributes. */
     fun logBitmap(@Px width: Int, @Px height: Int, config: Bitmap.Config): String
 }

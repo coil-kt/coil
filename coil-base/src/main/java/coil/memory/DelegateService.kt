@@ -22,9 +22,7 @@ internal class DelegateService(
     private val referenceCounter: BitmapReferenceCounter
 ) {
 
-    /**
-     * Wrap the [request]'s [Target] to support [Bitmap] pooling.
-     */
+    /** Wrap the [request]'s [Target] to support [Bitmap] pooling. */
     fun createTargetDelegate(request: Request): TargetDelegate {
         val target = request.target
         return when {
@@ -35,9 +33,7 @@ internal class DelegateService(
         }
     }
 
-    /**
-     * Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [Request] based on its lifecycle.
-     */
+    /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [Request] based on its lifecycle. */
     fun createRequestDelegate(
         request: Request,
         targetDelegate: TargetDelegate,
