@@ -40,6 +40,11 @@ class MovieDrawable(
     private val pool: BitmapPool
 ) : Drawable(), Animatable2Compat {
 
+    companion object {
+        /** Pass this to [setRepeatCount] to repeat infinitely. */
+        const val REPEAT_INFINITE = -1
+    }
+
     init {
         require(SDK_INT < O || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
     }
@@ -221,9 +226,4 @@ class MovieDrawable(
     }
 
     override fun clearAnimationCallbacks() = callbacks.clear()
-
-    companion object {
-        /** Pass this to [setRepeatCount] to repeat infinitely. */
-        const val REPEAT_INFINITE = -1
-    }
 }

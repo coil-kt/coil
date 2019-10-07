@@ -14,9 +14,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
     private var elements = IntArray(initialCapacity)
     private var size = 0
 
-    /**
-     * Adds an element to the set.
-     */
+    /** Adds an element to the set. */
     fun add(element: Int): Boolean {
         val i = elements.binarySearch(element, toIndex = size)
         val absent = i < 0
@@ -27,9 +25,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
         return absent
     }
 
-    /**
-     * Removes the element from the set. Return true if it was present.
-     */
+    /** Removes the element from the set. Return true if it was present. */
     fun remove(element: Int): Boolean {
         val i = elements.binarySearch(element, toIndex = size)
         val present = i >= 0
@@ -39,22 +35,16 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
         return present
     }
 
-    /**
-     * Return true if the SparseIntArraySet contains this element.
-     */
+    /** Return true if the SparseIntArraySet contains this element. */
     fun contains(element: Int): Boolean = elements.binarySearch(element, toIndex = size) >= 0
 
-    /**
-     * Removes the element at the given index.
-     */
+    /** Removes the element at the given index. */
     fun removeAt(index: Int) {
         System.arraycopy(elements, index + 1, elements, index, size - (index + 1))
         size--
     }
 
-    /**
-     * Returns the number of elements that this SparseIntArraySet currently stores.
-     */
+    /** Returns the number of elements that this SparseIntArraySet currently stores. */
     fun size(): Int = size
 
     /**
@@ -75,9 +65,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
      */
     fun indexOfElement(key: Int): Int = elements.binarySearch(key, toIndex = size)
 
-    /**
-     * Removes all elements from this SparseIntArraySet.
-     */
+    /** Removes all elements from this SparseIntArraySet. */
     fun clear() {
         size = 0
     }

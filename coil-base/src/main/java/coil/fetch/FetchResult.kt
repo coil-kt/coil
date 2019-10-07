@@ -5,9 +5,7 @@ import coil.decode.DataSource
 import coil.decode.Decoder
 import okio.BufferedSource
 
-/**
- * The result of [Fetcher.fetch].
- */
+/** The result of [Fetcher.fetch]. */
 sealed class FetchResult
 
 /**

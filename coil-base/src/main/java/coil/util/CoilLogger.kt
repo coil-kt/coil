@@ -4,9 +4,7 @@ package coil.util
 
 import android.util.Log
 
-/**
- * A singleton that enables/disables logging to [Log].
- */
+/** A singleton that enables/disables logging to [Log]. */
 object CoilLogger {
 
     internal var enabled = false

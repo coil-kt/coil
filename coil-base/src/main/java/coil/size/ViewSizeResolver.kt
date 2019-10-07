@@ -9,9 +9,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.math.max
 
-/**
- * A [SizeResolver] that measures the size of a [View].
- */
+/** A [SizeResolver] that measures the size of a [View]. */
 interface ViewSizeResolver<T : View> : SizeResolver {
 
     companion object {
@@ -19,6 +17,9 @@ interface ViewSizeResolver<T : View> : SizeResolver {
 
         /**
          * Construct a [ViewSizeResolver] instance using the default [View] measurement implementation.
+         *
+         * @param view The [View] to measure.
+         * @param includePadding If true, the [view]'s padding will be subtracted from its size.
          */
         operator fun <T : View> invoke(
             view: T,
