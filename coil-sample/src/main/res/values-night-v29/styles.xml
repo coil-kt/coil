@@ -1,0 +1,9 @@
+<resources>
+
+    <style name="AppTheme.v29" parent="AppTheme.v21">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.v29"/>
+
+</resources>

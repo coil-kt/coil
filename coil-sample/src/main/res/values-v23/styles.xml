@@ -1,11 +1,13 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme.v23" parent="AppTheme.v21">
         <item name="colorPrimary">#FFF</item>
         <item name="colorPrimaryDark">#FFF</item>
         <item name="colorAccent">#CCC</item>
 
         <item name="android:windowLightStatusBar">true</item>
     </style>
+
+    <style name="AppTheme" parent="AppTheme.v23"/>
 
 </resources>
