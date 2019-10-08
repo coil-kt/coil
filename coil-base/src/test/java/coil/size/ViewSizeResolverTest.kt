@@ -44,7 +44,7 @@ class ViewSizeResolverTest {
 
     @Test
     fun `view padding is ignored`() {
-        resolver = ViewSizeResolver(view, includePadding = false)
+        resolver = ViewSizeResolver(view, subtractPadding = false)
         view.layoutParams = ViewGroup.LayoutParams(100, 100)
         view.setPadding(10)
 
