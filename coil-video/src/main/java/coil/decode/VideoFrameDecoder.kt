@@ -37,9 +37,10 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
         options: Options
     ): DecodeResult {
         var tempFile: File? = null
-        val retriever = MediaMetadataRetriever()
+        var retriever: MediaMetadataRetriever? = null
 
         try {
+            retriever = MediaMetadataRetriever()
             if (SDK_INT >= M) {
                 retriever.setDataSource(BufferedMediaDataSource(source))
             } else {
@@ -77,7 +78,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                 isSampled = false
             )
         } finally {
-            retriever.release()
+            retriever?.release()
             tempFile?.delete()
         }
     }
