@@ -31,10 +31,9 @@ internal class RealBitmapPool(
 
         private fun getDefaultAllowedConfigs(): Set<Bitmap.Config> = arraySetOf {
             addAll(Bitmap.Config.values())
-            if (SDK_INT >= O) {
-                // Hardware bitmaps cannot be recycled and cannot be added to the pool.
-                remove(Bitmap.Config.HARDWARE)
-            }
+
+            // Hardware bitmaps cannot be recycled and cannot be added to the pool.
+            if (SDK_INT >= O) remove(Bitmap.Config.HARDWARE)
         }
     }
 
@@ -107,6 +106,8 @@ internal class RealBitmapPool(
 
         return result
     }
+
+    override fun clear() = clearMemory()
 
     fun clearMemory() {
         log(TAG, Log.DEBUG) { "clearMemory" }
