@@ -44,6 +44,11 @@ class FakeBitmapPool : BitmapPool {
         }
     }
 
+    override fun clear() {
+        bitmaps.forEach { it.recycle() }
+        bitmaps.clear()
+    }
+
     data class Get(
         val width: Int,
         val height: Int,

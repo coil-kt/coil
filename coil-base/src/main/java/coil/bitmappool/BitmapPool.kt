@@ -9,11 +9,20 @@ import androidx.annotation.Px
  */
 interface BitmapPool {
 
+    companion object {
+        /**
+         * Create a new [BitmapPool].
+         *
+         * @param maxSize The maximum size of the pool in bytes.
+         */
+        operator fun invoke(maxSize: Long): BitmapPool = RealBitmapPool(maxSize)
+    }
+
     /**
      * Add the given [Bitmap] to the pool if it is eligible to be re-used and the pool can fit it.
      * Otherwise, this method calls [Bitmap.recycle] on the Bitmap and discards it.
      *
-     * Callers must **not** continue to use the Bitmap after calling this method.
+     * Callers **must not** continue to use the Bitmap after calling this method.
      */
     fun put(bitmap: Bitmap)
 
@@ -35,7 +44,7 @@ interface BitmapPool {
     fun getOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap?
 
     /**
-     * Identical to [get] except that any returned [Bitmap] may **not** have been erased and may contain random data.
+     * Identical to [get] except that any returned [Bitmap] may not have been erased and may contain random data.
      *
      * If no Bitmap with the requested attributes is present in the pool, a new one will be allocated.
      *
@@ -49,4 +58,9 @@ interface BitmapPool {
      * Identical to [getDirty] except that null will be returned if the pool does not contain a usable Bitmap.
      */
     fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap?
+
+    /**
+     * Remove all [Bitmap]s from this pool and free their memory.
+     */
+    fun clear()
 }
