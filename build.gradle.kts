@@ -18,8 +18,8 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:3.5.1")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0-SNAPSHOT")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.18")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:8.2.0")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.0")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.0.0")
         classpath(kotlin("gradle-plugin", version = "1.3.50"))
     }
 }
@@ -59,29 +59,31 @@ allprojects {
     // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our dokka configuration.
     afterEvaluate {
         tasks.withType<DokkaAndroidTask> {
-            jdkVersion = 8
-            reportUndocumented = false
-            skipDeprecated = true
+            configuration {
+                jdkVersion = 8
+                reportUndocumented = false
+                skipDeprecated = true
 
-            externalDocumentationLink {
-                url = URL("https://developer.android.com/reference/androidx/")
-            }
-            externalDocumentationLink {
-                url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-            }
-            externalDocumentationLink {
-                url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-            }
-            externalDocumentationLink {
-                url = URL("https://square.github.io/okhttp/3.x/okhttp/")
-            }
-            externalDocumentationLink {
-                url = URL("https://square.github.io/okio/2.x/okio/")
-            }
-            linkMapping {
-                dir = "src/main/java"
-                url = "https://github.com/coil-kt/coil"
-                suffix = "#L"
+                externalDocumentationLink {
+                    url = URL("https://developer.android.com/reference/androidx/")
+                }
+                externalDocumentationLink {
+                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
+                }
+                externalDocumentationLink {
+                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+                }
+                externalDocumentationLink {
+                    url = URL("https://square.github.io/okhttp/3.x/okhttp/")
+                }
+                externalDocumentationLink {
+                    url = URL("https://square.github.io/okio/2.x/okio/")
+                }
+                sourceLink {
+                    path = "src/main/java"
+                    url = "https://github.com/coil-kt/coil"
+                    lineSuffix = "#L"
+                }
             }
         }
     }
