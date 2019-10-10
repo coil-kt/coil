@@ -64,6 +64,7 @@ class MovieDrawable(
 
     private var isRunning = false
     private var startTimeMillis = 0L
+    private var frameTimeMillis = 0L
 
     private var repeatCount = REPEAT_INFINITE
     private var loopIteration = 0
@@ -79,7 +80,10 @@ class MovieDrawable(
             invalidate = false
             time = 0
         } else {
-            val elapsedTime = (SystemClock.uptimeMillis() - startTimeMillis).toInt()
+            if (isRunning) {
+                frameTimeMillis = SystemClock.uptimeMillis()
+            }
+            val elapsedTime = (frameTimeMillis - startTimeMillis).toInt()
             loopIteration = elapsedTime / duration
             invalidate = repeatCount == REPEAT_INFINITE || loopIteration <= repeatCount
             time = if (invalidate) elapsedTime - loopIteration * duration else duration

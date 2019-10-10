@@ -116,16 +116,15 @@ class CrossfadeDrawable(
     override fun isRunning() = isRunning
 
     override fun start() {
+        (start as? Animatable)?.start()
+        (end as? Animatable)?.start()
+
         if (isRunning || isDone) {
             return
         }
 
         isRunning = true
         startTimeMillis = SystemClock.uptimeMillis()
-
-        (start as? Animatable)?.start()
-        (end as? Animatable)?.start()
-
         invalidateSelf()
     }
 
