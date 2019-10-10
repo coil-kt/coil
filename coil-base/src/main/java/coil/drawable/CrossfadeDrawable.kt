@@ -1,11 +1,17 @@
 package coil.drawable
 
+import android.content.res.ColorStateList
+import android.graphics.BlendMode
 import android.graphics.Canvas
 import android.graphics.ColorFilter
+import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
+import android.os.Build.VERSION_CODES.LOLLIPOP
+import android.os.Build.VERSION_CODES.Q
 import android.os.SystemClock
+import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import coil.decode.DecodeUtils
 import coil.size.Scale
@@ -78,6 +84,8 @@ class CrossfadeDrawable(
         }
     }
 
+    override fun getAlpha() = maxAlpha
+
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }
         maxAlpha = alpha
@@ -92,6 +100,9 @@ class CrossfadeDrawable(
             end.opacity
         }
     }
+
+    @RequiresApi(LOLLIPOP)
+    override fun getColorFilter(): ColorFilter? = end.colorFilter
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
         start?.colorFilter = colorFilter
@@ -112,6 +123,30 @@ class CrossfadeDrawable(
     override fun invalidateDrawable(who: Drawable) = invalidateSelf()
 
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
+
+    @RequiresApi(LOLLIPOP)
+    override fun setTint(tintColor: Int) {
+        start?.setTint(tintColor)
+        end.setTint(tintColor)
+    }
+
+    @RequiresApi(LOLLIPOP)
+    override fun setTintList(tint: ColorStateList?) {
+        start?.setTintList(tint)
+        end.setTintList(tint)
+    }
+
+    @RequiresApi(LOLLIPOP)
+    override fun setTintMode(tintMode: PorterDuff.Mode?) {
+        start?.setTintMode(tintMode)
+        end.setTintMode(tintMode)
+    }
+
+    @RequiresApi(Q)
+    override fun setTintBlendMode(blendMode: BlendMode?) {
+        start?.setTintBlendMode(blendMode)
+        end.setTintBlendMode(blendMode)
+    }
 
     override fun isRunning() = isRunning
 
