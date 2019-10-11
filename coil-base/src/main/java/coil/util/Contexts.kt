@@ -23,34 +23,8 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
-internal val HAS_APPCOMPAT_RESOURCES = try {
-    Class.forName(AppCompatResources::class.java.name)
-    true
-} catch (_: Throwable) {
-    false
-}
-
-internal val HAS_VECTOR_DRAWABLE_COMPAT = try {
-    Class.forName(VectorDrawableCompat::class.java.name)
-    true
-} catch (_: Throwable) {
-    false
-}
-
-internal val HAS_ANIMATED_VECTOR_DRAWABLE_COMPAT = try {
-    Class.forName(AnimatedVectorDrawableCompat::class.java.name)
-    true
-} catch (_: Throwable) {
-    false
-}
-
 internal fun Context.getDrawableCompat(@DrawableRes resId: Int): Drawable {
-    val drawable = if (HAS_APPCOMPAT_RESOURCES) {
-        AppCompatResources.getDrawable(this, resId)
-    } else {
-        ContextCompat.getDrawable(this, resId)
-    }
-    return checkNotNull(drawable)
+    return checkNotNull(AppCompatResources.getDrawable(this, resId)) { "Invalid resource ID: $resId" }
 }
 
 /**
@@ -74,16 +48,12 @@ internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes resId: I
     if (SDK_INT < N) {
         when (parser.name) {
             "vector" -> {
-                if (HAS_VECTOR_DRAWABLE_COMPAT) {
-                    val attrs = Xml.asAttributeSet(parser)
-                    return VectorDrawableCompat.createFromXmlInner(resources, parser, attrs, theme)
-                }
+                val attrs = Xml.asAttributeSet(parser)
+                return VectorDrawableCompat.createFromXmlInner(resources, parser, attrs, theme)
             }
             "animated-vector" -> {
-                if (HAS_ANIMATED_VECTOR_DRAWABLE_COMPAT) {
-                    val attrs = Xml.asAttributeSet(parser)
-                    return AnimatedVectorDrawableCompat.createFromXmlInner(this, resources, parser, attrs, theme)
-                }
+                val attrs = Xml.asAttributeSet(parser)
+                return AnimatedVectorDrawableCompat.createFromXmlInner(this, resources, parser, attrs, theme)
             }
         }
     }
