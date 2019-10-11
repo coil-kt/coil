@@ -13,6 +13,7 @@ import android.os.Build.VERSION_CODES.Q
 import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DecodeUtils
 import coil.size.Scale
 import kotlin.math.max
@@ -27,19 +28,19 @@ import kotlin.math.roundToInt
  * @param end The Drawable to crossfade to.
  * @param scale The scaling algorithm for [start] and [end].
  * @param duration The duration of the crossfade animation.
- * @param onEnd A callback for when the animation completes.
  */
 class CrossfadeDrawable(
     private var start: Drawable?,
     val end: Drawable,
     private val scale: Scale = Scale.FIT,
-    private val duration: Int = DEFAULT_DURATION,
-    private val onEnd: (() -> Unit)? = null
-) : Drawable(), Drawable.Callback, Animatable {
+    private val duration: Int = DEFAULT_DURATION
+) : Drawable(), Drawable.Callback, Animatable2Compat {
 
     companion object {
         const val DEFAULT_DURATION = 100
     }
+
+    private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
     private val width = max(start?.intrinsicWidth ?: -1, end.intrinsicWidth)
     private val height = max(start?.intrinsicHeight ?: -1, end.intrinsicHeight)
@@ -56,7 +57,6 @@ class CrossfadeDrawable(
 
     override fun draw(canvas: Canvas) {
         if (!isRunning || isDone) {
-            start = null
             end.alpha = maxAlpha
             end.draw(canvas)
             return
@@ -160,6 +160,8 @@ class CrossfadeDrawable(
 
         isRunning = true
         startTimeMillis = SystemClock.uptimeMillis()
+        callbacks.forEach { it.onAnimationStart(this) }
+
         invalidateSelf()
     }
 
@@ -171,6 +173,16 @@ class CrossfadeDrawable(
             markDone()
         }
     }
+
+    override fun registerAnimationCallback(callback: Animatable2Compat.AnimationCallback) {
+        callbacks.add(callback)
+    }
+
+    override fun unregisterAnimationCallback(callback: Animatable2Compat.AnimationCallback): Boolean {
+        return callbacks.remove(callback)
+    }
+
+    override fun clearAnimationCallbacks() = callbacks.clear()
 
     /** Scale and position the [Drawable] inside [targetBounds] preserving aspect ratio. */
     @VisibleForTesting
@@ -205,6 +217,6 @@ class CrossfadeDrawable(
         isDone = true
         isRunning = false
         start = null
-        onEnd?.invoke()
+        callbacks.forEach { it.onAnimationEnd(this) }
     }
 }
