@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.drawable.CrossfadeDrawable
 import coil.request.Request
 import coil.util.scale
@@ -52,9 +53,11 @@ class ImageViewTarget(override val view: ImageView) : PoolableViewTarget<ImageVi
             start = view.drawable,
             end = result,
             scale = view.scale,
-            duration = duration,
-            onEnd = { continuation.resume(Unit) }
+            duration = duration
         )
+        drawable.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+            override fun onAnimationEnd(drawable: Drawable) = continuation.resume(Unit)
+        })
         continuation.invokeOnCancellation { drawable.stop() }
         onSuccess(drawable)
     }

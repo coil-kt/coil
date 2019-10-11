@@ -18,7 +18,6 @@ import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
-import coil.util.HAS_VECTOR_DRAWABLE_COMPAT
 import coil.util.height
 import coil.util.normalize
 import coil.util.toDrawable
@@ -79,7 +78,6 @@ internal class DrawableDecoderService(
     }
 
     private fun shouldConvertToBitmap(drawable: Drawable): Boolean {
-        return (HAS_VECTOR_DRAWABLE_COMPAT && drawable is VectorDrawableCompat) ||
-            (SDK_INT > LOLLIPOP && drawable is VectorDrawable)
+        return (drawable is VectorDrawableCompat) || (SDK_INT > LOLLIPOP && drawable is VectorDrawable)
     }
 }
