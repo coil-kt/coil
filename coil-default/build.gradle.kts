@@ -1,7 +1,8 @@
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
-import org.jetbrains.dokka.gradle.DokkaAndroidTask
+import org.jetbrains.dokka.gradle.DokkaTask
+import java.net.URL
 
 plugins {
     id("com.android.library")
@@ -17,10 +18,6 @@ android {
         targetSdkVersion(project.targetSdk)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
     libraryVariants.all {
         generateBuildConfigProvider?.configure { enabled = false }
     }
@@ -30,9 +27,16 @@ android {
 }
 
 afterEvaluate {
-    tasks.withType<DokkaAndroidTask> {
+    tasks.withType<DokkaTask> {
         outputDirectory = "$rootDir/docs/api"
         outputFormat = "gfm"
+
+        configuration {
+            externalDocumentationLink {
+                url = URL("file://$rootDir/docs/api/coil-base/")
+                packageListUrl = URL("file://$rootDir/docs/api/coil-base/package-list")
+            }
+        }
     }
 }
 

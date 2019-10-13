@@ -1,8 +1,11 @@
+@file:Suppress("UnstableApiUsage")
+
 import coil.groupId
 import coil.versionName
+import com.android.build.gradle.BaseExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.dokka.gradle.DokkaAndroidTask
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
@@ -11,8 +14,8 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
         maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://plugins.gradle.org/m2/")
         jcenter()
     }
     dependencies {
@@ -36,7 +39,6 @@ allprojects {
     group = project.groupId
     version = project.versionName
 
-    @Suppress("UnstableApiUsage")
     extensions.configure<KtlintExtension>("ktlint") {
         version.set("0.34.2")
         enableExperimentalRules.set(true)
@@ -58,32 +60,45 @@ allprojects {
 
     // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our dokka configuration.
     afterEvaluate {
-        tasks.withType<DokkaAndroidTask> {
+        tasks.withType<DokkaTask> {
             configuration {
                 jdkVersion = 8
                 reportUndocumented = false
                 skipDeprecated = true
+                skipEmptyPackages = true
 
                 externalDocumentationLink {
                     url = URL("https://developer.android.com/reference/androidx/")
+                    packageListUrl = URL("https://developer.android.com/reference/androidx/package-list")
                 }
                 externalDocumentationLink {
                     url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
+                    packageListUrl = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list")
                 }
                 externalDocumentationLink {
                     url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+                    packageListUrl = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list")
                 }
                 externalDocumentationLink {
                     url = URL("https://square.github.io/okhttp/3.x/okhttp/")
+                    packageListUrl = URL("https://square.github.io/okhttp/3.x/okhttp/package-list")
                 }
                 externalDocumentationLink {
                     url = URL("https://square.github.io/okio/2.x/okio/")
+                    packageListUrl = URL("https://square.github.io/okio/2.x/okio/package-list")
                 }
-                sourceLink {
-                    path = "src/main/java"
-                    url = "https://github.com/coil-kt/coil"
-                    lineSuffix = "#L"
-                }
+            }
+        }
+    }
+}
+
+// Require that all Android projects target Java 8.
+subprojects {
+    afterEvaluate {
+        extensions.configure<BaseExtension> {
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_1_8
+                targetCompatibility = JavaVersion.VERSION_1_8
             }
         }
     }
