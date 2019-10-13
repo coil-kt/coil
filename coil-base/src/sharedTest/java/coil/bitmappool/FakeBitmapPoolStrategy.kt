@@ -16,7 +16,7 @@ class FakeBitmapPoolStrategy : BitmapPoolStrategy {
         bitmaps += bitmap
     }
 
-    override operator fun get(width: Int, height: Int, config: Bitmap.Config): Bitmap? {
+    override fun get(width: Int, height: Int, config: Bitmap.Config): Bitmap? {
         return if (bitmaps.isEmpty()) null else bitmaps.removeLast()
     }
 
