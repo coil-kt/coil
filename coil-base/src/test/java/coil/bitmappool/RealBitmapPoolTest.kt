@@ -7,6 +7,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
+import coil.bitmappool.strategy.FakeBitmapPoolStrategy
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
 import org.junit.Before

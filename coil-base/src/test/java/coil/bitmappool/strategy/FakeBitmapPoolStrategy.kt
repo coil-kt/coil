@@ -1,7 +1,6 @@
-package coil.bitmappool
+package coil.bitmappool.strategy
 
 import android.graphics.Bitmap
-import coil.bitmappool.strategy.BitmapPoolStrategy
 import java.util.ArrayDeque
 
 class FakeBitmapPoolStrategy : BitmapPoolStrategy {
