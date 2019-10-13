@@ -42,11 +42,11 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
         try {
             retriever = MediaMetadataRetriever()
             if (SDK_INT >= M) {
-                retriever.setDataSource(BufferedMediaDataSource(source))
+                source.use { retriever.setDataSource(BufferedMediaDataSource(it)) }
             } else {
                 // Write the source to disk so it can be read on pre-M.
                 tempFile = createTempFile()
-                tempFile.sink().buffer().writeAll(source)
+                source.use { tempFile.sink().buffer().writeAll(it) }
 
                 retriever.setDataSource(tempFile.path)
             }
