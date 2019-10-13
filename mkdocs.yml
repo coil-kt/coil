@@ -51,6 +51,7 @@ nav:
     - 'coil-base': api/coil-base/index.md
     - 'coil-gif': api/coil-gif/index.md
     - 'coil-svg': api/coil-svg/index.md
+    - 'coil-video': api/coil-video/index.md
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md

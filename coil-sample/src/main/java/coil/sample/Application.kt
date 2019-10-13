@@ -10,6 +10,7 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
+import coil.decode.VideoFrameDecoder
 import coil.util.CoilLogger
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -34,6 +35,7 @@ class Application : MultiDexApplication() {
                     add(GifDecoder())
                 }
                 add(SvgDecoder(applicationContext))
+                add(VideoFrameDecoder(applicationContext))
             }
             okHttpClient {
                 // Create a disk cache with "unlimited" size. Don't do this in production.

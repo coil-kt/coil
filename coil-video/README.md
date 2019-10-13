@@ -24,4 +24,6 @@ imageView.load("https://www.example.com/video.mp4") {
 }
 ```
 
-And that's it! The `ImageLoader` will automatically detect any videos and extract their frames them correctly.
+If a frame time isn't specified, the first frame of the video is decoded.
+
+And that's it! The `ImageLoader` will automatically detect any videos and extract their frames.
