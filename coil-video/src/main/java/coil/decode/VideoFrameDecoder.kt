@@ -17,7 +17,6 @@ import coil.extension.videoFrameMillis
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
-import okio.buffer
 import okio.sink
 import java.io.File
 
@@ -46,7 +45,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
             } else {
                 // Write the source to disk so it can be read on pre-M.
                 tempFile = createTempFile()
-                source.use { tempFile.sink().buffer().writeAll(it) }
+                source.use { source.readAll(tempFile.sink()) }
 
                 retriever.setDataSource(tempFile.path)
             }
