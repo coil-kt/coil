@@ -103,9 +103,9 @@ class ContentUriFetcherTest {
         val contentUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, id)
         val photoUri = Uri.withAppendedPath(contentUri, RawContacts.DisplayPhoto.CONTENT_DIRECTORY)
         checkNotNull(context.contentResolver.openAssetFileDescriptor(photoUri, "rw")).use { fd ->
-            fd.createOutputStream().sink().buffer().use { sink ->
-                sink.writeAll(context.assets.open("normal.jpg").source())
-            }
+            val source = context.assets.open("normal.jpg").source()
+            val sink = fd.createOutputStream().sink().buffer()
+            source.use { sink.use { sink.writeAll(source) } }
         }
 
         // Wait for the display image to be parsed by the system.

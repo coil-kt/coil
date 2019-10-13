@@ -4,7 +4,6 @@ import android.graphics.drawable.ColorDrawable
 import coil.ComponentRegistry
 import coil.bitmappool.BitmapPool
 import coil.size.Size
-import coil.util.closeQuietly
 import okio.BufferedSource
 import okio.blackholeSink
 
@@ -30,8 +29,7 @@ internal object EmptyDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
-        source.readAll(sink)
-        source.closeQuietly()
+        source.use { it.readAll(sink) }
         return result
     }
 }
