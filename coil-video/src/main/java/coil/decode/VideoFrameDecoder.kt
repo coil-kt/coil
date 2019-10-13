@@ -26,7 +26,6 @@ import java.io.File
  */
 class VideoFrameDecoder(private val context: Context) : Decoder {
 
-    /** TODO: Check the file headers for any of Android's supported video formats instead of relying on the MIME type. */
     override fun handles(source: BufferedSource, mimeType: String?) = mimeType?.startsWith("video") == true
 
     override suspend fun decode(
@@ -36,17 +35,15 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
         options: Options
     ): DecodeResult {
         var tempFile: File? = null
-        var retriever: MediaMetadataRetriever? = null
+        val retriever = MediaMetadataRetriever()
 
         try {
-            retriever = MediaMetadataRetriever()
             if (SDK_INT >= M) {
                 source.use { retriever.setDataSource(BufferedMediaDataSource(it)) }
             } else {
                 // Write the source to disk so it can be read on pre-M.
                 tempFile = createTempFile()
-                source.use { source.readAll(tempFile.sink()) }
-
+                source.use { tempFile.sink().use { source.readAll(it) } }
                 retriever.setDataSource(tempFile.path)
             }
 
@@ -77,7 +74,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                 isSampled = false
             )
         } finally {
-            retriever?.release()
+            retriever.release()
             tempFile?.delete()
         }
     }
