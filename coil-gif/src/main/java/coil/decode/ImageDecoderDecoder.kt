@@ -13,7 +13,6 @@ import coil.extension.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
-import okio.buffer
 import okio.sink
 
 /**
@@ -38,7 +37,8 @@ class ImageDecoderDecoder : Decoder {
             var isSampled = false
 
             // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
-            source.use { tempFile.sink().buffer().writeAll(it) }
+            val sink = tempFile.sink()
+            source.use { sink.use { source.readAll(sink) } }
             val decoderSource = ImageDecoder.createSource(tempFile)
 
             val drawable = decoderSource.decodeDrawable { info, _ ->

@@ -34,10 +34,11 @@ class AssetContentProvider : ContentProvider() {
     ): Cursor {
         // Copy the file out of the private assets directory.
         val context = checkNotNull(context)
-        val source = context.assets.open(uri.pathSegments.joinToString("/")).source().buffer()
+        val source = context.assets.open(uri.pathSegments.joinToString("/")).source()
         val parent = File(context.cacheDir.path + File.separator + uri.pathSegments.dropLast(1)).apply { mkdirs() }
         val file = File(parent, uri.pathSegments.last())
-        file.sink().buffer().writeAll(source)
+        val sink = file.sink().buffer()
+        source.use { sink.use { sink.writeAll(source) } }
 
         // Return a cursor containing the image's file path.
         val cursor = MatrixCursor(arrayOf("_data"))

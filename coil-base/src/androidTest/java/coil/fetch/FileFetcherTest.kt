@@ -34,10 +34,10 @@ class FileFetcherTest {
     @Test
     fun basic() {
         // Copy the asset to filesDir.
-        val source = context.assets.open("normal.jpg").source().buffer()
+        val source = context.assets.open("normal.jpg").source()
         val file = File(context.filesDir.absolutePath + File.separator + "normal.jpg")
         val sink = file.sink().buffer()
-        sink.writeAll(source)
+        source.use { sink.use { sink.writeAll(source) } }
 
         assertTrue(fetcher.handles(file))
 
@@ -55,9 +55,9 @@ class FileFetcherTest {
         val file = File(context.filesDir.absolutePath + File.separator + "file.jpg")
 
         // Copy the asset to filesDir.
-        val source = context.assets.open("normal.jpg").source().buffer()
+        val source = context.assets.open("normal.jpg").source()
         val sink = file.sink().buffer()
-        sink.writeAll(source)
+        source.use { sink.use { sink.writeAll(source) } }
 
         file.setLastModified(1234L)
         val firstKey = fetcher.key(file)
