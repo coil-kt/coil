@@ -1,5 +1,5 @@
 @file:Suppress("unused")
-@file:JvmName("Requests")
+@file:JvmName("Videos")
 
 package coil.extension
 
