@@ -1,4 +1,4 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE", "unused", "NOTHING_TO_INLINE")
+@file:Suppress("EXPERIMENTAL_API_USAGE", "NOTHING_TO_INLINE", "unused")
 
 package coil.util
 

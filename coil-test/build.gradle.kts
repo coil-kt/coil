@@ -4,14 +4,11 @@ import coil.addTestDependencies
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
-    id("com.vanniktech.maven.publish")
     id("kotlin-android")
-    id("org.jetbrains.dokka")
 }
 
 android {
@@ -29,28 +26,21 @@ android {
     }
 }
 
-afterEvaluate {
-    tasks.withType<DokkaTask> {
-        outputDirectory = "$rootDir/docs/api"
-        outputFormat = "gfm"
-    }
-}
-
 dependencies {
-    api(kotlin("stdlib", KotlinCompilerVersion.VERSION))
-    api(Library.KOTLINX_COROUTINES_ANDROID)
+    // compileOnly to avoid circular dependency issues.
+    compileOnly(project(":coil-base"))
 
-    implementation(Library.ANDROIDX_ANNOTATION)
-    implementation(Library.ANDROIDX_APPCOMPAT_RESOURCES)
-    implementation(Library.ANDROIDX_COLLECTION)
+    implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
+    implementation(Library.KOTLINX_COROUTINES_ANDROID)
+
     implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_EXIF_INTERFACE)
+    implementation(Library.ANDROIDX_LIFECYCLE_COMMON)
 
-    api(Library.ANDROIDX_LIFECYCLE_COMMON)
+    implementation(Library.OKHTTP)
+    implementation(Library.OKHTTP_MOCK_WEB_SERVER)
 
-    api(Library.OKHTTP)
-    api(Library.OKIO)
+    implementation(Library.OKIO)
 
-    addTestDependencies(KotlinCompilerVersion.VERSION)
-    addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+    addTestDependencies(KotlinCompilerVersion.VERSION, includeTestProject = false)
+    addAndroidTestDependencies(KotlinCompilerVersion.VERSION, includeTestProject = false)
 }

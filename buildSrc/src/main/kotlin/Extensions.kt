@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.kotlin
+import org.gradle.kotlin.dsl.project
 import kotlin.math.pow
 
 val Project.minSdk: Int
@@ -59,7 +60,11 @@ fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Depend
     return add("androidTestImplementation", dependencyNotation)
 }
 
-fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
+fun DependencyHandler.addTestDependencies(kotlinVersion: String, includeTestProject: Boolean = true) {
+    if (includeTestProject) {
+        testImplementation(project(":coil-test"))
+    }
+
     testImplementation(kotlin("test-junit", kotlinVersion))
     testImplementation(Library.KOTLINX_COROUTINES_TEST)
 
@@ -72,7 +77,11 @@ fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
     testImplementation(Library.ROBOLECTRIC)
 }
 
-fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String) {
+fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeTestProject: Boolean = true) {
+    if (includeTestProject) {
+        androidTestImplementation(project(":coil-test"))
+    }
+
     androidTestImplementation(kotlin("test-junit", kotlinVersion))
 
     androidTestImplementation(Library.ANDROIDX_TEST_CORE)

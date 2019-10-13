@@ -1,8 +1,11 @@
 import coil.Library
+import coil.addAndroidTestDependencies
+import coil.addTestDependencies
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
 import org.jetbrains.dokka.gradle.DokkaAndroidTask
+import org.jetbrains.kotlin.config.KotlinCompilerVersion
 import java.net.URL
 
 plugins {
@@ -45,4 +48,7 @@ dependencies {
     api(project(":coil-base"))
 
     implementation(Library.ANDROIDX_CORE)
+
+    addTestDependencies(KotlinCompilerVersion.VERSION)
+    addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
 }
