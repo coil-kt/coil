@@ -4,7 +4,7 @@ import coil.addTestDependencies
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
-import org.jetbrains.dokka.gradle.DokkaAndroidTask
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
@@ -21,13 +21,6 @@ android {
         targetSdkVersion(project.targetSdk)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    libraryVariants.all {
-        generateBuildConfigProvider?.configure { enabled = false }
-    }
     sourceSets {
         getByName("test").apply {
             assets.srcDirs("src/sharedTest/assets")
@@ -38,13 +31,16 @@ android {
             java.srcDirs("src/sharedTest/java")
         }
     }
+    libraryVariants.all {
+        generateBuildConfigProvider?.configure { enabled = false }
+    }
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
 }
 
 afterEvaluate {
-    tasks.withType<DokkaAndroidTask> {
+    tasks.withType<DokkaTask> {
         outputDirectory = "$rootDir/docs/api"
         outputFormat = "gfm"
     }
