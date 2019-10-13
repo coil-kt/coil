@@ -310,8 +310,10 @@ class RealImageLoaderIntegrationTest {
     }
 
     private fun copyNormalImageAssetToCacheDir(): File {
-        return File(context.cacheDir, IMAGE_NAME).apply {
-            sink().buffer().writeAll(context.assets.open(IMAGE_NAME).source())
-        }
+        val file = File(context.cacheDir, IMAGE_NAME)
+        val source = context.assets.open(IMAGE_NAME).source()
+        val sink = file.sink().buffer()
+        source.use { sink.use { sink.writeAll(source) } }
+        return file
     }
 }
