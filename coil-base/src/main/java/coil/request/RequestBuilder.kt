@@ -373,8 +373,10 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
     @DrawableRes private var placeholderResId: Int
     @DrawableRes private var errorResId: Int
+    @DrawableRes private var fallbackResId: Int
     private var placeholderDrawable: Drawable?
     private var errorDrawable: Drawable?
+    private var fallbackDrawable: Drawable?
 
     constructor(context: Context, defaults: DefaultRequestOptions) : super(defaults) {
         this.context = context
@@ -385,8 +387,10 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
         placeholderResId = 0
         errorResId = 0
+        fallbackResId = 0
         placeholderDrawable = defaults.placeholder
         errorDrawable = defaults.error
+        fallbackDrawable = defaults.fallback
     }
 
     constructor(context: Context, request: LoadRequest) : super(request) {
@@ -398,8 +402,10 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
         placeholderResId = request.placeholderResId
         errorResId = request.errorResId
+        fallbackResId = request.fallbackResId
         placeholderDrawable = request.placeholderDrawable
         errorDrawable = request.errorDrawable
+        fallbackDrawable = request.fallbackDrawable
     }
 
     /**
@@ -479,7 +485,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * Set a placeholder drawable to use when the request starts.
+     * Set the placeholder drawable to use when the request starts.
      */
     fun placeholder(@DrawableRes drawableResId: Int) = apply {
         this.placeholderResId = drawableResId
@@ -487,7 +493,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * Set a placeholder drawable to use when the request starts.
+     * Set the placeholder drawable to use when the request starts.
      */
     fun placeholder(drawable: Drawable?) = apply {
         this.placeholderDrawable = drawable
@@ -495,7 +501,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * Set an error drawable to use if the request fails.
+     * Set the error drawable to use if the request fails.
      */
     fun error(@DrawableRes drawableResId: Int) = apply {
         this.errorResId = drawableResId
@@ -503,11 +509,27 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * Set an error drawable to use if the request fails.
+     * Set the error drawable to use if the request fails.
      */
     fun error(drawable: Drawable?) = apply {
         this.errorDrawable = drawable
         this.errorResId = 0
+    }
+
+    /**
+     * Set the fallback drawable to use if [data] is null.
+     */
+    fun fallback(@DrawableRes drawableResId: Int) = apply {
+        this.fallbackResId = drawableResId
+        this.fallbackDrawable = null
+    }
+
+    /**
+     * Set the fallback drawable to use if [data] is null.
+     */
+    fun fallback(drawable: Drawable?) = apply {
+        this.fallbackDrawable = drawable
+        this.fallbackResId = 0
     }
 
     /**
@@ -539,8 +561,10 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             allowRgb565,
             placeholderResId,
             errorResId,
+            fallbackResId,
             placeholderDrawable,
-            errorDrawable
+            errorDrawable,
+            fallbackDrawable
         )
     }
 }
