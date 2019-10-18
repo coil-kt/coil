@@ -68,7 +68,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                     val bitmap = retriever.getScaledFrameAtTime(frameMicros, OPTION_CLOSEST_SYNC, size.width, size.height)
                     if (bitmap != null) {
                         return DecodeResult(
-                            drawable = ensureValidConfig(pool, bitmap, options.config).toDrawable(context.resources),
+                            drawable = ensureValidConfig(pool, bitmap, options).toDrawable(context.resources),
                             isSampled = true
                         )
                     }
@@ -81,7 +81,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
             }
 
             return DecodeResult(
-                drawable = ensureValidConfig(pool, bitmap, options.config).toDrawable(context.resources),
+                drawable = ensureValidConfig(pool, bitmap, options).toDrawable(context.resources),
                 isSampled = false
             )
         } finally {
@@ -95,12 +95,12 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
     }
 
     /** Copy the input [Bitmap] to a non-hardware [Bitmap.Config] if necessary. */
-    private fun ensureValidConfig(pool: BitmapPool, bitmap: Bitmap, config: Bitmap.Config): Bitmap {
-        if (config == bitmap.config) {
+    private fun ensureValidConfig(pool: BitmapPool, bitmap: Bitmap, options: Options): Bitmap {
+        if (options.config == bitmap.config || (options.allowRgb565 && options.config == Bitmap.Config.RGB_565)) {
             return bitmap
         }
 
-        val safeBitmap = pool.get(bitmap.width, bitmap.height, config)
+        val safeBitmap = pool.get(bitmap.width, bitmap.height, options.config)
         safeBitmap.applyCanvas {
             drawBitmap(bitmap, 0f, 0f, paint)
         }
