@@ -31,8 +31,8 @@ import java.io.File
 class VideoFrameDecoder(private val context: Context) : Decoder {
 
     companion object {
-        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
         const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
+        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
