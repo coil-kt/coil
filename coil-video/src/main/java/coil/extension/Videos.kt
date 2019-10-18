@@ -4,10 +4,9 @@
 package coil.extension
 
 import coil.decode.VideoFrameDecoder
+import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Parameters
 import coil.request.RequestBuilder
-
-private const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
 
 /**
  * Set the time **in milliseconds** of the frame to extract from a video.
@@ -31,4 +30,4 @@ fun RequestBuilder<*>.videoFrameMicros(frameMicros: Long) {
  *
  * @see VideoFrameDecoder
  */
-fun Parameters.videoFrameMicros(): Long? = value(VIDEO_FRAME_MICROS_KEY) as? Long
+fun Parameters.videoFrameMicros(): Long? = value(VIDEO_FRAME_MICROS_KEY) as Long?

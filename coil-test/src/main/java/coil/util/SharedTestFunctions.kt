@@ -4,6 +4,7 @@ package coil.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ColorSpace
 import coil.ComponentRegistry
 import coil.DefaultRequestOptions
@@ -81,6 +82,13 @@ fun createOptions(
         networkCachePolicy,
         diskCachePolicy
     )
+}
+
+fun Context.decodeBitmapAsset(fileName: String): Bitmap {
+    val options = BitmapFactory.Options().apply {
+        inPreferredConfig = Bitmap.Config.ARGB_8888
+    }
+    return checkNotNull(BitmapFactory.decodeStream(assets.open(fileName), null, options))
 }
 
 inline fun createGetRequest(

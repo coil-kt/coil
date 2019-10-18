@@ -3,6 +3,8 @@
 package coil.decode
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Paint
 import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
@@ -10,6 +12,7 @@ import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import android.os.Build.VERSION_CODES.O_MR1
+import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
 import coil.extension.videoFrameMicros
@@ -26,6 +29,12 @@ import java.io.File
  */
 class VideoFrameDecoder(private val context: Context) : Decoder {
 
+    companion object {
+        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
+    }
+
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+
     override fun handles(source: BufferedSource, mimeType: String?) = mimeType?.startsWith("video") == true
 
     override suspend fun decode(
@@ -35,15 +44,17 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
         options: Options
     ): DecodeResult {
         var tempFile: File? = null
+        var mediaDataSource: BufferedMediaDataSource? = null
         val retriever = MediaMetadataRetriever()
 
         try {
             if (SDK_INT >= M) {
-                source.use { retriever.setDataSource(BufferedMediaDataSource(it)) }
+                mediaDataSource = BufferedMediaDataSource(source)
+                retriever.setDataSource(mediaDataSource)
             } else {
                 // Write the source to disk so it can be read on pre-M.
                 tempFile = createTempFile()
-                source.use { tempFile.sink().use { source.readAll(it) } }
+                source.use { tempFile.sink().use(source::readAll) }
                 retriever.setDataSource(tempFile.path)
             }
 
@@ -57,7 +68,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                     val bitmap = retriever.getScaledFrameAtTime(frameMicros, OPTION_CLOSEST_SYNC, size.width, size.height)
                     if (bitmap != null) {
                         return DecodeResult(
-                            drawable = bitmap.toDrawable(context.resources),
+                            drawable = ensureValidConfig(pool, bitmap, options.config).toDrawable(context.resources),
                             isSampled = true
                         )
                     }
@@ -70,12 +81,29 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
             }
 
             return DecodeResult(
-                drawable = bitmap.toDrawable(context.resources),
+                drawable = ensureValidConfig(pool, bitmap, options.config).toDrawable(context.resources),
                 isSampled = false
             )
         } finally {
             retriever.release()
-            tempFile?.delete()
+            if (SDK_INT >= M) {
+                mediaDataSource?.close()
+            } else {
+                tempFile?.delete()
+            }
         }
+    }
+
+    /** Copy the input [Bitmap] to a non-hardware [Bitmap.Config] if necessary. */
+    private fun ensureValidConfig(pool: BitmapPool, bitmap: Bitmap, config: Bitmap.Config): Bitmap {
+        if (config == bitmap.config) {
+            return bitmap
+        }
+
+        val safeBitmap = pool.get(bitmap.width, bitmap.height, config)
+        safeBitmap.applyCanvas {
+            drawBitmap(bitmap, 0f, 0f, paint)
+        }
+        return safeBitmap
     }
 }
