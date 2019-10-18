@@ -99,7 +99,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
 
     /** Copy the input [Bitmap] to a non-hardware [Bitmap.Config] if necessary. */
     private fun ensureValidConfig(pool: BitmapPool, bitmap: Bitmap, options: Options): Bitmap {
-        if (options.config == bitmap.config || (options.allowRgb565 && options.config == Bitmap.Config.RGB_565)) {
+        if (options.config == bitmap.config || (options.allowRgb565 && bitmap.config == Bitmap.Config.RGB_565)) {
             return bitmap
         }
 
