@@ -17,6 +17,7 @@ import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
 import coil.extension.videoFrameMicros
 import coil.extension.videoFrameMillis
+import coil.extension.videoFrameOption
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
@@ -31,6 +32,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
 
     companion object {
         const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
+        const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -58,6 +60,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                 retriever.setDataSource(tempFile.path)
             }
 
+            val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
             val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
             // Frame sampling is only supported on O_MR1 and above.
@@ -65,7 +68,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                 val width = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
                 val height = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
                 if (width > 0 && height > 0 && size.width < width && size.height < height) {
-                    val bitmap = retriever.getScaledFrameAtTime(frameMicros, OPTION_CLOSEST_SYNC, size.width, size.height)
+                    val bitmap = retriever.getScaledFrameAtTime(frameMicros, option, size.width, size.height)
                     if (bitmap != null) {
                         return DecodeResult(
                             drawable = ensureValidConfig(pool, bitmap, options).toDrawable(context.resources),
@@ -76,7 +79,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
             }
 
             // Read the frame at its full size.
-            val bitmap = checkNotNull(retriever.getFrameAtTime(frameMicros, OPTION_CLOSEST_SYNC)) {
+            val bitmap = checkNotNull(retriever.getFrameAtTime(frameMicros, option)) {
                 "Failed to decode frame at $frameMicros microseconds."
             }
 
