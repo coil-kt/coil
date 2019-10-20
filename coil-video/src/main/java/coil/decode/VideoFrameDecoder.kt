@@ -54,7 +54,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                 mediaDataSource = BufferedMediaDataSource(source)
                 retriever.setDataSource(mediaDataSource)
             } else {
-                // Write the source to disk so it can be read on pre-M.
+                // Write the source to a temp file so it can be read on pre-M.
                 tempFile = createTempFile()
                 source.use { tempFile.sink().use(source::readAll) }
                 retriever.setDataSource(tempFile.path)

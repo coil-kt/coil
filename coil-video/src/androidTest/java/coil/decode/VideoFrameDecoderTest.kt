@@ -53,7 +53,6 @@ class VideoFrameDecoderTest {
 
     @Test
     fun specificFrameTime() {
-        val frameMicros = 32600000L
         val result = runBlocking {
             decoder.decode(
                 pool = pool,
@@ -61,7 +60,7 @@ class VideoFrameDecoderTest {
                 size = OriginalSize,
                 options = createOptions(
                     parameters = Parameters {
-                        set(VIDEO_FRAME_MICROS_KEY, frameMicros, frameMicros.toString())
+                        set(VIDEO_FRAME_MICROS_KEY, 32600000L)
                     }
                 )
             )
