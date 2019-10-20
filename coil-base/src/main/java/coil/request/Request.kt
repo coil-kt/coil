@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.ColorSpace
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
+import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import coil.DefaultRequestOptions
 import coil.ImageLoader
@@ -57,28 +58,32 @@ sealed class Request {
     abstract val error: Drawable?
 
     /**
-     * A set of callbacks for a [Request]. All callbacks are guaranteed to be called on the main thread.
+     * A set of callbacks for a [Request].
      */
     interface Listener {
 
         /**
          * Called when the request is dispatched and starts loading the image.
          */
+        @MainThread
         fun onStart(data: Any) {}
 
         /**
          * Called when the request successfully loads the image.
          */
+        @MainThread
         fun onSuccess(data: Any, source: DataSource) {}
 
         /**
          * Called when the request is cancelled.
          */
+        @MainThread
         fun onCancel(data: Any) {}
 
         /**
          * Called when the request fails to load the image.
          */
+        @MainThread
         fun onError(data: Any, throwable: Throwable) {}
     }
 }
