@@ -8,6 +8,7 @@ import coil.bitmappool.BitmapPool
 import coil.decode.DecodeResult
 import coil.fetch.DrawableResult
 import coil.request.RequestBuilder
+import coil.size.Size
 
 /**
  * An interface for making transformations to an image's pixel data.
@@ -42,8 +43,12 @@ interface Transformation {
      * [BitmapPool] to get new [Bitmap]s. Also, you should return every Bitmap except the output [Bitmap] to the
      * pool so that they can be reused.
      *
+     * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
+     * @param input The input [Bitmap] to transform.
+     * @param size The size for the image request.
+     *
      * @see BitmapPool.get
      * @see BitmapPool.put
      */
-    suspend fun transform(pool: BitmapPool, input: Bitmap): Bitmap
+    suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap
 }

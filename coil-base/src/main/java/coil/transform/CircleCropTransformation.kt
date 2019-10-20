@@ -8,6 +8,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
+import coil.size.Size
 import kotlin.math.min
 
 /**
@@ -21,7 +22,7 @@ class CircleCropTransformation : Transformation {
 
     override fun key(): String = CircleCropTransformation::class.java.name
 
-    override suspend fun transform(pool: BitmapPool, input: Bitmap): Bitmap {
+    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
         val minSize = min(input.width, input.height)

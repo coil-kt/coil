@@ -13,6 +13,7 @@ import android.renderscript.ScriptIntrinsicBlur
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
+import coil.size.Size
 
 /**
  * A [Transformation] that applies a Gaussian blur to an image.
@@ -41,7 +42,7 @@ class BlurTransformation(
 
     override fun key(): String = "${BlurTransformation::class.java.name}-$radius-$sampling"
 
-    override suspend fun transform(pool: BitmapPool, input: Bitmap): Bitmap {
+    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
         val scaledWidth = (input.width / sampling).toInt()
