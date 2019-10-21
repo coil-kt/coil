@@ -19,6 +19,10 @@ import okio.BufferedSource
  */
 class GifDecoder : Decoder {
 
+    companion object {
+        const val REPEAT_COUNT_KEY = "coil#repeat_count"
+    }
+
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source)
     }
