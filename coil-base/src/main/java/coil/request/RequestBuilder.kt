@@ -125,14 +125,14 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     inline fun listener(
         crossinline onStart: (data: Any) -> Unit = {},
-        crossinline onCancel: (data: Any) -> Unit = {},
-        crossinline onError: (data: Any, throwable: Throwable) -> Unit = { _, _ -> },
+        crossinline onCancel: (data: Any?) -> Unit = {},
+        crossinline onError: (data: Any?, throwable: Throwable) -> Unit = { _, _ -> },
         crossinline onSuccess: (data: Any, source: DataSource) -> Unit = { _, _ -> }
     ): T = self {
         listener(object : Request.Listener {
             override fun onStart(data: Any) = onStart(data)
-            override fun onCancel(data: Any) = onCancel(data)
-            override fun onError(data: Any, throwable: Throwable) = onError(data, throwable)
+            override fun onCancel(data: Any?) = onCancel(data)
+            override fun onError(data: Any?, throwable: Throwable) = onError(data, throwable)
             override fun onSuccess(data: Any, source: DataSource) = onSuccess(data, source)
         })
     }

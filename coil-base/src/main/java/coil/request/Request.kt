@@ -83,13 +83,13 @@ sealed class Request {
          * Called when the request is cancelled.
          */
         @MainThread
-        fun onCancel(data: Any) {}
+        fun onCancel(data: Any?) {}
 
         /**
          * Called when the request fails to load the image.
          */
         @MainThread
-        fun onError(data: Any, throwable: Throwable) {}
+        fun onError(data: Any?, throwable: Throwable) {}
     }
 }
 
