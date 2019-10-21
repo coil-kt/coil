@@ -1,15 +1,14 @@
 @file:Suppress("unused")
-@file:JvmName("Requests")
+@file:JvmName("Gifs")
 
 package coil.extension
 
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
+import coil.decode.GifDecoder.Companion.REPEAT_COUNT_KEY
 import coil.drawable.MovieDrawable
 import coil.request.Parameters
 import coil.request.RequestBuilder
-
-private const val REPEAT_COUNT_KEY = "coil#repeat_count"
 
 /**
  * Set the number of times to repeat the animation if the result is an animated [Drawable].
@@ -25,4 +24,4 @@ fun RequestBuilder<*>.repeatCount(repeatCount: Int) {
 }
 
 /** Get the number of times to repeat the animation if the result is an animated [Drawable]. */
-fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY) as? Int
+fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY) as Int?

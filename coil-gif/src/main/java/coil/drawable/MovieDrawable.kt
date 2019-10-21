@@ -45,10 +45,6 @@ class MovieDrawable(
         const val REPEAT_INFINITE = -1
     }
 
-    init {
-        require(SDK_INT < O || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
-    }
-
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
@@ -68,6 +64,10 @@ class MovieDrawable(
 
     private var repeatCount = REPEAT_INFINITE
     private var loopIteration = 0
+
+    init {
+        require(SDK_INT < O || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
+    }
 
     override fun draw(canvas: Canvas) {
         val softwareCanvas = checkNotNull(softwareCanvas)

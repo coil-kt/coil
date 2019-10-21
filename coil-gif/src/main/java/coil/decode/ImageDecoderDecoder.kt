@@ -21,6 +21,10 @@ import okio.sink
 @RequiresApi(P)
 class ImageDecoderDecoder : Decoder {
 
+    companion object {
+        const val REPEAT_COUNT_KEY = GifDecoder.REPEAT_COUNT_KEY
+    }
+
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) || DecodeUtils.isAnimatedWebP(source)
     }
