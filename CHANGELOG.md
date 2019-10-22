@@ -3,6 +3,7 @@
 ## [0.8.0] - October 22, 2019
 
 - **Breaking**: `SvgDrawable` has been removed. Instead, SVGs are now prerendered to `BitmapDrawable`s by `SvgDecoder`. This makes SVGs **significantly less expensive to render on the main thread**. Also `SvgDecoder` now requires a `Context` in its constructor.
+- **Breaking**: `SparseIntArraySet` extension functions have moved to the `coil.extension` package.
 
 ---
 
