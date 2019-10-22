@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
-import androidx.collection.arraySetOf
 import coil.bitmappool.BitmapPool
 import coil.decode.DecodeResult
 import coil.fetch.DrawableResult
@@ -24,9 +23,9 @@ interface Transformation {
          * A whitelist of valid bitmap configs for the input and output bitmaps of [transform].
          */
         internal val VALID_CONFIGS = if (SDK_INT >= O) {
-            arraySetOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
+            arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
         } else {
-            arraySetOf(Bitmap.Config.ARGB_8888)
+            arrayOf(Bitmap.Config.ARGB_8888)
         }
     }
 
