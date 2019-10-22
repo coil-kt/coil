@@ -73,6 +73,7 @@ val imageLoader = ImageLoader(context) {
 - Fix: Support nested Android asset files. Thanks @JaCzekanski.
 - Fix: Guard against running out of file descriptors on Android O and O_MR1.
 - Fix: Don't crash when disabling memory cache. Thanks @hansenji.
+- Fix: Ensure Target.cancel is always called from the main thread.
 
 ---
 
