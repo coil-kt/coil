@@ -131,10 +131,14 @@ internal class RealImageLoader(
         val data = request.data
         val target = request.target
         if (data == null) {
-            if (target is ViewTarget<*>) {
-                target.cancel()
+            return if (target is ViewTarget<*>) {
+                val job = loaderScope.launch(exceptionHandler) {
+                    target.cancel()
+                }
+                BaseTargetRequestDisposable(job)
+            } else {
+                EmptyRequestDisposable
             }
-            return EmptyRequestDisposable
         }
 
         // Start loading the data.
