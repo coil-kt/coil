@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.8.0] - October 22, 2019
+
+- **Breaking**: `SvgDrawable` has been removed. Instead, SVGs are now prerendered to `BitmapDrawable`s by `SvgDecoder`. This makes SVGs **significantly less expensive to render on the main thread**. Also `SvgDecoder` now requires a `Context` in its constructor.
+
+---
+
+- **New**: Support setting per-request network headers. [See here for more info](https://github.com/coil-kt/coil/pull/120).
+- **New**: Add new `Parameters` API to support passing custom data through the image pipeline.
+- **New**: Support individual corner radii in RoundedCornersTransformation. Thanks @khatv911.
+- **New**: Add `ImageView.clear()` to support proactively freeing resources.
+- **New**: Support loading resources from other packages.
+- **New**: Add `subtractPadding` attribute to ViewSizeResolver to enable/disable subtracting a view's padding when measuring.
+- **New**: Improve HttpUrlFetcher MIME type detection.
+- **New**: Add Animatable2Compat support to MovieDrawable and CrossfadeDrawable.
+- **New**: Add `RequestBuilder<*>.repeatCount` to set the repeat count for a GIF.
+- **New**: Add BitmapPool creation to the public API.
+- **New**: Annotate Request.Listener methods with `@MainThread`.
+
+---
+
+- Fix: Make CoilContentProvider visible for testing.
+- Fix: Include night mode in the resource cache key.
+- Fix: Work around ImageDecoder native crash by temporarily writing the source to disk.
+- Fix: Correctly handle contact display photo uris.
+- Fix: Pass tint to CrossfadeDrawable's children.
+- Fix: Fix several instances of not closing sources.
+- Fix: Add a blacklist of devices with broken/incomplete hardware bitmap implementations.
+
+---
+
+- Compile against SDK 29.
+- Update Kotlin Coroutines to 1.3.2.
+- Update OkHttp to 3.12.6.
+- Update Okio to 2.4.1.
+- Change `appcompat-resources` from `compileOnly` to `implementation` for `coil-base`.
+
 ## [0.7.0] - September 8, 2019
 - **Breaking**: `ImageLoaderBuilder.okHttpClient(OkHttpClient.Builder.() -> Unit)` is now `ImageLoaderBuilder.okHttpClient(() -> OkHttpClient)`. The initializer is also now called lazily on a background thread. **If you set a custom `OkHttpClient` you must set `OkHttpClient.cache` to enable disk caching.** If you don't set a custom `OkHttpClient`, Coil will create the default `OkHttpClient` which has disk caching enabled. The default Coil cache can be created using `CoilUtils.createDefaultCache(context)`. e.g.:
 
