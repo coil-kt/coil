@@ -12,16 +12,15 @@ import coil.request.RequestBuilder
 /**
  * An interface for making transformations to an image's pixel data.
  *
- * NOTE: Transformations are only applied if [DrawableResult.drawable] or [DecodeResult.drawable] is a [BitmapDrawable].
+ * NOTE: If [DrawableResult.drawable] or [DecodeResult.drawable] is not a [BitmapDrawable], it will be converted to one.
+ * This will cause animated drawables to only draw the first frame of their animation.
  *
  * @see RequestBuilder.transformations
  */
 interface Transformation {
 
     companion object {
-        /**
-         * A whitelist of valid bitmap configs for the input and output bitmaps of [transform].
-         */
+        /** A whitelist of valid bitmap configs for the input and output bitmaps of [transform]. */
         internal val VALID_CONFIGS = if (SDK_INT >= O) {
             arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
         } else {

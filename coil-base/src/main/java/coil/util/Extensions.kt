@@ -30,7 +30,9 @@ import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
 import coil.memory.ViewTargetRequestManager
+import coil.request.LoadRequest
 import coil.request.Parameters
+import coil.request.Request
 import coil.size.Scale
 import coil.target.ViewTarget
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -220,3 +222,7 @@ private val EMPTY_HEADERS = Headers.Builder().build()
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
 
 internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
+
+internal fun Request.isDiskPreload(): Boolean {
+    return this is LoadRequest && target == null && !memoryCachePolicy.writeEnabled
+}
