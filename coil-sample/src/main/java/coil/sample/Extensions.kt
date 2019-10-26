@@ -9,11 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
 import coil.size.PixelSize
 
 inline fun <reified V : View> ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): V {
@@ -21,10 +18,6 @@ inline fun <reified V : View> ViewGroup.inflate(@LayoutRes layoutRes: Int, attac
 }
 
 inline fun <T> unsafeLazy(noinline initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)
-
-inline fun <reified T : ViewModel> FragmentActivity.bindViewModel() = unsafeLazy {
-    ViewModelProviders.of(this).get(T::class.java)
-}
 
 inline fun <reified R : Any> Array<*>.findInstance(): R? = find { it is R } as R?
 
