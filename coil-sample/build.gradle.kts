@@ -39,6 +39,7 @@ dependencies {
 
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
 
+    implementation(Library.ANDROIDX_ACTIVITY)
     implementation(Library.ANDROIDX_APPCOMPAT)
     implementation(Library.ANDROIDX_CONSTRAINT_LAYOUT)
     implementation(Library.ANDROIDX_CORE)

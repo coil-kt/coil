@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
@@ -19,7 +20,7 @@ import coil.api.load
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by bindViewModel()
+    private val viewModel: MainViewModel by viewModels()
 
     private val toolbar: Toolbar by bindView(R.id.toolbar)
     private val list: RecyclerView by bindView(R.id.list)
