@@ -12,7 +12,6 @@ import android.provider.ContactsContract.RawContacts
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import coil.bitmappool.BitmapPool
-import coil.bitmappool.FakeBitmapPool
 import coil.size.PixelSize
 import coil.util.createOptions
 import kotlinx.coroutines.runBlocking
@@ -38,13 +37,13 @@ class ContentUriFetcherTest {
         android.Manifest.permission.WRITE_CONTACTS
     )
 
-    // Re-use the same contact across all tests.
-    private val contactId by lazy { createFakeContact() }
+    // Re-use the same contact across all tests. Must be created lazily.
+    private val contactId by lazy(::createFakeContact)
 
     @Before
     fun before() {
         fetcher = ContentUriFetcher(context)
-        pool = FakeBitmapPool()
+        pool = BitmapPool(0)
     }
 
     @Test

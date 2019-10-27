@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
-import coil.bitmappool.FakeBitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
@@ -29,12 +28,12 @@ class BitmapFactoryDecoderTest {
 
     @Before
     fun before() {
-        pool = FakeBitmapPool()
+        pool = BitmapPool(0)
         service = BitmapFactoryDecoder(context)
     }
 
     @Test
-    fun basicDecode() {
+    fun basic() {
         val source = context.assets.open("normal.jpg").source().buffer()
         val (drawable, isSampled) = runBlocking {
             service.decode(
@@ -104,8 +103,8 @@ class BitmapFactoryDecoderTest {
     fun largeExifMetadata() {
         val size = PixelSize(500, 500)
         val normal = decode("exif/large_metadata_normalized.jpg", size)
-        val largeExifMetadata = decode("exif/large_metadata_normalized.jpg", size)
-        assertTrue(normal.isSimilarTo(largeExifMetadata))
+        val actual = decode("exif/large_metadata_normalized.jpg", size)
+        assertTrue(normal.isSimilarTo(actual))
     }
 
     private fun decode(fileName: String, size: Size): Bitmap = runBlocking {
