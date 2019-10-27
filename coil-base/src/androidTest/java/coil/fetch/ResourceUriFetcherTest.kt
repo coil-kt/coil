@@ -6,7 +6,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
-import coil.bitmappool.FakeBitmapPool
+import coil.bitmappool.BitmapPool
 import coil.decode.DrawableDecoderService
 import coil.map.ResourceUriMapper
 import coil.size.PixelSize
@@ -22,13 +22,13 @@ class ResourceUriFetcherTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
-    private lateinit var pool: FakeBitmapPool
+    private lateinit var pool: BitmapPool
     private lateinit var drawableDecoder: DrawableDecoderService
     private lateinit var fetcher: ResourceUriFetcher
 
     @Before
     fun before() {
-        pool = FakeBitmapPool()
+        pool = BitmapPool(0)
         drawableDecoder = DrawableDecoderService(context, pool)
         fetcher = ResourceUriFetcher(context, drawableDecoder)
     }
