@@ -5,7 +5,6 @@ package coil.fetch
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
-import coil.bitmappool.FakeBitmapPool
 import coil.size.PixelSize
 import coil.util.createMockWebServer
 import coil.util.createOptions
@@ -40,7 +39,7 @@ class HttpUrlFetcherTest {
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg")
         fetcher = HttpUrlFetcher(OkHttpClient())
-        pool = FakeBitmapPool()
+        pool = BitmapPool(0)
     }
 
     @After

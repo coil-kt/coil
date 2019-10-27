@@ -197,7 +197,7 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
-    fun preloadWithMemoryCacheDisabledDoesNotDecode() {
+    fun memoryCacheDisabled_preloadDoesNotDecode() {
         val imageLoader = ImageLoader(context) {
             componentRegistry {
                 add(object : Decoder {
@@ -239,7 +239,7 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
-    fun getWithMemoryCacheDisabledDoesDecode() {
+    fun memoryCacheDisabled_getDoesDecode() {
         var numDecodes = 0
         val imageLoader = ImageLoader(context) {
             componentRegistry {
@@ -304,7 +304,7 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
-    fun requestWithTransformations_emptyTransformationsDoesNotConvertDrawable() {
+    fun applyTransformations_emptyTransformationsDoesNotConvertDrawable() {
         val drawable = ColorDrawable(Color.BLACK)
         val size = PixelSize(100, 100)
         val result = runBlocking {

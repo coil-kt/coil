@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
-import coil.bitmappool.FakeBitmapPool
 import coil.size.PixelSize
 import coil.util.createOptions
 import kotlinx.coroutines.runBlocking
@@ -24,7 +23,7 @@ class AssetUriFetcherTest {
     @Before
     fun before() {
         fetcher = AssetUriFetcher(context)
-        pool = FakeBitmapPool()
+        pool = BitmapPool(0)
     }
 
     @Test
