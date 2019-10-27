@@ -17,6 +17,7 @@ import coil.decode.BitmapFactoryDecoder
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.EmptyDecoder
+import coil.decode.Options
 import coil.extension.isNotEmpty
 import coil.fetch.AssetUriFetcher
 import coil.fetch.BitmapFetcher
@@ -60,6 +61,7 @@ import coil.util.cancel
 import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.getValue
+import coil.util.isDiskPreload
 import coil.util.log
 import coil.util.normalize
 import coil.util.putValue
@@ -340,7 +342,7 @@ internal class RealImageLoader(
     ): DrawableResult = withContext(request.dispatcher) {
         // Convert the data into a Drawable.
         val options = requestService.options(request, size, scale, networkObserver.isOnline())
-        val result = when (val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)) {
+        val baseResult = when (val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)) {
             is SourceResult -> {
                 val decodeResult = try {
                     // Check if we're cancelled.
@@ -377,18 +379,37 @@ internal class RealImageLoader(
         // Check if we're cancelled.
         ensureActive()
 
-        // Transformations can only be applied to BitmapDrawables.
-        val transformedResult = if (result.drawable is BitmapDrawable && request.transformations.isNotEmpty()) {
-            val bitmap = request.transformations.fold(result.drawable.bitmap) { bitmap, transformation ->
-                transformation.transform(bitmapPool, bitmap).also { ensureActive() }
-            }
-            result.copy(drawable = bitmap.toDrawable(context))
-        } else {
-            result
+        // Apply any transformations and prepare to draw.
+        val finalResult = applyTransformations(this, baseResult, request.transformations, size, options)
+        (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
+
+        return@withContext finalResult
+    }
+
+    /** Apply any [Transformation]s and return an updated [DrawableResult]. */
+    @VisibleForTesting
+    internal suspend inline fun applyTransformations(
+        scope: CoroutineScope,
+        result: DrawableResult,
+        transformations: List<Transformation>,
+        size: Size,
+        options: Options
+    ): DrawableResult = scope.run {
+        if (transformations.isEmpty()) {
+            return@run result
         }
 
-        (transformedResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
-        return@withContext transformedResult
+        // Convert the drawable into a BitmapDrawable.
+        val drawable = if (result.drawable is BitmapDrawable) {
+            result.drawable
+        } else {
+            drawableDecoder.convert(result.drawable, size, options.config).toDrawable(context)
+        }
+
+        val bitmap = transformations.fold(drawable.bitmap) { bitmap, transformation ->
+            transformation.transform(bitmapPool, bitmap).also { ensureActive() }
+        }
+        return@run result.copy(drawable = bitmap.toDrawable(context))
     }
 
     override fun onTrimMemory(level: Int) {
@@ -409,10 +430,6 @@ internal class RealImageLoader(
         context.unregisterComponentCallbacks(this)
         networkObserver.shutdown()
         clearMemory()
-    }
-
-    private fun Request.isDiskPreload(): Boolean {
-        return this is LoadRequest && target == null && !memoryCachePolicy.writeEnabled
     }
 
     private fun assertNotShutdown() {

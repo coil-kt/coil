@@ -2,7 +2,9 @@ package coil
 
 import android.content.ContentResolver
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
@@ -13,15 +15,19 @@ import coil.api.loadAny
 import coil.base.test.R
 import coil.bitmappool.BitmapPool
 import coil.decode.BitmapFactoryDecoder
+import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.AssetUriFetcher
+import coil.fetch.DrawableResult
 import coil.request.CachePolicy
 import coil.size.PixelSize
 import coil.size.Size
+import coil.transform.CircleCropTransformation
 import coil.util.Utils
 import coil.util.createMockWebServer
+import coil.util.createOptions
 import coil.util.getDrawableCompat
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
@@ -42,6 +48,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 /**
@@ -57,12 +64,12 @@ class RealImageLoaderIntegrationTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     private lateinit var server: MockWebServer
-    private lateinit var imageLoader: ImageLoader
+    private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
         server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
-        imageLoader = ImageLoader(context)
+        imageLoader = ImageLoader(context) as RealImageLoader
     }
 
     @After
@@ -212,7 +219,7 @@ class RealImageLoaderIntegrationTest {
             mkdirs()
         }
 
-        assertTrue(cacheFolder.listFiles().orEmpty().isEmpty())
+        assertTrue(cacheFolder.listFiles().isNullOrEmpty())
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
@@ -260,7 +267,7 @@ class RealImageLoaderIntegrationTest {
             mkdirs()
         }
 
-        assertTrue(cacheFolder.listFiles().orEmpty().isEmpty())
+        assertTrue(cacheFolder.listFiles().isNullOrEmpty())
 
         runBlocking {
             imageLoader.get(url) {
@@ -271,6 +278,50 @@ class RealImageLoaderIntegrationTest {
         val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
         assertNotNull(cacheFile, "Did not find the image file in the disk cache.")
         assertEquals(1, numDecodes)
+    }
+
+    @Test
+    fun applyTransformations_transformationsConvertDrawableToBitmap() {
+        val drawable = ColorDrawable(Color.BLACK)
+        val size = PixelSize(100, 100)
+        val result = runBlocking {
+            imageLoader.applyTransformations(
+                scope = this,
+                result = DrawableResult(
+                    drawable = drawable,
+                    isSampled = false,
+                    dataSource = DataSource.MEMORY
+                ),
+                transformations = listOf(CircleCropTransformation()),
+                size = size,
+                options = createOptions()
+            )
+        }
+
+        val resultDrawable = result.drawable
+        assertTrue(resultDrawable is BitmapDrawable)
+        assertTrue(resultDrawable.bitmap.run { width == size.width && height == size.height })
+    }
+
+    @Test
+    fun requestWithTransformations_emptyTransformationsDoesNotConvertDrawable() {
+        val drawable = ColorDrawable(Color.BLACK)
+        val size = PixelSize(100, 100)
+        val result = runBlocking {
+            imageLoader.applyTransformations(
+                scope = this,
+                result = DrawableResult(
+                    drawable = drawable,
+                    isSampled = false,
+                    dataSource = DataSource.MEMORY
+                ),
+                transformations = emptyList(),
+                size = size,
+                options = createOptions()
+            )
+        }
+
+        assertSame(drawable, result.drawable)
     }
 
     private fun testLoad(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
