@@ -90,25 +90,117 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
     }
 }
 
-/** Maintains a list of devices with broken/incomplete hardware bitmap implementations. */
+/**
+ * Maintains a list of devices with broken/incomplete/unstable hardware bitmap implementations.
+ *
+ * Model names are retrieved from [Google's official device list](https://support.google.com/googleplay/answer/1727131?hl=en).
+ */
 private object HardwareBitmapBlacklist {
 
     val IS_BLACKLISTED = isBlacklisted()
 
-    /** Modified from Glide's HardwareConfigState. */
     private fun isBlacklisted(): Boolean {
-        val model = Build.MODEL
-            ?.takeIf { it.count() >= 7 }
-            ?.substring(0, 7)
-            ?: return false
-
-        if (model == "LG-Q710") {
-            return true
-        }
+        val model = Build.MODEL ?: return false
 
         if (SDK_INT == O) {
-            val models = arrayOf("SM-N935", "SM-J720", "SM-G960", "SM-G965", "SM-G935", "SM-G930", "SM-A520")
-            return models.contains(model)
+            return model in arrayOf(
+                // Moto G6 Play
+                "Moto G Play", "moto g(6) play",
+
+                // Moto E5 Play/Cruise
+                "Moto E", "moto e5 cruise", "moto e5 play",
+
+                // Samsung Galaxy Amp Prime 3
+                "SM-J337AZ",
+
+                // Samsung Galaxy A5 (2017)
+                "SM-A520F", "SM-A520X", "SM-A520W", "SM-A520K", "SM-A520L", "SM-A520S",
+
+                // Samsung Galaxy A8 (2018)
+                "SM-A530F", "SM-A530X", "SM-A530W", "SM-A530N",
+
+                // Samsung Galaxy J7 Duo
+                "SM-J720F", "SM-J720M",
+
+                // Samsung Galaxy J7 Crown
+                "SM-S767VL", "SM-S757BL",
+
+                // Samsung Galaxy S7
+                "SM-G930F", "SM-G930X", "SM-G930W8", "SM-G930K", "SM-G930L", "SM-G930S", "SM-G930R7", "SAMSUNG-SM-G930AZ",
+                "SAMSUNG-SM-G930A", "SM-G930VC", "SM-G9300", "SM-G9308", "SM-G930R6", "SM-G930T1", "SM-G930P", "SM-G930VL",
+                "SM-G930T", "SM-G930U", "SM-G930R4", "SM-G930V",
+
+                // Samsung Galaxy S7 Edge
+                "SC-02H", "SCV33", "SM-G935X", "SM-G935W8", "SM-G935K", "SM-G935S", "SAMSUNG-SM-G935A", "SM-G935VC", "SM-G935P",
+                "SM-G935T", "SM-G935R4", "SM-G935V", "SM-G935F", "SM-G935L", "SM-G9350", "SM-G935U",
+
+                // Samsung Galaxy Note 7 FE
+                "SM-N935F", "SM-N935K", "SM-N935L", "SM-N935S",
+
+                // Samsung Galaxy Note 8
+                "GT-N5100", "GT-N5105", "GT-N5120", "SAMSUNG-SGH-I467", "SGH-I467M", "GT-N5110", "SHW-M500W",
+
+                // Samsung Galaxy S9
+                "SC-02K", "SCV38", "SM-G960F", "SM-G960N", "SM-G9600", "SM-G9608", "SM-G960W", "SM-G960U", "SM-G960U1",
+
+                // Samsung Galaxy S9+
+                "SC-03K", "SCV39", "SM-G965F", "SM-G965N", "SM-G9650", "SM-G965W", "SM-G965U", "SM-G965U1"
+            )
+        }
+
+        if (SDK_INT == O_MR1) {
+            return model in arrayOf(
+                // Nuu A7L
+                "N5002L",
+
+                // Cubot King Kong 3
+                "KING_KONG_3",
+
+                // BLU VIVO XI+
+                "Vivo XI PLUS", "Vivo XI+",
+
+                // Revvl 2 Plus
+                "REVVL 2 PLUS", "6062W",
+
+                // LG Stylo 4
+                "LM-Q710(FGN)", "LM-Q710.FG", "LM-Q710.FGN", "LML713DL", "LG-Q710AL", "LG-Q710PL",
+
+                // LG Tribute Empire
+                "LM-X220PM",
+
+                // LG K11
+                "LM-X410(FN)", "LM-X410.F", "LM-X410.FN",
+
+                // LG Q7
+                "LM-Q610.FG", "LM-Q610.FGN", "LM-Q617.FGN",
+
+                // Alcatel A30/3T
+                "9027W",
+
+                // Alcatel Tetra
+                "5041C",
+
+                // Alcatel 1X
+                "5059Z",
+
+                // Alcatel TCL A1
+                "A501DL",
+
+                // Alcatel TCL LX
+                "A502DL",
+
+                // Alcatel ONYX
+                "Alcatel_5008R", "5008R",
+
+                // RCA Atlas 10
+                "RCT6B03W13",
+
+                // HTC One Max
+                "HTC One max", "HTC_One_max", "HTC0P3P7",
+
+                // Wiko Life
+                "C210AE"
+            )
         }
 
         return false
