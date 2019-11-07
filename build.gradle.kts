@@ -19,10 +19,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.1")
+        classpath("com.android.tools.build:gradle:3.5.2")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0-SNAPSHOT")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.0")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.0.0")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.1.0")
         classpath(kotlin("gradle-plugin", version = "1.3.50"))
     }
 }
