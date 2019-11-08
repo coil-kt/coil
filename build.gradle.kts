@@ -40,7 +40,7 @@ allprojects {
     version = project.versionName
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version.set("0.34.2")
+        version.set("0.35.0")
         enableExperimentalRules.set(true)
     }
 
