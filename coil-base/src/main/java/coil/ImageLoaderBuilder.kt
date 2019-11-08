@@ -9,7 +9,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
 import coil.drawable.CrossfadeDrawable
-import coil.target.ImageViewTarget
+import coil.transition.CrossfadeTransition
+import coil.transition.Transition
 import coil.util.CoilUtils
 import coil.util.Utils
 import coil.util.getDrawableCompat
@@ -158,25 +159,28 @@ class ImageLoaderBuilder(private val context: Context) {
     }
 
     /**
-     * Enable a crossfade animation with duration [CrossfadeDrawable.DEFAULT_DURATION] milliseconds when loading
-     * images into an [ImageViewTarget].
-     *
-     * NOTE: Crossfading only applies to [ImageViewTarget]s.
+     * Enable a crossfade animation with duration [CrossfadeDrawable.DEFAULT_DURATION] milliseconds
+     * when a request completes successfully.
      *
      * Default: false
      */
-    fun crossfade(enable: Boolean) = apply {
-        this.defaults = this.defaults.copy(crossfadeMillis = if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
-    }
+    fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
     /**
-     * Enable a crossfade animation with [durationMillis] milliseconds when loading images into an [ImageViewTarget].
+     * Enable a crossfade animation with [durationMillis] milliseconds when a request completes successfully.
      *
      * @see `crossfade(Boolean)`
      */
     fun crossfade(durationMillis: Int) = apply {
-        require(durationMillis >= 0) { "Duration must be >= 0." }
-        this.defaults = this.defaults.copy(crossfadeMillis = durationMillis)
+        val factory = if (durationMillis > 0) CrossfadeTransition.Factory(durationMillis) else null
+        this.defaults = this.defaults.copy(transitionFactory = factory)
+    }
+
+    /**
+     * Set the default [Transition.Factory] for each request.
+     */
+    fun transitionFactory(factory: Transition.Factory?) = apply {
+        this.defaults = this.defaults.copy(transitionFactory = factory)
     }
 
     /**

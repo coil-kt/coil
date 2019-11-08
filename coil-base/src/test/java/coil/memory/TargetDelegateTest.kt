@@ -66,7 +66,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), 0)
+            delegate.success(bitmap.toDrawable(context), null)
             assertFalse(counter.invalid(bitmap))
         }
     }
@@ -78,7 +78,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), 0)
+            delegate.success(bitmap.toDrawable(context), null)
             assertTrue(counter.invalid(bitmap))
         }
     }
@@ -101,14 +101,14 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), 0)
+            delegate.success(bitmap.toDrawable(context), null)
             assertTrue(target.success)
             assertTrue(counter.invalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.error(bitmap.toDrawable(context), 0)
+            delegate.error(bitmap.toDrawable(context))
             assertTrue(target.error)
             assertFalse(counter.invalid(bitmap))
         }
@@ -130,7 +130,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), 0)
+            delegate.success(bitmap.toDrawable(context), null)
             assertFalse(counter.invalid(bitmap))
         }
 

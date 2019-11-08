@@ -230,7 +230,8 @@ internal class RealImageLoader(
             // Short circuit if the cached drawable is valid for the target.
             if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, scale, request)) {
                 log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                targetDelegate.success(cachedDrawable, 0)
+                val transition = request.transitionFactory?.newTransition(true)
+                targetDelegate.success(cachedDrawable, transition)
                 request.listener?.onSuccess(data, DataSource.MEMORY)
                 return@innerJob cachedDrawable
             }
@@ -245,7 +246,8 @@ internal class RealImageLoader(
 
             // Set the final result on the target.
             log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            targetDelegate.success(drawable, request.crossfadeMillis)
+            val transition = request.transitionFactory?.newTransition(false)
+            targetDelegate.success(drawable, transition)
             request.listener?.onSuccess(data, source)
 
             return@innerJob drawable
@@ -265,7 +267,7 @@ internal class RealImageLoader(
                     request.listener?.onCancel(data)
                 } else {
                     log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
-                    targetDelegate.error(request.error, request.crossfadeMillis)
+                    targetDelegate.error(request.error)
                     request.listener?.onError(data, throwable)
                 }
             }

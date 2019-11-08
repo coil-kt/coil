@@ -27,13 +27,13 @@ import kotlin.math.roundToInt
  * @param start The Drawable to crossfade from.
  * @param end The Drawable to crossfade to.
  * @param scale The scaling algorithm for [start] and [end].
- * @param duration The duration of the crossfade animation.
+ * @param durationMillis The duration of the crossfade animation.
  */
 class CrossfadeDrawable(
     private var start: Drawable?,
     val end: Drawable,
     private val scale: Scale = Scale.FIT,
-    private val duration: Int = DEFAULT_DURATION
+    private val durationMillis: Int = DEFAULT_DURATION
 ) : Drawable(), Drawable.Callback, Animatable2Compat {
 
     companion object {
@@ -51,6 +51,8 @@ class CrossfadeDrawable(
     private var isRunning = false
 
     init {
+        require(durationMillis > 0) { "durationMillis must be > 0." }
+
         start?.callback = this
         end.callback = this
     }
@@ -62,7 +64,7 @@ class CrossfadeDrawable(
             return
         }
 
-        val percent = (SystemClock.uptimeMillis() - startTimeMillis) / duration.toDouble()
+        val percent = (SystemClock.uptimeMillis() - startTimeMillis) / durationMillis.toDouble()
         val isDone = percent >= 1.0
 
         // Draw the start Drawable.
