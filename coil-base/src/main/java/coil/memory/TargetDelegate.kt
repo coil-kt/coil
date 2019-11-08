@@ -154,8 +154,7 @@ private suspend inline fun Poolable.onSuccess(result: Drawable, transition: Tran
 
     if (target !is Transition.Adapter) {
         log(TargetDelegate.TAG, Log.WARN) {
-            "Ignoring transition '$transition' as the target '$target' " +
-                "does not implement '${Transition.Adapter::class.java.canonicalName}'."
+            "Ignoring '$transition' as '$target' does not implement coil.transition.Transition\$Adapter."
         }
         target.onSuccess(result)
         return
