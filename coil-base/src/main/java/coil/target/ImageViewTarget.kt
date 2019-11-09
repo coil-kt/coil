@@ -10,7 +10,7 @@ import coil.transition.Transition
 import coil.util.scale
 
 /** A [Target] that handles setting images on an [ImageView]. */
-class ImageViewTarget(
+open class ImageViewTarget(
     override val view: ImageView
 ) : PoolableViewTarget<ImageView>, DefaultLifecycleObserver, Transition.Adapter {
 
@@ -18,18 +18,18 @@ class ImageViewTarget(
 
     override var drawable: Drawable?
         get() = view.drawable
-        set(value) = applyDrawable(value)
+        set(value) = setDrawableInternal(value)
 
     override val scale: Scale
         get() = view.scale
 
-    override fun onStart(placeholder: Drawable?) = applyDrawable(placeholder)
+    override fun onStart(placeholder: Drawable?) = setDrawableInternal(placeholder)
 
-    override fun onSuccess(result: Drawable) = applyDrawable(result)
+    override fun onSuccess(result: Drawable) = setDrawableInternal(result)
 
-    override fun onError(error: Drawable?) = applyDrawable(error)
+    override fun onError(error: Drawable?) = setDrawableInternal(error)
 
-    override fun onClear() = applyDrawable(null)
+    override fun onClear() = setDrawableInternal(null)
 
     override fun onStart(owner: LifecycleOwner) {
         isStarted = true
@@ -41,13 +41,15 @@ class ImageViewTarget(
         updateAnimation()
     }
 
-    private fun applyDrawable(drawable: Drawable?) {
+    /** Set [drawable] to this [ImageView]. */
+    protected open fun setDrawableInternal(drawable: Drawable?) {
         (view.drawable as? Animatable)?.stop()
         view.setImageDrawable(drawable)
         updateAnimation()
     }
 
-    private fun updateAnimation() {
+    /** Start/stop the current [Drawable]'s animation based on the lifecycle state. */
+    protected open fun updateAnimation() {
         val animatable = view.drawable as? Animatable ?: return
         if (isStarted) animatable.start() else animatable.stop()
     }
