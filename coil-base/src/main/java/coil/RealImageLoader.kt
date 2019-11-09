@@ -63,6 +63,7 @@ import coil.util.Emoji
 import coil.util.cancel
 import coil.util.closeQuietly
 import coil.util.emoji
+import coil.util.firstNotNull
 import coil.util.getValue
 import coil.util.isDiskPreload
 import coil.util.log
@@ -216,7 +217,7 @@ internal class RealImageLoader(
 
             // Check the memory cache and set the placeholder.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
-                memoryCache.getValue(cacheKey)
+                memoryCache.getValue(cacheKey) ?: request.commonKeys.firstNotNull { memoryCache.getValue(it) }
             }
             val cachedDrawable = cachedValue?.bitmap?.toDrawable(context)
 

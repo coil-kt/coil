@@ -49,6 +49,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var data: Any?
 
     protected var key: String?
+    protected var commonKeys: List<String>
     protected var listener: Request.Listener?
     protected var sizeResolver: SizeResolver?
     protected var scale: Scale?
@@ -71,6 +72,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         data = null
 
         key = null
+        commonKeys = emptyList()
         listener = null
         sizeResolver = null
         scale = null
@@ -96,6 +98,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         data = request.data
 
         key = request.key
+        commonKeys = request.commonKeys
         listener = request.listener
         sizeResolver = request.sizeResolver
         scale = request.scale
@@ -258,6 +261,14 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun key(key: String?): T = self {
         this.key = key
+    }
+
+    fun commonKeys(vararg commonKeys: String): T = self {
+        this.commonKeys = commonKeys.toList()
+    }
+
+    fun commonKeys(commonKeys: List<String>): T = self {
+        this.commonKeys = commonKeys.toList()
     }
 
     /**
@@ -498,6 +509,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             lifecycle,
             transitionFactory,
             key,
+            commonKeys,
             listener,
             sizeResolver,
             scale,
@@ -540,6 +552,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
         return GetRequest(
             checkNotNull(data) { "data == null" },
             key,
+            commonKeys,
             listener,
             sizeResolver,
             scale,
