@@ -17,16 +17,20 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
+import coil.size.Scale
 import coil.size.Size
-import coil.util.height
 import coil.util.normalize
 import coil.util.toDrawable
-import coil.util.width
+import kotlin.math.roundToInt
 
 internal class DrawableDecoderService(
     private val context: Context,
     private val bitmapPool: BitmapPool
 ) {
+
+    companion object {
+        private const val DEFAULT_SIZE = 512
+    }
 
     @WorkerThread
     fun convertIfNecessary(
@@ -59,9 +63,28 @@ internal class DrawableDecoderService(
             }
         }
 
-        val (width, height) = when (size) {
-            is OriginalSize -> PixelSize(drawable.width, drawable.height)
-            is PixelSize -> size
+        val width: Int
+        val height: Int
+        val unsafeIntrinsicWidth = drawable.intrinsicWidth
+        val unsafeIntrinsicHeight = drawable.intrinsicHeight
+        val intrinsicWidth = if (unsafeIntrinsicWidth > 0) unsafeIntrinsicWidth else DEFAULT_SIZE
+        val intrinsicHeight = if (unsafeIntrinsicHeight > 0) unsafeIntrinsicHeight else DEFAULT_SIZE
+        when (size) {
+            is OriginalSize -> {
+                width = intrinsicWidth
+                height = intrinsicHeight
+            }
+            is PixelSize -> {
+                val multiplier = DecodeUtils.computeSizeMultiplier(
+                    srcWidth = intrinsicWidth.toFloat(),
+                    srcHeight = intrinsicHeight.toFloat(),
+                    destWidth = size.width.toFloat(),
+                    destHeight = size.height.toFloat(),
+                    scale = Scale.FIT
+                )
+                width = (multiplier * intrinsicWidth).roundToInt()
+                height = (multiplier * intrinsicHeight).roundToInt()
+            }
         }
 
         val (oldLeft, oldTop, oldRight, oldBottom) = drawable.bounds
