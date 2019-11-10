@@ -224,16 +224,16 @@ internal class RealImageLoader(
                 size = sizeResolver.size().also { ensureActive() }
             }
 
+            // Resolve the scale.
+            val scale = requestService.scale(request, sizeResolver)
+
             // Short circuit if the cached drawable is valid for the target.
-            if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, request)) {
+            if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, scale, request)) {
                 log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
                 targetDelegate.success(cachedDrawable, 0)
                 request.listener?.onSuccess(data, DataSource.MEMORY)
                 return@innerJob cachedDrawable
             }
-
-            // Resolve the scale.
-            val scale = requestService.scale(request, sizeResolver)
 
             // Load the image.
             val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale)
@@ -306,24 +306,38 @@ internal class RealImageLoader(
         cached: BitmapDrawable,
         isSampled: Boolean,
         size: Size,
+        scale: Scale,
         request: Request
     ): Boolean {
+        // Ensure the image is the original size if requested.
         if (size !is PixelSize) {
             return !isSampled
         }
 
-        if (isSampled && (cached.bitmap.width < size.width || cached.bitmap.height < size.height)) {
-            return false
+        // Ensure the size is large enough for the target.
+        if (isSampled) {
+            val isWidthSmall = cached.bitmap.width < size.width
+            val isHeightSmall = cached.bitmap.height < size.height
+            when {
+                scale == Scale.FILL && (isWidthSmall || isHeightSmall) -> return false
+                scale == Scale.FIT && (isWidthSmall && isHeightSmall) -> return false
+            }
         }
+
+        // Ensure we don't return a hardware bitmap if the request doesn't allow it.
         if (SDK_INT >= O && !request.allowHardware && cached.bitmap.config == Bitmap.Config.HARDWARE) {
             return false
         }
 
         val cachedConfig = cached.bitmap.config.normalize()
         val requestedConfig = request.bitmapConfig.normalize()
+
+        // Allow returning a bitmap with an equal or greater config.
         if (cachedConfig >= requestedConfig) {
             return true
         }
+
+        // Allow returning a lesser RGB_565 bitmap if enabled.
         if (request.allowRgb565 && cachedConfig == Bitmap.Config.RGB_565 && requestedConfig == Bitmap.Config.ARGB_8888) {
             return true
         }
@@ -421,9 +435,7 @@ internal class RealImageLoader(
 
     @Synchronized
     override fun shutdown() {
-        if (isShutdown) {
-            return
-        }
+        if (isShutdown) return
         isShutdown = true
 
         loaderScope.cancel()
