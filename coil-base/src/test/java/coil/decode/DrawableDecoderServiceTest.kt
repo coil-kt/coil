@@ -38,7 +38,24 @@ class DrawableDecoderServiceTest {
         )
 
         assertTrue(output is BitmapDrawable)
+        assertEquals(Bitmap.Config.ARGB_8888, output.bitmap.config)
         assertTrue(output.bitmap.run { width == 200 && height == 200 })
+    }
+
+    @Test
+    fun `aspect ratio is preserved`() {
+        val input = object : ColorDrawable() {
+            override fun getIntrinsicWidth() = 125
+            override fun getIntrinsicHeight() = 250
+        }
+        val output = service.convert(
+            drawable = input,
+            size = PixelSize(200, 200),
+            config = Bitmap.Config.ARGB_8888
+        )
+
+        assertEquals(Bitmap.Config.ARGB_8888, output.config)
+        assertTrue(output.width == 100 && output.height == 200)
     }
 
     @Test
