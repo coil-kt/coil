@@ -10,6 +10,7 @@ import coil.decode.Options
 import coil.fetch.Fetcher
 import coil.request.Parameters
 import coil.size.PixelSize
+import coil.size.Scale
 import coil.size.Size
 import coil.transform.Transformation
 import coil.util.createBitmap
@@ -46,36 +47,118 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `large enough cached drawable is valid`() {
+    fun `isCachedDrawableValid - fill`() {
+        val request = createGetRequest {
+            size(100, 100)
+        }
+        val cached = createBitmap().toDrawable(context)
+        assertFalse(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(200, 200),
+            scale = Scale.FILL,
+            request = request
+        ))
+        assertFalse(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(150, 50),
+            scale = Scale.FILL,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(100, 100),
+            scale = Scale.FILL,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(50, 100),
+            scale = Scale.FILL,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(50, 50),
+            scale = Scale.FILL,
+            request = request
+        ))
+    }
+
+    @Test
+    fun `isCachedDrawableValid - fit`() {
+        val request = createGetRequest {
+            size(100, 100)
+        }
+        val cached = createBitmap().toDrawable(context)
+        assertFalse(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(200, 200),
+            scale = Scale.FIT,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(150, 50),
+            scale = Scale.FIT,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(100, 100),
+            scale = Scale.FIT,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(50, 100),
+            scale = Scale.FIT,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(50, 50),
+            scale = Scale.FIT,
+            request = request
+        ))
+    }
+
+    @Test
+    fun `isCachedDrawableValid - small not sampled cached drawable is valid`() {
         val request = createGetRequest()
         val cached = createBitmap().toDrawable(context)
-        val isValid = imageLoader.isCachedDrawableValid(cached, true, PixelSize(100, 100), request)
+        val isValid = imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = false,
+            size = PixelSize(200, 200),
+            scale = Scale.FILL,
+            request = request
+        )
         assertTrue(isValid)
     }
 
     @Test
-    fun `too small cached drawable is invalid`() {
-        val request = createGetRequest()
-        val cached = createBitmap().toDrawable(context)
-        val isValid = imageLoader.isCachedDrawableValid(cached, true, PixelSize(200, 200), request)
-        assertFalse(isValid)
-    }
-
-    @Test
-    fun `too small not sampled cached drawable is valid`() {
-        val request = createGetRequest()
-        val cached = createBitmap().toDrawable(context)
-        val isValid = imageLoader.isCachedDrawableValid(cached, false, PixelSize(200, 200), request)
-        assertTrue(isValid)
-    }
-
-    @Test
-    fun `only requests with higher quality are valid`() {
+    fun `isCachedDrawableValid - cached drawable with equal or greater config is valid`() {
         val request = createGetRequest()
 
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config).toDrawable(context)
-            return imageLoader.isCachedDrawableValid(cached, true, PixelSize(100, 100), request)
+            return imageLoader.isCachedDrawableValid(
+                cached = cached,
+                isSampled = true,
+                size = PixelSize(100, 100),
+                scale = Scale.FILL,
+                request = request
+            )
         }
 
         assertTrue(isBitmapConfigValid(Bitmap.Config.RGBA_F16))
@@ -86,24 +169,36 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `allowRgb565=true allows using RGB_565 bitmaps with ARGB_8888 bitmaps`() {
+    fun `isCachedDrawableValid - allowRgb565=true allows using RGB_565 bitmap with ARGB_8888 request`() {
         val request = createGetRequest {
             allowRgb565(true)
         }
         val cached = createBitmap(config = Bitmap.Config.HARDWARE).toDrawable(context)
-        val isValid = imageLoader.isCachedDrawableValid(cached, true, PixelSize(100, 100), request)
+        val isValid = imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(100, 100),
+            scale = Scale.FILL,
+            request = request
+        )
         assertTrue(isValid)
     }
 
     @Test
-    fun `allowHardware=false prevents using cached hardware bitmap`() {
+    fun `isCachedDrawableValid - allowHardware=false prevents using cached hardware bitmap`() {
         val request = createGetRequest {
             allowHardware(false)
         }
 
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config).toDrawable(context)
-            return imageLoader.isCachedDrawableValid(cached, true, PixelSize(100, 100), request)
+            return imageLoader.isCachedDrawableValid(
+                cached = cached,
+                isSampled = true,
+                size = PixelSize(100, 100),
+                scale = Scale.FILL,
+                request = request
+            )
         }
 
         assertFalse(isBitmapConfigValid(Bitmap.Config.HARDWARE))
@@ -111,7 +206,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `null key`() {
+    fun `computeCacheKey - null key`() {
         val fetcher = createFakeFetcher(key = null)
         val key = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList())
 
@@ -119,7 +214,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `basic key`() {
+    fun `computeCacheKey - basic key`() {
         val fetcher = createFakeFetcher()
         val result = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList())
 
@@ -127,7 +222,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `params only`() {
+    fun `computeCacheKey - params only`() {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
         val result = imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList())
@@ -136,7 +231,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `transformations only`() {
+    fun `computeCacheKey - transformations only`() {
         val fetcher = createFakeFetcher()
         val transformations = createFakeTransformations()
         val result = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations)
@@ -145,7 +240,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `complex key`() {
+    fun `computeCacheKey - complex key`() {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
@@ -168,11 +263,11 @@ class RealImageLoaderBasicTest {
     }
 
     private fun createFakeParameters(): Parameters {
-        return Parameters {
-            set("key1", "no_cache")
-            set("key2", "cached2", "cached2")
-            set("key3", "cached3", "cached3")
-        }
+        return Parameters.Builder()
+            .set("key1", "no_cache")
+            .set("key2", "cached2", "cached2")
+            .set("key3", "cached3", "cached3")
+            .build()
     }
 
     private fun createFakeFetcher(key: String? = "base_key"): Fetcher<Any> {
