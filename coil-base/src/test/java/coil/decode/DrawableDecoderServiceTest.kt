@@ -30,7 +30,27 @@ class DrawableDecoderServiceTest {
 
     @Test
     fun `vector with hardware config is converted correctly`() {
-        val input = VectorDrawable()
+        val input = object : VectorDrawable() {
+            override fun getIntrinsicWidth() = 100
+            override fun getIntrinsicHeight() = 100
+        }
+        val output = service.convertIfNecessary(
+            drawable = input,
+            size = PixelSize(200, 200),
+            config = Bitmap.Config.HARDWARE
+        )
+
+        assertTrue(output is BitmapDrawable)
+        assertEquals(Bitmap.Config.ARGB_8888, output.bitmap.config)
+        assertTrue(output.bitmap.run { width == 200 && height == 200 })
+    }
+
+    @Test
+    fun `unimplemented intrinsic size does not crash`() {
+        val input = object : VectorDrawable() {
+            override fun getIntrinsicWidth() = -1
+            override fun getIntrinsicHeight() = -1
+        }
         val output = service.convertIfNecessary(
             drawable = input,
             size = PixelSize(200, 200),
@@ -44,7 +64,7 @@ class DrawableDecoderServiceTest {
 
     @Test
     fun `aspect ratio is preserved`() {
-        val input = object : ColorDrawable() {
+        val input = object : VectorDrawable() {
             override fun getIntrinsicWidth() = 125
             override fun getIntrinsicHeight() = 250
         }

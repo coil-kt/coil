@@ -28,6 +28,10 @@ internal class DrawableDecoderService(
     private val bitmapPool: BitmapPool
 ) {
 
+    companion object {
+        private const val DEFAULT_SIZE = 512
+    }
+
     @WorkerThread
     fun convertIfNecessary(
         drawable: Drawable,
@@ -61,8 +65,10 @@ internal class DrawableDecoderService(
 
         val width: Int
         val height: Int
-        val intrinsicWidth = drawable.intrinsicWidth
-        val intrinsicHeight = drawable.intrinsicHeight
+        val unsafeIntrinsicWidth = drawable.intrinsicWidth
+        val unsafeIntrinsicHeight = drawable.intrinsicHeight
+        val intrinsicWidth = if (unsafeIntrinsicWidth > 0) unsafeIntrinsicWidth else DEFAULT_SIZE
+        val intrinsicHeight = if (unsafeIntrinsicHeight > 0) unsafeIntrinsicHeight else DEFAULT_SIZE
         when (size) {
             is OriginalSize -> {
                 width = intrinsicWidth
