@@ -1,5 +1,3 @@
-@file:UseExperimental(ExperimentalCoroutinesApi::class)
-
 package coil.fetch
 
 import android.content.Context
@@ -26,6 +24,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
+@UseExperimental(ExperimentalCoroutinesApi::class)
 class HttpUrlFetcherTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()

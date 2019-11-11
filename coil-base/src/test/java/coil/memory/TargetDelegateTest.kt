@@ -1,14 +1,16 @@
-@file:UseExperimental(ExperimentalCoroutinesApi::class)
-
 package coil.memory
 
 import android.content.Context
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoil
 import coil.bitmappool.FakeBitmapPool
+import coil.drawable.CrossfadeDrawable
+import coil.lifecycle.FakeLifecycle
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
+import coil.transition.CrossfadeTransition
 import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
@@ -28,6 +30,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
+@UseExperimental(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
 class TargetDelegateTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
@@ -127,14 +130,38 @@ class TargetDelegateTest {
             val drawable = initialBitmap.toDrawable(context)
             delegate.start(drawable, drawable)
             assertFalse(counter.invalid(initialBitmap))
+            assertFalse(pool.bitmaps.contains(initialBitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
             delegate.success(bitmap.toDrawable(context), null)
             assertFalse(counter.invalid(bitmap))
+            assertTrue(pool.bitmaps.contains(initialBitmap))
         }
+    }
 
-        assertTrue(pool.bitmaps.contains(initialBitmap))
+    @Test
+    fun `request suspends until transition is complete`() {
+        val imageView = ImageView(context)
+        val target = ImageViewTarget(imageView)
+        val request = createLoadRequest(context) {
+            target(target)
+        }
+        val delegate = delegateService.createTargetDelegate(request)
+        delegate.start(null, null)
+
+        runBlocking {
+            val bitmap = createBitmap()
+            target.onStart { FakeLifecycle() }
+            delegate.success(bitmap.toDrawable(context), CrossfadeTransition())
+
+            // If we start the drawable and it does not run, it must have already been run.
+            val drawable = imageView.drawable
+            assertTrue(drawable is CrossfadeDrawable)
+            assertFalse(drawable.isRunning)
+            drawable.start()
+            assertFalse(drawable.isRunning)
+        }
     }
 }
