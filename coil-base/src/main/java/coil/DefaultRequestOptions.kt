@@ -1,6 +1,9 @@
+@file:UseExperimental(ExperimentalCoil::class)
+
 package coil
 
 import android.graphics.drawable.Drawable
+import coil.annotation.ExperimentalCoil
 import coil.request.RequestBuilder
 import coil.transition.Transition
 import kotlinx.coroutines.CoroutineDispatcher

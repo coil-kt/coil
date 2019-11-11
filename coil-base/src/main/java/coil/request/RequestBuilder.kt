@@ -1,4 +1,5 @@
 @file:Suppress("unused")
+@file:UseExperimental(ExperimentalCoil::class)
 
 package coil.request
 
