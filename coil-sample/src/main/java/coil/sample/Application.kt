@@ -19,7 +19,7 @@ class Application : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        CoilLogger.setEnabled(true) // Enable logging to the standard Android log.
+        CoilLogger.setEnabled(BuildConfig.DEBUG) // Enable logging to the standard Android log if this is a debug build.
         Coil.setDefaultImageLoader(::buildDefaultImageLoader) // Set a callback to lazily initialize the default ImageLoader.
     }
 
