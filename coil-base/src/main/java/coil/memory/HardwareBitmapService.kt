@@ -128,14 +128,17 @@ private object HardwareBitmapBlacklist {
                 // BLU VIVO XI+
                 "Vivo XI PLUS", "Vivo XI+",
 
-                // Revvl 2 Plus
-                "REVVL 2 PLUS", "6062W",
+                // T-Mobile Revvl 2
+                "REVVL 2", "REVVL_2_5052W",
+
+                // T-Mobile Revvl 2 Plus
+                "REVVL 2 PLUS",
 
                 // LG Stylo 4
                 "LM-Q710(FGN)", "LM-Q710.FG", "LM-Q710.FGN", "LML713DL", "LG-Q710AL", "LG-Q710PL",
 
                 // LG Tribute Empire
-                "LM-X220PM", "X220PM",
+                "LM-X220PM",
 
                 // LG K11
                 "LM-X410(FN)", "LM-X410.F", "LM-X410.FN",
@@ -167,14 +170,14 @@ private object HardwareBitmapBlacklist {
                 // RCA Atlas 10
                 "RCT6B03W13",
 
-                // HTC One Max
-                "HTC One max", "HTC_One_max", "HTC0P3P7",
-
                 // Wiko Life
                 "C210AE",
 
                 // Blackview BV9500Pro
-                "BV9500Pro"
+                "BV9500Pro",
+
+                // Umidigi One Max
+                "One Max"
             )
         }
 
