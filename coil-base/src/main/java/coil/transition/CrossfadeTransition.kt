@@ -4,6 +4,8 @@ import android.graphics.drawable.Drawable
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.annotation.ExperimentalCoil
 import coil.drawable.CrossfadeDrawable
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CompletionHandler
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -25,14 +27,24 @@ class CrossfadeTransition(private val durationMillis: Int) : Transition {
             scale = adapter.scale,
             durationMillis = durationMillis
         )
-        crossfade.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable) {
-                crossfade.unregisterAnimationCallback(this)
-                continuation.resume(Unit)
-            }
-        })
-        continuation.invokeOnCancellation { crossfade.stop() }
+        val callback = Callback(crossfade, continuation)
+        crossfade.registerAnimationCallback(callback)
+        continuation.invokeOnCancellation(callback)
         adapter.drawable = crossfade
+    }
+
+    /** Handle cancellation of the continuation and completion of the animation in one object. */
+    private class Callback(
+        private val crossfade: CrossfadeDrawable,
+        private val continuation: CancellableContinuation<Unit>
+    ) : Animatable2Compat.AnimationCallback(), CompletionHandler {
+
+        override fun onAnimationEnd(drawable: Drawable) {
+            crossfade.unregisterAnimationCallback(this)
+            continuation.resume(Unit)
+        }
+
+        override fun invoke(cause: Throwable?) = crossfade.stop()
     }
 
     class Factory(durationMillis: Int) : Transition.Factory {
