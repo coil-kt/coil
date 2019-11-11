@@ -102,17 +102,19 @@ private object HardwareBitmapBlacklist {
 
         if (SDK_INT == O) {
             // Samsung Galaxy (ALL)
-            if (model.startsWith("SM-")) {
+            if (model.removePrefix("SAMSUNG-").startsWith("SM-")) {
                 return@run true
             }
 
-            return@run model in arrayOf(
-                // Moto G6 Play
-                "Moto G Play", "moto g(6) play",
+            // Moto E5
+            if (model in arrayOf("Moto E", "XT1924-9") || model.startsWith("moto e5", ignoreCase = true)) {
+                return@run true
+            }
 
-                // Moto E5 Play/Cruise
-                "Moto E", "moto e5 cruise", "moto e5 play"
-            )
+            // Moto G6
+            if (model in arrayOf("Moto G Play", "XT1925-10") || model.startsWith("moto g(6)", ignoreCase = true)) {
+                return@run true
+            }
         }
 
         if (SDK_INT == O_MR1) {
@@ -156,6 +158,9 @@ private object HardwareBitmapBlacklist {
                 // Alcatel TCL LX
                 "A502DL",
 
+                // Alcatel TCL XL2
+                "A503DL",
+
                 // Alcatel ONYX
                 "Alcatel_5008R", "5008R",
 
@@ -166,7 +171,10 @@ private object HardwareBitmapBlacklist {
                 "HTC One max", "HTC_One_max", "HTC0P3P7",
 
                 // Wiko Life
-                "C210AE"
+                "C210AE",
+
+                // Blackview BV9500Pro
+                "BV9500Pro"
             )
         }
 
