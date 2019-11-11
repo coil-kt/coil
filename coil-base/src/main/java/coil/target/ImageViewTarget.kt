@@ -1,3 +1,5 @@
+@file:UseExperimental(ExperimentalCoil::class)
+
 package coil.target
 
 import android.graphics.drawable.Animatable
@@ -5,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import coil.annotation.ExperimentalCoil
 import coil.size.Scale
 import coil.transition.Transition
 import coil.util.scale
@@ -18,18 +21,18 @@ open class ImageViewTarget(
 
     override var drawable: Drawable?
         get() = view.drawable
-        set(value) = setDrawableInternal(value)
+        set(value) = updateDrawable(value)
 
     override val scale: Scale
         get() = view.scale
 
-    override fun onStart(placeholder: Drawable?) = setDrawableInternal(placeholder)
+    override fun onStart(placeholder: Drawable?) = updateDrawable(placeholder)
 
-    override fun onSuccess(result: Drawable) = setDrawableInternal(result)
+    override fun onSuccess(result: Drawable) = updateDrawable(result)
 
-    override fun onError(error: Drawable?) = setDrawableInternal(error)
+    override fun onError(error: Drawable?) = updateDrawable(error)
 
-    override fun onClear() = setDrawableInternal(null)
+    override fun onClear() = updateDrawable(null)
 
     override fun onStart(owner: LifecycleOwner) {
         isStarted = true
@@ -41,8 +44,8 @@ open class ImageViewTarget(
         updateAnimation()
     }
 
-    /** Set [drawable] to this [ImageView]. */
-    protected open fun setDrawableInternal(drawable: Drawable?) {
+    /** Replace the [ImageView]'s current drawable with [drawable]. */
+    protected open fun updateDrawable(drawable: Drawable?) {
         (view.drawable as? Animatable)?.stop()
         view.setImageDrawable(drawable)
         updateAnimation()
