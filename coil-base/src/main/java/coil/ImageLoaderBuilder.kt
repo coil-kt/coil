@@ -1,4 +1,5 @@
 @file:Suppress("MemberVisibilityCanBePrivate", "unused")
+@file:UseExperimental(ExperimentalCoil::class)
 
 package coil
 
@@ -8,6 +9,7 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
+import coil.annotation.ExperimentalCoil
 import coil.drawable.CrossfadeDrawable
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
@@ -179,6 +181,7 @@ class ImageLoaderBuilder(private val context: Context) {
     /**
      * Set the default [Transition.Factory] for each request.
      */
+    @ExperimentalCoil
     fun transitionFactory(factory: Transition.Factory?) = apply {
         this.defaults = this.defaults.copy(transitionFactory = factory)
     }

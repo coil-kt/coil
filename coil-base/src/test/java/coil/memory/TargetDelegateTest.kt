@@ -1,4 +1,4 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE")
+@file:UseExperimental(ExperimentalCoroutinesApi::class)
 
 package coil.memory
 
@@ -15,6 +15,7 @@ import coil.util.createLoadRequest
 import coil.util.createTestMainDispatcher
 import coil.util.toDrawable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -108,7 +109,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.error(bitmap.toDrawable(context))
+            delegate.error(bitmap.toDrawable(context), null)
             assertTrue(target.error)
             assertFalse(counter.invalid(bitmap))
         }

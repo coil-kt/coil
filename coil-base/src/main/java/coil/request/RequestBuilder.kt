@@ -19,6 +19,7 @@ import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.ImageLoaderBuilder
 import coil.annotation.BuilderMarker
+import coil.annotation.ExperimentalCoil
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
@@ -450,6 +451,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     /**
      * See: [ImageLoaderBuilder.transitionFactory]
      */
+    @ExperimentalCoil
     fun transitionFactory(factory: Transition.Factory?) = apply {
         this.transitionFactory = factory
     }

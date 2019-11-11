@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.BlendMode
 import android.graphics.Canvas
 import android.graphics.ColorFilter
+import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
@@ -31,7 +32,7 @@ import kotlin.math.roundToInt
  */
 class CrossfadeDrawable(
     private var start: Drawable?,
-    val end: Drawable,
+    val end: Drawable?,
     private val scale: Scale = Scale.FIT,
     private val durationMillis: Int = DEFAULT_DURATION
 ) : Drawable(), Drawable.Callback, Animatable2Compat {
@@ -42,8 +43,8 @@ class CrossfadeDrawable(
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
-    private val width = max(start?.intrinsicWidth ?: -1, end.intrinsicWidth)
-    private val height = max(start?.intrinsicHeight ?: -1, end.intrinsicHeight)
+    private val width = max(start?.intrinsicWidth ?: -1, end?.intrinsicWidth ?: -1)
+    private val height = max(start?.intrinsicHeight ?: -1, end?.intrinsicHeight ?: -1)
 
     private var startTimeMillis = 0L
     private var maxAlpha = 255
@@ -54,13 +55,15 @@ class CrossfadeDrawable(
         require(durationMillis > 0) { "durationMillis must be > 0." }
 
         start?.callback = this
-        end.callback = this
+        end?.callback = this
     }
 
     override fun draw(canvas: Canvas) {
         if (!isRunning || isDone) {
-            end.alpha = maxAlpha
-            end.draw(canvas)
+            end?.apply {
+                alpha = maxAlpha
+                draw(canvas)
+            }
             return
         }
 
@@ -76,8 +79,10 @@ class CrossfadeDrawable(
         }
 
         // Draw the end Drawable.
-        end.alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
-        end.draw(canvas)
+        end?.apply {
+            alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
+            draw(canvas)
+        }
 
         if (isDone) {
             markDone()
@@ -95,25 +100,29 @@ class CrossfadeDrawable(
 
     @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
-        val start = start
-        return if (isRunning && start != null) {
-            resolveOpacity(start.opacity, end.opacity)
+        return if (end != null) {
+            val start = start
+            if (isRunning && start != null) {
+                resolveOpacity(start.opacity, end.opacity)
+            } else {
+                end.opacity
+            }
         } else {
-            end.opacity
+            PixelFormat.TRANSPARENT
         }
     }
 
     @RequiresApi(LOLLIPOP)
-    override fun getColorFilter(): ColorFilter? = end.colorFilter
+    override fun getColorFilter(): ColorFilter? = end?.colorFilter
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
         start?.colorFilter = colorFilter
-        end.colorFilter = colorFilter
+        end?.colorFilter = colorFilter
     }
 
     override fun onBoundsChange(bounds: Rect) {
         start?.let { updateBounds(it, bounds) }
-        updateBounds(end, bounds)
+        end?.let { updateBounds(it, bounds) }
     }
 
     override fun getIntrinsicWidth() = width
@@ -129,25 +138,25 @@ class CrossfadeDrawable(
     @RequiresApi(LOLLIPOP)
     override fun setTint(tintColor: Int) {
         start?.setTint(tintColor)
-        end.setTint(tintColor)
+        end?.setTint(tintColor)
     }
 
     @RequiresApi(LOLLIPOP)
     override fun setTintList(tint: ColorStateList?) {
         start?.setTintList(tint)
-        end.setTintList(tint)
+        end?.setTintList(tint)
     }
 
     @RequiresApi(LOLLIPOP)
     override fun setTintMode(tintMode: PorterDuff.Mode?) {
         start?.setTintMode(tintMode)
-        end.setTintMode(tintMode)
+        end?.setTintMode(tintMode)
     }
 
     @RequiresApi(Q)
     override fun setTintBlendMode(blendMode: BlendMode?) {
         start?.setTintBlendMode(blendMode)
-        end.setTintBlendMode(blendMode)
+        end?.setTintBlendMode(blendMode)
     }
 
     override fun isRunning() = isRunning

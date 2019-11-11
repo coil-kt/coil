@@ -6,5 +6,5 @@ package coil.annotation
  */
 @DslMarker
 @MustBeDocumented
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.BINARY)
 annotation class BuilderMarker

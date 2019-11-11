@@ -1,4 +1,4 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE")
+@file:UseExperimental(ExperimentalCoroutinesApi::class)
 
 package coil.fetch
 
@@ -10,6 +10,7 @@ import coil.util.createMockWebServer
 import coil.util.createOptions
 import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain

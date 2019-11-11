@@ -1,4 +1,5 @@
 @file:Suppress("unused")
+@file:UseExperimental(ExperimentalCoil::class)
 
 package coil
 
@@ -12,6 +13,7 @@ import android.os.Build.VERSION_CODES.O
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
+import coil.annotation.ExperimentalCoil
 import coil.bitmappool.RealBitmapPool
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DataSource
@@ -55,6 +57,7 @@ import coil.size.Size
 import coil.size.SizeResolver
 import coil.target.ViewTarget
 import coil.transform.Transformation
+import coil.transition.Transition
 import coil.util.ComponentCallbacks
 import coil.util.Emoji
 import coil.util.cancel
@@ -230,7 +233,7 @@ internal class RealImageLoader(
             // Short circuit if the cached drawable is valid for the target.
             if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, scale, request)) {
                 log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                val transition = request.transitionFactory?.newTransition(true)
+                val transition = request.transitionFactory?.newTransition(Transition.Event.CACHED)
                 targetDelegate.success(cachedDrawable, transition)
                 request.listener?.onSuccess(data, DataSource.MEMORY)
                 return@innerJob cachedDrawable
@@ -246,7 +249,7 @@ internal class RealImageLoader(
 
             // Set the final result on the target.
             log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            val transition = request.transitionFactory?.newTransition(false)
+            val transition = request.transitionFactory?.newTransition(Transition.Event.SUCCESS)
             targetDelegate.success(drawable, transition)
             request.listener?.onSuccess(data, source)
 
@@ -267,7 +270,8 @@ internal class RealImageLoader(
                     request.listener?.onCancel(data)
                 } else {
                     log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
-                    targetDelegate.error(request.error)
+                    val transition = request.transitionFactory?.newTransition(Transition.Event.ERROR)
+                    targetDelegate.error(request.error, transition)
                     request.listener?.onError(data, throwable)
                 }
             }
