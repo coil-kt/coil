@@ -90,27 +90,97 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
     }
 }
 
-/** Maintains a list of devices with broken/incomplete hardware bitmap implementations. */
+/**
+ * Maintains a list of devices with broken/incomplete/unstable hardware bitmap implementations.
+ *
+ * Model names are retrieved from [Google's official device list](https://support.google.com/googleplay/answer/1727131?hl=en).
+ */
 private object HardwareBitmapBlacklist {
 
-    val IS_BLACKLISTED = isBlacklisted()
-
-    /** Modified from Glide's HardwareConfigState. */
-    private fun isBlacklisted(): Boolean {
-        val model = Build.MODEL
-            ?.takeIf { it.count() >= 7 }
-            ?.substring(0, 7)
-            ?: return false
-
-        if (model == "LG-Q710") {
-            return true
-        }
+    val IS_BLACKLISTED = run {
+        val model = Build.MODEL ?: return@run false
 
         if (SDK_INT == O) {
-            val models = arrayOf("SM-N935", "SM-J720", "SM-G960", "SM-G965", "SM-G935", "SM-G930", "SM-A520")
-            return models.contains(model)
+            // Samsung Galaxy (ALL)
+            if (model.removePrefix("SAMSUNG-").startsWith("SM-")) {
+                return@run true
+            }
+
+            // Moto E5
+            if (model in arrayOf("Moto E", "XT1924-9") || model.startsWith("moto e5", ignoreCase = true)) {
+                return@run true
+            }
+
+            // Moto G6
+            if (model in arrayOf("Moto G Play", "XT1925-10") || model.startsWith("moto g(6)", ignoreCase = true)) {
+                return@run true
+            }
         }
 
-        return false
+        if (SDK_INT == O_MR1) {
+            return@run model in arrayOf(
+                // Nuu A7L
+                "N5002L",
+
+                // Cubot King Kong 3
+                "KING_KONG_3",
+
+                // BLU VIVO XI+
+                "Vivo XI PLUS", "Vivo XI+",
+
+                // T-Mobile Revvl 2
+                "REVVL 2", "REVVL_2_5052W",
+
+                // T-Mobile Revvl 2 Plus
+                "REVVL 2 PLUS",
+
+                // LG Stylo 4
+                "LM-Q710(FGN)", "LM-Q710.FG", "LM-Q710.FGN", "LML713DL", "LG-Q710AL", "LG-Q710PL",
+
+                // LG Tribute Empire
+                "LM-X220PM",
+
+                // LG K11
+                "LM-X410(FN)", "LM-X410.F", "LM-X410.FN",
+
+                // LG Q7
+                "LM-Q610.FG", "LM-Q610.FGN", "LM-Q617.FGN",
+
+                // Alcatel A30/3T
+                "9027W",
+
+                // Alcatel Tetra
+                "5041C",
+
+                // Alcatel 1X
+                "5059Z",
+
+                // Alcatel TCL A1
+                "A501DL",
+
+                // Alcatel TCL LX
+                "A502DL",
+
+                // Alcatel TCL XL2
+                "A503DL",
+
+                // Alcatel ONYX
+                "Alcatel_5008R", "5008R",
+
+                // RCA Atlas 10
+                "RCT6B03W13",
+
+                // Wiko Life
+                "C210AE",
+
+                // Blackview BV9500Pro
+                "BV9500Pro",
+
+                // Umidigi One Max
+                "One Max"
+            )
+        }
+
+        return@run false
     }
 }
