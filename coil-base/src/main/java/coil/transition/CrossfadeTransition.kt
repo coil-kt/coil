@@ -1,9 +1,12 @@
 package coil.transition
 
 import android.graphics.drawable.Drawable
+import android.widget.ImageView
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.annotation.ExperimentalCoil
 import coil.drawable.CrossfadeDrawable
+import coil.size.Scale
+import coil.util.scale
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CompletionHandler
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -24,7 +27,7 @@ class CrossfadeTransition(private val durationMillis: Int) : Transition {
         val crossfade = CrossfadeDrawable(
             start = adapter.drawable,
             end = drawable,
-            scale = adapter.scale,
+            scale = (adapter.view as? ImageView)?.scale ?: Scale.FILL,
             durationMillis = durationMillis
         )
         val callback = Callback(crossfade, continuation)

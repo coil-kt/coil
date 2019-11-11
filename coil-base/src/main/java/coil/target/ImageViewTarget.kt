@@ -8,9 +8,7 @@ import android.widget.ImageView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.annotation.ExperimentalCoil
-import coil.size.Scale
 import coil.transition.Transition
-import coil.util.scale
 
 /** A [Target] that handles setting images on an [ImageView]. */
 open class ImageViewTarget(
@@ -22,9 +20,6 @@ open class ImageViewTarget(
     override var drawable: Drawable?
         get() = view.drawable
         set(value) = updateDrawable(value)
-
-    override val scale: Scale
-        get() = view.scale
 
     override fun onStart(placeholder: Drawable?) = updateDrawable(placeholder)
 

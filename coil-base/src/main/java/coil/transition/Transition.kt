@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.MainThread
 import coil.annotation.ExperimentalCoil
-import coil.size.Scale
 import coil.target.Target
 
 /**
@@ -33,10 +32,6 @@ interface Transition {
 
         /** The underlying [View] that this [Transition] is being applied to. */
         val view: View
-
-        /** The [view]'s current scaling algorithm. */
-        val scale: Scale
-            get() = Scale.FILL
 
         /** The [view]'s current [Drawable]. */
         var drawable: Drawable?
