@@ -112,28 +112,26 @@ private object HardwareBitmapBlacklist {
         }
 
         if (SDK_INT == O_MR1) {
-            val lgModel = model.removePrefix("LM-")
-
             // LG Stylo 4
-            if (model == "LML713DL" || lgModel.startsWith("Q710")) return@run true
+            if (model == "LML713DL" || model.startsWith("LM-Q710")) return@run true
 
             // LG K11
-            if (lgModel.startsWith("X410")) return@run true
+            if (model.startsWith("LM-X410")) return@run true
 
             // LG Aristo 3 / LG Tribute Empire
-            if (lgModel.startsWith("X220")) return@run true
+            if (model.startsWith("LM-X220")) return@run true
 
             // LG Q7
-            if (lgModel.startsWith("Q610") || lgModel.startsWith("Q617")) return@run true
+            if (model.startsWith("LM-Q610") || model.startsWith("LM-Q617")) return@run true
 
-            // Alcatel (ALL)
-            if (Build.BRAND == "TCT (Alcatel)") return@run true
+            // Blackview BV9500
+            if (model.startsWith("BV9500")) return@run true
 
             // RCA (ALL)
             if (model.startsWith("RCT6")) return@run true
 
-            // Blackview BV9500
-            if (model.startsWith("BV9500")) return@run true
+            // Alcatel (ALL)
+            if (Build.BRAND == "TCT (Alcatel)") return@run true
 
             return@run model in arrayOf(
                 "N5001L", // Nuu A4L
