@@ -1,5 +1,3 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE")
-
 package coil.fetch
 
 import android.content.Context
@@ -10,6 +8,7 @@ import coil.util.createMockWebServer
 import coil.util.createOptions
 import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -25,6 +24,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
+@UseExperimental(ExperimentalCoroutinesApi::class)
 class HttpUrlFetcherTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()

@@ -1,4 +1,5 @@
 @file:Suppress("unused")
+@file:UseExperimental(ExperimentalCoil::class)
 
 package coil.request
 
@@ -19,6 +20,7 @@ import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.ImageLoaderBuilder
 import coil.annotation.BuilderMarker
+import coil.annotation.ExperimentalCoil
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
@@ -31,6 +33,8 @@ import coil.size.SizeResolver
 import coil.target.ImageViewTarget
 import coil.target.Target
 import coil.transform.Transformation
+import coil.transition.CrossfadeTransition
+import coil.transition.Transition
 import coil.util.Utils
 import coil.util.orEmpty
 import coil.util.self
@@ -344,7 +348,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
     private var target: Target?
     private var lifecycle: Lifecycle?
-    private var crossfadeMillis: Int
+    private var transitionFactory: Transition.Factory?
 
     @DrawableRes private var placeholderResId: Int
     @DrawableRes private var errorResId: Int
@@ -356,7 +360,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
         target = null
         lifecycle = null
-        crossfadeMillis = defaults.crossfadeMillis
+        transitionFactory = defaults.transitionFactory
 
         placeholderResId = 0
         errorResId = 0
@@ -369,7 +373,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
         target = request.target
         lifecycle = request.lifecycle
-        crossfadeMillis = request.crossfadeMillis
+        transitionFactory = request.transitionFactory
 
         placeholderResId = request.placeholderResId
         errorResId = request.errorResId
@@ -436,16 +440,21 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     /**
      * See: [ImageLoaderBuilder.crossfade]
      */
-    fun crossfade(enable: Boolean) = apply {
-        this.crossfadeMillis = if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0
-    }
+    fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
     /**
      * See: [ImageLoaderBuilder.crossfade]
      */
     fun crossfade(durationMillis: Int) = apply {
-        require(durationMillis >= 0) { "Duration must be >= 0." }
-        this.crossfadeMillis = durationMillis
+        this.transitionFactory = CrossfadeTransition.Factory(durationMillis)
+    }
+
+    /**
+     * See: [ImageLoaderBuilder.transitionFactory]
+     */
+    @ExperimentalCoil
+    fun transitionFactory(factory: Transition.Factory?) = apply {
+        this.transitionFactory = factory
     }
 
     /**
@@ -487,7 +496,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             data,
             target,
             lifecycle,
-            crossfadeMillis,
+            transitionFactory,
             key,
             listener,
             sizeResolver,

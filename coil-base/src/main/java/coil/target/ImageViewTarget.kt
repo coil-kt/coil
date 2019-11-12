@@ -1,3 +1,5 @@
+@file:UseExperimental(ExperimentalCoil::class)
+
 package coil.target
 
 import android.graphics.drawable.Animatable
@@ -5,27 +7,27 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil.drawable.CrossfadeDrawable
-import coil.request.Request
-import coil.util.scale
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
+import coil.annotation.ExperimentalCoil
+import coil.transition.Transition
 
-/**
- * A [Target], which handles setting images on an [ImageView].
- */
-class ImageViewTarget(override val view: ImageView) : PoolableViewTarget<ImageView>, DefaultLifecycleObserver {
+/** A [Target] that handles setting images on an [ImageView]. */
+open class ImageViewTarget(
+    override val view: ImageView
+) : PoolableViewTarget<ImageView>, DefaultLifecycleObserver, Transition.Adapter {
 
     private var isStarted = false
 
-    override fun onStart(placeholder: Drawable?) = setDrawable(placeholder)
+    override var drawable: Drawable?
+        get() = view.drawable
+        set(value) = updateDrawable(value)
 
-    override fun onSuccess(result: Drawable) = setDrawable(result)
+    override fun onStart(placeholder: Drawable?) = updateDrawable(placeholder)
 
-    override fun onError(error: Drawable?) = setDrawable(error)
+    override fun onSuccess(result: Drawable) = updateDrawable(result)
 
-    override fun onClear() = setDrawable(null)
+    override fun onError(error: Drawable?) = updateDrawable(error)
+
+    override fun onClear() = updateDrawable(null)
 
     override fun onStart(owner: LifecycleOwner) {
         isStarted = true
@@ -37,38 +39,15 @@ class ImageViewTarget(override val view: ImageView) : PoolableViewTarget<ImageVi
         updateAnimation()
     }
 
-    /**
-     * Internal method to crossfade the successful [Drawable] with the current drawable.
-     *
-     * This is called instead of [onSuccess] if [Request.crossfadeMillis] > 0.
-     *
-     * The request is suspended until the animation is complete to avoid pooling the
-     * current drawable while it is still being used by the animation.
-     */
-    internal suspend inline fun onSuccessCrossfade(
-        result: Drawable,
-        duration: Int
-    ) = suspendCancellableCoroutine<Unit> { continuation ->
-        val drawable = CrossfadeDrawable(
-            start = view.drawable,
-            end = result,
-            scale = view.scale,
-            duration = duration
-        )
-        drawable.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable) = continuation.resume(Unit)
-        })
-        continuation.invokeOnCancellation { drawable.stop() }
-        onSuccess(drawable)
-    }
-
-    private fun setDrawable(drawable: Drawable?) {
+    /** Replace the [ImageView]'s current drawable with [drawable]. */
+    protected open fun updateDrawable(drawable: Drawable?) {
         (view.drawable as? Animatable)?.stop()
         view.setImageDrawable(drawable)
         updateAnimation()
     }
 
-    private fun updateAnimation() {
+    /** Start/stop the current [Drawable]'s animation based on the lifecycle state. */
+    protected open fun updateAnimation() {
         val animatable = view.drawable as? Animatable ?: return
         if (isStarted) animatable.start() else animatable.stop()
     }
