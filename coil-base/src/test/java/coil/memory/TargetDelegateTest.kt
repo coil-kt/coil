@@ -157,7 +157,7 @@ class TargetDelegateTest {
             var isRunning = true
             val transition = object : Transition {
                 override suspend fun transition(adapter: Transition.Adapter, drawable: Drawable?) {
-                    assertFalse(pool.bitmaps.contains(initialBitmap)) // Ensure the initial bitmap is not pooled until this method completes.
+                    assertFalse(pool.bitmaps.contains(initialBitmap))
                     delay(100) // Simulate an animation.
                     assertFalse(pool.bitmaps.contains(initialBitmap))
                     isRunning = false
@@ -165,6 +165,7 @@ class TargetDelegateTest {
             }
             delegate.success(bitmap.toDrawable(context), transition)
 
+            // Ensure that the animation completed and the initial bitmap was not pooled until this method completes.
             assertFalse(isRunning)
             assertTrue(pool.bitmaps.contains(initialBitmap))
         }
