@@ -40,6 +40,7 @@ nav:
   - 'Requests': requests.md
   - 'Targets': targets.md
   - 'Transformations': transformations.md
+  - 'Transitions': transitions.md
   - 'Extending the Image Pipeline': image_pipeline.md
   - 'Java Compatibility': java_compatibility.md
   - 'GIFs': gifs.md
