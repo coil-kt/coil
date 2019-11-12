@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("SuspiciousCollectionReassignment", "UnstableApiUsage")
 
 import coil.groupId
 import coil.versionName
@@ -46,6 +46,7 @@ allprojects {
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
+            freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
             jvmTarget = "1.8"
         }
     }

@@ -1,4 +1,5 @@
 @file:Suppress("unused")
+@file:UseExperimental(ExperimentalCoil::class)
 
 package coil.request
 
@@ -11,12 +12,14 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import coil.DefaultRequestOptions
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoil
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.size.Scale
 import coil.size.SizeResolver
 import coil.target.Target
 import coil.transform.Transformation
+import coil.transition.Transition
 import coil.util.getDrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
@@ -33,7 +36,7 @@ sealed class Request {
 
     abstract val target: Target?
     abstract val lifecycle: Lifecycle?
-    abstract val crossfadeMillis: Int
+    abstract val transitionFactory: Transition.Factory?
 
     abstract val key: String?
     abstract val listener: Listener?
@@ -117,7 +120,7 @@ class LoadRequest internal constructor(
     override val data: Any?,
     override val target: Target?,
     override val lifecycle: Lifecycle?,
-    override val crossfadeMillis: Int,
+    override val transitionFactory: Transition.Factory?,
     override val key: String?,
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
@@ -231,7 +234,7 @@ class GetRequest internal constructor(
 
     override val lifecycle: Lifecycle? = null
 
-    override val crossfadeMillis: Int = 0
+    override val transitionFactory: Transition.Factory? = null
 
     override val placeholder: Drawable? = null
 
