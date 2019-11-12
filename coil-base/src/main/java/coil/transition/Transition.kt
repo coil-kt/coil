@@ -10,7 +10,8 @@ import coil.target.Target
 /**
  * A class to animate between a [Target]'s current drawable and the result of an image request.
  *
- * NOTE: A [Target] must implement [Transition.Adapter] or any [Transition]s for that [Target] will be ignored.
+ * NOTE: A [Target] must implement [Transition.Adapter] to support applying [Transition]s.
+ * If the [Target] does not implement [Transition.Adapter], any [Transition]s will be ignored.
  */
 @ExperimentalCoil
 interface Transition {

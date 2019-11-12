@@ -6,4 +6,4 @@ Both `ImageLoader` and `Request` builders accept a `Transition.Factory`, which e
 
 By default, Coil comes packaged with 1 transformation: [crossfade](../api/coil-base/coil.transition/-crossfade-transition/).
 
-See the [API doc](../api/coil-base/coil.transform/-transformation/) for more information.
+See the [API doc](../api/coil-base/coil.transition/-transition/) for more information.
