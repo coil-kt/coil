@@ -1,16 +1,15 @@
 package coil.memory
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoil
 import coil.bitmappool.FakeBitmapPool
-import coil.drawable.CrossfadeDrawable
-import coil.lifecycle.FakeLifecycle
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
-import coil.transition.CrossfadeTransition
+import coil.transition.Transition
 import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
@@ -18,6 +17,7 @@ import coil.util.createTestMainDispatcher
 import coil.util.toDrawable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -126,12 +126,10 @@ class TargetDelegateTest {
         val delegate = delegateService.createTargetDelegate(request)
 
         val initialBitmap = createBitmap()
-        runBlocking {
-            val drawable = initialBitmap.toDrawable(context)
-            delegate.start(drawable, drawable)
-            assertFalse(counter.invalid(initialBitmap))
-            assertFalse(pool.bitmaps.contains(initialBitmap))
-        }
+        val initialDrawable = initialBitmap.toDrawable(context)
+        delegate.start(initialDrawable, initialDrawable)
+        assertFalse(counter.invalid(initialBitmap))
+        assertFalse(pool.bitmaps.contains(initialBitmap))
 
         runBlocking {
             val bitmap = createBitmap()
@@ -143,25 +141,32 @@ class TargetDelegateTest {
 
     @Test
     fun `request suspends until transition is complete`() {
-        val imageView = ImageView(context)
-        val target = ImageViewTarget(imageView)
         val request = createLoadRequest(context) {
-            target(target)
+            target(ImageViewTarget(ImageView(context)))
         }
         val delegate = delegateService.createTargetDelegate(request)
-        delegate.start(null, null)
+
+        val initialBitmap = createBitmap()
+        val initialDrawable = initialBitmap.toDrawable(context)
+        delegate.start(initialDrawable, initialDrawable)
+        assertFalse(counter.invalid(initialBitmap))
+        assertFalse(pool.bitmaps.contains(initialBitmap))
 
         runBlocking {
             val bitmap = createBitmap()
-            target.onStart { FakeLifecycle() }
-            delegate.success(bitmap.toDrawable(context), CrossfadeTransition())
+            var isRunning = true
+            val transition = object : Transition {
+                override suspend fun transition(adapter: Transition.Adapter, drawable: Drawable?) {
+                    assertFalse(pool.bitmaps.contains(initialBitmap)) // Ensure the initial bitmap is not pooled until this method completes.
+                    delay(100) // Simulate an animation.
+                    assertFalse(pool.bitmaps.contains(initialBitmap))
+                    isRunning = false
+                }
+            }
+            delegate.success(bitmap.toDrawable(context), transition)
 
-            // If we start the drawable and it does not run, it must have already been run.
-            val drawable = imageView.drawable
-            assertTrue(drawable is CrossfadeDrawable)
-            assertFalse(drawable.isRunning)
-            drawable.start()
-            assertFalse(drawable.isRunning)
+            assertFalse(isRunning)
+            assertTrue(pool.bitmaps.contains(initialBitmap))
         }
     }
 }
