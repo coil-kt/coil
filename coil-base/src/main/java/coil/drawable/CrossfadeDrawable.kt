@@ -38,6 +38,10 @@ class CrossfadeDrawable(
 ) : Drawable(), Drawable.Callback, Animatable2Compat {
 
     companion object {
+        private const val STATE_START = 0
+        private const val STATE_RUNNING = 1
+        private const val STATE_DONE = 2
+
         const val DEFAULT_DURATION = 100
     }
 
@@ -48,8 +52,7 @@ class CrossfadeDrawable(
 
     private var startTimeMillis = 0L
     private var maxAlpha = 255
-    private var isDone = false
-    private var isRunning = false
+    private var state = STATE_START
 
     init {
         require(durationMillis > 0) { "durationMillis must be > 0." }
@@ -59,7 +62,15 @@ class CrossfadeDrawable(
     }
 
     override fun draw(canvas: Canvas) {
-        if (!isRunning || isDone) {
+        if (state == STATE_START) {
+            start?.apply {
+                alpha = maxAlpha
+                draw(canvas)
+            }
+            return
+        }
+
+        if (state == STATE_DONE) {
             end?.apply {
                 alpha = maxAlpha
                 draw(canvas)
@@ -100,20 +111,32 @@ class CrossfadeDrawable(
 
     @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
-        return if (end != null) {
-            val start = start
-            if (isRunning && start != null) {
-                resolveOpacity(start.opacity, end.opacity)
-            } else {
-                end.opacity
-            }
-        } else {
-            PixelFormat.TRANSPARENT
+        val start = start
+        val end = end
+
+        if (state == STATE_START) {
+            return start?.opacity ?: PixelFormat.TRANSPARENT
+        }
+
+        if (state == STATE_DONE) {
+            return end?.opacity ?: PixelFormat.TRANSPARENT
+        }
+
+        return when {
+            start != null && end != null -> resolveOpacity(start.opacity, end.opacity)
+            start != null -> start.opacity
+            end != null -> end.opacity
+            else -> PixelFormat.TRANSPARENT
         }
     }
 
     @RequiresApi(LOLLIPOP)
-    override fun getColorFilter(): ColorFilter? = end?.colorFilter
+    override fun getColorFilter(): ColorFilter? = when (state) {
+        STATE_START -> start?.colorFilter
+        STATE_RUNNING -> end?.colorFilter ?: start?.colorFilter
+        STATE_DONE -> end?.colorFilter
+        else -> null
+    }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
         start?.colorFilter = colorFilter
@@ -159,17 +182,17 @@ class CrossfadeDrawable(
         end?.setTintBlendMode(blendMode)
     }
 
-    override fun isRunning() = isRunning
+    override fun isRunning() = state == STATE_RUNNING
 
     override fun start() {
         (start as? Animatable)?.start()
         (end as? Animatable)?.start()
 
-        if (isRunning || isDone) {
+        if (state != STATE_START) {
             return
         }
 
-        isRunning = true
+        state = STATE_RUNNING
         startTimeMillis = SystemClock.uptimeMillis()
         callbacks.forEach { it.onAnimationStart(this) }
 
@@ -180,7 +203,7 @@ class CrossfadeDrawable(
         (start as? Animatable)?.stop()
         (end as? Animatable)?.stop()
 
-        if (!isDone) {
+        if (state != STATE_DONE) {
             markDone()
         }
     }
@@ -225,8 +248,7 @@ class CrossfadeDrawable(
     }
 
     private fun markDone() {
-        isDone = true
-        isRunning = false
+        state = STATE_DONE
         start = null
         callbacks.forEach { it.onAnimationEnd(this) }
     }
