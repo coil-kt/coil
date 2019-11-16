@@ -88,6 +88,6 @@ class Parameters private constructor(
         }
 
         /** Create a new [Parameters] instance. */
-        fun build() = Parameters(map)
+        fun build() = Parameters(map.toSortedMap())
     }
 }
