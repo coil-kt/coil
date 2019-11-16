@@ -108,23 +108,24 @@ internal class RealImageLoader(
     private val memoryCache = MemoryCache(referenceCounter, memoryCacheSize)
     private val networkObserver = NetworkObserver(context)
 
-    private val registry = ComponentRegistry(registry) {
-        add(StringMapper())
-        add(HttpUriMapper())
-        add(FileUriMapper())
-        add(ResourceUriMapper(context))
-        add(ResourceIntMapper(context))
-
-        add(HttpUrlFetcher(callFactory))
-        add(FileFetcher())
-        add(AssetUriFetcher(context))
-        add(ContentUriFetcher(context))
-        add(ResourceUriFetcher(context, drawableDecoder))
-        add(DrawableFetcher(drawableDecoder))
-        add(BitmapFetcher(context))
-
-        add(BitmapFactoryDecoder(context))
-    }
+    private val registry = registry.newBuilder()
+        // Mappers
+        .add(StringMapper())
+        .add(HttpUriMapper())
+        .add(FileUriMapper())
+        .add(ResourceUriMapper(context))
+        .add(ResourceIntMapper(context))
+        // Fetchers
+        .add(HttpUrlFetcher(callFactory))
+        .add(FileFetcher())
+        .add(AssetUriFetcher(context))
+        .add(ContentUriFetcher(context))
+        .add(ResourceUriFetcher(context, drawableDecoder))
+        .add(DrawableFetcher(drawableDecoder))
+        .add(BitmapFetcher(context))
+        // Decoders
+        .add(BitmapFactoryDecoder(context))
+        .build()
 
     private var isShutdown = false
 
