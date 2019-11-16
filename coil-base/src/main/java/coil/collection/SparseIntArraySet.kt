@@ -5,7 +5,10 @@ package coil.collection
 import android.util.SparseIntArray
 
 /**
- * A collection of unordered, unique [Int]s. [Int]s are stored as primitives in an [Array], which reduces memory usage.
+ * A collection of unordered, unique [Int]s.
+ *
+ * This data structure is intended to be more memory efficient than using a [Set] to store [Int]s, both
+ * because it avoids auto-boxing elements and it doesn't allocate a hash table.
  *
  * @see SparseIntArray
  */
