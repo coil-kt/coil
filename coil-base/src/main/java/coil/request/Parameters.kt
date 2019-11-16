@@ -2,15 +2,14 @@
 
 package coil.request
 
-import androidx.collection.arrayMapOf
 import coil.decode.Decoder
 import coil.fetch.Fetcher
-import coil.util.toArrayMap
+import java.util.SortedMap
 
 /** A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s. */
 class Parameters private constructor(
-    private val map: Map<String, Entry>
-) : Iterable<Map.Entry<String, Parameters.Entry>> {
+    private val map: SortedMap<String, Entry>
+) : Iterable<Pair<String, Parameters.Entry>> {
 
     companion object {
         @JvmField
@@ -37,8 +36,10 @@ class Parameters private constructor(
     /** Returns true if this object has no parameters. */
     fun isEmpty(): Boolean = map.isEmpty()
 
-    /** Returns an [Iterator] over the entries in the [Parameters]. */
-    override operator fun iterator(): Iterator<Map.Entry<String, Entry>> = map.iterator()
+    /** Returns an [Iterator] over the entries in the [Parameters]. Iteration order is deterministic. */
+    override operator fun iterator(): Iterator<Pair<String, Entry>> {
+        return map.map { (key, value) -> key to value }.iterator()
+    }
 
     override fun equals(other: Any?) = map == other
 
@@ -55,14 +56,14 @@ class Parameters private constructor(
 
     class Builder {
 
-        private val map: MutableMap<String, Entry>
+        private val map: SortedMap<String, Entry>
 
         constructor() {
-            map = arrayMapOf()
+            map = sortedMapOf()
         }
 
         constructor(parameters: Parameters) {
-            map = parameters.map.toArrayMap()
+            map = parameters.map.toSortedMap()
         }
 
         /**
