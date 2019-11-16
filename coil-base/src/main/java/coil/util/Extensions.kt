@@ -226,3 +226,8 @@ internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 internal fun Request.isDiskPreload(): Boolean {
     return this is LoadRequest && target == null && !memoryCachePolicy.writeEnabled
 }
+
+internal inline fun <R, T> Iterable<R>.firstNotNull(transform: (R) -> T?): T? {
+    for (element in this) transform(element)?.let { return it }
+    return null
+}
