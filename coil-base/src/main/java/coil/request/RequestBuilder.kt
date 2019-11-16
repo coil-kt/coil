@@ -49,7 +49,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var data: Any?
 
     protected var key: String?
-    protected var commonKeys: List<String>
+    protected var aliasKeys: List<String>
     protected var listener: Request.Listener?
     protected var sizeResolver: SizeResolver?
     protected var scale: Scale?
@@ -72,7 +72,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         data = null
 
         key = null
-        commonKeys = emptyList()
+        aliasKeys = emptyList()
         listener = null
         sizeResolver = null
         scale = null
@@ -98,7 +98,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         data = request.data
 
         key = request.key
-        commonKeys = request.commonKeys
+        aliasKeys = request.aliasKeys
         listener = request.listener
         sizeResolver = request.sizeResolver
         scale = request.scale
@@ -263,12 +263,22 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         this.key = key
     }
 
-    fun commonKeys(vararg commonKeys: String): T = self {
-        this.commonKeys = commonKeys.toList()
+    /**
+     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
+     *
+     * Requests are still written to the memory cache as [key].
+     */
+    fun aliasKeys(vararg aliasKeys: String): T = self {
+        this.aliasKeys = aliasKeys.toList()
     }
 
-    fun commonKeys(commonKeys: List<String>): T = self {
-        this.commonKeys = commonKeys.toList()
+    /**
+     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
+     *
+     * Requests are still written to the memory cache as [key].
+     */
+    fun aliasKeys(aliasKeys: List<String>): T = self {
+        this.aliasKeys = aliasKeys.toList()
     }
 
     /**
@@ -500,7 +510,9 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
         this.errorResId = 0
     }
 
-    /** Create a new [LoadRequest] instance. */
+    /**
+     * Create a new [LoadRequest] instance.
+     */
     fun build(): LoadRequest {
         return LoadRequest(
             context,
@@ -509,7 +521,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             lifecycle,
             transitionFactory,
             key,
-            commonKeys,
+            aliasKeys,
             listener,
             sizeResolver,
             scale,
@@ -547,12 +559,14 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
         this.data = data
     }
 
-    /** Create a new [GetRequest] instance. */
+    /**
+     * Create a new [GetRequest] instance.
+     */
     fun build(): GetRequest {
         return GetRequest(
             checkNotNull(data) { "data == null" },
             key,
-            commonKeys,
+            aliasKeys,
             listener,
             sizeResolver,
             scale,

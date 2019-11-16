@@ -39,7 +39,7 @@ sealed class Request {
     abstract val transitionFactory: Transition.Factory?
 
     abstract val key: String?
-    abstract val commonKeys: List<String>
+    abstract val aliasKeys: List<String>
     abstract val listener: Listener?
     abstract val sizeResolver: SizeResolver?
     abstract val scale: Scale?
@@ -123,7 +123,7 @@ class LoadRequest internal constructor(
     override val lifecycle: Lifecycle?,
     override val transitionFactory: Transition.Factory?,
     override val key: String?,
-    override val commonKeys: List<String>,
+    override val aliasKeys: List<String>,
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
@@ -201,7 +201,7 @@ class LoadRequest internal constructor(
 class GetRequest internal constructor(
     override val data: Any,
     override val key: String?,
-    override val commonKeys: List<String>,
+    override val aliasKeys: List<String>,
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,

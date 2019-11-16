@@ -215,9 +215,9 @@ internal class RealImageLoader(
             val fetcher = registry.requireFetcher(mappedData)
             val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations)
 
-            // Check the memory cache and set the placeholder.
+            // Check the memory cache.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
-                memoryCache.getValue(cacheKey) ?: request.commonKeys.firstNotNull { memoryCache.getValue(it) }
+                memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNull { memoryCache.getValue(it) }
             }
             val cachedDrawable = cachedValue?.bitmap?.toDrawable(context)
 
