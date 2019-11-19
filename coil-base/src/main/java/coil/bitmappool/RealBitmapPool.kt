@@ -10,8 +10,8 @@ import android.os.Build.VERSION_CODES.KITKAT
 import android.os.Build.VERSION_CODES.O
 import android.util.Log
 import androidx.annotation.Px
+import androidx.collection.arraySetOf
 import coil.bitmappool.strategy.BitmapPoolStrategy
-import coil.util.arraySetOf
 import coil.util.getAllocationByteCountCompat
 import coil.util.log
 
@@ -29,11 +29,18 @@ internal class RealBitmapPool(
     companion object {
         private const val TAG = "RealBitmapPool"
 
-        private fun getDefaultAllowedConfigs(): Set<Bitmap.Config> = arraySetOf {
-            addAll(Bitmap.Config.values())
-
-            // Hardware bitmaps cannot be recycled and cannot be added to the pool.
-            if (SDK_INT >= O) remove(Bitmap.Config.HARDWARE)
+        @Suppress("DEPRECATION")
+        private fun getDefaultAllowedConfigs(): Set<Bitmap.Config> {
+            val configs = arraySetOf(
+                Bitmap.Config.ALPHA_8,
+                Bitmap.Config.RGB_565,
+                Bitmap.Config.ARGB_4444,
+                Bitmap.Config.ARGB_8888
+            )
+            if (SDK_INT >= O) {
+                configs += Bitmap.Config.RGBA_F16
+            }
+            return configs
         }
     }
 
@@ -43,18 +50,22 @@ internal class RealBitmapPool(
     private var puts: Int = 0
     private var evictions: Int = 0
 
+    init {
+        require(maxSize >= 0) { "maxSize must be >= 0." }
+    }
+
     @Synchronized
     override fun put(bitmap: Bitmap) {
         require(!bitmap.isRecycled) { "Cannot pool recycled bitmap!" }
 
         val size = bitmap.getAllocationByteCountCompat()
 
-        if (!bitmap.isMutable || size > maxSize || !allowedConfigs.contains(bitmap.config)) {
+        if (!bitmap.isMutable || size > maxSize || bitmap.config !in allowedConfigs) {
             log(TAG, Log.VERBOSE) {
                 "Rejected bitmap from pool: bitmap: ${strategy.logBitmap(bitmap)}, " +
                     "is mutable: ${bitmap.isMutable}, " +
                     "is greater than max size: ${size > maxSize}" +
-                    "is allowed config: ${allowedConfigs.contains(bitmap.config)}"
+                    "is allowed config: ${bitmap.config in allowedConfigs}"
             }
             bitmap.recycle()
             return
