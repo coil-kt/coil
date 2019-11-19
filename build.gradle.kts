@@ -23,7 +23,7 @@ buildscript {
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0-SNAPSHOT")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.0")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.1.0")
-        classpath(kotlin("gradle-plugin", version = "1.3.50"))
+        classpath(kotlin("gradle-plugin", version = "1.3.60"))
     }
 }
 
