@@ -22,7 +22,6 @@ import android.widget.ImageView.ScaleType.FIT_CENTER
 import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
-import androidx.collection.arraySetOf
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
 import coil.base.R
@@ -61,17 +60,13 @@ internal fun Bitmap.Config?.getBytesPerPixel(): Int {
 
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
-internal inline fun <T> arraySetOf(builder: MutableSet<T>.() -> Unit): Set<T> = arraySetOf<T>().apply(builder)
-
 internal inline fun ActivityManager.isLowRawDeviceCompat(): Boolean {
     return SDK_INT < KITKAT || isLowRamDevice
 }
 
 internal inline fun Bitmap.toDrawable(context: Context): BitmapDrawable = toDrawable(context.resources)
 
-/**
- * Returns the in memory size of the given [Bitmap] in bytes.
- */
+/** Returns the in memory size of this [Bitmap] in bytes. */
 internal fun Bitmap.getAllocationByteCountCompat(): Int {
     check(!isRecycled) { "Cannot obtain size for recycled Bitmap: $this [$width x $height] + $config" }
 

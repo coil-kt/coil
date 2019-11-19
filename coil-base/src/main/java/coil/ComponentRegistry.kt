@@ -103,7 +103,7 @@ class ComponentRegistry private constructor(
             decoders = registry.decoders.toMutableList()
         }
 
-        /** Add a [Mapper]. */
+        /** Register a [Mapper]. */
         inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(T::class.java, mapper)
 
         @PublishedApi
@@ -111,7 +111,7 @@ class ComponentRegistry private constructor(
             mappers += type to mapper
         }
 
-        /** Add a [MeasuredMapper]. */
+        /** Register a [MeasuredMapper]. */
         inline fun <reified T : Any> add(measuredMapper: MeasuredMapper<T, *>) = add(T::class.java, measuredMapper)
 
         @PublishedApi
@@ -119,7 +119,7 @@ class ComponentRegistry private constructor(
             measuredMappers += type to measuredMapper
         }
 
-        /** Add a [Fetcher]. */
+        /** Register a [Fetcher]. */
         inline fun <reified T : Any> add(fetcher: Fetcher<T>) = add(T::class.java, fetcher)
 
         @PublishedApi
@@ -127,7 +127,7 @@ class ComponentRegistry private constructor(
             fetchers += type to fetcher
         }
 
-        /** Add a [Decoder]. */
+        /** Register a [Decoder]. */
         fun add(decoder: Decoder) = apply {
             decoders += decoder
         }
