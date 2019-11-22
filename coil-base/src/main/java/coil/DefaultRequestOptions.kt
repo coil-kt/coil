@@ -20,5 +20,6 @@ data class DefaultRequestOptions(
     val allowHardware: Boolean = true,
     val allowRgb565: Boolean = false,
     val placeholder: Drawable? = null,
-    val error: Drawable? = null
+    val error: Drawable? = null,
+    val fallback: Drawable? = null
 )

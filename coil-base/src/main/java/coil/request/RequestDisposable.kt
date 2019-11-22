@@ -22,13 +22,6 @@ interface RequestDisposable {
     fun dispose()
 }
 
-internal object EmptyRequestDisposable : RequestDisposable {
-
-    override fun isDisposed() = true
-
-    override fun dispose() {}
-}
-
 internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
 
     override fun isDisposed(): Boolean {

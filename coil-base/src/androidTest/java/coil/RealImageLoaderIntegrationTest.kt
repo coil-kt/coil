@@ -22,6 +22,7 @@ import coil.decode.Options
 import coil.fetch.AssetUriFetcher
 import coil.fetch.DrawableResult
 import coil.request.CachePolicy
+import coil.request.NullRequestDataException
 import coil.size.PixelSize
 import coil.size.Size
 import coil.transform.CircleCropTransformation
@@ -322,6 +323,44 @@ class RealImageLoaderIntegrationTest {
         }
 
         assertSame(drawable, result.drawable)
+    }
+
+    @Test
+    fun nullRequestDataShowsFallbackDrawable() {
+        val error = ColorDrawable(Color.BLUE)
+        val fallback = ColorDrawable(Color.BLACK)
+
+        runBlocking {
+            suspendCancellableCoroutine<Unit> { continuation ->
+                var hasCalledTargetOnError = false
+
+                imageLoader.loadAny(context, null) {
+                    size(100, 100)
+                    error(error)
+                    fallback(fallback)
+                    target(
+                        onStart = { throw IllegalStateException() },
+                        onError = { drawable ->
+                            check(drawable === fallback)
+                            hasCalledTargetOnError = true
+                        },
+                        onSuccess = { throw IllegalStateException() }
+                    )
+                    listener(
+                        onStart = { throw IllegalStateException() },
+                        onSuccess = { _, _ -> throw IllegalStateException() },
+                        onCancel = { throw IllegalStateException() },
+                        onError = { _, throwable ->
+                            if (hasCalledTargetOnError && throwable is NullRequestDataException) {
+                                continuation.resume(Unit)
+                            } else {
+                                continuation.resumeWithException(throwable)
+                            }
+                        }
+                    )
+                }
+            }
+        }
     }
 
     private fun testLoad(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {

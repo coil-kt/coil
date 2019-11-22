@@ -60,6 +60,7 @@ sealed class Request {
 
     abstract val placeholder: Drawable?
     abstract val error: Drawable?
+    abstract val fallback: Drawable?
 
     /**
      * A set of callbacks for a [Request].
@@ -82,13 +83,13 @@ sealed class Request {
          * Called when the request is cancelled.
          */
         @MainThread
-        fun onCancel(data: Any) {}
+        fun onCancel(data: Any?) {}
 
         /**
          * Called when the request fails to load the image.
          */
         @MainThread
-        fun onError(data: Any, throwable: Throwable) {}
+        fun onError(data: Any?, throwable: Throwable) {}
     }
 }
 
@@ -141,8 +142,10 @@ class LoadRequest internal constructor(
     override val allowRgb565: Boolean,
     @DrawableRes internal val placeholderResId: Int,
     @DrawableRes internal val errorResId: Int,
+    @DrawableRes internal val fallbackResId: Int,
     internal val placeholderDrawable: Drawable?,
-    internal val errorDrawable: Drawable?
+    internal val errorDrawable: Drawable?,
+    internal val fallbackDrawable: Drawable?
 ) : Request() {
 
     companion object {
@@ -166,6 +169,9 @@ class LoadRequest internal constructor(
 
     override val error: Drawable?
         get() = context.getDrawable(errorDrawable, errorResId)
+
+    override val fallback: Drawable?
+        get() = context.getDrawable(fallbackDrawable, fallbackResId)
 
     private fun Context.getDrawable(drawable: Drawable?, @DrawableRes resId: Int): Drawable? {
         return drawable ?: if (resId != 0) getDrawableCompat(resId) else null
@@ -242,6 +248,8 @@ class GetRequest internal constructor(
     override val placeholder: Drawable? = null
 
     override val error: Drawable? = null
+
+    override val fallback: Drawable? = null
 
     /** Create a new [GetRequestBuilder] instance using this as a base. */
     fun newBuilder() = GetRequestBuilder(this)
