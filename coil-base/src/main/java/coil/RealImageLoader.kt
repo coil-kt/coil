@@ -44,9 +44,9 @@ import coil.memory.MemoryCache
 import coil.memory.RequestService
 import coil.network.NetworkObserver
 import coil.request.BaseTargetRequestDisposable
-import coil.request.EmptyRequestDisposable
 import coil.request.GetRequest
 import coil.request.LoadRequest
+import coil.request.NullRequestDataException
 import coil.request.Parameters
 import coil.request.Request
 import coil.request.RequestDisposable
@@ -60,7 +60,6 @@ import coil.transform.Transformation
 import coil.transition.Transition
 import coil.util.ComponentCallbacks
 import coil.util.Emoji
-import coil.util.cancel
 import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.firstNotNull
@@ -134,25 +133,12 @@ internal class RealImageLoader(
     }
 
     override fun load(request: LoadRequest): RequestDisposable {
-        // Short circuit and cancel any attached requests if data is null.
-        val data = request.data
-        val target = request.target
-        if (data == null) {
-            return if (target is ViewTarget<*>) {
-                val job = loaderScope.launch(exceptionHandler) {
-                    target.cancel()
-                }
-                BaseTargetRequestDisposable(job)
-            } else {
-                EmptyRequestDisposable
-            }
-        }
-
         // Start loading the data.
         val job = loaderScope.launch(exceptionHandler) {
-            execute(data, request)
+            execute(request.data, request)
         }
 
+        val target = request.target
         return if (target is ViewTarget<*>) {
             ViewTargetRequestDisposable(target, request)
         } else {
@@ -164,7 +150,7 @@ internal class RealImageLoader(
 
     @Suppress("UNCHECKED_CAST")
     private suspend fun execute(
-        data: Any,
+        data: Any?,
         request: Request
     ): Drawable = withContext(Dispatchers.Main.immediate) outerJob@{
         // Ensure this image loader isn't shutdown.
@@ -177,6 +163,8 @@ internal class RealImageLoader(
         val targetDelegate = delegateService.createTargetDelegate(request)
 
         val deferred = async<Drawable>(mainDispatcher, CoroutineStart.LAZY) innerJob@{
+            // Fail before starting if data is null.
+            data ?: throw NullRequestDataException()
             request.listener?.onStart(data)
 
             // Add the target as a lifecycle observer, if necessary.
@@ -195,7 +183,7 @@ internal class RealImageLoader(
             var size: Size? = null
 
             // Perform any data conversions and resolve the size early, if necessary.
-            var mappedData = data
+            var mappedData: Any = data
             for ((type, mapper) in registry.measuredMappers) {
                 if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
                     if (sizeResolver == null || size == null) {
@@ -272,8 +260,9 @@ internal class RealImageLoader(
                     request.listener?.onCancel(data)
                 } else {
                     log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
+                    val drawable = if (throwable is NullRequestDataException) request.fallback else request.error
                     val transition = request.transitionFactory?.newTransition(Transition.Event.ERROR)
-                    targetDelegate.error(request.error, transition)
+                    targetDelegate.error(drawable, transition)
                     request.listener?.onError(data, throwable)
                 }
             }
