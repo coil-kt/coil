@@ -54,7 +54,7 @@ internal class ViewTargetRequestDelegate(
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
     private val dispatcher: CoroutineDispatcher,
-    private val job: Job
+    val job: Job
 ) : RequestDelegate() {
 
     /** Repeat this request with the same params. */

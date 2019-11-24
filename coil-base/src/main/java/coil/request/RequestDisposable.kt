@@ -1,5 +1,6 @@
 package coil.request
 
+import android.view.View
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoil
 import coil.target.ViewTarget
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 interface RequestDisposable {
 
     /**
-     * Return true if the request is completed or cancelling.
+     * Return true if the request is complete or cancelling.
      */
     val isDisposed: Boolean
 
@@ -25,12 +26,13 @@ interface RequestDisposable {
     fun dispose()
 
     /**
-     * Suspend until the request completes or is cancelled.
+     * Suspend until the current work completes.
      */
     @ExperimentalCoil
     suspend fun await()
 }
 
+/** Used for a one-shot image request. */
 internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
 
     override val isDisposed
@@ -46,11 +48,14 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
     override suspend fun await() = job.join()
 }
 
+/**
+ * Used for requests that are tied to a [View].
+ * Requests are not disposed until a new request is attached to the view.
+ */
 internal class ViewTargetRequestDisposable(
     private val target: ViewTarget<*>,
     private val request: LoadRequest,
-    private val scope: CoroutineScope,
-    private val job: Job
+    private val scope: CoroutineScope
 ) : RequestDisposable {
 
     override val isDisposed
@@ -66,5 +71,7 @@ internal class ViewTargetRequestDisposable(
     }
 
     @ExperimentalCoil
-    override suspend fun await() = job.join()
+    override suspend fun await() {
+        target.view.requestManager.currentRequest()?.job?.join()
+    }
 }
