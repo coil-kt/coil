@@ -1,6 +1,7 @@
 package coil.memory
 
 import android.view.View
+import androidx.annotation.MainThread
 import coil.request.Request
 import coil.util.requestManager
 
@@ -14,7 +15,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     private var skipAttach = true
 
     var currentRequest: ViewTargetRequestDelegate? = null
-        set(value) {
+        @MainThread set(value) {
             field?.dispose()
             field = value
             skipAttach = true

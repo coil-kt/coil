@@ -12,11 +12,11 @@ import kotlinx.coroutines.Job
 
 internal sealed class RequestDelegate : DefaultLifecycleObserver {
 
-    /** Cancel any in progress work and free resources associated with this delegate. */
+    /** Cancel any in progress work and free any resources associated with this delegate. */
     @MainThread
     open fun dispose() {}
 
-    /** Called when the load completes. */
+    /** Called when the image request completes for any reason. */
     @MainThread
     open fun onComplete() {}
 }

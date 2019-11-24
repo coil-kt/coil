@@ -1,5 +1,6 @@
 @file:JvmName("ImageViews")
-@file:Suppress("unused", "NOTHING_TO_INLINE")
+@file:Suppress("unused")
+@file:UseExperimental(ExperimentalCoil::class)
 
 package coil.api
 
@@ -8,10 +9,13 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import androidx.annotation.MainThread
 import coil.Coil
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoil
 import coil.request.LoadRequestBuilder
 import coil.request.RequestDisposable
+import coil.util.CoilUtils
 import okhttp3.HttpUrl
 import java.io.File
 
@@ -141,13 +145,10 @@ inline fun ImageView.loadAny(
 
 /**
  * Cancel any in progress requests and clear any resources associated with this [ImageView].
- *
- * @param imageLoader The [ImageLoader] to return the resources to.
  */
-inline fun ImageView.clear(
-    imageLoader: ImageLoader = Coil.loader()
-) {
-    loadAny(null, imageLoader)
+@MainThread
+fun ImageView.clear() {
+    CoilUtils.clear(this)
 }
 
 // endregion
