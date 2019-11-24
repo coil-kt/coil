@@ -102,82 +102,48 @@ private object HardwareBitmapBlacklist {
 
         if (SDK_INT == O) {
             // Samsung Galaxy (ALL)
-            if (model.removePrefix("SAMSUNG-").startsWith("SM-")) {
-                return@run true
-            }
+            if (model.removePrefix("SAMSUNG-").startsWith("SM-")) return@run true
 
             // Moto E5
-            if (model in arrayOf("Moto E", "XT1924-9") || model.startsWith("moto e5", ignoreCase = true)) {
-                return@run true
-            }
+            if (model in arrayOf("Moto E", "XT1924-9") ||
+                model.startsWith("moto e5", true)) return@run true
 
             // Moto G6
-            if (model in arrayOf("Moto G Play", "XT1925-10") || model.startsWith("moto g(6)", ignoreCase = true)) {
-                return@run true
-            }
+            if (model in arrayOf("Moto G Play", "XT1925-10") ||
+                model.startsWith("moto g(6)", true)) return@run true
         }
 
         if (SDK_INT == O_MR1) {
+            // LG Stylo 4
+            if (model.startsWith("LM-Q710") || model == "LML713DL") return@run true
+
+            // LG K11
+            if (model.startsWith("LM-X410")) return@run true
+
+            // LG Aristo 3 / LG Tribute Empire
+            if (model.startsWith("LM-X220")) return@run true
+
+            // LG Q7
+            if (model.startsWith("LM-Q610") || model.startsWith("LM-Q617")) return@run true
+
+            // Blackview BV9500
+            if (model.startsWith("BV9500")) return@run true
+
+            // RCA (ALL)
+            if (model.startsWith("RCT6")) return@run true
+
+            // Alcatel (ALL)
+            if (Build.BRAND == "TCL") return@run true
+
             return@run model in arrayOf(
-                // Nuu A7L
-                "N5002L",
-
-                // Cubot King Kong 3
-                "KING_KONG_3",
-
-                // BLU VIVO XI+
-                "Vivo XI PLUS", "Vivo XI+",
-
-                // T-Mobile Revvl 2
-                "REVVL 2", "REVVL_2_5052W",
-
-                // T-Mobile Revvl 2 Plus
-                "REVVL 2 PLUS",
-
-                // LG Stylo 4
-                "LM-Q710(FGN)", "LM-Q710.FG", "LM-Q710.FGN", "LML713DL", "LG-Q710AL", "LG-Q710PL",
-
-                // LG Tribute Empire
-                "LM-X220PM",
-
-                // LG K11
-                "LM-X410(FN)", "LM-X410.F", "LM-X410.FN",
-
-                // LG Q7
-                "LM-Q610.FG", "LM-Q610.FGN", "LM-Q617.FGN",
-
-                // Alcatel A30/3T
-                "9027W",
-
-                // Alcatel Tetra
-                "5041C",
-
-                // Alcatel 1X
-                "5059Z",
-
-                // Alcatel TCL A1
-                "A501DL",
-
-                // Alcatel TCL LX
-                "A502DL",
-
-                // Alcatel TCL XL2
-                "A503DL",
-
-                // Alcatel ONYX
-                "Alcatel_5008R", "5008R",
-
-                // RCA Atlas 10
-                "RCT6B03W13",
-
-                // Wiko Life
-                "C210AE",
-
-                // Blackview BV9500Pro
-                "BV9500Pro",
-
-                // Umidigi One Max
-                "One Max"
+                "N5001L", // Nuu A4L
+                "N5501L", // Nuu A5L
+                "N5002L", // Nuu A7L
+                "C210AE", // Wiko Life
+                "One Max", // Umidigi One Max
+                "KING_KONG_3", // Cubot King Kong 3
+                "Vivo XI+", "Vivo XI PLUS", // BLU VIVO XI+
+                "REVVL 2", "REVVL_2_5052W", "REVVL 2 PLUS" // T-Mobile Revvl 2
             )
         }
 
