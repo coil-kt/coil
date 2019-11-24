@@ -54,13 +54,13 @@ internal class ViewTargetRequestDisposable(
 ) : RequestDisposable {
 
     override val isDisposed
-        get() = target.view.requestManager.currentRequest?.request !== request
+        get() = target.view.requestManager.currentRequest()?.request !== request
 
     override fun dispose() {
         // Ensure currentRequest is set from the main thread.
         scope.launch(Dispatchers.Main.immediate) {
             if (!isDisposed) {
-                target.view.requestManager.currentRequest = null
+                target.view.requestManager.setCurrentRequest(null)
             }
         }
     }

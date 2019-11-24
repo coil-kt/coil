@@ -12,14 +12,17 @@ import coil.util.requestManager
  */
 internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
+    private var currentRequest: ViewTargetRequestDelegate? = null
     private var skipAttach = true
 
-    var currentRequest: ViewTargetRequestDelegate? = null
-        @MainThread set(value) {
-            field?.dispose()
-            field = value
-            skipAttach = true
-        }
+    fun currentRequest() = currentRequest
+
+    @MainThread
+    fun setCurrentRequest(request: ViewTargetRequestDelegate?) {
+        currentRequest?.dispose()
+        currentRequest = request
+        skipAttach = true
+    }
 
     override fun onViewAttachedToWindow(v: View) {
         if (skipAttach) {

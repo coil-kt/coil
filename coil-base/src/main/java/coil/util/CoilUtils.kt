@@ -22,6 +22,6 @@ object CoilUtils {
     @JvmStatic
     @MainThread
     fun clear(view: View) {
-        view.requestManager.currentRequest = null
+        view.requestManager.setCurrentRequest(null)
     }
 }

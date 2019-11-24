@@ -64,7 +64,7 @@ internal class DelegateService(
                     lifecycle.addObserver(requestDelegate)
 
                     // Attach this request to the target's view.
-                    target.view.requestManager.currentRequest = requestDelegate
+                    target.view.requestManager.setCurrentRequest(requestDelegate)
                 }
                 else -> {
                     requestDelegate = BaseRequestDelegate(lifecycle, mainDispatcher, deferred)
