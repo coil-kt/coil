@@ -8,6 +8,7 @@ import coil.util.requestManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -59,19 +60,23 @@ internal class ViewTargetRequestDisposable(
 ) : RequestDisposable {
 
     override val isDisposed
-        get() = target.view.requestManager.currentRequest()?.request !== request
+        get() = !scope.isActive || target.view.requestManager.currentRequest()?.request !== request
 
     override fun dispose() {
-        // Ensure currentRequest is set from the main thread.
-        scope.launch(Dispatchers.Main.immediate) {
-            if (!isDisposed) {
-                target.view.requestManager.setCurrentRequest(null)
+        if (!isDisposed) {
+            // Ensure currentRequest is set from the main thread.
+            scope.launch(Dispatchers.Main.immediate) {
+                if (!isDisposed) {
+                    target.view.requestManager.setCurrentRequest(null)
+                }
             }
         }
     }
 
     @ExperimentalCoil
     override suspend fun await() {
-        target.view.requestManager.currentRequest()?.job?.join()
+        if (!isDisposed) {
+            target.view.requestManager.currentRequest()?.job?.join()
+        }
     }
 }
