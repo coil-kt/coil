@@ -1,55 +1,65 @@
 package coil.request
 
-import coil.memory.ViewTargetRequestDelegate
+import androidx.annotation.MainThread
+import coil.ImageLoader
+import coil.annotation.ExperimentalCoil
 import coil.target.ViewTarget
-import coil.util.cancel
 import coil.util.requestManager
 import kotlinx.coroutines.Job
 
 /**
- * Represents the work of an image request.
+ * Represents the work of an [ImageLoader.load] request.
  */
 interface RequestDisposable {
 
     /**
-     * Return true if request is not active, completed, or cancelling.
+     * Return true if the request is completed or cancelling.
      */
-    fun isDisposed(): Boolean
+    val isDisposed: Boolean
 
     /**
      * Cancel any in progress work and free any resources associated with this request. This method is idempotent.
      */
+    @MainThread
     fun dispose()
+
+    /**
+     * Suspend until the current request completes or is cancelled.
+     */
+    @ExperimentalCoil
+    suspend fun await()
 }
 
 internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
 
-    override fun isDisposed(): Boolean {
-        return !job.isActive || job.isCompleted
-    }
+    override val isDisposed
+        get() = !job.isActive
 
     override fun dispose() {
-        if (!isDisposed()) {
+        if (!isDisposed) {
             job.cancel()
         }
     }
+
+    @ExperimentalCoil
+    override suspend fun await() = job.join()
 }
 
 internal class ViewTargetRequestDisposable(
     private val target: ViewTarget<*>,
-    private val request: Request
+    private val request: LoadRequest,
+    private val job: Job
 ) : RequestDisposable {
 
-    /**
-     * Check if the current request attached to this view is the same as this disposable's request.
-     */
-    override fun isDisposed(): Boolean {
-        return (target.requestManager.getRequest() as? ViewTargetRequestDelegate)?.request != request
-    }
+    override val isDisposed
+        get() = target.view.requestManager.currentRequest?.request != request
 
     override fun dispose() {
-        if (!isDisposed()) {
-            target.cancel()
+        if (!isDisposed) {
+            target.view.requestManager.currentRequest = null
         }
     }
+
+    @ExperimentalCoil
+    override suspend fun await() = job.join()
 }

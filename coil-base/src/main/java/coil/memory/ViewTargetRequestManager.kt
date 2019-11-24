@@ -1,30 +1,35 @@
 package coil.memory
 
 import android.view.View
+import coil.request.Request
+import coil.util.requestManager
 
+/**
+ * Ensures that at most one [Request] can be attached to a given [View] at one time.
+ *
+ * @see requestManager
+ */
 internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
-    private var request: RequestDelegate? = null
     private var skipAttach = true
 
-    fun getRequest() = request
-
-    fun setRequest(request: RequestDelegate?) {
-        this.request?.dispose()
-        this.request = request
-        this.skipAttach = true
-    }
+    var currentRequest: ViewTargetRequestDelegate? = null
+        set(value) {
+            field?.dispose()
+            field = value
+            skipAttach = true
+        }
 
     override fun onViewAttachedToWindow(v: View) {
         if (skipAttach) {
             skipAttach = false
         } else {
-            request?.restart()
+            currentRequest?.restart()
         }
     }
 
     override fun onViewDetachedFromWindow(v: View) {
         skipAttach = false
-        request?.dispose()
+        currentRequest?.dispose()
     }
 }

@@ -2,6 +2,7 @@ package coil.memory
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import coil.ImageLoader
 import coil.request.GetRequest
@@ -24,16 +25,18 @@ internal class DelegateService(
 
     /** Wrap the [request]'s [Target] to support [Bitmap] pooling. */
     fun createTargetDelegate(request: Request): TargetDelegate {
-        val target = request.target
-        return when {
-            request is GetRequest -> InvalidatableEmptyTargetDelegate(referenceCounter)
-            target == null -> EmptyTargetDelegate
-            target is PoolableViewTarget<*> -> PoolableTargetDelegate(target, referenceCounter)
-            else -> InvalidatableTargetDelegate(target, referenceCounter)
+        return when (request) {
+            is GetRequest -> InvalidatableEmptyTargetDelegate(referenceCounter)
+            is LoadRequest -> when (val target = request.target) {
+                null -> EmptyTargetDelegate
+                is PoolableViewTarget<*> -> PoolableTargetDelegate(target, referenceCounter)
+                else -> InvalidatableTargetDelegate(target, referenceCounter)
+            }
         }
     }
 
     /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [Request] based on its lifecycle. */
+    @MainThread
     fun createRequestDelegate(
         request: Request,
         targetDelegate: TargetDelegate,
@@ -41,20 +44,33 @@ internal class DelegateService(
         mainDispatcher: CoroutineDispatcher,
         deferred: Deferred<Drawable>
     ): RequestDelegate {
-        val requestDelegate = when (request) {
-            is GetRequest -> EmptyRequestDelegate
-            is LoadRequest -> if (request.target is ViewTarget<*>) {
-                ViewTargetRequestDelegate(imageLoader, request, targetDelegate, lifecycle, mainDispatcher, deferred)
-            } else {
-                BaseRequestDelegate(lifecycle, mainDispatcher, deferred)
+        val requestDelegate: RequestDelegate
+
+        when (request) {
+            is GetRequest -> {
+                requestDelegate = EmptyRequestDelegate
+                lifecycle.addObserver(requestDelegate)
             }
-        }
+            is LoadRequest -> when (val target = request.target) {
+                is ViewTarget<*> -> {
+                    requestDelegate = ViewTargetRequestDelegate(
+                        loader = imageLoader,
+                        request = request,
+                        target = targetDelegate,
+                        lifecycle = lifecycle,
+                        dispatcher = mainDispatcher,
+                        job = deferred
+                    )
+                    lifecycle.addObserver(requestDelegate)
 
-        lifecycle.addObserver(requestDelegate)
-
-        val target = request.target
-        if (target is ViewTarget<*>) {
-            target.requestManager.setRequest(requestDelegate)
+                    // Attach this request to the target's view.
+                    target.view.requestManager.currentRequest = requestDelegate
+                }
+                else -> {
+                    requestDelegate = BaseRequestDelegate(lifecycle, mainDispatcher, deferred)
+                    lifecycle.addObserver(requestDelegate)
+                }
+            }
         }
 
         return requestDelegate

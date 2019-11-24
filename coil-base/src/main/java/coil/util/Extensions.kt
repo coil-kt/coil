@@ -15,6 +15,7 @@ import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
 import android.os.Build.VERSION_CODES.KITKAT
 import android.os.Build.VERSION_CODES.O
 import android.os.StatFs
+import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER_INSIDE
@@ -32,7 +33,6 @@ import coil.request.LoadRequest
 import coil.request.Parameters
 import coil.request.Request
 import coil.size.Scale
-import coil.target.ViewTarget
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Headers
@@ -117,19 +117,17 @@ internal fun Bitmap.Config?.normalize(): Bitmap.Config {
     }
 }
 
-internal val ViewTarget<*>.requestManager: ViewTargetRequestManager
+internal val View.requestManager: ViewTargetRequestManager
     get() {
-        var manager = view.getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
+        var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
         if (manager == null) {
             manager = ViewTargetRequestManager().apply {
-                view.addOnAttachStateChangeListener(this)
-                view.setTag(R.id.coil_request_manager, this)
+                addOnAttachStateChangeListener(this)
+                setTag(R.id.coil_request_manager, this)
             }
         }
         return manager
     }
-
-internal fun ViewTarget<*>.cancel() = requestManager.setRequest(null)
 
 internal typealias MultiMutableList<R, T> = MutableList<Pair<R, T>>
 
