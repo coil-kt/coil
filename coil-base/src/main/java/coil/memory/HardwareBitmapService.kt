@@ -105,15 +105,17 @@ private object HardwareBitmapBlacklist {
             if (model.removePrefix("SAMSUNG-").startsWith("SM-")) return@run true
 
             // Moto E5
-            if (model in arrayOf("Moto E", "XT1924-9") || model.startsWith("moto e5", true)) return@run true
+            if (model in arrayOf("Moto E", "XT1924-9") ||
+                model.startsWith("moto e5", true)) return@run true
 
             // Moto G6
-            if (model in arrayOf("Moto G Play", "XT1925-10") || model.startsWith("moto g(6)", true)) return@run true
+            if (model in arrayOf("Moto G Play", "XT1925-10") ||
+                model.startsWith("moto g(6)", true)) return@run true
         }
 
         if (SDK_INT == O_MR1) {
             // LG Stylo 4
-            if (model == "LML713DL" || model.startsWith("LM-Q710")) return@run true
+            if (model.startsWith("LM-Q710") || model == "LML713DL") return@run true
 
             // LG K11
             if (model.startsWith("LM-X410")) return@run true
@@ -131,7 +133,7 @@ private object HardwareBitmapBlacklist {
             if (model.startsWith("RCT6")) return@run true
 
             // Alcatel (ALL)
-            if (Build.BRAND == "TCT (Alcatel)") return@run true
+            if (Build.BRAND == "TCL") return@run true
 
             return@run model in arrayOf(
                 "N5001L", // Nuu A4L
