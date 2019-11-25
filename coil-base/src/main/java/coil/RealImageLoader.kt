@@ -141,7 +141,7 @@ internal class RealImageLoader(
         }
 
         return if (request.target is ViewTarget<*>) {
-            ViewTargetRequestDisposable(request.target, request, loaderScope)
+            ViewTargetRequestDisposable(request.target, request)
         } else {
             BaseTargetRequestDisposable(job)
         }

@@ -5,11 +5,7 @@ import coil.ImageLoader
 import coil.annotation.ExperimentalCoil
 import coil.target.ViewTarget
 import coil.util.requestManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
 /**
  * Represents the work of an [ImageLoader.load] request.
@@ -27,7 +23,7 @@ interface RequestDisposable {
     fun dispose()
 
     /**
-     * Suspend until the current work completes.
+     * Suspend until any in progress work completes.
      */
     @ExperimentalCoil
     suspend fun await()
@@ -50,33 +46,29 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
 }
 
 /**
- * Used for requests that are tied to a [View].
- * Requests are not disposed until a new request is attached to the view.
+ * Used for requests that are attached to a [View].
+ *
+ * As requests attached to a view can be restarted when the view is re-attached, [isDisposed] will
+ * return true until [dispose] is called or another request has been set on the view.
  */
 internal class ViewTargetRequestDisposable(
     private val target: ViewTarget<*>,
-    private val request: LoadRequest,
-    private val scope: CoroutineScope
+    private val request: LoadRequest
 ) : RequestDisposable {
 
     override val isDisposed
-        get() = !scope.isActive || target.view.requestManager.currentRequest()?.request !== request
+        get() = target.view.requestManager.currentRequest?.request !== request
 
     override fun dispose() {
         if (!isDisposed) {
-            // Ensure currentRequest is set from the main thread.
-            scope.launch(Dispatchers.Main.immediate) {
-                if (!isDisposed) {
-                    target.view.requestManager.setCurrentRequest(null)
-                }
-            }
+            target.view.requestManager.clearCurrentRequest()
         }
     }
 
     @ExperimentalCoil
     override suspend fun await() {
         if (!isDisposed) {
-            target.view.requestManager.currentRequest()?.job?.join()
+            target.view.requestManager.currentRequest?.job?.join()
         }
     }
 }

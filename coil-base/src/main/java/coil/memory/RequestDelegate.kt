@@ -58,6 +58,7 @@ internal class ViewTargetRequestDelegate(
 ) : RequestDelegate() {
 
     /** Repeat this request with the same params. */
+    @MainThread
     fun restart() {
         loader.load(request)
     }

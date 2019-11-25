@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
-import androidx.annotation.MainThread
 import coil.Coil
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoil
@@ -146,7 +145,6 @@ inline fun ImageView.loadAny(
 /**
  * Cancel any in progress requests and clear any resources associated with this [ImageView].
  */
-@MainThread
 fun ImageView.clear() {
     CoilUtils.clear(this)
 }
