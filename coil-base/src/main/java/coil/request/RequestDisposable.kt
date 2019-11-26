@@ -58,6 +58,7 @@ internal class ViewTargetRequestDisposable(
     private val request: LoadRequest
 ) : RequestDisposable {
 
+    /** TODO: This isn't a perfect check since we can reuse the same [LoadRequest] for multiple distinct requests. */
     override var isDisposed = false
         get() = field || target.view.requestManager.currentRequest?.request !== request
         private set
