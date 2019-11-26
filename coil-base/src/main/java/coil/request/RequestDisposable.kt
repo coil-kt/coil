@@ -48,8 +48,10 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
 /**
  * Used for requests that are attached to a [View].
  *
- * As requests attached to a view can be restarted when the view is re-attached, [isDisposed] will
- * return true until [dispose] is called or another request has been set on the view.
+ * Requests attached to a view are automatically restarted when
+ * [View.OnAttachStateChangeListener.onViewAttachedToWindow] is called.
+ * As a result, [isDisposed] will return true until [dispose] is called
+ * or another request has been attached to the view.
  */
 internal class ViewTargetRequestDisposable(
     private val target: ViewTarget<*>,
