@@ -410,17 +410,21 @@ internal class RealImageLoader(
             return@run result
         }
 
-        // Convert the drawable into a BitmapDrawable.
-        val drawable = if (result.drawable is BitmapDrawable) {
-            result.drawable
+        // Convert the drawable into a bitmap.
+        val baseBitmap = if (result.drawable is BitmapDrawable) {
+            result.drawable.bitmap
         } else {
-            drawableDecoder.convert(result.drawable, size, options.config).toDrawable(context)
+            log(TAG, Log.INFO) {
+                "Converting drawable of type ${result.drawable::class.java.canonicalName} " +
+                    "to apply transformations: $transformations"
+            }
+            drawableDecoder.convert(result.drawable, size, options.config)
         }
 
-        val bitmap = transformations.fold(drawable.bitmap) { bitmap, transformation ->
+        val transformedBitmap = transformations.fold(baseBitmap) { bitmap, transformation ->
             transformation.transform(bitmapPool, bitmap).also { ensureActive() }
         }
-        return@run result.copy(drawable = bitmap.toDrawable(context))
+        return@run result.copy(drawable = transformedBitmap.toDrawable(context))
     }
 
     override fun onTrimMemory(level: Int) {
