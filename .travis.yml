@@ -1,6 +1,6 @@
 language: android
 dist: trusty
-jdk: oraclejdk8
+jdk: openjdk8
 android:
   components:
     - android-29
