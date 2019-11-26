@@ -1,6 +1,7 @@
 package coil.memory
 
 import android.view.View
+import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import coil.request.Request
 import coil.util.requestManager
@@ -16,23 +17,21 @@ import kotlinx.coroutines.launch
  */
 internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
-    private var clearCurrentRequestJob: Job? = null
-        set(value) {
-            field?.cancel()
-            field = value
-        }
-    var currentRequest: ViewTargetRequestDelegate? = null
-        private set
-
+    private var pendingClear: Job? = null
     private var isRestart = false
     private var skipAttach = true
 
+    var currentRequest: ViewTargetRequestDelegate? = null
+        private set
+
+    /** Replace the current request attached to this view. */
     @MainThread
     fun setCurrentRequest(request: ViewTargetRequestDelegate?) {
         if (isRestart) {
             isRestart = false
         } else {
-            clearCurrentRequestJob = null
+            pendingClear?.cancel()
+            pendingClear = null
         }
 
         currentRequest?.dispose()
@@ -41,18 +40,20 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     }
 
     /** Detach the current request from this view. */
+    @AnyThread
     fun clearCurrentRequest() {
-        clearCurrentRequestJob = CoroutineScope(Job() + Dispatchers.Main.immediate).launch {
-            setCurrentRequest(null)
-        }
+        pendingClear?.cancel()
+        pendingClear = CoroutineScope(Dispatchers.Main.immediate).launch { setCurrentRequest(null) }
     }
 
     override fun onViewAttachedToWindow(v: View) {
         if (skipAttach) {
             skipAttach = false
         } else {
-            isRestart = true
-            currentRequest?.restart()
+            currentRequest?.let { request ->
+                isRestart = true
+                request.restart()
+            }
         }
     }
 

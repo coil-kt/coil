@@ -56,11 +56,13 @@ internal class ViewTargetRequestDisposable(
     private val request: LoadRequest
 ) : RequestDisposable {
 
-    override val isDisposed
-        get() = target.view.requestManager.currentRequest?.request !== request
+    override var isDisposed = false
+        get() = field || target.view.requestManager.currentRequest?.request !== request
+        private set
 
     override fun dispose() {
         if (!isDisposed) {
+            isDisposed = true
             target.view.requestManager.clearCurrentRequest()
         }
     }
