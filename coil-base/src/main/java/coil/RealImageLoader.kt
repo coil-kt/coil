@@ -51,6 +51,7 @@ import coil.request.Parameters
 import coil.request.Request
 import coil.request.RequestDisposable
 import coil.request.ViewTargetRequestDisposable
+import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
@@ -306,18 +307,22 @@ internal class RealImageLoader(
         scale: Scale,
         request: Request
     ): Boolean {
-        // Ensure the image is the original size if requested.
-        if (size !is PixelSize) {
-            return !isSampled
-        }
-
         // Ensure the size is large enough for the target.
-        if (isSampled) {
-            val isWidthSmall = cached.bitmap.width < size.width
-            val isHeightSmall = cached.bitmap.height < size.height
-            when {
-                scale == Scale.FILL && (isWidthSmall || isHeightSmall) -> return false
-                scale == Scale.FIT && (isWidthSmall && isHeightSmall) -> return false
+        when (size) {
+            is OriginalSize -> {
+                if (isSampled) {
+                    return false
+                }
+            }
+            is PixelSize -> {
+                if (isSampled || requestService.upscale(request)) {
+                    val isWidthSmall = cached.bitmap.width < size.width
+                    val isHeightSmall = cached.bitmap.height < size.height
+                    when {
+                        scale == Scale.FILL && (isWidthSmall || isHeightSmall) -> return false
+                        scale == Scale.FIT && (isWidthSmall && isHeightSmall) -> return false
+                    }
+                }
             }
         }
 

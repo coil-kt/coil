@@ -15,6 +15,7 @@ import coil.request.CachePolicy
 import coil.request.GetRequest
 import coil.request.LoadRequest
 import coil.request.Request
+import coil.request.UpscaleStrategy
 import coil.size.DisplaySizeResolver
 import coil.size.Scale
 import coil.size.Size
@@ -85,6 +86,19 @@ internal class RequestService {
         return Scale.FILL
     }
 
+
+    /**
+     * If the upscale strategy is not specified, only upscale if the target is not an [ImageView].
+     * [ImageView]s scale the drawable with a matrix and don't need the result to be upscaled in memory.
+     */
+    fun upscale(request: Request): Boolean {
+        return when (request.upscaleStrategy) {
+            UpscaleStrategy.ENABLED -> true
+            UpscaleStrategy.DISABLED -> false
+            UpscaleStrategy.UNSPECIFIED -> (request.target as? ViewTarget<*>)?.view !is ImageView
+        }
+    }
+
     @WorkerThread
     fun options(
         request: Request,
@@ -107,6 +121,7 @@ internal class RequestService {
             colorSpace = request.colorSpace,
             scale = scale,
             allowRgb565 = allowRgb565,
+            upscale = upscale(request),
             headers = request.headers,
             parameters = request.parameters,
             diskCachePolicy = request.diskCachePolicy,

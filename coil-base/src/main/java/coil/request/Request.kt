@@ -47,6 +47,7 @@ sealed class Request {
     abstract val dispatcher: CoroutineDispatcher
     abstract val transformations: List<Transformation>
     abstract val bitmapConfig: Bitmap.Config
+    abstract val upscaleStrategy: UpscaleStrategy
     abstract val colorSpace: ColorSpace?
     abstract val headers: Headers
     abstract val parameters: Parameters
@@ -132,6 +133,7 @@ class LoadRequest internal constructor(
     override val dispatcher: CoroutineDispatcher,
     override val transformations: List<Transformation>,
     override val bitmapConfig: Bitmap.Config,
+    override val upscaleStrategy: UpscaleStrategy,
     override val colorSpace: ColorSpace?,
     override val headers: Headers,
     override val parameters: Parameters,
@@ -215,6 +217,7 @@ class GetRequest internal constructor(
     override val dispatcher: CoroutineDispatcher,
     override val transformations: List<Transformation>,
     override val bitmapConfig: Bitmap.Config,
+    override val upscaleStrategy: UpscaleStrategy,
     override val colorSpace: ColorSpace?,
     override val headers: Headers,
     override val parameters: Parameters,

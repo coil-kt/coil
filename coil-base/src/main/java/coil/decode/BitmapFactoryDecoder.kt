@@ -13,7 +13,6 @@ import androidx.core.graphics.applyCanvas
 import androidx.exifinterface.media.ExifInterface
 import coil.bitmappool.BitmapPool
 import coil.size.PixelSize
-import coil.size.Scale
 import coil.size.Size
 import coil.util.normalize
 import coil.util.toDrawable
@@ -24,8 +23,6 @@ import okio.Source
 import okio.buffer
 import java.io.InputStream
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /** The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource]. */
@@ -95,19 +92,26 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 inSampleSize = DecodeUtils.calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
 
                 // Calculate the image's density scaling multiple.
-                val sampledSrcWidth = srcWidth / inSampleSize.toDouble()
-                val sampledSrcHeight = srcHeight / inSampleSize.toDouble()
-                val widthPercent = min(1.0, width / sampledSrcWidth)
-                val heightPercent = min(1.0, height / sampledSrcHeight)
-                val scale = when (options.scale) {
-                    Scale.FILL -> max(widthPercent, heightPercent)
-                    Scale.FIT -> min(widthPercent, heightPercent)
-                }
+                val rawScale = DecodeUtils.computeSizeMultiplier(
+                    srcWidth = srcWidth / inSampleSize.toDouble(),
+                    srcHeight = srcHeight / inSampleSize.toDouble(),
+                    destWidth = width.toDouble(),
+                    destHeight = height.toDouble(),
+                    scale = options.scale
+                )
+                val scale = if (options.upscale) rawScale else rawScale.coerceAtMost(1.0)
 
                 inScaled = scale != 1.0
                 if (inScaled) {
-                    inDensity = Int.MAX_VALUE
-                    inTargetDensity = (scale * Int.MAX_VALUE).roundToInt()
+                    if (scale > 1) {
+                        // Upscale
+                        inDensity = (scale * Int.MAX_VALUE).roundToInt()
+                        inTargetDensity = Int.MAX_VALUE
+                    } else {
+                        // Downscale
+                        inDensity = Int.MAX_VALUE
+                        inTargetDensity = (scale * Int.MAX_VALUE).roundToInt()
+                    }
                 }
 
                 if (inMutable) {

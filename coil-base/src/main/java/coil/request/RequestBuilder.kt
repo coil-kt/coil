@@ -57,6 +57,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var dispatcher: CoroutineDispatcher
     protected var transformations: List<Transformation>
     protected var bitmapConfig: Bitmap.Config
+    protected var upscaleStrategy: UpscaleStrategy
     protected var colorSpace: ColorSpace? = null
     protected var headers: Headers.Builder?
     protected var parameters: Parameters.Builder?
@@ -80,6 +81,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         dispatcher = defaults.dispatcher
         transformations = emptyList()
         bitmapConfig = Utils.getDefaultBitmapConfig()
+        upscaleStrategy = UpscaleStrategy.UNSPECIFIED
         if (SDK_INT >= O) {
             colorSpace = null
         }
@@ -106,6 +108,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         dispatcher = request.dispatcher
         transformations = request.transformations
         bitmapConfig = request.bitmapConfig
+        upscaleStrategy = request.upscaleStrategy
         if (SDK_INT >= O) {
             colorSpace = request.colorSpace
         }
@@ -235,6 +238,10 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun allowRgb565(enable: Boolean): T = self {
         this.allowRgb565 = enable
+    }
+
+    fun upscale(enable: Boolean): T = self {
+        this.upscaleStrategy = if (enable) UpscaleStrategy.ENABLED else UpscaleStrategy.DISABLED
     }
 
     /**
@@ -551,6 +558,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             dispatcher,
             transformations,
             bitmapConfig,
+            upscaleStrategy,
             colorSpace,
             headers?.build().orEmpty(),
             parameters?.build().orEmpty(),
@@ -598,6 +606,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             dispatcher,
             transformations,
             bitmapConfig,
+            upscaleStrategy,
             colorSpace,
             headers?.build().orEmpty(),
             parameters?.build().orEmpty(),
