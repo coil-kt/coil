@@ -99,7 +99,9 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                     destHeight = height.toDouble(),
                     scale = options.scale
                 )
-                val scale = if (options.upscale) rawScale else rawScale.coerceAtMost(1.0)
+
+                // Avoid loading the image larger than its original dimensions if allowed.
+                val scale = if (options.requireExactSize) rawScale else rawScale.coerceAtMost(1.0)
 
                 inScaled = scale != 1.0
                 if (inScaled) {

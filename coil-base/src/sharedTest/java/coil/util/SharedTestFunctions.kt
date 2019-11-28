@@ -37,6 +37,7 @@ fun createOptions(): Options {
         colorSpace = null,
         scale = Scale.FILL,
         allowRgb565 = false,
+        requireExactSize = false,
         headers = Headers.Builder().build(),
         parameters = Parameters.Builder().build(),
         networkCachePolicy = CachePolicy.ENABLED,

@@ -83,6 +83,8 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
+import kotlin.math.max
+import kotlin.math.min
 
 internal class RealImageLoader(
     private val context: Context,
@@ -307,31 +309,29 @@ internal class RealImageLoader(
         scale: Scale,
         request: Request
     ): Boolean {
-        // Ensure the size is large enough for the target.
+        // Ensure the size is valid for the target.
+        val bitmap = cached.bitmap
         when (size) {
-            is OriginalSize -> {
-                if (isSampled) {
-                    return false
+            is OriginalSize -> if (isSampled) return false
+            is PixelSize -> if (requestService.requireExactSize(request)) {
+                when (scale) {
+                    Scale.FILL -> if (min(bitmap.width, bitmap.height) != max(size.width, size.height)) return false
+                    Scale.FIT -> if (max(bitmap.width, bitmap.height) != min(size.width, size.height)) return false
                 }
-            }
-            is PixelSize -> {
-                if (isSampled || requestService.upscale(request)) {
-                    val isWidthSmall = cached.bitmap.width < size.width
-                    val isHeightSmall = cached.bitmap.height < size.height
-                    when {
-                        scale == Scale.FILL && (isWidthSmall || isHeightSmall) -> return false
-                        scale == Scale.FIT && (isWidthSmall && isHeightSmall) -> return false
-                    }
+            } else if (isSampled) {
+                when (scale) {
+                    Scale.FILL -> if (min(bitmap.width, bitmap.height) < max(size.width, size.height)) return false
+                    Scale.FIT -> if (max(bitmap.width, bitmap.height) < min(size.width, size.height)) return false
                 }
             }
         }
 
         // Ensure we don't return a hardware bitmap if the request doesn't allow it.
-        if (SDK_INT >= O && !request.allowHardware && cached.bitmap.config == Bitmap.Config.HARDWARE) {
+        if (SDK_INT >= O && !request.allowHardware && bitmap.config == Bitmap.Config.HARDWARE) {
             return false
         }
 
-        val cachedConfig = cached.bitmap.config.normalize()
+        val cachedConfig = bitmap.config.normalize()
         val requestedConfig = request.bitmapConfig.normalize()
 
         // Allow returning a bitmap with an equal or greater config.

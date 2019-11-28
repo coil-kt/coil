@@ -15,8 +15,8 @@ import coil.request.CachePolicy
 import coil.request.GetRequest
 import coil.request.LoadRequest
 import coil.request.Request
-import coil.request.UpscaleStrategy
 import coil.size.DisplaySizeResolver
+import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
@@ -86,16 +86,15 @@ internal class RequestService {
         return Scale.FILL
     }
 
-
     /**
      * If the upscale strategy is not specified, only upscale if the target is not an [ImageView].
      * [ImageView]s scale the drawable with a matrix and don't need the result to be upscaled in memory.
      */
-    fun upscale(request: Request): Boolean {
-        return when (request.upscaleStrategy) {
-            UpscaleStrategy.ENABLED -> true
-            UpscaleStrategy.DISABLED -> false
-            UpscaleStrategy.UNSPECIFIED -> (request.target as? ViewTarget<*>)?.view !is ImageView
+    fun requireExactSize(request: Request): Boolean {
+        return when (request.precision) {
+            Precision.EXACT -> true
+            Precision.INEXACT -> false
+            Precision.AUTOMATIC -> (request.target as? ViewTarget<*>)?.view !is ImageView
         }
     }
 
@@ -114,14 +113,14 @@ internal class RequestService {
         val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
 
         // Disable allowRgb565 if there are transformations.
-        val allowRgb565 = request.transformations.isEmpty() && request.allowRgb565
+        val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty()
 
         return Options(
             config = bitmapConfig,
             colorSpace = request.colorSpace,
             scale = scale,
             allowRgb565 = allowRgb565,
-            upscale = upscale(request),
+            requireExactSize = requireExactSize(request),
             headers = request.headers,
             parameters = request.parameters,
             diskCachePolicy = request.diskCachePolicy,

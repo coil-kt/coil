@@ -27,6 +27,7 @@ import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.memory.RequestService
 import coil.size.PixelSize
+import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
@@ -53,11 +54,11 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var listener: Request.Listener?
     protected var sizeResolver: SizeResolver?
     protected var scale: Scale?
+    protected var precision: Precision
     protected var decoder: Decoder?
     protected var dispatcher: CoroutineDispatcher
     protected var transformations: List<Transformation>
     protected var bitmapConfig: Bitmap.Config
-    protected var upscaleStrategy: UpscaleStrategy
     protected var colorSpace: ColorSpace? = null
     protected var headers: Headers.Builder?
     protected var parameters: Parameters.Builder?
@@ -77,11 +78,11 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         listener = null
         sizeResolver = null
         scale = null
+        precision = Precision.AUTOMATIC
         decoder = null
         dispatcher = defaults.dispatcher
         transformations = emptyList()
         bitmapConfig = Utils.getDefaultBitmapConfig()
-        upscaleStrategy = UpscaleStrategy.UNSPECIFIED
         if (SDK_INT >= O) {
             colorSpace = null
         }
@@ -104,11 +105,11 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         listener = request.listener
         sizeResolver = request.sizeResolver
         scale = request.scale
+        precision = request.precision
         decoder = request.decoder
         dispatcher = request.dispatcher
         transformations = request.transformations
         bitmapConfig = request.bitmapConfig
-        upscaleStrategy = request.upscaleStrategy
         if (SDK_INT >= O) {
             colorSpace = request.colorSpace
         }
@@ -162,35 +163,35 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Set the [CoroutineDispatcher].
+     * Set the [CoroutineDispatcher] to run the fetching, decoding, and transforming work on.
      */
     fun dispatcher(dispatcher: CoroutineDispatcher): T = self {
         this.dispatcher = dispatcher
     }
 
     /**
-     * Set the requested width/height. Coil will attempt to load the image into memory with these dimensions.
+     * Set the requested width/height.
      */
     fun size(@Px size: Int): T = self {
         size(size, size)
     }
 
     /**
-     * Set the requested width/height. Coil will attempt to load the image into memory with these dimensions.
+     * Set the requested width/height.
      */
     fun size(@Px width: Int, @Px height: Int): T = self {
         size(PixelSize(width, height))
     }
 
     /**
-     * Set the requested width/height. Coil will attempt to load the image into memory with these dimensions.
+     * Set the requested width/height.
      */
     fun size(size: Size): T = self {
         this.sizeResolver = SizeResolver(size)
     }
 
     /**
-     * Set the requested width/height. Coil will attempt to load the image into memory with these dimensions.
+     * Set the [SizeResolver] for this request. It will be used to determine the requested width/height for this request.
      *
      * If this isn't set, Coil will attempt to determine the size of the request using the logic in [RequestService.sizeResolver].
      */
@@ -207,6 +208,18 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun scale(scale: Scale): T = self {
         this.scale = scale
+    }
+
+    /**
+     * Set the required precision of the size of the loaded image.
+     *
+     * The default value is [Precision.AUTOMATIC], which uses the logic in [RequestService.requireExactSize]
+     * to determine if output image's dimensions must match the input [size] and [scale] exactly.
+     *
+     * @see Precision
+     */
+    fun precision(precision: Precision): T = self {
+        this.precision = precision
     }
 
     /**
@@ -238,10 +251,6 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun allowRgb565(enable: Boolean): T = self {
         this.allowRgb565 = enable
-    }
-
-    fun upscale(enable: Boolean): T = self {
-        this.upscaleStrategy = if (enable) UpscaleStrategy.ENABLED else UpscaleStrategy.DISABLED
     }
 
     /**
@@ -554,11 +563,11 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             listener,
             sizeResolver,
             scale,
+            precision,
             decoder,
             dispatcher,
             transformations,
             bitmapConfig,
-            upscaleStrategy,
             colorSpace,
             headers?.build().orEmpty(),
             parameters?.build().orEmpty(),
@@ -602,11 +611,11 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             listener,
             sizeResolver,
             scale,
+            precision,
             decoder,
             dispatcher,
             transformations,
             bitmapConfig,
-            upscaleStrategy,
             colorSpace,
             headers?.build().orEmpty(),
             parameters?.build().orEmpty(),
