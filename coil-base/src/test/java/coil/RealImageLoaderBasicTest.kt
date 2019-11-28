@@ -10,6 +10,7 @@ import coil.decode.Options
 import coil.fetch.Fetcher
 import coil.request.Parameters
 import coil.size.PixelSize
+import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.transform.Transformation
@@ -50,6 +51,7 @@ class RealImageLoaderBasicTest {
     fun `isCachedDrawableValid - fill`() {
         val request = createGetRequest {
             size(100, 100)
+            precision(Precision.INEXACT)
         }
         val cached = createBitmap().toDrawable(context)
         assertFalse(imageLoader.isCachedDrawableValid(
@@ -93,6 +95,7 @@ class RealImageLoaderBasicTest {
     fun `isCachedDrawableValid - fit`() {
         val request = createGetRequest {
             size(100, 100)
+            precision(Precision.INEXACT)
         }
         val cached = createBitmap().toDrawable(context)
         assertFalse(imageLoader.isCachedDrawableValid(
@@ -134,7 +137,9 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - small not sampled cached drawable is valid`() {
-        val request = createGetRequest()
+        val request = createGetRequest {
+            precision(Precision.INEXACT)
+        }
         val cached = createBitmap().toDrawable(context)
         val isValid = imageLoader.isCachedDrawableValid(
             cached = cached,
