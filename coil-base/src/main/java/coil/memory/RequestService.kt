@@ -94,7 +94,8 @@ internal class RequestService {
         return when (request.precision) {
             Precision.EXACT -> true
             Precision.INEXACT -> false
-            Precision.AUTOMATIC -> (request.target as? ViewTarget<*>)?.view !is ImageView
+            Precision.AUTOMATIC -> (request.target as? ViewTarget<*>)?.view !is ImageView &&
+                (request.sizeResolver != null || request.target is ViewTarget<*>)
         }
     }
 
