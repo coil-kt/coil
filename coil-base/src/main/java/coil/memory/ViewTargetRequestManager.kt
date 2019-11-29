@@ -24,6 +24,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     private var skipAttach = true
 
     /** Get the current request attached to this view. */
+    @AnyThread
     fun getCurrentRequest() = currentRequest
 
     /** Replace the current request attached to this view. */
