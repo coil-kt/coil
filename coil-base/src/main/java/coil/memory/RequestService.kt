@@ -86,16 +86,20 @@ internal class RequestService {
         return Scale.FILL
     }
 
-    /**
-     * If the upscale strategy is not specified, only upscale if the target is not an [ImageView].
-     * [ImageView]s scale the drawable with a matrix and don't need the result to be upscaled in memory.
-     */
     fun requireExactSize(request: Request): Boolean {
         return when (request.precision) {
             Precision.EXACT -> true
             Precision.INEXACT -> false
-            Precision.AUTOMATIC -> (request.target as? ViewTarget<*>)?.view !is ImageView &&
-                (request.sizeResolver != null || request.target is ViewTarget<*>)
+            Precision.AUTOMATIC -> {
+                // ImageViews will automatically scale the image.
+                if ((request.target as? ViewTarget<*>)?.view is ImageView) return false
+
+                // If we fall back to a DisplaySizeResolver, allow the dimensions to be inexact.
+                if (request.sizeResolver == null && request.target !is ViewTarget<*>) return false
+
+                // Else, require the dimensions to be exact.
+                return true
+            }
         }
     }
 
