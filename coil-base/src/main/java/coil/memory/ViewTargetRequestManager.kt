@@ -49,6 +49,9 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
         pendingClear = CoroutineScope(Dispatchers.Main.immediate).launch { setCurrentRequest(null) }
     }
 
+    @AnyThread
+    fun hasPendingClear() = pendingClear != null
+
     override fun onViewAttachedToWindow(v: View) {
         if (skipAttach) {
             skipAttach = false
