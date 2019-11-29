@@ -17,10 +17,13 @@ import kotlinx.coroutines.launch
  */
 internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
-    private var pendingClear: Job? = null
     private var isRestart = false
     private var skipAttach = true
 
+    @Volatile
+    private var pendingClear: Job? = null
+
+    @Volatile
     var currentRequest: ViewTargetRequestDelegate? = null
         private set
 
