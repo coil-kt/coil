@@ -60,7 +60,7 @@ internal class ViewTargetRequestDisposable(
 
     /** TODO: This isn't a perfect check since we can reuse the same [LoadRequest] for multiple distinct requests. */
     override var isDisposed = false
-        get() = field || target.view.requestManager.currentRequest?.request !== request
+        get() = field || target.view.requestManager.getCurrentRequest()?.request !== request
         private set
 
     override fun dispose() {
@@ -73,7 +73,7 @@ internal class ViewTargetRequestDisposable(
     @ExperimentalCoil
     override suspend fun await() {
         if (!isDisposed) {
-            target.view.requestManager.currentRequest?.job?.join()
+            target.view.requestManager.getCurrentRequest()?.job?.join()
         }
     }
 }

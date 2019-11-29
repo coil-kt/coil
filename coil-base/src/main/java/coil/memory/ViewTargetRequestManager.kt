@@ -17,15 +17,14 @@ import kotlinx.coroutines.launch
  */
 internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
+    @Volatile private var pendingClear: Job? = null
+    @Volatile private var currentRequest: ViewTargetRequestDelegate? = null
+
     private var isRestart = false
     private var skipAttach = true
 
-    @Volatile
-    private var pendingClear: Job? = null
-
-    @Volatile
-    var currentRequest: ViewTargetRequestDelegate? = null
-        private set
+    /** Get the current request attached to this view. */
+    fun getCurrentRequest() = currentRequest
 
     /** Replace the current request attached to this view. */
     @MainThread
