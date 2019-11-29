@@ -107,12 +107,12 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 if (inScaled) {
                     if (scale > 1) {
                         // Upscale
-                        inDensity = (scale * Int.MAX_VALUE).roundToInt()
+                        inDensity = (Int.MAX_VALUE / scale).roundToInt()
                         inTargetDensity = Int.MAX_VALUE
                     } else {
                         // Downscale
                         inDensity = Int.MAX_VALUE
-                        inTargetDensity = (scale * Int.MAX_VALUE).roundToInt()
+                        inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
                     }
                 }
 

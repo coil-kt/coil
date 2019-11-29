@@ -7,6 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
+import coil.size.Scale
 import coil.size.Size
 import coil.util.createOptions
 import coil.util.isSimilarTo
@@ -85,7 +86,7 @@ class BitmapFactoryDecoderTest {
     fun originalSizeDimensionsAreResolvedCorrectly() {
         val size = OriginalSize
         val normal = decode("normal.jpg", size)
-        assertTrue(normal.width == 1080 && normal.height == 1350)
+        assertEquals(PixelSize(1080, 1350), normal.run { PixelSize(width, height) })
     }
 
     @Test
@@ -107,12 +108,36 @@ class BitmapFactoryDecoderTest {
         assertTrue(normal.isSimilarTo(actual))
     }
 
-    private fun decode(fileName: String, size: Size): Bitmap = runBlocking {
+    @Test
+    fun requireExactSize_True() {
+        val result = decode(
+            fileName = "normal.jpg",
+            size = PixelSize(1500, 1500),
+            options = { createOptions(scale = Scale.FIT, requireExactSize = true) }
+        )
+        assertEquals(PixelSize(1200, 1500), result.run { PixelSize(width, height) })
+    }
+
+    @Test
+    fun requireExactSize_False() {
+        val result = decode(
+            fileName = "normal.jpg",
+            size = PixelSize(1500, 1500),
+            options = { createOptions(scale = Scale.FIT, requireExactSize = false) }
+        )
+        assertEquals(PixelSize(1080, 1350), result.run { PixelSize(width, height) })
+    }
+
+    private fun decode(
+        fileName: String,
+        size: Size,
+        options: () -> Options = { createOptions() }
+    ): Bitmap = runBlocking {
         val result = service.decode(
             pool = pool,
             source = context.assets.open(fileName).source().buffer(),
             size = size,
-            options = createOptions()
+            options = options()
         )
         return@runBlocking (result.drawable as BitmapDrawable).bitmap
     }
