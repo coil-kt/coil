@@ -23,10 +23,10 @@ import kotlin.math.roundToInt
 /**
  * A [Drawable] that crossfades from [start] to [end].
  *
- * NOTE: The transition can only be executed once as the [start] drawable is dereferenced at the end of the transition.
+ * NOTE: The animation can only be executed once as the [start] drawable is dereferenced at the end of the transition.
  *
- * @param start The Drawable to crossfade from.
- * @param end The Drawable to crossfade to.
+ * @param start The [Drawable] to crossfade from.
+ * @param end The [Drawable] to crossfade to.
  * @param scale The scaling algorithm for [start] and [end].
  * @param durationMillis The duration of the crossfade animation.
  */
@@ -47,8 +47,8 @@ class CrossfadeDrawable(
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
-    private val width = max(start?.intrinsicWidth ?: -1, end?.intrinsicWidth ?: -1)
-    private val height = max(start?.intrinsicHeight ?: -1, end?.intrinsicHeight ?: -1)
+    private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth, end?.intrinsicWidth)
+    private val intrinsicHeight = computeIntrinsicDimension(start?.intrinsicHeight, end?.intrinsicHeight)
 
     private var startTimeMillis = 0L
     private var maxAlpha = 255
@@ -148,9 +148,9 @@ class CrossfadeDrawable(
         end?.let { updateBounds(it, bounds) }
     }
 
-    override fun getIntrinsicWidth() = width
+    override fun getIntrinsicWidth() = intrinsicWidth
 
-    override fun getIntrinsicHeight() = height
+    override fun getIntrinsicHeight() = intrinsicHeight
 
     override fun unscheduleDrawable(who: Drawable, what: Runnable) = unscheduleSelf(what)
 
@@ -245,6 +245,10 @@ class CrossfadeDrawable(
         val right = targetBounds.right - dx
         val bottom = targetBounds.bottom - dy
         drawable.setBounds(left, top, right, bottom)
+    }
+
+    private fun computeIntrinsicDimension(startSize: Int?, endSize: Int?): Int {
+        return if (startSize == -1 || endSize == -1) -1 else max(startSize ?: -1, endSize ?: -1)
     }
 
     private fun markDone() {
