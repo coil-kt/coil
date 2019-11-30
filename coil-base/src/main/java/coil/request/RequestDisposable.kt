@@ -29,7 +29,7 @@ interface RequestDisposable {
     suspend fun await()
 }
 
-/** Used for a one-shot image request. */
+/** Used for one-shot image requests. */
 internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
 
     override val isDisposed
