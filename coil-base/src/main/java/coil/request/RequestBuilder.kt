@@ -217,8 +217,8 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * The default value is [Precision.AUTOMATIC], which uses the logic in [RequestService.allowInexactSize]
      * to determine if output image's dimensions must match the input [size] and [scale] exactly.
      *
-     * NOTE: If [size] is [OriginalSize], image's dimensions will always be equal to
-     * or greater than the image's original dimensions.
+     * NOTE: If [size] is [OriginalSize], image's dimensions will always be equal to or greater than
+     * the image's original dimensions.
      *
      * @see Precision
      */
