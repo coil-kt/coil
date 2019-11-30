@@ -18,7 +18,7 @@ interface RequestDisposable {
     val isDisposed: Boolean
 
     /**
-     * Cancels any in progress work and free any resources associated with this request. This method is idempotent.
+     * Cancels any in progress work and frees any resources associated with this request. This method is idempotent.
      */
     fun dispose()
 
