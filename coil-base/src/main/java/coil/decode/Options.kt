@@ -16,7 +16,7 @@ import okhttp3.Headers
  * @param config The requested config for any [Bitmap]s.
  * @param colorSpace The preferred color space for any [Bitmap]s.
  * @param scale Determines if the image should be loaded to fit or fill the target's dimensions.
- * @param requireExactSize True if the image should be loaded to the exact dimensions given by the size + scale.
+ * @param allowInexactSize True if the image should be loaded to the exact dimensions given by the size + scale.
  *  This will be false if the target supports scaling the image to its required dimensions.
  * @param allowRgb565 True if the [Fetcher] is allowed to use [Bitmap.Config.RGB_565] as an optimization.
  * @param headers The headers for any network operations.
@@ -28,8 +28,8 @@ data class Options(
     val config: Bitmap.Config,
     val colorSpace: ColorSpace?,
     val scale: Scale,
+    val allowInexactSize: Boolean,
     val allowRgb565: Boolean,
-    val requireExactSize: Boolean,
     val headers: Headers,
     val parameters: Parameters,
     val networkCachePolicy: CachePolicy,

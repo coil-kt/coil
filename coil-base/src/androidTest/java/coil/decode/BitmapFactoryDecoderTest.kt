@@ -109,23 +109,23 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun requireExactSize_True() {
+    fun allowInexactSize_True() {
         val result = decode(
             fileName = "normal.jpg",
             size = PixelSize(1500, 1500),
-            options = { createOptions(scale = Scale.FIT, requireExactSize = true) }
+            options = { createOptions(scale = Scale.FIT, allowInexactSize = true) }
         )
-        assertEquals(PixelSize(1200, 1500), result.run { PixelSize(width, height) })
+        assertEquals(PixelSize(1080, 1350), result.run { PixelSize(width, height) })
     }
 
     @Test
-    fun requireExactSize_False() {
+    fun allowInexactSize_False() {
         val result = decode(
             fileName = "normal.jpg",
             size = PixelSize(1500, 1500),
-            options = { createOptions(scale = Scale.FIT, requireExactSize = false) }
+            options = { createOptions(scale = Scale.FIT, allowInexactSize = false) }
         )
-        assertEquals(PixelSize(1080, 1350), result.run { PixelSize(width, height) })
+        assertEquals(PixelSize(1200, 1500), result.run { PixelSize(width, height) })
     }
 
     private fun decode(

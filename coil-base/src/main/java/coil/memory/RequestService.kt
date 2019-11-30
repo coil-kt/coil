@@ -86,19 +86,19 @@ internal class RequestService {
         return Scale.FILL
     }
 
-    fun requireExactSize(request: Request): Boolean {
+    fun allowInexactSize(request: Request): Boolean {
         return when (request.precision) {
-            Precision.EXACT -> true
-            Precision.INEXACT -> false
+            Precision.EXACT -> false
+            Precision.INEXACT -> true
             Precision.AUTOMATIC -> {
                 // ImageViews will automatically scale the image.
-                if ((request.target as? ViewTarget<*>)?.view is ImageView) return false
+                if ((request.target as? ViewTarget<*>)?.view is ImageView) return true
 
                 // If we fall back to a DisplaySizeResolver, allow the dimensions to be inexact.
-                if (request.sizeResolver == null && request.target !is ViewTarget<*>) return false
+                if (request.sizeResolver == null && request.target !is ViewTarget<*>) return true
 
                 // Else, require the dimensions to be exact.
-                return true
+                return false
             }
         }
     }
@@ -124,8 +124,8 @@ internal class RequestService {
             config = bitmapConfig,
             colorSpace = request.colorSpace,
             scale = scale,
+            allowInexactSize = allowInexactSize(request),
             allowRgb565 = allowRgb565,
-            requireExactSize = requireExactSize(request),
             headers = request.headers,
             parameters = request.parameters,
             diskCachePolicy = request.diskCachePolicy,

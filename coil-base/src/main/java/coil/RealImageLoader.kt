@@ -313,7 +313,7 @@ internal class RealImageLoader(
         val bitmap = cached.bitmap
         when (size) {
             is OriginalSize -> if (isSampled) return false
-            is PixelSize -> if (requestService.requireExactSize(request)) {
+            is PixelSize -> if (!requestService.allowInexactSize(request)) {
                 when (scale) {
                     Scale.FILL -> if (min(bitmap.width, bitmap.height) != max(size.width, size.height)) return false
                     Scale.FIT -> if (max(bitmap.width, bitmap.height) != min(size.width, size.height)) return false

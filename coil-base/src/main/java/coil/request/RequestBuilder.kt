@@ -211,9 +211,9 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Set the required precision of the size of the loaded image.
+     * Set the required precision for the size of the loaded image.
      *
-     * The default value is [Precision.AUTOMATIC], which uses the logic in [RequestService.requireExactSize]
+     * The default value is [Precision.AUTOMATIC], which uses the logic in [RequestService.allowInexactSize]
      * to determine if output image's dimensions must match the input [size] and [scale] exactly.
      *
      * @see Precision

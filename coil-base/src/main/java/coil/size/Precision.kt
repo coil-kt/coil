@@ -5,6 +5,8 @@ import coil.memory.RequestService
 import coil.request.RequestBuilder
 
 /**
+ * Represents the required precision for the size of an image in an image request.
+ *
  * @see RequestBuilder.precision
  */
 enum class Precision {
@@ -28,9 +30,7 @@ enum class Precision {
 
     /**
      * Allow Coil to automatically determine if the size needs to be exact for this request
-     * using the logic in [RequestService.requireExactSize].
-     *
-     * Currently, the size will always be exact unless the image is being loaded into an [ImageView].
+     * using the logic in [RequestService.allowInexactSize].
      */
     AUTOMATIC
 }

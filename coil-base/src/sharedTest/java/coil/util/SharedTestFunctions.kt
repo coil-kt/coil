@@ -36,8 +36,8 @@ fun createOptions(
     config: Bitmap.Config = Bitmap.Config.ARGB_8888,
     colorSpace: ColorSpace? = null,
     scale: Scale = Scale.FILL,
+    allowInexactSize: Boolean = false,
     allowRgb565: Boolean = false,
-    requireExactSize: Boolean = false,
     headers: Headers = Headers.Builder().build(),
     parameters: Parameters = Parameters.Builder().build(),
     networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
@@ -47,8 +47,8 @@ fun createOptions(
         config,
         colorSpace,
         scale,
+        allowInexactSize,
         allowRgb565,
-        requireExactSize,
         headers,
         parameters,
         networkCachePolicy,
@@ -58,9 +58,9 @@ fun createOptions(
 
 inline fun createGetRequest(
     builder: GetRequestBuilder.() -> Unit = {}
-): GetRequest = GetRequestBuilder(DefaultRequestOptions()).data(Any()).apply(builder).build()
+): GetRequest = GetRequestBuilder(DefaultRequestOptions()).data(Unit).apply(builder).build()
 
 inline fun createLoadRequest(
     context: Context,
     builder: LoadRequestBuilder.() -> Unit = {}
-): LoadRequest = LoadRequestBuilder(context, DefaultRequestOptions()).data(Any()).apply(builder).build()
+): LoadRequest = LoadRequestBuilder(context, DefaultRequestOptions()).data(Unit).apply(builder).build()
