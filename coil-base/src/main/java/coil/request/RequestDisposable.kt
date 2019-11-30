@@ -13,17 +13,17 @@ import kotlinx.coroutines.Job
 interface RequestDisposable {
 
     /**
-     * Return true if the request is complete or cancelling.
+     * Returns true if the request is complete or cancelling.
      */
     val isDisposed: Boolean
 
     /**
-     * Cancel any in progress work and free any resources associated with this request. This method is idempotent.
+     * Cancels any in progress work and free any resources associated with this request. This method is idempotent.
      */
     fun dispose()
 
     /**
-     * Suspend until any in progress work completes.
+     * Suspends until any in progress work completes.
      */
     @ExperimentalCoil
     suspend fun await()
