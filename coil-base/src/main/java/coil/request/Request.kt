@@ -15,6 +15,7 @@ import coil.ImageLoader
 import coil.annotation.ExperimentalCoil
 import coil.decode.DataSource
 import coil.decode.Decoder
+import coil.size.Precision
 import coil.size.Scale
 import coil.size.SizeResolver
 import coil.target.Target
@@ -43,6 +44,7 @@ sealed class Request {
     abstract val listener: Listener?
     abstract val sizeResolver: SizeResolver?
     abstract val scale: Scale?
+    abstract val precision: Precision
     abstract val decoder: Decoder?
     abstract val dispatcher: CoroutineDispatcher
     abstract val transformations: List<Transformation>
@@ -128,6 +130,7 @@ class LoadRequest internal constructor(
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
+    override val precision: Precision,
     override val decoder: Decoder?,
     override val dispatcher: CoroutineDispatcher,
     override val transformations: List<Transformation>,
@@ -211,6 +214,7 @@ class GetRequest internal constructor(
     override val listener: Listener?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
+    override val precision: Precision,
     override val decoder: Decoder?,
     override val dispatcher: CoroutineDispatcher,
     override val transformations: List<Transformation>,

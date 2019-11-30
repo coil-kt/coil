@@ -5,8 +5,8 @@ import android.graphics.drawable.Drawable
 /**
  * The result of [Decoder.decode].
  *
- * @param drawable The loaded [Drawable].
- * @param isSampled True if [drawable] is sampled (i.e. not loaded into memory at full size).
+ * @param drawable The decoded [Drawable].
+ * @param isSampled True if [drawable] is sampled (i.e. loaded into memory at less than its original size).
  *
  * @see Decoder
  */
