@@ -53,8 +53,8 @@ object DecodeUtils {
         @Px destHeight: Int,
         scale: Scale
     ): Int {
-        val widthInSampleSize = max(1, Integer.highestOneBit(srcWidth / destWidth))
-        val heightInSampleSize = max(1, Integer.highestOneBit(srcHeight / destHeight))
+        val widthInSampleSize = Integer.highestOneBit(srcWidth / destWidth).coerceAtLeast(1)
+        val heightInSampleSize = Integer.highestOneBit(srcHeight / destHeight).coerceAtLeast(1)
         return when (scale) {
             Scale.FILL -> min(widthInSampleSize, heightInSampleSize)
             Scale.FIT -> max(widthInSampleSize, heightInSampleSize)
@@ -73,6 +73,23 @@ object DecodeUtils {
         @Px destHeight: Float,
         scale: Scale
     ): Float {
+        val widthPercent = destWidth / srcWidth
+        val heightPercent = destHeight / srcHeight
+        return when (scale) {
+            Scale.FILL -> max(widthPercent, heightPercent)
+            Scale.FIT -> min(widthPercent, heightPercent)
+        }
+    }
+
+    /** @see computeSizeMultiplier */
+    @JvmStatic
+    fun computeSizeMultiplier(
+        @Px srcWidth: Double,
+        @Px srcHeight: Double,
+        @Px destWidth: Double,
+        @Px destHeight: Double,
+        scale: Scale
+    ): Double {
         val widthPercent = destWidth / srcWidth
         val heightPercent = destHeight / srcHeight
         return when (scale) {

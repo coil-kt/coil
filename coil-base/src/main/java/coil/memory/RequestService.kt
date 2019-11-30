@@ -16,6 +16,7 @@ import coil.request.GetRequest
 import coil.request.LoadRequest
 import coil.request.Request
 import coil.size.DisplaySizeResolver
+import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
@@ -85,6 +86,23 @@ internal class RequestService {
         return Scale.FILL
     }
 
+    fun allowInexactSize(request: Request): Boolean {
+        return when (request.precision) {
+            Precision.EXACT -> false
+            Precision.INEXACT -> true
+            Precision.AUTOMATIC -> {
+                // ImageViews will automatically scale the image.
+                if ((request.target as? ViewTarget<*>)?.view is ImageView) return true
+
+                // If we fall back to a DisplaySizeResolver, allow the dimensions to be inexact.
+                if (request.sizeResolver == null && request.target !is ViewTarget<*>) return true
+
+                // Else, require the dimensions to be exact.
+                return false
+            }
+        }
+    }
+
     @WorkerThread
     fun options(
         request: Request,
@@ -100,12 +118,13 @@ internal class RequestService {
         val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
 
         // Disable allowRgb565 if there are transformations.
-        val allowRgb565 = request.transformations.isEmpty() && request.allowRgb565
+        val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty()
 
         return Options(
             config = bitmapConfig,
             colorSpace = request.colorSpace,
             scale = scale,
+            allowInexactSize = allowInexactSize(request),
             allowRgb565 = allowRgb565,
             headers = request.headers,
             parameters = request.parameters,

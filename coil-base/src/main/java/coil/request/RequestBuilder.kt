@@ -26,7 +26,9 @@ import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.memory.RequestService
+import coil.size.OriginalSize
 import coil.size.PixelSize
+import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
@@ -53,6 +55,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var listener: Request.Listener?
     protected var sizeResolver: SizeResolver?
     protected var scale: Scale?
+    protected var precision: Precision
     protected var decoder: Decoder?
     protected var dispatcher: CoroutineDispatcher
     protected var transformations: List<Transformation>
@@ -76,6 +79,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         listener = null
         sizeResolver = null
         scale = null
+        precision = Precision.AUTOMATIC
         decoder = null
         dispatcher = defaults.dispatcher
         transformations = emptyList()
@@ -102,6 +106,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         listener = request.listener
         sizeResolver = request.sizeResolver
         scale = request.scale
+        precision = request.precision
         decoder = request.decoder
         dispatcher = request.dispatcher
         transformations = request.transformations
@@ -159,35 +164,35 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Set the [CoroutineDispatcher].
+     * Set the [CoroutineDispatcher] to run the fetching, decoding, and transforming work on.
      */
     fun dispatcher(dispatcher: CoroutineDispatcher): T = self {
         this.dispatcher = dispatcher
     }
 
     /**
-     * Set the requested width/height. Coil will attempt to load the image into memory with these dimensions.
+     * Set the requested width/height.
      */
     fun size(@Px size: Int): T = self {
         size(size, size)
     }
 
     /**
-     * Set the requested width/height. Coil will attempt to load the image into memory with these dimensions.
+     * Set the requested width/height.
      */
     fun size(@Px width: Int, @Px height: Int): T = self {
         size(PixelSize(width, height))
     }
 
     /**
-     * Set the requested width/height. Coil will attempt to load the image into memory with these dimensions.
+     * Set the requested width/height.
      */
     fun size(size: Size): T = self {
         this.sizeResolver = SizeResolver(size)
     }
 
     /**
-     * Set the requested width/height. Coil will attempt to load the image into memory with these dimensions.
+     * Set the [SizeResolver] for this request. It will be used to determine the requested width/height for this request.
      *
      * If this isn't set, Coil will attempt to determine the size of the request using the logic in [RequestService.sizeResolver].
      */
@@ -204,6 +209,21 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun scale(scale: Scale): T = self {
         this.scale = scale
+    }
+
+    /**
+     * Set the required precision for the size of the loaded image.
+     *
+     * The default value is [Precision.AUTOMATIC], which uses the logic in [RequestService.allowInexactSize]
+     * to determine if output image's dimensions must match the input [size] and [scale] exactly.
+     *
+     * NOTE: If [size] is [OriginalSize], image's dimensions will always be equal to or greater than
+     * the image's original dimensions.
+     *
+     * @see Precision
+     */
+    fun precision(precision: Precision): T = self {
+        this.precision = precision
     }
 
     /**
@@ -547,6 +567,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             listener,
             sizeResolver,
             scale,
+            precision,
             decoder,
             dispatcher,
             transformations,
@@ -594,6 +615,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             listener,
             sizeResolver,
             scale,
+            precision,
             decoder,
             dispatcher,
             transformations,

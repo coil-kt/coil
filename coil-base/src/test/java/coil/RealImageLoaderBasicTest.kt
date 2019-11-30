@@ -10,11 +10,13 @@ import coil.decode.Options
 import coil.fetch.Fetcher
 import coil.request.Parameters
 import coil.size.PixelSize
+import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.transform.Transformation
 import coil.util.createBitmap
 import coil.util.createGetRequest
+import coil.util.createLoadRequest
 import coil.util.toDrawable
 import org.junit.After
 import org.junit.Before
@@ -50,6 +52,7 @@ class RealImageLoaderBasicTest {
     fun `isCachedDrawableValid - fill`() {
         val request = createGetRequest {
             size(100, 100)
+            precision(Precision.INEXACT)
         }
         val cached = createBitmap().toDrawable(context)
         assertFalse(imageLoader.isCachedDrawableValid(
@@ -93,6 +96,7 @@ class RealImageLoaderBasicTest {
     fun `isCachedDrawableValid - fit`() {
         val request = createGetRequest {
             size(100, 100)
+            precision(Precision.INEXACT)
         }
         val cached = createBitmap().toDrawable(context)
         assertFalse(imageLoader.isCachedDrawableValid(
@@ -134,7 +138,9 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - small not sampled cached drawable is valid`() {
-        val request = createGetRequest()
+        val request = createGetRequest {
+            precision(Precision.INEXACT)
+        }
         val cached = createBitmap().toDrawable(context)
         val isValid = imageLoader.isCachedDrawableValid(
             cached = cached,
@@ -203,6 +209,42 @@ class RealImageLoaderBasicTest {
 
         assertFalse(isBitmapConfigValid(Bitmap.Config.HARDWARE))
         assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888))
+    }
+
+    @Test
+    fun `isCachedDrawableValid - allowInexactSize=true`() {
+        val request = createLoadRequest(context) {
+            precision(Precision.INEXACT)
+        }
+
+        val cached = createBitmap().toDrawable(context)
+        val isValid = imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(50, 50),
+            scale = Scale.FILL,
+            request = request
+        )
+
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `isCachedDrawableValid - allowInexactSize=false`() {
+        val request = createLoadRequest(context) {
+            precision(Precision.EXACT)
+        }
+
+        val cached = createBitmap().toDrawable(context)
+        val isValid = imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(50, 50),
+            scale = Scale.FILL,
+            request = request
+        )
+
+        assertFalse(isValid)
     }
 
     @Test
