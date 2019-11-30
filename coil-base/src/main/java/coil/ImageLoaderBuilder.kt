@@ -12,6 +12,7 @@ import coil.annotation.BuilderMarker
 import coil.annotation.ExperimentalCoil
 import coil.drawable.CrossfadeDrawable
 import coil.request.Request
+import coil.size.Precision
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.CoilUtils
@@ -185,6 +186,16 @@ class ImageLoaderBuilder(private val context: Context) {
     @ExperimentalCoil
     fun transitionFactory(factory: Transition.Factory?) = apply {
         this.defaults = this.defaults.copy(transitionFactory = factory)
+    }
+
+    /**
+     * Set the default precision for a request. [Precision] controls whether the size of the
+     * loaded image must match the request's size exactly or not.
+     *
+     * Default: [Precision.AUTOMATIC]
+     */
+    fun precision(precision: Precision) = apply {
+        this.defaults = this.defaults.copy(precision = precision)
     }
 
     /**

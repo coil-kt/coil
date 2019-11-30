@@ -79,7 +79,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         listener = null
         sizeResolver = null
         scale = null
-        precision = Precision.AUTOMATIC
+        precision = defaults.precision
         decoder = null
         dispatcher = defaults.dispatcher
         transformations = emptyList()
