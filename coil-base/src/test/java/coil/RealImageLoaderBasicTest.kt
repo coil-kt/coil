@@ -16,6 +16,7 @@ import coil.size.Size
 import coil.transform.Transformation
 import coil.util.createBitmap
 import coil.util.createGetRequest
+import coil.util.createLoadRequest
 import coil.util.toDrawable
 import org.junit.After
 import org.junit.Before
@@ -208,6 +209,42 @@ class RealImageLoaderBasicTest {
 
         assertFalse(isBitmapConfigValid(Bitmap.Config.HARDWARE))
         assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888))
+    }
+
+    @Test
+    fun `isCachedDrawableValid - allowInexactSize=true`() {
+        val request = createLoadRequest(context) {
+            precision(Precision.INEXACT)
+        }
+
+        val cached = createBitmap().toDrawable(context)
+        val isValid = imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(50, 50),
+            scale = Scale.FILL,
+            request = request
+        )
+
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `isCachedDrawableValid - allowInexactSize=false`() {
+        val request = createLoadRequest(context) {
+            precision(Precision.EXACT)
+        }
+
+        val cached = createBitmap().toDrawable(context)
+        val isValid = imageLoader.isCachedDrawableValid(
+            cached = cached,
+            isSampled = true,
+            size = PixelSize(50, 50),
+            scale = Scale.FILL,
+            request = request
+        )
+
+        assertFalse(isValid)
     }
 
     @Test
