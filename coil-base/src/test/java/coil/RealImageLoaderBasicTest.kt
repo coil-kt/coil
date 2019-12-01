@@ -90,6 +90,13 @@ class RealImageLoaderBasicTest {
             scale = Scale.FILL,
             request = request
         ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 400, height = 200).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(400, 200),
+            scale = Scale.FILL,
+            request = request
+        ))
     }
 
     @Test
@@ -131,6 +138,13 @@ class RealImageLoaderBasicTest {
             cached = cached,
             isSampled = true,
             size = PixelSize(50, 50),
+            scale = Scale.FIT,
+            request = request
+        ))
+        assertFalse(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 200, height = 400).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(400, 800),
             scale = Scale.FIT,
             request = request
         ))
@@ -212,39 +226,66 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - allowInexactSize=true`() {
-        val request = createLoadRequest(context) {
-            precision(Precision.INEXACT)
-        }
-
-        val cached = createBitmap().toDrawable(context)
-        val isValid = imageLoader.isCachedDrawableValid(
-            cached = cached,
-            isSampled = true,
-            size = PixelSize(50, 50),
-            scale = Scale.FILL,
-            request = request
-        )
-
-        assertTrue(isValid)
-    }
-
-    @Test
-    fun `isCachedDrawableValid - allowInexactSize=false`() {
+    fun `isCachedDrawableValid - exact precision`() {
         val request = createLoadRequest(context) {
             precision(Precision.EXACT)
         }
-
-        val cached = createBitmap().toDrawable(context)
-        val isValid = imageLoader.isCachedDrawableValid(
-            cached = cached,
+        assertFalse(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 100, height = 100).toDrawable(context),
             isSampled = true,
             size = PixelSize(50, 50),
             scale = Scale.FILL,
             request = request
-        )
-
-        assertFalse(isValid)
+        ))
+        assertFalse(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 100, height = 100).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(50, 50),
+            scale = Scale.FIT,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 100, height = 100).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(100, 50),
+            scale = Scale.FILL,
+            request = request
+        ))
+        assertFalse(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 100, height = 100).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(100, 50),
+            scale = Scale.FIT,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 100, height = 100).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(100, 100),
+            scale = Scale.FILL,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 100, height = 100).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(100, 100),
+            scale = Scale.FIT,
+            request = request
+        ))
+        assertTrue(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 400, height = 200).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(400, 200),
+            scale = Scale.FILL,
+            request = request
+        ))
+        assertFalse(imageLoader.isCachedDrawableValid(
+            cached = createBitmap(width = 200, height = 400).toDrawable(context),
+            isSampled = true,
+            size = PixelSize(400, 800),
+            scale = Scale.FIT,
+            request = request
+        ))
     }
 
     @Test
