@@ -17,6 +17,7 @@ import coil.annotation.ExperimentalCoil
 import coil.bitmappool.RealBitmapPool
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DataSource
+import coil.decode.DecodeUtils
 import coil.decode.DrawableDecoderService
 import coil.decode.EmptyDecoder
 import coil.decode.Options
@@ -83,8 +84,6 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
-import kotlin.math.max
-import kotlin.math.min
 
 internal class RealImageLoader(
     private val context: Context,
@@ -312,16 +311,24 @@ internal class RealImageLoader(
         // Ensure the size is valid for the target.
         val bitmap = cached.bitmap
         when (size) {
-            is OriginalSize -> if (isSampled) return false
-            is PixelSize -> if (!requestService.allowInexactSize(request)) {
-                when (scale) {
-                    Scale.FILL -> if (min(bitmap.width, bitmap.height) != max(size.width, size.height)) return false
-                    Scale.FIT -> if (max(bitmap.width, bitmap.height) != min(size.width, size.height)) return false
+            is OriginalSize -> {
+                if (isSampled) {
+                    return false
                 }
-            } else if (isSampled) {
-                when (scale) {
-                    Scale.FILL -> if (min(bitmap.width, bitmap.height) < max(size.width, size.height)) return false
-                    Scale.FIT -> if (max(bitmap.width, bitmap.height) < min(size.width, size.height)) return false
+            }
+            is PixelSize -> {
+                val multiple = DecodeUtils.computeSizeMultiplier(
+                    srcWidth = bitmap.width,
+                    srcHeight = bitmap.height,
+                    destWidth = size.width,
+                    destHeight = size.height,
+                    scale = scale
+                )
+                if (multiple != 1.0 && !requestService.allowInexactSize(request)) {
+                    return false
+                }
+                if (multiple > 1.0 && isSampled) {
+                    return false
                 }
             }
         }
