@@ -76,10 +76,10 @@ internal class DrawableDecoderService(
             }
             is PixelSize -> {
                 val multiplier = DecodeUtils.computeSizeMultiplier(
-                    srcWidth = intrinsicWidth.toFloat(),
-                    srcHeight = intrinsicHeight.toFloat(),
-                    destWidth = size.width.toFloat(),
-                    destHeight = size.height.toFloat(),
+                    srcWidth = intrinsicWidth,
+                    srcHeight = intrinsicHeight,
+                    destWidth = size.width,
+                    destHeight = size.height,
                     scale = Scale.FIT
                 )
                 width = (multiplier * intrinsicWidth).roundToInt()

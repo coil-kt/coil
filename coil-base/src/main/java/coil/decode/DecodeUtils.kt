@@ -67,6 +67,23 @@ object DecodeUtils {
      */
     @JvmStatic
     fun computeSizeMultiplier(
+        @Px srcWidth: Int,
+        @Px srcHeight: Int,
+        @Px destWidth: Int,
+        @Px destHeight: Int,
+        scale: Scale
+    ): Double {
+        val widthPercent = destWidth / srcWidth.toDouble()
+        val heightPercent = destHeight / srcHeight.toDouble()
+        return when (scale) {
+            Scale.FILL -> max(widthPercent, heightPercent)
+            Scale.FIT -> min(widthPercent, heightPercent)
+        }
+    }
+
+    /** @see computeSizeMultiplier */
+    @JvmStatic
+    fun computeSizeMultiplier(
         @Px srcWidth: Float,
         @Px srcHeight: Float,
         @Px destWidth: Float,
