@@ -19,10 +19,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.2")
+        classpath("com.android.tools.build:gradle:3.5.3")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0-SNAPSHOT")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.0")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.1.0")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.1.1")
         classpath(kotlin("gradle-plugin", version = "1.3.61"))
     }
 }
@@ -40,7 +40,7 @@ allprojects {
     version = project.versionName
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version.set("0.35.0")
+        version.set("0.36.0")
         enableExperimentalRules.set(true)
     }
 
