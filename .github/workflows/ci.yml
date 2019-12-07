@@ -19,6 +19,8 @@ jobs:
             - name: Clean Cache
               run: rm -rf ~/.gradle/caches
 
+            # Restore the cache.
+            # We intentionally don't set 'restore-keys' so the cache is always exactly the size our current dependencies.
             - uses: actions/cache@v1
               with:
                   path: ~/.gradle/caches
