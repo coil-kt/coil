@@ -36,4 +36,4 @@ jobs:
               env:
                   SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
                   SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-              run: ./.buildscript/deploy_snapshot.sh
+              run: ./upload_archives.sh
