@@ -1,12 +1,12 @@
-name: Build
+name: CI
 on:
     push:
         branches:
             - master
     pull_request:
 jobs:
-    build:
-        name: Test
+    ci:
+        name: Build + Test
         runs-on: macOS-latest
         steps:
             - uses: actions/checkout@v1
