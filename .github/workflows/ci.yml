@@ -31,6 +31,9 @@ jobs:
                   arch: x86_64
                   script: ./gradlew connectedDebugAndroidTest
 
+            - name: Debug cache
+              run: du -h ~/.gradle/caches
+
             - name: Deploy Snapshot
               if: github.ref == 'master'
               env:
