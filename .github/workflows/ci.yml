@@ -13,13 +13,16 @@ jobs:
             - uses: actions/setup-java@v1
               with:
                   java-version: 1.8
+
+            # Ensure the cache is clean before restoring it.
+            # This helps us stay within Github's cache size limits.
+            - name: Clean Cache
+              run: rm -rf ~/.gradle/caches
+
             - uses: actions/cache@v1
               with:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
-
-            - name: Debug cache
-              run: du -sh ~/.gradle/caches
 
             - name: Ktlint
               run: ./gradlew ktlintCheck
