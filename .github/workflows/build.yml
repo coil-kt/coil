@@ -6,7 +6,7 @@ on:
     pull_request:
 jobs:
     build:
-        name: Build + Test
+        name: Test
         runs-on: macOS-latest
         steps:
             - uses: actions/checkout@v1
@@ -17,8 +17,6 @@ jobs:
               with:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
-                  restore-keys: |
-                      gradle-${{ runner.os }}-
 
             - name: Ktlint
               run: ./gradlew ktlintCheck
@@ -34,6 +32,7 @@ jobs:
                   script: ./gradlew connectedDebugAndroidTest
 
             - name: Deploy Snapshot
+              if: github.ref == 'master'
               env:
                   SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
                   SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
