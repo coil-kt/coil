@@ -19,6 +19,11 @@ install:
   - touch ~/.android/repositories.cfg
   - echo yes | sdkmanager "tools" "system-images;android-25;default;x86" > /dev/null
   - export ANDROID_SDK_ROOT="$ANDROID_HOME"
+  # Pin the emulator to 29.2.1.0 to work around https://issuetracker.google.com/issues/145622251.
+  - curl -fo emulator.zip "https://dl.google.com/android/repository/emulator-linux-5889189.zip"
+  - rm -rf "${ANDROID_HOME}/emulator"
+  - unzip -q emulator.zip -d "${ANDROID_HOME}"
+  - rm -f emulator.zip
 
 before_script:
   # Check syntax and run unit tests first since they're fast.
