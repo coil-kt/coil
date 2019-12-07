@@ -18,8 +18,14 @@ jobs:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
+            - name: Debug cache
+              run: du -sh ~/.gradle/caches
+
             - name: Ktlint
               run: ./gradlew ktlintCheck
+
+            - name: Unit Tests
+              run: ./gradlew testDebugUnitTest
 
             - name: Instrumentation Tests
               uses: reactivecircus/android-emulator-runner@v2
