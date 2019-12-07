@@ -21,8 +21,12 @@ jobs:
             - name: Ktlint
               run: ./gradlew ktlintCheck
 
-            - name: Unit Tests
-              run: ./gradlew testDebugUnitTest
+            - name: Instrumentation Tests
+              uses: reactivecircus/android-emulator-runner@v2
+              with:
+                  api-level: 25
+                  arch: x86_64
+                  script: ./gradlew connectedDebugAndroidTest
 
             - name: Deploy Snapshot
               if: github.ref == 'master'
