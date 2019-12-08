@@ -25,7 +25,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
     /** Get the current request attached to this view. */
     @AnyThread
-    fun getCurrentRequest() = currentRequest
+    fun currentRequest() = currentRequest
 
     /** Replace the current request attached to this view. */
     @MainThread

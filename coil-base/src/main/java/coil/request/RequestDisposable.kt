@@ -42,7 +42,11 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
     }
 
     @ExperimentalCoil
-    override suspend fun await() = job.join()
+    override suspend fun await() {
+        if (!isDisposed) {
+            job.join()
+        }
+    }
 }
 
 /**
@@ -60,7 +64,7 @@ internal class ViewTargetRequestDisposable(
 
     /** TODO: This isn't a perfect check since we can reuse the same [LoadRequest] for multiple distinct requests. */
     override val isDisposed
-        get() = target.view.requestManager.run { getCurrentRequest()?.request !== request || hasPendingClear() }
+        get() = target.view.requestManager.run { currentRequest()?.request !== request || hasPendingClear() }
 
     override fun dispose() {
         if (!isDisposed) {
@@ -71,7 +75,7 @@ internal class ViewTargetRequestDisposable(
     @ExperimentalCoil
     override suspend fun await() {
         if (!isDisposed) {
-            target.view.requestManager.getCurrentRequest()?.job?.join()
+            target.view.requestManager.currentRequest()?.job?.join()
         }
     }
 }

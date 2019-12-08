@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -49,7 +48,6 @@ class RequestDisposableTest {
         assertTrue(disposable.isDisposed)
     }
 
-    @Ignore
     @Test
     fun baseTargetRequestDisposable_await() {
         val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
@@ -83,7 +81,6 @@ class RequestDisposableTest {
         assertTrue(disposable.isDisposed)
     }
 
-    @Ignore
     @Test
     fun viewTargetRequestDisposable_await() {
         val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
