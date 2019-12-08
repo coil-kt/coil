@@ -50,11 +50,11 @@ internal class BaseRequestDelegate(
  */
 internal class ViewTargetRequestDelegate(
     private val loader: ImageLoader,
-    val request: LoadRequest,
+    private val request: LoadRequest,
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
     private val dispatcher: CoroutineDispatcher,
-    val job: Job
+    private val job: Job
 ) : RequestDelegate() {
 
     /** Repeat this request with the same params. */

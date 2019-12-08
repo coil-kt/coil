@@ -14,6 +14,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
 import android.os.Build.VERSION_CODES.KITKAT
 import android.os.Build.VERSION_CODES.O
+import android.os.Looper
 import android.os.StatFs
 import android.view.View
 import android.webkit.MimeTypeMap
@@ -217,3 +218,5 @@ internal inline fun <R, T> Iterable<R>.firstNotNull(transform: (R) -> T?): T? {
     for (element in this) transform(element)?.let { return it }
     return null
 }
+
+internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()

@@ -6,6 +6,7 @@ import coil.annotation.ExperimentalCoil
 import coil.target.ViewTarget
 import coil.util.requestManager
 import kotlinx.coroutines.Job
+import java.util.UUID
 
 /**
  * Represents the work of an [ImageLoader.load] request.
@@ -29,7 +30,9 @@ interface RequestDisposable {
     suspend fun await()
 }
 
-/** Used for one-shot image requests. */
+/**
+ * Used for one-shot image requests.
+ */
 internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
 
     override val isDisposed
@@ -52,19 +55,17 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
 /**
  * Used for requests that are attached to a [View].
  *
- * Requests attached to a view are automatically restarted when
- * [View.OnAttachStateChangeListener.onViewAttachedToWindow] is called.
- * As a result, [isDisposed] will return true until [dispose] is called
- * or another request has been attached to the view.
+ * [ViewTargetRequestDisposable] is not disposed until its request is disconnected from the view.
+ * This is because requests are automatically cancelled in [View.onDetachedFromWindow]
+ * and are restarted in [View.onAttachedToWindow].
  */
 internal class ViewTargetRequestDisposable(
-    private val target: ViewTarget<*>,
-    private val request: LoadRequest
+    private val requestId: UUID,
+    private val target: ViewTarget<*>
 ) : RequestDisposable {
 
-    /** TODO: This isn't a perfect check since we can reuse the same [LoadRequest] for multiple distinct requests. */
     override val isDisposed
-        get() = target.view.requestManager.run { currentRequest()?.request !== request || hasPendingClear() }
+        get() = target.view.requestManager.currentRequestId != requestId
 
     override fun dispose() {
         if (!isDisposed) {
@@ -75,7 +76,7 @@ internal class ViewTargetRequestDisposable(
     @ExperimentalCoil
     override suspend fun await() {
         if (!isDisposed) {
-            target.view.requestManager.currentRequest()?.job?.join()
+            target.view.requestManager.currentRequestJob?.join()
         }
     }
 }
