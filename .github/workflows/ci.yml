@@ -14,13 +14,13 @@ jobs:
               with:
                   java-version: 1.8
 
-            # Ensure the cache is clean before restoring it.
+            # Ensure .gradle/caches is empty before writing to it.
             # This helps us stay within Github's cache size limits.
             - name: Clean Cache
               run: rm -rf ~/.gradle/caches
 
             # Restore the cache.
-            # We intentionally don't set 'restore-keys' so the cache is always exactly the size our current dependencies.
+            # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
             - uses: actions/cache@v1
               with:
                   path: ~/.gradle/caches
