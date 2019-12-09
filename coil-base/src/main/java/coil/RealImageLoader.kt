@@ -70,6 +70,7 @@ import coil.util.isDiskPreload
 import coil.util.log
 import coil.util.normalize
 import coil.util.putValue
+import coil.util.requestManager
 import coil.util.takeIf
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
@@ -140,9 +141,9 @@ internal class RealImageLoader(
             execute(request.data, request)
         }
 
-        val target = request.target
-        return if (target is ViewTarget<*>) {
-            ViewTargetRequestDisposable(target, request)
+        return if (request.target is ViewTarget<*>) {
+            val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
+            ViewTargetRequestDisposable(requestId, request.target)
         } else {
             BaseTargetRequestDisposable(job)
         }
