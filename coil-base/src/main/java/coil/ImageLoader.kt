@@ -64,7 +64,7 @@ interface ImageLoader {
      *
      * All associated resources will be freed and any new requests will fail before starting.
      *
-     * In-flight [load] requests will be cancelled. In-flight [get] requests will continue until complete.
+     * In progress [load] requests will be cancelled. In progress [get] requests will continue until complete.
      */
     fun shutdown()
 }
