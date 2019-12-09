@@ -19,11 +19,10 @@ import java.util.UUID
  */
 internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
-    // This variable can temporarily diverge from currentRequestJob and currentRequestJob
-    // as it must be updated from the main thread.
+    // The request delegate for the most recently dispatched request.
     private var currentRequest: ViewTargetRequestDelegate? = null
 
-    // These fields are updated by any thread calling ImageLoader.load.
+    // Metadata about the current request (that may have not been dispatched yet).
     @Volatile var currentRequestId: UUID? = null
         private set
     @Volatile var currentRequestJob: Job? = null
@@ -35,7 +34,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     private var isRestart = false
     private var skipAttach = true
 
-    /** Replace the current request attached to this view. */
+    /** Attach [request] to this view and dispose the old request. */
     @MainThread
     fun setCurrentRequest(request: ViewTargetRequestDelegate?) {
         // Don't cancel the pending clear if this is a restarted request.
@@ -51,6 +50,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
         skipAttach = true
     }
 
+    /** Set the current [job] attached to this view and assign it an ID. */
     @AnyThread
     fun setCurrentRequestJob(job: Job): UUID {
         val requestId = newRequestId()
@@ -91,7 +91,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     @AnyThread
     private fun newRequestId(): UUID {
         // Return the current request ID if this is a restarted request.
-        // Restarted requests are always started from the main thread.
+        // Restarted requests are always launched from the main thread.
         val requestId = currentRequestId
         if (requestId != null && isMainThread() && isRestart) {
             return requestId
