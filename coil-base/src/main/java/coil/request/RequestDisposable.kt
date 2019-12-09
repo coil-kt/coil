@@ -55,7 +55,7 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
 /**
  * Used for requests that are attached to a [View].
  *
- * [ViewTargetRequestDisposable] is not disposed until its request is disconnected from the view.
+ * [ViewTargetRequestDisposable] is not disposed until its request is detached from the view.
  * This is because requests are automatically cancelled in [View.onDetachedFromWindow]
  * and are restarted in [View.onAttachedToWindow].
  */
