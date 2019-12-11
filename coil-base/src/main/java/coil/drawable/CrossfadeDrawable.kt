@@ -8,6 +8,7 @@ import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION_CODES.LOLLIPOP
 import android.os.Build.VERSION_CODES.Q
@@ -67,7 +68,7 @@ class CrossfadeDrawable(
         if (state == STATE_START) {
             start?.apply {
                 alpha = maxAlpha
-                canvas.withScale(startPositioning.scale, startPositioning.scale, 0f, 0f, ::draw)
+                startPositioning.run { canvas.withScale(scale, scale, 0f, 0f, ::draw) }
             }
             return
         }
@@ -75,7 +76,7 @@ class CrossfadeDrawable(
         if (state == STATE_DONE) {
             end?.apply {
                 alpha = maxAlpha
-                canvas.withScale(endPositioning.scale, endPositioning.scale, 0f, 0f, ::draw)
+                endPositioning.run { canvas.withScale(scale, scale, 0f, 0f, ::draw) }
             }
             return
         }
@@ -87,14 +88,14 @@ class CrossfadeDrawable(
         if (!isDone) {
             start?.apply {
                 alpha = maxAlpha
-                canvas.withScale(startPositioning.scale, startPositioning.scale, 0f, 0f, ::draw)
+                startPositioning.run { canvas.withScale(scale, scale, 0f, 0f, ::draw) }
             }
         }
 
         // Draw the end Drawable.
         end?.apply {
             alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
-            canvas.withScale(endPositioning.scale, endPositioning.scale, 0f, 0f, ::draw)
+            endPositioning.run { canvas.withScale(scale, scale, 0f, 0f, ::draw) }
         }
 
         if (isDone) {
@@ -253,11 +254,24 @@ class CrossfadeDrawable(
                 dy = (targetHeight - scale * height) / 2
             }
 
-            val left = bounds.left + positioning.dx
-            val top = bounds.top + positioning.dy
-            val right = bounds.right - positioning.dx
-            val bottom = bounds.bottom - positioning.dy
-            drawable.setBounds(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
+            if (drawable is BitmapDrawable) {
+                val left = bounds.left + positioning.dx
+                val top = bounds.top + positioning.dy
+                val right = bounds.right - positioning.dx
+                val bottom = bounds.bottom - positioning.dy
+                positioning.apply {
+                    scale = 1f
+                    dx = 0f
+                    dy = 0f
+                }
+                drawable.setBounds(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
+            } else {
+                val left = bounds.left + positioning.dx
+                val top = bounds.top + positioning.dy
+                val right = bounds.right - positioning.dx
+                val bottom = bounds.bottom - positioning.dy
+                drawable.setBounds(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
+            }
         }
     }
 

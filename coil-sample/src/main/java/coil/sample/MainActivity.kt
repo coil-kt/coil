@@ -17,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import coil.api.load
+import coil.request.CachePolicy
 
 class MainActivity : AppCompatActivity() {
 
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity() {
                 detail.isVisible = true
                 detail.load(screen.image.url) {
                     placeholder(ColorDrawable(screen.image.color))
+                    memoryCachePolicy(CachePolicy.READ_ONLY)
                 }
             }
         }

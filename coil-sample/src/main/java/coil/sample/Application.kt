@@ -26,7 +26,7 @@ class Application : MultiDexApplication() {
     private fun buildDefaultImageLoader(): ImageLoader {
         return ImageLoader(applicationContext) {
             availableMemoryPercentage(0.5) // Use 50% of the application's available memory.
-            crossfade(true) // Show a short crossfade when loading images from network or disk into an ImageView.
+            crossfade(5000) // Show a short crossfade when loading images from network or disk into an ImageView.
             componentRegistry {
                 if (SDK_INT >= P) {
                     add(ImageDecoderDecoder())
