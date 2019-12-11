@@ -46,20 +46,15 @@ class CrossfadeDrawable(
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
-    private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth, end?.intrinsicWidth)
-    private val intrinsicHeight = computeIntrinsicDimension(start?.intrinsicHeight, end?.intrinsicHeight)
+    private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth ?: -1, end?.intrinsicWidth ?: -1)
+    private val intrinsicHeight = computeIntrinsicDimension(start?.intrinsicHeight ?: -1, end?.intrinsicHeight ?: -1)
 
     private var startTimeMillis = 0L
     private var maxAlpha = 255
     private var state = STATE_START
 
-    private var startScale = 1f
-    private var startDx = 0f
-    private var startDy = 0f
-
-    private var endScale = 1f
-    private var endDx = 0f
-    private var endDy = 0f
+    private var startPositioning = Positioning()
+    private var endPositioning = Positioning()
 
     init {
         require(durationMillis > 0) { "durationMillis must be > 0." }
@@ -72,7 +67,7 @@ class CrossfadeDrawable(
         if (state == STATE_START) {
             start?.apply {
                 alpha = maxAlpha
-                canvas.withScale(startScale, startScale, startDx, startDy, ::draw)
+                canvas.withScale(startPositioning.scale, startPositioning.scale, 0f, 0f, ::draw)
             }
             return
         }
@@ -80,7 +75,7 @@ class CrossfadeDrawable(
         if (state == STATE_DONE) {
             end?.apply {
                 alpha = maxAlpha
-                canvas.withScale(endScale, endScale, endDx, endDy, ::draw)
+                canvas.withScale(endPositioning.scale, endPositioning.scale, 0f, 0f, ::draw)
             }
             return
         }
@@ -92,14 +87,14 @@ class CrossfadeDrawable(
         if (!isDone) {
             start?.apply {
                 alpha = maxAlpha
-                canvas.withScale(startScale, startScale, startDx, startDy, ::draw)
+                canvas.withScale(startPositioning.scale, startPositioning.scale, 0f, 0f, ::draw)
             }
         }
 
         // Draw the end Drawable.
         end?.apply {
             alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
-            canvas.withScale(endScale, endScale, endDx, endDy, ::draw)
+            canvas.withScale(endPositioning.scale, endPositioning.scale, 0f, 0f, ::draw)
         }
 
         if (isDone) {
@@ -151,51 +146,8 @@ class CrossfadeDrawable(
     }
 
     override fun onBoundsChange(bounds: Rect) {
-        val start = start
-        if (start != null) {
-            start.bounds = bounds
-
-            val width = start.intrinsicWidth
-            val height = start.intrinsicHeight
-            if (width <= 0 || height <= 0) {
-                startScale = 1f
-                startDx = 0f
-                startDy = 0f
-            } else {
-                val targetWidth = bounds.width()
-                val targetHeight = bounds.height()
-                startScale = DecodeUtils.computeSizeMultiplier(width, height, targetWidth, targetHeight, scale).toFloat()
-                startDx = (targetWidth - startScale * width) / 2
-                startDy = (targetHeight - startScale * height) / 2
-            }
-        } else {
-            startScale = 1f
-            startDx = 0f
-            startDy = 0f
-        }
-
-        val end = end
-        if (end != null) {
-            end.bounds = bounds
-
-            val width = end.intrinsicWidth
-            val height = end.intrinsicHeight
-            if (width <= 0 || height <= 0) {
-                endScale = 1f
-                endDx = 0f
-                endDy = 0f
-            } else {
-                val targetWidth = bounds.width()
-                val targetHeight = bounds.height()
-                endScale = DecodeUtils.computeSizeMultiplier(width, height, targetWidth, targetHeight, scale).toFloat()
-                endDx = (targetWidth - endScale * width) / 2
-                endDy = (targetHeight - endScale * height) / 2
-            }
-        } else {
-            endScale = 1f
-            endDx = 0f
-            endDy = 0f
-        }
+        updatePositioning(startPositioning, start, bounds)
+        updatePositioning(endPositioning, end, bounds)
     }
 
     override fun getIntrinsicWidth() = intrinsicWidth
@@ -268,8 +220,45 @@ class CrossfadeDrawable(
 
     override fun clearAnimationCallbacks() = callbacks.clear()
 
-    private fun computeIntrinsicDimension(startSize: Int?, endSize: Int?): Int {
-        return if (startSize == -1 || endSize == -1) -1 else max(startSize ?: -1, endSize ?: -1)
+    private fun computeIntrinsicDimension(startSize: Int, endSize: Int): Int {
+        return if (startSize == -1 || endSize == -1) -1 else max(startSize, endSize)
+    }
+
+    private fun updatePositioning(positioning: Positioning, drawable: Drawable?, bounds: Rect) {
+        if (drawable == null) {
+            positioning.apply {
+                scale = 1f
+                dx = 0f
+                dy = 0f
+            }
+            return
+        }
+
+        val width = drawable.intrinsicWidth
+        val height = drawable.intrinsicHeight
+
+        if (width <= 0 || height <= 0) {
+            positioning.apply {
+                scale = 1f
+                dx = 0f
+                dy = 0f
+            }
+            drawable.bounds = bounds
+        } else {
+            val targetWidth = bounds.width()
+            val targetHeight = bounds.height()
+            positioning.apply {
+                scale = DecodeUtils.computeSizeMultiplier(width, height, targetWidth, targetHeight, this@CrossfadeDrawable.scale).toFloat()
+                dx = (targetWidth - scale * width) / 2
+                dy = (targetHeight - scale * height) / 2
+            }
+
+            val left = bounds.left + positioning.dx
+            val top = bounds.top + positioning.dy
+            val right = bounds.right - positioning.dx
+            val bottom = bounds.bottom - positioning.dy
+            drawable.setBounds(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
+        }
     }
 
     private fun markDone() {
@@ -277,4 +266,10 @@ class CrossfadeDrawable(
         start = null
         callbacks.forEach { it.onAnimationEnd(this) }
     }
+
+    private class Positioning(
+        var scale: Float = 1f,
+        var dx: Float = 0f,
+        var dy: Float = 0f
+    )
 }
