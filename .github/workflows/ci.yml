@@ -34,6 +34,7 @@ jobs:
               with:
                   api-level: 25
                   arch: x86
+                  emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -camera-back emulated
                   script: ./gradlew connectedDebugAndroidTest
 
             - name: Deploy Snapshot
