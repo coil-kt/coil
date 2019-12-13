@@ -30,7 +30,7 @@ jobs:
               run: ./gradlew testDebugUnitTest
 
             - name: Instrumentation Tests
-              uses: reactivecircus/android-emulator-runner@v2
+              uses: reactivecircus/android-emulator-runner@v2.0.0
               with:
                   api-level: 25
                   arch: x86
