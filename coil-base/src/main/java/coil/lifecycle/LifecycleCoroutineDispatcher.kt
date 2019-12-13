@@ -6,7 +6,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Runnable
 import java.util.LinkedList
 import java.util.Queue
@@ -33,7 +32,6 @@ internal class LifecycleCoroutineDispatcher private constructor(
 
     private val queue: Queue<Pair<CoroutineContext, Runnable>> = LinkedList()
 
-    @ExperimentalCoroutinesApi
     override fun isDispatchNeeded(context: CoroutineContext) = delegate.isDispatchNeeded(context)
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
