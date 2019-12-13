@@ -52,11 +52,13 @@ internal class LifecycleCoroutineDispatcher private constructor(
     }
 
     private fun drainQueue() {
-        val iterator = queue.iterator()
-        while (iterator.hasNext()) {
-            val (context, block) = iterator.next()
-            iterator.remove()
-            delegate.dispatch(context, block)
+        if (queue.isNotEmpty()) {
+            val iterator = queue.iterator()
+            while (iterator.hasNext()) {
+                val (context, block) = iterator.next()
+                iterator.remove()
+                delegate.dispatch(context, block)
+            }
         }
     }
 }
