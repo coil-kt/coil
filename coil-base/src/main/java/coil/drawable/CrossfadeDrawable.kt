@@ -8,12 +8,14 @@ import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION_CODES.LOLLIPOP
 import android.os.Build.VERSION_CODES.Q
 import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
+import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DecodeUtils
 import coil.size.Scale
@@ -50,6 +52,9 @@ class CrossfadeDrawable(
     private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth, end?.intrinsicWidth)
     private val intrinsicHeight = computeIntrinsicDimension(start?.intrinsicHeight, end?.intrinsicHeight)
 
+    private var startPosition = Position()
+    private var endPosition = Position()
+
     private var startTimeMillis = 0L
     private var maxAlpha = 255
     private var state = STATE_START
@@ -65,7 +70,11 @@ class CrossfadeDrawable(
         if (state == STATE_START) {
             start?.apply {
                 alpha = maxAlpha
-                draw(canvas)
+                canvas.withSave {
+                    translate(startPosition.dx, startPosition.dy)
+                    scale(startPosition.scale, startPosition.scale)
+                    draw(this)
+                }
             }
             return
         }
@@ -73,7 +82,11 @@ class CrossfadeDrawable(
         if (state == STATE_DONE) {
             end?.apply {
                 alpha = maxAlpha
-                draw(canvas)
+                canvas.withSave {
+                    translate(endPosition.dx, endPosition.dy)
+                    scale(endPosition.scale, endPosition.scale)
+                    draw(this)
+                }
             }
             return
         }
@@ -85,14 +98,22 @@ class CrossfadeDrawable(
         if (!isDone) {
             start?.apply {
                 alpha = maxAlpha
-                draw(canvas)
+                canvas.withSave {
+                    translate(startPosition.dx, startPosition.dy)
+                    scale(startPosition.scale, startPosition.scale)
+                    draw(this)
+                }
             }
         }
 
         // Draw the end Drawable.
         end?.apply {
             alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
-            draw(canvas)
+            canvas.withSave {
+                translate(endPosition.dx, endPosition.dy)
+                scale(endPosition.scale, endPosition.scale)
+                draw(this)
+            }
         }
 
         if (isDone) {
@@ -144,8 +165,8 @@ class CrossfadeDrawable(
     }
 
     override fun onBoundsChange(bounds: Rect) {
-        start?.let { updateBounds(it, bounds) }
-        end?.let { updateBounds(it, bounds) }
+        start?.let { updateBounds(it, startPosition, bounds) }
+        end?.let { updateBounds(it, endPosition, bounds) }
     }
 
     override fun getIntrinsicWidth() = intrinsicWidth
@@ -218,9 +239,9 @@ class CrossfadeDrawable(
 
     override fun clearAnimationCallbacks() = callbacks.clear()
 
-    /** Scale and position the [Drawable] inside [targetBounds] preserving aspect ratio. */
+    /** Update the [Drawable]'s bounds and [position] inside [targetBounds] preserving aspect ratio. */
     @VisibleForTesting
-    internal fun updateBounds(drawable: Drawable, targetBounds: Rect) {
+    internal fun updateBounds(drawable: Drawable, position: Position, targetBounds: Rect) {
         val width = drawable.intrinsicWidth
         val height = drawable.intrinsicHeight
         if (width <= 0 || height <= 0) {
@@ -240,11 +261,28 @@ class CrossfadeDrawable(
         val dx = ((targetWidth - multiplier * width) / 2).roundToInt()
         val dy = ((targetHeight - multiplier * height) / 2).roundToInt()
 
-        val left = targetBounds.left + dx
-        val top = targetBounds.top + dy
-        val right = targetBounds.right - dx
-        val bottom = targetBounds.bottom - dy
-        drawable.setBounds(left, top, right, bottom)
+        // BitmapDrawables automatically scale their content to fit the target bounds.
+        if (drawable is BitmapDrawable) {
+            position.scale = 1f
+            position.dx = 0f
+            position.dy = 0f
+
+            val left = targetBounds.left + dx
+            val top = targetBounds.top + dy
+            val right = targetBounds.right - dx
+            val bottom = targetBounds.bottom - dy
+            drawable.setBounds(left, top, right, bottom)
+        } else {
+            position.scale = multiplier.toFloat()
+            position.dx = dx.toFloat()
+            position.dy = dy.toFloat()
+
+            val left = targetBounds.left
+            val top = targetBounds.top
+            val right = left + width
+            val bottom = top + height
+            drawable.setBounds(left, top, right, bottom)
+        }
     }
 
     private fun computeIntrinsicDimension(startSize: Int?, endSize: Int?): Int {
@@ -256,4 +294,14 @@ class CrossfadeDrawable(
         start = null
         callbacks.forEach { it.onAnimationEnd(this) }
     }
+
+    /**
+     * Holds the positional information of a child [Drawable].
+     * This class is intentionally mutable to avoid extra allocations.
+     */
+    internal class Position(
+        var scale: Float = 1f,
+        var dx: Float = 0f,
+        var dy: Float = 0f
+    )
 }

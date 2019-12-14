@@ -18,15 +18,13 @@ import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.SystemClock
-import androidx.annotation.Px
-import androidx.core.graphics.withScale
+import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.bitmappool.BitmapPool
+import coil.decode.DecodeUtils
 import coil.decode.ImageDecoderDecoder
 import coil.size.Scale
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
@@ -94,20 +92,15 @@ class MovieDrawable(
         softwareCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
         // Draw onto a software canvas first.
-        softwareCanvas.withScale(
-            x = softwareScale,
-            y = softwareScale
-        ) {
+        softwareCanvas.withSave {
+            scale(softwareScale, softwareScale)
             movie.draw(this, 0f, 0f, paint)
         }
 
         // Draw onto the input canvas (may or may not be hardware).
-        canvas.withScale(
-            x = hardwareScale,
-            y = hardwareScale,
-            pivotX = hardwareDx,
-            pivotY = hardwareDy
-        ) {
+        canvas.withSave {
+            translate(hardwareDx, hardwareDy)
+            scale(hardwareScale, hardwareScale)
             drawBitmap(softwareBitmap, 0f, 0f, paint)
         }
 
@@ -154,9 +147,7 @@ class MovieDrawable(
     }
 
     override fun onBoundsChange(bounds: Rect) {
-        if (currentBounds == bounds) {
-            return
-        }
+        if (currentBounds == bounds) return
         currentBounds = bounds
 
         val boundsWidth = bounds.width().toFloat()
@@ -165,7 +156,9 @@ class MovieDrawable(
         val movieWidth = movie.width().toFloat()
         val movieHeight = movie.height().toFloat()
 
-        softwareScale = computeScale(movieWidth, movieHeight, boundsWidth, boundsHeight)
+        softwareScale = DecodeUtils
+            .computeSizeMultiplier(movieWidth, movieHeight, boundsWidth, boundsHeight, scale)
+            .coerceAtMost(1f)
         val bitmapWidth = ceil(softwareScale * movieWidth)
         val bitmapHeight = ceil(softwareScale * movieHeight)
 
@@ -174,23 +167,9 @@ class MovieDrawable(
         softwareBitmap = bitmap
         softwareCanvas = Canvas(bitmap)
 
-        hardwareScale = computeScale(bitmapWidth, bitmapHeight, boundsWidth, boundsHeight)
-        hardwareDx = (boundsWidth - bitmapWidth / hardwareScale) / 2
-        hardwareDy = (boundsHeight - bitmapHeight / hardwareScale) / 2
-    }
-
-    private fun computeScale(
-        @Px srcWidth: Float,
-        @Px srcHeight: Float,
-        @Px destWidth: Float,
-        @Px destHeight: Float
-    ): Float {
-        val bitmapWidthPercent = srcWidth / min(destWidth, srcWidth)
-        val bitmapHeightPercent = srcHeight / min(destHeight, srcHeight)
-        return when (scale) {
-            Scale.FILL -> max(bitmapWidthPercent, bitmapHeightPercent)
-            Scale.FIT -> min(bitmapWidthPercent, bitmapHeightPercent)
-        }
+        hardwareScale = DecodeUtils.computeSizeMultiplier(bitmapWidth, bitmapHeight, boundsWidth, boundsHeight, scale)
+        hardwareDx = (boundsWidth - hardwareScale * bitmapWidth) / 2
+        hardwareDy = (boundsHeight - hardwareScale * bitmapHeight) / 2
     }
 
     override fun getIntrinsicWidth() = movie.width()
@@ -200,11 +179,9 @@ class MovieDrawable(
     override fun isRunning() = isRunning
 
     override fun start() {
-        if (isRunning) {
-            return
-        }
-
+        if (isRunning) return
         isRunning = true
+
         loopIteration = 0
         startTimeMillis = SystemClock.uptimeMillis()
         callbacks.forEach { it.onAnimationStart(this) }
@@ -213,11 +190,9 @@ class MovieDrawable(
     }
 
     override fun stop() {
-        if (!isRunning) {
-            return
-        }
-
+        if (!isRunning) return
         isRunning = false
+
         callbacks.forEach { it.onAnimationEnd(this) }
     }
 
