@@ -1,6 +1,5 @@
 package coil.sample
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.Q
 import android.os.Bundle
@@ -64,9 +63,7 @@ class MainActivity : AppCompatActivity() {
             is Screen.Detail -> {
                 list.isVisible = false
                 detail.isVisible = true
-                detail.load(screen.image.url) {
-                    placeholder(ColorDrawable(screen.image.color))
-                }
+                detail.load(screen.image.url)
             }
         }
     }
