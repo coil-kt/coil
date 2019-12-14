@@ -9,7 +9,7 @@ jobs:
         name: Build + Test
         runs-on: macOS-latest
         steps:
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2
 
             # Ensure .gradle/caches is empty before writing to it.
             # This helps us stay within Github's cache size limits.
@@ -30,7 +30,7 @@ jobs:
               run: ./gradlew testDebugUnitTest
 
             - name: Instrumentation Tests
-              uses: reactivecircus/android-emulator-runner@v2.0.0
+              uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: 25
                   arch: x86
