@@ -237,7 +237,8 @@ class CrossfadeDrawable(
 
     /**
      * Update the [Drawable]'s bounds inside [targetBounds] preserving aspect ratio.
-     * Return the scale to apply when rendering [drawable] to the [Canvas].
+     *
+     * @return The scale to apply when rendering [drawable] to the [Canvas].
      */
     @VisibleForTesting
     internal fun updateBounds(drawable: Drawable, targetBounds: Rect): Float {
