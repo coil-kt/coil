@@ -46,7 +46,7 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-이미지를 급하게 가져오기 위해서, `get` [suspend](https://kotlinlang.org/docs/reference/coroutines/basics.html) function을 사용합니다:
+이미지를 직접적으로 가져오기 위해서, `get` [suspend](https://kotlinlang.org/docs/reference/coroutines/basics.html) function을 사용합니다:
 
 ```kotlin
 val drawable = Coil.get("https://www.example.com/image.jpg")
