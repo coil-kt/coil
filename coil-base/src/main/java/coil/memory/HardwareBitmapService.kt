@@ -113,40 +113,6 @@ private object HardwareBitmapBlacklist {
                 model.startsWith("moto g(6)", true)) return@run true
         }
 
-        if (SDK_INT == O_MR1) {
-            // LG Stylo 4
-            if (model.startsWith("LM-Q710") || model == "LML713DL") return@run true
-
-            // LG K11
-            if (model.startsWith("LM-X410")) return@run true
-
-            // LG Aristo 3 / LG Tribute Empire
-            if (model.startsWith("LM-X220")) return@run true
-
-            // LG Q7
-            if (model.startsWith("LM-Q610") || model.startsWith("LM-Q617")) return@run true
-
-            // Blackview BV9500
-            if (model.startsWith("BV9500")) return@run true
-
-            // RCA (ALL)
-            if (model.startsWith("RCT6")) return@run true
-
-            // Alcatel (ALL)
-            if (Build.BRAND == "TCL") return@run true
-
-            return@run model in arrayOf(
-                "N5001L", // Nuu A4L
-                "N5501L", // Nuu A5L
-                "N5002L", // Nuu A7L
-                "C210AE", // Wiko Life
-                "One Max", // Umidigi One Max
-                "KING_KONG_3", // Cubot King Kong 3
-                "Vivo XI+", "Vivo XI PLUS", // BLU VIVO XI+
-                "REVVL 2", "REVVL_2_5052W", "REVVL 2 PLUS" // T-Mobile Revvl 2
-            )
-        }
-
         return@run false
     }
 }
