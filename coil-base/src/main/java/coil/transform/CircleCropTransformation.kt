@@ -30,7 +30,7 @@ class CircleCropTransformation : Transformation {
         output.applyCanvas {
             drawCircle(radius, radius, radius, paint)
             paint.xfermode = XFERMODE
-            drawBitmap(input, radius - input.width / 2, radius - input.height / 2, paint)
+            drawBitmap(input, radius - input.width / 2f, radius - input.height / 2f, paint)
         }
         pool.put(input)
 
