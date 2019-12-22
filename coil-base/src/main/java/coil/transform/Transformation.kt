@@ -44,8 +44,8 @@ interface Transformation {
      * pool so that they can be reused.
      *
      * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
-     * @param input The input [Bitmap] to transform.
-     * @param size The size for the image request.
+     * @param input The input [Bitmap] to transform. Its config will always be one of [VALID_CONFIGS].
+     * @param size The size of the image request.
      *
      * @see BitmapPool.get
      * @see BitmapPool.put

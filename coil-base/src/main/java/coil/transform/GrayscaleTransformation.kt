@@ -22,7 +22,8 @@ class GrayscaleTransformation : Transformation {
     override fun key(): String = GrayscaleTransformation::class.java.name
 
     override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply { colorFilter = COLOR_FILTER }
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+        paint.colorFilter = COLOR_FILTER
 
         val output = pool.get(input.width, input.height, input.config)
         output.applyCanvas {
