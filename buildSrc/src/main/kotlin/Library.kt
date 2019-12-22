@@ -27,14 +27,14 @@ object Library {
     const val ANDROIDX_LIFECYCLE_LIVE_DATA = "androidx.lifecycle:lifecycle-livedata:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
 
-    const val MATERIAL = "com.google.android.material:material:1.1.0-beta02"
+    const val MATERIAL = "com.google.android.material:material:1.1.0-rc01"
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
     private const val OKHTTP_VERSION = "3.12.6"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
-    const val OKIO = "com.squareup.okio:okio:2.4.2"
+    const val OKIO = "com.squareup.okio:okio:2.4.3"
 
     // TEST
 
