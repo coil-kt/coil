@@ -190,6 +190,7 @@ internal class RealImageLoader(
             var mappedData: Any = data
             for ((type, mapper) in registry.measuredMappers) {
                 if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
+                    // Resolve the size.
                     if (sizeResolver == null || size == null) {
                         targetDelegate.start(null, request.placeholder)
                         sizeResolver = requestService.sizeResolver(request, context)
@@ -210,6 +211,7 @@ internal class RealImageLoader(
                 request.key
             } else {
                 if (request.transformations.isNotEmpty()) {
+                    // Resolve the size.
                     if (sizeResolver == null || size == null) {
                         targetDelegate.start(null, request.placeholder)
                         sizeResolver = requestService.sizeResolver(request, context)
