@@ -162,7 +162,7 @@ internal class RealImageLoader(
         // Compute lifecycle info on the main thread.
         val (lifecycle, mainDispatcher) = requestService.lifecycleInfo(request)
 
-        // Wrap the target to support Bitmap pooling.
+        // Wrap the target to support bitmap pooling.
         val targetDelegate = delegateService.createTargetDelegate(request)
 
         val deferred = async<Drawable>(mainDispatcher, CoroutineStart.LAZY) innerJob@{
@@ -172,19 +172,19 @@ internal class RealImageLoader(
             // Notify the listener that the request has started.
             request.listener?.onStart(data)
 
+            // Invalidate the bitmap if it was provided as input.
+            when (data) {
+                is BitmapDrawable -> referenceCounter.invalidate(data.bitmap)
+                is Bitmap -> referenceCounter.invalidate(data)
+            }
+
             // Add the target as a lifecycle observer, if necessary.
             val target = request.target
             if (target is ViewTarget<*> && target is LifecycleObserver) {
                 lifecycle.addObserver(target)
             }
 
-            // Invalidate the Bitmap if it was provided as input.
-            when (data) {
-                is BitmapDrawable -> referenceCounter.invalidate(data.bitmap)
-                is Bitmap -> referenceCounter.invalidate(data)
-            }
-
-            // Perform any data conversions and resolve the size early, if necessary.
+            // Perform any data conversions.
             var sizeResolver: SizeResolver? = null
             var size: Size? = null
             var mappedData: Any = data

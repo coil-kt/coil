@@ -9,6 +9,7 @@ import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+/** @see [Call.await]. */
 internal class ContinuationCallback(
     private val call: Call,
     private val continuation: CancellableContinuation<Response>
