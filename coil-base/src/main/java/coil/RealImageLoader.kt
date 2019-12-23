@@ -473,10 +473,7 @@ internal class RealImageLoader(
         check(!isShutdown) { "The image loader is shutdown!" }
     }
 
-    /**
-     * Lazily resolves and caches a request's size.
-     * Responsible for calling [Target.onStart] before suspending to resolve the size.
-     */
+    /** Lazily resolves and caches a request's size. Responsible for calling [Target.onStart]. */
     @VisibleForTesting
     internal class LazySizeResolver(
         private val sizeResolver: SizeResolver,
