@@ -386,8 +386,8 @@ class RealImageLoaderBasicTest {
         }
     }
 
-    private fun createFakeSizeLazy(block: suspend () -> Size = { unsupported() }): RealImageLoader.SizeLazy {
-        return RealImageLoader.SizeLazy(
+    private fun createFakeSizeLazy(block: suspend () -> Size = { unsupported() }): RealImageLoader.LazySizeResolver {
+        return RealImageLoader.LazySizeResolver(
             sizeResolver = object : SizeResolver {
                 override suspend fun size() = block()
             },
