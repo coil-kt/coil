@@ -168,6 +168,8 @@ internal class RealImageLoader(
         val deferred = async<Drawable>(mainDispatcher, CoroutineStart.LAZY) innerJob@{
             // Fail before starting if data is null.
             data ?: throw NullRequestDataException()
+
+            // Notify the listener that the request has started.
             request.listener?.onStart(data)
 
             // Add the target as a lifecycle observer, if necessary.
@@ -182,10 +184,9 @@ internal class RealImageLoader(
                 is Bitmap -> referenceCounter.invalidate(data)
             }
 
+            // Perform any data conversions and resolve the size early, if necessary.
             var sizeResolver: SizeResolver? = null
             var size: Size? = null
-
-            // Perform any data conversions and resolve the size early, if necessary.
             var mappedData: Any = data
             for ((type, mapper) in registry.measuredMappers) {
                 if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
@@ -243,7 +244,7 @@ internal class RealImageLoader(
                 return@innerJob cachedDrawable
             }
 
-            // Load the image.
+            // Fetch and decode the image.
             val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale)
 
             // Cache the result.
@@ -286,7 +287,7 @@ internal class RealImageLoader(
         return@outerJob deferred.await()
     }
 
-    /** Compute the cache key for the [data] + [parameters] + [transformations]. */
+    /** Compute the cache key for the [data] + [parameters] + [transformations] + [size]. */
     @VisibleForTesting
     internal fun <T : Any> computeCacheKey(
         fetcher: Fetcher<T>,
