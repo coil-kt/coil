@@ -205,7 +205,18 @@ internal class RealImageLoader(
 
             // Compute the cache key.
             val fetcher = registry.requireFetcher(mappedData)
-            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations)
+            val cacheKey = if (request.key != null) {
+                request.key
+            } else {
+                if (request.transformations.isNotEmpty()) {
+                    if (sizeResolver == null || size == null) {
+                        targetDelegate.start(null, request.placeholder)
+                        sizeResolver = requestService.sizeResolver(request, context)
+                        size = sizeResolver.size().also { ensureActive() }
+                    }
+                }
+                computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, size)
+            }
 
             // Check the memory cache.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
@@ -281,7 +292,8 @@ internal class RealImageLoader(
         fetcher: Fetcher<T>,
         data: T,
         parameters: Parameters,
-        transformations: List<Transformation>
+        transformations: List<Transformation>,
+        size: Size?
     ): String? {
         val baseCacheKey = fetcher.key(data) ?: return null
 
@@ -296,7 +308,12 @@ internal class RealImageLoader(
                 }
             }
 
-            transformations.forEach { append('#').append(it.key()) }
+            if (transformations.isNotEmpty()) {
+                transformations.forEach { append('#').append(it.key()) }
+
+                // Append the size if there are any transformations. Size must not be null here.
+                append('#').append(checkNotNull(size))
+            }
         }
     }
 

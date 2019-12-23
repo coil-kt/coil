@@ -1,4 +1,4 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE", "unused")
+@file:Suppress("EXPERIMENTAL_API_USAGE", "unused", "NOTHING_TO_INLINE")
 
 package coil.util
 
@@ -24,3 +24,5 @@ fun createBitmap(
 fun createTestMainDispatcher(): TestCoroutineDispatcher {
     return TestCoroutineDispatcher().apply { Dispatchers.setMain(this) }
 }
+
+inline fun unsupported(): Nothing = throw UnsupportedOperationException()

@@ -9,6 +9,7 @@ import coil.bitmappool.BitmapPool
 import coil.decode.Options
 import coil.fetch.Fetcher
 import coil.request.Parameters
+import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
@@ -18,6 +19,7 @@ import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
 import coil.util.toDrawable
+import coil.util.unsupported
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -291,7 +293,7 @@ class RealImageLoaderBasicTest {
     @Test
     fun `computeCacheKey - null key`() {
         val fetcher = createFakeFetcher(key = null)
-        val key = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList())
+        val key = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), null)
 
         assertNull(key)
     }
@@ -299,7 +301,7 @@ class RealImageLoaderBasicTest {
     @Test
     fun `computeCacheKey - basic key`() {
         val fetcher = createFakeFetcher()
-        val result = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList())
+        val result = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), null)
 
         assertEquals("base_key", result)
     }
@@ -308,7 +310,7 @@ class RealImageLoaderBasicTest {
     fun `computeCacheKey - params only`() {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
-        val result = imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList())
+        val result = imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList(), null)
 
         assertEquals("base_key#key2=cached2#key3=cached3", result)
     }
@@ -317,9 +319,9 @@ class RealImageLoaderBasicTest {
     fun `computeCacheKey - transformations only`() {
         val fetcher = createFakeFetcher()
         val transformations = createFakeTransformations()
-        val result = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations)
+        val result = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, PixelSize(123, 332))
 
-        assertEquals("base_key#key1#key2", result)
+        assertEquals("base_key#key1#key2#PixelSize(width=123, height=332)", result)
     }
 
     @Test
@@ -327,20 +329,20 @@ class RealImageLoaderBasicTest {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
-        val result = imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations)
+        val result = imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations, OriginalSize)
 
-        assertEquals("base_key#key2=cached2#key3=cached3#key1#key2", result)
+        assertEquals("base_key#key2=cached2#key3=cached3#key1#key2#OriginalSize", result)
     }
 
     private fun createFakeTransformations(): List<Transformation> {
         return listOf(
             object : Transformation {
                 override fun key() = "key1"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap) = throw UnsupportedOperationException()
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = unsupported()
             },
             object : Transformation {
                 override fun key() = "key2"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap) = throw UnsupportedOperationException()
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = unsupported()
             }
         )
     }
@@ -362,7 +364,7 @@ class RealImageLoaderBasicTest {
                 data: Any,
                 size: Size,
                 options: Options
-            ) = throw UnsupportedOperationException()
+            ) = unsupported()
         }
     }
 }

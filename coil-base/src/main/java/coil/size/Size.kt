@@ -12,7 +12,10 @@ import coil.request.RequestBuilder
 sealed class Size
 
 /** Represents the width and height of the source image. */
-object OriginalSize : Size()
+object OriginalSize : Size() {
+
+    override fun toString() = "OriginalSize"
+}
 
 /** A positive width and height in pixels. */
 data class PixelSize(
