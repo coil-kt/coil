@@ -18,6 +18,9 @@ import java.util.TreeMap
  *
  * Using both the [Bitmap]'s allocation count and the config allows us to safely re-use a greater variety of
  * [Bitmap]s, which increases the hit rate of the pool and therefore the performance of applications.
+ *
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s SizeConfigStrategy.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 @RequiresApi(KITKAT)
 internal class SizeConfigStrategy : BitmapPoolStrategy {

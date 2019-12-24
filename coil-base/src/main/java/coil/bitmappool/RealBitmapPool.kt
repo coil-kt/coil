@@ -19,6 +19,9 @@ import coil.util.log
  * A [BitmapPool] implementation that uses a [BitmapPoolStrategy] to bucket [Bitmap]s
  * and then uses an LRU eviction policy to evict [Bitmap]s from the least
  * recently used bucket in order to keep the pool below a given maximum size limit.
+ *
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s LruBitmapPool.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 internal class RealBitmapPool(
     private val maxSize: Long,

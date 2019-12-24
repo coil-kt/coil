@@ -18,6 +18,9 @@ import java.util.TreeMap
  *
  * Technically, the APIs for this strategy are available since [KITKAT], however we shouldn't use this strategy until
  * [M] due to framework bugs.
+ *
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s SizeStrategy.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 @RequiresApi(M)
 internal class SizeStrategy : BitmapPoolStrategy {
