@@ -6,6 +6,9 @@ import java.util.HashMap
 /**
  * Similar to [LinkedHashMap] when access ordered except that it is access ordered
  * on groups of objects rather than an individual object.
+ *
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s GroupedLinkedMap.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 internal class GroupedLinkedMap<K, V> {
 

@@ -44,7 +44,8 @@ private class ImmutableHardwareBitmapService(private val allowHardware: Boolean)
  *
  * NOTE: This must be a singleton since it tracks global file descriptor usage state for the entire process.
  *
- * Modified from Glide's HardwareConfigState.
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s HardwareConfigState.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapService() {
 
