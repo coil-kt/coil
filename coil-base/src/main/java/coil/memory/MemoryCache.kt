@@ -6,6 +6,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
+import coil.memory.MemoryCache.Value
 import coil.util.getAllocationByteCountCompat
 import coil.util.log
 
@@ -47,7 +48,7 @@ internal interface MemoryCache {
 /** A [MemoryCache] implementation that caches nothing. */
 private object EmptyMemoryCache : MemoryCache {
 
-    override fun get(key: String): MemoryCache.Value? = null
+    override fun get(key: String): Value? = null
 
     override fun set(key: String, value: Bitmap, isSampled: Boolean) {}
 
@@ -70,18 +71,18 @@ private class RealMemoryCache(
         private const val TAG = "RealMemoryCache"
     }
 
-    private val cache = object : LruCache<String, MemoryCache.Value>(maxSize) {
+    private val cache = object : LruCache<String, Value>(maxSize) {
         override fun entryRemoved(
             evicted: Boolean,
             key: String,
-            oldValue: MemoryCache.Value,
-            newValue: MemoryCache.Value?
+            oldValue: Value,
+            newValue: Value?
         ) = referenceCounter.decrement(oldValue.bitmap)
 
-        override fun sizeOf(key: String, value: MemoryCache.Value) = value.size
+        override fun sizeOf(key: String, value: Value) = value.size
     }
 
-    override fun get(key: String): MemoryCache.Value? = cache.get(key)
+    override fun get(key: String): Value? = cache.get(key)
 
     override fun set(key: String, value: Bitmap, isSampled: Boolean) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
@@ -93,7 +94,7 @@ private class RealMemoryCache(
         }
 
         referenceCounter.increment(value)
-        cache.put(key, MemoryCache.Value(value, isSampled, size))
+        cache.put(key, Value(value, isSampled, size))
     }
 
     override fun size(): Int = cache.size()
