@@ -4,7 +4,12 @@ import android.graphics.Bitmap
 import androidx.annotation.Px
 import coil.collection.GroupedLinkedMap
 
-/** A strategy for reusing bitmaps that requires any returned bitmap's dimensions to exactly match those in the request. */
+/**
+ * A strategy for reusing bitmaps that requires any returned bitmap's dimensions to exactly match those in the request.
+ *
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s AttributeStrategy.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
+ */
 internal class AttributeStrategy : BitmapPoolStrategy {
 
     companion object {
