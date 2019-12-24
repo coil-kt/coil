@@ -296,7 +296,7 @@ class RealImageLoaderBasicTest {
     @Test
     fun `computeCacheKey - null key`() {
         val fetcher = createFakeFetcher(key = null)
-        val size = createFakeSizeLazy()
+        val size = createFakeLazySizeResolver()
         val key = runBlocking {
             imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), size)
         }
@@ -307,7 +307,7 @@ class RealImageLoaderBasicTest {
     @Test
     fun `computeCacheKey - basic key`() {
         val fetcher = createFakeFetcher()
-        val size = createFakeSizeLazy()
+        val size = createFakeLazySizeResolver()
         val result = runBlocking {
             imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), size)
         }
@@ -319,7 +319,7 @@ class RealImageLoaderBasicTest {
     fun `computeCacheKey - params only`() {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
-        val size = createFakeSizeLazy()
+        val size = createFakeLazySizeResolver()
         val result = runBlocking {
             imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList(), size)
         }
@@ -331,7 +331,7 @@ class RealImageLoaderBasicTest {
     fun `computeCacheKey - transformations only`() {
         val fetcher = createFakeFetcher()
         val transformations = createFakeTransformations()
-        val size = createFakeSizeLazy { PixelSize(123, 332) }
+        val size = createFakeLazySizeResolver { PixelSize(123, 332) }
         val result = runBlocking {
             imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, size)
         }
@@ -344,7 +344,7 @@ class RealImageLoaderBasicTest {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
-        val size = createFakeSizeLazy { OriginalSize }
+        val size = createFakeLazySizeResolver { OriginalSize }
         val result = runBlocking {
             imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations, size)
         }
@@ -386,7 +386,7 @@ class RealImageLoaderBasicTest {
         }
     }
 
-    private fun createFakeSizeLazy(block: suspend () -> Size = { unsupported() }): RealImageLoader.LazySizeResolver {
+    private fun createFakeLazySizeResolver(block: suspend () -> Size = { unsupported() }): RealImageLoader.LazySizeResolver {
         return RealImageLoader.LazySizeResolver(
             sizeResolver = object : SizeResolver {
                 override suspend fun size() = block()
