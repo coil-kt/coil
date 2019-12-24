@@ -37,11 +37,11 @@ interface Transformation {
     fun key(): String
 
     /**
-     * Apply the transformation to [Bitmap].
+     * Apply the transformation to [input].
      *
      * For optimal performance, do not use [Bitmap.createBitmap] inside this method. Instead, use the provided
-     * [BitmapPool] to get new [Bitmap]s. Also, you should return every Bitmap except the output [Bitmap] to the
-     * pool so that they can be reused.
+     * [BitmapPool] to get new [Bitmap]s. Also, you should return every bitmp except the output bitmap to [pool]
+     * so that they can be reused.
      *
      * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
      * @param input The input [Bitmap] to transform. Its config will always be one of [VALID_CONFIGS].
