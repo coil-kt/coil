@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.util.Log
+import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import coil.annotation.ExperimentalCoil
@@ -43,6 +44,7 @@ import coil.memory.BitmapReferenceCounter
 import coil.memory.DelegateService
 import coil.memory.MemoryCache
 import coil.memory.RequestService
+import coil.memory.TargetDelegate
 import coil.network.NetworkObserver
 import coil.request.BaseTargetRequestDisposable
 import coil.request.GetRequest
@@ -57,6 +59,7 @@ import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
+import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.Transition
@@ -81,6 +84,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -151,7 +155,6 @@ internal class RealImageLoader(
 
     override suspend fun get(request: GetRequest): Drawable = execute(request.data, request)
 
-    @Suppress("UNCHECKED_CAST")
     private suspend fun execute(
         data: Any?,
         request: Request
@@ -162,13 +165,21 @@ internal class RealImageLoader(
         // Compute lifecycle info on the main thread.
         val (lifecycle, mainDispatcher) = requestService.lifecycleInfo(request)
 
-        // Wrap the target to support Bitmap pooling.
+        // Wrap the target to support bitmap pooling.
         val targetDelegate = delegateService.createTargetDelegate(request)
 
         val deferred = async<Drawable>(mainDispatcher, CoroutineStart.LAZY) innerJob@{
             // Fail before starting if data is null.
             data ?: throw NullRequestDataException()
+
+            // Notify the listener that the request has started.
             request.listener?.onStart(data)
+
+            // Invalidate the bitmap if it was provided as input.
+            when (data) {
+                is BitmapDrawable -> referenceCounter.invalidate(data.bitmap)
+                is Bitmap -> referenceCounter.invalidate(data)
+            }
 
             // Add the target as a lifecycle observer, if necessary.
             val target = request.target
@@ -176,36 +187,17 @@ internal class RealImageLoader(
                 lifecycle.addObserver(target)
             }
 
-            // Invalidate the Bitmap if it was provided as input.
-            when (data) {
-                is BitmapDrawable -> referenceCounter.invalidate(data.bitmap)
-                is Bitmap -> referenceCounter.invalidate(data)
-            }
+            // Prepare to resolve the size lazily.
+            val sizeResolver = requestService.sizeResolver(request, context)
+            val lazySizeResolver = LazySizeResolver(sizeResolver, targetDelegate, request)
 
-            var sizeResolver: SizeResolver? = null
-            var size: Size? = null
-
-            // Perform any data conversions and resolve the size early, if necessary.
-            var mappedData: Any = data
-            for ((type, mapper) in registry.measuredMappers) {
-                if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
-                    if (sizeResolver == null || size == null) {
-                        targetDelegate.start(null, request.placeholder)
-                        sizeResolver = requestService.sizeResolver(request, context)
-                        size = sizeResolver.size().also { ensureActive() }
-                    }
-                    mappedData = mapper.map(mappedData, size)
-                }
-            }
-            for ((type, mapper) in registry.mappers) {
-                if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
-                    mappedData = mapper.map(mappedData)
-                }
-            }
+            // Perform any data mapping.
+            val mappedData = mapData(data, lazySizeResolver)
 
             // Compute the cache key.
             val fetcher = registry.requireFetcher(mappedData)
-            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations)
+            val cacheKey = request.key
+                ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, lazySizeResolver)
 
             // Check the memory cache.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
@@ -214,11 +206,7 @@ internal class RealImageLoader(
             val cachedDrawable = cachedValue?.bitmap?.toDrawable(context)
 
             // If we didn't resolve the size earlier, resolve it now.
-            if (sizeResolver == null || size == null) {
-                targetDelegate.start(cachedDrawable, cachedDrawable ?: request.placeholder)
-                sizeResolver = requestService.sizeResolver(request, context)
-                size = sizeResolver.size().also { ensureActive() }
-            }
+            val size = lazySizeResolver.size(cachedDrawable)
 
             // Resolve the scale.
             val scale = requestService.scale(request, sizeResolver)
@@ -232,7 +220,7 @@ internal class RealImageLoader(
                 return@innerJob cachedDrawable
             }
 
-            // Load the image.
+            // Fetch and decode the image.
             val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale)
 
             // Cache the result.
@@ -275,13 +263,32 @@ internal class RealImageLoader(
         return@outerJob deferred.await()
     }
 
-    /** Compute the cache key for the [data] + [parameters] + [transformations]. */
+    /** Map [data] using the components registered in [registry]. */
+    @Suppress("UNCHECKED_CAST")
     @VisibleForTesting
-    internal fun <T : Any> computeCacheKey(
+    internal suspend inline fun mapData(data: Any, lazySizeResolver: LazySizeResolver): Any {
+        var mappedData = data
+        for ((type, mapper) in registry.measuredMappers) {
+            if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
+                mappedData = mapper.map(mappedData, lazySizeResolver.size())
+            }
+        }
+        for ((type, mapper) in registry.mappers) {
+            if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
+                mappedData = mapper.map(mappedData)
+            }
+        }
+        return mappedData
+    }
+
+    /** Compute the cache key for the [data] + [parameters] + [transformations] + [lazySizeResolver]. */
+    @VisibleForTesting
+    internal suspend inline fun <T : Any> computeCacheKey(
         fetcher: Fetcher<T>,
         data: T,
         parameters: Parameters,
-        transformations: List<Transformation>
+        transformations: List<Transformation>,
+        lazySizeResolver: LazySizeResolver
     ): String? {
         val baseCacheKey = fetcher.key(data) ?: return null
 
@@ -296,7 +303,12 @@ internal class RealImageLoader(
                 }
             }
 
-            transformations.forEach { append('#').append(it.key()) }
+            if (transformations.isNotEmpty()) {
+                transformations.forEach { append('#').append(it.key()) }
+
+                // Append the size if there are any transformations. Size must not be null here.
+                append('#').append(lazySizeResolver.size())
+            }
         }
     }
 
@@ -404,7 +416,7 @@ internal class RealImageLoader(
         ensureActive()
 
         // Apply any transformations and prepare to draw.
-        val finalResult = applyTransformations(this, baseResult, request.transformations, size, options)
+        val finalResult = applyTransformations(baseResult, request.transformations, size, options)
         (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
 
         return@withContext finalResult
@@ -413,14 +425,13 @@ internal class RealImageLoader(
     /** Apply any [Transformation]s and return an updated [DrawableResult]. */
     @VisibleForTesting
     internal suspend inline fun applyTransformations(
-        scope: CoroutineScope,
         result: DrawableResult,
         transformations: List<Transformation>,
         size: Size,
         options: Options
-    ): DrawableResult = scope.run {
+    ): DrawableResult = coroutineScope {
         if (transformations.isEmpty()) {
-            return@run result
+            return@coroutineScope result
         }
 
         // Convert the drawable into a bitmap.
@@ -435,9 +446,9 @@ internal class RealImageLoader(
         }
 
         val transformedBitmap = transformations.fold(baseBitmap) { bitmap, transformation ->
-            transformation.transform(bitmapPool, bitmap).also { ensureActive() }
+            transformation.transform(bitmapPool, bitmap, size).also { ensureActive() }
         }
-        return@run result.copy(drawable = transformedBitmap.toDrawable(context))
+        return@coroutineScope result.copy(drawable = transformedBitmap.toDrawable(context))
     }
 
     override fun onTrimMemory(level: Int) {
@@ -460,5 +471,28 @@ internal class RealImageLoader(
 
     private fun assertNotShutdown() {
         check(!isShutdown) { "The image loader is shutdown!" }
+    }
+
+    /** Lazily resolves and caches a request's size. Responsible for calling [Target.onStart]. */
+    @VisibleForTesting
+    internal class LazySizeResolver(
+        private val sizeResolver: SizeResolver,
+        private val targetDelegate: TargetDelegate,
+        private val request: Request
+    ) {
+
+        private var size: Size? = null
+
+        @MainThread
+        suspend fun size(cached: BitmapDrawable? = null): Size = coroutineScope {
+            size?.let { return@coroutineScope it }
+
+            // Call the target's onStart before resolving the size.
+            targetDelegate.start(cached, cached ?: request.placeholder)
+
+            return@coroutineScope sizeResolver.size()
+                .also { size = it }
+                .also { ensureActive() }
+        }
     }
 }

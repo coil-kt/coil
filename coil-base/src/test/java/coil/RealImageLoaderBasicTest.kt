@@ -8,16 +8,21 @@ import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.decode.Options
 import coil.fetch.Fetcher
+import coil.memory.EmptyTargetDelegate
 import coil.request.Parameters
+import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
+import coil.size.SizeResolver
 import coil.transform.Transformation
 import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
 import coil.util.toDrawable
+import coil.util.unsupported
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -291,7 +296,10 @@ class RealImageLoaderBasicTest {
     @Test
     fun `computeCacheKey - null key`() {
         val fetcher = createFakeFetcher(key = null)
-        val key = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList())
+        val size = createFakeLazySizeResolver()
+        val key = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), size)
+        }
 
         assertNull(key)
     }
@@ -299,7 +307,10 @@ class RealImageLoaderBasicTest {
     @Test
     fun `computeCacheKey - basic key`() {
         val fetcher = createFakeFetcher()
-        val result = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList())
+        val size = createFakeLazySizeResolver()
+        val result = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), size)
+        }
 
         assertEquals("base_key", result)
     }
@@ -308,7 +319,10 @@ class RealImageLoaderBasicTest {
     fun `computeCacheKey - params only`() {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
-        val result = imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList())
+        val size = createFakeLazySizeResolver()
+        val result = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList(), size)
+        }
 
         assertEquals("base_key#key2=cached2#key3=cached3", result)
     }
@@ -317,9 +331,12 @@ class RealImageLoaderBasicTest {
     fun `computeCacheKey - transformations only`() {
         val fetcher = createFakeFetcher()
         val transformations = createFakeTransformations()
-        val result = imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations)
+        val size = createFakeLazySizeResolver { PixelSize(123, 332) }
+        val result = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, size)
+        }
 
-        assertEquals("base_key#key1#key2", result)
+        assertEquals("base_key#key1#key2#PixelSize(width=123, height=332)", result)
     }
 
     @Test
@@ -327,20 +344,40 @@ class RealImageLoaderBasicTest {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
-        val result = imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations)
+        val size = createFakeLazySizeResolver { OriginalSize }
+        val result = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations, size)
+        }
 
-        assertEquals("base_key#key2=cached2#key3=cached3#key1#key2", result)
+        assertEquals("base_key#key2=cached2#key3=cached3#key1#key2#OriginalSize", result)
+    }
+
+    @Test
+    fun `lazySizeResolver - resolves at most once`() {
+        var isFirstResolve = true
+        val lazySizeResolver = createFakeLazySizeResolver {
+            if (isFirstResolve) {
+                isFirstResolve = false
+                PixelSize(100, 100)
+            } else {
+                throw IllegalStateException()
+            }
+        }
+
+        runBlocking {
+            assertEquals(lazySizeResolver.size(), lazySizeResolver.size())
+        }
     }
 
     private fun createFakeTransformations(): List<Transformation> {
         return listOf(
             object : Transformation {
                 override fun key() = "key1"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap) = throw UnsupportedOperationException()
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = unsupported()
             },
             object : Transformation {
                 override fun key() = "key2"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap) = throw UnsupportedOperationException()
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = unsupported()
             }
         )
     }
@@ -362,7 +399,17 @@ class RealImageLoaderBasicTest {
                 data: Any,
                 size: Size,
                 options: Options
-            ) = throw UnsupportedOperationException()
+            ) = unsupported()
         }
+    }
+
+    private fun createFakeLazySizeResolver(block: suspend () -> Size = { unsupported() }): RealImageLoader.LazySizeResolver {
+        return RealImageLoader.LazySizeResolver(
+            sizeResolver = object : SizeResolver {
+                override suspend fun size() = block()
+            },
+            targetDelegate = EmptyTargetDelegate,
+            request = createLoadRequest(context)
+        )
     }
 }
