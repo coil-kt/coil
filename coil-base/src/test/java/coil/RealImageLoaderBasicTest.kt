@@ -352,6 +352,23 @@ class RealImageLoaderBasicTest {
         assertEquals("base_key#key2=cached2#key3=cached3#key1#key2#OriginalSize", result)
     }
 
+    @Test
+    fun `lazySizeResolver - resolves at most once`() {
+        var isFirstResolve = true
+        val lazySizeResolver = createFakeLazySizeResolver {
+            if (isFirstResolve) {
+                isFirstResolve = false
+                PixelSize(100, 100)
+            } else {
+                throw IllegalStateException()
+            }
+        }
+
+        runBlocking {
+            assertEquals(lazySizeResolver.size(), lazySizeResolver.size())
+        }
+    }
+
     private fun createFakeTransformations(): List<Transformation> {
         return listOf(
             object : Transformation {

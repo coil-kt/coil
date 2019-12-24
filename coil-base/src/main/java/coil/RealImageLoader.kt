@@ -270,7 +270,7 @@ internal class RealImageLoader(
         var mappedData = data
         for ((type, mapper) in registry.measuredMappers) {
             if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
-                mappedData = mapper.map(mappedData, lazySizeResolver.size(null))
+                mappedData = mapper.map(mappedData, lazySizeResolver.size())
             }
         }
         for ((type, mapper) in registry.mappers) {
@@ -307,7 +307,7 @@ internal class RealImageLoader(
                 transformations.forEach { append('#').append(it.key()) }
 
                 // Append the size if there are any transformations. Size must not be null here.
-                append('#').append(lazySizeResolver.size(null))
+                append('#').append(lazySizeResolver.size())
             }
         }
     }
@@ -484,7 +484,7 @@ internal class RealImageLoader(
         private var size: Size? = null
 
         @MainThread
-        suspend fun size(cached: BitmapDrawable?): Size = coroutineScope {
+        suspend fun size(cached: BitmapDrawable? = null): Size = coroutineScope {
             size?.let { return@coroutineScope it }
 
             // Call the target's onStart before resolving the size.
