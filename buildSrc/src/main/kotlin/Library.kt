@@ -8,6 +8,7 @@ object Library {
 
     private const val COROUTINES_VERSION = "1.3.3"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
+    const val KOTLINX_COROUTINES_PLAY_SERVICES = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$COROUTINES_VERSION"
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.0.0"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.1.0"
@@ -30,6 +31,8 @@ object Library {
     const val MATERIAL = "com.google.android.material:material:1.1.0-rc01"
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
+
+    const val FIREBASE_STORAGE = "com.google.firebase:firebase-storage:19.1.0"
 
     private const val OKHTTP_VERSION = "3.12.6"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
