@@ -84,7 +84,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -189,15 +188,14 @@ internal class RealImageLoader(
 
             // Prepare to resolve the size lazily.
             val sizeResolver = requestService.sizeResolver(request, context)
-            val lazySizeResolver = LazySizeResolver(sizeResolver, targetDelegate, request)
+            val lazySizeResolver = LazySizeResolver(this, sizeResolver, targetDelegate, request)
 
             // Perform any data mapping.
             val mappedData = mapData(data, lazySizeResolver)
 
             // Compute the cache key.
             val fetcher = registry.requireFetcher(mappedData)
-            val cacheKey = request.key
-                ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, lazySizeResolver)
+            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, lazySizeResolver)
 
             // Check the memory cache.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
@@ -306,7 +304,7 @@ internal class RealImageLoader(
             if (transformations.isNotEmpty()) {
                 transformations.forEach { append('#').append(it.key()) }
 
-                // Append the size if there are any transformations. Size must not be null here.
+                // Append the size if there are any transformations.
                 append('#').append(lazySizeResolver.size())
             }
         }
@@ -416,7 +414,7 @@ internal class RealImageLoader(
         ensureActive()
 
         // Apply any transformations and prepare to draw.
-        val finalResult = applyTransformations(baseResult, request.transformations, size, options)
+        val finalResult = applyTransformations(this, baseResult, request.transformations, size, options)
         (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
 
         return@withContext finalResult
@@ -425,13 +423,14 @@ internal class RealImageLoader(
     /** Apply any [Transformation]s and return an updated [DrawableResult]. */
     @VisibleForTesting
     internal suspend inline fun applyTransformations(
+        scope: CoroutineScope,
         result: DrawableResult,
         transformations: List<Transformation>,
         size: Size,
         options: Options
-    ): DrawableResult = coroutineScope {
+    ): DrawableResult = scope.run {
         if (transformations.isEmpty()) {
-            return@coroutineScope result
+            return@run result
         }
 
         // Convert the drawable into a bitmap.
@@ -448,7 +447,7 @@ internal class RealImageLoader(
         val transformedBitmap = transformations.fold(baseBitmap) { bitmap, transformation ->
             transformation.transform(bitmapPool, bitmap, size).also { ensureActive() }
         }
-        return@coroutineScope result.copy(drawable = transformedBitmap.toDrawable(context))
+        return@run result.copy(drawable = transformedBitmap.toDrawable(context))
     }
 
     override fun onTrimMemory(level: Int) {
@@ -476,6 +475,7 @@ internal class RealImageLoader(
     /** Lazily resolves and caches a request's size. Responsible for calling [Target.onStart]. */
     @VisibleForTesting
     internal class LazySizeResolver(
+        private val scope: CoroutineScope,
         private val sizeResolver: SizeResolver,
         private val targetDelegate: TargetDelegate,
         private val request: Request
@@ -484,13 +484,13 @@ internal class RealImageLoader(
         private var size: Size? = null
 
         @MainThread
-        suspend fun size(cached: BitmapDrawable? = null): Size = coroutineScope {
-            size?.let { return@coroutineScope it }
+        suspend inline fun size(cached: BitmapDrawable? = null): Size = scope.run {
+            size?.let { return@run it }
 
             // Call the target's onStart before resolving the size.
             targetDelegate.start(cached, cached ?: request.placeholder)
 
-            return@coroutineScope sizeResolver.size()
+            return@run sizeResolver.size()
                 .also { size = it }
                 .also { ensureActive() }
         }
