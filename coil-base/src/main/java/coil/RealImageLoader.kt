@@ -62,7 +62,6 @@ import coil.size.SizeResolver
 import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
-import coil.transition.Transition
 import coil.util.ComponentCallbacks
 import coil.util.Emoji
 import coil.util.closeQuietly
@@ -212,8 +211,7 @@ internal class RealImageLoader(
             // Short circuit if the cached drawable is valid for the target.
             if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, scale, request)) {
                 log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                val transition = request.transitionFactory?.newTransition(Transition.Event.CACHED)
-                targetDelegate.success(cachedDrawable, transition)
+                targetDelegate.success(cachedDrawable, true, request.transition)
                 request.listener?.onSuccess(data, DataSource.MEMORY)
                 return@innerJob cachedDrawable
             }
@@ -228,8 +226,7 @@ internal class RealImageLoader(
 
             // Set the final result on the target.
             log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            val transition = request.transitionFactory?.newTransition(Transition.Event.SUCCESS)
-            targetDelegate.success(drawable, transition)
+            targetDelegate.success(drawable, false, request.transition)
             request.listener?.onSuccess(data, source)
 
             return@innerJob drawable
@@ -250,8 +247,7 @@ internal class RealImageLoader(
                 } else {
                     log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
                     val drawable = if (throwable is NullRequestDataException) request.fallback else request.error
-                    val transition = request.transitionFactory?.newTransition(Transition.Event.ERROR)
-                    targetDelegate.error(drawable, transition)
+                    targetDelegate.error(drawable, request.transition)
                     request.listener?.onError(data, throwable)
                 }
             }

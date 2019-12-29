@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
  */
 data class DefaultRequestOptions(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    val transitionFactory: Transition.Factory? = null,
+    val transition: Transition? = null,
     val precision: Precision = Precision.AUTOMATIC,
     val allowHardware: Boolean = true,
     val allowRgb565: Boolean = false,

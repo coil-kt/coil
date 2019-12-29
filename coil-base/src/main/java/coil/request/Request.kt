@@ -37,7 +37,7 @@ sealed class Request {
 
     abstract val target: Target?
     abstract val lifecycle: Lifecycle?
-    abstract val transitionFactory: Transition.Factory?
+    abstract val transition: Transition?
 
     abstract val key: String?
     abstract val aliasKeys: List<String>
@@ -98,7 +98,7 @@ sealed class Request {
 /**
  * A value object that represents a *load* image request.
  *
- * Instances can be created ad hoc:
+ * Instances can be created and executed ad hoc:
  * ```
  * imageLoader.load(context, "https://www.example.com/image.jpg") {
  *     crossfade(true)
@@ -124,7 +124,7 @@ class LoadRequest internal constructor(
     override val data: Any?,
     override val target: Target?,
     override val lifecycle: Lifecycle?,
-    override val transitionFactory: Transition.Factory?,
+    override val transition: Transition?,
     override val key: String?,
     override val aliasKeys: List<String>,
     override val listener: Listener?,
@@ -188,7 +188,7 @@ class LoadRequest internal constructor(
 /**
  * A value object that represents a *get* image request.
  *
- * Instances can be created ad hoc:
+ * Instances can be created and executed ad hoc:
  * ```
  * val drawable = imageLoader.get("https://www.example.com/image.jpg") {
  *     size(1080, 1920)
@@ -247,7 +247,7 @@ class GetRequest internal constructor(
 
     override val lifecycle: Lifecycle? = null
 
-    override val transitionFactory: Transition.Factory? = null
+    override val transition: Transition? = null
 
     override val placeholder: Drawable? = null
 

@@ -176,16 +176,16 @@ class ImageLoaderBuilder(private val context: Context) {
      * @see `crossfade(Boolean)`
      */
     fun crossfade(durationMillis: Int) = apply {
-        val factory = if (durationMillis > 0) CrossfadeTransition.Factory(durationMillis) else null
-        this.defaults = this.defaults.copy(transitionFactory = factory)
+        val factory = if (durationMillis > 0) CrossfadeTransition(durationMillis) else null
+        this.defaults = this.defaults.copy(transition = factory)
     }
 
     /**
-     * Set the default [Transition.Factory] for each request.
+     * Set the default [Transition] for each request.
      */
     @ExperimentalCoil
-    fun transitionFactory(factory: Transition.Factory?) = apply {
-        this.defaults = this.defaults.copy(transitionFactory = factory)
+    fun transition(transition: Transition?) = apply {
+        this.defaults = this.defaults.copy(transition = transition)
     }
 
     /**
