@@ -30,6 +30,7 @@ class CrossfadeTransition(
     ) = suspendCancellableCoroutine<Unit> { continuation ->
         when (result) {
             is Success -> if (result.isMemoryCache) {
+                // Don't animate if the request was fulfilled by the memory cache.
                 target.onSuccess(result.drawable)
             } else {
                 target.onSuccess(createCrossfade(continuation, target, result.drawable))
