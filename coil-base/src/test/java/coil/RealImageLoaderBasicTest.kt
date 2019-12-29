@@ -22,6 +22,8 @@ import coil.util.createGetRequest
 import coil.util.createLoadRequest
 import coil.util.toDrawable
 import coil.util.unsupported
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -403,8 +405,11 @@ class RealImageLoaderBasicTest {
         }
     }
 
-    private fun createFakeLazySizeResolver(block: suspend () -> Size = { unsupported() }): RealImageLoader.LazySizeResolver {
+    private fun createFakeLazySizeResolver(
+        block: suspend () -> Size = { unsupported() }
+    ): RealImageLoader.LazySizeResolver {
         return RealImageLoader.LazySizeResolver(
+            scope = CoroutineScope(Job()), // Pass a fake scope.
             sizeResolver = object : SizeResolver {
                 override suspend fun size() = block()
             },

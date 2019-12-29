@@ -287,6 +287,7 @@ class RealImageLoaderIntegrationTest {
         val size = PixelSize(100, 100)
         val result = runBlocking {
             imageLoader.applyTransformations(
+                scope = this,
                 result = DrawableResult(
                     drawable = drawable,
                     isSampled = false,
@@ -309,6 +310,7 @@ class RealImageLoaderIntegrationTest {
         val size = PixelSize(100, 100)
         val result = runBlocking {
             imageLoader.applyTransformations(
+                scope = this,
                 result = DrawableResult(
                     drawable = drawable,
                     isSampled = false,
