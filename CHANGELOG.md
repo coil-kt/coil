@@ -12,7 +12,7 @@
 - **New**: Add `RequestDisposable.await` to support suspending while a `LoadRequest` is in progress.
 - **New**: Support setting a `fallback` drawable when request data is null.
 - **New**: Add `Precision`. This makes the size of the output `Drawable` exact while enabling scaling optimizations for targets that support scaling (e.g. `ImageViewTarget`). See [its documentation](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/size/Precision.kt) for more information.
-- **New**: Add `aliasKeys` to support matching multiple cache keys.
+- **New**: Add `RequestBuilder.aliasKeys` to support matching multiple cache keys.
 
 ---
 
