@@ -66,8 +66,9 @@ class MovieDrawable(
     }
 
     override fun draw(canvas: Canvas) {
-        val softwareCanvas = checkNotNull(softwareCanvas)
-        val softwareBitmap = checkNotNull(softwareBitmap)
+        // onBoundsChange must be called first.
+        val softwareCanvas = softwareCanvas ?: return
+        val softwareBitmap = softwareBitmap ?: return
 
         val invalidate: Boolean
         val time: Int
@@ -153,6 +154,7 @@ class MovieDrawable(
 
         val movieWidth = movie.width().toFloat()
         val movieHeight = movie.height().toFloat()
+        if (movieWidth <= 0f || movieHeight <= 0f) return
 
         softwareScale = DecodeUtils
             .computeSizeMultiplier(movieWidth, movieHeight, boundsWidth, boundsHeight, scale)
