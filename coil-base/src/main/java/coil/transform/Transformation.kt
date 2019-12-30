@@ -40,7 +40,7 @@ interface Transformation {
      * Apply the transformation to [input].
      *
      * For optimal performance, do not use [Bitmap.createBitmap] inside this method. Instead, use the provided
-     * [BitmapPool] to get new [Bitmap]s. Also, you should return every bitmp except the output bitmap to [pool]
+     * [BitmapPool] to get new [Bitmap]s. Also, you should return every bitmap except the output bitmap to [pool]
      * so that they can be reused.
      *
      * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
