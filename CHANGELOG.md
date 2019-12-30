@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.9.0] - December 30, 2019
+
+- **Breaking**: `Transformation.transform` now includes a `Size` parameter. This is to support transformations that change the size of the output `Bitmap` based on the size of the `Target`. Requests with transformations are now also exempt from [image sampling](https://coil-kt.github.io/coil/getting_started/#image-sampling).
+- **Breaking**: `Transformation`s are now applied to any type of `Drawable`. Before, `Transformation`s would be skipped if the input `Drawable` was not a `BitmapDrawable`. Now, `Drawable`s are rendered to a `Bitmap` before applying the `Transformation`s.
+- **Breaking**: Passing `null` data to `ImageLoader.load` is now treated as an error and calls `Target.onError` and `Request.Listener.onError` with a `NullRequestDataException`. This change was made to support setting a `fallback` drawable if data is `null`. Previously the request was silently ignored.
+
+---
+
+- **New**: Support for custom transitions. [See here for more info](https://coil-kt.github.io/coil/transitions/). Transitions are marked as experimental as the API is incubating.
+- **New**: Add `RequestDisposable.await` to support suspending while a `LoadRequest` is in progress.
+- **New**: Support setting a `fallback` drawable when request data is null.
+- **New**: Add `Precision`. This makes the size of the output `Drawable` exact while enabling scaling optimizations for targets that support scaling (e.g. `ImageViewTarget`). See [its documentation](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/size/Precision.kt) for more information.
+- **New**: Add `aliasKeys` to support matching multiple cache keys.
+
+---
+
+- Fix: Make RequestDisposable thread safe.
+- Fix: `RoundedCornersTransformation` now crops to the size of the target then rounds the corners.
+- Fix: `CircleCropTransformation` now crops from the center.
+- Fix: Add several devices to the [hardware bitmap blacklist](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/memory/HardwareBitmapService.kt).
+- Fix: Preserve aspect ratio when converting a Drawable to a Bitmap.
+- Fix: Fix possible memory cache miss with `Scale.FIT`.
+- Fix: Ensure Parameters iteration order is deterministic.
+- Fix: Defensive copy when creating Parameters and ComponentRegistry.
+- Fix: Ensure RealBitmapPool's maxSize >= 0.
+- Fix: Show the start drawable if CrossfadeDrawable is not animating or done.
+- Fix: Adjust CrossfadeDrawable to account for children with undefined intrinsic size.
+- Fix: Fix `MovieDrawable` not scaling properly.
+
+---
+
+- Update Kotlin to 1.3.61.
+- Update Kotlin Coroutines to 1.3.3.
+- Update Okio to 2.4.3.
+- Update AndroidX dependencies:
+  - `androidx.exifinterface:exifinterface` -> 1.1.0
+
 ## [0.8.0] - October 22, 2019
 
 - **Breaking**: `SvgDrawable` has been removed. Instead, SVGs are now prerendered to `BitmapDrawable`s by `SvgDecoder`. This makes SVGs **significantly less expensive to render on the main thread**. Also `SvgDecoder` now requires a `Context` in its constructor.
