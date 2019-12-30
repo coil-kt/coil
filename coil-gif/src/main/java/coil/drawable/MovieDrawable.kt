@@ -152,8 +152,9 @@ class MovieDrawable(
         val boundsWidth = bounds.width().toFloat()
         val boundsHeight = bounds.height().toFloat()
 
-        val movieWidth = movie.width().toFloat().coerceAtLeast(1f)
-        val movieHeight = movie.height().toFloat().coerceAtLeast(1f)
+        val movieWidth = movie.width().toFloat()
+        val movieHeight = movie.height().toFloat()
+        if (movieWidth <= 0f || movieHeight <= 0f) return
 
         softwareScale = DecodeUtils
             .computeSizeMultiplier(movieWidth, movieHeight, boundsWidth, boundsHeight, scale)
