@@ -5,6 +5,7 @@
 - **Breaking**: `Transformation.transform` now includes a `Size` parameter. This is to support transformations that change the size of the output `Bitmap` based on the size of the `Target`. Requests with transformations are now also exempt from [image sampling](https://coil-kt.github.io/coil/getting_started/#image-sampling).
 - **Breaking**: `Transformation`s are now applied to any type of `Drawable`. Before, `Transformation`s would be skipped if the input `Drawable` was not a `BitmapDrawable`. Now, `Drawable`s are rendered to a `Bitmap` before applying the `Transformation`s.
 - **Breaking**: Passing `null` data to `ImageLoader.load` is now treated as an error and calls `Target.onError` and `Request.Listener.onError` with a `NullRequestDataException`. This change was made to support setting a `fallback` drawable if data is `null`. Previously the request was silently ignored.
+- **Breaking**: `RequestDisposable.isDisposed` is now a `val`.
 
 ---
 
