@@ -3,7 +3,7 @@
 To add SVG support, import the extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-svg:0.8.0")
+implementation("io.coil-kt:coil-svg:0.9.0")
 ```
 
 And add the decoder to your component registry when constructing your `ImageLoader`:

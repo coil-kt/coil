@@ -16,7 +16,7 @@ Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한�
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.8.0")
+implementation("io.coil-kt:coil:0.9.0")
 ```
 
 ## Quick Start
