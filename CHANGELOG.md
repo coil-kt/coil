@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.1] - December 30, 2019
+
+- Fix: Fix crash when calling `LoadRequestBuilder.crossfade(false)`.
+
 ## [0.9.0] - December 30, 2019
 
 - **Breaking**: `Transformation.transform` now includes a `Size` parameter. This is to support transformations that change the size of the output `Bitmap` based on the size of the `Target`. Requests with transformations are now also exempt from [image sampling](https://coil-kt.github.io/coil/getting_started/#image-sampling).
