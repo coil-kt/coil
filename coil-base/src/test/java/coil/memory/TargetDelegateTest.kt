@@ -1,7 +1,6 @@
 package coil.memory
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
@@ -10,6 +9,8 @@ import coil.bitmappool.FakeBitmapPool
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
 import coil.transition.Transition
+import coil.transition.TransitionResult
+import coil.transition.TransitionTarget
 import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
@@ -70,7 +71,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), null)
+            delegate.success(bitmap.toDrawable(context), false, null)
             assertFalse(counter.invalid(bitmap))
         }
     }
@@ -82,7 +83,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), null)
+            delegate.success(bitmap.toDrawable(context), false, null)
             assertTrue(counter.invalid(bitmap))
         }
     }
@@ -105,7 +106,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), null)
+            delegate.success(bitmap.toDrawable(context), false, null)
             assertTrue(target.success)
             assertTrue(counter.invalid(bitmap))
         }
@@ -133,7 +134,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), null)
+            delegate.success(bitmap.toDrawable(context), false, null)
             assertFalse(counter.invalid(bitmap))
             assertTrue(pool.bitmaps.contains(initialBitmap))
         }
@@ -156,14 +157,14 @@ class TargetDelegateTest {
             val bitmap = createBitmap()
             var isRunning = true
             val transition = object : Transition {
-                override suspend fun transition(adapter: Transition.Adapter, drawable: Drawable?) {
+                override suspend fun transition(target: TransitionTarget<*>, result: TransitionResult) {
                     assertFalse(pool.bitmaps.contains(initialBitmap))
                     delay(100) // Simulate an animation.
                     assertFalse(pool.bitmaps.contains(initialBitmap))
                     isRunning = false
                 }
             }
-            delegate.success(bitmap.toDrawable(context), transition)
+            delegate.success(bitmap.toDrawable(context), false, transition)
 
             // Ensure that the animation completed and the initial bitmap was not pooled until this method completes.
             assertFalse(isRunning)

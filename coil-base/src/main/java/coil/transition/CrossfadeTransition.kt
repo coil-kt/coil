@@ -6,6 +6,8 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.annotation.ExperimentalCoil
 import coil.drawable.CrossfadeDrawable
 import coil.size.Scale
+import coil.transition.TransitionResult.Error
+import coil.transition.TransitionResult.Success
 import coil.util.scale
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CompletionHandler
@@ -23,19 +25,38 @@ class CrossfadeTransition(
     }
 
     override suspend fun transition(
-        adapter: Transition.Adapter,
-        drawable: Drawable?
+        target: TransitionTarget<*>,
+        result: TransitionResult
     ) = suspendCancellableCoroutine<Unit> { continuation ->
+        when (result) {
+            is Success -> if (result.isMemoryCache) {
+                // Don't animate if the request was fulfilled by the memory cache.
+                target.onSuccess(result.drawable)
+            } else {
+                target.onSuccess(createCrossfade(continuation, target, result.drawable))
+            }
+            is Error -> {
+                target.onError(createCrossfade(continuation, target, result.drawable))
+            }
+        }
+    }
+
+    /** Create a [CrossfadeDrawable]. [continuation] will suspend until the crossfade animation completes. */
+    private fun createCrossfade(
+        continuation: CancellableContinuation<Unit>,
+        target: TransitionTarget<*>,
+        drawable: Drawable?
+    ): CrossfadeDrawable {
         val crossfade = CrossfadeDrawable(
-            start = adapter.drawable,
+            start = target.drawable,
             end = drawable,
-            scale = (adapter.view as? ImageView)?.scale ?: Scale.FILL,
+            scale = (target.view as? ImageView)?.scale ?: Scale.FILL,
             durationMillis = durationMillis
         )
         val callback = Callback(crossfade, continuation)
         crossfade.registerAnimationCallback(callback)
         continuation.invokeOnCancellation(callback)
-        adapter.drawable = crossfade
+        return crossfade
     }
 
     /** Handle cancellation of the continuation and completion of the animation in one object. */
@@ -50,15 +71,5 @@ class CrossfadeTransition(
         }
 
         override fun invoke(cause: Throwable?) = crossfade.stop()
-    }
-
-    class Factory(durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION) : Transition.Factory {
-
-        // CrossfadeTransition is stateless so we can reuse the same instance.
-        private val transition = CrossfadeTransition(durationMillis)
-
-        override fun newTransition(event: Transition.Event): Transition? {
-            return transition.takeIf { event != Transition.Event.CACHED }
-        }
     }
 }

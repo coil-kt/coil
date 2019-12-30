@@ -389,7 +389,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
     private var target: Target?
     private var lifecycle: Lifecycle?
-    private var transitionFactory: Transition.Factory?
+    private var transition: Transition?
 
     @DrawableRes private var placeholderResId: Int
     @DrawableRes private var errorResId: Int
@@ -403,7 +403,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
         target = null
         lifecycle = null
-        transitionFactory = defaults.transitionFactory
+        transition = defaults.transition
 
         placeholderResId = 0
         errorResId = 0
@@ -418,7 +418,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
         target = request.target
         lifecycle = request.lifecycle
-        transitionFactory = request.transitionFactory
+        transition = request.transition
 
         placeholderResId = request.placeholderResId
         errorResId = request.errorResId
@@ -493,15 +493,15 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      * See: [ImageLoaderBuilder.crossfade]
      */
     fun crossfade(durationMillis: Int) = apply {
-        this.transitionFactory = CrossfadeTransition.Factory(durationMillis)
+        this.transition = CrossfadeTransition(durationMillis)
     }
 
     /**
-     * See: [ImageLoaderBuilder.transitionFactory]
+     * See: [ImageLoaderBuilder.transition]
      */
     @ExperimentalCoil
-    fun transitionFactory(factory: Transition.Factory?) = apply {
-        this.transitionFactory = factory
+    fun transition(transition: Transition?) = apply {
+        this.transition = transition
     }
 
     /**
@@ -561,7 +561,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             data,
             target,
             lifecycle,
-            transitionFactory,
+            transition,
             key,
             aliasKeys,
             listener,
