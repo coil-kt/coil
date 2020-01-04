@@ -1,4 +1,4 @@
-﻿![Github Actions status](https://github.com/nuhkoca/coil/workflows/coil/badge.svg)
+﻿![Github Actions status](https://github.com/coil-kt/coil/workflows/coil/badge.svg)
 
 ![Coil](logo.svg)
 
