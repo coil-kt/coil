@@ -1,4 +1,6 @@
-﻿![Coil](logo.svg)
+﻿![Github Actions status](https://github.com/nuhkoca/coil/workflows/coil/badge.svg)
+
+![Coil](logo.svg)
 
 An image loading library for Android backed by Kotlin Coroutines. Coil is:
 

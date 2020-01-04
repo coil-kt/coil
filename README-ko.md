@@ -1,4 +1,6 @@
-﻿![Coil](logo.svg)
+﻿![Github Actions status](https://github.com/nuhkoca/coil/workflows/coil/badge.svg)
+
+![Coil](logo.svg)
 
 Coil은 Android 백앤드를 위해 Kotlin Coroutines으로 만들어진 이미지 로딩 라이브러리입니다. Coil 은:
 
