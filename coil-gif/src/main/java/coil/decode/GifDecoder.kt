@@ -37,8 +37,8 @@ class GifDecoder : Decoder {
         val drawable = MovieDrawable(
             movie = if (SDK_INT <= JELLY_BEAN_MR2) {
                 source.use {
-                    val byteArray: ByteArray? = it.readByteArray()
-                    checkNotNull(Movie.decodeByteArray(byteArray, 0, byteArray!!.size)) { " Null response while decoding Gif" }
+                    val byteArray = it.readByteArray()
+                    checkNotNull(Movie.decodeByteArray(byteArray, 0, byteArray.size))
                 }
             } else {
                 source.use { checkNotNull(Movie.decodeStream(it.inputStream())) }
