@@ -5,6 +5,7 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.Movie
 import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
 import android.os.Build.VERSION_CODES.O
 import coil.bitmappool.BitmapPool
 import coil.drawable.MovieDrawable
@@ -34,7 +35,14 @@ class GifDecoder : Decoder {
         options: Options
     ): DecodeResult {
         val drawable = MovieDrawable(
-            movie = source.use { checkNotNull(Movie.decodeStream(it.inputStream())) },
+            movie = if (SDK_INT <= JELLY_BEAN_MR2) {
+                source.use {
+                    val byteArray: ByteArray? = it.readByteArray()
+                    checkNotNull(Movie.decodeByteArray(byteArray, 0, byteArray!!.size)) { " Null response while decoding Gif" }
+                }
+            } else {
+                source.use { checkNotNull(Movie.decodeStream(it.inputStream())) }
+            },
             config = when {
                 options.allowRgb565 -> Bitmap.Config.RGB_565
                 SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
