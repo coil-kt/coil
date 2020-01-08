@@ -15,7 +15,7 @@ import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import coil.annotation.ExperimentalCoil
-import coil.bitmappool.RealBitmapPool
+import coil.bitmappool.BitmapPool
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DataSource
 import coil.decode.DecodeUtils
@@ -91,8 +91,9 @@ import okhttp3.Call
 internal class RealImageLoader(
     private val context: Context,
     override val defaults: DefaultRequestOptions,
-    bitmapPoolSize: Long,
-    memoryCacheSize: Int,
+    private val bitmapPool: BitmapPool,
+    private val referenceCounter: BitmapReferenceCounter,
+    private val memoryCache: MemoryCache,
     callFactory: Call.Factory,
     registry: ComponentRegistry
 ) : ImageLoader, ComponentCallbacks {
@@ -104,12 +105,9 @@ internal class RealImageLoader(
     private val loaderScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable -> log(TAG, throwable) }
 
-    private val bitmapPool = RealBitmapPool(bitmapPoolSize)
-    private val referenceCounter = BitmapReferenceCounter(bitmapPool)
     private val delegateService = DelegateService(this, referenceCounter)
     private val requestService = RequestService()
     private val drawableDecoder = DrawableDecoderService(context, bitmapPool)
-    private val memoryCache = MemoryCache(referenceCounter, memoryCacheSize)
     private val networkObserver = NetworkObserver(context)
 
     private val registry = registry.newBuilder()
