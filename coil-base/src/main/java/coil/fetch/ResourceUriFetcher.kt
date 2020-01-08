@@ -13,7 +13,9 @@ import coil.size.Size
 import coil.util.getDrawableCompat
 import coil.util.getMimeTypeFromUrl
 import coil.util.getXmlDrawableCompat
+import coil.util.isVector
 import coil.util.nightMode
+import coil.util.toDrawable
 import okio.buffer
 import okio.source
 
@@ -53,9 +55,14 @@ internal class ResourceUriFetcher(
                 context.getXmlDrawableCompat(resources, resId)
             }
 
+            val isVector = drawable.isVector()
             DrawableResult(
-                drawable = drawableDecoder.convertIfNecessary(drawable, size, options.config),
-                isSampled = false,
+                drawable = if (isVector) {
+                    drawableDecoder.convert(drawable, size, options.config).toDrawable(context)
+                } else {
+                    drawable
+                },
+                isSampled = isVector,
                 dataSource = DataSource.MEMORY
             )
         } else {

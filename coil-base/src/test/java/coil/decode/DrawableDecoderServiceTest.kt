@@ -2,9 +2,6 @@ package coil.decode
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.VectorDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.RealBitmapPool
@@ -34,15 +31,14 @@ class DrawableDecoderServiceTest {
             override fun getIntrinsicWidth() = 100
             override fun getIntrinsicHeight() = 100
         }
-        val output = service.convertIfNecessary(
+        val output = service.convert(
             drawable = input,
             size = PixelSize(200, 200),
             config = Bitmap.Config.HARDWARE
         )
 
-        assertTrue(output is BitmapDrawable)
-        assertEquals(Bitmap.Config.ARGB_8888, output.bitmap.config)
-        assertTrue(output.bitmap.run { width == 200 && height == 200 })
+        assertEquals(Bitmap.Config.ARGB_8888, output.config)
+        assertTrue(output.run { width == 200 && height == 200 })
     }
 
     @Test
@@ -51,15 +47,14 @@ class DrawableDecoderServiceTest {
             override fun getIntrinsicWidth() = -1
             override fun getIntrinsicHeight() = -1
         }
-        val output = service.convertIfNecessary(
+        val output = service.convert(
             drawable = input,
             size = PixelSize(200, 200),
             config = Bitmap.Config.HARDWARE
         )
 
-        assertTrue(output is BitmapDrawable)
-        assertEquals(Bitmap.Config.ARGB_8888, output.bitmap.config)
-        assertTrue(output.bitmap.run { width == 200 && height == 200 })
+        assertEquals(Bitmap.Config.ARGB_8888, output.config)
+        assertTrue(output.run { width == 200 && height == 200 })
     }
 
     @Test
@@ -76,17 +71,5 @@ class DrawableDecoderServiceTest {
 
         assertEquals(Bitmap.Config.ARGB_8888, output.config)
         assertTrue(output.width == 100 && output.height == 200)
-    }
-
-    @Test
-    fun `color is not converted`() {
-        val input = ColorDrawable(Color.BLACK)
-        val output = service.convertIfNecessary(
-            drawable = input,
-            size = PixelSize(200, 200),
-            config = Bitmap.Config.ARGB_8888
-        )
-
-        assertEquals(input, output)
     }
 }
