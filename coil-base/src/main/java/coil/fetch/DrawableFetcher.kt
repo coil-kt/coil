@@ -23,13 +23,14 @@ internal class DrawableFetcher(
         size: Size,
         options: Options
     ): FetchResult {
+        val isVector = data.isVector()
         return DrawableResult(
-            drawable = if (data.isVector()) {
+            drawable = if (isVector) {
                 drawableDecoder.convert(data, size, options.config).toDrawable(context)
             } else {
                 data
             },
-            isSampled = false,
+            isSampled = isVector,
             dataSource = DataSource.MEMORY
         )
     }
