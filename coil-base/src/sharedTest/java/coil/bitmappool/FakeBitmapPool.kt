@@ -44,6 +44,8 @@ class FakeBitmapPool : BitmapPool {
         }
     }
 
+    override fun trimMemory(level: Int) = clear()
+
     override fun clear() {
         bitmaps.forEach { it.recycle() }
         bitmaps.clear()

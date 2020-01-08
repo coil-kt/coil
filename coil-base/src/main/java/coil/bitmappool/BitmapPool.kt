@@ -1,5 +1,6 @@
 package coil.bitmappool
 
+import android.content.ComponentCallbacks2
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.annotation.Px
@@ -58,6 +59,11 @@ interface BitmapPool {
      * Identical to [getDirty] except that null will be returned if the pool does not contain a usable Bitmap.
      */
     fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap?
+
+    /**
+     * @see ComponentCallbacks2.onTrimMemory
+     */
+    fun trimMemory(level: Int)
 
     /**
      * Remove all [Bitmap]s from this pool and free their memory.

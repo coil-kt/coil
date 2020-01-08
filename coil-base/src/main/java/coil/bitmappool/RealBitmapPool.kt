@@ -129,7 +129,7 @@ internal class RealBitmapPool(
     }
 
     @Synchronized
-    fun trimMemory(level: Int) {
+    override fun trimMemory(level: Int) {
         log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
