@@ -60,7 +60,7 @@ class ResourceUriFetcherTest {
 
         assertTrue(result is DrawableResult)
         assertTrue(result.drawable is BitmapDrawable)
-        assertFalse(result.isSampled)
+        assertTrue(result.isSampled)
     }
 
     @Test
@@ -96,6 +96,6 @@ class ResourceUriFetcherTest {
 
         assertTrue(result is DrawableResult)
         assertTrue(result.drawable is BitmapDrawable)
-        assertFalse(result.isSampled)
+        assertTrue(result.isSampled)
     }
 }
