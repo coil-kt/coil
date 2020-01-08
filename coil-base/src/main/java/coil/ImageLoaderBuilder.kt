@@ -10,7 +10,10 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
 import coil.annotation.ExperimentalCoil
+import coil.bitmappool.BitmapPool
 import coil.drawable.CrossfadeDrawable
+import coil.memory.BitmapReferenceCounter
+import coil.memory.MemoryCache
 import coil.request.Request
 import coil.size.Precision
 import coil.transition.CrossfadeTransition
@@ -248,11 +251,16 @@ class ImageLoaderBuilder(private val context: Context) {
         val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toLong()
         val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
+        val bitmapPool = BitmapPool(bitmapPoolSize)
+        val referenceCounter = BitmapReferenceCounter(bitmapPool)
+        val memoryCache = MemoryCache(referenceCounter, memoryCacheSize)
+
         return RealImageLoader(
             context = context,
             defaults = defaults,
-            bitmapPoolSize = bitmapPoolSize,
-            memoryCacheSize = memoryCacheSize,
+            bitmapPool = bitmapPool,
+            referenceCounter = referenceCounter,
+            memoryCache = memoryCache,
             callFactory = callFactory ?: buildDefaultCallFactory(),
             registry = registry ?: ComponentRegistry()
         )
