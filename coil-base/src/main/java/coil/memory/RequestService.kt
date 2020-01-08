@@ -148,7 +148,7 @@ internal class RequestService {
     private fun Request.isConfigValidForHardware(size: Size): Boolean {
         if (SDK_INT < O) return true
         if (bitmapConfig != Bitmap.Config.HARDWARE) return true
-        return allowHardware && hardwareBitmapService.allowHardware(size)
+        return allowHardware && (target !is ViewTarget<*> || ((target as ViewTarget<*>).view.isHardwareAccelerated) && hardwareBitmapService.allowHardware(size))
     }
 
     data class LifecycleInfo(
