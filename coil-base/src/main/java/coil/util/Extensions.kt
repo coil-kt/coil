@@ -138,13 +138,12 @@ internal inline fun <T> takeIf(take: Boolean, factory: () -> T): T? {
     return if (take) factory() else null
 }
 
+internal val Bitmap.Config.isHardware: Boolean
+    get() = SDK_INT >= O && this == Bitmap.Config.HARDWARE
+
 /** Convert null and [Bitmap.Config.HARDWARE] configs to [Bitmap.Config.ARGB_8888]. */
 internal fun Bitmap.Config?.normalize(): Bitmap.Config {
-    return if (this == null || (SDK_INT >= O && this == Bitmap.Config.HARDWARE)) {
-        Bitmap.Config.ARGB_8888
-    } else {
-        this
-    }
+    return if (this == null || isHardware) Bitmap.Config.ARGB_8888 else this
 }
 
 internal val View.requestManager: ViewTargetRequestManager

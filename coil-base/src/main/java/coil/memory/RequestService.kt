@@ -2,8 +2,6 @@ package coil.memory
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
@@ -21,9 +19,11 @@ import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.size.ViewSizeResolver
+import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.getLifecycle
+import coil.util.isHardware
 import coil.util.scale
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -111,7 +111,7 @@ internal class RequestService {
         isOnline: Boolean
     ): Options {
         // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
-        val isValidConfig = request.isConfigValidForTransformations() && request.isConfigValidForHardware(size)
+        val isValidConfig = isConfigValidForTransformations(request) && isConfigValidForHardwareAllocation(request, size)
         val bitmapConfig = if (isValidConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
 
         // Disable fetching from the network if we know we're offline.
@@ -133,22 +133,42 @@ internal class RequestService {
         )
     }
 
+    /** Return true if [requestedConfig] is a valid (i.e. can be returned to its [Target]) config for [request]. */
+    fun isConfigValidForHardware(request: Request, requestedConfig: Bitmap.Config): Boolean {
+        // Short circuit if the requested bitmap config is software.
+        if (!requestedConfig.isHardware) return true
+
+        // Ensure the request allows hardware bitmaps.
+        if (!request.allowHardware) return false
+
+        // Prevent hardware bitmaps for non-hardware accelerated targets.
+        if (request.target.run { this is ViewTarget<*> && !view.isHardwareAccelerated }) return false
+
+        return true
+    }
+
+    /**
+     * Return true if [request]'s requested bitmap config is valid (i.e. can be returned to its [Target]).
+     *
+     * This check is similar to [isConfigValidForHardware] except this method also checks
+     * that we are able to allocate a new hardware bitmap.
+     */
+    @WorkerThread
+    private fun isConfigValidForHardwareAllocation(request: Request, size: Size): Boolean {
+        return isConfigValidForHardware(request, request.bitmapConfig) && hardwareBitmapService.allowHardware(size)
+    }
+
+    /** Return true if [Request.bitmapConfig] is valid given its [Transformation]s. */
+    private fun isConfigValidForTransformations(request: Request): Boolean {
+        return request.transformations.isEmpty() || Transformation.VALID_CONFIGS.contains(request.bitmapConfig)
+    }
+
     private fun LoadRequest.getLifecycle(): Lifecycle? {
         return when {
             lifecycle != null -> lifecycle
             target is ViewTarget<*> -> target.view.context.getLifecycle()
             else -> context.getLifecycle()
         }
-    }
-
-    private fun Request.isConfigValidForTransformations(): Boolean {
-        return transformations.isEmpty() || Transformation.VALID_CONFIGS.contains(bitmapConfig)
-    }
-
-    private fun Request.isConfigValidForHardware(size: Size): Boolean {
-        if (SDK_INT < O) return true
-        if (bitmapConfig != Bitmap.Config.HARDWARE) return true
-        return allowHardware && (target !is ViewTarget<*> || ((target as ViewTarget<*>).view.isHardwareAccelerated) && hardwareBitmapService.allowHardware(size))
     }
 
     data class LifecycleInfo(

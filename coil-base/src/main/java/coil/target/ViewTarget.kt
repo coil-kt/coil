@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleObserver
  *
  * Unlike [Target]s, [ViewTarget]s can have their lifecycle methods called multiple times.
  *
- * Optionally, [ViewTarget]s can be declared as [LifecycleObserver]s. They are automatically registered when the request
+ * Optionally, a [ViewTarget] can be declared as a [LifecycleObserver]. It is automatically registered when the request
  * starts and unregistered when the request is disposed.
  */
 interface ViewTarget<T : View> : Target {

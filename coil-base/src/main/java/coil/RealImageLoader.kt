@@ -8,8 +8,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
@@ -199,7 +197,11 @@ internal class RealImageLoader(
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
                 memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNullIndices { memoryCache.getValue(it) }
             }
-            val cachedDrawable = cachedValue?.bitmap?.toDrawable(context)
+
+            // Ignore the cached value if it is hardware-backed and the request disallows hardware bitmaps.
+            val cachedDrawable = cachedValue?.bitmap
+                ?.takeIf { requestService.isConfigValidForHardware(request, it.config) }
+                ?.toDrawable(context)
 
             // If we didn't resolve the size earlier, resolve it now.
             val size = lazySizeResolver.size(cachedDrawable)
@@ -340,7 +342,7 @@ internal class RealImageLoader(
         }
 
         // Ensure we don't return a hardware bitmap if the request doesn't allow it.
-        if (SDK_INT >= O && !request.allowHardware && bitmap.config == Bitmap.Config.HARDWARE) {
+        if (!requestService.isConfigValidForHardware(request, bitmap.config)) {
             return false
         }
 
