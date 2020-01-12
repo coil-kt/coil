@@ -9,10 +9,12 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
 import android.os.Build.VERSION_CODES.KITKAT
+import android.os.Build.VERSION_CODES.LOLLIPOP
 import android.os.Build.VERSION_CODES.O
 import android.os.Looper
 import android.os.StatFs
@@ -26,6 +28,7 @@ import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
@@ -146,6 +149,9 @@ internal val Drawable.width: Int
 
 internal val Drawable.height: Int
     get() = (this as? BitmapDrawable)?.bitmap?.width ?: intrinsicWidth
+
+internal val Drawable.isVector: Boolean
+    get() = (this is VectorDrawableCompat) || (SDK_INT > LOLLIPOP && this is VectorDrawable)
 
 internal fun Closeable.closeQuietly() {
     try {
