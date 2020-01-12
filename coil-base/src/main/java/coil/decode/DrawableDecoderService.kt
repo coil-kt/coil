@@ -5,22 +5,17 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.VectorDrawable
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.LOLLIPOP
 import androidx.annotation.WorkerThread
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import androidx.core.graphics.component3
 import androidx.core.graphics.component4
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
 import coil.util.normalize
-import coil.util.toDrawable
 import kotlin.math.roundToInt
 
 internal class DrawableDecoderService(
@@ -30,19 +25,6 @@ internal class DrawableDecoderService(
 
     companion object {
         private const val DEFAULT_SIZE = 512
-    }
-
-    @WorkerThread
-    fun convertIfNecessary(
-        drawable: Drawable,
-        size: Size,
-        config: Bitmap.Config
-    ): Drawable {
-        return if (shouldConvertToBitmap(drawable)) {
-            convert(drawable, size, config).toDrawable(context)
-        } else {
-            drawable
-        }
     }
 
     /** Convert the provided [Drawable] into a [Bitmap]. */
@@ -98,9 +80,5 @@ internal class DrawableDecoderService(
         }
 
         return bitmap
-    }
-
-    private fun shouldConvertToBitmap(drawable: Drawable): Boolean {
-        return (drawable is VectorDrawableCompat) || (SDK_INT > LOLLIPOP && drawable is VectorDrawable)
     }
 }
