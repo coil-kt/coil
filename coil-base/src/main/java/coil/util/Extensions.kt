@@ -150,6 +150,9 @@ internal val Drawable.width: Int
 internal val Drawable.height: Int
     get() = (this as? BitmapDrawable)?.bitmap?.width ?: intrinsicWidth
 
+internal val Drawable.isVector: Boolean
+    get() = (this is VectorDrawableCompat) || (SDK_INT > LOLLIPOP && this is VectorDrawable)
+
 internal fun Closeable.closeQuietly() {
     try {
         close()
@@ -223,7 +226,3 @@ internal inline fun <R, T> Iterable<R>.firstNotNull(transform: (R) -> T?): T? {
 }
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
-
-internal fun Drawable.isVector(): Boolean {
-    return (this is VectorDrawableCompat) || (SDK_INT > LOLLIPOP && this is VectorDrawable)
-}

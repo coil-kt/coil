@@ -55,7 +55,7 @@ internal class ResourceUriFetcher(
                 context.getXmlDrawableCompat(resources, resId)
             }
 
-            val isVector = drawable.isVector()
+            val isVector = drawable.isVector
             DrawableResult(
                 drawable = if (isVector) {
                     drawableDecoder.convert(drawable, size, options.config).toDrawable(context)
