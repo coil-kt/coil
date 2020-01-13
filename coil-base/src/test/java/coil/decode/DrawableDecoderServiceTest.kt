@@ -1,9 +1,7 @@
 package coil.decode
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.VectorDrawable
-import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.RealBitmapPool
 import coil.size.PixelSize
 import org.junit.Before
@@ -16,13 +14,11 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class DrawableDecoderServiceTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
     private lateinit var service: DrawableDecoderService
 
     @Before
     fun before() {
-        service = DrawableDecoderService(context, RealBitmapPool(0))
+        service = DrawableDecoderService(RealBitmapPool(0))
     }
 
     @Test
