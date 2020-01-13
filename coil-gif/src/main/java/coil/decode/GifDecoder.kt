@@ -34,15 +34,19 @@ class GifDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
+        val movie = if (SDK_INT <= JELLY_BEAN_MR2) {
+            source.use {
+                val byteArray = it.readByteArray()
+                checkNotNull(Movie.decodeByteArray(byteArray, 0, byteArray.size))
+            }
+        } else {
+            source.use { checkNotNull(Movie.decodeStream(it.inputStream())) }
+        }
+
+        check(movie.width() > 0 && movie.height() > 0) { "Failed to decode GIF." }
+
         val drawable = MovieDrawable(
-            movie = if (SDK_INT <= JELLY_BEAN_MR2) {
-                source.use {
-                    val byteArray = it.readByteArray()
-                    checkNotNull(Movie.decodeByteArray(byteArray, 0, byteArray.size))
-                }
-            } else {
-                source.use { checkNotNull(Movie.decodeStream(it.inputStream())) }
-            },
+            movie = movie,
             config = when {
                 options.allowRgb565 -> Bitmap.Config.RGB_565
                 SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
