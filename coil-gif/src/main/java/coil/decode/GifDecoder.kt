@@ -34,6 +34,8 @@ class GifDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
+        // Movie requires an InputStream to resettable on API 18 and below.
+        // Read the data as a ByteArray to work around this.
         val movie = if (SDK_INT <= JELLY_BEAN_MR2) {
             source.use {
                 val byteArray = it.readByteArray()
