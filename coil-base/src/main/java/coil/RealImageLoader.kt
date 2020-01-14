@@ -107,7 +107,7 @@ internal class RealImageLoader(
 
     private val delegateService = DelegateService(this, referenceCounter)
     private val requestService = RequestService()
-    private val drawableDecoder = DrawableDecoderService(context, bitmapPool)
+    private val drawableDecoder = DrawableDecoderService(bitmapPool)
     private val networkObserver = NetworkObserver(context)
 
     private val registry = registry.newBuilder()
