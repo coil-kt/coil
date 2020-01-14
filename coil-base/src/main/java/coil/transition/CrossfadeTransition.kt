@@ -27,16 +27,18 @@ class CrossfadeTransition(
     override suspend fun transition(
         target: TransitionTarget<*>,
         result: TransitionResult
-    ) = suspendCancellableCoroutine<Unit> { continuation ->
-        when (result) {
-            is Success -> if (result.isMemoryCache) {
-                // Don't animate if the request was fulfilled by the memory cache.
-                target.onSuccess(result.drawable)
-            } else {
-                target.onSuccess(createCrossfade(continuation, target, result.drawable))
-            }
-            is Error -> {
-                target.onError(createCrossfade(continuation, target, result.drawable))
+    ) {
+        // Don't animate if the request was fulfilled by the memory cache.
+        if (result is Success && result.isMemoryCache) {
+            target.onSuccess(result.drawable)
+            return
+        }
+
+        // Animate the drawable and suspend until the animation is completes.
+        suspendCancellableCoroutine<Unit> { continuation ->
+            when (result) {
+                is Success -> target.onSuccess(createCrossfade(continuation, target, result.drawable))
+                is Error -> target.onError(createCrossfade(continuation, target, result.drawable))
             }
         }
     }
