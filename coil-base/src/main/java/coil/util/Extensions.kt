@@ -69,6 +69,25 @@ internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
     }
 }
 
+/** Return the first non-null value returned by [transform]. Generate an index-based loop that doesn't use an [Iterator]. */
+internal inline fun <R, T> List<R>.firstNotNullIndices(transform: (R) -> T?): T? {
+    for (i in indices) {
+        transform(get(i))?.let { return it }
+    }
+    return null
+}
+
+/** Functionally the same as [Iterable.find] except it generates an index-based loop that doesn't use an [Iterator]. */
+internal inline fun <T> List<T>.findIndices(predicate: (T) -> Boolean): T? {
+    for (i in indices) {
+        val value = get(i)
+        if (predicate(value)) {
+            return value
+        }
+    }
+    return null
+}
+
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
 internal inline fun ActivityManager.isLowRawDeviceCompat(): Boolean {
@@ -225,11 +244,6 @@ internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
 internal fun Request.isDiskPreload(): Boolean {
     return this is LoadRequest && target == null && !memoryCachePolicy.writeEnabled
-}
-
-internal inline fun <R, T> Iterable<R>.firstNotNull(transform: (R) -> T?): T? {
-    for (element in this) transform(element)?.let { return it }
-    return null
 }
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()

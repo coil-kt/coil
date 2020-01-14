@@ -9,6 +9,7 @@ import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.util.MultiList
 import coil.util.MultiMutableList
+import coil.util.findIndices
 import okio.BufferedSource
 
 /**
@@ -47,7 +48,7 @@ class ComponentRegistry private constructor(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getMapper(data: T): Mapper<T, *>? {
-        val result = mappers.find { (type, mapper) ->
+        val result = mappers.findIndices { (type, mapper) ->
             type.isAssignableFrom(data::class.java) && (mapper as Mapper<Any, *>).handles(data)
         }
         return result?.second as Mapper<T, *>?
@@ -55,7 +56,7 @@ class ComponentRegistry private constructor(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getMeasuredMapper(data: T): MeasuredMapper<T, *>? {
-        val result = measuredMappers.find { (type, mapper) ->
+        val result = measuredMappers.findIndices { (type, mapper) ->
             type.isAssignableFrom(data::class.java) && (mapper as MeasuredMapper<Any, *>).handles(data)
         }
         return result?.second as MeasuredMapper<T, *>?
@@ -63,7 +64,7 @@ class ComponentRegistry private constructor(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> requireFetcher(data: T): Fetcher<T> {
-        val result = fetchers.find { (type, fetcher) ->
+        val result = fetchers.findIndices { (type, fetcher) ->
             type.isAssignableFrom(data::class.java) && (fetcher as Fetcher<Any>).handles(data)
         }
         checkNotNull(result) { "Unable to fetch data. No fetcher supports: $data" }
@@ -75,7 +76,7 @@ class ComponentRegistry private constructor(
         source: BufferedSource,
         mimeType: String?
     ): Decoder {
-        val decoder = decoders.find { it.handles(source, mimeType) }
+        val decoder = decoders.findIndices { it.handles(source, mimeType) }
         return checkNotNull(decoder) { "Unable to decode data. No decoder supports: $data" }
     }
 

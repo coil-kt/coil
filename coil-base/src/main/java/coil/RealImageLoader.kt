@@ -66,7 +66,8 @@ import coil.util.ComponentCallbacks
 import coil.util.Emoji
 import coil.util.closeQuietly
 import coil.util.emoji
-import coil.util.firstNotNull
+import coil.util.firstNotNullIndices
+import coil.util.forEachIndices
 import coil.util.getValue
 import coil.util.isDiskPreload
 import coil.util.log
@@ -196,7 +197,7 @@ internal class RealImageLoader(
 
             // Check the memory cache.
             val cachedValue = takeIf(request.memoryCachePolicy.readEnabled) {
-                memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNull { memoryCache.getValue(it) }
+                memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNullIndices { memoryCache.getValue(it) }
             }
             val cachedDrawable = cachedValue?.bitmap?.toDrawable(context)
 
@@ -260,12 +261,12 @@ internal class RealImageLoader(
     @VisibleForTesting
     internal suspend inline fun mapData(data: Any, lazySizeResolver: LazySizeResolver): Any {
         var mappedData = data
-        for ((type, mapper) in registry.measuredMappers) {
+        registry.measuredMappers.forEachIndices { (type, mapper) ->
             if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
                 mappedData = mapper.map(mappedData, lazySizeResolver.size())
             }
         }
-        for ((type, mapper) in registry.mappers) {
+        registry.mappers.forEachIndices { (type, mapper) ->
             if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
                 mappedData = mapper.map(mappedData)
             }
@@ -296,7 +297,7 @@ internal class RealImageLoader(
             }
 
             if (transformations.isNotEmpty()) {
-                transformations.forEach { append('#').append(it.key()) }
+                transformations.forEachIndices { append('#').append(it.key()) }
 
                 // Append the size if there are any transformations.
                 append('#').append(lazySizeResolver.size())
