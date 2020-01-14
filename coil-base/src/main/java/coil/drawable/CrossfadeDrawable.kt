@@ -19,6 +19,7 @@ import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DecodeUtils
 import coil.size.Scale
+import coil.util.forEachIndices
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -287,6 +288,6 @@ class CrossfadeDrawable(
     private fun markDone() {
         state = STATE_DONE
         start = null
-        callbacks.forEach { it.onAnimationEnd(this) }
+        callbacks.forEachIndices { it.onAnimationEnd(this) }
     }
 }

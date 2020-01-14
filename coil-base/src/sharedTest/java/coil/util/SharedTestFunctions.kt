@@ -1,4 +1,4 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE", "unused")
+@file:Suppress("EXPERIMENTAL_API_USAGE", "unused", "NOTHING_TO_INLINE")
 
 package coil.util
 
@@ -64,3 +64,5 @@ inline fun createLoadRequest(
     context: Context,
     builder: LoadRequestBuilder.() -> Unit = {}
 ): LoadRequest = LoadRequestBuilder(context, DefaultRequestOptions()).data(Unit).apply(builder).build()
+
+inline fun error(): Nothing = throw IllegalStateException()
