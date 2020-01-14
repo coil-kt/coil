@@ -212,7 +212,7 @@ class CrossfadeDrawable(
 
         state = STATE_RUNNING
         startTimeMillis = SystemClock.uptimeMillis()
-        callbacks.forEach { it.onAnimationStart(this) }
+        callbacks.forEachIndices { it.onAnimationStart(this) }
 
         invalidateSelf()
     }
