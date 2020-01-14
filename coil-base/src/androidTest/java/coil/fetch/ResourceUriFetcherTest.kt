@@ -29,7 +29,7 @@ class ResourceUriFetcherTest {
     @Before
     fun before() {
         pool = BitmapPool(0)
-        drawableDecoder = DrawableDecoderService(context, pool)
+        drawableDecoder = DrawableDecoderService(pool)
         fetcher = ResourceUriFetcher(context, drawableDecoder)
     }
 

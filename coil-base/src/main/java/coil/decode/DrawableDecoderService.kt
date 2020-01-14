@@ -1,6 +1,5 @@
 package coil.decode
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -18,10 +17,7 @@ import coil.size.Size
 import coil.util.normalize
 import kotlin.math.roundToInt
 
-internal class DrawableDecoderService(
-    private val context: Context,
-    private val bitmapPool: BitmapPool
-) {
+internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
 
     companion object {
         private const val DEFAULT_SIZE = 512
