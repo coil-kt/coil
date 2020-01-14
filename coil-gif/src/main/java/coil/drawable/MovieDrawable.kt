@@ -184,7 +184,10 @@ class MovieDrawable(
 
         loopIteration = 0
         startTimeMillis = SystemClock.uptimeMillis()
-        callbacks.forEach { it.onAnimationStart(this) }
+
+        for (i in callbacks.indices) {
+            callbacks[i].onAnimationStart(this)
+        }
 
         invalidateSelf()
     }
@@ -193,7 +196,9 @@ class MovieDrawable(
         if (!isRunning) return
         isRunning = false
 
-        callbacks.forEach { it.onAnimationEnd(this) }
+        for (i in callbacks.indices) {
+            callbacks[i].onAnimationEnd(this)
+        }
     }
 
     override fun registerAnimationCallback(callback: Animatable2Compat.AnimationCallback) {
