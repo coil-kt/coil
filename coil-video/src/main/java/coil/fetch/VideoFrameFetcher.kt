@@ -22,6 +22,9 @@ import coil.size.PixelSize
 import coil.size.Size
 import java.io.File
 
+/**
+ * A [VideoFrameFetcher] that supports fetching and decoding a video frame from a [File].
+ */
 class VideoFrameFileFetcher(context: Context) : VideoFrameFetcher<File>(context) {
 
     override fun key(data: File) = "${data.path}:${data.lastModified()}"
@@ -34,6 +37,9 @@ class VideoFrameFileFetcher(context: Context) : VideoFrameFetcher<File>(context)
     override fun MediaMetadataRetriever.setDataSource(data: File) = setDataSource(data.path)
 }
 
+/**
+ * A [VideoFrameFetcher] that supports fetching and decoding a video frame from a [Uri].
+ */
 class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri>(context) {
 
     override fun key(data: Uri) = data.toString()
@@ -58,7 +64,7 @@ class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri
  * A [Fetcher] that uses [MediaMetadataRetriever] to fetch and decode a frame from a video.
  *
  * Due to [MediaMetadataRetriever] requiring non-sequential reads into the data source it's not
- * possible to make this a [Decoder].
+ * possible to make this a [Decoder]. Use the [VideoFrameFileFetcher] and [VideoFrameUriFetcher] implementations.
  */
 abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetcher<T> {
 
