@@ -160,7 +160,7 @@ internal class RequestService {
 
     /** Return true if [Request.bitmapConfig] is valid given its [Transformation]s. */
     private fun isConfigValidForTransformations(request: Request): Boolean {
-        return request.transformations.isEmpty() || Transformation.VALID_CONFIGS.contains(request.bitmapConfig)
+        return request.transformations.isEmpty() || request.bitmapConfig in Transformation.VALID_CONFIGS
     }
 
     private fun LoadRequest.getLifecycle(): Lifecycle? {
