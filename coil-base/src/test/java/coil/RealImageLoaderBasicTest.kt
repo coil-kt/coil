@@ -4,11 +4,16 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
+import coil.annotation.ExperimentalCoil
+import coil.api.newLoadBuilder
 import coil.bitmappool.BitmapPool
 import coil.decode.Options
 import coil.fetch.Fetcher
+import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
+import coil.memory.MemoryCache
 import coil.request.Parameters
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -19,10 +24,12 @@ import coil.size.SizeResolver
 import coil.transform.Transformation
 import coil.util.createBitmap
 import coil.util.createGetRequest
+import coil.util.createImageLoader
 import coil.util.createLoadRequest
+import coil.util.error
 import coil.util.toDrawable
-import coil.util.unsupported
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -32,6 +39,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -39,15 +47,27 @@ import kotlin.test.assertTrue
  * Basic tests for [RealImageLoader] that don't touch Android's graphics pipeline ([BitmapFactory], [ImageDecoder], etc.).
  */
 @RunWith(RobolectricTestRunner::class)
+@UseExperimental(ExperimentalCoil::class)
 class RealImageLoaderBasicTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
+    private lateinit var bitmapPool: BitmapPool
+    private lateinit var referenceCounter: BitmapReferenceCounter
+    private lateinit var memoryCache: MemoryCache
     private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
-        imageLoader = ImageLoader(context) as RealImageLoader
+        bitmapPool = BitmapPool(Long.MAX_VALUE)
+        referenceCounter = BitmapReferenceCounter(bitmapPool)
+        memoryCache = MemoryCache(referenceCounter, Int.MAX_VALUE)
+        imageLoader = createImageLoader(
+            context = context,
+            bitmapPool = bitmapPool,
+            referenceCounter = referenceCounter,
+            memoryCache = memoryCache
+        )
     }
 
     @After
@@ -371,15 +391,94 @@ class RealImageLoaderBasicTest {
         }
     }
 
+    @Test
+    fun cachedHardwareBitmap_disallowHardware() {
+        val key = "fake_key"
+        val fileName = "normal.jpg"
+        val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
+
+        runBlocking {
+            var error: Throwable? = null
+            val request = imageLoader.newLoadBuilder(context)
+                .key(key)
+                .data("file:///android_asset/$fileName")
+                .size(100, 100)
+                .precision(Precision.INEXACT)
+                .allowHardware(false)
+                .dispatcher(Dispatchers.Main.immediate)
+                .target(
+                    onStart = {
+                        // The hardware bitmap should not be returned as a placeholder.
+                        assertNull(it)
+                    },
+                    onSuccess = {
+                        // The hardware bitmap should not be returned as the result.
+                        assertNotEquals(bitmap, (it as BitmapDrawable).bitmap)
+                    }
+                )
+                .listener(
+                    onError = { _, throwable -> error = throwable }
+                )
+                .build()
+            imageLoader.load(request).await()
+
+            // Rethrow any errors that occurred while loading.
+            error?.let { throw it }
+        }
+    }
+
+    @Test
+    fun cachedHardwareBitmap_allowHardware() {
+        val key = "fake_key"
+        val fileName = "normal.jpg"
+        val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
+
+        runBlocking {
+            var error: Throwable? = null
+            val request = imageLoader.newLoadBuilder(context)
+                .key(key)
+                .data("file:///android_asset/$fileName")
+                .size(100, 100)
+                .precision(Precision.INEXACT)
+                .allowHardware(true)
+                .dispatcher(Dispatchers.Main.immediate)
+                .target(
+                    onStart = {
+                        assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                    },
+                    onSuccess = {
+                        assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                    }
+                )
+                .listener(
+                    onError = { _, throwable -> error = throwable }
+                )
+                .build()
+            imageLoader.load(request).await()
+
+            // Rethrow any errors that occurred while loading.
+            error?.let { throw it }
+        }
+    }
+
+    @Suppress("SameParameterValue")
+    private fun decodeAssetAndAddToMemoryCache(key: String, fileName: String): Bitmap {
+        val options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.HARDWARE }
+        val bitmap = checkNotNull(BitmapFactory.decodeStream(context.assets.open(fileName), null, options))
+        assertEquals(Bitmap.Config.HARDWARE, bitmap.config)
+        memoryCache.set(key, bitmap, false)
+        return bitmap
+    }
+
     private fun createFakeTransformations(): List<Transformation> {
         return listOf(
             object : Transformation {
                 override fun key() = "key1"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = unsupported()
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = error()
             },
             object : Transformation {
                 override fun key() = "key2"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = unsupported()
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = error()
             }
         )
     }
@@ -401,12 +500,12 @@ class RealImageLoaderBasicTest {
                 data: Any,
                 size: Size,
                 options: Options
-            ) = unsupported()
+            ) = error()
         }
     }
 
     private fun createFakeLazySizeResolver(
-        block: suspend () -> Size = { unsupported() }
+        block: suspend () -> Size = { error() }
     ): RealImageLoader.LazySizeResolver {
         return RealImageLoader.LazySizeResolver(
             scope = CoroutineScope(Job()), // Pass a fake scope.
