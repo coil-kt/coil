@@ -2,6 +2,7 @@
 
 package coil.fetch
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Paint
@@ -13,6 +14,7 @@ import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
+import coil.decode.Decoder
 import coil.decode.Options
 import coil.extension.videoFrameMicros
 import coil.extension.videoFrameOption
@@ -41,14 +43,30 @@ class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri
         return fileName != null && SUPPORTED_FILE_FORMATS.any { fileName.endsWith(it, true) }
     }
 
-    override fun MediaMetadataRetriever.setDataSource(data: Uri) = setDataSource(context, data)
+    override fun MediaMetadataRetriever.setDataSource(data: Uri) {
+        if (data.scheme == ContentResolver.SCHEME_FILE && data.pathSegments.firstOrNull() == ASSET_FILE_PATH_ROOT) {
+            // Work around setDataSource(Context, Uri) not properly handling android_asset uris.
+            val path = data.pathSegments.drop(1).joinToString("/")
+            context.assets.openFd(path).use { setDataSource(it.fileDescriptor, it.startOffset, it.length) }
+        } else {
+            setDataSource(context, data)
+        }
+    }
 }
 
+/**
+ * A [Fetcher] that uses [MediaMetadataRetriever] to fetch and decode a frame from a video.
+ *
+ * Due to [MediaMetadataRetriever] requiring non-sequential reads into the data source it's not
+ * possible to make this a [Decoder].
+ */
 abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetcher<T> {
 
     companion object {
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
         internal val SUPPORTED_FILE_FORMATS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
+
+        internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
         const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
         const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"

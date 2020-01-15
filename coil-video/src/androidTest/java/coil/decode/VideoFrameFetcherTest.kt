@@ -2,7 +2,7 @@ package coil.decode
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
-import androidx.core.net.toUri
+import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.fetch.DrawableResult
@@ -10,7 +10,6 @@ import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.fetch.VideoFrameUriFetcher
 import coil.request.Parameters
 import coil.size.OriginalSize
-import coil.util.copyAssetToFile
 import coil.util.createOptions
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
@@ -21,7 +20,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class VideoFrameDecoderTest {
+class VideoFrameFetcherTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
@@ -39,7 +38,7 @@ class VideoFrameDecoderTest {
         val result = runBlocking {
             fetcher.fetch(
                 pool = pool,
-                data = context.copyAssetToFile("video.mp4").toUri(),
+                data = Uri.parse("file:///android_asset/video.mp4"),
                 size = OriginalSize,
                 options = createOptions()
             )
@@ -59,7 +58,7 @@ class VideoFrameDecoderTest {
         val result = runBlocking {
             fetcher.fetch(
                 pool = pool,
-                data = context.copyAssetToFile("video.mp4").toUri(),
+                data = Uri.parse("file:///android_asset/video.mp4"),
                 size = OriginalSize,
                 options = createOptions(
                     parameters = Parameters {
