@@ -24,5 +24,3 @@ fun createBitmap(
 fun createTestMainDispatcher(): TestCoroutineDispatcher {
     return TestCoroutineDispatcher().apply { Dispatchers.setMain(this) }
 }
-
-inline fun unsupported(): Nothing = throw UnsupportedOperationException()
