@@ -198,7 +198,7 @@ internal class RealImageLoader(
                 memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNullIndices { memoryCache.getValue(it) }
             }
 
-            // Ignore the cached value if it is hardware-backed and the request disallows hardware bitmaps.
+            // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
             val cachedDrawable = cachedValue?.bitmap
                 ?.takeIf { requestService.isConfigValidForHardware(request, it.config) }
                 ?.toDrawable(context)
