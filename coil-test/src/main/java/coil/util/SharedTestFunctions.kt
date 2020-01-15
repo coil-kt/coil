@@ -19,6 +19,7 @@ import coil.request.GetRequestBuilder
 import coil.request.LoadRequest
 import coil.request.LoadRequestBuilder
 import coil.request.Parameters
+import coil.size.PixelSize
 import coil.size.Scale
 import okhttp3.Call
 import okhttp3.Headers
@@ -27,7 +28,9 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import okio.buffer
+import okio.sink
 import okio.source
+import java.io.File
 
 internal fun createImageLoader(
     context: Context,
@@ -90,6 +93,17 @@ fun Context.decodeBitmapAsset(fileName: String): Bitmap {
     }
     return checkNotNull(BitmapFactory.decodeStream(assets.open(fileName), null, options))
 }
+
+fun Context.copyAssetToFile(fileName: String): File {
+    val source = assets.open(fileName).source()
+    val file = File(filesDir.absolutePath + File.separator + fileName)
+    val sink = file.sink().buffer()
+    source.use { sink.use { sink.writeAll(source) } }
+    return file
+}
+
+val Bitmap.size: PixelSize
+    get() = PixelSize(width, height)
 
 inline fun createGetRequest(
     builder: GetRequestBuilder.() -> Unit = {}

@@ -1,10 +1,10 @@
 package coil.transform
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
+import coil.util.decodeBitmapAsset
 import coil.util.getPixels
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
@@ -27,8 +27,8 @@ class GrayscaleTransformationTest {
 
     @Test
     fun basic() {
-        val input = BitmapFactory.decodeStream(context.assets.open("normal.jpg"))
-        val expected = BitmapFactory.decodeStream(context.assets.open("normal_grayscale.jpg"))
+        val input = context.decodeBitmapAsset("normal.jpg")
+        val expected = context.decodeBitmapAsset("normal_grayscale.jpg")
 
         val actual = runBlocking {
             transformation.transform(pool, input, OriginalSize)

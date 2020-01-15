@@ -2,17 +2,19 @@ package coil.decode
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
-import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
+import coil.fetch.DrawableResult
+import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
+import coil.fetch.VideoFrameUriFetcher
 import coil.request.Parameters
 import coil.size.OriginalSize
+import coil.util.copyAssetToFile
 import coil.util.createOptions
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
-import okio.buffer
-import okio.source
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -24,25 +26,26 @@ class VideoFrameDecoderTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     private lateinit var pool: BitmapPool
-    private lateinit var decoder: VideoFrameDecoder
+    private lateinit var fetcher: VideoFrameUriFetcher
 
     @Before
     fun before() {
         pool = BitmapPool(0)
-        decoder = VideoFrameDecoder(context)
+        fetcher = VideoFrameUriFetcher(context)
     }
 
     @Test
     fun noSetFrameTime() {
         val result = runBlocking {
-            decoder.decode(
+            fetcher.fetch(
                 pool = pool,
-                source = context.assets.open("video.mp4").source().buffer(),
+                data = context.copyAssetToFile("video.mp4").toUri(),
                 size = OriginalSize,
                 options = createOptions()
             )
         }
 
+        assertTrue(result is DrawableResult)
         val actual = (result.drawable as? BitmapDrawable)?.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
@@ -54,9 +57,9 @@ class VideoFrameDecoderTest {
     @Test
     fun specificFrameTime() {
         val result = runBlocking {
-            decoder.decode(
+            fetcher.fetch(
                 pool = pool,
-                source = context.assets.open("video.mp4").source().buffer(),
+                data = context.copyAssetToFile("video.mp4").toUri(),
                 size = OriginalSize,
                 options = createOptions(
                     parameters = Parameters {
@@ -66,6 +69,7 @@ class VideoFrameDecoderTest {
             )
         }
 
+        assertTrue(result is DrawableResult)
         val actual = (result.drawable as? BitmapDrawable)?.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)

@@ -1,78 +1,88 @@
 @file:Suppress("unused")
 
-package coil.decode
+package coil.fetch
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.media.MediaMetadataRetriever
-import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
-import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
-import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.M
 import android.os.Build.VERSION_CODES.O_MR1
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
+import coil.decode.DataSource
+import coil.decode.Options
 import coil.extension.videoFrameMicros
-import coil.extension.videoFrameMillis
 import coil.extension.videoFrameOption
 import coil.size.PixelSize
 import coil.size.Size
-import okio.BufferedSource
-import okio.sink
 import java.io.File
 
-/**
- * A [Decoder] that decodes a frame from a video.
- * Use [videoFrameMillis] or [videoFrameMicros] to specify the time of the frame to extract.
- */
-class VideoFrameDecoder(private val context: Context) : Decoder {
+class VideoFrameFileFetcher(context: Context) : VideoFrameFetcher<File>(context) {
+
+    override fun key(data: File) = "${data.path}:${data.lastModified()}"
+
+    override fun handles(data: File): Boolean {
+        val fileName = data.name
+        return SUPPORTED_FILE_FORMATS.any { fileName.endsWith(it, true) }
+    }
+
+    override fun MediaMetadataRetriever.setDataSource(data: File) = setDataSource(data.path)
+}
+
+class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri>(context) {
+
+    override fun key(data: Uri) = data.toString()
+
+    override fun handles(data: Uri): Boolean {
+        val fileName = data.lastPathSegment
+        return fileName != null && SUPPORTED_FILE_FORMATS.any { fileName.endsWith(it, true) }
+    }
+
+    override fun MediaMetadataRetriever.setDataSource(data: Uri) = setDataSource(context, data)
+}
+
+abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetcher<T> {
 
     companion object {
+        // https://developer.android.com/guide/topics/media/media-formats#video-formats
+        internal val SUPPORTED_FILE_FORMATS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
+
         const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
         const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-    override fun handles(source: BufferedSource, mimeType: String?) = mimeType?.startsWith("video") == true
+    abstract fun MediaMetadataRetriever.setDataSource(data: T)
 
-    override suspend fun decode(
+    override suspend fun fetch(
         pool: BitmapPool,
-        source: BufferedSource,
+        data: T,
         size: Size,
         options: Options
-    ): DecodeResult {
-        var tempFile: File? = null
-        var mediaDataSource: BufferedMediaDataSource? = null
+    ): FetchResult {
         val retriever = MediaMetadataRetriever()
 
         try {
-            if (SDK_INT >= M) {
-                mediaDataSource = BufferedMediaDataSource(source)
-                retriever.setDataSource(mediaDataSource)
-            } else {
-                // Write the source to a temp file so it can be read on pre-M.
-                tempFile = createTempFile()
-                source.use { tempFile.sink().use(source::readAll) }
-                retriever.setDataSource(tempFile.path)
-            }
+            retriever.setDataSource(data)
 
-            val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
+            val option = options.parameters.videoFrameOption() ?: MediaMetadataRetriever.OPTION_CLOSEST_SYNC
             val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
             // Frame sampling is only supported on O_MR1 and above.
             if (SDK_INT >= O_MR1 && size is PixelSize) {
-                val width = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
-                val height = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+                val width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+                val height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
                 if (width > 0 && height > 0 && size.width < width && size.height < height) {
                     val bitmap = retriever.getScaledFrameAtTime(frameMicros, option, size.width, size.height)
                     if (bitmap != null) {
-                        return DecodeResult(
+                        return DrawableResult(
                             drawable = ensureValidConfig(pool, bitmap, options).toDrawable(context.resources),
-                            isSampled = true
+                            isSampled = true,
+                            dataSource = DataSource.DISK
                         )
                     }
                 }
@@ -83,17 +93,13 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
                 "Failed to decode frame at $frameMicros microseconds."
             }
 
-            return DecodeResult(
+            return DrawableResult(
                 drawable = ensureValidConfig(pool, bitmap, options).toDrawable(context.resources),
-                isSampled = false
+                isSampled = false,
+                dataSource = DataSource.DISK
             )
         } finally {
             retriever.release()
-            if (SDK_INT >= M) {
-                mediaDataSource?.close()
-            } else {
-                tempFile?.delete()
-            }
         }
     }
 
