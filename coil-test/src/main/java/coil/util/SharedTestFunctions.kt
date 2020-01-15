@@ -8,11 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.ColorSpace
 import coil.ComponentRegistry
 import coil.DefaultRequestOptions
-import coil.RealImageLoader
-import coil.bitmappool.BitmapPool
 import coil.decode.Options
-import coil.memory.BitmapReferenceCounter
-import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.request.GetRequest
 import coil.request.GetRequestBuilder
@@ -31,26 +27,6 @@ import okio.buffer
 import okio.sink
 import okio.source
 import java.io.File
-
-internal fun createImageLoader(
-    context: Context,
-    defaults: DefaultRequestOptions = DefaultRequestOptions(),
-    bitmapPool: BitmapPool = BitmapPool(Long.MAX_VALUE),
-    referenceCounter: BitmapReferenceCounter = BitmapReferenceCounter(bitmapPool),
-    memoryCache: MemoryCache = MemoryCache(referenceCounter, Int.MAX_VALUE),
-    callFactory: Call.Factory = OkHttpClient(),
-    registry: ComponentRegistry = ComponentRegistry()
-): RealImageLoader {
-    return RealImageLoader(
-        context,
-        defaults,
-        bitmapPool,
-        referenceCounter,
-        memoryCache,
-        callFactory,
-        registry
-    )
-}
 
 fun createMockWebServer(context: Context, vararg images: String): MockWebServer {
     return MockWebServer().apply {
