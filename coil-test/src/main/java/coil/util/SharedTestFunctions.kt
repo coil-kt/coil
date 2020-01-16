@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ColorSpace
-import coil.ComponentRegistry
 import coil.DefaultRequestOptions
 import coil.decode.Options
 import coil.request.CachePolicy
@@ -17,9 +16,7 @@ import coil.request.LoadRequestBuilder
 import coil.request.Parameters
 import coil.size.PixelSize
 import coil.size.Scale
-import okhttp3.Call
 import okhttp3.Headers
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
