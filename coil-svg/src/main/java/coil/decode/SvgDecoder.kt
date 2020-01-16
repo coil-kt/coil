@@ -76,8 +76,16 @@ class SvgDecoder(private val context: Context) : Decoder {
         }
         val bitmap = pool.get(bitmapWidth, bitmapHeight, config)
 
+        // Set the SVG's view box to enable scaling if it is not set.
+        if (svg.documentViewBox == null && svgWidth > 0 && svgHeight > 0) {
+            svg.setDocumentViewBox(0f, 0f, svgWidth, svgHeight)
+        }
+
+        // Scale the SVG to fit the bitmap's bounds.
         svg.setDocumentWidth("100%")
         svg.setDocumentHeight("100%")
+
+        // Render the SVG to the bitmap.
         svg.renderToCanvas(Canvas(bitmap))
 
         return DecodeResult(
