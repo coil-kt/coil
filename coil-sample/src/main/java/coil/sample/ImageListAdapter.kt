@@ -38,8 +38,9 @@ class ImageListAdapter(
                 width = columnWidth
             }
 
-            load(item.url) {
+            load(item.uri) {
                 placeholder(ColorDrawable(item.color))
+                parameters(item.parameters)
             }
 
             setOnClickListener {
@@ -53,7 +54,7 @@ class ImageListAdapter(
     }
 
     private object Callback : DiffUtil.ItemCallback<Image>() {
-        override fun areItemsTheSame(old: Image, new: Image) = old.url == new.url
+        override fun areItemsTheSame(old: Image, new: Image) = old.uri == new.uri
         override fun areContentsTheSame(old: Image, new: Image) = old == new
     }
 }

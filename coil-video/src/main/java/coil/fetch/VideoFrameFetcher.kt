@@ -4,13 +4,11 @@ package coil.fetch
 
 import android.content.ContentResolver
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Paint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O_MR1
-import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
@@ -31,7 +29,7 @@ class VideoFrameFileFetcher(context: Context) : VideoFrameFetcher<File>(context)
 
     override fun handles(data: File): Boolean {
         val fileName = data.name
-        return SUPPORTED_FILE_FORMATS.any { fileName.endsWith(it, true) }
+        return SUPPORTED_FILE_EXTENSIONS.any { fileName.endsWith(it, true) }
     }
 
     override fun MediaMetadataRetriever.setDataSource(data: File) = setDataSource(data.path)
@@ -46,7 +44,7 @@ class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri
 
     override fun handles(data: Uri): Boolean {
         val fileName = data.lastPathSegment
-        return fileName != null && SUPPORTED_FILE_FORMATS.any { fileName.endsWith(it, true) }
+        return fileName != null && SUPPORTED_FILE_EXTENSIONS.any { fileName.endsWith(it, true) }
     }
 
     override fun MediaMetadataRetriever.setDataSource(data: Uri) {
@@ -70,7 +68,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
 
     companion object {
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
-        internal val SUPPORTED_FILE_FORMATS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
+        internal val SUPPORTED_FILE_EXTENSIONS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
 
         internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
@@ -104,7 +102,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                     val bitmap = retriever.getScaledFrameAtTime(frameMicros, option, size.width, size.height)
                     if (bitmap != null) {
                         return DrawableResult(
-                            drawable = ensureValidConfig(pool, bitmap, options).toDrawable(context.resources),
+                            drawable = bitmap.toDrawable(context.resources),
                             isSampled = true,
                             dataSource = DataSource.DISK
                         )
@@ -112,31 +110,20 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 }
             }
 
-            // Read the frame at its full size.
+            // Read the frame at its original size.
             val bitmap = checkNotNull(retriever.getFrameAtTime(frameMicros, option)) {
                 "Failed to decode frame at $frameMicros microseconds."
             }
 
+            // TODO: Ensure size and config are valid.
+
             return DrawableResult(
-                drawable = ensureValidConfig(pool, bitmap, options).toDrawable(context.resources),
+                drawable = bitmap.toDrawable(context.resources),
                 isSampled = false,
                 dataSource = DataSource.DISK
             )
         } finally {
             retriever.release()
         }
-    }
-
-    /** Copy the input [Bitmap] to a non-hardware [Bitmap.Config] if necessary. */
-    private fun ensureValidConfig(pool: BitmapPool, bitmap: Bitmap, options: Options): Bitmap {
-        if (options.config == bitmap.config || (options.allowRgb565 && bitmap.config == Bitmap.Config.RGB_565)) {
-            return bitmap
-        }
-
-        val safeBitmap = pool.get(bitmap.width, bitmap.height, options.config)
-        safeBitmap.applyCanvas {
-            drawBitmap(bitmap, 0f, 0f, paint)
-        }
-        return safeBitmap
     }
 }

@@ -63,7 +63,9 @@ class MainActivity : AppCompatActivity() {
             is Screen.Detail -> {
                 list.isVisible = false
                 detail.isVisible = true
-                detail.load(screen.image.url)
+                detail.load(screen.image.uri) {
+                    parameters(screen.image.parameters)
+                }
             }
         }
     }
