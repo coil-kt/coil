@@ -81,11 +81,8 @@ class SvgDecoder(private val context: Context) : Decoder {
             svg.setDocumentViewBox(0f, 0f, svgWidth, svgHeight)
         }
 
-        // Scale the SVG to fit the bitmap's bounds.
         svg.setDocumentWidth("100%")
         svg.setDocumentHeight("100%")
-
-        // Render the SVG to the bitmap.
         svg.renderToCanvas(Canvas(bitmap))
 
         return DecodeResult(
