@@ -85,6 +85,10 @@ class ScaleDrawable(
         childScale = multiplier.toFloat()
     }
 
+    override fun onLevelChange(level: Int) = child.setLevel(level)
+
+    override fun onStateChange(state: IntArray) = child.setState(state)
+
     override fun getIntrinsicWidth() = child.intrinsicWidth
 
     override fun getIntrinsicHeight() = child.intrinsicHeight
