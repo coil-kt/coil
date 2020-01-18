@@ -168,8 +168,8 @@ class MovieDrawable(
         softwareCanvas = Canvas(bitmap)
 
         hardwareScale = DecodeUtils.computeSizeMultiplier(bitmapWidth, bitmapHeight, boundsWidth, boundsHeight, scale)
-        hardwareDx = (boundsWidth - hardwareScale * bitmapWidth) / 2
-        hardwareDy = (boundsHeight - hardwareScale * bitmapHeight) / 2
+        hardwareDx = bounds.left + (boundsWidth - hardwareScale * bitmapWidth) / 2
+        hardwareDy = bounds.top + (boundsHeight - hardwareScale * bitmapHeight) / 2
     }
 
     override fun getIntrinsicWidth() = movie.width()
