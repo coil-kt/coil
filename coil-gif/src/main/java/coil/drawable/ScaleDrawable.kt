@@ -19,7 +19,7 @@ import coil.size.Scale
 import kotlin.math.roundToInt
 
 /**
- * A [Drawable] that scales the [child] to fill its bounds.
+ * A [Drawable] that scales its [child] to fill its bounds.
  *
  * This allows drawables that only draw within their intrinsic dimensions
  * (e.g. [AnimatedImageDrawable]) to fill their entire bounds.
