@@ -9,6 +9,7 @@ import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
 import coil.bitmappool.BitmapPool
+import coil.drawable.ScaleDrawable
 import coil.extension.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
@@ -44,7 +45,7 @@ class ImageDecoderDecoder : Decoder {
             source.use { tempFile.sink().use { source.readAll(it) } }
             val decoderSource = ImageDecoder.createSource(tempFile)
 
-            val drawable = decoderSource.decodeDrawable { info, _ ->
+            val baseDrawable = decoderSource.decodeDrawable { info, _ ->
                 // It's safe to delete the temp file here.
                 tempFile.delete()
 
@@ -69,8 +70,13 @@ class ImageDecoderDecoder : Decoder {
                 }
             }
 
-            if (drawable is AnimatedImageDrawable) {
-                drawable.repeatCount = options.parameters.repeatCount() ?: AnimatedImageDrawable.REPEAT_INFINITE
+            val drawable = if (baseDrawable is AnimatedImageDrawable) {
+                baseDrawable.repeatCount = options.parameters.repeatCount() ?: AnimatedImageDrawable.REPEAT_INFINITE
+
+                // Wrap AnimatedImageDrawable in a ScaleDrawable so it always scales to fill its bounds.
+                ScaleDrawable(baseDrawable, options.scale)
+            } else {
+                baseDrawable
             }
 
             return DecodeResult(

@@ -28,10 +28,10 @@ class CrossfadeDrawableTest {
 
         val bounds = Rect(0, 0, 100, 100)
 
-        assertEquals(1f, drawable.updateBounds(start, bounds))
+        drawable.updateBounds(start, bounds)
         assertEquals(Rect(0, 0, 100, 100), start.bounds)
 
-        assertEquals(1f, drawable.updateBounds(end, bounds))
+        drawable.updateBounds(end, bounds)
         assertEquals(Rect(0, 0, 100, 100), end.bounds)
     }
 
@@ -46,10 +46,10 @@ class CrossfadeDrawableTest {
 
         val bounds = Rect(0, 0, 100, 100)
 
-        assertEquals(1f, drawable.updateBounds(start, bounds))
+        drawable.updateBounds(start, bounds)
         assertEquals(Rect(0, 0, 100, 100), start.bounds)
 
-        assertEquals(1f, drawable.updateBounds(end, bounds))
+        drawable.updateBounds(end, bounds)
         assertEquals(Rect(0, 0, 100, 100), end.bounds)
     }
 
@@ -64,10 +64,10 @@ class CrossfadeDrawableTest {
 
         val bounds = Rect(0, 0, 40, 100)
 
-        assertEquals(1f, drawable.updateBounds(start, bounds))
+        drawable.updateBounds(start, bounds)
         assertEquals(Rect(0, 0, 40, 100), start.bounds)
 
-        assertEquals(1f, drawable.updateBounds(end, bounds))
+        drawable.updateBounds(end, bounds)
         assertEquals(Rect(-42, 0, 82, 100), end.bounds)
     }
 
@@ -82,10 +82,10 @@ class CrossfadeDrawableTest {
 
         val bounds = Rect(0, 0, 200, 210)
 
-        assertEquals(1f, drawable.updateBounds(start, bounds))
+        drawable.updateBounds(start, bounds)
         assertEquals(Rect(0, 73, 200, 137), start.bounds)
 
-        assertEquals(1f, drawable.updateBounds(end, bounds))
+        drawable.updateBounds(end, bounds)
         assertEquals(Rect(60, 0, 140, 210), end.bounds)
     }
 
@@ -99,7 +99,7 @@ class CrossfadeDrawableTest {
 
         val bounds = Rect(0, 0, 40, 100)
 
-        assertEquals(1f, drawable.updateBounds(end, bounds))
+        drawable.updateBounds(end, bounds)
         assertEquals(Rect(-42, 0, 82, 100), end.bounds)
     }
 
@@ -113,7 +113,7 @@ class CrossfadeDrawableTest {
 
         val bounds = Rect(0, 0, 200, 210)
 
-        assertEquals(1f, drawable.updateBounds(end, bounds))
+        drawable.updateBounds(end, bounds)
         assertEquals(Rect(60, 0, 140, 210), end.bounds)
     }
 
@@ -128,11 +128,11 @@ class CrossfadeDrawableTest {
 
         val bounds = Rect(0, 0, 40, 100)
 
-        assertEquals(1f, drawable.updateBounds(start, bounds))
+        drawable.updateBounds(start, bounds)
         assertEquals(Rect(-21, 0, 61, 100), start.bounds)
 
-        assertEquals(1 / 3f, drawable.updateBounds(end, bounds))
-        assertEquals(Rect(-47, 0, 353, 300), end.bounds)
+        drawable.updateBounds(end, bounds)
+        assertEquals(Rect(-47, 0, 87, 100), end.bounds)
     }
 
     @Test
@@ -146,11 +146,11 @@ class CrossfadeDrawableTest {
 
         val bounds = Rect(0, 0, 200, 210)
 
-        assertEquals(1f, drawable.updateBounds(start, bounds))
+        drawable.updateBounds(start, bounds)
         assertEquals(Rect(0, 45, 200, 165), start.bounds)
 
-        assertEquals(0.4f, drawable.updateBounds(end, bounds))
-        assertEquals(Rect(0, 70, 500, 245), end.bounds)
+        drawable.updateBounds(end, bounds)
+        assertEquals(Rect(0, 70, 200, 140), end.bounds)
     }
 
     private class TestDrawable(
