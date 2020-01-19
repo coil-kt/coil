@@ -12,6 +12,7 @@
 ---
 
 - Remove automatic scaling from CrossfadeDrawable.
+- Make `BitmapPool.trimMemory` public.
 - Wrap AnimatedImageDrawable in a ScaleDrawable to ensure it fills its bounds.
 - Add @JvmOverloads to RequestBuilder.setParameter.
 - Set an SVG's view box to its size if the view box is not set.
