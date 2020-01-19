@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.9.2] - January 19, 2020
+
+- Fix: Fix decoding GIFs on pre-API 19. Thanks @mario.
+- Fix: Fix rasterized vector drawables not being marked as sampled.
+- Fix: Throw exception if Movie dimensions are <= 0.
+- Fix: Fix CrossfadeTransition not being resumed for a memory cache event.
+- Fix: Prevent returning hardware bitmaps to all target methods if disallowed.
+- Fix: Fix MovieDrawable not positioning itself in the center of its bounds.
+
+---
+
+- Remove automatic scaling from CrossfadeDrawable.
+- Wrap AnimatedImageDrawable in a ScaleDrawable to ensure it fills its bounds.
+- Add @JvmOverloads to RequestBuilder.setParameter.
+- Set an SVG's view box to its size if the view box is not set.
+- Pass state and level changes to CrossfadeDrawable children.
+
+---
+
+- Update OkHttp to 3.12.8.
+
 ## [0.9.1] - December 30, 2019
 
 - Fix: Fix crash when calling `LoadRequestBuilder.crossfade(false)`.
