@@ -26,7 +26,7 @@ import kotlin.math.roundToInt
  */
 class ScaleDrawable(
     val child: Drawable,
-    private val scale: Scale
+    private val scale: Scale = Scale.FIT
 ) : Drawable(), Drawable.Callback, Animatable {
 
     private var childScale = 1f
