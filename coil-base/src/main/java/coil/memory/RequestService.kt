@@ -142,7 +142,7 @@ internal class RequestService {
         if (!request.allowHardware) return false
 
         // Prevent hardware bitmaps for non-hardware accelerated targets.
-        if (request.target.run { this is ViewTarget<*> && !view.isHardwareAccelerated }) return false
+        if (request.target.run { this is ViewTarget<*> && (!view.isAttachedToWindow || !view.isHardwareAccelerated) }) return false
 
         return true
     }
