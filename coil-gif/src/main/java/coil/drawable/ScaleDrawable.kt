@@ -19,7 +19,7 @@ import coil.size.Scale
 import kotlin.math.roundToInt
 
 /**
- * A [Drawable] that scales its [child] to fill its bounds.
+ * A [Drawable] that centers and scales its [child] to fill its bounds.
  *
  * This allows drawables that only draw within their intrinsic dimensions
  * (e.g. [AnimatedImageDrawable]) to fill their entire bounds.
@@ -29,10 +29,13 @@ class ScaleDrawable(
     private val scale: Scale = Scale.FIT
 ) : Drawable(), Drawable.Callback, Animatable {
 
+    private var childDx = 0f
+    private var childDy = 0f
     private var childScale = 1f
 
     override fun draw(canvas: Canvas) {
         canvas.withSave {
+            translate(childDx, childDy)
             scale(childScale, childScale)
             child.draw(this)
         }
@@ -61,6 +64,8 @@ class ScaleDrawable(
         val height = child.intrinsicHeight
         if (width <= 0 || height <= 0) {
             child.bounds = bounds
+            childDx = 0f
+            childDy = 0f
             childScale = 1f
             return
         }
@@ -74,14 +79,15 @@ class ScaleDrawable(
             destHeight = targetHeight,
             scale = scale
         )
-        val dx = ((targetWidth - multiplier * width) / 2).roundToInt()
-        val dy = ((targetHeight - multiplier * height) / 2).roundToInt()
 
-        val left = bounds.left + dx
-        val top = bounds.top + dy
+        val left = ((targetWidth - multiplier * width) / 2).roundToInt()
+        val top = ((targetHeight - multiplier * height) / 2).roundToInt()
         val right = left + width
         val bottom = top + height
         child.setBounds(left, top, right, bottom)
+
+        childDx = bounds.left.toFloat()
+        childDy = bounds.top.toFloat()
         childScale = multiplier.toFloat()
     }
 
