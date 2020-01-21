@@ -33,6 +33,10 @@ class ScaleDrawable(
     private var childDy = 0f
     private var childScale = 1f
 
+    init {
+        child.callback = this
+    }
+
     override fun draw(canvas: Canvas) {
         canvas.withSave {
             translate(childDx, childDy)
