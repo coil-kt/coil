@@ -24,17 +24,15 @@ val Project.versionName: String
     get() = stringProperty("VERSION_NAME")
 
 val Project.versionCode: Int
-    get() {
-        return versionName
-            .trimEnd { !it.isDigit() }
-            .split('.')
-            .map { it.toInt() }
-            .reversed()
-            .sumByIndexed { index, unit ->
-                // 1.2.3 -> 102030
-                (unit * 10.0.pow(2 * index + 1)).toInt()
-            }
-    }
+    get() = versionName
+        .trimEnd { !it.isDigit() }
+        .split('.')
+        .map { it.toInt() }
+        .reversed()
+        .sumByIndexed { index, unit ->
+            // 1.2.3 -> 102030
+            (unit * 10.0.pow(2 * index + 1)).toInt()
+        }
 
 private fun Project.intProperty(name: String): Int {
     return (property(name) as String).toInt()
