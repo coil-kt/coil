@@ -4,14 +4,20 @@ package coil.fetch
 
 import android.content.ContentResolver
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Paint
 import android.media.MediaMetadataRetriever
+import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
+import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
+import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O_MR1
+import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
+import coil.decode.DecodeUtils
 import coil.decode.Decoder
 import coil.decode.Options
 import coil.extension.videoFrameMicros
@@ -19,6 +25,7 @@ import coil.extension.videoFrameOption
 import coil.size.PixelSize
 import coil.size.Size
 import java.io.File
+import kotlin.math.roundToInt
 
 /**
  * A [VideoFrameFetcher] that supports fetching and decoding a video frame from a [File].
@@ -91,22 +98,39 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         try {
             retriever.setDataSource(data)
 
-            val option = options.parameters.videoFrameOption() ?: MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+            val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
             val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
             // Frame sampling is only supported on O_MR1 and above.
             if (SDK_INT >= O_MR1 && size is PixelSize) {
-                val width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
-                val height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
-                if (width > 0 && height > 0 && size.width < width && size.height < height) {
-                    val bitmap = retriever.getScaledFrameAtTime(frameMicros, option, size.width, size.height)
-                    if (bitmap != null) {
-                        return DrawableResult(
-                            drawable = bitmap.toDrawable(context.resources),
-                            isSampled = true,
-                            dataSource = DataSource.DISK
-                        )
+                val srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+                val srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+
+                if (srcWidth > 0 && srcHeight > 0) {
+                    val rawScale = DecodeUtils.computeSizeMultiplier(
+                        srcWidth = srcWidth,
+                        srcHeight = srcHeight,
+                        destWidth = size.width,
+                        destHeight = size.height,
+                        scale = options.scale
+                    )
+                    val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
+                    val width = (scale * srcWidth).roundToInt()
+                    val height = (scale * srcHeight).roundToInt()
+
+                    val rawBitmap = retriever.getScaledFrameAtTime(frameMicros, option, width, height)
+                    val config = if (options.allowRgb565 && rawBitmap.config == Bitmap.Config.RGB_565) {
+                        Bitmap.Config.RGB_565
+                    } else {
+                        options.config
                     }
+                    val bitmap = ensureBitmap(pool, rawBitmap, width, height, config)
+
+                    return DrawableResult(
+                        drawable = bitmap.toDrawable(context.resources),
+                        isSampled = true,
+                        dataSource = DataSource.DISK
+                    )
                 }
             }
 
@@ -125,5 +149,24 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         } finally {
             retriever.release()
         }
+    }
+
+    /** Validate that [bitmap] matches [destWidth], [destHeight], and [destConfig]*/
+    private fun ensureBitmap(
+        pool: BitmapPool,
+        bitmap: Bitmap,
+        destWidth: Int,
+        destHeight: Int,
+        destConfig: Bitmap.Config
+    ): Bitmap {
+        if (bitmap.run { width == destWidth && height == destHeight && config == destConfig }) {
+            return bitmap
+        }
+
+        val outBitmap = pool.get(destWidth, destHeight, destConfig)
+        outBitmap.applyCanvas {
+            drawBitmap(bitmap, 0f, 0f, paint)
+        }
+        return outBitmap
     }
 }
