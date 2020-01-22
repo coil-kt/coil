@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import coil.api.load
@@ -49,9 +49,9 @@ class MainActivity : AppCompatActivity() {
             adapter = listAdapter
         }
 
-        viewModel.screens().observe(this, Observer(::setScreen))
-        viewModel.images().observe(this, Observer(listAdapter::submitList))
-        viewModel.assetTypes().observe(this, Observer { invalidateOptionsMenu() })
+        viewModel.screens().observe(this, ::setScreen)
+        viewModel.images().observe(this, listAdapter::submitList)
+        viewModel.assetTypes().observe(this) { invalidateOptionsMenu() }
     }
 
     private fun setScreen(screen: Screen) {
