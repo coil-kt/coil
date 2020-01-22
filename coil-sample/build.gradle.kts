@@ -43,7 +43,6 @@ dependencies {
     implementation(Library.ANDROIDX_APPCOMPAT)
     implementation(Library.ANDROIDX_CONSTRAINT_LAYOUT)
     implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_LIFECYCLE_EXTENSIONS)
     implementation(Library.ANDROIDX_LIFECYCLE_LIVE_DATA)
     implementation(Library.ANDROIDX_LIFECYCLE_VIEW_MODEL)
     implementation(Library.ANDROIDX_MULTIDEX)
