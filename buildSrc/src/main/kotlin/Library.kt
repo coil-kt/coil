@@ -9,7 +9,7 @@ object Library {
     private const val COROUTINES_VERSION = "1.3.3"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
-    const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.0.0"
+    const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.1.0"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.1.0"
     const val ANDROIDX_APPCOMPAT = "androidx.appcompat:appcompat:1.1.0"
     const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:1.1.0"
@@ -21,13 +21,13 @@ object Library {
     const val ANDROIDX_RECYCLER_VIEW = "androidx.recyclerview:recyclerview:1.1.0"
     const val ANDROIDX_VECTOR_DRAWABLE_ANIMATED = "androidx.vectordrawable:vectordrawable-animated:1.1.0"
 
-    private const val LIFECYCLE_VERSION = "2.1.0"
+    private const val LIFECYCLE_VERSION = "2.2.0"
     const val ANDROIDX_LIFECYCLE_COMMON = "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_EXTENSIONS = "androidx.lifecycle:lifecycle-extensions:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_LIVE_DATA = "androidx.lifecycle:lifecycle-livedata:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
 
-    const val MATERIAL = "com.google.android.material:material:1.1.0-rc01"
+    const val MATERIAL = "com.google.android.material:material:1.1.0-rc02"
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
