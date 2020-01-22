@@ -102,10 +102,11 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
             // Frame sampling is only supported on O_MR1 and above.
-            if (SDK_INT >= O_MR1 && size is PixelSize) {
+            if (size is PixelSize) {
                 val srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
                 val srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
 
+                // If we can't determine the source dimensions fall through to the OriginalSize logic below.
                 if (srcWidth > 0 && srcHeight > 0) {
                     val rawScale = DecodeUtils.computeSizeMultiplier(
                         srcWidth = srcWidth,
@@ -118,12 +119,14 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                     val width = (scale * srcWidth).roundToInt()
                     val height = (scale * srcHeight).roundToInt()
 
-                    val rawBitmap = retriever.getScaledFrameAtTime(frameMicros, option, width, height)
-                    val config = if (options.allowRgb565 && rawBitmap.config == Bitmap.Config.RGB_565) {
-                        Bitmap.Config.RGB_565
+                    val rawBitmap = if (SDK_INT >= O_MR1) {
+                        retriever.getScaledFrameAtTime(frameMicros, option, width, height)
                     } else {
-                        options.config
+                        retriever.getFrameAtTime(frameMicros, option)
                     }
+                    checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
+
+                    val config = getTargetConfig(options, rawBitmap)
                     val bitmap = ensureBitmap(pool, rawBitmap, width, height, config)
 
                     return DrawableResult(
@@ -135,11 +138,11 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             }
 
             // Read the frame at its original size.
-            val bitmap = checkNotNull(retriever.getFrameAtTime(frameMicros, option)) {
-                "Failed to decode frame at $frameMicros microseconds."
-            }
+            val rawBitmap = retriever.getFrameAtTime(frameMicros, option)
+            checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
-            // TODO: Ensure size and config are valid.
+            val config = getTargetConfig(options, rawBitmap)
+            val bitmap = ensureBitmap(pool, rawBitmap, rawBitmap.width, rawBitmap.height, config)
 
             return DrawableResult(
                 drawable = bitmap.toDrawable(context.resources),
@@ -168,5 +171,15 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             drawBitmap(bitmap, 0f, 0f, paint)
         }
         return outBitmap
+    }
+
+    private fun getTargetConfig(options: Options, bitmap: Bitmap): Bitmap.Config {
+        return if (options.allowRgb565 &&
+            bitmap.config == Bitmap.Config.RGB_565 &&
+            options.config == Bitmap.Config.ARGB_8888) {
+            Bitmap.Config.RGB_565
+        } else {
+            options.config
+        }
     }
 }
