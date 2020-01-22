@@ -15,7 +15,7 @@ import okhttp3.Headers
  *
  * @param config The requested config for any [Bitmap]s.
  * @param colorSpace The preferred color space for any [Bitmap]s.
- *  If null, components should typically default to [ColorSpace.Named.SRGB].
+ *  If null, components should typically default to [ColorSpace.Rgb].
  * @param scale The scaling algorithm for how to fit the source image's dimensions into the target's dimensions.
  * @param allowInexactSize True if the output image does not need to fit/fill the target's dimensions exactly. For instance,
  *  if true [BitmapFactoryDecoder] will not decode an image at a larger size than its source dimensions as an optimization.
