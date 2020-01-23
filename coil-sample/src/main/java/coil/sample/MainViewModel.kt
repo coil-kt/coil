@@ -6,10 +6,8 @@ import androidx.core.graphics.toColorInt
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import okio.buffer
 import okio.source
@@ -17,8 +15,6 @@ import org.json.JSONArray
 import kotlin.random.Random
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private val screenLiveData = MutableLiveData<Screen>(Screen.List)
     private val imagesLiveData = MutableLiveData<List<Image>>()
@@ -52,7 +48,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun loadImages(assetType: AssetType) = scope.launch(Dispatchers.IO) {
+    private fun loadImages(assetType: AssetType) = viewModelScope.launch(Dispatchers.IO) {
         val json = JSONArray(context.assets.open(assetType.fileName).source().buffer().readUtf8())
 
         val images = mutableListOf<Image>()
@@ -79,6 +75,4 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         imagesLiveData.postValue(images)
     }
-
-    override fun onCleared() = scope.cancel()
 }
