@@ -153,7 +153,10 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
 
         // Apply any EXIF transformations.
-        checkNotNull(rawBitmap) { "BitmapFactory returned a null Bitmap." }
+        checkNotNull(rawBitmap) {
+            "BitmapFactory returned a null Bitmap. Often this means BitmapFactory could not decode the image data " +
+                "read from the input source (e.g. network or disk) as it's not encoded as a valid image format."
+        }
         val bitmap = applyExifTransformations(pool, rawBitmap, inPreferredConfig, isFlipped, rotationDegrees)
         bitmap.density = Bitmap.DENSITY_NONE
 
