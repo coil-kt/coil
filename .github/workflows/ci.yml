@@ -23,6 +23,9 @@ jobs:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
+            # Validate the Gradle wrapper JAR files.
+            - uses: gradle/wrapper-validation-action@v1
+
             - name: Ktlint
               run: ./gradlew ktlintCheck
 
