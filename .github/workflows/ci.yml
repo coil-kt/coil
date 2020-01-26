@@ -11,6 +11,9 @@ jobs:
         steps:
             - uses: actions/checkout@v2
 
+            # Validate the Gradle wrapper JAR files.
+            - uses: gradle/wrapper-validation-action@v1
+
             # Ensure .gradle/caches is empty before writing to it.
             # This helps us stay within Github's cache size limits.
             - name: Clean Cache
@@ -22,9 +25,6 @@ jobs:
               with:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
-
-            # Validate the Gradle wrapper JAR files.
-            - uses: gradle/wrapper-validation-action@v1
 
             - name: Ktlint
               run: ./gradlew ktlintCheck
