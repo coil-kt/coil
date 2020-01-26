@@ -1,15 +1,13 @@
 package coil.sample
 
 import android.app.Application
-import android.media.MediaMetadataRetriever.OPTION_CLOSEST
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
-import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_OPTION_KEY
-import coil.request.Parameters
 import androidx.lifecycle.viewModelScope
+import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
+import coil.request.Parameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okio.buffer
@@ -59,7 +57,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val videoFrameMicros = Random.nextLong(62000000L)
                 val parameters = Parameters.Builder()
                     .set(VIDEO_FRAME_MICROS_KEY, videoFrameMicros, videoFrameMicros.toString())
-                    .set(VIDEO_FRAME_OPTION_KEY, OPTION_CLOSEST, OPTION_CLOSEST.toString())
                     .build()
 
                 images += Image(

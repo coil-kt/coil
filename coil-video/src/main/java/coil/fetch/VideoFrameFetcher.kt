@@ -12,6 +12,7 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.O
 import android.os.Build.VERSION_CODES.O_MR1
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
@@ -22,6 +23,7 @@ import coil.decode.Decoder
 import coil.decode.Options
 import coil.extension.videoFrameMicros
 import coil.extension.videoFrameOption
+import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
 import java.io.File
@@ -101,52 +103,48 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
             val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
-            // Frame sampling is only supported on O_MR1 and above.
-            if (size is PixelSize) {
-                val srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
-                val srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+            // Resolve the dimensions to decode the video frame at
+            // accounting for the source's aspect ratio and the target's size.
+            val destSize = when (size) {
+                is PixelSize -> {
+                    val srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+                    val srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
 
-                // If we can't determine the source dimensions fall through to the OriginalSize logic below.
-                if (srcWidth > 0 && srcHeight > 0) {
-                    val rawScale = DecodeUtils.computeSizeMultiplier(
-                        srcWidth = srcWidth,
-                        srcHeight = srcHeight,
-                        destWidth = size.width,
-                        destHeight = size.height,
-                        scale = options.scale
-                    )
-                    val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
-                    val width = (scale * srcWidth).roundToInt()
-                    val height = (scale * srcHeight).roundToInt()
-
-                    val rawBitmap = if (SDK_INT >= O_MR1) {
-                        retriever.getScaledFrameAtTime(frameMicros, option, width, height)
+                    if (srcWidth > 0 && srcHeight > 0) {
+                        val rawScale = DecodeUtils.computeSizeMultiplier(
+                            srcWidth = srcWidth,
+                            srcHeight = srcHeight,
+                            destWidth = size.width,
+                            destHeight = size.height,
+                            scale = options.scale
+                        )
+                        val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
+                        val width = (scale * srcWidth).roundToInt()
+                        val height = (scale * srcHeight).roundToInt()
+                        PixelSize(width, height)
                     } else {
-                        retriever.getFrameAtTime(frameMicros, option)
+                        // We were unable to decode the video's dimensions.
+                        // Fall back to decoding the video frame at the target's size.
+                        // We'll scale the resulting bitmap after decoding, if necessary.
+                        size
                     }
-                    checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
-
-                    val config = getTargetConfig(options, rawBitmap)
-                    val bitmap = ensureBitmap(pool, rawBitmap, width, height, config)
-
-                    return DrawableResult(
-                        drawable = bitmap.toDrawable(context.resources),
-                        isSampled = true,
-                        dataSource = DataSource.DISK
-                    )
                 }
+                is OriginalSize -> OriginalSize
             }
 
-            // Read the frame at its original size.
-            val rawBitmap = retriever.getFrameAtTime(frameMicros, option)
+            val rawBitmap = if (destSize is PixelSize && SDK_INT >= O_MR1) {
+                retriever.getScaledFrameAtTime(frameMicros, option, destSize.width, destSize.height)
+            } else {
+                retriever.getFrameAtTime(frameMicros, option)
+            }
             checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
             val config = getTargetConfig(options, rawBitmap)
-            val bitmap = ensureBitmap(pool, rawBitmap, rawBitmap.width, rawBitmap.height, config)
+            val bitmap = validateBitmap(pool, rawBitmap, destSize, config, options)
 
             return DrawableResult(
                 drawable = bitmap.toDrawable(context.resources),
-                isSampled = false,
+                isSampled = true,
                 dataSource = DataSource.DISK
             )
         } finally {
@@ -154,32 +152,62 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         }
     }
 
-    /** Validate that [bitmap] matches [destWidth], [destHeight], and [destConfig]*/
-    private fun ensureBitmap(
+    /** Validate that [inBitmap] matches [destSize] and [destConfig]. */
+    private fun validateBitmap(
         pool: BitmapPool,
-        bitmap: Bitmap,
-        destWidth: Int,
-        destHeight: Int,
-        destConfig: Bitmap.Config
+        inBitmap: Bitmap,
+        destSize: Size,
+        destConfig: Bitmap.Config,
+        options: Options
     ): Bitmap {
-        if (bitmap.run { width == destWidth && height == destHeight && config == destConfig }) {
-            return bitmap
+        // If the input bitmap is valid, return it.
+        if (destConfig == inBitmap.config &&
+            (options.allowInexactSize ||
+                destSize !is PixelSize ||
+                (destSize.width == inBitmap.width && destSize.height == inBitmap.height))) {
+            return inBitmap
         }
 
+        // Else, re-render the bitmap with the correct size + config.
+        val scale: Float
+        val destWidth: Int
+        val destHeight: Int
+        when (destSize) {
+            is PixelSize -> {
+                scale = DecodeUtils.computeSizeMultiplier(
+                    srcWidth = inBitmap.width,
+                    srcHeight = inBitmap.height,
+                    destWidth = destSize.width,
+                    destHeight = destSize.height,
+                    scale = options.scale
+                ).toFloat()
+                destWidth = (scale * inBitmap.width).roundToInt()
+                destHeight = (scale * inBitmap.height).roundToInt()
+            }
+            is OriginalSize -> {
+                scale = 1f
+                destWidth = inBitmap.width
+                destHeight = inBitmap.height
+            }
+        }
         val outBitmap = pool.get(destWidth, destHeight, destConfig)
         outBitmap.applyCanvas {
-            drawBitmap(bitmap, 0f, 0f, paint)
+            scale(scale, scale)
+            drawBitmap(inBitmap, 0f, 0f, paint)
         }
+        pool.put(inBitmap)
         return outBitmap
     }
 
     private fun getTargetConfig(options: Options, bitmap: Bitmap): Bitmap.Config {
+        val srcConfig = bitmap.config.takeIf { SDK_INT < O || it != Bitmap.Config.HARDWARE } ?: Bitmap.Config.ARGB_8888
+        val destConfig = options.config.takeIf { SDK_INT < O || it != Bitmap.Config.HARDWARE } ?: Bitmap.Config.ARGB_8888
         return if (options.allowRgb565 &&
-            bitmap.config == Bitmap.Config.RGB_565 &&
-            options.config == Bitmap.Config.ARGB_8888) {
+            srcConfig == Bitmap.Config.RGB_565 &&
+            destConfig == Bitmap.Config.ARGB_8888) {
             Bitmap.Config.RGB_565
         } else {
-            options.config
+            destConfig
         }
     }
 }
