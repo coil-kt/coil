@@ -133,14 +133,12 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         crossinline onCancel: (data: Any?) -> Unit = {},
         crossinline onError: (data: Any?, throwable: Throwable) -> Unit = { _, _ -> },
         crossinline onSuccess: (data: Any, source: DataSource) -> Unit = { _, _ -> }
-    ): T = self {
-        listener(object : Request.Listener {
-            override fun onStart(data: Any) = onStart(data)
-            override fun onCancel(data: Any?) = onCancel(data)
-            override fun onError(data: Any?, throwable: Throwable) = onError(data, throwable)
-            override fun onSuccess(data: Any, source: DataSource) = onSuccess(data, source)
-        })
-    }
+    ): T = listener(object : Request.Listener {
+        override fun onStart(data: Any) = onStart(data)
+        override fun onCancel(data: Any?) = onCancel(data)
+        override fun onError(data: Any?, throwable: Throwable) = onError(data, throwable)
+        override fun onSuccess(data: Any, source: DataSource) = onSuccess(data, source)
+    })
 
     /**
      * Set the [Request.Listener].
@@ -450,13 +448,11 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
         crossinline onStart: (placeholder: Drawable?) -> Unit = {},
         crossinline onError: (error: Drawable?) -> Unit = {},
         crossinline onSuccess: (result: Drawable) -> Unit = {}
-    ) = apply {
-        target(object : Target {
-            override fun onStart(placeholder: Drawable?) = onStart(placeholder)
-            override fun onError(error: Drawable?) = onError(error)
-            override fun onSuccess(result: Drawable) = onSuccess(result)
-        })
-    }
+    ) = target(object : Target {
+        override fun onStart(placeholder: Drawable?) = onStart(placeholder)
+        override fun onError(error: Drawable?) = onError(error)
+        override fun onSuccess(result: Drawable) = onSuccess(result)
+    })
 
     /**
      * Set the [Target]. If the target is null, this request will preload the image into memory.

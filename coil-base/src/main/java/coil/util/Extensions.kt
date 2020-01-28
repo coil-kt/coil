@@ -193,7 +193,6 @@ internal val ImageView.scale: Scale
     }
 
 /** Work around for Kotlin not supporting a self type. */
-@PublishedApi
 @Suppress("UNCHECKED_CAST")
 internal inline fun <T> Any.self(block: T.() -> Unit): T {
     this as T
