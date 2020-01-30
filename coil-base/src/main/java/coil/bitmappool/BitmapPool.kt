@@ -16,6 +16,8 @@ interface BitmapPool {
          *
          * @param maxSize The maximum size of the pool in bytes.
          */
+        @JvmStatic
+        @JvmName("create")
         operator fun invoke(maxSize: Long): BitmapPool = RealBitmapPool(maxSize)
     }
 

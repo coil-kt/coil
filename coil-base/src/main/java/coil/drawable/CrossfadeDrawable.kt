@@ -32,7 +32,7 @@ import kotlin.math.roundToInt
  * @param scale The scaling algorithm for [start] and [end].
  * @param durationMillis The duration of the crossfade animation.
  */
-class CrossfadeDrawable(
+class CrossfadeDrawable @JvmOverloads constructor(
     private var start: Drawable?,
     val end: Drawable?,
     val scale: Scale = Scale.FIT,

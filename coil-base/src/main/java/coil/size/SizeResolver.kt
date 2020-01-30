@@ -12,6 +12,8 @@ interface SizeResolver {
 
     companion object {
         /** Construct a [SizeResolver] instance with a fixed [size]. */
+        @JvmStatic
+        @JvmName("create")
         operator fun invoke(size: Size): SizeResolver {
             return object : SizeResolver {
                 override suspend fun size() = size
