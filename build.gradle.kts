@@ -116,9 +116,9 @@ allprojects {
             )
 
             val lowercaseName = configuration.name.toLowerCase(Locale.US)
-            if (!lowercaseName.contains("compileonly")
-                && !lowercaseName.contains("kapt")
-                && !lowercaseName.contains("annotationprocessor")) {
+            if (!lowercaseName.contains("compileonly") &&
+                !lowercaseName.contains("kapt") &&
+                !lowercaseName.contains("annotationprocessor")) {
                 eachDependency {
                     if (requested.group == "com.google.auto.service") {
                         useTarget(mapOf(
