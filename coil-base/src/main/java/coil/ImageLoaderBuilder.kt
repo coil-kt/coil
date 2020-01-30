@@ -94,7 +94,7 @@ class ImageLoaderBuilder(private val context: Context) {
      */
     inline fun componentRegistry(
         builder: ComponentRegistry.Builder.() -> Unit
-    ) = componentRegistry(ComponentRegistry(builder))
+    ) = componentRegistry(ComponentRegistry.Builder().apply(builder).build())
 
     /**
      * Set the [ComponentRegistry].

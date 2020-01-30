@@ -24,22 +24,23 @@ class ComponentRegistry private constructor(
     internal val decoders: List<Decoder>
 ) {
 
+    constructor() : this(emptyList(), emptyList(), emptyList(), emptyList())
+
     companion object {
-        /**
-         * Create a new [ComponentRegistry] instance.
-         *
-         * Example:
-         * ```
-         * val registry = ComponentRegistry {
-         *     add(GifDecoder())
-         * }
-         * ```
-         */
+        /** Create a new [ComponentRegistry] instance. */
+        @Deprecated(
+            message = "Use ComponentRegistry.Builder to create new instances.",
+            replaceWith = ReplaceWith("ComponentRegistry.Builder().apply(builder).build()")
+        )
         inline operator fun invoke(
             builder: Builder.() -> Unit = {}
         ): ComponentRegistry = Builder().apply(builder).build()
 
         /** Create a new [ComponentRegistry] instance. */
+        @Deprecated(
+            message = "Use ComponentRegistry.Builder to create new instances.",
+            replaceWith = ReplaceWith("ComponentRegistry.Builder(registry).apply(builder).build()")
+        )
         inline operator fun invoke(
             registry: ComponentRegistry,
             builder: Builder.() -> Unit = {}

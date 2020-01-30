@@ -26,10 +26,10 @@ class Application : MultiDexApplication() {
     }
 
     private fun buildDefaultImageLoader(): ImageLoader {
-        return ImageLoader(applicationContext) {
-            availableMemoryPercentage(0.5) // Use 50% of the application's available memory.
-            crossfade(true) // Show a short crossfade when loading images from network or disk into an ImageView.
-            componentRegistry {
+        return ImageLoader.Builder(this)
+            .availableMemoryPercentage(0.5) // Use 50% of the application's available memory.
+            .crossfade(true) // Show a short crossfade when loading images from network or disk.
+            .componentRegistry {
                 // Fetchers
                 add(VideoFrameFileFetcher(applicationContext))
                 add(VideoFrameUriFetcher(applicationContext))
@@ -40,9 +40,9 @@ class Application : MultiDexApplication() {
                 } else {
                     add(GifDecoder())
                 }
-                add(SvgDecoder(applicationContext))
+                add(SvgDecoder(this@Application))
             }
-            okHttpClient {
+            .okHttpClient {
                 // Create a disk cache with "unlimited" size. Don't do this in production.
                 // To create the an optimized Coil disk cache, use CoilUtils.createDefaultCache(context).
                 val cacheDirectory = File(filesDir, "image_cache").apply { mkdirs() }
@@ -58,6 +58,6 @@ class Application : MultiDexApplication() {
                     .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
             }
-        }
+            .build()
     }
 }

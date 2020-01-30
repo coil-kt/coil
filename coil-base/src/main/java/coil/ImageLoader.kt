@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName", "NOTHING_TO_INLINE")
+
 package coil
 
 import android.content.Context
@@ -14,17 +16,21 @@ import coil.target.Target
 interface ImageLoader {
 
     companion object {
-        /**
-         * Create a new [ImageLoader] instance.
-         *
-         * Example:
-         * ```
-         * val loader = ImageLoader(context) {
-         *     availableMemoryPercentage(0.5)
-         *     crossfade(true)
-         * }
-         * ```
-         */
+        /** Alias function to create an [ImageLoaderBuilder]. */
+        @JvmStatic
+        @JvmName("builder")
+        inline fun Builder(context: Context) = ImageLoaderBuilder(context)
+
+        /** Convenience function to create a new [ImageLoader] without configuration */
+        @JvmStatic
+        @JvmName("create")
+        inline operator fun invoke(context: Context) = ImageLoaderBuilder(context).build()
+
+        /** Create a new [ImageLoader] instance. */
+        @Deprecated(
+            message = "Use ImageLoader.Builder to create new instances.",
+            replaceWith = ReplaceWith("ImageLoader.Builder(context).apply(builder).build()")
+        )
         inline operator fun invoke(
             context: Context,
             builder: ImageLoaderBuilder.() -> Unit = {}
