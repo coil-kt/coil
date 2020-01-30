@@ -9,6 +9,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
+import java.util.Locale
 
 buildscript {
     repositories {
@@ -100,6 +101,33 @@ subprojects {
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
+            }
+        }
+    }
+}
+
+// Work around: https://github.com/robolectric/robolectric/issues/5245
+allprojects {
+    configurations.forEach { configuration ->
+        configuration.resolutionStrategy {
+            force(
+                "com.google.auto.service:auto-service:1.0-rc6",
+                "com.google.auto.service:auto-service-annotations:1.0-rc6"
+            )
+
+            val lowercaseName = configuration.name.toLowerCase(Locale.US)
+            if (!lowercaseName.contains("compileonly")
+                && !lowercaseName.contains("kapt")
+                && !lowercaseName.contains("annotationprocessor")) {
+                eachDependency {
+                    if (requested.group == "com.google.auto.service") {
+                        useTarget(mapOf(
+                            "group" to requested.group,
+                            "name" to "auto-service-annotations",
+                            "version" to "1.0-rc6"
+                        ))
+                    }
+                }
             }
         }
     }
