@@ -16,12 +16,12 @@ import coil.target.Target
 interface ImageLoader {
 
     companion object {
-        /** Alias function to create an [ImageLoaderBuilder]. */
+        /** Alias to create an [ImageLoaderBuilder]. */
         @JvmStatic
         @JvmName("builder")
         inline fun Builder(context: Context) = ImageLoaderBuilder(context)
 
-        /** Convenience function to create a new [ImageLoader] without configuration */
+        /** Alias to create a new [ImageLoader] without configuration */
         @JvmStatic
         @JvmName("create")
         inline operator fun invoke(context: Context) = ImageLoaderBuilder(context).build()
