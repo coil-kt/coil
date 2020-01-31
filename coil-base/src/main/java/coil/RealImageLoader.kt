@@ -28,11 +28,11 @@ import coil.fetch.DrawableFetcher
 import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
 import coil.fetch.FileFetcher
+import coil.fetch.HttpUriFetcher
 import coil.fetch.HttpUrlFetcher
 import coil.fetch.ResourceUriFetcher
 import coil.fetch.SourceResult
 import coil.map.FileUriMapper
-import coil.map.HttpUriMapper
 import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.map.ResourceIntMapper
@@ -112,11 +112,11 @@ internal class RealImageLoader(
     private val registry = registry.newBuilder()
         // Mappers
         .add(StringMapper())
-        .add(HttpUriMapper())
         .add(FileUriMapper())
         .add(ResourceUriMapper(context))
         .add(ResourceIntMapper(context))
         // Fetchers
+        .add(HttpUriFetcher(callFactory))
         .add(HttpUrlFetcher(callFactory))
         .add(FileFetcher())
         .add(AssetUriFetcher(context))

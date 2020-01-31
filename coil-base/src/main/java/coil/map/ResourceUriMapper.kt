@@ -3,6 +3,7 @@ package coil.map
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
 
 /**
  * Maps android.resource uris with resource names to uris containing their resources ID. i.e.:
@@ -24,6 +25,6 @@ internal class ResourceUriMapper(private val context: Context) : Mapper<Uri, Uri
         val id = resources.getIdentifier(name, type, packageName)
         check(id != 0) { "Invalid ${ContentResolver.SCHEME_ANDROID_RESOURCE} URI: $data" }
 
-        return Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/$id")
+        return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/$id".toUri()
     }
 }

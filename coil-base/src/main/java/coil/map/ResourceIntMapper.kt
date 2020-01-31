@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.core.net.toUri
 
 internal class ResourceIntMapper(private val context: Context) : Mapper<@DrawableRes Int, Uri> {
 
@@ -15,6 +16,6 @@ internal class ResourceIntMapper(private val context: Context) : Mapper<@Drawabl
     }
 
     override fun map(@DrawableRes data: Int): Uri {
-        return Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/$data")
+        return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/$data".toUri()
     }
 }
