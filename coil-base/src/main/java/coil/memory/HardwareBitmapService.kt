@@ -114,6 +114,17 @@ private object HardwareBitmapBlacklist {
                 model.startsWith("moto g(6)", true)) return@run true
         }
 
+        if (SDK_INT == O_MR1) {
+            // LG Stylo 4 (Boost/Sprint)
+            if (model == "LG-Q710AL") return@run true
+
+            // LG Tribute Empire
+            if (model == "LM-X220PM") return@run true
+
+            // LG K11
+            if (model.startsWith("LM-X410")) return@run true
+        }
+
         return@run false
     }
 }
