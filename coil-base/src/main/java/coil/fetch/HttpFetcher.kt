@@ -43,7 +43,10 @@ internal abstract class HttpFetcher<T : Any>(
         private val CACHE_CONTROL_NO_NETWORK_NO_CACHE = CacheControl.Builder().noCache().onlyIfCached().build()
     }
 
-    /** Perform this conversion in a [Fetcher] instead of a [Mapper] so [HttpUrl.get] is executed on a background thread. */
+    /**
+     * Perform this conversion in a [Fetcher] instead of a [Mapper] so
+     * [HttpUriFetcher] can execute [HttpUrl.get] on a background thread.
+     */
     abstract fun T.toHttpUrl(): HttpUrl
 
     override suspend fun fetch(
