@@ -1,6 +1,7 @@
 package coil.fetch
 
 import android.content.Context
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.size.PixelSize
@@ -12,6 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -25,20 +27,20 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @UseExperimental(ExperimentalCoroutinesApi::class)
-class HttpUrlFetcherTest {
+class HttpFetcherTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var server: MockWebServer
-    private lateinit var fetcher: HttpUrlFetcher
+    private lateinit var callFactory: Call.Factory
     private lateinit var pool: BitmapPool
 
     @Before
     fun before() {
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg")
-        fetcher = HttpUrlFetcher(OkHttpClient())
+        callFactory = OkHttpClient()
         pool = BitmapPool(0)
     }
 
@@ -49,13 +51,29 @@ class HttpUrlFetcherTest {
     }
 
     @Test
-    fun `basic network fetch`() {
+    fun `basic network URL fetch`() {
+        val fetcher = HttpUrlFetcher(callFactory)
         val url = server.url("/normal.jpg")
         assertTrue(fetcher.handles(url))
         assertEquals(url.toString(), fetcher.key(url))
 
         val result = runBlocking {
             fetcher.fetch(pool, url, PixelSize(100, 100), createOptions())
+        }
+
+        assertTrue(result is SourceResult)
+        assertFalse(result.source.exhausted())
+    }
+
+    @Test
+    fun `basic network URI fetch`() {
+        val fetcher = HttpUriFetcher(callFactory)
+        val uri = server.url("/normal.jpg").toString().toUri()
+        assertTrue(fetcher.handles(uri))
+        assertEquals(uri.toString(), fetcher.key(uri))
+
+        val result = runBlocking {
+            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
         }
 
         assertTrue(result is SourceResult)
