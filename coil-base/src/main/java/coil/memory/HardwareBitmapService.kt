@@ -116,7 +116,7 @@ private object HardwareBitmapBlacklist {
 
         if (SDK_INT == O_MR1) {
             // LG Stylo 4 (Boost/Sprint)
-            if (model == "LG-Q710AL") return@run true
+            if (model.startsWith("LG-Q710")) return@run true
 
             // LG Tribute Empire
             if (model == "LM-X220PM") return@run true
