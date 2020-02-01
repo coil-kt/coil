@@ -53,7 +53,7 @@ internal object Utils {
 
     fun getDefaultAvailableMemoryPercentage(context: Context): Double {
         val activityManager: ActivityManager = context.requireSystemService()
-        return if (activityManager.isLowRawDeviceCompat()) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
+        return if (activityManager.isLowRamDeviceCompat()) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
     }
 
     fun getDefaultBitmapPoolPercentage(): Double {

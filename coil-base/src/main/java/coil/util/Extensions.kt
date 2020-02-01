@@ -90,7 +90,7 @@ internal inline fun <T> List<T>.findIndices(predicate: (T) -> Boolean): T? {
 
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
-internal inline fun ActivityManager.isLowRawDeviceCompat(): Boolean {
+internal inline fun ActivityManager.isLowRamDeviceCompat(): Boolean {
     return SDK_INT < KITKAT || isLowRamDevice
 }
 
