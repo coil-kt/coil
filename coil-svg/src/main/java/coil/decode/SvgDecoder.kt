@@ -14,7 +14,6 @@ import coil.size.PixelSize
 import coil.size.Size
 import com.caverock.androidsvg.SVG
 import okio.BufferedSource
-import kotlin.math.ceil
 
 /**
  * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG files.
@@ -51,8 +50,8 @@ class SvgDecoder(private val context: Context) : Decoder {
                         destHeight = size.height.toFloat(),
                         scale = options.scale
                     )
-                    bitmapWidth = ceil(multiplier * svgWidth).toInt()
-                    bitmapHeight = ceil(multiplier * svgHeight).toInt()
+                    bitmapWidth = (multiplier * svgWidth).toInt()
+                    bitmapHeight = (multiplier * svgHeight).toInt()
                 } else {
                     bitmapWidth = size.width
                     bitmapHeight = size.height
@@ -60,8 +59,8 @@ class SvgDecoder(private val context: Context) : Decoder {
             }
             is OriginalSize -> {
                 if (svgWidth > 0 && svgHeight > 0) {
-                    bitmapWidth = ceil(svgWidth).toInt()
-                    bitmapHeight = ceil(svgHeight).toInt()
+                    bitmapWidth = svgWidth.toInt()
+                    bitmapHeight = svgHeight.toInt()
                 } else {
                     bitmapWidth = DEFAULT_SIZE
                     bitmapHeight = DEFAULT_SIZE
