@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.3] - February 1, 2020
+
+- Fix: Translate child drawable inside `ScaleDrawable` to ensure it is centered.
+- Fix: Fix case where GIFs and SVGs would not fill bounds completely.
+
+---
+
+- Defer calling `HttpUrl.get()` to background thread.
+- Improve BitmapFactory null bitmap error message.
+- Add 3 devices to hardware bitmap blacklist. ([#264](https://github.com/coil-kt/coil/pull/264))
+
+---
+
+- Update AndroidX dependencies:
+  - `androidx.lifecycle:lifecycle-common-java8` -> 2.2.0
+
 ## [0.9.2] - January 19, 2020
 
 - Fix: Fix decoding GIFs on pre-API 19. Thanks @mario.
