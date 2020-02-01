@@ -22,7 +22,6 @@ import coil.bitmappool.BitmapPool
 import coil.decode.DecodeUtils
 import coil.decode.ImageDecoderDecoder
 import coil.size.Scale
-import kotlin.math.ceil
 
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
@@ -149,25 +148,27 @@ class MovieDrawable(
         if (currentBounds == bounds) return
         currentBounds = bounds
 
-        val boundsWidth = bounds.width().toFloat()
-        val boundsHeight = bounds.height().toFloat()
+        val boundsWidth = bounds.width()
+        val boundsHeight = bounds.height()
 
-        val movieWidth = movie.width().toFloat()
-        val movieHeight = movie.height().toFloat()
-        if (movieWidth <= 0f || movieHeight <= 0f) return
+        // If width/height are not positive, we're unable to draw the movie.
+        val movieWidth = movie.width()
+        val movieHeight = movie.height()
+        if (movieWidth <= 0 || movieHeight <= 0) return
 
         softwareScale = DecodeUtils
             .computeSizeMultiplier(movieWidth, movieHeight, boundsWidth, boundsHeight, scale)
+            .toFloat()
             .coerceAtMost(1f)
-        val bitmapWidth = ceil(softwareScale * movieWidth)
-        val bitmapHeight = ceil(softwareScale * movieHeight)
+        val bitmapWidth = (softwareScale * movieWidth).toInt()
+        val bitmapHeight = (softwareScale * movieHeight).toInt()
 
-        val bitmap = pool.get(bitmapWidth.toInt(), bitmapHeight.toInt(), config)
+        val bitmap = pool.get(bitmapWidth, bitmapHeight, config)
         softwareBitmap?.let(pool::put)
         softwareBitmap = bitmap
         softwareCanvas = Canvas(bitmap)
 
-        hardwareScale = DecodeUtils.computeSizeMultiplier(bitmapWidth, bitmapHeight, boundsWidth, boundsHeight, scale)
+        hardwareScale = DecodeUtils.computeSizeMultiplier(bitmapWidth, bitmapHeight, boundsWidth, boundsHeight, scale).toFloat()
         hardwareDx = bounds.left + (boundsWidth - hardwareScale * bitmapWidth) / 2
         hardwareDy = bounds.top + (boundsHeight - hardwareScale * bitmapHeight) / 2
     }
