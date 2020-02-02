@@ -1,6 +1,6 @@
 package coil.map
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
@@ -24,7 +24,7 @@ class ResourceIntMapperTest {
     @Test
     fun resourceInt() {
         val resId = R.drawable.normal
-        val expected = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/$resId".toUri()
+        val expected = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/$resId".toUri()
         val actual = mapper.map(resId)
 
         assertEquals(expected, actual)

@@ -21,7 +21,7 @@ import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
-import coil.fetch.AssetUriFetcher
+import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.DrawableResult
 import coil.request.CachePolicy
 import coil.request.NullRequestDataException
@@ -162,7 +162,7 @@ class RealImageLoaderIntegrationTest {
 
     @Test
     fun assetUri() {
-        val data = "$SCHEME_FILE:///${AssetUriFetcher.ASSET_FILE_PATH_ROOT}/exif/large_metadata.jpg".toUri()
+        val data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
         testLoad(data, PixelSize(75, 100))
         testGet(data, PixelSize(100, 133))
     }

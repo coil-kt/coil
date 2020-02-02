@@ -1,6 +1,6 @@
 package coil.map
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
@@ -24,8 +24,8 @@ class ResourceUriMapperTest {
 
     @Test
     fun resourceNameUri() {
-        val uri = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal".toUri()
-        val expected = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}".toUri()
+        val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/normal".toUri()
+        val expected = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
 
         assertTrue(mapper.handles(uri))
 
@@ -38,20 +38,20 @@ class ResourceUriMapperTest {
     fun externalResourceNameUri() {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/regulatory_info.png
         val packageName = "com.android.settings"
-        val input = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/drawable/regulatory_info".toUri()
+        val input = "$SCHEME_ANDROID_RESOURCE://$packageName/drawable/regulatory_info".toUri()
 
         assertTrue(mapper.handles(input))
 
         val output = mapper.map(input)
 
-        assertEquals(ContentResolver.SCHEME_ANDROID_RESOURCE, output.scheme)
+        assertEquals(SCHEME_ANDROID_RESOURCE, output.scheme)
         assertEquals(packageName, output.authority)
         assertTrue(output.pathSegments[0].toInt() > 0)
     }
 
     @Test
     fun resourceIntUri() {
-        val uri = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}".toUri()
+        val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
 
         assertFalse(mapper.handles(uri))
     }

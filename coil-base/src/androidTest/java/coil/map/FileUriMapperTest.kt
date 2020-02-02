@@ -1,8 +1,8 @@
 package coil.map
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_FILE
 import androidx.core.net.toUri
-import coil.fetch.AssetUriFetcher
+import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -21,7 +21,7 @@ class FileUriMapperTest {
 
     @Test
     fun basic() {
-        val uri = "${ContentResolver.SCHEME_FILE}:///path/to/file".toUri()
+        val uri = "$SCHEME_FILE:///path/to/file".toUri()
 
         assertTrue(mapper.handles(uri))
         assertEquals(File("/path/to/file"), mapper.map(uri))
@@ -29,7 +29,7 @@ class FileUriMapperTest {
 
     @Test
     fun doesNotHandleAssetUris() {
-        val uri = "${ContentResolver.SCHEME_FILE}:///${AssetUriFetcher.ASSET_FILE_PATH_ROOT}/asset.jpg".toUri()
+        val uri = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/asset.jpg".toUri()
 
         assertFalse(mapper.handles(uri))
     }
