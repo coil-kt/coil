@@ -1,14 +1,20 @@
 package coil.fetch
 
-import android.content.ContentResolver
+import android.Manifest.permission.READ_CONTACTS
+import android.Manifest.permission.WRITE_CONTACTS
+import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
+import android.provider.ContactsContract.AUTHORITY
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
+import android.provider.ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
+import android.provider.ContactsContract.Contacts.Photo.DISPLAY_PHOTO
 import android.provider.ContactsContract.RawContacts
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import coil.bitmappool.BitmapPool
@@ -32,10 +38,7 @@ class ContentUriFetcherTest {
     private lateinit var fetcher: ContentUriFetcher
     private lateinit var pool: BitmapPool
 
-    @get:Rule val grantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-        android.Manifest.permission.READ_CONTACTS,
-        android.Manifest.permission.WRITE_CONTACTS
-    )
+    @get:Rule val grantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_CONTACTS, WRITE_CONTACTS)
 
     // Re-use the same contact across all tests. Must be created lazily.
     private val contactId by lazy(::createFakeContact)
@@ -48,8 +51,7 @@ class ContentUriFetcherTest {
 
     @Test
     fun contactsThumbnail() {
-        val uri = Uri.parse("${ContentResolver.SCHEME_CONTENT}://${ContactsContract.AUTHORITY}/" +
-            "contacts/$contactId/${ContactsContract.Contacts.Photo.CONTENT_DIRECTORY}")
+        val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$CONTENT_DIRECTORY".toUri()
 
         assertFalse(fetcher.isContactPhotoUri(uri))
         assertTrue(fetcher.handles(uri))
@@ -58,8 +60,7 @@ class ContentUriFetcherTest {
 
     @Test
     fun contactsDisplayPhoto() {
-        val uri = Uri.parse("${ContentResolver.SCHEME_CONTENT}://${ContactsContract.AUTHORITY}/" +
-            "contacts/$contactId/${ContactsContract.Contacts.Photo.DISPLAY_PHOTO}")
+        val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$DISPLAY_PHOTO".toUri()
 
         assertTrue(fetcher.isContactPhotoUri(uri))
         assertTrue(fetcher.handles(uri))
