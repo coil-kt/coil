@@ -1,5 +1,6 @@
 package coil
 
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,6 +11,7 @@ import coil.annotation.ExperimentalCoil
 import coil.api.newLoadBuilder
 import coil.bitmappool.BitmapPool
 import coil.decode.Options
+import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.Fetcher
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
@@ -401,7 +403,7 @@ class RealImageLoaderBasicTest {
             var error: Throwable? = null
             val request = imageLoader.newLoadBuilder(context)
                 .key(key)
-                .data("file:///android_asset/$fileName")
+                .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                 .size(100, 100)
                 .precision(Precision.INEXACT)
                 .allowHardware(false)
@@ -437,7 +439,7 @@ class RealImageLoaderBasicTest {
             var error: Throwable? = null
             val request = imageLoader.newLoadBuilder(context)
                 .key(key)
-                .data("file:///android_asset/$fileName")
+                .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                 .size(100, 100)
                 .precision(Precision.INEXACT)
                 .allowHardware(true)

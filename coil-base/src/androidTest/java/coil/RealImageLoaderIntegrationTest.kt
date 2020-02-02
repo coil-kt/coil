@@ -1,12 +1,14 @@
 package coil
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
+import android.content.ContentResolver.SCHEME_CONTENT
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.widget.ImageView
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.api.get
 import coil.api.getAny
@@ -90,7 +92,7 @@ class RealImageLoaderIntegrationTest {
 
     @Test
     fun httpUri() {
-        val data = Uri.parse(server.url(IMAGE_NAME).toString())
+        val data = server.url(IMAGE_NAME).toString().toUri()
         testLoad(data)
         testGet(data)
     }
@@ -118,28 +120,28 @@ class RealImageLoaderIntegrationTest {
 
     @Test
     fun resourceUriInt() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
+        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
         testLoad(data)
         testGet(data)
     }
 
     @Test
     fun resourceUriIntVector() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.ic_android}")
+        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
         testLoad(data, PixelSize(100, 100))
         testGet(data, PixelSize(100, 100))
     }
 
     @Test
     fun resourceUriString() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal")
+        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/normal".toUri()
         testLoad(data)
         testGet(data)
     }
 
     @Test
     fun resourceUriStringVector() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/ic_android")
+        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/ic_android".toUri()
         testLoad(data, PixelSize(100, 100))
         testGet(data, PixelSize(100, 100))
     }
@@ -153,21 +155,21 @@ class RealImageLoaderIntegrationTest {
 
     @Test
     fun fileUri() {
-        val data = Uri.fromFile(copyNormalImageAssetToCacheDir())
+        val data = copyNormalImageAssetToCacheDir().toUri()
         testLoad(data)
         testGet(data)
     }
 
     @Test
     fun assetUri() {
-        val data = Uri.parse("${ContentResolver.SCHEME_FILE}:///${AssetUriFetcher.ASSET_FILE_PATH_ROOT}/exif/large_metadata.jpg")
+        val data = "$SCHEME_FILE:///${AssetUriFetcher.ASSET_FILE_PATH_ROOT}/exif/large_metadata.jpg".toUri()
         testLoad(data, PixelSize(75, 100))
         testGet(data, PixelSize(100, 133))
     }
 
     @Test
     fun contentUri() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/$IMAGE_NAME")
+        val data = "$SCHEME_CONTENT://coil/$IMAGE_NAME".toUri()
         testLoad(data)
         testGet(data)
     }

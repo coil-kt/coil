@@ -1,10 +1,10 @@
 package coil.request
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.widget.ImageView
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
@@ -41,7 +41,7 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_dispose() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
+        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val disposable = imageLoader.load(context, data) {
             target { /* Do nothing. */ }
             listener(onError = { _, throwable -> throw throwable })
@@ -55,7 +55,7 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_await() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
+        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         var result: Drawable? = null
         val disposable = imageLoader.load(context, data) {
             target { result = it }
@@ -72,7 +72,7 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_dispose() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
+        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
         val disposable = imageLoader.load(context, data) {
             target(imageView)
@@ -88,7 +88,7 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_await() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
+        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
         val disposable = imageLoader.load(context, data) {
             target(imageView)
@@ -106,7 +106,7 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_restart() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
+        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
         val disposable = imageLoader.load(context, data) {
             target(imageView)
@@ -134,7 +134,7 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_replace() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
+        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
 
         fun launchNewRequest(): RequestDisposable {
@@ -159,7 +159,7 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_clear() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/normal.jpg")
+        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
         val disposable = imageLoader.load(context, data) {
             target(imageView)

@@ -3,7 +3,7 @@ package coil.fetch
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
 import coil.bitmappool.BitmapPool
@@ -35,7 +35,7 @@ class ResourceUriFetcherTest {
 
     @Test
     fun rasterDrawable() {
-        val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
+        val uri = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}".toUri()
 
         assertTrue(fetcher.handles(uri))
 
@@ -50,7 +50,7 @@ class ResourceUriFetcherTest {
 
     @Test
     fun vectorDrawable() {
-        val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.ic_android}")
+        val uri = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.ic_android}".toUri()
 
         assertTrue(fetcher.handles(uri))
 
@@ -67,7 +67,7 @@ class ResourceUriFetcherTest {
     fun externalPackageRasterDrawable() {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/regulatory_info.png
         val packageName = "com.android.settings"
-        val rawUri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/drawable/regulatory_info")
+        val rawUri = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/drawable/regulatory_info".toUri()
         val uri = ResourceUriMapper(context).map(rawUri)
 
         assertTrue(fetcher.handles(uri))
@@ -85,7 +85,7 @@ class ResourceUriFetcherTest {
     fun externalPackageVectorDrawable() {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/ic_cancel.xml
         val packageName = "com.android.settings"
-        val rawUri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/drawable/ic_cancel")
+        val rawUri = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/drawable/ic_cancel".toUri()
         val uri = ResourceUriMapper(context).map(rawUri)
 
         assertTrue(fetcher.handles(uri))

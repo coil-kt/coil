@@ -2,7 +2,7 @@ package coil.map
 
 import android.content.ContentResolver
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
 import org.junit.Before
@@ -24,8 +24,8 @@ class ResourceUriMapperTest {
 
     @Test
     fun resourceNameUri() {
-        val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal")
-        val expected = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
+        val uri = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal".toUri()
+        val expected = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}".toUri()
 
         assertTrue(mapper.handles(uri))
 
@@ -38,7 +38,7 @@ class ResourceUriMapperTest {
     fun externalResourceNameUri() {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/regulatory_info.png
         val packageName = "com.android.settings"
-        val input = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/drawable/regulatory_info")
+        val input = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/drawable/regulatory_info".toUri()
 
         assertTrue(mapper.handles(input))
 
@@ -51,7 +51,7 @@ class ResourceUriMapperTest {
 
     @Test
     fun resourceIntUri() {
-        val uri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
+        val uri = "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}".toUri()
 
         assertFalse(mapper.handles(uri))
     }
