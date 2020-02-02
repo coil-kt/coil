@@ -15,6 +15,7 @@ import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
 import okio.sink
+import kotlin.math.roundToInt
 
 /**
  * A [Decoder] that uses [ImageDecoder] to decode GIFs and animated WebPs on Android P and above.
@@ -50,9 +51,21 @@ class ImageDecoderDecoder : Decoder {
                 tempFile.delete()
 
                 // Set the target size if the source image is larger than the target.
-                if (size is PixelSize && info.size.run { width > size.width || height > size.height }) {
-                    isSampled = true
-                    setTargetSize(size.width, size.height)
+                if (size is PixelSize) {
+                    val infoSize = info.size
+                    val multiplier = DecodeUtils.computeSizeMultiplier(
+                        srcWidth = infoSize.width,
+                        srcHeight = infoSize.height,
+                        destWidth = size.width,
+                        destHeight = size.height,
+                        scale = options.scale
+                    )
+                    if (multiplier < 1) {
+                        isSampled = true
+                        val targetWidth = (multiplier * infoSize.width).roundToInt()
+                        val targetHeight = (multiplier * infoSize.height).roundToInt()
+                        setTargetSize(targetWidth, targetHeight)
+                    }
                 }
 
                 if (options.config != Bitmap.Config.HARDWARE) {
