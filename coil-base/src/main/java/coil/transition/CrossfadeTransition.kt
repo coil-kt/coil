@@ -17,7 +17,7 @@ import kotlin.coroutines.resume
 /** A [Transition] that crossfades from the current drawable to a new one. */
 @ExperimentalCoil
 class CrossfadeTransition(
-    private val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION
+    val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION
 ) : Transition {
 
     init {
