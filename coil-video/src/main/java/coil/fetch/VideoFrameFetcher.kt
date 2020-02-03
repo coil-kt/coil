@@ -58,7 +58,7 @@ class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri
 
     override fun MediaMetadataRetriever.setDataSource(data: Uri) {
         if (data.scheme == ContentResolver.SCHEME_FILE && data.pathSegments.firstOrNull() == ASSET_FILE_PATH_ROOT) {
-            // Work around setDataSource(Context, Uri) not properly handling android_asset uris.
+            // Work around setDataSource(Context, Uri) not handling android_asset uris properly.
             val path = data.pathSegments.drop(1).joinToString("/")
             context.assets.openFd(path).use { setDataSource(it.fileDescriptor, it.startOffset, it.length) }
         } else {

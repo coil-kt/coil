@@ -61,9 +61,9 @@ class VideoFrameFetcherTest {
                 data = "file:///android_asset/video.mp4".toUri(),
                 size = OriginalSize,
                 options = createOptions(
-                    parameters = Parameters {
-                        set(VIDEO_FRAME_MICROS_KEY, 32600000L)
-                    }
+                    parameters = Parameters.Builder()
+                        .set(VIDEO_FRAME_MICROS_KEY, 32600000L)
+                        .build()
                 )
             )
         }

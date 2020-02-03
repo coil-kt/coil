@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    // compileOnly to avoid circular dependency issues.
+    // compileOnly to avoid duplicate class issues.
     compileOnly(project(":coil-base"))
 
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
