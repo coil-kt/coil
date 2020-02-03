@@ -46,8 +46,8 @@ class SvgDecoder(private val context: Context) : Decoder {
                     val multiplier = DecodeUtils.computeSizeMultiplier(
                         srcWidth = svgWidth,
                         srcHeight = svgHeight,
-                        destWidth = size.width.toFloat(),
-                        destHeight = size.height.toFloat(),
+                        dstWidth = size.width.toFloat(),
+                        dstHeight = size.height.toFloat(),
                         scale = options.scale
                     )
                     bitmapWidth = (multiplier * svgWidth).toInt()
