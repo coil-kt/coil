@@ -197,7 +197,8 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 destHeight = inBitmap.height
             }
         }
-        val outBitmap = pool.get(destWidth, destHeight, options.config)
+        val safeConfig = if (SDK_INT >= O && options.config == Bitmap.Config.HARDWARE) Bitmap.Config.ARGB_8888 else options.config
+        val outBitmap = pool.get(destWidth, destHeight, safeConfig)
         outBitmap.applyCanvas {
             scale(scale, scale)
             drawBitmap(inBitmap, 0f, 0f, paint)
