@@ -105,10 +105,12 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
 
             // Resolve the dimensions to decode the video frame at
             // accounting for the source's aspect ratio and the target's size.
+            var srcWidth = 0
+            var srcHeight = 0
             val destSize = when (size) {
                 is PixelSize -> {
-                    val srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
-                    val srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+                    srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+                    srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
 
                     if (srcWidth > 0 && srcHeight > 0) {
                         val rawScale = DecodeUtils.computeSizeMultiplier(
@@ -124,27 +126,37 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                         PixelSize(width, height)
                     } else {
                         // We were unable to decode the video's dimensions.
-                        // Fall back to decoding the video frame at the target's size.
+                        // Fall back to decoding the video frame at the original size.
                         // We'll scale the resulting bitmap after decoding, if necessary.
-                        size
+                        OriginalSize
                     }
                 }
                 is OriginalSize -> OriginalSize
             }
 
-            val rawBitmap = if (destSize is PixelSize && SDK_INT >= O_MR1) {
+            val rawBitmap = if (SDK_INT >= O_MR1 && destSize is PixelSize) {
                 retriever.getScaledFrameAtTime(frameMicros, option, destSize.width, destSize.height)
             } else {
-                retriever.getFrameAtTime(frameMicros, option)
+                retriever.getFrameAtTime(frameMicros, option).also {
+                    srcWidth = it.width
+                    srcHeight = it.height
+                }
             }
             checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
             val config = getTargetConfig(options, rawBitmap)
             val bitmap = normalizeBitmap(pool, rawBitmap, destSize, config, options)
 
+            val isSampled = if (srcWidth > 0 && srcHeight > 0) {
+                DecodeUtils.computeSizeMultiplier(srcWidth, srcHeight, bitmap.width, bitmap.height, options.scale) < 1.0
+            } else {
+                // We were unable to determine the original size of the video. Assume it is sampled.
+                true
+            }
+
             return DrawableResult(
                 drawable = bitmap.toDrawable(context.resources),
-                isSampled = true,
+                isSampled = isSampled,
                 dataSource = DataSource.DISK
             )
         } finally {
