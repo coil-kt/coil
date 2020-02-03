@@ -4,7 +4,7 @@ import coil.addTestDependencies
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
-import org.jetbrains.dokka.gradle.DokkaAndroidTask
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 import java.net.URL
 
@@ -31,7 +31,7 @@ android {
 }
 
 afterEvaluate {
-    tasks.withType<DokkaAndroidTask> {
+    tasks.withType<DokkaTask> {
         outputDirectory = "$rootDir/docs/api"
         outputFormat = "gfm"
 
