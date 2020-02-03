@@ -129,7 +129,7 @@ internal class RequestService {
         val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
 
         // Disable allowRgb565 if there are transformations or the requested config is ALPHA_8.
-        // ALPHA_8 is a mask config where each pixel is 1 byte. It wouldn't make sense to use RGB_565 as an optimization.
+        // ALPHA_8 is a mask config where each pixel is 1 byte so it wouldn't make sense to use RGB_565 as an optimization in that case.
         val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() && bitmapConfig != Bitmap.Config.ALPHA_8
 
         return Options(
