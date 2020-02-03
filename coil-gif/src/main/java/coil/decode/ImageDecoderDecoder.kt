@@ -8,6 +8,8 @@ import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
+import androidx.core.util.component1
+import androidx.core.util.component2
 import coil.bitmappool.BitmapPool
 import coil.drawable.ScaleDrawable
 import coil.extension.repeatCount
@@ -50,20 +52,22 @@ class ImageDecoderDecoder : Decoder {
                 // It's safe to delete the temp file here.
                 tempFile.delete()
 
-                // Set the target size if the source image is larger than the target.
                 if (size is PixelSize) {
-                    val infoSize = info.size
+                    val (srcWidth, srcHeight) = info.size
                     val multiplier = DecodeUtils.computeSizeMultiplier(
-                        srcWidth = infoSize.width,
-                        srcHeight = infoSize.height,
+                        srcWidth = srcWidth,
+                        srcHeight = srcHeight,
                         destWidth = size.width,
                         destHeight = size.height,
                         scale = options.scale
                     )
-                    if (multiplier < 1) {
-                        isSampled = true
-                        val targetWidth = (multiplier * infoSize.width).roundToInt()
-                        val targetHeight = (multiplier * infoSize.height).roundToInt()
+
+                    // Set the target size if the image is larger than the requested dimensions
+                    // or the request requires exact dimensions.
+                    isSampled = multiplier < 1
+                    if (isSampled || !options.allowInexactSize) {
+                        val targetWidth = (multiplier * srcWidth).roundToInt()
+                        val targetHeight = (multiplier * srcHeight).roundToInt()
                         setTargetSize(targetWidth, targetHeight)
                     }
                 }
