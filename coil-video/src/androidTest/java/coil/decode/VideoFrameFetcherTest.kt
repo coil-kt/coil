@@ -1,11 +1,13 @@
 package coil.decode
 
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.fetch.DrawableResult
+import coil.fetch.VideoFrameFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.fetch.VideoFrameUriFetcher
 import coil.request.Parameters
@@ -38,7 +40,7 @@ class VideoFrameFetcherTest {
         val result = runBlocking {
             fetcher.fetch(
                 pool = pool,
-                data = "file:///android_asset/video.mp4".toUri(),
+                data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/video.mp4".toUri(),
                 size = OriginalSize,
                 options = createOptions()
             )
@@ -58,7 +60,7 @@ class VideoFrameFetcherTest {
         val result = runBlocking {
             fetcher.fetch(
                 pool = pool,
-                data = "file:///android_asset/video.mp4".toUri(),
+                data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/video.mp4".toUri(),
                 size = OriginalSize,
                 options = createOptions(
                     parameters = Parameters.Builder()

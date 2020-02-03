@@ -144,8 +144,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             }
             checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
-            val config = getTargetConfig(options, rawBitmap)
-            val bitmap = normalizeBitmap(pool, rawBitmap, destSize, config, options)
+            val bitmap = normalizeBitmap(pool, rawBitmap, destSize, options)
 
             val isSampled = if (srcWidth > 0 && srcHeight > 0) {
                 DecodeUtils.computeSizeMultiplier(srcWidth, srcHeight, bitmap.width, bitmap.height, options.scale) < 1.0
@@ -164,33 +163,29 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         }
     }
 
-    /** Ensure [inBitmap] matches [destSize] and [destConfig]. Convert it and return the result if it doesn't match. */
+    /** Return [inBitmap] (or a copy of [inBitmap]) that is valid for the input [options] and [size]. */
     private fun normalizeBitmap(
         pool: BitmapPool,
         inBitmap: Bitmap,
-        destSize: Size,
-        destConfig: Bitmap.Config,
+        size: Size,
         options: Options
     ): Bitmap {
-        // If the input bitmap is valid, return it.
-        if (destConfig == inBitmap.config &&
-            (options.allowInexactSize ||
-                destSize !is PixelSize ||
-                (destSize.width == inBitmap.width && destSize.height == inBitmap.height))) {
+        // Fast path: if the input bitmap is valid, return it.
+        if (isConfigValid(inBitmap, options) && isSizeValid(inBitmap, options, size)) {
             return inBitmap
         }
 
-        // Else, re-render the bitmap with the correct size + config.
+        // Slow path: re-render the bitmap with the correct size + config.
         val scale: Float
         val destWidth: Int
         val destHeight: Int
-        when (destSize) {
+        when (size) {
             is PixelSize -> {
                 scale = DecodeUtils.computeSizeMultiplier(
                     srcWidth = inBitmap.width,
                     srcHeight = inBitmap.height,
-                    destWidth = destSize.width,
-                    destHeight = destSize.height,
+                    destWidth = size.width,
+                    destHeight = size.height,
                     scale = options.scale
                 ).toFloat()
                 destWidth = (scale * inBitmap.width).roundToInt()
@@ -202,7 +197,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 destHeight = inBitmap.height
             }
         }
-        val outBitmap = pool.get(destWidth, destHeight, destConfig)
+        val outBitmap = pool.get(destWidth, destHeight, options.config)
         outBitmap.applyCanvas {
             scale(scale, scale)
             drawBitmap(inBitmap, 0f, 0f, paint)
@@ -211,15 +206,13 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         return outBitmap
     }
 
-    private fun getTargetConfig(options: Options, bitmap: Bitmap): Bitmap.Config {
-        val srcConfig = bitmap.config.takeIf { SDK_INT < O || it != Bitmap.Config.HARDWARE } ?: Bitmap.Config.ARGB_8888
-        val destConfig = options.config.takeIf { SDK_INT < O || it != Bitmap.Config.HARDWARE } ?: Bitmap.Config.ARGB_8888
-        return if (options.allowRgb565 &&
-            srcConfig == Bitmap.Config.RGB_565 &&
-            destConfig == Bitmap.Config.ARGB_8888) {
-            Bitmap.Config.RGB_565
-        } else {
-            destConfig
-        }
+    private fun isConfigValid(inBitmap: Bitmap, options: Options): Boolean {
+        return inBitmap.config == options.config ||
+            (options.allowRgb565 && inBitmap.config == Bitmap.Config.RGB_565) ||
+            (SDK_INT >= O && inBitmap.config == Bitmap.Config.ARGB_8888 && options.config == Bitmap.Config.HARDWARE)
+    }
+
+    private fun isSizeValid(inBitmap: Bitmap, options: Options, size: Size): Boolean {
+        return options.allowInexactSize || size !is PixelSize || (size.width == inBitmap.width && size.height == inBitmap.height)
     }
 }
