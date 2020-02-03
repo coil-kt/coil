@@ -196,7 +196,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - normalized bitmap config must be equal`() {
+    fun `isCachedDrawableValid - bitmap config must be equal`() {
         val request = createGetRequest()
 
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
@@ -242,8 +242,8 @@ class RealImageLoaderBasicTest {
         assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.RGB_565))
         assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.ALPHA_8))
 
-        assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.HARDWARE))
         assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.HARDWARE))
         assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.ARGB_8888))
         assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.RGB_565))
         assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.ALPHA_8))

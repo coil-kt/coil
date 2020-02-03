@@ -354,7 +354,7 @@ internal class RealImageLoader(
             return true
         }
 
-        // Ensure the cached config matches the request config (after normalization).
+        // The cached bitmap is valid if its config matches the requested config.
         return cachedConfig == requestedConfig
     }
 
