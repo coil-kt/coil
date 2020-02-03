@@ -35,8 +35,8 @@ import kotlin.math.roundToInt
 class CrossfadeDrawable(
     private var start: Drawable?,
     val end: Drawable?,
-    private val scale: Scale = Scale.FIT,
-    private val durationMillis: Int = DEFAULT_DURATION
+    val scale: Scale = Scale.FIT,
+    val durationMillis: Int = DEFAULT_DURATION
 ) : Drawable(), Drawable.Callback, Animatable2Compat {
 
     companion object {
