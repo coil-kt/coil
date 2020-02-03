@@ -140,7 +140,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
             val config = getTargetConfig(options, rawBitmap)
-            val bitmap = validateBitmap(pool, rawBitmap, destSize, config, options)
+            val bitmap = normalizeBitmap(pool, rawBitmap, destSize, config, options)
 
             return DrawableResult(
                 drawable = bitmap.toDrawable(context.resources),
@@ -152,8 +152,8 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         }
     }
 
-    /** Validate that [inBitmap] matches [destSize] and [destConfig]. */
-    private fun validateBitmap(
+    /** Ensure [inBitmap] matches [destSize] and [destConfig]. Convert it and return the result if it doesn't match. */
+    private fun normalizeBitmap(
         pool: BitmapPool,
         inBitmap: Bitmap,
         destSize: Size,
