@@ -14,7 +14,7 @@ import java.util.TreeMap
  * A strategy for reusing bitmaps that relies on [Bitmap.reconfigure].
  *
  * Keys [Bitmap]s using [Bitmap.getAllocationByteCountCompat].
- * This improves the hit rate over [SizeConfigStrategy], as it allows re-use of Bitmaps with different configs.
+ * This improves the hit rate over [SizeConfigStrategy], as it allows re-use of bitmaps with different configs.
  *
  * Technically, the APIs for this strategy are available since [KITKAT], however we shouldn't use this strategy until
  * [M] due to framework bugs.

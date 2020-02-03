@@ -62,7 +62,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         val srcWidth = if (isSwapped) outHeight else outWidth
         val srcHeight = if (isSwapped) outWidth else outHeight
 
-        // Disable hardware Bitmaps if we need to perform EXIF transformations.
+        // Disable hardware bitmaps if we need to perform EXIF transformations.
         val safeConfig = if (isFlipped || isRotated) options.config.normalize() else options.config
         inPreferredConfig = if (allowRgb565(options.allowRgb565, safeConfig, outMimeType)) Bitmap.Config.RGB_565 else safeConfig
 
@@ -129,7 +129,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 }
             }
             else -> {
-                // We can only re-use Bitmaps that exactly match the size of the image.
+                // We can only re-use bitmaps that exactly match the size of the image.
                 if (inMutable) {
                     inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
                 }

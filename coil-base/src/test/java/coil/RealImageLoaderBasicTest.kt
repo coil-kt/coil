@@ -196,7 +196,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - cached drawable with equal or greater config is valid`() {
+    fun `isCachedDrawableValid - bitmap config must be equal`() {
         val request = createGetRequest()
 
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
@@ -210,7 +210,7 @@ class RealImageLoaderBasicTest {
             )
         }
 
-        assertTrue(isBitmapConfigValid(Bitmap.Config.RGBA_F16))
+        assertFalse(isBitmapConfigValid(Bitmap.Config.RGBA_F16))
         assertTrue(isBitmapConfigValid(Bitmap.Config.HARDWARE))
         assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888))
         assertFalse(isBitmapConfigValid(Bitmap.Config.RGB_565))
@@ -218,19 +218,35 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - allowRgb565=true allows using RGB_565 bitmap with ARGB_8888 request`() {
-        val request = createGetRequest {
-            allowRgb565(true)
+    fun `isCachedDrawableValid - allowRgb565=true allows matching any config if cached bitmap is RGB_565`() {
+        fun isBitmapConfigValid(
+            cachedConfig: Bitmap.Config,
+            requestedConfig: Bitmap.Config
+        ): Boolean {
+            val request = createGetRequest {
+                allowRgb565(true)
+                bitmapConfig(requestedConfig)
+            }
+            return imageLoader.isCachedDrawableValid(
+                cached = createBitmap(config = cachedConfig).toDrawable(context),
+                isSampled = true,
+                size = PixelSize(100, 100),
+                scale = Scale.FILL,
+                request = request
+            )
         }
-        val cached = createBitmap(config = Bitmap.Config.HARDWARE).toDrawable(context)
-        val isValid = imageLoader.isCachedDrawableValid(
-            cached = cached,
-            isSampled = true,
-            size = PixelSize(100, 100),
-            scale = Scale.FILL,
-            request = request
-        )
-        assertTrue(isValid)
+
+        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.HARDWARE))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.RGBA_F16))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.ARGB_8888))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.RGB_565))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.ALPHA_8))
+
+        assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.HARDWARE))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.ARGB_8888))
+        assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.RGB_565))
+        assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.ALPHA_8))
     }
 
     @Test
@@ -252,6 +268,7 @@ class RealImageLoaderBasicTest {
 
         assertFalse(isBitmapConfigValid(Bitmap.Config.HARDWARE))
         assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888))
+        assertFalse(isBitmapConfigValid(Bitmap.Config.RGB_565))
     }
 
     @Test

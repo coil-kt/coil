@@ -2,6 +2,8 @@ package coil.memory
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.O
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
@@ -30,6 +32,15 @@ import kotlinx.coroutines.Dispatchers
 
 /** Handles operations that act on [Request]s. */
 internal class RequestService {
+
+    companion object {
+        /** A whitelist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
+        private val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= O) {
+            arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
+        } else {
+            arrayOf(Bitmap.Config.ARGB_8888)
+        }
+    }
 
     private val hardwareBitmapService = HardwareBitmapService()
 
@@ -117,8 +128,9 @@ internal class RequestService {
         // Disable fetching from the network if we know we're offline.
         val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
 
-        // Disable allowRgb565 if there are transformations.
-        val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty()
+        // Disable allowRgb565 if there are transformations or the requested config is ALPHA_8.
+        // ALPHA_8 is a mask config where each pixel is 1 byte so it wouldn't make sense to use RGB_565 as an optimization in that case.
+        val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() && bitmapConfig != Bitmap.Config.ALPHA_8
 
         return Options(
             config = bitmapConfig,
@@ -160,7 +172,7 @@ internal class RequestService {
 
     /** Return true if [Request.bitmapConfig] is valid given its [Transformation]s. */
     private fun isConfigValidForTransformations(request: Request): Boolean {
-        return request.transformations.isEmpty() || request.bitmapConfig in Transformation.VALID_CONFIGS
+        return request.transformations.isEmpty() || request.bitmapConfig in VALID_TRANSFORMATION_CONFIGS
     }
 
     private fun LoadRequest.getLifecycle(): Lifecycle? {
