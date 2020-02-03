@@ -349,17 +349,13 @@ internal class RealImageLoader(
         val cachedConfig = bitmap.config.normalize()
         val requestedConfig = request.bitmapConfig.normalize()
 
-        // Allow returning a bitmap with an equal or greater config.
-        if (cachedConfig >= requestedConfig) {
+        // Allow returning a cached RGB_565 bitmap if allowRgb565 is enabled.
+        if (request.allowRgb565 && cachedConfig == Bitmap.Config.RGB_565) {
             return true
         }
 
-        // Allow returning a lesser RGB_565 bitmap if enabled.
-        if (request.allowRgb565 && cachedConfig == Bitmap.Config.RGB_565 && requestedConfig != Bitmap.Config.ALPHA_8) {
-            return true
-        }
-
-        return false
+        // Ensure the cached config matches the request config (after normalization).
+        return cachedConfig == requestedConfig
     }
 
     /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
