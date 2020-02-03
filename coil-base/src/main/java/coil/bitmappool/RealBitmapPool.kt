@@ -139,7 +139,7 @@ internal class RealBitmapPool(
     }
 
     /**
-     * Setting these two values provides Bitmaps that are essentially
+     * Setting these two values provides bitmaps that are essentially
      * equivalent to those returned from [Bitmap.createBitmap].
      */
     private fun normalize(bitmap: Bitmap) {
