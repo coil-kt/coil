@@ -355,7 +355,7 @@ internal class RealImageLoader(
         }
 
         // Allow returning a lesser RGB_565 bitmap if enabled.
-        if (request.allowRgb565 && cachedConfig == Bitmap.Config.RGB_565 && requestedConfig == Bitmap.Config.ARGB_8888) {
+        if (request.allowRgb565 && cachedConfig == Bitmap.Config.RGB_565 && requestedConfig != Bitmap.Config.ALPHA_8) {
             return true
         }
 

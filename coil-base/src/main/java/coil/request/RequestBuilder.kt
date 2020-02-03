@@ -242,7 +242,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      *
      * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
      *
-     * This is useful for shared element transitions, which do not support hardware Bitmaps.
+     * This is useful for shared element transitions, which do not support hardware bitmaps.
      */
     fun allowHardware(enable: Boolean): T = self {
         this.allowHardware = enable

@@ -2,8 +2,6 @@ package coil.transform
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import coil.bitmappool.BitmapPool
 import coil.decode.DecodeResult
 import coil.fetch.DrawableResult
@@ -20,15 +18,6 @@ import coil.size.Size
  */
 interface Transformation {
 
-    companion object {
-        /** A whitelist of valid bitmap configs for the input and output bitmaps of [transform]. */
-        internal val VALID_CONFIGS = if (SDK_INT >= O) {
-            arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
-        } else {
-            arrayOf(Bitmap.Config.ARGB_8888)
-        }
-    }
-
     /**
      * Return a unique key for this transformation.
      *
@@ -44,7 +33,7 @@ interface Transformation {
      * so that they can be reused.
      *
      * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
-     * @param input The input [Bitmap] to transform. Its config will always be one of [VALID_CONFIGS].
+     * @param input The input [Bitmap] to transform. Its config will always be [Bitmap.Config.ARGB_8888] or [Bitmap.Config.RGBA_F16].
      * @param size The size of the image request.
      *
      * @see BitmapPool.get
