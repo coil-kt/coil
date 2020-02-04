@@ -52,7 +52,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun loadImages(assetType: AssetType) = viewModelScope.launch(Dispatchers.IO) {
         val images = mutableListOf<Image>()
 
-        if (assetType == AssetType.VIDEO) {
+        if (assetType == AssetType.MP4) {
             for (index in 0 until 50) {
                 val videoFrameMicros = Random.nextLong(62000000L)
                 val parameters = Parameters.Builder()

@@ -6,5 +6,5 @@ enum class AssetType(val fileName: String) {
     JPG("jpgs.json"),
     GIF("gifs.json"),
     SVG("svgs.json"),
-    VIDEO("video.mp4")
+    MP4("video.mp4")
 }
