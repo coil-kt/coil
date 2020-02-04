@@ -18,7 +18,7 @@ val imageLoader = ImageLoader(context) {
 ```
 
 !!! Note
-    Video frame decoding is only supported for `Uri`s (`content`, `file` schemes only) and `File`s.
+    Video frame decoding is only supported for `File`s and `Uri`s (`content` and `file` schemes only).
 
 To specify the time code of the frame to extract from a video, use `videoFrameMillis` or `videoFrameMicros`:
 
