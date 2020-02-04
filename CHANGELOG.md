@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.4] - February 3, 2020
+
+- Fix: Respect aspect ratio when downsampling in ImageDecoderDecoder. Thanks @zhanghai.
+
+---
+
+- Previously bitmaps would be returned from the memory cache as long as their config was greater than or equal to the config specified in the request. For example, if you requested an `ARGB_8888` bitmap, it would be possible to have a `RGBA_F16` bitmap returned to you from the memory cache. Now, the cached config and the requested config must be equal.
+- Make `scale` and `durationMillis` public in `CrossfadeDrawable` and `CrossfadeTransition`.
+
 ## [0.9.3] - February 1, 2020
 
 - Fix: Translate child drawable inside `ScaleDrawable` to ensure it is centered.
