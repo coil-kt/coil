@@ -7,13 +7,13 @@ Fortunately, [ImageLoaders](image_loaders.md) support pluggable components to ad
 Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-base/coil/-component-registry):
 
 ```kotlin
-val imageLoader = ImageLoader(context) {
-    componentRegistry {
+val imageLoader = ImageLoader.Builder(context)
+    .componentRegistry {
         add(ItemMapper())
         add(ProtocolBufferFetcher())
         add(GifDecoder())
     }
-}
+    .build()
 ```
 
 ## Mappers

@@ -72,14 +72,14 @@ If you're using the `io.coil-kt:coil` artifact, you can set a default [ImageLoad
 
 ```kotlin
 Coil.setDefaultImageLoader {
-    ImageLoader(context) {
-        crossfade(true)
-        okHttpClient {
+    ImageLoader.Builder(context)
+        .crossfade(true)
+        .okHttpClient {
             OkHttpClient.Builder()
                 .cache(CoilUtils.createDefaultCache(context))
                 .build()
         }
-    }
+        .build()
 }
 ```
 

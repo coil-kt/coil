@@ -11,15 +11,15 @@ implementation("io.coil-kt:coil-gif:0.9.5")
 And add the decoders to your component registry when constructing your `ImageLoader`:
 
 ```kotlin
-val imageLoader = ImageLoader(context) {
-    componentRegistry {
+val imageLoader = ImageLoader.Builder(context)
+    .componentRegistry {
         if (SDK_INT >= P) {
             add(ImageDecoderDecoder())
         } else {
             add(GifDecoder())
         }
     }
-}
+    .build()
 ```
 
 And that's it! The `ImageLoader` will automatically detect any GIFs using their file headers and decode them correctly.
