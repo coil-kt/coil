@@ -8,7 +8,7 @@ New instances can be created like so:
 val imageLoader = ImageLoader(context)
 ```
 
-Similar to [Requests](requests.md), `ImageLoader`s can be configured with an optional trailing lambda param:
+Similar to [Requests](requests.md), `ImageLoader`s can be configured by using a builder:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
