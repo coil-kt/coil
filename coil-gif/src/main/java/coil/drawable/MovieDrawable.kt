@@ -28,11 +28,11 @@ import coil.size.Scale
  *
  * NOTE: Prefer using [ImageDecoderDecoder] and [AnimatedImageDrawable] on Android P and above.
  */
-class MovieDrawable(
+class MovieDrawable @JvmOverloads constructor(
     private val movie: Movie,
-    private val config: Bitmap.Config,
-    private val scale: Scale,
-    private val pool: BitmapPool
+    private val pool: BitmapPool,
+    val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
+    val scale: Scale = Scale.FIT
 ) : Drawable(), Animatable2Compat {
 
     companion object {
