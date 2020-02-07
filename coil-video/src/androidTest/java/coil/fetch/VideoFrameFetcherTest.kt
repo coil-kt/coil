@@ -1,4 +1,4 @@
-package coil.decode
+package coil.fetch
 
 import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
@@ -6,10 +6,8 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
-import coil.fetch.DrawableResult
 import coil.fetch.VideoFrameFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
-import coil.fetch.VideoFrameUriFetcher
 import coil.request.Parameters
 import coil.size.OriginalSize
 import coil.util.createOptions
