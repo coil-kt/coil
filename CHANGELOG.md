@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.5] - February 6, 2020
+
+- Fix: Ensure a view is attached before checking if it is hardware accelerated. This fixes a case where requesting a hardware bitmap could miss the memory cache.
+
+---
+
+- Update AndroidX dependencies:
+  - `androidx.core:core-ktx` -> 1.2.0
+
 ## [0.9.4] - February 3, 2020
 
 - Fix: Respect aspect ratio when downsampling in ImageDecoderDecoder. Thanks @zhanghai.
