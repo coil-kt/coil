@@ -116,8 +116,8 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                         val rawScale = DecodeUtils.computeSizeMultiplier(
                             srcWidth = srcWidth,
                             srcHeight = srcHeight,
-                            destWidth = size.width,
-                            destHeight = size.height,
+                            dstWidth = size.width,
+                            dstHeight = size.height,
                             scale = options.scale
                         )
                         val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
@@ -177,28 +177,28 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
 
         // Slow path: re-render the bitmap with the correct size + config.
         val scale: Float
-        val destWidth: Int
-        val destHeight: Int
+        val dstWidth: Int
+        val dstHeight: Int
         when (size) {
             is PixelSize -> {
                 scale = DecodeUtils.computeSizeMultiplier(
                     srcWidth = inBitmap.width,
                     srcHeight = inBitmap.height,
-                    destWidth = size.width,
-                    destHeight = size.height,
+                    dstWidth = size.width,
+                    dstHeight = size.height,
                     scale = options.scale
                 ).toFloat()
-                destWidth = (scale * inBitmap.width).roundToInt()
-                destHeight = (scale * inBitmap.height).roundToInt()
+                dstWidth = (scale * inBitmap.width).roundToInt()
+                dstHeight = (scale * inBitmap.height).roundToInt()
             }
             is OriginalSize -> {
                 scale = 1f
-                destWidth = inBitmap.width
-                destHeight = inBitmap.height
+                dstWidth = inBitmap.width
+                dstHeight = inBitmap.height
             }
         }
         val safeConfig = if (SDK_INT >= O && options.config == Bitmap.Config.HARDWARE) Bitmap.Config.ARGB_8888 else options.config
-        val outBitmap = pool.get(destWidth, destHeight, safeConfig)
+        val outBitmap = pool.get(dstWidth, dstHeight, safeConfig)
         outBitmap.applyCanvas {
             scale(scale, scale)
             drawBitmap(inBitmap, 0f, 0f, paint)
