@@ -76,13 +76,7 @@ class ScaleDrawable(
 
         val targetWidth = bounds.width()
         val targetHeight = bounds.height()
-        val multiplier = DecodeUtils.computeSizeMultiplier(
-            srcWidth = width,
-            srcHeight = height,
-            destWidth = targetWidth,
-            destHeight = targetHeight,
-            scale = scale
-        )
+        val multiplier = DecodeUtils.computeSizeMultiplier(width, height, targetWidth, targetHeight, scale)
 
         val left = ((targetWidth - multiplier * width) / 2).roundToInt()
         val top = ((targetHeight - multiplier * height) / 2).roundToInt()

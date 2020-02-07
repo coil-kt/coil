@@ -43,18 +43,18 @@ object DecodeUtils {
 
     /**
      * Calculate the [BitmapFactory.Options.inSampleSize] given the source dimensions of the image
-     * ([srcWidth] and [srcHeight]), the output dimensions ([destWidth], [destHeight]), and the [scale].
+     * ([srcWidth] and [srcHeight]), the output dimensions ([dstWidth], [dstHeight]), and the [scale].
      */
     @JvmStatic
     fun calculateInSampleSize(
         @Px srcWidth: Int,
         @Px srcHeight: Int,
-        @Px destWidth: Int,
-        @Px destHeight: Int,
+        @Px dstWidth: Int,
+        @Px dstHeight: Int,
         scale: Scale
     ): Int {
-        val widthInSampleSize = Integer.highestOneBit(srcWidth / destWidth).coerceAtLeast(1)
-        val heightInSampleSize = Integer.highestOneBit(srcHeight / destHeight).coerceAtLeast(1)
+        val widthInSampleSize = Integer.highestOneBit(srcWidth / dstWidth).coerceAtLeast(1)
+        val heightInSampleSize = Integer.highestOneBit(srcHeight / dstHeight).coerceAtLeast(1)
         return when (scale) {
             Scale.FILL -> min(widthInSampleSize, heightInSampleSize)
             Scale.FIT -> max(widthInSampleSize, heightInSampleSize)
@@ -69,12 +69,12 @@ object DecodeUtils {
     fun computeSizeMultiplier(
         @Px srcWidth: Int,
         @Px srcHeight: Int,
-        @Px destWidth: Int,
-        @Px destHeight: Int,
+        @Px dstWidth: Int,
+        @Px dstHeight: Int,
         scale: Scale
     ): Double {
-        val widthPercent = destWidth / srcWidth.toDouble()
-        val heightPercent = destHeight / srcHeight.toDouble()
+        val widthPercent = dstWidth / srcWidth.toDouble()
+        val heightPercent = dstHeight / srcHeight.toDouble()
         return when (scale) {
             Scale.FILL -> max(widthPercent, heightPercent)
             Scale.FIT -> min(widthPercent, heightPercent)
@@ -86,12 +86,12 @@ object DecodeUtils {
     fun computeSizeMultiplier(
         @Px srcWidth: Float,
         @Px srcHeight: Float,
-        @Px destWidth: Float,
-        @Px destHeight: Float,
+        @Px dstWidth: Float,
+        @Px dstHeight: Float,
         scale: Scale
     ): Float {
-        val widthPercent = destWidth / srcWidth
-        val heightPercent = destHeight / srcHeight
+        val widthPercent = dstWidth / srcWidth
+        val heightPercent = dstHeight / srcHeight
         return when (scale) {
             Scale.FILL -> max(widthPercent, heightPercent)
             Scale.FIT -> min(widthPercent, heightPercent)
@@ -103,12 +103,12 @@ object DecodeUtils {
     fun computeSizeMultiplier(
         @Px srcWidth: Double,
         @Px srcHeight: Double,
-        @Px destWidth: Double,
-        @Px destHeight: Double,
+        @Px dstWidth: Double,
+        @Px dstHeight: Double,
         scale: Scale
     ): Double {
-        val widthPercent = destWidth / srcWidth
-        val heightPercent = destHeight / srcHeight
+        val widthPercent = dstWidth / srcWidth
+        val heightPercent = dstHeight / srcHeight
         return when (scale) {
             Scale.FILL -> max(widthPercent, heightPercent)
             Scale.FIT -> min(widthPercent, heightPercent)
