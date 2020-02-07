@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
  * This allows drawables that only draw within their intrinsic dimensions
  * (e.g. [AnimatedImageDrawable]) to fill their entire bounds.
  */
-class ScaleDrawable(
+class ScaleDrawable @JvmOverloads constructor(
     val child: Drawable,
     private val scale: Scale = Scale.FIT
 ) : Drawable(), Drawable.Callback, Animatable {

@@ -24,7 +24,7 @@ import coil.size.Size
  *  will downscale the image. Values between 0 and 1 will upscale the image.
  */
 @RequiresApi(JELLY_BEAN_MR2)
-class BlurTransformation(
+class BlurTransformation @JvmOverloads constructor(
     private val context: Context,
     private val radius: Float = DEFAULT_RADIUS,
     private val sampling: Float = DEFAULT_SAMPLING
