@@ -60,12 +60,10 @@ fun createOptions(
     )
 }
 
-fun Context.decodeBitmapAsset(fileName: String): Bitmap {
-    val options = BitmapFactory.Options().apply {
-        inPreferredConfig = Bitmap.Config.ARGB_8888
-    }
-    return checkNotNull(BitmapFactory.decodeStream(assets.open(fileName), null, options))
-}
+fun Context.decodeBitmapAsset(
+    fileName: String,
+    options: BitmapFactory.Options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.ARGB_8888 }
+): Bitmap = checkNotNull(BitmapFactory.decodeStream(assets.open(fileName), null, options))
 
 fun Context.copyAssetToFile(fileName: String): File {
     val source = assets.open(fileName).source()
