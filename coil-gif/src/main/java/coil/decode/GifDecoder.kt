@@ -49,13 +49,13 @@ class GifDecoder : Decoder {
 
         val drawable = MovieDrawable(
             movie = movie,
+            pool = pool,
             config = when {
                 options.allowRgb565 -> Bitmap.Config.RGB_565
                 SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
                 else -> options.config
             },
-            scale = options.scale,
-            pool = pool
+            scale = options.scale
         )
 
         drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
