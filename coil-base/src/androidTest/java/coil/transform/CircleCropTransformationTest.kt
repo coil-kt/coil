@@ -1,10 +1,10 @@
 package coil.transform
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
+import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -26,8 +26,8 @@ class CircleCropTransformationTest {
 
     @Test
     fun basic() {
-        val input = BitmapFactory.decodeStream(context.assets.open("normal_small.jpg"))
-        val expected = BitmapFactory.decodeStream(context.assets.open("normal_small_circle.png"))
+        val input = context.decodeBitmapAsset("normal_small.jpg")
+        val expected = context.decodeBitmapAsset("normal_small_circle.png")
 
         val actual = runBlocking {
             transformation.transform(pool, input, OriginalSize)

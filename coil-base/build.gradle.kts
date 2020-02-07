@@ -21,16 +21,6 @@ android {
         targetSdkVersion(project.targetSdk)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    sourceSets {
-        getByName("test").apply {
-            assets.srcDirs("src/sharedTest/assets")
-            java.srcDirs("src/sharedTest/java")
-        }
-        getByName("androidTest").apply {
-            assets.srcDirs("src/sharedTest/assets")
-            java.srcDirs("src/sharedTest/java")
-        }
-    }
     libraryVariants.all {
         generateBuildConfigProvider?.configure { enabled = false }
     }

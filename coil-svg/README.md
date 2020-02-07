@@ -16,4 +16,4 @@ val imageLoader = ImageLoader(context) {
 }
 ```
 
-And that's it! The `ImageLoader` will automatically detect any SVGs using their file headers and decode them correctly.
+And that's it! The `ImageLoader` will automatically detect any SVGs and decode them correctly.

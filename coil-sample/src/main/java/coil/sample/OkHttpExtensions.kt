@@ -19,7 +19,9 @@ import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
 private const val TLS_1_2 = "TLSv1.2"
+
 private val TLS_1_2_ONLY = arrayOf(TLS_1_2)
+
 private val CONNECTION_SPEC_TLS_1_2_ONLY = run {
     ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
         .tlsVersions(TlsVersion.TLS_1_2)
