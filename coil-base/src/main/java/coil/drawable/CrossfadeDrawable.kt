@@ -246,13 +246,7 @@ class CrossfadeDrawable(
 
         val targetWidth = targetBounds.width()
         val targetHeight = targetBounds.height()
-        val multiplier = DecodeUtils.computeSizeMultiplier(
-            srcWidth = width,
-            srcHeight = height,
-            destWidth = targetWidth,
-            destHeight = targetHeight,
-            scale = scale
-        )
+        val multiplier = DecodeUtils.computeSizeMultiplier(width, height, targetWidth, targetHeight, scale)
         val dx = ((targetWidth - multiplier * width) / 2).roundToInt()
         val dy = ((targetHeight - multiplier * height) / 2).roundToInt()
 

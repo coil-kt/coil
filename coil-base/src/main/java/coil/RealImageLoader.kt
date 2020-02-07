@@ -328,8 +328,8 @@ internal class RealImageLoader(
                 val multiple = DecodeUtils.computeSizeMultiplier(
                     srcWidth = bitmap.width,
                     srcHeight = bitmap.height,
-                    destWidth = size.width,
-                    destHeight = size.height,
+                    dstWidth = size.width,
+                    dstHeight = size.height,
                     scale = scale
                 )
                 if (multiple != 1.0 && !requestService.allowInexactSize(request)) {

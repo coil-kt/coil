@@ -95,8 +95,8 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 val rawScale = DecodeUtils.computeSizeMultiplier(
                     srcWidth = srcWidth / inSampleSize.toDouble(),
                     srcHeight = srcHeight / inSampleSize.toDouble(),
-                    destWidth = width.toDouble(),
-                    destHeight = height.toDouble(),
+                    dstWidth = width.toDouble(),
+                    dstHeight = height.toDouble(),
                     scale = options.scale
                 )
 
