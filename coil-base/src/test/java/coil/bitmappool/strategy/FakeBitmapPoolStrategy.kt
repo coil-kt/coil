@@ -1,7 +1,6 @@
-package coil.bitmappool
+package coil.bitmappool.strategy
 
 import android.graphics.Bitmap
-import coil.bitmappool.strategy.BitmapPoolStrategy
 import java.util.ArrayDeque
 
 class FakeBitmapPoolStrategy : BitmapPoolStrategy {
@@ -16,7 +15,7 @@ class FakeBitmapPoolStrategy : BitmapPoolStrategy {
         bitmaps += bitmap
     }
 
-    override operator fun get(width: Int, height: Int, config: Bitmap.Config): Bitmap? {
+    override fun get(width: Int, height: Int, config: Bitmap.Config): Bitmap? {
         return if (bitmaps.isEmpty()) null else bitmaps.removeLast()
     }
 

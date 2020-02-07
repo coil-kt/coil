@@ -11,6 +11,7 @@ import coil.size.Scale
 import coil.size.Size
 import coil.util.createOptions
 import coil.util.isSimilarTo
+import coil.util.size
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.source
@@ -49,7 +50,7 @@ class BitmapFactoryDecoderTest {
         assertEquals("closed", exception.message)
         assertTrue(isSampled)
         assertTrue(drawable is BitmapDrawable)
-        assertEquals(PixelSize(100, 125), drawable.bitmap.run { PixelSize(width, height) })
+        assertEquals(PixelSize(100, 125), drawable.bitmap.size)
         assertEquals(drawable.bitmap.config, Bitmap.Config.ARGB_8888)
     }
 

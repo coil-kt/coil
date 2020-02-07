@@ -6,6 +6,7 @@ import coil.minSdk
 import coil.targetSdk
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
+import java.net.URL
 
 plugins {
     id("com.android.library")
@@ -33,23 +34,20 @@ afterEvaluate {
     tasks.withType<DokkaTask> {
         outputDirectory = "$rootDir/docs/api"
         outputFormat = "gfm"
+
+        configuration {
+            externalDocumentationLink {
+                url = URL("file://$rootDir/docs/api/coil-base/")
+                packageListUrl = URL("file://$rootDir/docs/api/coil-base/package-list")
+            }
+        }
     }
 }
 
 dependencies {
-    api(kotlin("stdlib", KotlinCompilerVersion.VERSION))
-    api(Library.KOTLINX_COROUTINES_ANDROID)
+    api(project(":coil-base"))
 
-    implementation(Library.ANDROIDX_ANNOTATION)
-    implementation(Library.ANDROIDX_APPCOMPAT_RESOURCES)
-    implementation(Library.ANDROIDX_COLLECTION)
     implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_EXIF_INTERFACE)
-
-    api(Library.ANDROIDX_LIFECYCLE_COMMON)
-
-    api(Library.OKHTTP)
-    api(Library.OKIO)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)

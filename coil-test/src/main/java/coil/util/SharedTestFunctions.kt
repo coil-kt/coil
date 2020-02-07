@@ -1,52 +1,29 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE", "unused", "NOTHING_TO_INLINE")
+@file:Suppress("EXPERIMENTAL_API_USAGE", "NOTHING_TO_INLINE", "unused")
 
 package coil.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ColorSpace
-import coil.ComponentRegistry
 import coil.DefaultRequestOptions
-import coil.RealImageLoader
-import coil.bitmappool.BitmapPool
 import coil.decode.Options
-import coil.memory.BitmapReferenceCounter
-import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.request.GetRequest
 import coil.request.GetRequestBuilder
 import coil.request.LoadRequest
 import coil.request.LoadRequestBuilder
 import coil.request.Parameters
+import coil.size.PixelSize
 import coil.size.Scale
-import okhttp3.Call
 import okhttp3.Headers
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import okio.buffer
+import okio.sink
 import okio.source
-
-internal fun createImageLoader(
-    context: Context,
-    defaults: DefaultRequestOptions = DefaultRequestOptions(),
-    bitmapPool: BitmapPool = BitmapPool(Long.MAX_VALUE),
-    referenceCounter: BitmapReferenceCounter = BitmapReferenceCounter(bitmapPool),
-    memoryCache: MemoryCache = MemoryCache(referenceCounter, Int.MAX_VALUE),
-    callFactory: Call.Factory = OkHttpClient(),
-    registry: ComponentRegistry = ComponentRegistry()
-): RealImageLoader {
-    return RealImageLoader(
-        context,
-        defaults,
-        bitmapPool,
-        referenceCounter,
-        memoryCache,
-        callFactory,
-        registry
-    )
-}
+import java.io.File
 
 fun createMockWebServer(context: Context, vararg images: String): MockWebServer {
     return MockWebServer().apply {
@@ -82,6 +59,22 @@ fun createOptions(
         diskCachePolicy
     )
 }
+
+fun Context.decodeBitmapAsset(
+    fileName: String,
+    options: BitmapFactory.Options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.ARGB_8888 }
+): Bitmap = checkNotNull(BitmapFactory.decodeStream(assets.open(fileName), null, options))
+
+fun Context.copyAssetToFile(fileName: String): File {
+    val source = assets.open(fileName).source()
+    val file = File(filesDir.absolutePath + File.separator + fileName)
+    val sink = file.sink().buffer()
+    source.use { sink.use { sink.writeAll(source) } }
+    return file
+}
+
+val Bitmap.size: PixelSize
+    get() = PixelSize(width, height)
 
 inline fun createGetRequest(
     builder: GetRequestBuilder.() -> Unit = {}
