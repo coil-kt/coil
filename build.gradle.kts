@@ -15,12 +15,11 @@ buildscript {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
         jcenter()
     }
     dependencies {
         classpath("com.android.tools.build:gradle:3.5.3")
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0-SNAPSHOT")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.0")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.1.1")
         classpath(kotlin("gradle-plugin", version = "1.3.61"))
