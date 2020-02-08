@@ -9,12 +9,12 @@ implementation("io.coil-kt:coil-video:0.10.0-SNAPSHOT")
 And add the two fetchers to your component registry when constructing your `ImageLoader`:
 
 ```kotlin
-val imageLoader = ImageLoader(context) {
-    componentRegistry {
-        add(VideoFrameFileFetcher())
-        add(VideoFrameUriFetcher())
+val imageLoader = ImageLoader.Builder(context)
+    .componentRegistry {
+         add(VideoFrameFileFetcher())
+         add(VideoFrameUriFetcher())
     }
-}
+    .build()
 ```
 
 !!! Note

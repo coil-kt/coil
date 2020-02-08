@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("FunctionName", "NOTHING_TO_INLINE", "unused")
 @file:UseExperimental(ExperimentalCoil::class)
 
 package coil.request
@@ -108,11 +108,11 @@ sealed class Request {
  *
  * Or instances can be created separately from the call that executes them:
  * ```
- * val request = LoadRequest(context, imageLoader.defaults) {
- *     data("https://www.example.com/image.jpg")
- *     crossfade(true)
- *     target(imageView)
- * }
+ * val request = LoadRequest.Builder(context, imageLoader.defaults)
+ *     .data("https://www.example.com/image.jpg")
+ *     .crossfade(true)
+ *     .target(imageView)
+ *     .build()
  * imageLoader.load(request)
  * ```
  *
@@ -152,7 +152,20 @@ class LoadRequest internal constructor(
 ) : Request() {
 
     companion object {
+        @JvmStatic
+        @JvmName("builder")
+        inline fun Builder(context: Context, defaults: DefaultRequestOptions) = LoadRequestBuilder(context, defaults)
+
+        @JvmStatic
+        @JvmName("builder")
+        inline fun Builder(context: Context, request: LoadRequest) = LoadRequestBuilder(context, request)
+
         /** Create a new [LoadRequest] instance. */
+        @Deprecated(
+            message = "Use LoadRequest.Builder to create new instances.",
+            replaceWith = ReplaceWith("LoadRequest.Builder(context, defaults).apply(builder).build()"),
+            level = DeprecationLevel.HIDDEN
+        )
         inline operator fun invoke(
             context: Context,
             defaults: DefaultRequestOptions,
@@ -160,6 +173,11 @@ class LoadRequest internal constructor(
         ): LoadRequest = LoadRequestBuilder(context, defaults).apply(builder).build()
 
         /** Create a new [LoadRequest] instance. */
+        @Deprecated(
+            message = "Use LoadRequest.Builder to create new instances.",
+            replaceWith = ReplaceWith("LoadRequest.Builder(context, request).apply(builder).build()"),
+            level = DeprecationLevel.HIDDEN
+        )
         inline operator fun invoke(
             context: Context,
             request: LoadRequest,
@@ -197,10 +215,10 @@ class LoadRequest internal constructor(
  *
  * Or instances can be created separately from the call that executes them:
  * ```
- * val request = GetRequest(imageLoader.defaults) {
- *     data("https://www.example.com/image.jpg")
- *     size(1080, 1920)
- * }
+ * val request = GetRequest.Builder(imageLoader.defaults)
+ *     .data("https://www.example.com/image.jpg")
+ *     .size(1080, 1920)
+ *     .build()
  * imageLoader.get(request)
  * ```
  *
@@ -230,13 +248,31 @@ class GetRequest internal constructor(
 ) : Request() {
 
     companion object {
+        @JvmStatic
+        @JvmName("builder")
+        inline fun Builder(defaults: DefaultRequestOptions) = GetRequestBuilder(defaults)
+
+        @JvmStatic
+        @JvmName("builder")
+        inline fun Builder(request: GetRequest) = GetRequestBuilder(request)
+
         /** Create a new [GetRequest] instance. */
+        @Deprecated(
+            message = "Use GetRequest.Builder to create new instances.",
+            replaceWith = ReplaceWith("GetRequest.Builder(defaults).apply(builder).build()"),
+            level = DeprecationLevel.HIDDEN
+        )
         inline operator fun invoke(
             defaults: DefaultRequestOptions,
             builder: GetRequestBuilder.() -> Unit = {}
         ): GetRequest = GetRequestBuilder(defaults).apply(builder).build()
 
         /** Create a new [GetRequest] instance. */
+        @Deprecated(
+            message = "Use GetRequest.Builder to create new instances.",
+            replaceWith = ReplaceWith("GetRequest.Builder(request).apply(builder).build()"),
+            level = DeprecationLevel.HIDDEN
+        )
         inline operator fun invoke(
             request: GetRequest,
             builder: GetRequestBuilder.() -> Unit = {}
@@ -244,15 +280,10 @@ class GetRequest internal constructor(
     }
 
     override val target: Target? = null
-
     override val lifecycle: Lifecycle? = null
-
     override val transition: Transition? = null
-
     override val placeholder: Drawable? = null
-
     override val error: Drawable? = null
-
     override val fallback: Drawable? = null
 
     /** Create a new [GetRequestBuilder] instance using this as a base. */
