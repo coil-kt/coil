@@ -8,14 +8,14 @@ New instances can be created like so:
 val imageLoader = ImageLoader(context)
 ```
 
-Similar to [Requests](requests.md), `ImageLoader`s can be configured with an optional trailing lambda param:
+Similar to [Requests](requests.md), `ImageLoader`s can be configured by using a builder:
 
 ```kotlin
-val imageLoader = ImageLoader(context) {
-    availableMemoryPercentage(0.5)
-    bitmapPoolPercentage(0.5)
-    crossfade(true)
-}
+val imageLoader = ImageLoader.Builder(context)
+    .availableMemoryPercentage(0.5)
+    .bitmapPoolPercentage(0.5)
+    .crossfade(true)
+    .build()
 ```
 
 Internally, this constructs a `RealImageLoader` using [ImageLoaderBuilder](../api/coil-base/coil/-image-loader-builder).
@@ -31,13 +31,13 @@ Coil relies on `OkHttpClient` to handle disk caching. **By default, every `Image
 However, if you set a custom `OkHttpClient`, you'll need to add the disk cache yourself. To get a `Cache` instance that's optimized for Coil, you can use [`CoilUtils.createDefaultCache`](../api/coil-base/coil.util/-coil-utils/create-default-cache/). Optionally, you can create your own `Cache` instance with a different size + location. Here's an example:
 
 ```kotlin
-val imageLoader = ImageLoader(context) {
-    okHttpClient {
+val imageLoader = ImageLoader.Builder(context)
+    .okHttpClient {
         OkHttpClient.Builder()
             .cache(CoilUtils.createDefaultCache(context))
             .build()
     }
-}
+    .build()
 ```
 
 ## Singleton vs. Dependency Injection

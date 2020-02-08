@@ -16,13 +16,13 @@ class RequestBuilderTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/221 */
     @Test
     fun `crossfade false creates no transition`() {
-        val loader = ImageLoader(context) {
-            crossfade(false)
-        }
+        val loader = ImageLoader.Builder(context)
+            .crossfade(false)
+            .build()
 
-        val request = LoadRequest(context, loader.defaults) {
-            crossfade(false)
-        }
+        val request = LoadRequest.Builder(context, loader.defaults)
+            .crossfade(false)
+            .build()
 
         assertNull(request.transition)
 

@@ -2,19 +2,10 @@
 
 Requests are [value objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that provide all the necessary information for an [ImageLoader](image_loaders.md) to execute an image request.
 
-Requests can be created a number of ways. This simplest way is to use the trailing lambda syntax:
+Requests can be created using a builder:
 
 ```kotlin
-val request = LoadRequest(context, imageLoader.defaults) {
-    data("https://www.example.com/image.jpg")
-    crossfade(true)
-}
-```
-
-Requests can also be created using typical builder syntax. This works best for Java:
-
-```kotlin
-val request = imageLoader.newLoadBuilder(context)
+val request = LoadRequest.Builder(context, imageLoader.defaults)
     .data("https://www.example.com/image.jpg")
     .crossfade(true)
     .build()
