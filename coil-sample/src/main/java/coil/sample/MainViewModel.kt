@@ -5,6 +5,7 @@ import androidx.core.graphics.toColorInt
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Parameters
@@ -15,14 +16,14 @@ import okio.source
 import org.json.JSONArray
 import kotlin.random.Random
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(application: Application, handle: SavedStateHandle) : AndroidViewModel(application) {
 
-    private val screenLiveData = MutableLiveData<Screen>(Screen.List)
-    private val imagesLiveData = MutableLiveData<List<Image>>()
-    private val assetTypeLiveData = MutableLiveData<AssetType>()
+    private val screenLiveData: MutableLiveData<Screen> = MutableLiveData(Screen.List) // Do not persist.
+    private val imagesLiveData: MutableLiveData<List<Image>> = MutableLiveData(emptyList()) // Do not persist.
+    private val assetTypeLiveData: MutableLiveData<AssetType> = handle.getLiveData("asset_type", AssetType.JPG)
 
     init {
-        setAssetType(AssetType.JPG)
+        loadImages(assetTypeLiveData.requireValue())
     }
 
     fun screens(): LiveData<Screen> = screenLiveData

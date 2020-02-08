@@ -31,8 +31,8 @@ class Application : MultiDexApplication() {
             .crossfade(true) // Show a short crossfade when loading images from network or disk.
             .componentRegistry {
                 // Fetchers
-                add(VideoFrameFileFetcher(applicationContext))
-                add(VideoFrameUriFetcher(applicationContext))
+                add(VideoFrameFileFetcher(this@Application))
+                add(VideoFrameUriFetcher(this@Application))
 
                 // Decoders
                 if (SDK_INT >= P) {

@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package coil.sample
 
 import android.os.Build.VERSION.SDK_INT
@@ -6,29 +8,28 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil.api.load
+import coil.sample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    private val toolbar: Toolbar by bindView(R.id.toolbar)
-    private val list: RecyclerView by bindView(R.id.list)
-    private val detail: ImageView by bindView(R.id.detail)
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var listAdapter: ImageListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         if (SDK_INT >= Q) {
             window.decorView.apply {
@@ -36,38 +37,49 @@ class MainActivity : AppCompatActivity() {
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                     View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             }
-            toolbar.setOnApplyWindowInsetsListener { view, insets ->
+            binding.toolbar.setOnApplyWindowInsetsListener { view, insets ->
                 view.updatePadding(top = insets.systemWindowInsetTop)
                 insets
             }
         }
 
-        val listAdapter = ImageListAdapter(this, viewModel::setScreen)
-        list.apply {
+        listAdapter = ImageListAdapter(this, viewModel::setScreen)
+        binding.list.apply {
             setHasFixedSize(true)
-            layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, VERTICAL)
             adapter = listAdapter
         }
 
         viewModel.screens().observe(this, ::setScreen)
-        viewModel.images().observe(this, listAdapter::submitList)
-        viewModel.assetTypes().observe(this) { invalidateOptionsMenu() }
+        viewModel.images().observe(this, ::setImages)
+        viewModel.assetTypes().observe(this, ::setAssetType)
     }
 
     private fun setScreen(screen: Screen) {
         when (screen) {
             is Screen.List -> {
-                list.isVisible = true
-                detail.isVisible = false
+                binding.list.isVisible = true
+                binding.detail.isVisible = false
             }
             is Screen.Detail -> {
-                list.isVisible = false
-                detail.isVisible = true
-                detail.load(screen.image.uri) {
+                binding.list.isVisible = false
+                binding.detail.isVisible = true
+                binding.detail.load(screen.image.uri) {
                     parameters(screen.image.parameters)
                 }
             }
         }
+    }
+
+    private fun setImages(images: List<Image>) {
+        listAdapter.submitList(images) {
+            // Ensure we're at the top of the list when the list items are updated.
+            binding.list.scrollToPosition(0)
+        }
+    }
+
+    private fun setAssetType(assetType: AssetType) {
+        invalidateOptionsMenu()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

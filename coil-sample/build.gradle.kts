@@ -30,6 +30,9 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+    viewBinding {
+        isEnabled = true
+    }
 }
 
 dependencies {

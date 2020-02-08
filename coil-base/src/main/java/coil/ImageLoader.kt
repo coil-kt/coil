@@ -21,7 +21,7 @@ interface ImageLoader {
         @JvmName("builder")
         inline fun Builder(context: Context) = ImageLoaderBuilder(context)
 
-        /** Alias to create a new [ImageLoader] without configuration */
+        /** Alias to create a new [ImageLoader] without configuration. */
         @JvmStatic
         @JvmName("create")
         inline operator fun invoke(context: Context) = ImageLoaderBuilder(context).build()
