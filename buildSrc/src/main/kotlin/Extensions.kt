@@ -5,6 +5,8 @@ package coil
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
 import kotlin.math.pow
@@ -74,7 +76,11 @@ fun DependencyHandler.addTestDependencies(kotlinVersion: String, includeTestProj
     testImplementation(Library.ANDROIDX_TEST_RUNNER)
 
     testImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
-    testImplementation(Library.ROBOLECTRIC)
+
+    // https://github.com/robolectric/robolectric/issues/5245
+    add("testImplementation", Library.ROBOLECTRIC) {
+        exclude(group = "com.google.auto.service", module = "auto-service")
+    }
 }
 
 fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeTestProject: Boolean = true) {
