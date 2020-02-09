@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme.v23" parent="AppTheme.v21">
+    <style name="AppTheme.v23" parent="AppTheme.v16">
         <item name="colorPrimary">#FFF</item>
         <item name="colorPrimaryDark">#FFF</item>
         <item name="colorAccent">#CCC</item>
