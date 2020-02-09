@@ -54,11 +54,11 @@ private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
     return sum
 }
 
-fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? {
+private fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? {
     return add("testImplementation", dependencyNotation)
 }
 
-fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? {
+private fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? {
     return add("androidTestImplementation", dependencyNotation)
 }
 
