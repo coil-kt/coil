@@ -23,13 +23,13 @@ import kotlin.test.assertTrue
 
 class BitmapFactoryDecoderTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var pool: BitmapPool
     private lateinit var service: BitmapFactoryDecoder
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         pool = BitmapPool(0)
         service = BitmapFactoryDecoder(context)
     }

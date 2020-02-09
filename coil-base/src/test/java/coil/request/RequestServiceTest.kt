@@ -19,12 +19,12 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class RequestServiceTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var service: RequestService
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         service = RequestService()
     }
 

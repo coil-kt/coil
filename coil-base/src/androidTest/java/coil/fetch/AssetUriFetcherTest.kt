@@ -18,13 +18,13 @@ import kotlin.test.assertTrue
 
 class AssetUriFetcherTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var fetcher: AssetUriFetcher
     private lateinit var pool: BitmapPool
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         fetcher = AssetUriFetcher(context)
         pool = BitmapPool(0)
     }
