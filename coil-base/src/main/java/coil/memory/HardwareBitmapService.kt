@@ -106,23 +106,28 @@ private object HardwareBitmapBlacklist {
             if (model.removePrefix("SAMSUNG-").startsWith("SM-")) return@run true
 
             // Moto E5
-            if (model in arrayOf("Moto E", "XT1924-9") ||
+            if (model == "Moto E" || model == "XT1924-9" ||
                 model.startsWith("moto e5", true)) return@run true
 
             // Moto G6
-            if (model in arrayOf("Moto G Play", "XT1925-10") ||
+            if (model == "Moto G Play" || model == "XT1925-10" ||
                 model.startsWith("moto g(6)", true)) return@run true
         }
 
         if (SDK_INT == O_MR1) {
-            // LG Stylo 4 (Boost/Sprint)
-            if (model.startsWith("LG-Q710")) return@run true
-
-            // LG Tribute Empire
-            if (model == "LM-X220PM") return@run true
-
-            // LG K11
-            if (model.startsWith("LM-X410")) return@run true
+            return@run model in arrayOf(
+                "LM-Q610.FG", "LM-Q610.FGN", "LM-Q617.FG", "LM-Q617.FGN", // LG Q7
+                "LG-Q710AL", "LG-Q710PL", "LM-Q710.FG", "LM-Q710.FGN", // LG Stylo 4
+                "LGM-K121K", "LGM-K121L", "LGM-K121S", // LG X400
+                "LGM-X320K", "LGM-X320L", "LGM-X320S", // LG X500
+                "LM-X220PM", // LG Tribute Empire
+                "LM-X220QMA", // LG K8s
+                "LM-X410PM", // LG K30
+                "LG-M250", // LG K10 (2017)
+                "LG-M320", // LG X-Power 2
+                "ILA X1", // iLA X1
+                "SGINO6" // SGiNO 6
+            )
         }
 
         return@run false
