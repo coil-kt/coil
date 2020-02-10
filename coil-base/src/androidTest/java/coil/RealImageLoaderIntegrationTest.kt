@@ -65,13 +65,13 @@ class RealImageLoaderIntegrationTest {
         private const val IMAGE_SIZE = 443291L
     }
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var server: MockWebServer
     private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
         imageLoader = ImageLoader(context) as RealImageLoader
     }

@@ -33,8 +33,7 @@ import kotlin.test.assertTrue
 
 class ContentUriFetcherTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var fetcher: ContentUriFetcher
     private lateinit var pool: BitmapPool
 
@@ -45,6 +44,7 @@ class ContentUriFetcherTest {
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         fetcher = ContentUriFetcher(context)
         pool = BitmapPool(0)
     }

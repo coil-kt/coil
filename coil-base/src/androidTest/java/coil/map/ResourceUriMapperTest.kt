@@ -13,12 +13,12 @@ import kotlin.test.assertTrue
 
 class ResourceUriMapperTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var mapper: ResourceUriMapper
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         mapper = ResourceUriMapper(context)
     }
 

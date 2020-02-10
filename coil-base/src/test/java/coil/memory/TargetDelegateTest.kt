@@ -34,8 +34,7 @@ import kotlin.test.assertTrue
 @UseExperimental(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
 class TargetDelegateTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var imageLoader: ImageLoader
     private lateinit var pool: FakeBitmapPool
@@ -44,6 +43,7 @@ class TargetDelegateTest {
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
         imageLoader = ImageLoader(context)
         pool = FakeBitmapPool()

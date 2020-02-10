@@ -12,12 +12,12 @@ import kotlin.test.assertFalse
 
 class ResourceIntMapperTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var mapper: ResourceIntMapper
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         mapper = ResourceIntMapper(context)
     }
 

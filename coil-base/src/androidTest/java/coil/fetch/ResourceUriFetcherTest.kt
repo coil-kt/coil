@@ -20,14 +20,14 @@ import kotlin.test.assertTrue
 
 class ResourceUriFetcherTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var pool: BitmapPool
     private lateinit var drawableDecoder: DrawableDecoderService
     private lateinit var fetcher: ResourceUriFetcher
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         pool = BitmapPool(0)
         drawableDecoder = DrawableDecoderService(pool)
         fetcher = ResourceUriFetcher(context, drawableDecoder)

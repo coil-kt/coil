@@ -29,8 +29,7 @@ import kotlin.test.assertTrue
 @UseExperimental(ExperimentalCoroutinesApi::class)
 class HttpFetcherTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var server: MockWebServer
     private lateinit var callFactory: Call.Factory
@@ -38,6 +37,7 @@ class HttpFetcherTest {
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg")
         callFactory = OkHttpClient()
