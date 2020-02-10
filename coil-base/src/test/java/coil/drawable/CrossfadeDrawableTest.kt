@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.size.Scale
 import coil.util.createBitmap
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -15,7 +16,12 @@ import kotlin.test.assertEquals
 @RunWith(RobolectricTestRunner::class)
 class CrossfadeDrawableTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
+    private lateinit var context: Context
+
+    @Before
+    fun before() {
+        context = ApplicationProvider.getApplicationContext()
+    }
 
     @Test
     fun `SAME aspect ratio - FILL`() {

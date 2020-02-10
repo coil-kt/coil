@@ -12,7 +12,7 @@ class MathsTest {
 
     @Test
     fun `basic variance`() {
-        assertEquals(2.67, intArrayOf(3, 4, 4, 5, 6, 8).variance().roundToInt(2))
+        assertEquals(2.67, intArrayOf(3, 4, 4, 5, 6, 8).variance().round(2))
         assertEquals(11.0, intArrayOf(1, 2, 4, 5, 7, 11).variance())
         assertEquals(21704.0, intArrayOf(600, 470, 170, 430, 300).variance())
     }
@@ -49,6 +49,6 @@ class MathsTest {
     fun `complex cross correlation`() {
         val x = intArrayOf(123, 241, 211, 183, 145)
         val y = intArrayOf(81, 48, 178, 64, 255)
-        assertEquals(-0.311775, crossCorrelation(x, y).roundToInt(6))
+        assertEquals(-0.311775, crossCorrelation(x, y).round(6))
     }
 }

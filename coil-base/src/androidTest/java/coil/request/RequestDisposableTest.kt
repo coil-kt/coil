@@ -25,12 +25,12 @@ import kotlin.test.assertTrue
 @UseExperimental(ExperimentalCoil::class)
 class RequestDisposableTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         imageLoader = ImageLoader(context) as RealImageLoader
     }
 

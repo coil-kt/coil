@@ -20,19 +20,21 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @UseExperimental(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
 class CrossfadeTransitionTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
+    private lateinit var context: Context
 
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var transition: CrossfadeTransition
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
         transition = CrossfadeTransition()
     }
@@ -51,7 +53,9 @@ class CrossfadeTransitionTest {
             transition.transition(
                 target = createTransitionTarget(
                     onSuccess = { result ->
+                        assertFalse(onSuccessCalled)
                         onSuccessCalled = true
+
                         assertEquals(drawable, result)
                     }
                 ),
@@ -71,7 +75,9 @@ class CrossfadeTransitionTest {
             transition.transition(
                 target = createTransitionTarget(
                     onSuccess = { result ->
+                        assertFalse(onSuccessCalled)
                         onSuccessCalled = true
+
                         assertTrue(result is CrossfadeDrawable)
                         assertEquals(drawable, result.end)
 
@@ -95,11 +101,13 @@ class CrossfadeTransitionTest {
             transition.transition(
                 target = createTransitionTarget(
                     onError = { error ->
+                        assertFalse(onSuccessCalled)
                         onSuccessCalled = true
+
                         assertTrue(error is CrossfadeDrawable)
                         assertEquals(drawable, error.end)
 
-                        // Stop the transition early to simulate the end of the animation.
+                        // Stop the animation early to simulate the end of the animation.
                         error.stop()
                     }
                 ),

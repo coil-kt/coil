@@ -16,13 +16,13 @@ import kotlin.test.assertTrue
 
 class FileFetcherTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var fetcher: FileFetcher
     private lateinit var pool: BitmapPool
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         fetcher = FileFetcher()
         pool = BitmapPool(0)
     }

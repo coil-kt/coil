@@ -13,13 +13,13 @@ import kotlin.test.assertTrue
 
 class CircleCropTransformationTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var pool: BitmapPool
     private lateinit var transformation: CircleCropTransformation
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         pool = BitmapPool(0)
         transformation = CircleCropTransformation()
     }

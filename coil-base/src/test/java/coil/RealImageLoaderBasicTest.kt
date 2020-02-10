@@ -53,8 +53,7 @@ import kotlin.test.assertTrue
 @UseExperimental(ExperimentalCoil::class)
 class RealImageLoaderBasicTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var bitmapPool: BitmapPool
     private lateinit var referenceCounter: BitmapReferenceCounter
     private lateinit var memoryCache: MemoryCache
@@ -62,6 +61,7 @@ class RealImageLoaderBasicTest {
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         bitmapPool = BitmapPool(Long.MAX_VALUE)
         referenceCounter = BitmapReferenceCounter(bitmapPool)
         memoryCache = MemoryCache(referenceCounter, Int.MAX_VALUE)

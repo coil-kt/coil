@@ -22,13 +22,13 @@ import kotlin.test.assertTrue
 
 class VideoFrameFetcherTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var pool: BitmapPool
     private lateinit var fetcher: VideoFrameUriFetcher
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         pool = BitmapPool(0)
         fetcher = VideoFrameUriFetcher(context)
     }
