@@ -2,6 +2,7 @@
 
 package coil
 
+import android.content.Context
 import coil.util.CoilContentProvider
 
 /**
@@ -15,8 +16,18 @@ object Coil {
     /**
      * Get the default [ImageLoader] instance. Creates a new instance if none has been set.
      */
+    @Deprecated(
+        message = "Migrate to loader(context).",
+        replaceWith = ReplaceWith("loader(context)")
+    )
     @JvmStatic
-    fun loader(): ImageLoader = imageLoader ?: buildDefaultImageLoader()
+    fun loader(): ImageLoader = imageLoader ?: buildDefaultImageLoader(CoilContentProvider.context)
+
+    /**
+     * Get the default [ImageLoader] instance. Creates a new instance if none has been set.
+     */
+    @JvmStatic
+    fun loader(context: Context): ImageLoader = imageLoader ?: buildDefaultImageLoader(context)
 
     /**
      * Set the default [ImageLoader] instance. Shutdown the current instance.
@@ -41,13 +52,14 @@ object Coil {
     }
 
     @Synchronized
-    private fun buildDefaultImageLoader(): ImageLoader {
+    private fun buildDefaultImageLoader(context: Context): ImageLoader {
         // Check again in case imageLoader was just set.
-        return imageLoader ?: run {
-            val loader = imageLoaderInitializer?.invoke() ?: ImageLoader(CoilContentProvider.context)
-            imageLoaderInitializer = null
-            setDefaultImageLoader(loader)
-            loader
-        }
+        imageLoader?.let { return it }
+
+        // Create a new ImageLoader.
+        val loader = imageLoaderInitializer?.invoke() ?: ImageLoader(context)
+        imageLoaderInitializer = null
+        setDefaultImageLoader(loader)
+        return loader
     }
 }
