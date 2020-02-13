@@ -9,6 +9,7 @@ import android.graphics.PorterDuffXfermode
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
 import coil.size.Size
+import coil.util.safeConfig
 import kotlin.math.min
 
 /**
@@ -27,7 +28,7 @@ class CircleCropTransformation : Transformation {
 
         val minSize = min(input.width, input.height)
         val radius = minSize / 2f
-        val output = pool.get(minSize, minSize, input.config)
+        val output = pool.get(minSize, minSize, input.safeConfig)
         output.applyCanvas {
             drawCircle(radius, radius, radius, paint)
             paint.xfermode = XFERMODE

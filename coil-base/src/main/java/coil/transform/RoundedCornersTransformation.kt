@@ -19,6 +19,7 @@ import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
+import coil.util.safeConfig
 import kotlin.math.roundToInt
 
 /**
@@ -67,7 +68,7 @@ class RoundedCornersTransformation(
             }
         }
 
-        val output = pool.get(outputWidth, outputHeight, input.config)
+        val output = pool.get(outputWidth, outputHeight, input.safeConfig)
         output.applyCanvas {
             drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
