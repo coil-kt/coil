@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
 import coil.size.Size
+import coil.util.safeConfig
 
 /**
  * A [Transformation] that applies a Gaussian blur to an image.
@@ -47,7 +48,7 @@ class BlurTransformation @JvmOverloads constructor(
 
         val scaledWidth = (input.width / sampling).toInt()
         val scaledHeight = (input.height / sampling).toInt()
-        val output = pool.get(scaledWidth, scaledHeight, input.config)
+        val output = pool.get(scaledWidth, scaledHeight, input.safeConfig)
         output.applyCanvas {
             scale(1 / sampling, 1 / sampling)
             drawBitmap(input, 0f, 0f, paint)
