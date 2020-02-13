@@ -36,8 +36,8 @@ class BlurTransformation @JvmOverloads constructor(
     }
 
     init {
-        require(radius >= 0) { "Radius must be >= 0." }
-        require(sampling > 0) { "Sampling must be > 0." }
+        require(radius in 0.0..25.0) { "radius must be in [0, 25]." }
+        require(sampling > 0) { "sampling must be > 0." }
     }
 
     override fun key(): String = "${BlurTransformation::class.java.name}-$radius-$sampling"
