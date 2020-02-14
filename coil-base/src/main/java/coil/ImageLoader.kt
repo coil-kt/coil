@@ -29,8 +29,7 @@ interface ImageLoader {
         /** Create a new [ImageLoader] instance. */
         @Deprecated(
             message = "Use ImageLoader.Builder to create new instances.",
-            replaceWith = ReplaceWith("ImageLoader.Builder(context).apply(builder).build()"),
-            level = DeprecationLevel.HIDDEN
+            replaceWith = ReplaceWith("ImageLoader.Builder(context).apply(builder).build()")
         )
         inline operator fun invoke(
             context: Context,
