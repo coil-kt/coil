@@ -30,8 +30,7 @@ class ComponentRegistry private constructor(
         /** Create a new [ComponentRegistry] instance. */
         @Deprecated(
             message = "Use ComponentRegistry.Builder to create new instances.",
-            replaceWith = ReplaceWith("ComponentRegistry.Builder().apply(builder).build()"),
-            level = DeprecationLevel.HIDDEN
+            replaceWith = ReplaceWith("ComponentRegistry.Builder().apply(builder).build()")
         )
         inline operator fun invoke(
             builder: Builder.() -> Unit = {}
@@ -40,8 +39,7 @@ class ComponentRegistry private constructor(
         /** Create a new [ComponentRegistry] instance. */
         @Deprecated(
             message = "Use ComponentRegistry.Builder to create new instances.",
-            replaceWith = ReplaceWith("ComponentRegistry.Builder(registry).apply(builder).build()"),
-            level = DeprecationLevel.HIDDEN
+            replaceWith = ReplaceWith("ComponentRegistry.Builder(registry).apply(builder).build()")
         )
         inline operator fun invoke(
             registry: ComponentRegistry,

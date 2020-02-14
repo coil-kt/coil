@@ -20,8 +20,7 @@ class Parameters private constructor(
         /** Create a new [Parameters] instance. */
         @Deprecated(
             message = "Use Parameters.Builder to create new instances.",
-            replaceWith = ReplaceWith("Parameters.Builder().apply(builder).build()"),
-            level = DeprecationLevel.HIDDEN
+            replaceWith = ReplaceWith("Parameters.Builder().apply(builder).build()")
         )
         inline operator fun invoke(
             builder: Builder.() -> Unit = {}

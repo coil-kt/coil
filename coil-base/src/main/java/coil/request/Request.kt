@@ -163,8 +163,7 @@ class LoadRequest internal constructor(
         /** Create a new [LoadRequest] instance. */
         @Deprecated(
             message = "Use LoadRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("LoadRequest.Builder(context, defaults).apply(builder).build()"),
-            level = DeprecationLevel.HIDDEN
+            replaceWith = ReplaceWith("LoadRequest.Builder(context, defaults).apply(builder).build()")
         )
         inline operator fun invoke(
             context: Context,
@@ -175,8 +174,7 @@ class LoadRequest internal constructor(
         /** Create a new [LoadRequest] instance. */
         @Deprecated(
             message = "Use LoadRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("LoadRequest.Builder(context, request).apply(builder).build()"),
-            level = DeprecationLevel.HIDDEN
+            replaceWith = ReplaceWith("LoadRequest.Builder(context, request).apply(builder).build()")
         )
         inline operator fun invoke(
             context: Context,
@@ -259,8 +257,7 @@ class GetRequest internal constructor(
         /** Create a new [GetRequest] instance. */
         @Deprecated(
             message = "Use GetRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("GetRequest.Builder(defaults).apply(builder).build()"),
-            level = DeprecationLevel.HIDDEN
+            replaceWith = ReplaceWith("GetRequest.Builder(defaults).apply(builder).build()")
         )
         inline operator fun invoke(
             defaults: DefaultRequestOptions,
@@ -270,8 +267,7 @@ class GetRequest internal constructor(
         /** Create a new [GetRequest] instance. */
         @Deprecated(
             message = "Use GetRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("GetRequest.Builder(request).apply(builder).build()"),
-            level = DeprecationLevel.HIDDEN
+            replaceWith = ReplaceWith("GetRequest.Builder(request).apply(builder).build()")
         )
         inline operator fun invoke(
             request: GetRequest,
