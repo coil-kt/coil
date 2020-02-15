@@ -29,16 +29,16 @@ import okhttp3.OkHttpClient
 
 /** Builder for an [ImageLoader]. */
 @BuilderMarker
-class ImageLoaderBuilder(private val context: Context) {
+class ImageLoaderBuilder(context: Context) {
+
+    private val applicationContext = context.applicationContext
 
     private var callFactory: Call.Factory? = null
-
     private var registry: ComponentRegistry? = null
-
-    private var availableMemoryPercentage: Double = Utils.getDefaultAvailableMemoryPercentage(context)
-    private var bitmapPoolPercentage: Double = Utils.getDefaultBitmapPoolPercentage()
-
     private var defaults = DefaultRequestOptions()
+
+    private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
+    private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
 
     /**
      * Set the [OkHttpClient] used for network requests.
@@ -205,7 +205,7 @@ class ImageLoaderBuilder(private val context: Context) {
      * Set the default placeholder drawable to use when a request starts.
      */
     fun placeholder(@DrawableRes drawableResId: Int) = apply {
-        this.defaults = this.defaults.copy(placeholder = context.getDrawableCompat(drawableResId))
+        this.defaults = this.defaults.copy(placeholder = applicationContext.getDrawableCompat(drawableResId))
     }
 
     /**
@@ -219,7 +219,7 @@ class ImageLoaderBuilder(private val context: Context) {
      * Set the default error drawable to use when a request fails.
      */
     fun error(@DrawableRes drawableResId: Int) = apply {
-        this.defaults = this.defaults.copy(error = context.getDrawableCompat(drawableResId))
+        this.defaults = this.defaults.copy(error = applicationContext.getDrawableCompat(drawableResId))
     }
 
     /**
@@ -233,7 +233,7 @@ class ImageLoaderBuilder(private val context: Context) {
      * Set the default fallback drawable to use if [Request.data] is null.
      */
     fun fallback(@DrawableRes drawableResId: Int) = apply {
-        this.defaults = this.defaults.copy(error = context.getDrawableCompat(drawableResId))
+        this.defaults = this.defaults.copy(error = applicationContext.getDrawableCompat(drawableResId))
     }
 
     /**
@@ -247,7 +247,7 @@ class ImageLoaderBuilder(private val context: Context) {
      * Create a new [ImageLoader] instance.
      */
     fun build(): ImageLoader {
-        val availableMemorySize = Utils.calculateAvailableMemorySize(context, availableMemoryPercentage)
+        val availableMemorySize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
         val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toLong()
         val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
@@ -256,7 +256,7 @@ class ImageLoaderBuilder(private val context: Context) {
         val memoryCache = MemoryCache(referenceCounter, memoryCacheSize)
 
         return RealImageLoader(
-            context = context,
+            context = applicationContext,
             defaults = defaults,
             bitmapPool = bitmapPool,
             referenceCounter = referenceCounter,
@@ -268,7 +268,7 @@ class ImageLoaderBuilder(private val context: Context) {
 
     private fun buildDefaultCallFactory() = lazyCallFactory {
         OkHttpClient.Builder()
-            .cache(CoilUtils.createDefaultCache(context))
+            .cache(CoilUtils.createDefaultCache(applicationContext))
             .build()
     }
 }

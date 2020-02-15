@@ -32,8 +32,18 @@ inline fun Coil.load(
     context: Context,
     uri: String?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, uri, builder)
+): RequestDisposable = loader(context).load(context, uri, builder)
 
+suspend inline fun Coil.get(
+    context: Context,
+    uri: String,
+    builder: GetRequestBuilder.() -> Unit = {}
+): Drawable = loader(context).get(uri, builder)
+
+@Deprecated(
+    message = "Migrate to Coil.get(context, uri).",
+    replaceWith = ReplaceWith("get(context, uri, builder)")
+)
 suspend inline fun Coil.get(
     uri: String,
     builder: GetRequestBuilder.() -> Unit = {}
@@ -46,8 +56,18 @@ inline fun Coil.load(
     context: Context,
     url: HttpUrl?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, url, builder)
+): RequestDisposable = loader(context).load(context, url, builder)
 
+suspend inline fun Coil.get(
+    context: Context,
+    url: HttpUrl,
+    builder: GetRequestBuilder.() -> Unit = {}
+): Drawable = loader(context).get(url, builder)
+
+@Deprecated(
+    message = "Migrate to Coil.get(context, url).",
+    replaceWith = ReplaceWith("get(context, url, builder)")
+)
 suspend inline fun Coil.get(
     url: HttpUrl,
     builder: GetRequestBuilder.() -> Unit = {}
@@ -60,8 +80,18 @@ inline fun Coil.load(
     context: Context,
     uri: Uri?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, uri, builder)
+): RequestDisposable = loader(context).load(context, uri, builder)
 
+suspend inline fun Coil.get(
+    context: Context,
+    uri: Uri,
+    builder: GetRequestBuilder.() -> Unit = {}
+): Drawable = loader(context).get(uri, builder)
+
+@Deprecated(
+    message = "Migrate to Coil.get(context, uri).",
+    replaceWith = ReplaceWith("get(context, uri, builder)")
+)
 suspend inline fun Coil.get(
     uri: Uri,
     builder: GetRequestBuilder.() -> Unit = {}
@@ -74,8 +104,18 @@ inline fun Coil.load(
     context: Context,
     file: File?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, file, builder)
+): RequestDisposable = loader(context).load(context, file, builder)
 
+suspend inline fun Coil.get(
+    context: Context,
+    file: File,
+    builder: GetRequestBuilder.() -> Unit = {}
+): Drawable = loader(context).get(file, builder)
+
+@Deprecated(
+    message = "Migrate to Coil.get(context, file).",
+    replaceWith = ReplaceWith("get(context, file, builder)")
+)
 suspend inline fun Coil.get(
     file: File,
     builder: GetRequestBuilder.() -> Unit = {}
@@ -88,8 +128,18 @@ inline fun Coil.load(
     context: Context,
     @DrawableRes drawableRes: Int,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, drawableRes, builder)
+): RequestDisposable = loader(context).load(context, drawableRes, builder)
 
+suspend inline fun Coil.get(
+    context: Context,
+    @DrawableRes drawableRes: Int,
+    builder: GetRequestBuilder.() -> Unit = {}
+): Drawable = loader(context).get(drawableRes, builder)
+
+@Deprecated(
+    message = "Migrate to Coil.get(context, drawableRes).",
+    replaceWith = ReplaceWith("get(context, drawableRes, builder)")
+)
 suspend inline fun Coil.get(
     @DrawableRes drawableRes: Int,
     builder: GetRequestBuilder.() -> Unit = {}
@@ -102,8 +152,18 @@ inline fun Coil.load(
     context: Context,
     drawable: Drawable?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, drawable, builder)
+): RequestDisposable = loader(context).load(context, drawable, builder)
 
+suspend inline fun Coil.get(
+    context: Context,
+    drawable: Drawable,
+    builder: GetRequestBuilder.() -> Unit = {}
+): Drawable = loader(context).get(drawable, builder)
+
+@Deprecated(
+    message = "Migrate to Coil.get(context, drawable).",
+    replaceWith = ReplaceWith("get(context, drawable, builder)")
+)
 suspend inline fun Coil.get(
     drawable: Drawable,
     builder: GetRequestBuilder.() -> Unit = {}
@@ -116,8 +176,18 @@ inline fun Coil.load(
     context: Context,
     bitmap: Bitmap?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().load(context, bitmap, builder)
+): RequestDisposable = loader(context).load(context, bitmap, builder)
 
+suspend inline fun Coil.get(
+    context: Context,
+    bitmap: Bitmap,
+    builder: GetRequestBuilder.() -> Unit = {}
+): Drawable = loader(context).get(bitmap, builder)
+
+@Deprecated(
+    message = "Migrate to Coil.get(context, bitmap).",
+    replaceWith = ReplaceWith("get(context, bitmap, builder)")
+)
 suspend inline fun Coil.get(
     bitmap: Bitmap,
     builder: GetRequestBuilder.() -> Unit = {}
@@ -130,8 +200,18 @@ inline fun Coil.loadAny(
     context: Context,
     data: Any?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader().loadAny(context, data, builder)
+): RequestDisposable = loader(context).loadAny(context, data, builder)
 
+suspend inline fun Coil.getAny(
+    context: Context,
+    data: Any,
+    builder: GetRequestBuilder.() -> Unit = {}
+): Drawable = loader(context).getAny(data, builder)
+
+@Deprecated(
+    message = "Migrate to Coil.getAny(context, data).",
+    replaceWith = ReplaceWith("getAny(context, data, builder)")
+)
 suspend inline fun Coil.getAny(
     data: Any,
     builder: GetRequestBuilder.() -> Unit = {}

@@ -101,7 +101,7 @@ val drawable = Picasso.get()
     .get()
 
 // Coil (suspends the current context; thread safe)
-val drawable = Coil.get(url) {
+val drawable = Coil.get(context, url) {
     size(width, height)
 }
 ```
