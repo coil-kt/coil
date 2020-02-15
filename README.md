@@ -49,7 +49,7 @@ imageView.load("https://www.example.com/image.jpg") {
 To get an image imperatively, use the `get` [suspend](https://kotlinlang.org/docs/reference/coroutines/basics.html) function:
 
 ```kotlin
-val drawable = Coil.get(context, "https://www.example.com/image.jpg")
+val drawable = Coil.get("https://www.example.com/image.jpg")
 ```
 
 Coil requires Java 8 bytecode. [Here's how to enable it](https://coil-kt.github.io/coil/getting_started/#java-8). 
