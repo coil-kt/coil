@@ -13,16 +13,18 @@ import kotlin.test.assertNull
 @RunWith(RobolectricTestRunner::class)
 class MemoryCacheTest {
 
+    private lateinit var weakMemoryCache: WeakMemoryCache
     private lateinit var counter: BitmapReferenceCounter
 
     @Before
     fun before() {
-        counter = BitmapReferenceCounter(RealBitmapPool(0))
+        weakMemoryCache = WeakMemoryCache()
+        counter = BitmapReferenceCounter(weakMemoryCache, RealBitmapPool(0))
     }
 
     @Test
     fun `can retrieve cached value`() {
-        val cache = MemoryCache(counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
+        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
 
         val bitmap = createBitmap()
         cache.set("1", bitmap, false)
@@ -32,7 +34,7 @@ class MemoryCacheTest {
 
     @Test
     fun `least recently used value is evicted`() {
-        val cache = MemoryCache(counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
+        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
 
         val first = createBitmap()
         cache.set("1", first, false)
@@ -48,7 +50,7 @@ class MemoryCacheTest {
 
     @Test
     fun `maxSize 0 disables memory cache`() {
-        val cache = MemoryCache(counter, 0)
+        val cache = MemoryCache(weakMemoryCache, counter, 0)
 
         val bitmap = createBitmap()
         cache.set("1", bitmap, false)

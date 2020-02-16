@@ -14,13 +14,15 @@ import kotlin.test.assertNull
 @RunWith(RobolectricTestRunner::class)
 class BitmapReferenceCounterTest {
 
+    private lateinit var weakMemoryCache: WeakMemoryCache
     private lateinit var pool: BitmapPool
     private lateinit var counter: BitmapReferenceCounter
 
     @Before
     fun before() {
+        weakMemoryCache = WeakMemoryCache()
         pool = RealBitmapPool(DEFAULT_BITMAP_SIZE)
-        counter = BitmapReferenceCounter(pool)
+        counter = BitmapReferenceCounter(weakMemoryCache, pool)
     }
 
     @Test

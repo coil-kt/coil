@@ -1,5 +1,6 @@
 package coil.memory
 
+import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
@@ -10,39 +11,45 @@ import coil.memory.MemoryCache.Value
 import coil.util.getAllocationByteCountCompat
 import coil.util.log
 
-/** A memory cache for [Bitmap]s. */
+/** An in-memory cache for [Bitmap]s. */
 internal interface MemoryCache {
 
     companion object {
         operator fun invoke(
+            weakMemoryCache: WeakMemoryCache,
             referenceCounter: BitmapReferenceCounter,
             maxSize: Int
         ): MemoryCache {
             return if (maxSize > 0) {
-                RealMemoryCache(referenceCounter, maxSize)
+                RealMemoryCache(weakMemoryCache, referenceCounter, maxSize)
             } else {
                 EmptyMemoryCache
             }
         }
     }
 
+    /** Get the value associated with [key]. */
     fun get(key: String): Value?
 
-    fun set(key: String, value: Bitmap, isSampled: Boolean)
+    /** Set the value associated with [key]. */
+    fun set(key: String, bitmap: Bitmap, isSampled: Boolean)
 
+    /** Return the **current size** of the memory cache in bytes. */
     fun size(): Int
 
+    /** Return the **maximum size** of the memory cache in bytes. */
     fun maxSize(): Int
 
+    /** Remove all values from this cache. */
     fun clearMemory()
 
+    /** @see ComponentCallbacks2.onTrimMemory */
     fun trimMemory(level: Int)
 
-    data class Value(
-        val bitmap: Bitmap,
-        val isSampled: Boolean,
-        val size: Int
-    )
+    interface Value {
+        val bitmap: Bitmap?
+        val isSampled: Boolean
+    }
 }
 
 /** A [MemoryCache] implementation that caches nothing. */
@@ -50,7 +57,7 @@ private object EmptyMemoryCache : MemoryCache {
 
     override fun get(key: String): Value? = null
 
-    override fun set(key: String, value: Bitmap, isSampled: Boolean) {}
+    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean) {}
 
     override fun size(): Int = 0
 
@@ -63,6 +70,7 @@ private object EmptyMemoryCache : MemoryCache {
 
 /** A [MemoryCache] implementation backed by an [LruCache]. */
 private class RealMemoryCache(
+    private val weakMemoryCache: WeakMemoryCache,
     private val referenceCounter: BitmapReferenceCounter,
     maxSize: Int
 ) : MemoryCache {
@@ -71,30 +79,40 @@ private class RealMemoryCache(
         private const val TAG = "RealMemoryCache"
     }
 
-    private val cache = object : LruCache<String, Value>(maxSize) {
+    private val cache = object : LruCache<String, InternalValue>(maxSize) {
         override fun entryRemoved(
             evicted: Boolean,
             key: String,
-            oldValue: Value,
-            newValue: Value?
-        ) = referenceCounter.decrement(oldValue.bitmap)
+            oldValue: InternalValue,
+            newValue: InternalValue?
+        ) {
+            val isPooled = referenceCounter.decrement(oldValue.bitmap)
+            if (!isPooled) {
+                // Add the bitmap to the WeakMemoryCache if it wasn't just added to the BitmapPool.
+                weakMemoryCache.set(key, oldValue.bitmap, oldValue.isSampled)
+            }
+        }
 
-        override fun sizeOf(key: String, value: Value) = value.size
+        override fun sizeOf(key: String, value: InternalValue) = value.size
     }
 
-    override fun get(key: String): Value? = cache.get(key)
+    override fun get(key: String) = cache.get(key) ?: weakMemoryCache.get(key)
 
-    override fun set(key: String, value: Bitmap, isSampled: Boolean) {
+    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
         // the cache to be cleared. Instead just evict an existing element with the same key if it exists.
-        val size = value.getAllocationByteCountCompat()
+        val size = bitmap.getAllocationByteCountCompat()
         if (size > maxSize()) {
-            cache.remove(key)
+            val previous = cache.remove(key)
+            if (previous == null) {
+                // If previous != null, the value was already added to the weak memory cache in LruCache.entryRemoved.
+                weakMemoryCache.set(key, bitmap, isSampled)
+            }
             return
         }
 
-        referenceCounter.increment(value)
-        cache.put(key, Value(value, isSampled, size))
+        referenceCounter.increment(bitmap)
+        cache.put(key, InternalValue(bitmap, isSampled, size))
     }
 
     override fun size(): Int = cache.size()
@@ -114,4 +132,10 @@ private class RealMemoryCache(
             cache.trimToSize(size() / 2)
         }
     }
+
+    private data class InternalValue(
+        override val bitmap: Bitmap,
+        override val isSampled: Boolean,
+        val size: Int
+    ) : Value
 }

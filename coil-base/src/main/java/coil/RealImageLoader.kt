@@ -43,6 +43,7 @@ import coil.memory.DelegateService
 import coil.memory.MemoryCache
 import coil.memory.RequestService
 import coil.memory.TargetDelegate
+import coil.memory.WeakMemoryCache
 import coil.network.NetworkObserver
 import coil.request.BaseTargetRequestDisposable
 import coil.request.GetRequest
@@ -93,6 +94,7 @@ internal class RealImageLoader(
     private val bitmapPool: BitmapPool,
     private val referenceCounter: BitmapReferenceCounter,
     private val memoryCache: MemoryCache,
+    private val weakMemoryCache: WeakMemoryCache,
     callFactory: Call.Factory,
     registry: ComponentRegistry
 ) : ImageLoader, ComponentCallbacks {
@@ -456,6 +458,7 @@ internal class RealImageLoader(
         context.unregisterComponentCallbacks(this)
         networkObserver.shutdown()
         clearMemory()
+        weakMemoryCache.clear() // This must be after clearMemory.
     }
 
     private fun assertNotShutdown() {

@@ -10,15 +10,22 @@ import androidx.core.util.set
 import coil.bitmappool.BitmapPool
 import coil.collection.SparseIntArraySet
 import coil.extension.plusAssign
+import coil.util.identityHashCode
 import coil.util.log
 import java.lang.ref.WeakReference
 
 /**
  * Count references to [Bitmap]s. Add bitmaps to the [bitmapPool] when they're no longer referenced.
  *
+ * This class uses [System.identityHashCode] to determine bitmap identity as it provides a "unique-enough" key
+ * for a [Bitmap] and it allows us to avoid using [WeakReference]s.
+ *
  * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
  */
-internal class BitmapReferenceCounter(private val bitmapPool: BitmapPool) {
+internal class BitmapReferenceCounter(
+    private val weakMemoryCache: WeakMemoryCache,
+    private val bitmapPool: BitmapPool
+) {
 
     companion object {
         private const val TAG = "BitmapReferenceCounter"
@@ -31,7 +38,7 @@ internal class BitmapReferenceCounter(private val bitmapPool: BitmapPool) {
      * Increase the reference count for this [Bitmap] by one.
      */
     fun increment(bitmap: Bitmap) {
-        val key = bitmap.key()
+        val key = bitmap.identityHashCode
         val count = counts[key]
         val newCount = count + 1
         counts[key] = newCount
@@ -42,9 +49,11 @@ internal class BitmapReferenceCounter(private val bitmapPool: BitmapPool) {
      * Decrease the reference count for this [Bitmap] by one.
      *
      * If the reference count is now zero, add the [Bitmap] to [bitmapPool].
+     *
+     * @return True if [bitmap] was added to [bitmapPool] as a result of this decrement operation.
      */
-    fun decrement(bitmap: Bitmap) {
-        val key = bitmap.key()
+    fun decrement(bitmap: Bitmap): Boolean {
+        val key = bitmap.identityHashCode
         val count = counts[key]
         val newCount = count - 1
         counts[key] = newCount
@@ -54,34 +63,31 @@ internal class BitmapReferenceCounter(private val bitmapPool: BitmapPool) {
             counts.delete(key)
             val isValid = !invalidKeys.remove(key)
             if (isValid) {
+                // Remove the bitmap from the WeakMemoryCache and add it to the BitmapPool.
+                weakMemoryCache.remove(bitmap)
                 bitmapPool.put(bitmap)
+                return true
             }
         }
+
+        return false
     }
 
     /**
-     * Mark this Bitmap as invalid so it is not returned to the Bitmap pool
+     * Mark this bitmap as invalid so it is not returned to the bitmap pool
      * when it is no longer referenced.
      */
     fun invalidate(bitmap: Bitmap) {
-        invalidKeys += bitmap.key()
+        invalidKeys += bitmap.identityHashCode
     }
 
     @VisibleForTesting
     fun count(bitmap: Bitmap): Int {
-        return counts[bitmap.key()]
+        return counts[bitmap.identityHashCode]
     }
 
     @VisibleForTesting
     fun invalid(bitmap: Bitmap): Boolean {
-        return invalidKeys.contains(bitmap.key())
-    }
-
-    /**
-     * [System.identityHashCode] provides a "unique-enough" key for a [Bitmap],
-     * which allows us to avoid using [WeakReference]s.
-     */
-    private inline fun Bitmap.key(): Int {
-        return System.identityHashCode(this)
+        return bitmap.identityHashCode in invalidKeys
     }
 }

@@ -121,9 +121,7 @@ internal inline fun StatFs.getBlockSizeCompat(): Long {
     return if (SDK_INT > JELLY_BEAN_MR2) blockSizeLong else blockSize.toLong()
 }
 
-internal fun MemoryCache.getValue(key: String?): MemoryCache.Value? {
-    return key?.let { get(it) }
-}
+internal fun MemoryCache.getValue(key: String?): MemoryCache.Value? = key?.let(::get)
 
 internal fun MemoryCache.putValue(key: String?, value: Drawable, isSampled: Boolean) {
     if (key != null) {
@@ -249,3 +247,6 @@ internal fun Request.isDiskOnlyPreload(): Boolean {
 }
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
+
+internal inline val Any.identityHashCode: Int
+    get() = System.identityHashCode(this)

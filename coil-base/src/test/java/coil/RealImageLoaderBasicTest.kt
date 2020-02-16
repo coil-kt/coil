@@ -16,6 +16,7 @@ import coil.fetch.Fetcher
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
+import coil.memory.WeakMemoryCache
 import coil.request.Parameters
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -57,20 +58,23 @@ class RealImageLoaderBasicTest {
     private lateinit var bitmapPool: BitmapPool
     private lateinit var referenceCounter: BitmapReferenceCounter
     private lateinit var memoryCache: MemoryCache
+    private lateinit var weakMemoryCache: WeakMemoryCache
     private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         bitmapPool = BitmapPool(Long.MAX_VALUE)
-        referenceCounter = BitmapReferenceCounter(bitmapPool)
-        memoryCache = MemoryCache(referenceCounter, Int.MAX_VALUE)
+        weakMemoryCache = WeakMemoryCache()
+        referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool)
+        memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE)
         imageLoader = RealImageLoader(
             context,
             DefaultRequestOptions(),
             bitmapPool,
             referenceCounter,
             memoryCache,
+            weakMemoryCache,
             OkHttpClient(),
             ComponentRegistry()
         )
