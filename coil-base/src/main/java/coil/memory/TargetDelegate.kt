@@ -57,7 +57,7 @@ internal object EmptyTargetDelegate : TargetDelegate()
  */
 internal class InvalidatableEmptyTargetDelegate(
     override val referenceCounter: BitmapReferenceCounter
-) : TargetDelegate(), Invalidable {
+) : TargetDelegate(), Invalidatable {
 
     override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
         invalidate(result.bitmap)
@@ -70,7 +70,7 @@ internal class InvalidatableEmptyTargetDelegate(
 internal class InvalidatableTargetDelegate(
     val target: Target,
     override val referenceCounter: BitmapReferenceCounter
-) : TargetDelegate(), Invalidable {
+) : TargetDelegate(), Invalidatable {
 
     override fun start(cached: BitmapDrawable?, placeholder: Drawable?) {
         invalidate(cached?.bitmap)
@@ -112,7 +112,7 @@ internal class PoolableTargetDelegate(
     }
 }
 
-private interface Invalidable {
+private interface Invalidatable {
 
     val referenceCounter: BitmapReferenceCounter
 
