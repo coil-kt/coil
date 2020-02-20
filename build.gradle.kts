@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 import coil.groupId
 import coil.versionName
 import com.android.build.gradle.BaseExtension
@@ -21,7 +19,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:3.6.0-rc03")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.2.0")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.2.1")
         classpath(kotlin("gradle-plugin", version = "1.3.61"))
     }
 }
