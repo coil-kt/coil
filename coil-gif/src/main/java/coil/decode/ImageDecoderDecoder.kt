@@ -5,6 +5,7 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
+import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -17,6 +18,8 @@ import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
 import okio.sink
+import java.io.File
+import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
 /**
@@ -39,18 +42,24 @@ class ImageDecoderDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
-        val tempFile = createTempFile()
+        var tempFile: File? = null
 
         try {
             var isSampled = false
 
-            // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
-            source.use { tempFile.sink().use(source::readAll) }
-            val decoderSource = ImageDecoder.createSource(tempFile)
+            val decoderSource = if (SDK_INT >= 30) {
+                // Buffer the source into memory.
+                ImageDecoder.createSource(ByteBuffer.wrap(source.readByteArray()))
+            } else {
+                // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
+                tempFile = createTempFile()
+                source.use { tempFile.sink().use(source::readAll) }
+                ImageDecoder.createSource(tempFile)
+            }
 
             val baseDrawable = decoderSource.decodeDrawable { info, _ ->
                 // It's safe to delete the temp file here.
-                tempFile.delete()
+                tempFile?.delete()
 
                 if (size is PixelSize) {
                     val (srcWidth, srcHeight) = info.size
@@ -101,7 +110,7 @@ class ImageDecoderDecoder : Decoder {
                 isSampled = isSampled
             )
         } finally {
-            tempFile.delete()
+            tempFile?.delete()
         }
     }
 }
