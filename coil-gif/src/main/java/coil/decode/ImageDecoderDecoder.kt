@@ -23,7 +23,9 @@ import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
 /**
- * A [Decoder] that uses [ImageDecoder] to decode GIFs and animated WebPs on Android P and above.
+ * A [Decoder] that uses [ImageDecoder] to decode GIFs, animated WebPs, and animated HEIFs.
+ *
+ * NOTE: Animated HEIF files are only supported on Android R and up.
  */
 @RequiresApi(P)
 class ImageDecoderDecoder : Decoder {
@@ -33,7 +35,9 @@ class ImageDecoderDecoder : Decoder {
     }
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
-        return DecodeUtils.isGif(source) || DecodeUtils.isAnimatedWebP(source)
+        return DecodeUtils.isGif(source) ||
+            DecodeUtils.isAnimatedWebP(source) ||
+            (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
     }
 
     override suspend fun decode(

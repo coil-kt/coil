@@ -25,4 +25,4 @@ val imageLoader = ImageLoader.Builder(context)
 And that's it! The `ImageLoader` will automatically detect any GIFs using their file headers and decode them correctly.
 
 !!! Note
-    Coil includes two separate decoders to support decoding GIFs. `GifDecoder` supports all API levels, but is slower. `ImageDecoderDecoder` is powered by Android's new [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API which is only available on Android P and above. `ImageDecoderDecoder` is faster than `GifDecoder` and also supports decoding animated WebP images.
+    Coil includes two separate decoders to support decoding GIFs. `GifDecoder` supports all API levels, but is slower. `ImageDecoderDecoder` is powered by Android's new [ImageDecoder](https://developer.android.com/reference/android/graphics/ImageDecoder) API which is only available on Android P and above. `ImageDecoderDecoder` is faster than `GifDecoder` and supports decoding animated WebP images and animated HEIF image sequences.
