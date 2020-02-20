@@ -42,6 +42,10 @@ import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Response
 import java.io.Closeable
+import java.util.SortedMap
+import java.util.SortedSet
+import java.util.TreeMap
+import java.util.TreeSet
 
 internal suspend inline fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
@@ -89,6 +93,18 @@ internal inline fun <T> List<T>.findIndices(predicate: (T) -> Boolean): T? {
 }
 
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
+
+/** Return the first non-null value returned by [transform]. */
+internal inline fun <R, T> Collection<R>.firstNotNull(transform: (R) -> T?): T? {
+    for (item in this) {
+        transform(item)?.let { return it }
+    }
+    return null
+}
+
+internal inline fun <T> sortedSetOf(): SortedSet<T> = TreeSet()
+
+internal inline fun <K, V> sortedMapOf(): SortedMap<K, V> = TreeMap()
 
 internal inline fun ActivityManager.isLowRamDeviceCompat(): Boolean {
     return SDK_INT < KITKAT || isLowRamDevice
