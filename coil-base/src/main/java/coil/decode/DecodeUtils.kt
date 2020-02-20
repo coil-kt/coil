@@ -20,6 +20,12 @@ object DecodeUtils {
     private val WEBP_HEADER_WEBP = "WEBP".encodeUtf8()
     private val WEBP_HEADER_VPX8 = "VP8X".encodeUtf8()
 
+    // https://nokiatech.github.io/heif/technical.html
+    private val HEIF_HEADER_FTYP = "ftyp".encodeUtf8()
+    private val HEIF_HEADER_MSF1 = "msf1".encodeUtf8()
+    private val HEIF_HEADER_HEVC = "hevc".encodeUtf8()
+    private val HEIF_HEADER_HEVX = "hevx".encodeUtf8()
+
     /** Return true if the [source] contains a GIF image. The [source] is not consumed. */
     @JvmStatic
     fun isGif(source: BufferedSource): Boolean {
@@ -39,6 +45,21 @@ object DecodeUtils {
             source.rangeEquals(12, WEBP_HEADER_VPX8) &&
             source.request(17) &&
             (source.buffer[16] and 0b00000010) > 0
+    }
+
+    /** Return true if the [source] contains an HEIF image. The [source] is not consumed. */
+    @JvmStatic
+    fun isHeif(source: BufferedSource): Boolean {
+        return source.rangeEquals(4, HEIF_HEADER_FTYP)
+    }
+
+    /** Return true if the [source] contains an animated HEIF image sequence. The [source] is not consumed. */
+    @JvmStatic
+    fun isAnimatedHeif(source: BufferedSource): Boolean {
+        return isHeif(source) &&
+            (source.rangeEquals(8, HEIF_HEADER_MSF1) ||
+                source.rangeEquals(8, HEIF_HEADER_HEVC) ||
+                source.rangeEquals(8, HEIF_HEADER_HEVX))
     }
 
     /**
