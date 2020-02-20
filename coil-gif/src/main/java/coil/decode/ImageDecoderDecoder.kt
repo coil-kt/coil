@@ -5,6 +5,7 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
+import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -20,7 +21,9 @@ import okio.sink
 import kotlin.math.roundToInt
 
 /**
- * A [Decoder] that uses [ImageDecoder] to decode GIFs and animated WebPs on Android P and above.
+ * A [Decoder] that uses [ImageDecoder] to decode GIFs, animated WebPs, and animated HEIFs.
+ *
+ * NOTE: Animated HEIF files are only supported on Android R and up.
  */
 @RequiresApi(P)
 class ImageDecoderDecoder : Decoder {
@@ -30,7 +33,9 @@ class ImageDecoderDecoder : Decoder {
     }
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
-        return DecodeUtils.isGif(source) || DecodeUtils.isAnimatedWebP(source)
+        return DecodeUtils.isGif(source) ||
+            DecodeUtils.isAnimatedWebP(source) ||
+            (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
     }
 
     override suspend fun decode(
