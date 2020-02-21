@@ -41,6 +41,8 @@ dependencies {
 
     implementation(Library.OKIO)
 
+    implementation(Library.JUNIT)
+
     addTestDependencies(KotlinCompilerVersion.VERSION, includeTestProject = false)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION, includeTestProject = false)
 }
