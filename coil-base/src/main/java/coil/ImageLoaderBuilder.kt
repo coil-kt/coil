@@ -58,7 +58,7 @@ class ImageLoaderBuilder(context: Context) {
      * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
      * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
      */
-    fun okHttpClient(initializer: () -> OkHttpClient) = callFactory(initializer)
+    fun okHttpClient(provider: () -> OkHttpClient) = callFactory(provider)
 
     /**
      * Set the [Call.Factory] used for network requests.
@@ -76,7 +76,7 @@ class ImageLoaderBuilder(context: Context) {
      * Set a lazy callback to create the [Call.Factory] used for network requests.
      *
      * This allows lazy creation of the [Call.Factory] on a background thread.
-     * [initializer] is guaranteed to be called at most once.
+     * [provider] is guaranteed to be called at most once.
      *
      * Prefer using this instead of `callFactory(Call.Factory)`.
      *
@@ -85,8 +85,8 @@ class ImageLoaderBuilder(context: Context) {
      * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
      * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
      */
-    fun callFactory(initializer: () -> Call.Factory) = apply {
-        this.callFactory = lazyCallFactory(initializer)
+    fun callFactory(provider: () -> Call.Factory) = apply {
+        this.callFactory = lazyCallFactory(provider)
     }
 
     /**

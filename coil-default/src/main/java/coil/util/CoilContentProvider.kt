@@ -13,7 +13,7 @@ import coil.Coil
 /**
  * A [ContentProvider] whose [Context] is used to initialize the [Coil] singleton.
  */
-@Deprecated("CoilContentProvider will be removed in a future release in favor of deferred initialization through Coil.loader(context).")
+@Deprecated("CoilContentProvider will be removed in a future release in favor of deferred initialization through Coil.imageLoader(context).")
 @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
 class CoilContentProvider : ContentProvider() {
 
