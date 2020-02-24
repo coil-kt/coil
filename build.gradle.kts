@@ -16,7 +16,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.6.0-rc03")
+        classpath("com.android.tools.build:gradle:3.6.0")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.9.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.2.1")
