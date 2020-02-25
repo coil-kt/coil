@@ -59,9 +59,9 @@ private object EmptyMemoryCache : MemoryCache {
 
     override fun set(key: String, bitmap: Bitmap, isSampled: Boolean) {}
 
-    override fun size(): Int = 0
+    override fun size() = 0
 
-    override fun maxSize(): Int = 0
+    override fun maxSize() = 0
 
     override fun clearMemory() {}
 
@@ -115,9 +115,9 @@ private class RealMemoryCache(
         cache.put(key, InternalValue(bitmap, isSampled, size))
     }
 
-    override fun size(): Int = cache.size()
+    override fun size() = cache.size()
 
-    override fun maxSize(): Int = cache.maxSize()
+    override fun maxSize() = cache.maxSize()
 
     override fun clearMemory() {
         log(TAG, Log.DEBUG) { "clearMemory" }
