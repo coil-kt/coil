@@ -18,7 +18,7 @@ import coil.util.CoilUtils
 import okhttp3.HttpUrl
 import java.io.File
 
-// This file defines a collection of type-safe load and get extension functions for ImageViews.
+// This file defines a collection of type-safe load extension functions for ImageViews.
 //
 // Example:
 // ```
