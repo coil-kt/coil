@@ -32,7 +32,7 @@ import java.io.File
 
 inline fun ImageView.load(
     uri: String?,
-    imageLoader: ImageLoader = Coil.loader(context),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.load(context, uri) {
@@ -46,7 +46,7 @@ inline fun ImageView.load(
 
 inline fun ImageView.load(
     url: HttpUrl?,
-    imageLoader: ImageLoader = Coil.loader(context),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.load(context, url) {
@@ -60,7 +60,7 @@ inline fun ImageView.load(
 
 inline fun ImageView.load(
     uri: Uri?,
-    imageLoader: ImageLoader = Coil.loader(context),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.load(context, uri) {
@@ -74,7 +74,7 @@ inline fun ImageView.load(
 
 inline fun ImageView.load(
     file: File?,
-    imageLoader: ImageLoader = Coil.loader(context),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.load(context, file) {
@@ -88,7 +88,7 @@ inline fun ImageView.load(
 
 inline fun ImageView.load(
     @DrawableRes drawableRes: Int,
-    imageLoader: ImageLoader = Coil.loader(context),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.load(context, drawableRes) {
@@ -102,7 +102,7 @@ inline fun ImageView.load(
 
 inline fun ImageView.load(
     drawable: Drawable?,
-    imageLoader: ImageLoader = Coil.loader(context),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.load(context, drawable) {
@@ -116,7 +116,7 @@ inline fun ImageView.load(
 
 inline fun ImageView.load(
     bitmap: Bitmap?,
-    imageLoader: ImageLoader = Coil.loader(context),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.load(context, bitmap) {
@@ -130,7 +130,7 @@ inline fun ImageView.load(
 
 inline fun ImageView.loadAny(
     data: Any?,
-    imageLoader: ImageLoader = Coil.loader(context),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.loadAny(context, data) {

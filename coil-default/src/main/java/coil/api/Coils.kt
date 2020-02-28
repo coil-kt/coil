@@ -32,13 +32,13 @@ inline fun Coil.load(
     context: Context,
     uri: String?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader(context).load(context, uri, builder)
+): RequestDisposable = imageLoader(context).load(context, uri, builder)
 
 suspend inline fun Coil.get(
     context: Context,
     uri: String,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader(context).get(uri, builder)
+): Drawable = imageLoader(context).get(uri, builder)
 
 @Deprecated(
     message = "Migrate to Coil.get(context, uri).",
@@ -56,13 +56,13 @@ inline fun Coil.load(
     context: Context,
     url: HttpUrl?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader(context).load(context, url, builder)
+): RequestDisposable = imageLoader(context).load(context, url, builder)
 
 suspend inline fun Coil.get(
     context: Context,
     url: HttpUrl,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader(context).get(url, builder)
+): Drawable = imageLoader(context).get(url, builder)
 
 @Deprecated(
     message = "Migrate to Coil.get(context, url).",
@@ -80,13 +80,13 @@ inline fun Coil.load(
     context: Context,
     uri: Uri?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader(context).load(context, uri, builder)
+): RequestDisposable = imageLoader(context).load(context, uri, builder)
 
 suspend inline fun Coil.get(
     context: Context,
     uri: Uri,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader(context).get(uri, builder)
+): Drawable = imageLoader(context).get(uri, builder)
 
 @Deprecated(
     message = "Migrate to Coil.get(context, uri).",
@@ -104,13 +104,13 @@ inline fun Coil.load(
     context: Context,
     file: File?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader(context).load(context, file, builder)
+): RequestDisposable = imageLoader(context).load(context, file, builder)
 
 suspend inline fun Coil.get(
     context: Context,
     file: File,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader(context).get(file, builder)
+): Drawable = imageLoader(context).get(file, builder)
 
 @Deprecated(
     message = "Migrate to Coil.get(context, file).",
@@ -128,13 +128,13 @@ inline fun Coil.load(
     context: Context,
     @DrawableRes drawableRes: Int,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader(context).load(context, drawableRes, builder)
+): RequestDisposable = imageLoader(context).load(context, drawableRes, builder)
 
 suspend inline fun Coil.get(
     context: Context,
     @DrawableRes drawableRes: Int,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader(context).get(drawableRes, builder)
+): Drawable = imageLoader(context).get(drawableRes, builder)
 
 @Deprecated(
     message = "Migrate to Coil.get(context, drawableRes).",
@@ -152,13 +152,13 @@ inline fun Coil.load(
     context: Context,
     drawable: Drawable?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader(context).load(context, drawable, builder)
+): RequestDisposable = imageLoader(context).load(context, drawable, builder)
 
 suspend inline fun Coil.get(
     context: Context,
     drawable: Drawable,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader(context).get(drawable, builder)
+): Drawable = imageLoader(context).get(drawable, builder)
 
 @Deprecated(
     message = "Migrate to Coil.get(context, drawable).",
@@ -176,13 +176,13 @@ inline fun Coil.load(
     context: Context,
     bitmap: Bitmap?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader(context).load(context, bitmap, builder)
+): RequestDisposable = imageLoader(context).load(context, bitmap, builder)
 
 suspend inline fun Coil.get(
     context: Context,
     bitmap: Bitmap,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader(context).get(bitmap, builder)
+): Drawable = imageLoader(context).get(bitmap, builder)
 
 @Deprecated(
     message = "Migrate to Coil.get(context, bitmap).",
@@ -200,13 +200,13 @@ inline fun Coil.loadAny(
     context: Context,
     data: Any?,
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loader(context).loadAny(context, data, builder)
+): RequestDisposable = imageLoader(context).loadAny(context, data, builder)
 
 suspend inline fun Coil.getAny(
     context: Context,
     data: Any,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = loader(context).getAny(data, builder)
+): Drawable = imageLoader(context).getAny(data, builder)
 
 @Deprecated(
     message = "Migrate to Coil.getAny(context, data).",

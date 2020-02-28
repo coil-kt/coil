@@ -2,6 +2,7 @@
 
 package coil
 
+import android.app.Application
 import android.content.Context
 import coil.util.CoilContentProvider
 
@@ -11,55 +12,81 @@ import coil.util.CoilContentProvider
 object Coil {
 
     private var imageLoader: ImageLoader? = null
-    private var imageLoaderInitializer: (() -> ImageLoader)? = null
+    private var imageLoaderProvider: ImageLoaderProvider? = null
 
-    /**
-     * Get the default [ImageLoader] instance. Creates a new instance if none has been set.
-     */
+    /** @see imageLoader */
     @Deprecated(
-        message = "Migrate to loader(context).",
-        replaceWith = ReplaceWith("loader(context)")
+        message = "Migrate to imageLoader(context).",
+        replaceWith = ReplaceWith("imageLoader(context)")
     )
     @JvmStatic
-    fun loader(): ImageLoader = imageLoader ?: buildDefaultImageLoader(CoilContentProvider.context)
+    fun loader(): ImageLoader = imageLoader(CoilContentProvider.context)
 
     /**
-     * Get the default [ImageLoader] instance. Creates a new instance if none has been set.
+     * Get the default [ImageLoader]. Creates a new instance if none has been set.
      */
     @JvmStatic
-    fun loader(context: Context): ImageLoader = imageLoader ?: buildDefaultImageLoader(context)
+    fun imageLoader(context: Context): ImageLoader = imageLoader ?: buildImageLoader(context)
 
     /**
-     * Set the default [ImageLoader] instance. Shutdown the current instance.
+     * Set the default [ImageLoader]. Shutdown the current instance if there is one.
      */
     @JvmStatic
-    fun setDefaultImageLoader(loader: ImageLoader) {
-        imageLoader?.shutdown()
-        imageLoader = loader
-        imageLoaderInitializer = null
+    fun setImageLoader(loader: ImageLoader) {
+        setImageLoader(object : ImageLoaderProvider {
+            override fun getImageLoader() = loader
+        })
     }
 
     /**
-     * Set a lazy callback to create the default [ImageLoader] instance. Shutdown the current instance.
+     * Set a lazy callback to create the default [ImageLoader]. Shutdown the current instance if there is one.
+     * The [provider] is guaranteed to be called at most once.
      *
-     * The [initializer] is guaranteed to only be called once. This enables lazy instantiation of the default [ImageLoader].
+     * Using this method to set an explicit [provider] takes precedence over an [Application] that
+     * implements [ImageLoaderProvider].
      */
     @JvmStatic
-    fun setDefaultImageLoader(initializer: () -> ImageLoader) {
-        imageLoader?.shutdown()
-        imageLoaderInitializer = initializer
+    @Synchronized
+    fun setImageLoader(provider: ImageLoaderProvider) {
+        imageLoaderProvider = provider
+
+        // Shutdown the image loader after clearing the reference.
+        val loader = imageLoader
         imageLoader = null
+        loader?.shutdown()
+    }
+
+    /** @see setImageLoader */
+    @Deprecated(
+        message = "Migrate to setImageLoader(loader).",
+        replaceWith = ReplaceWith("setImageLoader(loader)")
+    )
+    @JvmStatic
+    fun setDefaultImageLoader(loader: ImageLoader) = setImageLoader(loader)
+
+    /** @see setImageLoader */
+    @Deprecated(
+        message = "Migrate to setDefaultImageLoader(ImageLoaderProvider).",
+        replaceWith = ReplaceWith("setImageLoader(object : ImageLoaderProvider { override fun getImageLoader() = provider() })")
+    )
+    @JvmStatic
+    fun setDefaultImageLoader(provider: () -> ImageLoader) {
+        setImageLoader(object : ImageLoaderProvider {
+            override fun getImageLoader() = provider()
+        })
     }
 
     @Synchronized
-    private fun buildDefaultImageLoader(context: Context): ImageLoader {
+    private fun buildImageLoader(context: Context): ImageLoader {
         // Check again in case imageLoader was just set.
         imageLoader?.let { return it }
 
         // Create a new ImageLoader.
-        val loader = imageLoaderInitializer?.invoke() ?: ImageLoader(context)
-        imageLoaderInitializer = null
-        setDefaultImageLoader(loader)
+        val loader = imageLoaderProvider?.getImageLoader()
+            ?: (context.applicationContext as? ImageLoaderProvider)?.getImageLoader()
+            ?: ImageLoader(context)
+        imageLoaderProvider = null
+        setImageLoader(loader)
         return loader
     }
 }
