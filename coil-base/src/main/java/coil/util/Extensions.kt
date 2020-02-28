@@ -206,10 +206,10 @@ internal inline fun <T> Any.self(block: T.() -> Unit): T {
 
 /**
  * Wrap a [Call.Factory] factory as a [Call.Factory] instance.
- * [provider] is called only once the first time [Call.Factory.newCall] is called.
+ * [initializer] is called only once the first time [Call.Factory.newCall] is called.
  */
-internal fun lazyCallFactory(provider: () -> Call.Factory): Call.Factory {
-    val lazy: Lazy<Call.Factory> = lazy(provider)
+internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
+    val lazy: Lazy<Call.Factory> = lazy(initializer)
     return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
 }
 
