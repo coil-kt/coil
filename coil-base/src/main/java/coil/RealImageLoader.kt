@@ -67,7 +67,7 @@ import coil.util.emoji
 import coil.util.firstNotNullIndices
 import coil.util.forEachIndices
 import coil.util.getValue
-import coil.util.isDiskPreload
+import coil.util.isDiskOnlyPreload
 import coil.util.log
 import coil.util.normalize
 import coil.util.putValue
@@ -373,7 +373,7 @@ internal class RealImageLoader(
                     ensureActive()
 
                     // Find the relevant decoder.
-                    val decoder = if (request.isDiskPreload()) {
+                    val decoder = if (request.isDiskOnlyPreload()) {
                         // Skip decoding the result if we are preloading the data and writing to the memory cache is disabled.
                         // Instead, we exhaust the source and return an empty result.
                         EmptyDecoder

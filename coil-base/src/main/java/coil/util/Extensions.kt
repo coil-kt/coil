@@ -244,7 +244,7 @@ internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
 
 internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
-internal fun Request.isDiskPreload(): Boolean {
+internal fun Request.isDiskOnlyPreload(): Boolean {
     return this is LoadRequest && target == null && !memoryCachePolicy.writeEnabled
 }
 
