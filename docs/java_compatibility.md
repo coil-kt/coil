@@ -15,7 +15,7 @@ LoadRequest request = ImageLoaders.newLoadBuilder(imageLoader, context)
 imageLoader.load(request);
 ```
 
-If you're using the default `ImageLoader`, you can get it via `Coil.loader()`.
+If you're using the default `ImageLoader`, you can get it via `Coil.imageLoader(context)`.
 
 !!! Note
     You should not use the [API extension functions](../getting_started/#extension-functions) in Java. Instead, you should create `Request` objects manually like above.

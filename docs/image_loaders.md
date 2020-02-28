@@ -44,12 +44,12 @@ val imageLoader = ImageLoader.Builder(context)
 
 Ideally, you should construct and inject your `ImageLoader` instance(s) using dependency injection. This will scale well as your app grows and it is the best way to manage multiple `ImageLoader` instances.
 
-However, for simple use cases the `io.coil-kt:coil` artifact provides a default `ImageLoader` instance that can be accessed with `Coil.loader()`. Both `ImageView.load` and `Coil.load` use the default `ImageLoader` instance as a default parameter:
+However, for simple use cases the `io.coil-kt:coil` artifact provides a default `ImageLoader` instance that can be accessed with `Coil.imageLoader(context)`. Both `ImageView.load` and `Coil.load` use the default `ImageLoader` instance as a default parameter:
 
 ```kotlin
 inline fun ImageView.load(
     url: String?,
-    imageLoader: ImageLoader = Coil.loader(),
+    imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
     return imageLoader.load(context, url) {
