@@ -87,7 +87,7 @@ internal class BitmapReferenceCounter(
     }
 
     @VisibleForTesting
-    fun invalid(bitmap: Bitmap): Boolean {
+    fun isInvalid(bitmap: Bitmap): Boolean {
         return bitmap.identityHashCode in invalidKeys
     }
 }
