@@ -15,6 +15,7 @@ import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
 import coil.util.createTestMainDispatcher
+import coil.util.isInvalid
 import coil.util.toDrawable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

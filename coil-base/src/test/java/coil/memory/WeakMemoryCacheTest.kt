@@ -2,6 +2,8 @@ package coil.memory
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import coil.util.clear
+import coil.util.count
 import coil.util.createBitmap
 import coil.util.getAllocationByteCountCompat
 import org.junit.Before

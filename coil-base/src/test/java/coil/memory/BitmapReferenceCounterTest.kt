@@ -3,6 +3,7 @@ package coil.memory
 import coil.bitmappool.BitmapPool
 import coil.bitmappool.RealBitmapPool
 import coil.util.DEFAULT_BITMAP_SIZE
+import coil.util.count
 import coil.util.createBitmap
 import org.junit.Before
 import org.junit.Test

@@ -11,7 +11,6 @@ import android.os.Build.VERSION_CODES.N
 import androidx.annotation.VisibleForTesting
 import coil.memory.MemoryCache.Value
 import coil.util.firstNotNullIndices
-import coil.util.forEachIndices
 import coil.util.identityHashCode
 import coil.util.removeIfIndices
 import java.lang.ref.WeakReference
@@ -30,9 +29,9 @@ internal class WeakMemoryCache {
         private const val CLEAN_UP_INTERVAL = 10
     }
 
-    private val cache = HashMap<String, ArrayList<InternalValue>>()
+    @VisibleForTesting internal val cache = HashMap<String, ArrayList<InternalValue>>()
 
-    private var operationsSinceCleanUp = 0
+    @VisibleForTesting internal var operationsSinceCleanUp = 0
 
     /** Get the value associated with [key]. */
     fun get(key: String): Value? {
@@ -140,24 +139,8 @@ internal class WeakMemoryCache {
         }
     }
 
-    /** Clears [bitmap]'s weak reference without removing it from [cache]. This simulates garbage collection. */
     @VisibleForTesting
-    internal fun clear(bitmap: Bitmap) {
-        cache.values.forEach { values ->
-            values.forEachIndices { value ->
-                if (value.reference.get() == bitmap) {
-                    value.reference.clear()
-                    return
-                }
-            }
-        }
-    }
-
-    /** Return the number of values currently in the cache. */
-    @VisibleForTesting
-    internal fun count() = cache.count()
-
-    private class InternalValue(
+    internal class InternalValue(
         val identityHashCode: Int,
         val reference: WeakReference<Bitmap>,
         val isSampled: Boolean,
