@@ -20,6 +20,8 @@ import java.lang.ref.WeakReference
  *
  * This is used as a secondary caching layer for [MemoryCache]. [MemoryCache] holds strong references to its bitmaps.
  * Bitmaps are added to this cache when they're removed from [MemoryCache].
+ *
+ * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
  */
 internal class WeakMemoryCache {
 
@@ -27,7 +29,7 @@ internal class WeakMemoryCache {
         private const val CLEAN_UP_INTERVAL = 10
     }
 
-    private val cache = mutableMapOf<String, ArrayList<InternalValue>>()
+    private val cache = HashMap<String, ArrayList<InternalValue>>()
 
     private var operationsSinceCleanUp = 0
 
@@ -35,6 +37,7 @@ internal class WeakMemoryCache {
     fun get(key: String): Value? {
         val values = cache[key] ?: return null
 
+        // Find the first bitmap that hasn't been collected.
         val returnValue = values.firstNotNullIndices { value ->
             value.reference.get()?.let { bitmap -> ReturnValue(bitmap, value.isSampled) }
         }
@@ -105,19 +108,27 @@ internal class WeakMemoryCache {
     internal fun cleanUp() {
         operationsSinceCleanUp = 0
 
+        // Remove all the values whose references have been collected.
         val iterator = cache.values.iterator()
         while (iterator.hasNext()) {
             val list = iterator.next()
 
-            // Remove all the values whose references have been collected.
-            if (SDK_INT >= N) {
-                list.removeIf { it.reference.get() == null }
+            if (list.count() <= 1) {
+                // Typically, the list will only contain 1 item. Handle this case in an optimal way here.
+                if (list.firstOrNull()?.reference?.get() == null) {
+                    iterator.remove()
+                }
             } else {
-                list.removeIfIndices { it.reference.get() == null }
-            }
+                // Iterate over the list of values and delete entries that have been collected.
+                if (SDK_INT >= N) {
+                    list.removeIf { it.reference.get() == null }
+                } else {
+                    list.removeIfIndices { it.reference.get() == null }
+                }
 
-            if (list.isEmpty()) {
-                iterator.remove()
+                if (list.isEmpty()) {
+                    iterator.remove()
+                }
             }
         }
     }
