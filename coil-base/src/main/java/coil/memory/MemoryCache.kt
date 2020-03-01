@@ -23,7 +23,7 @@ internal interface MemoryCache {
             return if (maxSize > 0) {
                 RealMemoryCache(weakMemoryCache, referenceCounter, maxSize)
             } else {
-                EmptyMemoryCache
+                ForwardingMemoryCache(weakMemoryCache)
             }
         }
     }
@@ -52,12 +52,14 @@ internal interface MemoryCache {
     }
 }
 
-/** A [MemoryCache] implementation that caches nothing. */
-private object EmptyMemoryCache : MemoryCache {
+/** A [MemoryCache] implementation that caches nothing and delegates to [weakMemoryCache]. */
+private class ForwardingMemoryCache(private val weakMemoryCache: WeakMemoryCache) : MemoryCache {
 
-    override fun get(key: String): Value? = null
+    override fun get(key: String) = weakMemoryCache.get(key)
 
-    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean) {}
+    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean) {
+        weakMemoryCache.set(key, bitmap, isSampled, bitmap.getAllocationByteCountCompat())
+    }
 
     override fun size() = 0
 

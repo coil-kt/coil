@@ -18,7 +18,7 @@ class MemoryCacheTest {
 
     @Before
     fun before() {
-        weakMemoryCache = WeakMemoryCache()
+        weakMemoryCache = WeakMemoryCache(true)
         counter = BitmapReferenceCounter(weakMemoryCache, RealBitmapPool(0))
     }
 

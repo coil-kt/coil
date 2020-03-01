@@ -1,6 +1,7 @@
 package coil.memory
 
 import android.content.Context
+import androidx.collection.arraySetOf
 import androidx.test.core.app.ApplicationProvider
 import coil.util.clear
 import coil.util.count
@@ -18,14 +19,14 @@ import kotlin.test.assertNull
 class WeakMemoryCacheTest {
 
     private lateinit var context: Context
-    private lateinit var weakMemoryCache: WeakMemoryCache
+    private lateinit var weakMemoryCache: RealWeakMemoryCache
     private lateinit var references: MutableSet<Any?>
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        weakMemoryCache = WeakMemoryCache()
-        references = mutableSetOf()
+        weakMemoryCache = RealWeakMemoryCache()
+        references = arraySetOf()
     }
 
     @Test
@@ -152,7 +153,7 @@ class WeakMemoryCacheTest {
         assertNull(weakMemoryCache.get("key3"))
     }
 
-    /** Hold a hard reference to the value for the duration of the test to prevent it being garbage collected. */
+    /** Hold a strong reference to the value for the duration of the test to prevent it being garbage collected. */
     private fun <T> reference(value: T): T {
         references.add(value)
         return value

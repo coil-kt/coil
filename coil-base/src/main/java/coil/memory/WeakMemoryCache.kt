@@ -23,7 +23,51 @@ import java.lang.ref.WeakReference
  *
  * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
  */
-internal class WeakMemoryCache {
+internal interface WeakMemoryCache {
+
+    companion object {
+        operator fun invoke(isEnabled: Boolean): WeakMemoryCache {
+            return if (isEnabled) {
+                RealWeakMemoryCache()
+            } else {
+                EmptyWeakMemoryCache
+            }
+        }
+    }
+
+    /** Get the value associated with [key]. */
+    fun get(key: String): Value?
+
+    /** Set the value associated with [key]. */
+    fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int)
+
+    /** Remove [bitmap] from the cache if it is present. */
+    fun invalidate(bitmap: Bitmap)
+
+    /** Remove all values from this cache. */
+    fun clearMemory()
+
+    /** @see ComponentCallbacks2.onTrimMemory */
+    fun trimMemory(level: Int)
+}
+
+/** A [WeakMemoryCache] implementation that holds no references. */
+private object EmptyWeakMemoryCache : WeakMemoryCache {
+
+    override fun get(key: String): Value? = null
+
+    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int) {}
+
+    override fun invalidate(bitmap: Bitmap) {}
+
+    override fun clearMemory() {}
+
+    override fun trimMemory(level: Int) {}
+}
+
+/** A [WeakMemoryCache] implementation backed by a [HashMap]. */
+@VisibleForTesting
+internal class RealWeakMemoryCache : WeakMemoryCache {
 
     companion object {
         private const val CLEAN_UP_INTERVAL = 10
@@ -33,8 +77,7 @@ internal class WeakMemoryCache {
 
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
-    /** Get the value associated with [key]. */
-    fun get(key: String): Value? {
+    override fun get(key: String): Value? {
         val values = cache[key] ?: return null
 
         // Find the first bitmap that hasn't been collected.
@@ -47,8 +90,7 @@ internal class WeakMemoryCache {
         return returnValue
     }
 
-    /** Set the value associated with [key]. */
-    fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int) {
+    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int) {
         val rawValues = cache[key]
         val values = rawValues ?: arrayListOf()
 
@@ -72,8 +114,7 @@ internal class WeakMemoryCache {
         cleanUpIfNecessary()
     }
 
-    /** Remove [bitmap] from the cache if it is present. */
-    fun invalidate(bitmap: Bitmap) {
+    override fun invalidate(bitmap: Bitmap) {
         val identityHashCode = bitmap.identityHashCode
 
         // Find the bitmap in the cache and remove it.
@@ -92,12 +133,12 @@ internal class WeakMemoryCache {
     }
 
     /** Remove all values from this cache. */
-    fun clearMemory() {
+    override fun clearMemory() {
         cache.clear()
     }
 
     /** @see ComponentCallbacks2.onTrimMemory */
-    fun trimMemory(level: Int) {
+    override fun trimMemory(level: Int) {
         if (level >= TRIM_MEMORY_RUNNING_LOW && level != TRIM_MEMORY_UI_HIDDEN) {
             cleanUp()
         }
