@@ -73,7 +73,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         private const val CLEAN_UP_INTERVAL = 10
     }
 
-    @VisibleForTesting internal val cache = HashMap<String, ArrayList<InternalValue>>()
+    @VisibleForTesting internal val cache = HashMap<String, ArrayList<WeakValue>>()
 
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
@@ -81,13 +81,13 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         val values = cache[key] ?: return null
 
         // Find the first bitmap that hasn't been collected.
-        val returnValue = values.firstNotNullIndices { value ->
-            value.reference.get()?.let { bitmap -> ReturnValue(bitmap, value.isSampled) }
+        val strongValue = values.firstNotNullIndices { value ->
+            value.reference.get()?.let { bitmap -> StrongValue(bitmap, value.isSampled) }
         }
 
         cleanUpIfNecessary()
 
-        return returnValue
+        return strongValue
     }
 
     override fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int) {
@@ -96,7 +96,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
 
         // Insert the value into the list sorted descending by size.
         run {
-            val value = InternalValue(bitmap.identityHashCode, WeakReference(bitmap), isSampled, size)
+            val value = WeakValue(bitmap.identityHashCode, WeakReference(bitmap), isSampled, size)
             for (index in values.indices) {
                 if (size >= values[index].size) {
                     values.add(index, value)
@@ -181,14 +181,14 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     }
 
     @VisibleForTesting
-    internal class InternalValue(
+    internal class WeakValue(
         val identityHashCode: Int,
         val reference: WeakReference<Bitmap>,
         val isSampled: Boolean,
         val size: Int
     )
 
-    private class ReturnValue(
+    private class StrongValue(
         override val bitmap: Bitmap,
         override val isSampled: Boolean
     ) : Value
