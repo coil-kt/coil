@@ -49,7 +49,8 @@ internal class WeakMemoryCache {
 
     /** Set the value associated with [key]. */
     fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int) {
-        val values = cache.getOrElse(key) { arrayListOf() }
+        val rawValues = cache[key]
+        val values = rawValues ?: arrayListOf()
 
         // Insert the value into the list sorted descending by size.
         run {
@@ -61,6 +62,11 @@ internal class WeakMemoryCache {
                 }
             }
             values += value
+        }
+
+        // Only put the list if it's not already in the map.
+        if (rawValues == null) {
+            cache[key] = values
         }
 
         cleanUpIfNecessary()
@@ -119,7 +125,7 @@ internal class WeakMemoryCache {
                     iterator.remove()
                 }
             } else {
-                // Iterate over the list of values and delete entries that have been collected.
+                // Iterate over the list of values and delete individual entries that have been collected.
                 if (SDK_INT >= N) {
                     list.removeIf { it.reference.get() == null }
                 } else {
