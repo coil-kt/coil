@@ -25,16 +25,6 @@ import java.lang.ref.WeakReference
  */
 internal interface WeakMemoryCache {
 
-    companion object {
-        operator fun invoke(isEnabled: Boolean): WeakMemoryCache {
-            return if (isEnabled) {
-                RealWeakMemoryCache()
-            } else {
-                EmptyWeakMemoryCache
-            }
-        }
-    }
-
     /** Get the value associated with [key]. */
     fun get(key: String): Value?
 
@@ -52,7 +42,7 @@ internal interface WeakMemoryCache {
 }
 
 /** A [WeakMemoryCache] implementation that holds no references. */
-private object EmptyWeakMemoryCache : WeakMemoryCache {
+internal object EmptyWeakMemoryCache : WeakMemoryCache {
 
     override fun get(key: String): Value? = null
 
@@ -66,7 +56,6 @@ private object EmptyWeakMemoryCache : WeakMemoryCache {
 }
 
 /** A [WeakMemoryCache] implementation backed by a [HashMap]. */
-@VisibleForTesting
 internal class RealWeakMemoryCache : WeakMemoryCache {
 
     companion object {
