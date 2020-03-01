@@ -47,7 +47,7 @@ internal interface MemoryCache {
     fun trimMemory(level: Int)
 
     interface Value {
-        val bitmap: Bitmap?
+        val bitmap: Bitmap
         val isSampled: Boolean
     }
 }
@@ -89,7 +89,7 @@ private class RealMemoryCache(
             val isPooled = referenceCounter.decrement(oldValue.bitmap)
             if (!isPooled) {
                 // Add the bitmap to the WeakMemoryCache if it wasn't just added to the BitmapPool.
-                weakMemoryCache.set(key, oldValue.bitmap, oldValue.isSampled)
+                weakMemoryCache.set(key, oldValue.bitmap, oldValue.isSampled, oldValue.size)
             }
         }
 
@@ -106,7 +106,7 @@ private class RealMemoryCache(
             val previous = cache.remove(key)
             if (previous == null) {
                 // If previous != null, the value was already added to the weak memory cache in LruCache.entryRemoved.
-                weakMemoryCache.set(key, bitmap, isSampled)
+                weakMemoryCache.set(key, bitmap, isSampled, size)
             }
             return
         }
@@ -133,7 +133,7 @@ private class RealMemoryCache(
         }
     }
 
-    private data class InternalValue(
+    private class InternalValue(
         override val bitmap: Bitmap,
         override val isSampled: Boolean,
         val size: Int

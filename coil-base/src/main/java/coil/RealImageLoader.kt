@@ -3,7 +3,6 @@
 
 package coil
 
-import android.content.ComponentCallbacks2
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -444,10 +443,15 @@ internal class RealImageLoader(
 
     override fun onTrimMemory(level: Int) {
         memoryCache.trimMemory(level)
+        weakMemoryCache.trimMemory(level)
         bitmapPool.trimMemory(level)
     }
 
-    override fun clearMemory() = onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+    override fun clearMemory() {
+        memoryCache.clearMemory()
+        weakMemoryCache.clearMemory()
+        bitmapPool.clear()
+    }
 
     @Synchronized
     override fun shutdown() {
@@ -458,7 +462,6 @@ internal class RealImageLoader(
         context.unregisterComponentCallbacks(this)
         networkObserver.shutdown()
         clearMemory()
-        weakMemoryCache.clear() // This must be after clearMemory.
     }
 
     private fun assertNotShutdown() {

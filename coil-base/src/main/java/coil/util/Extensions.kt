@@ -26,6 +26,7 @@ import android.widget.ImageView.ScaleType.FIT_CENTER
 import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
+import androidx.collection.SparseArrayCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
@@ -43,9 +44,7 @@ import okhttp3.Headers
 import okhttp3.Response
 import java.io.Closeable
 import java.util.SortedMap
-import java.util.SortedSet
 import java.util.TreeMap
-import java.util.TreeSet
 
 internal suspend inline fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
@@ -92,19 +91,26 @@ internal inline fun <T> List<T>.findIndices(predicate: (T) -> Boolean): T? {
     return null
 }
 
-internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
+/** Removes values from the list as determined by the [predicate]. */
+internal inline fun <T> MutableList<T>.removeIfIndices(predicate: (T) -> Boolean) {
+    var numDeleted = 0
 
-/** Return the first non-null value returned by [transform]. */
-internal inline fun <R, T> Collection<R>.firstNotNull(transform: (R) -> T?): T? {
-    for (item in this) {
-        transform(item)?.let { return it }
+    for (rawIndex in indices) {
+        val index = rawIndex - numDeleted
+        val value = get(index)
+
+        if (predicate(value)) {
+            removeAt(index)
+            numDeleted++
+        }
     }
-    return null
 }
 
-internal inline fun <T> sortedSetOf(): SortedSet<T> = TreeSet()
+internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
 internal inline fun <K, V> sortedMapOf(): SortedMap<K, V> = TreeMap()
+
+internal inline fun <T> sparseArrayOf(): SparseArrayCompat<T> = SparseArrayCompat()
 
 internal inline fun ActivityManager.isLowRamDeviceCompat(): Boolean {
     return SDK_INT < KITKAT || isLowRamDevice

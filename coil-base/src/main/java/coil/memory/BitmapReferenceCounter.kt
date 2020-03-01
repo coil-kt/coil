@@ -64,7 +64,7 @@ internal class BitmapReferenceCounter(
             val isValid = !invalidKeys.remove(key)
             if (isValid) {
                 // Remove the bitmap from the WeakMemoryCache and add it to the BitmapPool.
-                weakMemoryCache.remove(bitmap)
+                weakMemoryCache.invalidate(bitmap)
                 bitmapPool.put(bitmap)
                 return true
             }
