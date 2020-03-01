@@ -5,14 +5,15 @@ import androidx.annotation.VisibleForTesting
 import coil.memory.BitmapReferenceCounter
 import coil.memory.RealWeakMemoryCache
 
+/** Return the current reference count for [bitmap]. */
 internal fun BitmapReferenceCounter.count(bitmap: Bitmap): Int {
     return counts[bitmap.identityHashCode]
 }
 
+/** Return true if [bitmap]'s reference count is invalid. */
 internal fun BitmapReferenceCounter.isInvalid(bitmap: Bitmap): Boolean {
     return bitmap.identityHashCode in invalidKeys
 }
-
 
 /** Clears [bitmap]'s weak reference without removing it from [cache]. This simulates garbage collection. */
 @VisibleForTesting
