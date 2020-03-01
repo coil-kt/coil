@@ -13,12 +13,12 @@ import kotlin.test.assertNull
 @RunWith(RobolectricTestRunner::class)
 class MemoryCacheTest {
 
-    private lateinit var weakMemoryCache: WeakMemoryCache
+    private lateinit var weakMemoryCache: RealWeakMemoryCache
     private lateinit var counter: BitmapReferenceCounter
 
     @Before
     fun before() {
-        weakMemoryCache = WeakMemoryCache(true)
+        weakMemoryCache = RealWeakMemoryCache()
         counter = BitmapReferenceCounter(weakMemoryCache, RealBitmapPool(0))
     }
 
