@@ -30,4 +30,4 @@ internal fun RealWeakMemoryCache.clear(bitmap: Bitmap) {
 
 /** Return the number of values currently in the cache. */
 @VisibleForTesting
-internal fun RealWeakMemoryCache.count() = cache.count()
+internal fun RealWeakMemoryCache.count(): Int = cache.count()
