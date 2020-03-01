@@ -16,6 +16,7 @@ import coil.fetch.Fetcher
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
+import coil.memory.RealWeakMemoryCache
 import coil.memory.WeakMemoryCache
 import coil.request.Parameters
 import coil.size.OriginalSize
@@ -65,7 +66,7 @@ class RealImageLoaderBasicTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         bitmapPool = BitmapPool(Long.MAX_VALUE)
-        weakMemoryCache = WeakMemoryCache()
+        weakMemoryCache = RealWeakMemoryCache()
         referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool)
         memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE)
         imageLoader = RealImageLoader(
