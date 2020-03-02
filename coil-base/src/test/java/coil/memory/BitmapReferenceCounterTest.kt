@@ -10,7 +10,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class BitmapReferenceCounterTest {
@@ -48,29 +50,39 @@ class BitmapReferenceCounterTest {
     }
 
     @Test
-    fun `bitmap is added to pool if count reaches zero`() {
+    fun `valid bitmap is added to pool if count reaches zero`() {
         val bitmap = createBitmap()
+
+        weakMemoryCache.set("key", bitmap, false, 0)
         counter.increment(bitmap)
 
         assertEquals(1, counter.count(bitmap))
 
-        counter.decrement(bitmap)
+        assertTrue(counter.decrement(bitmap))
 
         assertEquals(0, counter.count(bitmap))
         assertEquals(bitmap, pool.getDirtyOrNull(bitmap.width, bitmap.height, bitmap.config))
+
+        // The bitmap should be removed from the weak memory cache.
+        assertNull(weakMemoryCache.get("key"))
     }
 
     @Test
-    fun `invalid bitmap is not added to pool if count reaches zero`() {
+    fun `invalid bitmap is added to weak memory cache if count reaches zero`() {
         val bitmap = createBitmap()
+
+        weakMemoryCache.set("key", bitmap, false, 0)
         counter.increment(bitmap)
         counter.invalidate(bitmap)
 
         assertEquals(1, counter.count(bitmap))
 
-        counter.decrement(bitmap)
+        assertFalse(counter.decrement(bitmap))
 
         assertEquals(0, counter.count(bitmap))
         assertNull(pool.getDirtyOrNull(bitmap.width, bitmap.height, bitmap.config))
+
+        // The bitmap should still be present in the weak memory cache.
+        assertEquals(bitmap, weakMemoryCache.get("key")?.bitmap)
     }
 }

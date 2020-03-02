@@ -59,7 +59,7 @@ class MemoryCacheTest {
     }
 
     @Test
-    fun `evicted item is added to bitmap pool`() {
+    fun `valid evicted item is added to bitmap pool`() {
         val weakMemoryCache = RealWeakMemoryCache()
         val pool = BitmapPool(Long.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool)
