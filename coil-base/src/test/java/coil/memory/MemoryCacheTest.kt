@@ -16,7 +16,7 @@ class MemoryCacheTest {
     @Test
     fun `can retrieve cached value`() {
         val weakMemoryCache = EmptyWeakMemoryCache
-        val pool = BitmapPool(0)
+        val pool = BitmapPool(Long.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool)
         val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
 
@@ -29,7 +29,7 @@ class MemoryCacheTest {
     @Test
     fun `least recently used value is evicted`() {
         val weakMemoryCache = EmptyWeakMemoryCache
-        val pool = BitmapPool(0)
+        val pool = BitmapPool(Long.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool)
         val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
 
@@ -48,7 +48,7 @@ class MemoryCacheTest {
     @Test
     fun `maxSize 0 disables memory cache`() {
         val weakMemoryCache = EmptyWeakMemoryCache
-        val pool = BitmapPool(0)
+        val pool = BitmapPool(Long.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool)
         val cache = MemoryCache(weakMemoryCache, counter, 0)
 
