@@ -13,9 +13,9 @@ inline operator fun SparseIntArraySet.minusAssign(element: Int) {
     remove(element)
 }
 
-inline fun SparseIntArraySet.isEmpty() = size() == 0
+inline fun SparseIntArraySet.isEmpty(): Boolean = size() == 0
 
-inline fun SparseIntArraySet.isNotEmpty() = size() != 0
+inline fun SparseIntArraySet.isNotEmpty(): Boolean = size() != 0
 
 operator fun SparseIntArraySet.plus(other: SparseIntArraySet): SparseIntArraySet {
     val new = SparseIntArraySet(size() + other.size())
@@ -24,7 +24,9 @@ operator fun SparseIntArraySet.plus(other: SparseIntArraySet): SparseIntArraySet
     return new
 }
 
-fun SparseIntArraySet.addAll(other: SparseIntArraySet) = other.forEach { add(it) }
+fun SparseIntArraySet.addAll(other: SparseIntArraySet) {
+    other.forEach { add(it) }
+}
 
 inline fun SparseIntArraySet.forEach(action: (element: Int) -> Unit) {
     for (index in 0 until size()) {
