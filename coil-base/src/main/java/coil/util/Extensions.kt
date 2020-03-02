@@ -26,7 +26,6 @@ import android.widget.ImageView.ScaleType.FIT_CENTER
 import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
-import androidx.collection.SparseArrayCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
@@ -109,8 +108,6 @@ internal inline fun <T> MutableList<T>.removeIfIndices(predicate: (T) -> Boolean
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
 internal inline fun <K, V> sortedMapOf(): SortedMap<K, V> = TreeMap()
-
-internal inline fun <T> sparseArrayOf(): SparseArrayCompat<T> = SparseArrayCompat()
 
 internal inline fun ActivityManager.isLowRamDeviceCompat(): Boolean {
     return SDK_INT < KITKAT || isLowRamDevice
