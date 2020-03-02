@@ -1,10 +1,8 @@
 package coil.memory
 
 import coil.bitmappool.BitmapPool
-import coil.bitmappool.RealBitmapPool
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -15,19 +13,11 @@ import kotlin.test.assertNull
 @RunWith(RobolectricTestRunner::class)
 class MemoryCacheTest {
 
-    private lateinit var weakMemoryCache: RealWeakMemoryCache
-    private lateinit var pool: BitmapPool
-    private lateinit var counter: BitmapReferenceCounter
-
-    @Before
-    fun before() {
-        weakMemoryCache = RealWeakMemoryCache()
-        pool = RealBitmapPool(Long.MAX_VALUE)
-        counter = BitmapReferenceCounter(weakMemoryCache, pool)
-    }
-
     @Test
     fun `can retrieve cached value`() {
+        val weakMemoryCache = EmptyWeakMemoryCache
+        val pool = BitmapPool(0)
+        val counter = BitmapReferenceCounter(weakMemoryCache, pool)
         val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
 
         val bitmap = createBitmap()
@@ -38,6 +28,9 @@ class MemoryCacheTest {
 
     @Test
     fun `least recently used value is evicted`() {
+        val weakMemoryCache = EmptyWeakMemoryCache
+        val pool = BitmapPool(0)
+        val counter = BitmapReferenceCounter(weakMemoryCache, pool)
         val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
 
         val first = createBitmap()
@@ -54,6 +47,9 @@ class MemoryCacheTest {
 
     @Test
     fun `maxSize 0 disables memory cache`() {
+        val weakMemoryCache = EmptyWeakMemoryCache
+        val pool = BitmapPool(0)
+        val counter = BitmapReferenceCounter(weakMemoryCache, pool)
         val cache = MemoryCache(weakMemoryCache, counter, 0)
 
         val bitmap = createBitmap()
@@ -64,6 +60,9 @@ class MemoryCacheTest {
 
     @Test
     fun `evicted item is added to bitmap pool`() {
+        val weakMemoryCache = RealWeakMemoryCache()
+        val pool = BitmapPool(Long.MAX_VALUE)
+        val counter = BitmapReferenceCounter(weakMemoryCache, pool)
         val cache = MemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE.toInt())
 
         val first = createBitmap()
@@ -81,12 +80,18 @@ class MemoryCacheTest {
 
     @Test
     fun `invalid evicted item is added to weak memory cache`() {
+        val weakMemoryCache = RealWeakMemoryCache()
+        val pool = BitmapPool(Long.MAX_VALUE)
+        val counter = BitmapReferenceCounter(weakMemoryCache, pool)
         val cache = MemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE.toInt())
 
         val first = createBitmap()
         cache.set("key", first, false)
 
         assertNotNull(cache.get("key"))
+
+        // Invalidate the first bitmap.
+        counter.invalidate(first)
 
         // Overwrite the value in the memory cache.
         val second = createBitmap()
