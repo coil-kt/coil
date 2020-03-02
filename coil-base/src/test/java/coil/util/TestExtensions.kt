@@ -16,7 +16,7 @@ internal fun BitmapReferenceCounter.isInvalid(bitmap: Bitmap): Boolean {
 }
 
 /**
- * Clears [bitmap]'s weak reference without removing it from [RealWeakMemoryCache.cache].
+ * Clears [bitmap]'s weak reference without removing its entry from [RealWeakMemoryCache.cache].
  * This simulates garbage collection.
  */
 @VisibleForTesting
