@@ -22,7 +22,7 @@ class WeakMemoryCacheTest {
 
     private lateinit var context: Context
     private lateinit var weakMemoryCache: RealWeakMemoryCache
-    private lateinit var references: MutableSet<Any?>
+    private lateinit var references: MutableSet<Any>
 
     @Before
     fun before() {
@@ -156,7 +156,7 @@ class WeakMemoryCacheTest {
     }
 
     /** Hold a strong reference to the value for the duration of the test to prevent it being garbage collected. */
-    private fun <T> reference(value: T): T {
+    private fun <T : Any> reference(value: T): T {
         references.add(value)
         return value
     }
