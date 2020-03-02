@@ -69,7 +69,9 @@ private object EmptyMemoryCache : MemoryCache {
 }
 
 /** A [MemoryCache] implementation that caches nothing and delegates to [weakMemoryCache]. */
-private class ForwardingMemoryCache(private val weakMemoryCache: WeakMemoryCache) : MemoryCache {
+private class ForwardingMemoryCache(
+    private val weakMemoryCache: WeakMemoryCache
+) : MemoryCache {
 
     override fun get(key: String) = weakMemoryCache.get(key)
 
