@@ -98,10 +98,10 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
  */
 private object HardwareBitmapBlacklist {
 
-    val IS_BLACKLISTED = run {
-        val model = Build.MODEL ?: return@run false
+    val IS_BLACKLISTED = when (SDK_INT) {
+        26 -> run {
+            val model = Build.MODEL ?: return@run false
 
-        if (SDK_INT == O) {
             // Samsung Galaxy (ALL)
             if (model.removePrefix("SAMSUNG-").startsWith("SM-")) return@run true
 
@@ -112,24 +112,65 @@ private object HardwareBitmapBlacklist {
             // Moto G6
             if (model == "Moto G Play" || model == "XT1925-10" ||
                 model.startsWith("moto g(6)", true)) return@run true
-        }
 
-        if (SDK_INT == O_MR1) {
-            return@run model in arrayOf(
-                "LM-Q610.FG", "LM-Q610.FGN", "LM-Q617.FG", "LM-Q617.FGN", // LG Q7
-                "LG-Q710AL", "LG-Q710PL", "LM-Q710.FG", "LM-Q710.FGN", // LG Stylo 4
-                "LGM-K121K", "LGM-K121L", "LGM-K121S", // LG X400
-                "LGM-X320K", "LGM-X320L", "LGM-X320S", // LG X500
-                "LM-X220PM", // LG Tribute Empire
-                "LM-X220QMA", // LG K8s
-                "LM-X410PM", // LG K30
-                "LG-M250", // LG K10 (2017)
-                "LG-M320", // LG X-Power 2
-                "ILA X1", // iLA X1
-                "SGINO6" // SGiNO 6
+            return@run false
+        }
+        27 -> run {
+            val device = Build.DEVICE ?: return@run false
+
+            return@run device in arrayOf(
+                "A3", // BenQ A3
+                "A30ATMO", // T-Mobile REVVL 2
+                "A3_Pro", // Umidigi A3 Pro
+                "A3A_8_4G_TMO", // Alcatel 9027W
+                "A6L-C", // Nuu A6L-C
+                "A70AXLTMO", // T-Mobile REVVL 2 PLUS
+                "Armor_3", // Ulefone Armor 3
+                "Armor_6", // Ulefone Armor 6
+                "ASUS_X018_4", // Asus ZenFone Max Plus M1 (ZB570TL)
+                "Blackview", // Blackview BV6000
+                "BV9500", // Blackview BV9500
+                "BV9500Pro", // Blackview BV9500Pro
+                "C210AE", // Wiko Life
+                "Edison_CKT", // Alcatel ONYX
+                "EDISON_TF", // TCL XL2
+                "FERMI_TF", // Alcatel A501DL
+                "ILA_X1", // iLA X1
+                "Infinix-X605_sprout", // Infinix NOTE 5 Stylus
+                "j7maxlte", // Galaxy J7 Max
+                "KING_KONG_3", // Cubot King Kong 3
+                "M10500", // Packard Bell M10500
+                "mcv1s", // LG Tribute Empire
+                "mcv3", // LG K11
+                "mcv5a", // LG Q7
+                "mcv7a", // LG Stylo 4
+                "N5002LA", // Nuu A7L
+                "N5501LA", // Nuu A5L
+                "One", // Umidigi One
+                "One_Max", // Umidigi One Max
+                "One_Pro", // Umidigi One Pro
+                "Power_5", // Leagoo Power 5
+                "RCT6513W87DK5e", // RCA Galileo Pro
+                "RCT6873W42BMF9A", // RCA Voyager
+                "RCT6A03W13", // RCA 10 Viking
+                "RCT6B03W12", "RCT6B03W13", // RCA Atlas 10
+                "RCT6T06E13", // RCA Artemis 10
+                "S70", // Altice ALTICE S70
+                "S80Lite", // Doogee S80Lite
+                "SGINO6", // SGiNO 6
+                "st18c10bnn", // Barnes and Noble BNTV650
+                "TECNO-CA8", // Tecno CAMON X Pro
+                "U50A_ATT", // Alcatel TETRA
+                "U50A_PLUS_ATT", // Alcatel 5059R
+                "U50A_PLUS_TF", // Alcatel TCL LX
+                "U50APLUSTMO", // Alcatel 5059Z
+                "V0310WW", // Blu VIVO VI+
+                "V0330WW", // Blu VIVO XI
+                "Z2", // Umidigi Z2
+                "Z2_PRO", // Umidigi Z2 Pro
+                "Z9" // Leagoo Z9
             )
         }
-
-        return@run false
+        else -> false
     }
 }
