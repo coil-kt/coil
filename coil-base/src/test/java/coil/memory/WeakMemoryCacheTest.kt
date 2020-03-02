@@ -155,7 +155,7 @@ class WeakMemoryCacheTest {
         assertNull(weakMemoryCache.get("key3"))
     }
 
-    /** Hold a strong reference to the value for the duration of the test to prevent it being garbage collected. */
+    /** Hold a strong reference to the value for the duration of the test to prevent it from being garbage collected. */
     private fun <T : Any> reference(value: T): T {
         references.add(value)
         return value
