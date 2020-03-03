@@ -51,9 +51,9 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
 
     private const val TAG = "LimitedFileDescriptorHardwareBitmapService"
 
-    private const val MIN_SIZE_DIMENSION = 100
-    private const val FILE_DESCRIPTOR_LIMIT = 750
-    private const val FILE_DESCRIPTOR_CHECK_INTERVAL = 50
+    private const val MIN_SIZE_DIMENSION = 64
+    private const val FILE_DESCRIPTOR_LIMIT = 768
+    private const val FILE_DESCRIPTOR_CHECK_INTERVAL = 32
 
     private val fileDescriptorList = File("/proc/self/fd")
 
@@ -137,7 +137,7 @@ private object HardwareBitmapBlacklist {
                 "FERMI_TF", // Alcatel A501DL
                 "ILA_X1", // iLA X1
                 "Infinix-X605_sprout", // Infinix NOTE 5 Stylus
-                "j7maxlte", // Galaxy J7 Max
+                "j7maxlte", // Samsung Galaxy J7 Max
                 "KING_KONG_3", // Cubot King Kong 3
                 "M10500", // Packard Bell M10500
                 "mcv1s", // LG Tribute Empire
@@ -153,7 +153,8 @@ private object HardwareBitmapBlacklist {
                 "RCT6513W87DK5e", // RCA Galileo Pro
                 "RCT6873W42BMF9A", // RCA Voyager
                 "RCT6A03W13", // RCA 10 Viking
-                "RCT6B03W12", "RCT6B03W13", // RCA Atlas 10
+                "RCT6B03W12", // RCA Atlas 10
+                "RCT6B03W13", // RCA Atlas 10
                 "RCT6T06E13", // RCA Artemis 10
                 "S70", // Altice ALTICE S70
                 "S80Lite", // Doogee S80Lite
@@ -164,6 +165,7 @@ private object HardwareBitmapBlacklist {
                 "U50A_PLUS_ATT", // Alcatel 5059R
                 "U50A_PLUS_TF", // Alcatel TCL LX
                 "U50APLUSTMO", // Alcatel 5059Z
+                "U5A_PLUS_4G", // Alcatel 1X
                 "V0310WW", // Blu VIVO VI+
                 "V0330WW", // Blu VIVO XI
                 "Z2", // Umidigi Z2
