@@ -24,7 +24,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@UseExperimental(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
 class CrossfadeTransitionTest {
 
     private lateinit var context: Context

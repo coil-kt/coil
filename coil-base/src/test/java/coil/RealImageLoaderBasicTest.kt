@@ -50,7 +50,7 @@ import kotlin.test.assertTrue
  * Basic tests for [RealImageLoader] that don't touch Android's graphics pipeline ([BitmapFactory], [ImageDecoder], etc.).
  */
 @RunWith(RobolectricTestRunner::class)
-@UseExperimental(ExperimentalCoil::class)
+@OptIn(ExperimentalCoil::class)
 class RealImageLoaderBasicTest {
 
     private lateinit var context: Context

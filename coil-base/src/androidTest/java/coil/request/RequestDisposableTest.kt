@@ -22,7 +22,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@UseExperimental(ExperimentalCoil::class)
+@OptIn(ExperimentalCoil::class)
 class RequestDisposableTest {
 
     private lateinit var context: Context

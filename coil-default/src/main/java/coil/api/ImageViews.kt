@@ -1,6 +1,6 @@
 @file:JvmName("ImageViews")
 @file:Suppress("unused")
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoil::class)
 
 package coil.api
 

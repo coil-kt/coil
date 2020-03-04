@@ -1,5 +1,5 @@
 @file:Suppress("FunctionName", "NOTHING_TO_INLINE", "unused")
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoil::class)
 
 package coil.request
 

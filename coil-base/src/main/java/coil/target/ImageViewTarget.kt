@@ -1,4 +1,4 @@
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoil::class)
 
 package coil.target
 

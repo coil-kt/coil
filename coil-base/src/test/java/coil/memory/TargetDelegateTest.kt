@@ -31,7 +31,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@UseExperimental(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
 class TargetDelegateTest {
 
     private lateinit var context: Context

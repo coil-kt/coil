@@ -1,5 +1,5 @@
 @file:Suppress("MemberVisibilityCanBePrivate", "unused")
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoil::class)
 
 package coil
 
