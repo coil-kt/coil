@@ -140,6 +140,7 @@ internal class RequestService {
             allowRgb565 = allowRgb565,
             headers = request.headers,
             parameters = request.parameters,
+            memoryCachePolicy = request.memoryCachePolicy,
             diskCachePolicy = request.diskCachePolicy,
             networkCachePolicy = networkCachePolicy
         )

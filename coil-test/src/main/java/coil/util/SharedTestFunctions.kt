@@ -44,8 +44,9 @@ fun createOptions(
     allowRgb565: Boolean = false,
     headers: Headers = Headers.Builder().build(),
     parameters: Parameters = Parameters.Builder().build(),
-    networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
-    diskCachePolicy: CachePolicy = CachePolicy.ENABLED
+    memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 ): Options {
     return Options(
         config,
@@ -55,8 +56,9 @@ fun createOptions(
         allowRgb565,
         headers,
         parameters,
-        networkCachePolicy,
-        diskCachePolicy
+        memoryCachePolicy,
+        diskCachePolicy,
+        networkCachePolicy
     )
 }
 

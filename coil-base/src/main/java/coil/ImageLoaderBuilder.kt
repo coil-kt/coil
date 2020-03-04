@@ -14,6 +14,7 @@ import coil.bitmappool.BitmapPool
 import coil.drawable.CrossfadeDrawable
 import coil.memory.BitmapReferenceCounter
 import coil.memory.MemoryCache
+import coil.request.CachePolicy
 import coil.request.Request
 import coil.size.Precision
 import coil.transition.CrossfadeTransition
@@ -241,6 +242,29 @@ class ImageLoaderBuilder(context: Context) {
      */
     fun fallback(drawable: Drawable?) = apply {
         this.defaults = this.defaults.copy(error = drawable)
+    }
+
+    /**
+     * Set the default memory cache policy.
+     */
+    fun memoryCachePolicy(policy: CachePolicy) = apply {
+        this.defaults = this.defaults.copy(memoryCachePolicy = policy)
+    }
+
+    /**
+     * Set the default disk cache policy.
+     */
+    fun diskCachePolicy(policy: CachePolicy) = apply {
+        this.defaults = this.defaults.copy(diskCachePolicy = policy)
+    }
+
+    /**
+     * Set the default network cache policy.
+     *
+     * NOTE: Disabling writes has no effect.
+     */
+    fun networkCachePolicy(policy: CachePolicy) = apply {
+        this.defaults = this.defaults.copy(networkCachePolicy = policy)
     }
 
     /**

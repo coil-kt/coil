@@ -53,9 +53,9 @@ sealed class Request {
     abstract val headers: Headers
     abstract val parameters: Parameters
 
-    abstract val networkCachePolicy: CachePolicy
-    abstract val diskCachePolicy: CachePolicy
     abstract val memoryCachePolicy: CachePolicy
+    abstract val diskCachePolicy: CachePolicy
+    abstract val networkCachePolicy: CachePolicy
 
     abstract val allowHardware: Boolean
     abstract val allowRgb565: Boolean
@@ -138,9 +138,9 @@ class LoadRequest internal constructor(
     override val colorSpace: ColorSpace?,
     override val headers: Headers,
     override val parameters: Parameters,
-    override val networkCachePolicy: CachePolicy,
-    override val diskCachePolicy: CachePolicy,
     override val memoryCachePolicy: CachePolicy,
+    override val diskCachePolicy: CachePolicy,
+    override val networkCachePolicy: CachePolicy,
     override val allowHardware: Boolean,
     override val allowRgb565: Boolean,
     @DrawableRes internal val placeholderResId: Int,
@@ -238,9 +238,9 @@ class GetRequest internal constructor(
     override val colorSpace: ColorSpace?,
     override val headers: Headers,
     override val parameters: Parameters,
-    override val networkCachePolicy: CachePolicy,
-    override val diskCachePolicy: CachePolicy,
     override val memoryCachePolicy: CachePolicy,
+    override val diskCachePolicy: CachePolicy,
+    override val networkCachePolicy: CachePolicy,
     override val allowHardware: Boolean,
     override val allowRgb565: Boolean
 ) : Request() {

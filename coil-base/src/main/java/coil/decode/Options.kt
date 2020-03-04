@@ -23,8 +23,9 @@ import okhttp3.Headers
  *  not have an alpha channel, components should only use RGB_565 if the image is guaranteed to not use alpha.
  * @param headers The header fields to use for any network requests.
  * @param parameters A map of custom parameters. These are used to pass custom data to a component.
- * @param networkCachePolicy Determines if this request is allowed to read from the network.
+ * @param memoryCachePolicy Determines if this request is allowed to read/write from/to memory.
  * @param diskCachePolicy Determines if this request is allowed to read/write from/to disk.
+ * @param networkCachePolicy Determines if this request is allowed to read from the network.
  */
 data class Options(
     val config: Bitmap.Config,
@@ -34,6 +35,7 @@ data class Options(
     val allowRgb565: Boolean,
     val headers: Headers,
     val parameters: Parameters,
-    val networkCachePolicy: CachePolicy,
-    val diskCachePolicy: CachePolicy
+    val memoryCachePolicy: CachePolicy,
+    val diskCachePolicy: CachePolicy,
+    val networkCachePolicy: CachePolicy
 )
