@@ -1,4 +1,4 @@
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoilApi::class)
 
 package coil.target
 
@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.transition.TransitionTarget
 
 /** A [Target] that handles setting images on an [ImageView]. */

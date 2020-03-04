@@ -43,7 +43,7 @@ allprojects {
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            freeCompilerArgs = listOf("-progressive", "-Xuse-experimental=kotlin.Experimental")
+            freeCompilerArgs = listOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
             jvmTarget = "1.8"
         }
     }

@@ -1,5 +1,5 @@
 @file:Suppress("MemberVisibilityCanBePrivate", "unused")
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoilApi::class)
 
 package coil
 
@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.drawable.CrossfadeDrawable
 import coil.memory.BitmapReferenceCounter
@@ -186,7 +186,7 @@ class ImageLoaderBuilder(context: Context) {
     /**
      * Set the default [Transition] for each request.
      */
-    @ExperimentalCoil
+    @ExperimentalCoilApi
     fun transition(transition: Transition?) = apply {
         this.defaults = this.defaults.copy(transition = transition)
     }

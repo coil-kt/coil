@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.FakeBitmapPool
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
@@ -31,7 +31,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@UseExperimental(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class)
 class TargetDelegateTest {
 
     private lateinit var context: Context

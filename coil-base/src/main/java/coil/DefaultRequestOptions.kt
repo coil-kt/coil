@@ -1,9 +1,9 @@
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoilApi::class)
 
 package coil
 
 import android.graphics.drawable.Drawable
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.request.RequestBuilder
 import coil.size.Precision
 import coil.transition.Transition

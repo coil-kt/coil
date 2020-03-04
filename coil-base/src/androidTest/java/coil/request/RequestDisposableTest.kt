@@ -8,7 +8,7 @@ import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.api.load
 import coil.util.CoilUtils
 import coil.util.requestManager
@@ -22,7 +22,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@UseExperimental(ExperimentalCoil::class)
+@OptIn(ExperimentalCoilApi::class)
 class RequestDisposableTest {
 
     private lateinit var context: Context

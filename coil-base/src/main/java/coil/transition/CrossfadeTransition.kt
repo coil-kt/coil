@@ -3,7 +3,7 @@ package coil.transition
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.drawable.CrossfadeDrawable
 import coil.size.Scale
 import coil.transition.TransitionResult.Error
@@ -15,7 +15,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 /** A [Transition] that crossfades from the current drawable to a new one. */
-@ExperimentalCoil
+@ExperimentalCoilApi
 class CrossfadeTransition @JvmOverloads constructor(
     val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION
 ) : Transition {

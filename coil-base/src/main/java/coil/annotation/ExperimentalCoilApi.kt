@@ -6,5 +6,8 @@ package coil.annotation
  */
 @MustBeDocumented
 @Retention(AnnotationRetention.BINARY)
-@Experimental(Experimental.Level.WARNING)
-annotation class ExperimentalCoil
+@RequiresOptIn(
+    message = "This API is experimental and may contain breaking changes in the future as its design is still incubating.",
+    level = RequiresOptIn.Level.WARNING
+)
+annotation class ExperimentalCoilApi

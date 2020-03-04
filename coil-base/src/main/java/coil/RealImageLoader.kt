@@ -1,5 +1,5 @@
 @file:Suppress("unused")
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoilApi::class)
 
 package coil
 
@@ -12,7 +12,7 @@ import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DataSource
