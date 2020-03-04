@@ -51,9 +51,9 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
 
     private const val TAG = "LimitedFileDescriptorHardwareBitmapService"
 
-    private const val MIN_SIZE_DIMENSION = 64
-    private const val FILE_DESCRIPTOR_LIMIT = 768
-    private const val FILE_DESCRIPTOR_CHECK_INTERVAL = 32
+    private const val MIN_SIZE_DIMENSION = 80
+    private const val FILE_DESCRIPTOR_LIMIT = 800
+    private const val FILE_DESCRIPTOR_CHECK_INTERVAL = 40
 
     private val fileDescriptorList = File("/proc/self/fd")
 
