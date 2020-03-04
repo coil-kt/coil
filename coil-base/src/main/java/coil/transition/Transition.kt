@@ -2,7 +2,7 @@ package coil.transition
 
 import android.graphics.Bitmap
 import androidx.annotation.MainThread
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.target.Target
 
 /**
@@ -11,7 +11,7 @@ import coil.target.Target
  * NOTE: A [Target] must implement [TransitionTarget] to support applying [Transition]s.
  * If the [Target] does not implement [TransitionTarget], any [Transition]s will be ignored.
  */
-@ExperimentalCoil
+@ExperimentalCoilApi
 interface Transition {
 
     /**

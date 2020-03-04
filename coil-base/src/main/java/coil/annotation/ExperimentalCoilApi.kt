@@ -10,4 +10,4 @@ package coil.annotation
     message = "This API is experimental and may contain breaking changes in the future as its design is still incubating.",
     level = RequiresOptIn.Level.WARNING
 )
-annotation class ExperimentalCoil
+annotation class ExperimentalCoilApi

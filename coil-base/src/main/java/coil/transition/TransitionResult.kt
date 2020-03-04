@@ -1,13 +1,13 @@
 package coil.transition
 
 import android.graphics.drawable.Drawable
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.target.Target
 
 /**
  * Represents the result of an image request.
  */
-@ExperimentalCoil
+@ExperimentalCoilApi
 sealed class TransitionResult {
 
     /**

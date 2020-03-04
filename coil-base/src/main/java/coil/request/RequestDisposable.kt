@@ -2,7 +2,7 @@ package coil.request
 
 import android.view.View
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.target.ViewTarget
 import coil.util.requestManager
 import kotlinx.coroutines.Job
@@ -26,7 +26,7 @@ interface RequestDisposable {
     /**
      * Suspends until any in progress work completes.
      */
-    @ExperimentalCoil
+    @ExperimentalCoilApi
     suspend fun await()
 }
 
@@ -44,7 +44,7 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
         }
     }
 
-    @ExperimentalCoil
+    @ExperimentalCoilApi
     override suspend fun await() {
         if (!isDisposed) {
             job.join()
@@ -73,7 +73,7 @@ internal class ViewTargetRequestDisposable(
         }
     }
 
-    @ExperimentalCoil
+    @ExperimentalCoilApi
     override suspend fun await() {
         if (!isDisposed) {
             target.view.requestManager.currentRequestJob?.join()
