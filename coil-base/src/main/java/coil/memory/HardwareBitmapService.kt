@@ -153,8 +153,8 @@ private object HardwareBitmapBlacklist {
                 "RCT6513W87DK5e", // RCA Galileo Pro
                 "RCT6873W42BMF9A", // RCA Voyager
                 "RCT6A03W13", // RCA 10 Viking
-                "RCT6B03W12", // RCA Atlas 10
-                "RCT6B03W13", // RCA Atlas 10
+                "RCT6B03W12", // RCA Atlas 10 Pro
+                "RCT6B03W13", // RCA Atlas 10 Pro+
                 "RCT6T06E13", // RCA Artemis 10
                 "S70", // Altice ALTICE S70
                 "S80Lite", // Doogee S80Lite
