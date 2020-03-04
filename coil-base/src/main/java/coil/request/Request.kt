@@ -1,5 +1,5 @@
 @file:Suppress("FunctionName", "NOTHING_TO_INLINE", "unused")
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoilApi::class)
 
 package coil.request
 
@@ -12,7 +12,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import coil.DefaultRequestOptions
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.size.Precision

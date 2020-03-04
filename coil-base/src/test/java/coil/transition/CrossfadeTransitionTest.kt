@@ -5,7 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.drawable.CrossfadeDrawable
 import coil.util.createTestMainDispatcher
 import coil.util.error
@@ -24,7 +24,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@UseExperimental(ExperimentalCoil::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class)
 class CrossfadeTransitionTest {
 
     private lateinit var context: Context

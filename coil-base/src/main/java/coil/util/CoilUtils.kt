@@ -2,7 +2,7 @@ package coil.util
 
 import android.content.Context
 import android.view.View
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import okhttp3.Cache
 
 /** Public utility methods for Coil. */
@@ -17,7 +17,7 @@ object CoilUtils {
     }
 
     /** Cancel any in progress requests attached to [view] and clear any associated resources. */
-    @ExperimentalCoil
+    @ExperimentalCoilApi
     @JvmStatic
     fun clear(view: View) {
         view.requestManager.clearCurrentRequest()

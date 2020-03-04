@@ -7,7 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.api.newLoadBuilder
 import coil.bitmappool.BitmapPool
 import coil.decode.Options
@@ -50,7 +50,7 @@ import kotlin.test.assertTrue
  * Basic tests for [RealImageLoader] that don't touch Android's graphics pipeline ([BitmapFactory], [ImageDecoder], etc.).
  */
 @RunWith(RobolectricTestRunner::class)
-@UseExperimental(ExperimentalCoil::class)
+@OptIn(ExperimentalCoilApi::class)
 class RealImageLoaderBasicTest {
 
     private lateinit var context: Context

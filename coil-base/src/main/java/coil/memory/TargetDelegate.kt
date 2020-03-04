@@ -1,4 +1,4 @@
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoilApi::class)
 
 package coil.memory
 
@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.MainThread
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.base.R
 import coil.request.Request
 import coil.target.PoolableViewTarget

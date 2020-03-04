@@ -1,6 +1,6 @@
 @file:JvmName("ImageViews")
 @file:Suppress("unused")
-@file:UseExperimental(ExperimentalCoil::class)
+@file:OptIn(ExperimentalCoilApi::class)
 
 package coil.api
 
@@ -11,7 +11,7 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import coil.Coil
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoil
+import coil.annotation.ExperimentalCoilApi
 import coil.request.LoadRequestBuilder
 import coil.request.RequestDisposable
 import coil.util.CoilUtils
