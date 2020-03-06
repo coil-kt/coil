@@ -64,9 +64,9 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var headers: Headers.Builder?
     protected var parameters: Parameters.Builder?
 
-    protected var networkCachePolicy: CachePolicy
-    protected var diskCachePolicy: CachePolicy
     protected var memoryCachePolicy: CachePolicy
+    protected var diskCachePolicy: CachePolicy
+    protected var networkCachePolicy: CachePolicy
 
     protected var allowHardware: Boolean
     protected var allowRgb565: Boolean
@@ -90,9 +90,9 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         headers = null
         parameters = null
 
-        networkCachePolicy = CachePolicy.ENABLED
-        diskCachePolicy = CachePolicy.ENABLED
-        memoryCachePolicy = CachePolicy.ENABLED
+        memoryCachePolicy = defaults.memoryCachePolicy
+        diskCachePolicy = defaults.diskCachePolicy
+        networkCachePolicy = defaults.networkCachePolicy
 
         allowHardware = defaults.allowHardware
         allowRgb565 = defaults.allowRgb565
@@ -300,12 +300,10 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Enable/disable reading from the network.
-     *
-     * NOTE: Disabling writes has no effect.
+     * Enable/disable reading/writing from/to the memory cache.
      */
-    fun networkCachePolicy(policy: CachePolicy): T = self {
-        this.networkCachePolicy = policy
+    fun memoryCachePolicy(policy: CachePolicy): T = self {
+        this.memoryCachePolicy = policy
     }
 
     /**
@@ -316,10 +314,12 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Enable/disable reading/writing from/to the memory cache.
+     * Enable/disable reading from the network.
+     *
+     * NOTE: Disabling writes has no effect.
      */
-    fun memoryCachePolicy(policy: CachePolicy): T = self {
-        this.memoryCachePolicy = policy
+    fun networkCachePolicy(policy: CachePolicy): T = self {
+        this.networkCachePolicy = policy
     }
 
     /**
@@ -572,9 +572,9 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             colorSpace,
             headers?.build().orEmpty(),
             parameters?.build().orEmpty(),
-            networkCachePolicy,
-            diskCachePolicy,
             memoryCachePolicy,
+            diskCachePolicy,
+            networkCachePolicy,
             allowHardware,
             allowRgb565,
             placeholderResId,
@@ -620,9 +620,9 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             colorSpace,
             headers?.build().orEmpty(),
             parameters?.build().orEmpty(),
-            networkCachePolicy,
-            diskCachePolicy,
             memoryCachePolicy,
+            diskCachePolicy,
+            networkCachePolicy,
             allowHardware,
             allowRgb565
         )

@@ -4,6 +4,7 @@ package coil
 
 import android.graphics.drawable.Drawable
 import coil.annotation.ExperimentalCoilApi
+import coil.request.CachePolicy
 import coil.request.RequestBuilder
 import coil.size.Precision
 import coil.transition.Transition
@@ -23,5 +24,8 @@ data class DefaultRequestOptions(
     val allowRgb565: Boolean = false,
     val placeholder: Drawable? = null,
     val error: Drawable? = null,
-    val fallback: Drawable? = null
+    val fallback: Drawable? = null,
+    val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    val networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 )
