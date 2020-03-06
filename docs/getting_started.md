@@ -4,13 +4,15 @@
 
 Coil has 5 artifacts published to `mavenCentral()`:
 
-* `io.coil-kt:coil`: The default artifact, which includes the `Coil` singleton.
-* `io.coil-kt:coil-base`: The base artifact, which **does not** include the `Coil` singleton. Prefer this artifact if you want to use dependency injection to inject your [ImageLoader](image_loaders.md) instance(s).
+* `io.coil-kt:coil`: The default artifact, which includes the `Coil` singleton and `ImageView.load` extension functions.
+* `io.coil-kt:coil-base`: The base artifact, which **does not** include the `Coil` singleton and `ImageView.load` extension functions. Prefer this artifact if you want to use dependency injection to inject your [ImageLoader](image_loaders.md) instance(s).
 * `io.coil-kt:coil-gif`: Includes a set of [decoders](../api/coil-base/coil.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
 * `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
 * `io.coil-kt:coil-video`: Includes two [fetchers](../api/coil-base/coil.fetch/-fetcher) to support fetching and decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
 
-If you need [transformations](transformations.md) that aren't part of the base Coil artifacts, check out the 3rd-party `coil-transformations` artifact hosted [here](https://github.com/Commit451/coil-transformations).
+If you are a library author depending on Coil, you should depend on `io.coil-kt:coil-base` and not `io.coil-kt:coil` to avoid opting your users into the singleton.
+
+If you need [transformations](transformations.md) that aren't part of the base Coil artifact, check out the third-party `coil-transformations` library hosted [here](https://github.com/Commit451/coil-transformations).
 
 ## Java 8
 
@@ -54,7 +56,7 @@ tasks.withType<KotlinCompile> {
 
 The heart of Coil's API is the [ImageLoader](image_loaders.md). `ImageLoader`s are service classes that execute `Request` objects that are passed to them. `ImageLoader`s expose two methods for image loading:
 
-* `load`: Starts an asynchronous request to load the data into the [Target](targets.md).
+* `load`: Starts an asynchronous request to load the data into a [Target](targets.md).
 
 ```kotlin
 fun load(request: LoadRequest): RequestDisposable
