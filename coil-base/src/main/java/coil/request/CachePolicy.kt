@@ -5,9 +5,9 @@ package coil.request
 /**
  * Represents the read/write policy for a cache source.
  *
- * @see Request.networkCachePolicy
- * @see Request.diskCachePolicy
  * @see Request.memoryCachePolicy
+ * @see Request.diskCachePolicy
+ * @see Request.networkCachePolicy
  */
 enum class CachePolicy(
     val readEnabled: Boolean,

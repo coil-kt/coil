@@ -11,7 +11,7 @@ import coil.fetch.SourceResult
  * @see DrawableResult.dataSource
  */
 enum class DataSource {
-    NETWORK,
+    MEMORY,
     DISK,
-    MEMORY
+    NETWORK
 }
