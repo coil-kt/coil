@@ -42,6 +42,8 @@ import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Response
 import java.io.Closeable
+import java.util.SortedMap
+import java.util.TreeMap
 
 internal suspend inline fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
@@ -88,7 +90,24 @@ internal inline fun <T> List<T>.findIndices(predicate: (T) -> Boolean): T? {
     return null
 }
 
+/** Removes values from the list as determined by the [predicate]. */
+internal inline fun <T> MutableList<T>.removeIfIndices(predicate: (T) -> Boolean) {
+    var numDeleted = 0
+
+    for (rawIndex in indices) {
+        val index = rawIndex - numDeleted
+        val value = get(index)
+
+        if (predicate(value)) {
+            removeAt(index)
+            numDeleted++
+        }
+    }
+}
+
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
+
+internal inline fun <K, V> sortedMapOf(): SortedMap<K, V> = TreeMap()
 
 internal inline fun ActivityManager.isLowRamDeviceCompat(): Boolean {
     return SDK_INT < KITKAT || isLowRamDevice
@@ -121,9 +140,7 @@ internal inline fun StatFs.getBlockSizeCompat(): Long {
     return if (SDK_INT > JELLY_BEAN_MR2) blockSizeLong else blockSize.toLong()
 }
 
-internal fun MemoryCache.getValue(key: String?): MemoryCache.Value? {
-    return key?.let { get(it) }
-}
+internal fun MemoryCache.getValue(key: String?): MemoryCache.Value? = key?.let(::get)
 
 internal fun MemoryCache.putValue(key: String?, value: Drawable, isSampled: Boolean) {
     if (key != null) {
@@ -249,3 +266,6 @@ internal fun Request.isDiskOnlyPreload(): Boolean {
 }
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
+
+internal inline val Any.identityHashCode: Int
+    get() = System.identityHashCode(this)

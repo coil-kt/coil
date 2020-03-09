@@ -15,6 +15,7 @@ import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
 import coil.util.createTestMainDispatcher
+import coil.util.isInvalid
 import coil.util.toDrawable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,7 +48,7 @@ class TargetDelegateTest {
         mainDispatcher = createTestMainDispatcher()
         imageLoader = ImageLoader(context)
         pool = FakeBitmapPool()
-        counter = BitmapReferenceCounter(pool)
+        counter = BitmapReferenceCounter(EmptyWeakMemoryCache, pool)
         delegateService = DelegateService(imageLoader, counter)
     }
 
@@ -66,13 +67,13 @@ class TargetDelegateTest {
             val bitmap = createBitmap()
             val drawable = bitmap.toDrawable(context)
             delegate.start(drawable, drawable)
-            assertFalse(counter.invalid(bitmap))
+            assertFalse(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
             delegate.success(bitmap.toDrawable(context), false, null)
-            assertFalse(counter.invalid(bitmap))
+            assertFalse(counter.isInvalid(bitmap))
         }
     }
 
@@ -84,7 +85,7 @@ class TargetDelegateTest {
         runBlocking {
             val bitmap = createBitmap()
             delegate.success(bitmap.toDrawable(context), false, null)
-            assertTrue(counter.invalid(bitmap))
+            assertTrue(counter.isInvalid(bitmap))
         }
     }
 
@@ -101,21 +102,21 @@ class TargetDelegateTest {
             val drawable = bitmap.toDrawable(context)
             delegate.start(drawable, null)
             assertTrue(target.start)
-            assertTrue(counter.invalid(bitmap))
+            assertTrue(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
             delegate.success(bitmap.toDrawable(context), false, null)
             assertTrue(target.success)
-            assertTrue(counter.invalid(bitmap))
+            assertTrue(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
             delegate.error(bitmap.toDrawable(context), null)
             assertTrue(target.error)
-            assertFalse(counter.invalid(bitmap))
+            assertFalse(counter.isInvalid(bitmap))
         }
     }
 
@@ -129,13 +130,13 @@ class TargetDelegateTest {
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)
         delegate.start(initialDrawable, initialDrawable)
-        assertFalse(counter.invalid(initialBitmap))
+        assertFalse(counter.isInvalid(initialBitmap))
         assertFalse(pool.bitmaps.contains(initialBitmap))
 
         runBlocking {
             val bitmap = createBitmap()
             delegate.success(bitmap.toDrawable(context), false, null)
-            assertFalse(counter.invalid(bitmap))
+            assertFalse(counter.isInvalid(bitmap))
             assertTrue(pool.bitmaps.contains(initialBitmap))
         }
     }
@@ -150,7 +151,7 @@ class TargetDelegateTest {
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)
         delegate.start(initialDrawable, initialDrawable)
-        assertFalse(counter.invalid(initialBitmap))
+        assertFalse(counter.isInvalid(initialBitmap))
         assertFalse(pool.bitmaps.contains(initialBitmap))
 
         runBlocking {

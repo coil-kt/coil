@@ -3,7 +3,6 @@
 
 package coil
 
-import android.content.ComponentCallbacks2
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -43,6 +42,7 @@ import coil.memory.DelegateService
 import coil.memory.MemoryCache
 import coil.memory.RequestService
 import coil.memory.TargetDelegate
+import coil.memory.WeakMemoryCache
 import coil.network.NetworkObserver
 import coil.request.BaseTargetRequestDisposable
 import coil.request.GetRequest
@@ -93,6 +93,7 @@ internal class RealImageLoader(
     private val bitmapPool: BitmapPool,
     private val referenceCounter: BitmapReferenceCounter,
     private val memoryCache: MemoryCache,
+    private val weakMemoryCache: WeakMemoryCache,
     callFactory: Call.Factory,
     registry: ComponentRegistry
 ) : ImageLoader, ComponentCallbacks {
@@ -442,12 +443,16 @@ internal class RealImageLoader(
 
     override fun onTrimMemory(level: Int) {
         memoryCache.trimMemory(level)
+        weakMemoryCache.trimMemory(level)
         bitmapPool.trimMemory(level)
     }
 
-    override fun clearMemory() = onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+    override fun clearMemory() {
+        memoryCache.clearMemory()
+        weakMemoryCache.clearMemory()
+        bitmapPool.clear()
+    }
 
-    @Synchronized
     override fun shutdown() {
         if (isShutdown) return
         isShutdown = true
@@ -474,7 +479,7 @@ internal class RealImageLoader(
         private var size: Size? = null
 
         @MainThread
-        suspend inline fun size(cached: BitmapDrawable? = null): Size = scope.run {
+        suspend fun size(cached: BitmapDrawable? = null): Size = scope.run {
             size?.let { return@run it }
 
             // Call the target's onStart before resolving the size.
