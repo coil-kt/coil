@@ -4,6 +4,7 @@ package coil.request
 
 import coil.decode.Decoder
 import coil.fetch.Fetcher
+import coil.util.sortedMapOf
 import java.util.SortedMap
 
 /** A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s. */

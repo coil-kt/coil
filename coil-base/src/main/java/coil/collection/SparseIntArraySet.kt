@@ -39,7 +39,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
     }
 
     /** Return true if the SparseIntArraySet contains this element. */
-    fun contains(element: Int): Boolean = elements.binarySearch(element, toIndex = size) >= 0
+    operator fun contains(element: Int): Boolean = elements.binarySearch(element, toIndex = size) >= 0
 
     /** Removes the element at the given index. */
     fun removeAt(index: Int) {

@@ -4,6 +4,7 @@ package coil
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import androidx.annotation.MainThread
 import coil.request.GetRequest
 import coil.request.LoadRequest
 import coil.request.Request
@@ -63,6 +64,7 @@ interface ImageLoader {
     /**
      * Completely clear this image loader's memory cache and bitmap pool.
      */
+    @MainThread
     fun clearMemory()
 
     /**
@@ -72,5 +74,6 @@ interface ImageLoader {
      *
      * In progress [load] requests will be cancelled. In progress [get] requests will continue until complete.
      */
+    @MainThread
     fun shutdown()
 }

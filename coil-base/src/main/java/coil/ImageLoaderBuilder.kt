@@ -13,7 +13,9 @@ import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.drawable.CrossfadeDrawable
 import coil.memory.BitmapReferenceCounter
+import coil.memory.EmptyWeakMemoryCache
 import coil.memory.MemoryCache
+import coil.memory.RealWeakMemoryCache
 import coil.request.CachePolicy
 import coil.request.Request
 import coil.size.Precision
@@ -40,6 +42,7 @@ class ImageLoaderBuilder(context: Context) {
 
     private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
     private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
+    private var trackWeakReferences = true
 
     /**
      * Set the [OkHttpClient] used for network requests.
@@ -167,6 +170,18 @@ class ImageLoaderBuilder(context: Context) {
     }
 
     /**
+     * Enables weak reference tracking of loaded images.
+     *
+     * This allows the image loader to hold weak references to loaded images.
+     * This ensures that if an image is still in memory it will be returned from the memory cache.
+     *
+     * Default: true
+     */
+    fun trackWeakReferences(enable: Boolean) = apply {
+        this.trackWeakReferences = enable
+    }
+
+    /**
      * Enable a crossfade animation with duration [CrossfadeDrawable.DEFAULT_DURATION] milliseconds
      * when a request completes successfully.
      *
@@ -276,8 +291,9 @@ class ImageLoaderBuilder(context: Context) {
         val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
         val bitmapPool = BitmapPool(bitmapPoolSize)
-        val referenceCounter = BitmapReferenceCounter(bitmapPool)
-        val memoryCache = MemoryCache(referenceCounter, memoryCacheSize)
+        val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache() else EmptyWeakMemoryCache
+        val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool)
+        val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize)
 
         return RealImageLoader(
             context = applicationContext,
@@ -285,6 +301,7 @@ class ImageLoaderBuilder(context: Context) {
             bitmapPool = bitmapPool,
             referenceCounter = referenceCounter,
             memoryCache = memoryCache,
+            weakMemoryCache = weakMemoryCache,
             callFactory = callFactory ?: buildDefaultCallFactory(),
             registry = registry ?: ComponentRegistry()
         )

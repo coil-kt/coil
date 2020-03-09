@@ -13,7 +13,6 @@ sealed class Size
 
 /** Represents the width and height of the source image. */
 object OriginalSize : Size() {
-
     override fun toString() = "OriginalSize"
 }
 
