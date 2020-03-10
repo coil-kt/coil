@@ -53,7 +53,7 @@ class ImageDecoderDecoder : Decoder {
 
             val decoderSource = if (SDK_INT >= 30) {
                 // Buffer the source into memory.
-                ImageDecoder.createSource(ByteBuffer.wrap(source.readByteArray()))
+                ImageDecoder.createSource(ByteBuffer.wrap(source.use { it.readByteArray() }))
             } else {
                 // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
                 tempFile = createTempFile()
