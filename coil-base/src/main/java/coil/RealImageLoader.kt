@@ -479,7 +479,7 @@ internal class RealImageLoader(
         private var size: Size? = null
 
         @MainThread
-        suspend fun size(cached: BitmapDrawable? = null): Size = scope.run {
+        suspend inline fun size(cached: BitmapDrawable? = null): Size = scope.run {
             size?.let { return@run it }
 
             // Call the target's onStart before resolving the size.
