@@ -12,7 +12,7 @@ import coil.util.CoilContentProvider
 object Coil {
 
     private var imageLoader: ImageLoader? = null
-    private var imageLoaderProvider: ImageLoaderProvider? = null
+    private var imageLoaderFactory: ImageLoaderFactory? = null
 
     /** @see imageLoader */
     @Deprecated(
@@ -26,29 +26,29 @@ object Coil {
      * Get the default [ImageLoader]. Creates a new instance if none has been set.
      */
     @JvmStatic
-    fun imageLoader(context: Context): ImageLoader = imageLoader ?: buildImageLoader(context)
+    fun imageLoader(context: Context): ImageLoader = imageLoader ?: newImageLoader(context)
 
     /**
      * Set the default [ImageLoader]. Shutdown the current instance if there is one.
      */
     @JvmStatic
     fun setImageLoader(loader: ImageLoader) {
-        setImageLoader(object : ImageLoaderProvider {
-            override fun getImageLoader() = loader
+        setImageLoader(object : ImageLoaderFactory {
+            override fun newImageLoader() = loader
         })
     }
 
     /**
-     * Set a lazy callback to create the default [ImageLoader]. Shutdown the current instance if there is one.
-     * The [provider] is guaranteed to be called at most once.
+     * Set the [ImageLoaderFactory] that will be used to create the default [ImageLoader].
+     * Shutdown the current instance if there is one. The [factory] is guaranteed to be called at most once.
      *
-     * Using this method to set an explicit [provider] takes precedence over an [Application] that
-     * implements [ImageLoaderProvider].
+     * Using this method to set an explicit [factory] takes precedence over an [Application] that
+     * implements [ImageLoaderFactory].
      */
     @JvmStatic
     @Synchronized
-    fun setImageLoader(provider: ImageLoaderProvider) {
-        imageLoaderProvider = provider
+    fun setImageLoader(factory: ImageLoaderFactory) {
+        imageLoaderFactory = factory
 
         // Shutdown the image loader after clearing the reference.
         val loader = imageLoader
@@ -66,26 +66,27 @@ object Coil {
 
     /** @see setImageLoader */
     @Deprecated(
-        message = "Migrate to setDefaultImageLoader(ImageLoaderProvider).",
-        replaceWith = ReplaceWith("setImageLoader(object : ImageLoaderProvider { override fun getImageLoader() = provider() })")
+        message = "Migrate to setDefaultImageLoader(ImageLoaderFactory).",
+        replaceWith = ReplaceWith("setImageLoader(object : ImageLoaderFactory { override fun getImageLoader() = initializer() })")
     )
     @JvmStatic
-    fun setDefaultImageLoader(provider: () -> ImageLoader) {
-        setImageLoader(object : ImageLoaderProvider {
-            override fun getImageLoader() = provider()
+    fun setDefaultImageLoader(initializer: () -> ImageLoader) {
+        setImageLoader(object : ImageLoaderFactory {
+            override fun newImageLoader() = initializer()
         })
     }
 
+    /** Create and set the new default [ImageLoader]. */
     @Synchronized
-    private fun buildImageLoader(context: Context): ImageLoader {
+    private fun newImageLoader(context: Context): ImageLoader {
         // Check again in case imageLoader was just set.
         imageLoader?.let { return it }
 
         // Create a new ImageLoader.
-        val loader = imageLoaderProvider?.getImageLoader()
-            ?: (context.applicationContext as? ImageLoaderProvider)?.getImageLoader()
+        val loader = imageLoaderFactory?.newImageLoader()
+            ?: (context.applicationContext as? ImageLoaderFactory)?.newImageLoader()
             ?: ImageLoader(context)
-        imageLoaderProvider = null
+        imageLoaderFactory = null
         setImageLoader(loader)
         return loader
     }
