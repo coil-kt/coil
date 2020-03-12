@@ -7,7 +7,7 @@ import android.app.Application
  *
  * To configure how the default [ImageLoader] is created **either**:
  * - Implement [ImageLoaderFactory] in your [Application].
- * - Or call [Coil.setImageLoader] with your [ImageLoaderFactory].
+ * - **Or** call [Coil.setImageLoader] with your [ImageLoaderFactory].
  */
 interface ImageLoaderFactory {
 
