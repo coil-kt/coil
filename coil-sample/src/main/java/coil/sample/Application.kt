@@ -6,7 +6,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.P
 import androidx.multidex.MultiDexApplication
 import coil.ImageLoader
-import coil.ImageLoaderProvider
+import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
@@ -17,14 +17,14 @@ import okhttp3.Cache
 import okhttp3.OkHttpClient
 import java.io.File
 
-class Application : MultiDexApplication(), ImageLoaderProvider {
+class Application : MultiDexApplication(), ImageLoaderFactory {
 
     init {
         // Enable logging to the standard Android log if this is a debug build.
         CoilLogger.setEnabled(BuildConfig.DEBUG)
     }
 
-    override fun getImageLoader(): ImageLoader {
+    override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .availableMemoryPercentage(0.5) // Use 50% of the application's available memory.
             .crossfade(true) // Show a short crossfade when loading images from network or disk.
