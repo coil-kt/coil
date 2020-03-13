@@ -109,13 +109,13 @@ private object HardwareBitmapBlacklist {
             val device = Build.DEVICE ?: return@run false
 
             return@run device in arrayOf(
-                "ali", "ali_n", // Moto G6
-                "aljeter", "aljeter_n", "jeter", // Moto G6 Play
-                "evert", "evert_n", "evert_nt", // Moto G6 Plus
-
                 "nora", "nora_8917", "nora_8917_n", // Moto E5
                 "james", "rjames_f", "rjames_go", "pettyl", // Moto E5 Play
                 "hannah", "ahannah", "rhannah", // Moto E5 Plus
+
+                "ali", "ali_n", // Moto G6
+                "aljeter", "aljeter_n", "jeter", // Moto G6 Play
+                "evert", "evert_n", "evert_nt", // Moto G6 Plus
 
                 "G3112", "G3116", "G3121", "G3123", "G3125", // Xperia XA1
                 "G3412", "G3416", "G3421", "G3423", "G3426", // Xperia XA1 Plus
@@ -132,13 +132,13 @@ private object HardwareBitmapBlacklist {
             val device = Build.DEVICE ?: return@run false
 
             return@run device in arrayOf(
-                "A30ATMO", // T-Mobile REVVL 2
-                "A70AXLTMO", // T-Mobile REVVL 2 PLUS
-
                 "mcv1s", // LG Tribute Empire
                 "mcv3", // LG K11
                 "mcv5a", // LG Q7
                 "mcv7a", // LG Stylo 4
+
+                "A30ATMO", // T-Mobile REVVL 2
+                "A70AXLTMO", // T-Mobile REVVL 2 PLUS
 
                 "A3A_8_4G_TMO", // Alcatel 9027W
                 "Edison_CKT", // Alcatel ONYX
