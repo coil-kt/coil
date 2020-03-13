@@ -15,7 +15,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
-import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.ImageLoaderBuilder
 import coil.annotation.BuilderMarker
@@ -47,8 +46,8 @@ import okio.BufferedSource
 @BuilderMarker
 sealed class RequestBuilder<T : RequestBuilder<T>> {
 
+    protected val imageLoader: ImageLoader
     protected var data: Any?
-
     protected var key: String?
     protected var aliasKeys: List<String>
     protected var listener: Request.Listener?
@@ -70,9 +69,11 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     protected var allowHardware: Boolean
     protected var allowRgb565: Boolean
 
-    constructor(defaults: DefaultRequestOptions) {
-        data = null
+    constructor(loader: ImageLoader) {
+        imageLoader = loader
 
+        val defaults = loader.defaults
+        data = null
         key = null
         aliasKeys = emptyList()
         listener = null
@@ -97,9 +98,10 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         allowRgb565 = defaults.allowRgb565
     }
 
-    constructor(request: Request) {
-        data = request.data
+    constructor(request: Request, loader: ImageLoader) {
+        imageLoader = loader
 
+        data = request.data
         key = request.key
         aliasKeys = request.aliasKeys
         listener = request.listener
@@ -396,9 +398,10 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     private var errorDrawable: Drawable?
     private var fallbackDrawable: Drawable?
 
-    constructor(context: Context, defaults: DefaultRequestOptions) : super(defaults) {
+    constructor(context: Context, loader: ImageLoader) : super(loader) {
         this.context = context
 
+        val defaults = loader.defaults
         target = null
         lifecycle = null
         transition = defaults.transition
@@ -411,7 +414,12 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
         fallbackDrawable = defaults.fallback
     }
 
-    constructor(context: Context, request: LoadRequest) : super(request) {
+    @JvmOverloads
+    constructor(
+        request: LoadRequest,
+        context: Context = request.context,
+        loader: ImageLoader = request.imageLoader
+    ) : super(request, loader) {
         this.context = context
 
         target = request.target
@@ -554,10 +562,8 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     fun build(): LoadRequest {
         return LoadRequest(
             context,
+            imageLoader,
             data,
-            target,
-            lifecycle,
-            transition,
             key,
             aliasKeys,
             listener,
@@ -576,6 +582,9 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             networkCachePolicy,
             allowHardware,
             allowRgb565,
+            target,
+            lifecycle,
+            transition,
             placeholderResId,
             errorResId,
             fallbackResId,
@@ -584,14 +593,23 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             fallbackDrawable
         )
     }
+
+    /**
+     * Build and launch this load request.
+     */
+    fun launch(): RequestDisposable = build().launch()
 }
 
 /** Builder for a [GetRequest]. */
 class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
 
-    constructor(defaults: DefaultRequestOptions) : super(defaults)
+    constructor(loader: ImageLoader) : super(loader)
 
-    constructor(request: GetRequest) : super(request)
+    @JvmOverloads
+    constructor(
+        request: GetRequest,
+        loader: ImageLoader = request.imageLoader
+    ) : super(request, loader)
 
     /**
      * Set the data to load.
@@ -605,6 +623,7 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
      */
     fun build(): GetRequest {
         return GetRequest(
+            imageLoader,
             checkNotNull(data) { "data == null" },
             key,
             aliasKeys,
@@ -626,4 +645,9 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             allowRgb565
         )
     }
+
+    /**
+     * Build and launch this get request.
+     */
+    suspend inline fun launch(): Drawable = build().launch()
 }

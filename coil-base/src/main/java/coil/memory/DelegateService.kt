@@ -62,7 +62,6 @@ internal class DelegateService(
             is LoadRequest -> when (val target = request.target) {
                 is ViewTarget<*> -> {
                     requestDelegate = ViewTargetRequestDelegate(
-                        loader = imageLoader,
                         request = request,
                         target = targetDelegate,
                         lifecycle = lifecycle,

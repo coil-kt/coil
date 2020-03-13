@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
-import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
@@ -33,12 +32,8 @@ import okhttp3.Headers
  */
 sealed class Request {
 
+    abstract val imageLoader: ImageLoader
     abstract val data: Any?
-
-    abstract val target: Target?
-    abstract val lifecycle: Lifecycle?
-    abstract val transition: Transition?
-
     abstract val key: String?
     abstract val aliasKeys: List<String>
     abstract val listener: Listener?
@@ -59,6 +54,10 @@ sealed class Request {
 
     abstract val allowHardware: Boolean
     abstract val allowRgb565: Boolean
+
+    abstract val target: Target?
+    abstract val lifecycle: Lifecycle?
+    abstract val transition: Transition?
 
     abstract val placeholder: Drawable?
     abstract val error: Drawable?
@@ -100,20 +99,21 @@ sealed class Request {
  *
  * Instances can be created and executed ad hoc:
  * ```
- * imageLoader.load(context, "https://www.example.com/image.jpg") {
- *     crossfade(true)
- *     target(imageView)
- * }
+ * val disposable = imageLoader.load(context)
+ *     .data("https://www.example.com/image.jpg")
+ *     .crossfade(true)
+ *     .target(imageView)
+ *     .launch()
  * ```
  *
  * Or instances can be created separately from the call that executes them:
  * ```
- * val request = LoadRequest.Builder(context, imageLoader.defaults)
+ * val request = LoadRequest.Builder(context, imageLoader)
  *     .data("https://www.example.com/image.jpg")
  *     .crossfade(true)
  *     .target(imageView)
  *     .build()
- * imageLoader.load(request)
+ * val disposable = imageLoader.load(request)
  * ```
  *
  * @see LoadRequestBuilder
@@ -121,10 +121,8 @@ sealed class Request {
  */
 class LoadRequest internal constructor(
     val context: Context,
+    override val imageLoader: ImageLoader,
     override val data: Any?,
-    override val target: Target?,
-    override val lifecycle: Lifecycle?,
-    override val transition: Transition?,
     override val key: String?,
     override val aliasKeys: List<String>,
     override val listener: Listener?,
@@ -143,6 +141,9 @@ class LoadRequest internal constructor(
     override val networkCachePolicy: CachePolicy,
     override val allowHardware: Boolean,
     override val allowRgb565: Boolean,
+    override val target: Target?,
+    override val lifecycle: Lifecycle?,
+    override val transition: Transition?,
     @DrawableRes internal val placeholderResId: Int,
     @DrawableRes internal val errorResId: Int,
     @DrawableRes internal val fallbackResId: Int,
@@ -152,35 +153,42 @@ class LoadRequest internal constructor(
 ) : Request() {
 
     companion object {
+        /** Alias for [LoadRequestBuilder]. */
         @JvmStatic
         @JvmName("builder")
-        inline fun Builder(context: Context, defaults: DefaultRequestOptions) = LoadRequestBuilder(context, defaults)
+        inline fun Builder(context: Context, loader: ImageLoader) = LoadRequestBuilder(context, loader)
 
+        /** Alias for [LoadRequestBuilder]. */
         @JvmStatic
+        @JvmOverloads
         @JvmName("builder")
-        inline fun Builder(context: Context, request: LoadRequest) = LoadRequestBuilder(context, request)
+        inline fun Builder(
+            request: LoadRequest,
+            context: Context = request.context,
+            loader: ImageLoader = request.imageLoader
+        ) = LoadRequestBuilder(request, context, loader)
 
-        /** Create a new [LoadRequest] instance. */
+        /** Create a new [LoadRequest]. */
         @Deprecated(
             message = "Use LoadRequest.Builder to create new instances.",
             replaceWith = ReplaceWith("LoadRequest.Builder(context, defaults).apply(builder).build()")
         )
         inline operator fun invoke(
             context: Context,
-            defaults: DefaultRequestOptions,
+            loader: ImageLoader,
             builder: LoadRequestBuilder.() -> Unit = {}
-        ): LoadRequest = LoadRequestBuilder(context, defaults).apply(builder).build()
+        ): LoadRequest = LoadRequestBuilder(context, loader).apply(builder).build()
 
-        /** Create a new [LoadRequest] instance. */
+        /** Create a new [LoadRequest]. */
         @Deprecated(
             message = "Use LoadRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("LoadRequest.Builder(context, request).apply(builder).build()")
+            replaceWith = ReplaceWith("LoadRequest.Builder(request, context).apply(builder).build()")
         )
         inline operator fun invoke(
             context: Context,
             request: LoadRequest,
             builder: LoadRequestBuilder.() -> Unit = {}
-        ): LoadRequest = LoadRequestBuilder(context, request).apply(builder).build()
+        ): LoadRequest = LoadRequestBuilder(request, context).apply(builder).build()
     }
 
     override val placeholder: Drawable?
@@ -198,7 +206,13 @@ class LoadRequest internal constructor(
 
     /** Create a new [LoadRequestBuilder] instance using this as a base. */
     @JvmOverloads
-    fun newBuilder(context: Context = this.context) = LoadRequestBuilder(context, this)
+    fun newBuilder(
+        context: Context = this.context,
+        loader: ImageLoader = this.imageLoader
+    ) = LoadRequestBuilder(this, context, loader)
+
+    /** Launch this load request and return a [RequestDisposable]. */
+    fun launch(): RequestDisposable = imageLoader.launch(this)
 }
 
 /**
@@ -206,24 +220,26 @@ class LoadRequest internal constructor(
  *
  * Instances can be created and executed ad hoc:
  * ```
- * val drawable = imageLoader.get("https://www.example.com/image.jpg") {
- *     size(1080, 1920)
- * }
+ * val drawable = imageLoader.get()
+ *     .data("https://www.example.com/image.jpg")
+ *     .size(1080, 1920)
+ *     .launch()
  * ```
  *
  * Or instances can be created separately from the call that executes them:
  * ```
- * val request = GetRequest.Builder(imageLoader.defaults)
+ * val request = GetRequest.Builder(imageLoader)
  *     .data("https://www.example.com/image.jpg")
  *     .size(1080, 1920)
  *     .build()
- * imageLoader.get(request)
+ * val drawable = imageLoader.get(request)
  * ```
  *
  * @see GetRequestBuilder
  * @see ImageLoader.get
  */
 class GetRequest internal constructor(
+    override val imageLoader: ImageLoader,
     override val data: Any,
     override val key: String?,
     override val aliasKeys: List<String>,
@@ -246,13 +262,19 @@ class GetRequest internal constructor(
 ) : Request() {
 
     companion object {
+        /** Alias for [GetRequestBuilder]. */
         @JvmStatic
         @JvmName("builder")
-        inline fun Builder(defaults: DefaultRequestOptions) = GetRequestBuilder(defaults)
+        inline fun Builder(loader: ImageLoader) = GetRequestBuilder(loader)
 
+        /** Alias for [GetRequestBuilder]. */
         @JvmStatic
+        @JvmOverloads
         @JvmName("builder")
-        inline fun Builder(request: GetRequest) = GetRequestBuilder(request)
+        inline fun Builder(
+            request: GetRequest,
+            loader: ImageLoader = request.imageLoader
+        ) = GetRequestBuilder(request, loader)
 
         /** Create a new [GetRequest] instance. */
         @Deprecated(
@@ -260,9 +282,9 @@ class GetRequest internal constructor(
             replaceWith = ReplaceWith("GetRequest.Builder(defaults).apply(builder).build()")
         )
         inline operator fun invoke(
-            defaults: DefaultRequestOptions,
+            loader: ImageLoader,
             builder: GetRequestBuilder.() -> Unit = {}
-        ): GetRequest = GetRequestBuilder(defaults).apply(builder).build()
+        ): GetRequest = GetRequestBuilder(loader).apply(builder).build()
 
         /** Create a new [GetRequest] instance. */
         @Deprecated(
@@ -283,5 +305,11 @@ class GetRequest internal constructor(
     override val fallback: Drawable? = null
 
     /** Create a new [GetRequestBuilder] instance using this as a base. */
-    fun newBuilder() = GetRequestBuilder(this)
+    @JvmOverloads
+    fun newBuilder(
+        loader: ImageLoader = this.imageLoader
+    ) = GetRequestBuilder(this, loader)
+
+    /** Launch this get request. */
+    suspend inline fun launch(): Drawable = imageLoader.launch(this)
 }

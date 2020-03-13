@@ -4,6 +4,8 @@ package coil
 
 import android.app.Application
 import android.content.Context
+import coil.request.GetRequestBuilder
+import coil.request.LoadRequestBuilder
 import coil.util.CoilContentProvider
 
 /**
@@ -13,6 +15,14 @@ object Coil {
 
     private var imageLoader: ImageLoader? = null
     private var imageLoaderFactory: ImageLoaderFactory? = null
+
+    /** @see ImageLoader.load */
+    @JvmStatic
+    fun load(context: Context): LoadRequestBuilder = imageLoader(context).load(context)
+
+    /** @see ImageLoader.get */
+    @JvmStatic
+    fun get(context: Context): GetRequestBuilder = imageLoader(context).get()
 
     /** @see imageLoader */
     @Deprecated(

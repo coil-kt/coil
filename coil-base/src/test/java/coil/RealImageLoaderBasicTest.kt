@@ -8,7 +8,6 @@ import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
-import coil.api.newLoadBuilder
 import coil.bitmappool.BitmapPool
 import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
@@ -429,7 +428,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             var error: Throwable? = null
-            val request = imageLoader.newLoadBuilder(context)
+            imageLoader.load(context)
                 .key(key)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                 .size(100, 100)
@@ -449,8 +448,8 @@ class RealImageLoaderBasicTest {
                 .listener(
                     onError = { _, throwable -> error = throwable }
                 )
-                .build()
-            imageLoader.load(request).await()
+                .launch()
+                .await()
 
             // Rethrow any errors that occurred while loading.
             error?.let { throw it }
@@ -465,7 +464,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             var error: Throwable? = null
-            val request = imageLoader.newLoadBuilder(context)
+            imageLoader.load(context)
                 .key(key)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                 .size(100, 100)
@@ -483,8 +482,8 @@ class RealImageLoaderBasicTest {
                 .listener(
                     onError = { _, throwable -> error = throwable }
                 )
-                .build()
-            imageLoader.load(request).await()
+                .launch()
+                .await()
 
             // Rethrow any errors that occurred while loading.
             error?.let { throw it }

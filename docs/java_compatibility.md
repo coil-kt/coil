@@ -7,7 +7,7 @@ Also, suspend functions cannot be implemented in Java. This means custom [Transf
 With these limitations in mind, here is the recommended way to execute `load` requests from Java:
 
 ```java
-LoadRequest request = ImageLoaders.newLoadBuilder(imageLoader, context)
+LoadRequest request = imageLoader.load(context)
         .data("https://www.example.com/image.jpg")
         .crossfade(true)
         .target(imageView)
@@ -36,7 +36,7 @@ object ImageLoaderCompat {
 Then call the `ImageLoaderCompat` function from Java:
 
 ```java
-GetRequest request = ImageLoaders.newGetBuilder(imageLoader)
+GetRequest request = imageLoader.get()
         .data("https://www.example.com/image.jpg")
         .size(1080, 1920)
         .build();
