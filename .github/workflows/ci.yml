@@ -14,7 +14,7 @@ jobs:
             - name: Set Up Java
               uses: actions/setup-java@v1
               with:
-                  java-version: 11
+                  java-version: 9
 
             # Validate the Gradle wrapper JAR files.
             - uses: gradle/wrapper-validation-action@v1
