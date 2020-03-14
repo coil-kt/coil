@@ -42,7 +42,7 @@ private class ImmutableHardwareBitmapService(private val allowHardware: Boolean)
  * This class exists to disable [Bitmap.Config.HARDWARE] allocation if this process gets
  * too close to the limit, as passing the limit can cause crashes and/or rendering issues.
  *
- * NOTE: This must be a singleton since it tracks global file descriptor usage state for the entire process.
+ * NOTE: This must be a singleton as file descriptor usage is shared for the entire process.
  *
  * Adapted from [Glide](https://github.com/bumptech/glide)'s HardwareConfigState.
  * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
@@ -51,7 +51,7 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
 
     private const val TAG = "LimitedFileDescriptorHardwareBitmapService"
 
-    private const val MIN_SIZE_DIMENSION = 100
+    private const val MIN_SIZE_DIMENSION = 75
     private const val FILE_DESCRIPTOR_LIMIT = 750
     private const val FILE_DESCRIPTOR_CHECK_INTERVAL = 50
 
@@ -98,38 +98,105 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
  */
 private object HardwareBitmapBlacklist {
 
-    val IS_BLACKLISTED = run {
-        val model = Build.MODEL ?: return@run false
+    @JvmField
+    val IS_BLACKLISTED = when (SDK_INT) {
+        O -> run {
+            val model = Build.MODEL ?: return@run false
 
-        if (SDK_INT == O) {
             // Samsung Galaxy (ALL)
             if (model.removePrefix("SAMSUNG-").startsWith("SM-")) return@run true
 
-            // Moto E5
-            if (model == "Moto E" || model == "XT1924-9" ||
-                model.startsWith("moto e5", true)) return@run true
+            val device = Build.DEVICE ?: return@run false
 
-            // Moto G6
-            if (model == "Moto G Play" || model == "XT1925-10" ||
-                model.startsWith("moto g(6)", true)) return@run true
-        }
+            return@run device in arrayOf(
+                "nora", "nora_8917", "nora_8917_n", // Moto E5
+                "james", "rjames_f", "rjames_go", "pettyl", // Moto E5 Play
+                "hannah", "ahannah", "rhannah", // Moto E5 Plus
 
-        if (SDK_INT == O_MR1) {
-            return@run model in arrayOf(
-                "LM-Q610.FG", "LM-Q610.FGN", "LM-Q617.FG", "LM-Q617.FGN", // LG Q7
-                "LG-Q710AL", "LG-Q710PL", "LM-Q710.FG", "LM-Q710.FGN", // LG Stylo 4
-                "LGM-K121K", "LGM-K121L", "LGM-K121S", // LG X400
-                "LGM-X320K", "LGM-X320L", "LGM-X320S", // LG X500
-                "LM-X220PM", // LG Tribute Empire
-                "LM-X220QMA", // LG K8s
-                "LM-X410PM", // LG K30
-                "LG-M250", // LG K10 (2017)
-                "LG-M320", // LG X-Power 2
-                "ILA X1", // iLA X1
-                "SGINO6" // SGiNO 6
+                "ali", "ali_n", // Moto G6
+                "aljeter", "aljeter_n", "jeter", // Moto G6 Play
+                "evert", "evert_n", "evert_nt", // Moto G6 Plus
+
+                "G3112", "G3116", "G3121", "G3123", "G3125", // Xperia XA1
+                "G3412", "G3416", "G3421", "G3423", "G3426", // Xperia XA1 Plus
+                "G3212", "G3221", "G3223", "G3226", // Xperia XA1 Ultra
+
+                "BV6800Pro", // BlackView BV6800Pro
+                "CatS41", // Cat S41
+                "Hi9Pro", // CHUWI Hi9 Pro
+                "manning", // Lenovo K8 Note
+                "N5702L" // NUU Mobile G3
             )
         }
+        O_MR1 -> run {
+            val device = Build.DEVICE ?: return@run false
 
-        return@run false
+            return@run device in arrayOf(
+                "mcv1s", // LG Tribute Empire
+                "mcv3", // LG K11
+                "mcv5a", // LG Q7
+                "mcv7a", // LG Stylo 4
+
+                "A30ATMO", // T-Mobile REVVL 2
+                "A70AXLTMO", // T-Mobile REVVL 2 PLUS
+
+                "A3A_8_4G_TMO", // Alcatel 9027W
+                "Edison_CKT", // Alcatel ONYX
+                "EDISON_TF", // Alcatel TCL XL2
+                "FERMI_TF", // Alcatel A501DL
+                "U50A_ATT", // Alcatel TETRA
+                "U50A_PLUS_ATT", // Alcatel 5059R
+                "U50A_PLUS_TF", // Alcatel TCL LX
+                "U50APLUSTMO", // Alcatel 5059Z
+                "U5A_PLUS_4G", // Alcatel 1X
+
+                "RCT6513W87DK5e", // RCA Galileo Pro
+                "RCT6873W42BMF9A", // RCA Voyager
+                "RCT6A03W13", // RCA 10 Viking
+                "RCT6B03W12", // RCA Atlas 10 Pro
+                "RCT6B03W13", // RCA Atlas 10 Pro+
+                "RCT6T06E13", // RCA Artemis 10
+
+                "A3_Pro", // Umidigi A3 Pro
+                "One", // Umidigi One
+                "One_Max", // Umidigi One Max
+                "One_Pro", // Umidigi One Pro
+                "Z2", // Umidigi Z2
+                "Z2_PRO", // Umidigi Z2 Pro
+
+                "Armor_3", // Ulefone Armor 3
+                "Armor_6", // Ulefone Armor 6
+
+                "Blackview", // Blackview BV6000
+                "BV9500", // Blackview BV9500
+                "BV9500Pro", // Blackview BV9500Pro
+
+                "A6L-C", // Nuu A6L-C
+                "N5002LA", // Nuu A7L
+                "N5501LA", // Nuu A5L
+
+                "Power_2_Pro", // Leagoo Power 2 Pro
+                "Power_5", // Leagoo Power 5
+                "Z9", // Leagoo Z9
+
+                "V0310WW", // Blu VIVO VI+
+                "V0330WW", // Blu VIVO XI
+
+                "A3", // BenQ A3
+                "ASUS_X018_4", // Asus ZenFone Max Plus M1 (ZB570TL)
+                "C210AE", // Wiko Life
+                "ILA_X1", // iLA X1
+                "Infinix-X605_sprout", // Infinix NOTE 5 Stylus
+                "j7maxlte", // Samsung Galaxy J7 Max
+                "KING_KONG_3", // Cubot King Kong 3
+                "M10500", // Packard Bell M10500
+                "S70", // Altice ALTICE S70
+                "S80Lite", // Doogee S80Lite
+                "SGINO6", // SGiNO 6
+                "st18c10bnn", // Barnes and Noble BNTV650
+                "TECNO-CA8" // Tecno CAMON X Pro
+            )
+        }
+        else -> false
     }
 }
