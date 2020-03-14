@@ -107,8 +107,8 @@ subprojects {
                     systemProperty("javax.net.ssl.trustStoreType", "JKS")
 
                     // https://github.com/robolectric/robolectric/issues/5456
-                    systemProperty("robolectric.dependency.repo.url", "https://repo1.maven.org/maven2")
                     systemProperty("robolectric.dependency.repo.id", "central")
+                    systemProperty("robolectric.dependency.repo.url", "https://repo1.maven.org/maven2")
                 }.cast())
             }
         }
