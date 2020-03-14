@@ -357,7 +357,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     /**
      * Set the parameters for this request.
      */
-    fun parameters(parameters: Parameters) {
+    fun parameters(parameters: Parameters): T = self {
         this.parameters = parameters.newBuilder()
     }
 
