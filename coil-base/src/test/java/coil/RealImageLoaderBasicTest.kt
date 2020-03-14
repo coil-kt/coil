@@ -62,11 +62,6 @@ class RealImageLoaderBasicTest {
     private lateinit var weakMemoryCache: WeakMemoryCache
     private lateinit var imageLoader: RealImageLoader
 
-    init {
-        // https://github.com/robolectric/robolectric/issues/5115
-        System.setProperty("javax.net.ssl.trustStoreType", "JKS")
-    }
-
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()

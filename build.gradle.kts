@@ -98,6 +98,20 @@ subprojects {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
+
+            testOptions {
+                unitTests.all(object : groovy.lang.Closure<Test>(this, this) {
+                    @Suppress("unused")
+                    fun doCall(test: Test) = test.apply {
+                        // https://github.com/robolectric/robolectric/issues/5115
+                        systemProperty("javax.net.ssl.trustStoreType", "JKS")
+
+                        // https://github.com/robolectric/robolectric/issues/5456
+                        systemProperty("robolectric.dependency.repo.url", "https://repo1.maven.org/maven2")
+                        systemProperty("robolectric.dependency.repo.id", "central")
+                    }
+                })
+            }
         }
     }
 }

@@ -35,11 +35,6 @@ class HttpFetcherTest {
     private lateinit var callFactory: Call.Factory
     private lateinit var pool: BitmapPool
 
-    init {
-        // https://github.com/robolectric/robolectric/issues/5115
-        System.setProperty("javax.net.ssl.trustStoreType", "JKS")
-    }
-
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
