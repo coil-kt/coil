@@ -29,6 +29,7 @@ allprojects {
         google()
         mavenCentral()
         jcenter()
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
