@@ -5,6 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.utils.addToStdlib.cast
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
@@ -90,13 +91,25 @@ allprojects {
     }
 }
 
-// Require that all Android projects target Java 8.
 subprojects {
     afterEvaluate {
         extensions.configure<BaseExtension> {
+            // Require that all Android projects target Java 8.
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
+            }
+
+            // Work around Robolectric issues.
+            testOptions {
+                unitTests.all(closureOf<Test> {
+                    // https://github.com/robolectric/robolectric/issues/5115
+                    systemProperty("javax.net.ssl.trustStoreType", "JKS")
+
+                    // https://github.com/robolectric/robolectric/issues/5456
+                    systemProperty("robolectric.dependency.repo.id", "central")
+                    systemProperty("robolectric.dependency.repo.url", "https://repo1.maven.org/maven2")
+                }.cast())
             }
         }
     }
