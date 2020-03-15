@@ -5,6 +5,7 @@ import androidx.annotation.WorkerThread
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.decode.Decoder
+import coil.decode.Options
 import coil.fetch.Fetcher
 import coil.map.Mapper
 import coil.map.MeasuredMapper
@@ -60,33 +61,37 @@ interface EventListener : Request.Listener {
      * Called before [Fetcher.fetch].
      *
      * @param fetcher The [Fetcher] that will be used to handle the request.
+     * @param options The [Options] that will be passed to [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchStart(request: Request, fetcher: Fetcher<*>) {}
+    fun fetchStart(request: Request, fetcher: Fetcher<*>, options: Options) {}
 
     /**
      * Called after [Fetcher.fetch].
      *
      * @param fetcher The [Fetcher] that was used to handle the request.
+     * @param options The [Options] that were passed to [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchEnd(request: Request, fetcher: Fetcher<*>) {}
+    fun fetchEnd(request: Request, fetcher: Fetcher<*>, options: Options) {}
 
     /**
      * Called before [Decoder.decode].
      *
      * @param decoder The [Decoder] that will be used to handle the request.
+     * @param options The [Options] that will be passed to [Decoder.decode].
      */
     @WorkerThread
-    fun decodeStart(request: Request, decoder: Decoder) {}
+    fun decodeStart(request: Request, decoder: Decoder, options: Options) {}
 
     /**
      * Called after [Decoder.decode].
      *
      * @param decoder The [Decoder] that was used to handle the request.
+     * @param options The [Options] that were passed to [Decoder.decode].
      */
     @WorkerThread
-    fun decodeEnd(request: Request, decoder: Decoder) {}
+    fun decodeEnd(request: Request, decoder: Decoder, options: Options) {}
 
     /**
      * Called before any [Transformation]s are applied.

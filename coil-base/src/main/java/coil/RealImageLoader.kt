@@ -376,9 +376,9 @@ internal class RealImageLoader(
     ): DrawableResult = withContext(request.dispatcher) {
         val options = requestService.options(request, size, scale, networkObserver.isOnline())
 
-        eventListener.fetchStart(request, fetcher)
+        eventListener.fetchStart(request, fetcher, options)
         val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)
-        eventListener.fetchEnd(request, fetcher)
+        eventListener.fetchEnd(request, fetcher, options)
 
         val baseResult = when (fetchResult) {
             is SourceResult -> {
@@ -396,9 +396,9 @@ internal class RealImageLoader(
                     }
 
                     // Decode the stream.
-                    eventListener.decodeStart(request, decoder)
+                    eventListener.decodeStart(request, decoder, options)
                     val decodeResult = decoder.decode(bitmapPool, fetchResult.source, size, options)
-                    eventListener.decodeEnd(request, decoder)
+                    eventListener.decodeEnd(request, decoder, options)
                     decodeResult
                 } catch (rethrown: Exception) {
                     // NOTE: We only close the stream automatically if there is an uncaught exception.
