@@ -15,7 +15,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.math.max
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
@@ -84,7 +83,7 @@ class ViewSizeResolverTest {
 
     @Test
     fun `wrap_content is resolved to the size of the display`() {
-        val expectedWidth = view.context.resources.displayMetrics.run { max(widthPixels, heightPixels) }
+        val expectedWidth = view.context.resources.displayMetrics.widthPixels
         val deferred = scope.async(Dispatchers.Main.immediate) {
             resolver.size()
         }
