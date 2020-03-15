@@ -12,17 +12,12 @@ import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.fetch.VideoFrameFileFetcher
 import coil.fetch.VideoFrameUriFetcher
-import coil.util.CoilLogger
+import coil.util.DebugLogger
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import java.io.File
 
 class Application : MultiDexApplication(), ImageLoaderFactory {
-
-    init {
-        // Enable logging to the standard Android log if this is a debug build.
-        CoilLogger.setEnabled(BuildConfig.DEBUG)
-    }
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
@@ -40,6 +35,12 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
                     add(GifDecoder())
                 }
                 add(SvgDecoder(this@Application))
+            }
+            .apply {
+                // Enable logging to the standard Android log if this is a debug build.
+                if (BuildConfig.DEBUG) {
+                    logger(DebugLogger())
+                }
             }
             .okHttpClient {
                 // Create a disk cache with "unlimited" size. Don't do this in production.

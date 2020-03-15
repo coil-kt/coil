@@ -22,6 +22,7 @@ import coil.size.Precision
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.CoilUtils
+import coil.util.Logger
 import coil.util.Utils
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
@@ -38,6 +39,7 @@ class ImageLoaderBuilder(context: Context) {
 
     private var callFactory: Call.Factory? = null
     private var registry: ComponentRegistry? = null
+    private var logger: Logger? = null
     private var defaults = DefaultRequestOptions()
 
     private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
@@ -283,6 +285,15 @@ class ImageLoaderBuilder(context: Context) {
     }
 
     /**
+     * Set the [Logger] to write logs to.
+     *
+     * NOTE: Setting a non-null [Logger] can reduce performance and should be avoided in release builds.
+     */
+    fun logger(logger: Logger?) = apply {
+        this.logger = logger
+    }
+
+    /**
      * Create a new [ImageLoader] instance.
      */
     fun build(): ImageLoader {
@@ -290,10 +301,10 @@ class ImageLoaderBuilder(context: Context) {
         val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toLong()
         val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
-        val bitmapPool = BitmapPool(bitmapPoolSize)
+        val bitmapPool = BitmapPool(bitmapPoolSize, logger)
         val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache() else EmptyWeakMemoryCache
-        val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool)
-        val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize)
+        val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
+        val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
 
         return RealImageLoader(
             context = applicationContext,
@@ -303,7 +314,8 @@ class ImageLoaderBuilder(context: Context) {
             memoryCache = memoryCache,
             weakMemoryCache = weakMemoryCache,
             callFactory = callFactory ?: buildDefaultCallFactory(),
-            registry = registry ?: ComponentRegistry()
+            registry = registry ?: ComponentRegistry(),
+            logger = logger
         )
     }
 

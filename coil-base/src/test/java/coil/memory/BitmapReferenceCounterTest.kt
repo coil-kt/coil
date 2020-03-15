@@ -25,7 +25,7 @@ class BitmapReferenceCounterTest {
     fun before() {
         weakMemoryCache = RealWeakMemoryCache()
         pool = RealBitmapPool(DEFAULT_BITMAP_SIZE)
-        counter = BitmapReferenceCounter(weakMemoryCache, pool)
+        counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
     }
 
     @Test

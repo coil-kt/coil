@@ -11,6 +11,7 @@ import coil.request.Request
 import coil.target.PoolableViewTarget
 import coil.target.Target
 import coil.target.ViewTarget
+import coil.util.Logger
 import coil.util.requestManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
@@ -20,7 +21,8 @@ import kotlinx.coroutines.Deferred
  */
 internal class DelegateService(
     private val imageLoader: ImageLoader,
-    private val referenceCounter: BitmapReferenceCounter
+    private val referenceCounter: BitmapReferenceCounter,
+    private val logger: Logger?
 ) {
 
     /** Wrap the [request]'s [Target] to support [Bitmap] pooling. */
@@ -29,8 +31,8 @@ internal class DelegateService(
             is GetRequest -> InvalidatableEmptyTargetDelegate(referenceCounter)
             is LoadRequest -> when (val target = request.target) {
                 null -> EmptyTargetDelegate
-                is PoolableViewTarget<*> -> PoolableTargetDelegate(target, referenceCounter)
-                else -> InvalidatableTargetDelegate(target, referenceCounter)
+                is PoolableViewTarget<*> -> PoolableTargetDelegate(target, referenceCounter, logger)
+                else -> InvalidatableTargetDelegate(target, referenceCounter, logger)
             }
         }
     }

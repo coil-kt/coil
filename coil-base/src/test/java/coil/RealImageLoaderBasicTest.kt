@@ -67,8 +67,8 @@ class RealImageLoaderBasicTest {
         context = ApplicationProvider.getApplicationContext()
         bitmapPool = BitmapPool(Long.MAX_VALUE)
         weakMemoryCache = RealWeakMemoryCache()
-        referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool)
-        memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE)
+        referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
+        memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         imageLoader = RealImageLoader(
             context,
             DefaultRequestOptions(),
@@ -77,7 +77,8 @@ class RealImageLoaderBasicTest {
             memoryCache,
             weakMemoryCache,
             OkHttpClient(),
-            ComponentRegistry()
+            ComponentRegistry(),
+            null
         )
     }
 
