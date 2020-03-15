@@ -48,8 +48,8 @@ class TargetDelegateTest {
         mainDispatcher = createTestMainDispatcher()
         imageLoader = ImageLoader(context)
         pool = FakeBitmapPool()
-        counter = BitmapReferenceCounter(EmptyWeakMemoryCache, pool)
-        delegateService = DelegateService(imageLoader, counter)
+        counter = BitmapReferenceCounter(EmptyWeakMemoryCache, pool, null)
+        delegateService = DelegateService(imageLoader, counter, null)
     }
 
     @After

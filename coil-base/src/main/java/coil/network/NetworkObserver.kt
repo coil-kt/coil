@@ -2,6 +2,7 @@ package coil.network
 
 import android.content.Context
 import android.util.Log
+import coil.util.Logger
 import coil.util.log
 
 /**
@@ -9,7 +10,10 @@ import coil.util.log
  *
  * Instances should be cleaned up with [shutdown].
  */
-internal class NetworkObserver(context: Context) : NetworkObserverStrategy.Listener {
+internal class NetworkObserver(
+    context: Context,
+    private val logger: Logger?
+) : NetworkObserverStrategy.Listener {
 
     companion object {
         private const val TAG = "NetworkObserver"
@@ -17,7 +21,7 @@ internal class NetworkObserver(context: Context) : NetworkObserverStrategy.Liste
         private const val OFFLINE = "OFFLINE"
     }
 
-    private val strategy = NetworkObserverStrategy(context, this)
+    private val strategy = NetworkObserverStrategy(context, this, logger)
 
     private var isOnline = strategy.isOnline()
     private var isShutdown = false
@@ -42,6 +46,6 @@ internal class NetworkObserver(context: Context) : NetworkObserverStrategy.Liste
     }
 
     private fun logStatus() {
-        log(TAG, Log.INFO) { if (isOnline) ONLINE else OFFLINE }
+        logger?.log(TAG, Log.INFO) { if (isOnline) ONLINE else OFFLINE }
     }
 }

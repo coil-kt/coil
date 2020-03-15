@@ -16,6 +16,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import coil.network.NetworkObserverStrategy.Listener
+import coil.util.Logger
 import coil.util.isPermissionGranted
 import coil.util.log
 
@@ -33,10 +34,10 @@ internal interface NetworkObserverStrategy {
         private const val TAG = "NetworkObserverStrategy"
 
         /** Create a new [NetworkObserverStrategy] instance. */
-        operator fun invoke(context: Context, listener: Listener): NetworkObserverStrategy {
+        operator fun invoke(context: Context, listener: Listener, logger: Logger?): NetworkObserverStrategy {
             val connectivityManager: ConnectivityManager? = context.getSystemService()
             if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
-                log(TAG, Log.WARN) { "Unable to register network observer." }
+                logger?.log(TAG, Log.WARN) { "Unable to register network observer." }
                 return EmptyNetworkObserverStrategy
             }
 
@@ -47,7 +48,7 @@ internal interface NetworkObserverStrategy {
                     NetworkObserverStrategyApi14(context, connectivityManager, listener)
                 }
             } catch (e: Exception) {
-                log(TAG, RuntimeException("Failed to register network observer.", e))
+                logger?.log(TAG, RuntimeException("Failed to register network observer.", e))
                 EmptyNetworkObserverStrategy
             }
         }

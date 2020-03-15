@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.annotation.Px
 import androidx.collection.arraySetOf
 import coil.bitmappool.strategy.BitmapPoolStrategy
+import coil.util.Logger
 import coil.util.getAllocationByteCountCompat
 import coil.util.log
 
@@ -26,7 +27,8 @@ import coil.util.log
 internal class RealBitmapPool(
     private val maxSize: Long,
     private val allowedConfigs: Set<Bitmap.Config> = getDefaultAllowedConfigs(),
-    private val strategy: BitmapPoolStrategy = BitmapPoolStrategy()
+    private val strategy: BitmapPoolStrategy = BitmapPoolStrategy(),
+    private val logger: Logger? = null
 ) : BitmapPool {
 
     companion object {
@@ -64,7 +66,7 @@ internal class RealBitmapPool(
         val size = bitmap.getAllocationByteCountCompat()
 
         if (!bitmap.isMutable || size > maxSize || bitmap.config !in allowedConfigs) {
-            log(TAG, Log.VERBOSE) {
+            logger?.log(TAG, Log.VERBOSE) {
                 "Rejected bitmap from pool: bitmap: ${strategy.logBitmap(bitmap)}, " +
                     "is mutable: ${bitmap.isMutable}, " +
                     "is greater than max size: ${size > maxSize}" +
@@ -79,7 +81,7 @@ internal class RealBitmapPool(
         puts++
         currentSize += size
 
-        log(TAG, Log.VERBOSE) { "Put bitmap in pool=${strategy.logBitmap(bitmap)}" }
+        logger?.log(TAG, Log.VERBOSE) { "Put bitmap in pool=${strategy.logBitmap(bitmap)}" }
         dump()
 
         trimToSize(maxSize)
@@ -107,7 +109,7 @@ internal class RealBitmapPool(
 
         val result = strategy.get(width, height, config)
         if (result == null) {
-            log(TAG, Log.DEBUG) { "Missing bitmap=${strategy.logBitmap(width, height, config)}" }
+            logger?.log(TAG, Log.DEBUG) { "Missing bitmap=${strategy.logBitmap(width, height, config)}" }
             misses++
         } else {
             hits++
@@ -115,7 +117,7 @@ internal class RealBitmapPool(
             normalize(result)
         }
 
-        log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.logBitmap(width, height, config)}" }
+        logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.logBitmap(width, height, config)}" }
         dump()
 
         return result
@@ -124,13 +126,13 @@ internal class RealBitmapPool(
     override fun clear() = clearMemory()
 
     fun clearMemory() {
-        log(TAG, Log.DEBUG) { "clearMemory" }
+        logger?.log(TAG, Log.DEBUG) { "clearMemory" }
         trimToSize(-1)
     }
 
     @Synchronized
     override fun trimMemory(level: Int) {
-        log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
+        logger?.log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
@@ -155,14 +157,14 @@ internal class RealBitmapPool(
         while (currentSize > size) {
             val removed = strategy.removeLast()
             if (removed == null) {
-                log(TAG, Log.WARN) { "Size mismatch, resetting.\n${computeUnchecked()}" }
+                logger?.log(TAG, Log.WARN) { "Size mismatch, resetting.\n${computeUnchecked()}" }
                 currentSize = 0
                 return
             }
             currentSize -= removed.getAllocationByteCountCompat()
             evictions++
 
-            log(TAG, Log.DEBUG) { "Evicting bitmap=${strategy.logBitmap(removed)}" }
+            logger?.log(TAG, Log.DEBUG) { "Evicting bitmap=${strategy.logBitmap(removed)}" }
             dump()
 
             removed.recycle()
@@ -174,7 +176,7 @@ internal class RealBitmapPool(
     }
 
     private fun dump() {
-        log(TAG, Log.VERBOSE) { computeUnchecked() }
+        logger?.log(TAG, Log.VERBOSE) { computeUnchecked() }
     }
 
     private fun computeUnchecked(): String {
