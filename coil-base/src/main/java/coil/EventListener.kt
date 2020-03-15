@@ -15,7 +15,8 @@ import coil.size.SizeResolver
 import coil.transform.Transformation
 
 /**
- * Listener for metrics events. Implement this class to track the progress of an image request.
+ * An [ImageLoader]-scoped listener for tracking the progress of an image request.
+ * This class is useful for analytics, performance, or other metrics tracking.
  *
  * @see ImageLoaderBuilder.eventListenerFactory
  */
