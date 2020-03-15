@@ -5,10 +5,10 @@ import android.util.Log
 /**
  * Emojis for use in internal logging.
  *
- * TODO: Some emojis require an extra space to display correctly in logcat. Figure out why.
+ * Some emojis require an extra space to display correctly in logcat. I'm not sure why. 🤷
  */
 internal object Emoji {
-    const val BRAIN = "🧠" + " "
+    const val BRAIN = "🧠"
     const val FLOPPY = "💾"
     const val CLOUD = "☁️" + " "
     const val CONSTRUCTION = "🏗" + " "
