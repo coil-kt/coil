@@ -287,7 +287,7 @@ class ImageLoaderBuilder(context: Context) {
     /**
      * Set the [Logger] to write logs to.
      *
-     * NOTE: Enabling logging reduces performance and should be avoided in release builds.
+     * NOTE: Setting a non-null [Logger] can reduce performance and should be avoided in release builds.
      */
     fun logger(logger: Logger?) = apply {
         this.logger = logger
