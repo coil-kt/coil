@@ -62,6 +62,7 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.ComponentCallbacks
 import coil.util.Emoji
+import coil.util.Logger
 import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.firstNotNullIndices
@@ -95,7 +96,8 @@ internal class RealImageLoader(
     private val memoryCache: MemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
     callFactory: Call.Factory,
-    registry: ComponentRegistry
+    registry: ComponentRegistry,
+    private val logger: Logger?
 ) : ImageLoader, ComponentCallbacks {
 
     companion object {
@@ -103,12 +105,12 @@ internal class RealImageLoader(
     }
 
     private val loaderScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable -> log(TAG, throwable) }
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
 
-    private val delegateService = DelegateService(this, referenceCounter)
-    private val requestService = RequestService()
+    private val delegateService = DelegateService(this, referenceCounter, logger)
+    private val requestService = RequestService(logger)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
-    private val networkObserver = NetworkObserver(context)
+    private val networkObserver = NetworkObserver(context, logger)
 
     private val registry = registry.newBuilder()
         // Mappers
@@ -212,7 +214,7 @@ internal class RealImageLoader(
 
             // Short circuit if the cached drawable is valid for the target.
             if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, scale, request)) {
-                log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
+                logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
                 targetDelegate.success(cachedDrawable, true, request.transition)
                 request.listener?.onSuccess(data, DataSource.MEMORY)
                 return@innerJob cachedDrawable
@@ -227,7 +229,7 @@ internal class RealImageLoader(
             }
 
             // Set the final result on the target.
-            log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
+            logger?.log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
             targetDelegate.success(drawable, false, request.transition)
             request.listener?.onSuccess(data, source)
 
@@ -244,10 +246,10 @@ internal class RealImageLoader(
                 throwable ?: return@launch
 
                 if (throwable is CancellationException) {
-                    log(TAG, Log.INFO) { "${Emoji.CONSTRUCTION} Cancelled - $data" }
+                    logger?.log(TAG, Log.INFO) { "${Emoji.CONSTRUCTION} Cancelled - $data" }
                     request.listener?.onCancel(data)
                 } else {
-                    log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
+                    logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
                     val drawable = if (throwable is NullRequestDataException) request.fallback else request.error
                     targetDelegate.error(drawable, request.transition)
                     request.listener?.onError(data, throwable)
@@ -428,7 +430,7 @@ internal class RealImageLoader(
         val baseBitmap = if (result.drawable is BitmapDrawable) {
             result.drawable.bitmap
         } else {
-            log(TAG, Log.INFO) {
+            logger?.log(TAG, Log.INFO) {
                 "Converting drawable of type ${result.drawable::class.java.canonicalName} " +
                     "to apply transformations: $transformations"
             }

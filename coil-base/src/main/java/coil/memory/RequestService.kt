@@ -24,6 +24,7 @@ import coil.size.ViewSizeResolver
 import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
+import coil.util.Logger
 import coil.util.getLifecycle
 import coil.util.isHardware
 import coil.util.scale
@@ -31,7 +32,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 /** Handles operations that act on [Request]s. */
-internal class RequestService {
+internal class RequestService(private val logger: Logger?) {
 
     companion object {
         /** A whitelist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
@@ -169,7 +170,7 @@ internal class RequestService {
      */
     @WorkerThread
     private fun isConfigValidForHardwareAllocation(request: Request, size: Size): Boolean {
-        return isConfigValidForHardware(request, request.bitmapConfig) && hardwareBitmapService.allowHardware(size)
+        return isConfigValidForHardware(request, request.bitmapConfig) && hardwareBitmapService.allowHardware(size, logger)
     }
 
     /** Return true if [Request.bitmapConfig] is valid given its [Transformation]s. */

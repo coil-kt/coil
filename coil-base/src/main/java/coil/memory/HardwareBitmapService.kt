@@ -10,6 +10,7 @@ import androidx.annotation.WorkerThread
 import coil.memory.HardwareBitmapBlacklist.IS_BLACKLISTED
 import coil.size.PixelSize
 import coil.size.Size
+import coil.util.Logger
 import coil.util.log
 import java.io.File
 
@@ -25,13 +26,13 @@ internal sealed class HardwareBitmapService {
     }
 
     /** Return true if we can currently use [Bitmap.Config.HARDWARE]. */
-    abstract fun allowHardware(size: Size): Boolean
+    abstract fun allowHardware(size: Size, logger: Logger?): Boolean
 }
 
 /** Returns a fixed value for [allowHardware]. */
 private class ImmutableHardwareBitmapService(private val allowHardware: Boolean) : HardwareBitmapService() {
 
-    override fun allowHardware(size: Size) = allowHardware
+    override fun allowHardware(size: Size, logger: Logger?) = allowHardware
 }
 
 /**
@@ -60,18 +61,18 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
     @Volatile private var decodesSinceLastFileDescriptorCheck = 0
     @Volatile private var hasAvailableFileDescriptors = true
 
-    override fun allowHardware(size: Size): Boolean {
+    override fun allowHardware(size: Size, logger: Logger?): Boolean {
         // Don't use up file descriptors on small bitmaps.
         if (size is PixelSize && (size.width < MIN_SIZE_DIMENSION || size.height < MIN_SIZE_DIMENSION)) {
             return false
         }
 
-        return hasAvailableFileDescriptors()
+        return hasAvailableFileDescriptors(logger)
     }
 
     @Synchronized
     @WorkerThread
-    private fun hasAvailableFileDescriptors(): Boolean {
+    private fun hasAvailableFileDescriptors(logger: Logger?): Boolean {
         // Only check if we have available file descriptors after a
         // set amount of decodes since it's expensive (1-2 milliseconds).
         if (decodesSinceLastFileDescriptorCheck++ >= FILE_DESCRIPTOR_CHECK_INTERVAL) {
@@ -81,7 +82,7 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
             hasAvailableFileDescriptors = numUsedFileDescriptors < FILE_DESCRIPTOR_LIMIT
 
             if (hasAvailableFileDescriptors) {
-                log(TAG, Log.WARN) {
+                logger?.log(TAG, Log.WARN) {
                     "Unable to allocate more hardware bitmaps. Number of used file descriptors: $numUsedFileDescriptors"
                 }
             }

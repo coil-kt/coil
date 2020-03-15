@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
 import coil.memory.MemoryCache.Value
+import coil.util.Logger
 import coil.util.getAllocationByteCountCompat
 import coil.util.log
 
@@ -18,10 +19,11 @@ internal interface MemoryCache {
         operator fun invoke(
             weakMemoryCache: WeakMemoryCache,
             referenceCounter: BitmapReferenceCounter,
-            maxSize: Int
+            maxSize: Int,
+            logger: Logger?
         ): MemoryCache {
             return when {
-                maxSize > 0 -> RealMemoryCache(weakMemoryCache, referenceCounter, maxSize)
+                maxSize > 0 -> RealMemoryCache(weakMemoryCache, referenceCounter, maxSize, logger)
                 weakMemoryCache is RealWeakMemoryCache -> ForwardingMemoryCache(weakMemoryCache)
                 else -> EmptyMemoryCache
             }
@@ -92,7 +94,8 @@ private class ForwardingMemoryCache(
 private class RealMemoryCache(
     private val weakMemoryCache: WeakMemoryCache,
     private val referenceCounter: BitmapReferenceCounter,
-    maxSize: Int
+    maxSize: Int,
+    private val logger: Logger?
 ) : MemoryCache {
 
     companion object {
@@ -140,12 +143,12 @@ private class RealMemoryCache(
     override fun maxSize() = cache.maxSize()
 
     override fun clearMemory() {
-        log(TAG, Log.DEBUG) { "clearMemory" }
+        logger?.log(TAG, Log.DEBUG) { "clearMemory" }
         cache.trimToSize(-1)
     }
 
     override fun trimMemory(level: Int) {
-        log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
+        logger?.log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {

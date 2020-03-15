@@ -25,7 +25,7 @@ class RequestServiceTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        service = RequestService()
+        service = RequestService(null)
     }
 
     @Test

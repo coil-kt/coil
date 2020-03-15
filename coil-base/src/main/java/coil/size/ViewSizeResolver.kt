@@ -1,10 +1,8 @@
 package coil.size
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import coil.util.log
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -12,8 +10,6 @@ import kotlin.coroutines.resume
 interface ViewSizeResolver<T : View> : SizeResolver {
 
     companion object {
-        private const val TAG = "ViewSizeResolver"
-
         /**
          * Construct a [ViewSizeResolver] instance using the default [View] measurement implementation.
          *
@@ -121,7 +117,6 @@ interface ViewSizeResolver<T : View> : SizeResolver {
 
         // If the dimension is set to WRAP_CONTENT and the View is fully laid out, fallback to the size of the display.
         if (!isLayoutRequested && paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            log(TAG, Log.INFO) { "A View's width and/or height is set to WRAP_CONTENT. Falling back to the size of the display." }
             return view.context.resources.displayMetrics.run { if (isWidth) widthPixels else heightPixels }
         }
 

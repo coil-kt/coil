@@ -17,6 +17,7 @@ import coil.transition.Transition
 import coil.transition.TransitionResult.Error
 import coil.transition.TransitionResult.Success
 import coil.transition.TransitionTarget
+import coil.util.Logger
 import coil.util.log
 
 /**
@@ -69,7 +70,8 @@ internal class InvalidatableEmptyTargetDelegate(
  */
 internal class InvalidatableTargetDelegate(
     val target: Target,
-    override val referenceCounter: BitmapReferenceCounter
+    override val referenceCounter: BitmapReferenceCounter,
+    private val logger: Logger?
 ) : TargetDelegate(), Invalidatable {
 
     override fun start(cached: BitmapDrawable?, placeholder: Drawable?) {
@@ -79,11 +81,11 @@ internal class InvalidatableTargetDelegate(
 
     override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
         invalidate(result.bitmap)
-        target.onSuccess(result, isMemoryCache, transition)
+        target.onSuccess(result, isMemoryCache, transition, logger)
     }
 
     override suspend fun error(error: Drawable?, transition: Transition?) {
-        target.onError(error, transition)
+        target.onError(error, transition, logger)
     }
 }
 
@@ -92,7 +94,8 @@ internal class InvalidatableTargetDelegate(
  */
 internal class PoolableTargetDelegate(
     override val target: PoolableViewTarget<*>,
-    override val referenceCounter: BitmapReferenceCounter
+    override val referenceCounter: BitmapReferenceCounter,
+    private val logger: Logger?
 ) : TargetDelegate(), Poolable {
 
     override fun start(cached: BitmapDrawable?, placeholder: Drawable?) {
@@ -100,11 +103,11 @@ internal class PoolableTargetDelegate(
     }
 
     override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
-        instrument(result.bitmap) { onSuccess(result, isMemoryCache, transition) }
+        instrument(result.bitmap) { onSuccess(result, isMemoryCache, transition, logger) }
     }
 
     override suspend fun error(error: Drawable?, transition: Transition?) {
-        instrument(null) { onError(error, transition) }
+        instrument(null) { onError(error, transition, logger) }
     }
 
     override fun clear() {
@@ -151,14 +154,19 @@ private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarg
     decrement(bitmap)
 }
 
-private suspend inline fun Target.onSuccess(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
+private suspend inline fun Target.onSuccess(
+    result: Drawable,
+    isMemoryCache: Boolean,
+    transition: Transition?,
+    logger: Logger?
+) {
     if (transition == null) {
         onSuccess(result)
         return
     }
 
     if (this !is TransitionTarget<*>) {
-        log(TargetDelegate.TAG, Log.WARN) {
+        logger?.log(TargetDelegate.TAG, Log.WARN) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
         onSuccess(result)
@@ -168,14 +176,18 @@ private suspend inline fun Target.onSuccess(result: Drawable, isMemoryCache: Boo
     transition.transition(this, Success(result, isMemoryCache))
 }
 
-private suspend inline fun Target.onError(error: Drawable?, transition: Transition?) {
+private suspend inline fun Target.onError(
+    error: Drawable?,
+    transition: Transition?,
+    logger: Logger?
+) {
     if (transition == null) {
         onError(error)
         return
     }
 
     if (this !is TransitionTarget<*>) {
-        log(TargetDelegate.TAG, Log.WARN) {
+        logger?.log(TargetDelegate.TAG, Log.WARN) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
         onError(error)

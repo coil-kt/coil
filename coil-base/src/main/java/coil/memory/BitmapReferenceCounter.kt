@@ -10,6 +10,7 @@ import androidx.core.util.set
 import coil.bitmappool.BitmapPool
 import coil.collection.SparseIntArraySet
 import coil.extension.plusAssign
+import coil.util.Logger
 import coil.util.identityHashCode
 import coil.util.log
 import java.lang.ref.WeakReference
@@ -24,7 +25,8 @@ import java.lang.ref.WeakReference
  */
 internal class BitmapReferenceCounter(
     private val weakMemoryCache: WeakMemoryCache,
-    private val bitmapPool: BitmapPool
+    private val bitmapPool: BitmapPool,
+    private val logger: Logger?
 ) {
 
     companion object {
@@ -42,7 +44,7 @@ internal class BitmapReferenceCounter(
         val count = counts[key]
         val newCount = count + 1
         counts[key] = newCount
-        log(TAG, Log.VERBOSE) { "INCREMENT: [$key, $newCount]" }
+        logger?.log(TAG, Log.VERBOSE) { "INCREMENT: [$key, $newCount]" }
     }
 
     /**
@@ -57,7 +59,7 @@ internal class BitmapReferenceCounter(
         val count = counts[key]
         val newCount = count - 1
         counts[key] = newCount
-        log(TAG, Log.VERBOSE) { "DECREMENT: [$key, $newCount]" }
+        logger?.log(TAG, Log.VERBOSE) { "DECREMENT: [$key, $newCount]" }
 
         if (newCount <= 0) {
             counts.delete(key)
