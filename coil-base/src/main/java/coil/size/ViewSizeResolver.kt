@@ -7,7 +7,6 @@ import android.view.ViewTreeObserver
 import coil.util.log
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.math.max
 
 /** A [SizeResolver] that measures the size of a [View]. */
 interface ViewSizeResolver<T : View> : SizeResolver {
@@ -85,7 +84,8 @@ interface ViewSizeResolver<T : View> : SizeResolver {
             paramSize = view.layoutParams?.width ?: -1,
             viewSize = view.width,
             paddingSize = if (subtractPadding) view.paddingLeft + view.paddingRight else 0,
-            isLayoutRequested = isLayoutRequested
+            isLayoutRequested = isLayoutRequested,
+            isWidth = true
         )
     }
 
@@ -94,7 +94,8 @@ interface ViewSizeResolver<T : View> : SizeResolver {
             paramSize = view.layoutParams?.height ?: -1,
             viewSize = view.height,
             paddingSize = if (subtractPadding) view.paddingTop + view.paddingBottom else 0,
-            isLayoutRequested = isLayoutRequested
+            isLayoutRequested = isLayoutRequested,
+            isWidth = false
         )
     }
 
@@ -103,7 +104,8 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         paramSize: Int,
         viewSize: Int,
         paddingSize: Int,
-        isLayoutRequested: Boolean
+        isLayoutRequested: Boolean,
+        isWidth: Boolean
     ): Int {
         // Assume the dimension will match the value in the View's layout params.
         val insetParamSize = paramSize - paddingSize
@@ -120,7 +122,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         // If the dimension is set to WRAP_CONTENT and the View is fully laid out, fallback to the size of the display.
         if (!isLayoutRequested && paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
             log(TAG, Log.INFO) { "A View's width and/or height is set to WRAP_CONTENT. Falling back to the size of the display." }
-            return view.context.resources.displayMetrics.run { max(widthPixels, heightPixels) }
+            return view.context.resources.displayMetrics.run { if (isWidth) widthPixels else heightPixels }
         }
 
         // Unable to resolve the dimension's size.
