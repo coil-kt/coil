@@ -73,25 +73,25 @@ sealed class Request {
          * Called when the request is dispatched and starts loading the image.
          */
         @MainThread
-        fun onStart(data: Any) {}
+        fun onStart(request: Request) {}
 
         /**
          * Called when the request successfully loads the image.
          */
         @MainThread
-        fun onSuccess(data: Any, source: DataSource) {}
+        fun onSuccess(request: Request, source: DataSource) {}
 
         /**
          * Called when the request is cancelled.
          */
         @MainThread
-        fun onCancel(data: Any?) {}
+        fun onCancel(request: Request) {}
 
         /**
          * Called when the request fails to load the image.
          */
         @MainThread
-        fun onError(data: Any?, throwable: Throwable) {}
+        fun onError(request: Request, throwable: Throwable) {}
     }
 }
 

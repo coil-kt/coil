@@ -11,7 +11,7 @@ import coil.request.RequestBuilder
 interface SizeResolver {
 
     companion object {
-        /** Construct a [SizeResolver] instance with a fixed [size]. */
+        /** Create a [SizeResolver] with a fixed [size]. */
         @JvmStatic
         @JvmName("create")
         operator fun invoke(size: Size): SizeResolver {

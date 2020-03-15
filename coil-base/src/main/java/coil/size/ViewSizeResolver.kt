@@ -11,7 +11,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
 
     companion object {
         /**
-         * Construct a [ViewSizeResolver] instance using the default [View] measurement implementation.
+         * Create a [ViewSizeResolver] using the default [View] measurement implementation.
          *
          * @param view The [View] to measure.
          * @param subtractPadding If true, the [view]'s padding will be subtracted from its size.
