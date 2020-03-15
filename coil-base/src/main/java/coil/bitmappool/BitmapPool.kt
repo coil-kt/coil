@@ -25,14 +25,14 @@ interface BitmapPool {
      * Add the given [Bitmap] to the pool if it is eligible to be re-used and the pool can fit it.
      * Otherwise, this method calls [Bitmap.recycle] on the Bitmap and discards it.
      *
-     * Callers **must not** continue to use the Bitmap after calling this method.
+     * Callers **must not** continue to use the bitmap after calling this method.
      */
     fun put(bitmap: Bitmap)
 
     /**
      * Return a [Bitmap] of exactly the given width, height, and configuration, and containing only transparent pixels.
      *
-     * If no Bitmap with the requested attributes is present in the pool, a new one will be allocated.
+     * If no bitmap with the requested attributes is present in the pool, a new one will be allocated.
      *
      * Because this method erases all pixels in the [Bitmap], this method is slightly slower
      * than [getDirty]. If the [Bitmap] is being obtained to be used in [BitmapFactory]
@@ -42,14 +42,14 @@ interface BitmapPool {
     fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap
 
     /**
-     * Identical to [get] except that null will be returned if the pool does not contain a usable Bitmap.
+     * Identical to [get] except that null will be returned if the pool does not contain a usable bitmap.
      */
     fun getOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap?
 
     /**
      * Identical to [get] except that any returned [Bitmap] may not have been erased and may contain random data.
      *
-     * If no Bitmap with the requested attributes is present in the pool, a new one will be allocated.
+     * If no bitmap with the requested attributes is present in the pool, a new one will be allocated.
      *
      * Although this method is slightly more efficient than [BitmapPool.get] it should be used with
      * caution and only when the caller is sure that they are going to erase the [Bitmap] entirely
@@ -58,7 +58,7 @@ interface BitmapPool {
     fun getDirty(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap
 
     /**
-     * Identical to [getDirty] except that null will be returned if the pool does not contain a usable Bitmap.
+     * Identical to [getDirty] except that null will be returned if the pool does not contain a usable bitmap.
      */
     fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap?
 

@@ -130,12 +130,12 @@ private interface Poolable {
     val target: PoolableViewTarget<*>
     val referenceCounter: BitmapReferenceCounter
 
-    /** Increment the reference counter for the current Bitmap. */
+    /** Increment the reference counter for the current bitmap. */
     fun increment(bitmap: Bitmap?) {
         bitmap?.let(referenceCounter::increment)
     }
 
-    /** Replace the reference to the currently cached Bitmap. */
+    /** Replace the reference to the currently cached bitmap. */
     fun decrement(bitmap: Bitmap?) {
         target.bitmap?.let(referenceCounter::decrement)
         target.bitmap = bitmap

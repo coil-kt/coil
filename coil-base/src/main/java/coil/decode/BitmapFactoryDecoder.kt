@@ -117,7 +117,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 }
 
                 if (inMutable) {
-                    // Allocate a slightly larger Bitmap than necessary as the output Bitmap's dimensions may not match the
+                    // Allocate a slightly larger bitmap than necessary as the output bitmap's dimensions may not match the
                     // requested dimensions exactly. This is due to intricacies in Android's downsampling algorithm.
                     val sampledOutWidth = outWidth / inSampleSize.toDouble()
                     val sampledOutHeight = outHeight / inSampleSize.toDouble()
@@ -134,7 +134,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                     inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
                 }
 
-                // Sample size must be 1 if we are re-using a Bitmap.
+                // Sample size must be 1 if we are re-using a bitmap.
                 inSampleSize = if (inBitmap != null) {
                     1
                 } else {
@@ -143,7 +143,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
             }
         }
 
-        // Decode the Bitmap.
+        // Decode the bitmap.
         val rawBitmap: Bitmap? = safeBufferedSource.use {
             BitmapFactory.decodeStream(it.inputStream(), null, this)
         }
