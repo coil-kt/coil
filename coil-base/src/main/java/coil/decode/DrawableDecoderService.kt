@@ -33,7 +33,7 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
         // Treat HARDWARE configs as ARGB_8888.
         val safeConfig = config.normalize()
 
-        // Fast path to return the Bitmap.
+        // Fast path to return the bitmap.
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
             if (bitmap.config.normalize() == safeConfig) {

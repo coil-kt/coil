@@ -23,11 +23,11 @@ internal interface BitmapPoolStrategy {
 
     /**
      * Get the "best" [Bitmap] for the given attributes.
-     * Return null if there is no Bitmap in the cache that can be re-used given those attributes.
+     * Return null if there is no bitmap in the cache that can be re-used given those attributes.
      */
     fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap?
 
-    /** Remove the least recently used Bitmap from the cache and return it. */
+    /** Remove the least recently used bitmap from the cache and return it. */
     fun removeLast(): Bitmap?
 
     /** Log [bitmap]. */
