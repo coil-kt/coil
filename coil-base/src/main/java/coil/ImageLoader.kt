@@ -88,4 +88,20 @@ interface ImageLoader {
      */
     @MainThread
     fun shutdown()
+
+    /** @see launch */
+    @Deprecated(
+        message = "Migrate to launch().",
+        replaceWith = ReplaceWith("launch(request)"),
+        level = DeprecationLevel.ERROR
+    )
+    fun load(request: LoadRequest): RequestDisposable = launch(request)
+
+    /** @see launch */
+    @Deprecated(
+        message = "Migrate to launch().",
+        replaceWith = ReplaceWith("launch(request)"),
+        level = DeprecationLevel.ERROR
+    )
+    suspend fun get(request: GetRequest): Drawable = launch(request)
 }

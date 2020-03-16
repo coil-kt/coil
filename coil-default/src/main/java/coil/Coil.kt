@@ -16,11 +16,19 @@ object Coil {
     private var imageLoader: ImageLoader? = null
     private var imageLoaderFactory: ImageLoaderFactory? = null
 
-    /** @see ImageLoader.load */
+    /**
+     * Convenience function to get the default [ImageLoader] and create a new [LoadRequestBuilder].
+     *
+     * @see ImageLoader.load
+     */
     @JvmStatic
     fun load(context: Context): LoadRequestBuilder = imageLoader(context).load(context)
 
-    /** @see ImageLoader.get */
+    /**
+     * Convenience function to get the default [ImageLoader] and create a new [GetRequestBuilder].
+     *
+     * @see ImageLoader.get
+     */
     @JvmStatic
     fun get(context: Context): GetRequestBuilder = imageLoader(context).get()
 
