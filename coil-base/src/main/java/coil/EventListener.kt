@@ -16,9 +16,9 @@ import coil.transform.Transformation
 
 /**
  * An [ImageLoader]-scoped listener for tracking the progress of an image request.
- * This class is useful for analytics, performance, or other metrics tracking.
+ * This class is useful for measuring analytics, performance, or other metrics tracking.
  *
- * @see ImageLoaderBuilder.eventListenerFactory
+ * @see ImageLoaderBuilder.eventListener
  */
 @ExperimentalCoilApi
 interface EventListener : Request.Listener {

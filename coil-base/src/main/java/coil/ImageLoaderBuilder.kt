@@ -189,7 +189,7 @@ class ImageLoaderBuilder(context: Context) {
      * Set a single [EventListener] that will receive all callbacks for requests launched by this image loader.
      */
     @ExperimentalCoilApi
-    fun eventListener(listener: EventListener) = eventListenerFactory(EventListener.Factory(listener))
+    fun eventListener(listener: EventListener) = eventListener(EventListener.Factory(listener))
 
     /**
      * Set the [EventListener.Factory] to create per-request [EventListener]s.
@@ -197,7 +197,7 @@ class ImageLoaderBuilder(context: Context) {
      * @see eventListener
      */
     @ExperimentalCoilApi
-    fun eventListenerFactory(factory: EventListener.Factory) = apply {
+    fun eventListener(factory: EventListener.Factory) = apply {
         this.eventListenerFactory = factory
     }
 
