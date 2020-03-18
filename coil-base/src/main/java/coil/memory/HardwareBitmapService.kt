@@ -186,6 +186,7 @@ private object HardwareBitmapBlacklist {
                 "A3", // BenQ A3
                 "ASUS_X018_4", // Asus ZenFone Max Plus M1 (ZB570TL)
                 "C210AE", // Wiko Life
+                "fireball", // DROID Incredible 4G LTE
                 "ILA_X1", // iLA X1
                 "Infinix-X605_sprout", // Infinix NOTE 5 Stylus
                 "j7maxlte", // Samsung Galaxy J7 Max
