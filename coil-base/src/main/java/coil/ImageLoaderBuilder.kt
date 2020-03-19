@@ -38,6 +38,7 @@ class ImageLoaderBuilder(context: Context) {
     private val applicationContext = context.applicationContext
 
     private var callFactory: Call.Factory? = null
+    private var eventListenerFactory: EventListener.Factory? = null
     private var registry: ComponentRegistry? = null
     private var logger: Logger? = null
     private var defaults = DefaultRequestOptions()
@@ -98,6 +99,7 @@ class ImageLoaderBuilder(context: Context) {
     /**
      * Build and set the [ComponentRegistry].
      */
+    @JvmSynthetic
     inline fun componentRegistry(
         builder: ComponentRegistry.Builder.() -> Unit
     ) = componentRegistry(ComponentRegistry.Builder().apply(builder).build())
@@ -181,6 +183,22 @@ class ImageLoaderBuilder(context: Context) {
      */
     fun trackWeakReferences(enable: Boolean) = apply {
         this.trackWeakReferences = enable
+    }
+
+    /**
+     * Set a single [EventListener] that will receive all callbacks for requests launched by this image loader.
+     */
+    @ExperimentalCoilApi
+    fun eventListener(listener: EventListener) = eventListener(EventListener.Factory(listener))
+
+    /**
+     * Set the [EventListener.Factory] to create per-request [EventListener]s.
+     *
+     * @see eventListener
+     */
+    @ExperimentalCoilApi
+    fun eventListener(factory: EventListener.Factory) = apply {
+        this.eventListenerFactory = factory
     }
 
     /**
@@ -314,6 +332,7 @@ class ImageLoaderBuilder(context: Context) {
             memoryCache = memoryCache,
             weakMemoryCache = weakMemoryCache,
             callFactory = callFactory ?: buildDefaultCallFactory(),
+            eventListenerFactory = eventListenerFactory ?: EventListener.Factory.EMPTY,
             registry = registry ?: ComponentRegistry(),
             logger = logger
         )

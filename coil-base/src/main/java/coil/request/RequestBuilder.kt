@@ -129,15 +129,15 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * Convenience function to create and set the [Request.Listener].
      */
     inline fun listener(
-        crossinline onStart: (data: Any) -> Unit = {},
-        crossinline onCancel: (data: Any?) -> Unit = {},
-        crossinline onError: (data: Any?, throwable: Throwable) -> Unit = { _, _ -> },
-        crossinline onSuccess: (data: Any, source: DataSource) -> Unit = { _, _ -> }
+        crossinline onStart: (request: Request) -> Unit = {},
+        crossinline onCancel: (request: Request) -> Unit = {},
+        crossinline onError: (request: Request, throwable: Throwable) -> Unit = { _, _ -> },
+        crossinline onSuccess: (request: Request, source: DataSource) -> Unit = { _, _ -> }
     ): T = listener(object : Request.Listener {
-        override fun onStart(data: Any) = onStart(data)
-        override fun onCancel(data: Any?) = onCancel(data)
-        override fun onError(data: Any?, throwable: Throwable) = onError(data, throwable)
-        override fun onSuccess(data: Any, source: DataSource) = onSuccess(data, source)
+        override fun onStart(request: Request) = onStart(request)
+        override fun onCancel(request: Request) = onCancel(request)
+        override fun onError(request: Request, throwable: Throwable) = onError(request, throwable)
+        override fun onSuccess(request: Request, source: DataSource) = onSuccess(request, source)
     })
 
     /**

@@ -77,6 +77,7 @@ class RealImageLoaderBasicTest {
             memoryCache,
             weakMemoryCache,
             OkHttpClient(),
+            EventListener.Factory.EMPTY,
             ComponentRegistry(),
             null
         )
@@ -542,7 +543,8 @@ class RealImageLoaderBasicTest {
                 override suspend fun size() = block()
             },
             targetDelegate = EmptyTargetDelegate,
-            request = createLoadRequest(context)
+            request = createLoadRequest(context),
+            eventListener = EventListener.EMPTY
         )
     }
 }
