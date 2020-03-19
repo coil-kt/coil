@@ -96,6 +96,7 @@ internal class RealImageLoader(
     private val memoryCache: MemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
     callFactory: Call.Factory,
+    private val eventListenerFactory: EventListener.Factory,
     registry: ComponentRegistry,
     private val logger: Logger?
 ) : ImageLoader, ComponentCallbacks {
@@ -139,9 +140,7 @@ internal class RealImageLoader(
 
     override fun load(request: LoadRequest): RequestDisposable {
         // Start loading the data.
-        val job = loaderScope.launch(exceptionHandler) {
-            execute(request.data, request)
-        }
+        val job = loaderScope.launch(exceptionHandler) { execute(request) }
 
         return if (request.target is ViewTarget<*>) {
             val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
@@ -151,14 +150,14 @@ internal class RealImageLoader(
         }
     }
 
-    override suspend fun get(request: GetRequest): Drawable = execute(request.data, request)
+    override suspend fun get(request: GetRequest) = execute(request)
 
-    private suspend fun execute(
-        data: Any?,
-        request: Request
-    ): Drawable = withContext(Dispatchers.Main.immediate) outerJob@{
+    private suspend fun execute(request: Request) = withContext(Dispatchers.Main.immediate) outerJob@{
         // Ensure this image loader isn't shutdown.
         assertNotShutdown()
+
+        // Create a new event listener.
+        val eventListener = eventListenerFactory.newListener(request)
 
         // Compute lifecycle info on the main thread.
         val (lifecycle, mainDispatcher) = requestService.lifecycleInfo(request)
@@ -168,10 +167,11 @@ internal class RealImageLoader(
 
         val deferred = async<Drawable>(mainDispatcher, CoroutineStart.LAZY) innerJob@{
             // Fail before starting if data is null.
-            data ?: throw NullRequestDataException()
+            val data = request.data ?: throw NullRequestDataException()
 
             // Notify the listener that the request has started.
-            request.listener?.onStart(data)
+            eventListener.onStart(request)
+            request.listener?.onStart(request)
 
             // Invalidate the bitmap if it was provided as input.
             when (data) {
@@ -187,10 +187,12 @@ internal class RealImageLoader(
 
             // Prepare to resolve the size lazily.
             val sizeResolver = requestService.sizeResolver(request, context)
-            val lazySizeResolver = LazySizeResolver(this, sizeResolver, targetDelegate, request)
+            val lazySizeResolver = LazySizeResolver(this, sizeResolver, targetDelegate, request, eventListener)
 
             // Perform any data mapping.
+            eventListener.mapStart(request)
             val mappedData = mapData(data, lazySizeResolver)
+            eventListener.mapEnd(request, mappedData)
 
             // Compute the cache key.
             val fetcher = registry.requireFetcher(mappedData)
@@ -216,12 +218,13 @@ internal class RealImageLoader(
             if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, scale, request)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
                 targetDelegate.success(cachedDrawable, true, request.transition)
-                request.listener?.onSuccess(data, DataSource.MEMORY)
+                eventListener.onSuccess(request, DataSource.MEMORY)
+                request.listener?.onSuccess(request, DataSource.MEMORY)
                 return@innerJob cachedDrawable
             }
 
             // Fetch and decode the image.
-            val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale)
+            val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale, eventListener)
 
             // Cache the result.
             if (request.memoryCachePolicy.writeEnabled) {
@@ -231,7 +234,8 @@ internal class RealImageLoader(
             // Set the final result on the target.
             logger?.log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
             targetDelegate.success(drawable, false, request.transition)
-            request.listener?.onSuccess(data, source)
+            eventListener.onSuccess(request, source)
+            request.listener?.onSuccess(request, source)
 
             return@innerJob drawable
         }
@@ -246,13 +250,15 @@ internal class RealImageLoader(
                 throwable ?: return@launch
 
                 if (throwable is CancellationException) {
-                    logger?.log(TAG, Log.INFO) { "${Emoji.CONSTRUCTION} Cancelled - $data" }
-                    request.listener?.onCancel(data)
+                    logger?.log(TAG, Log.INFO) { "${Emoji.CONSTRUCTION} Cancelled - ${request.data}" }
+                    eventListener.onCancel(request)
+                    request.listener?.onCancel(request)
                 } else {
-                    logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - $data - $throwable" }
+                    logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - $throwable" }
                     val drawable = if (throwable is NullRequestDataException) request.fallback else request.error
                     targetDelegate.error(drawable, request.transition)
-                    request.listener?.onError(data, throwable)
+                    eventListener.onError(request, throwable)
+                    request.listener?.onError(request, throwable)
                 }
             }
         }
@@ -365,11 +371,16 @@ internal class RealImageLoader(
         fetcher: Fetcher<Any>,
         mappedData: Any,
         size: Size,
-        scale: Scale
+        scale: Scale,
+        eventListener: EventListener
     ): DrawableResult = withContext(request.dispatcher) {
-        // Convert the data into a Drawable.
         val options = requestService.options(request, size, scale, networkObserver.isOnline())
-        val baseResult = when (val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)) {
+
+        eventListener.fetchStart(request, fetcher, options)
+        val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)
+        eventListener.fetchEnd(request, fetcher, options)
+
+        val baseResult = when (fetchResult) {
             is SourceResult -> {
                 val decodeResult = try {
                     // Check if we're cancelled.
@@ -385,7 +396,10 @@ internal class RealImageLoader(
                     }
 
                     // Decode the stream.
-                    decoder.decode(bitmapPool, fetchResult.source, size, options)
+                    eventListener.decodeStart(request, decoder, options)
+                    val decodeResult = decoder.decode(bitmapPool, fetchResult.source, size, options)
+                    eventListener.decodeEnd(request, decoder, options)
+                    decodeResult
                 } catch (rethrown: Exception) {
                     // NOTE: We only close the stream automatically if there is an uncaught exception.
                     // This allows custom decoders to continue to read the source after returning a Drawable.
@@ -407,7 +421,9 @@ internal class RealImageLoader(
         ensureActive()
 
         // Apply any transformations and prepare to draw.
+        eventListener.transformStart(request)
         val finalResult = applyTransformations(this, baseResult, request.transformations, size, options)
+        eventListener.transformEnd(request)
         (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
 
         return@withContext finalResult
@@ -475,7 +491,8 @@ internal class RealImageLoader(
         private val scope: CoroutineScope,
         private val sizeResolver: SizeResolver,
         private val targetDelegate: TargetDelegate,
-        private val request: Request
+        private val request: Request,
+        private val eventListener: EventListener
     ) {
 
         private var size: Size? = null
@@ -487,9 +504,12 @@ internal class RealImageLoader(
             // Call the target's onStart before resolving the size.
             targetDelegate.start(cached, cached ?: request.placeholder)
 
-            return@run sizeResolver.size()
-                .also { size = it }
-                .also { ensureActive() }
+            eventListener.resolveSizeStart(request)
+            val size = sizeResolver.size().also { size = it }
+            eventListener.resolveSizeEnd(request, size)
+
+            ensureActive()
+            return@run size
         }
     }
 }

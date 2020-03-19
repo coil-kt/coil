@@ -36,12 +36,6 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
                 }
                 add(SvgDecoder(this@Application))
             }
-            .apply {
-                // Enable logging to the standard Android log if this is a debug build.
-                if (BuildConfig.DEBUG) {
-                    logger(DebugLogger())
-                }
-            }
             .okHttpClient {
                 // Create a disk cache with "unlimited" size. Don't do this in production.
                 // To create the an optimized Coil disk cache, use CoilUtils.createDefaultCache(context).
@@ -57,6 +51,12 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
                     .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
                     .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
+            }
+            .apply {
+                // Enable logging to the standard Android log if this is a debug build.
+                if (BuildConfig.DEBUG) {
+                    logger(DebugLogger())
+                }
             }
             .build()
     }
