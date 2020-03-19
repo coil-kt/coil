@@ -1,6 +1,3 @@
-@file:Suppress("unused")
-@file:OptIn(ExperimentalCoilApi::class)
-
 package coil
 
 import android.content.Context
@@ -88,6 +85,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 
+@OptIn(ExperimentalCoilApi::class)
 internal class RealImageLoader(
     private val context: Context,
     override val defaults: DefaultRequestOptions,
