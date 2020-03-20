@@ -5,8 +5,6 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.Movie
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
-import android.os.Build.VERSION_CODES.O
 import coil.bitmappool.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.extension.repeatCount
@@ -16,7 +14,7 @@ import okio.BufferedSource
 /**
  * A [Decoder] that uses [Movie] to decode GIFs.
  *
- * NOTE: Prefer using [ImageDecoderDecoder] on Android P and above.
+ * NOTE: Prefer using [ImageDecoderDecoder] on API 28 and above.
  */
 class GifDecoder : Decoder {
 
@@ -36,7 +34,7 @@ class GifDecoder : Decoder {
     ): DecodeResult {
         // Movie requires an InputStream to resettable on API 18 and below.
         // Read the data as a ByteArray to work around this.
-        val movie = if (SDK_INT <= JELLY_BEAN_MR2) {
+        val movie = if (SDK_INT <= 18) {
             source.use {
                 val byteArray = it.readByteArray()
                 checkNotNull(Movie.decodeByteArray(byteArray, 0, byteArray.size))
@@ -52,7 +50,7 @@ class GifDecoder : Decoder {
             pool = pool,
             config = when {
                 options.allowRgb565 -> Bitmap.Config.RGB_565
-                SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+                SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
                 else -> options.config
             },
             scale = options.scale

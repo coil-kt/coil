@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.N
 import android.util.Xml
 import androidx.annotation.DrawableRes
 import androidx.annotation.XmlRes
@@ -45,7 +44,7 @@ internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes resId: I
     }
 
     // Modified from androidx.appcompat.widget.ResourceManagerInternal.
-    if (SDK_INT < N) {
+    if (SDK_INT < 24) {
         when (parser.name) {
             "vector" -> {
                 val attrs = Xml.asAttributeSet(parser)

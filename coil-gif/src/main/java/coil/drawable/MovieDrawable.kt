@@ -14,7 +14,6 @@ import android.graphics.Rect
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import android.os.SystemClock
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -26,7 +25,7 @@ import coil.size.Scale
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
  *
- * NOTE: Prefer using [ImageDecoderDecoder] and [AnimatedImageDrawable] on Android P and above.
+ * NOTE: Prefer using [ImageDecoderDecoder] and [AnimatedImageDrawable] on API 28 and above.
  */
 class MovieDrawable @JvmOverloads constructor(
     private val movie: Movie,
@@ -61,7 +60,7 @@ class MovieDrawable @JvmOverloads constructor(
     private var loopIteration = 0
 
     init {
-        require(SDK_INT < O || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
+        require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
     }
 
     override fun draw(canvas: Canvas) {

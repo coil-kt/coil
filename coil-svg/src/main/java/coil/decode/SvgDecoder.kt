@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
@@ -70,7 +69,7 @@ class SvgDecoder(private val context: Context) : Decoder {
 
         val config = when {
             options.allowRgb565 -> Bitmap.Config.RGB_565
-            SDK_INT >= O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+            SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
             else -> options.config
         }
         val bitmap = pool.get(bitmapWidth, bitmapHeight, config)

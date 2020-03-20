@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.P
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
@@ -25,9 +24,9 @@ import kotlin.math.roundToInt
 /**
  * A [Decoder] that uses [ImageDecoder] to decode GIFs, animated WebPs, and animated HEIFs.
  *
- * NOTE: Animated HEIF files are only supported on Android R and up.
+ * NOTE: Animated HEIF files are only supported on API 30 and above.
  */
-@RequiresApi(P)
+@RequiresApi(28)
 class ImageDecoderDecoder : Decoder {
 
     companion object {

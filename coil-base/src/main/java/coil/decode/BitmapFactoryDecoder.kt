@@ -7,8 +7,6 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.KITKAT
-import android.os.Build.VERSION_CODES.O
 import androidx.core.graphics.applyCanvas
 import androidx.exifinterface.media.ExifInterface
 import coil.bitmappool.BitmapPool
@@ -66,11 +64,11 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         val safeConfig = if (isFlipped || isRotated) options.config.normalize() else options.config
         inPreferredConfig = if (allowRgb565(options.allowRgb565, safeConfig, outMimeType)) Bitmap.Config.RGB_565 else safeConfig
 
-        if (SDK_INT >= O && options.colorSpace != null) {
+        if (SDK_INT >= 26 && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
         }
 
-        inMutable = SDK_INT < O || inPreferredConfig != Bitmap.Config.HARDWARE
+        inMutable = SDK_INT < 26 || inPreferredConfig != Bitmap.Config.HARDWARE
         inScaled = false
 
         when {
@@ -87,7 +85,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                     inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
                 }
             }
-            SDK_INT >= KITKAT -> {
+            SDK_INT >= 19 -> {
                 val (width, height) = size
                 inSampleSize = DecodeUtils.calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
 
@@ -172,7 +170,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         config: Bitmap.Config,
         mimeType: String?
     ): Boolean {
-        return allowRgb565 && (SDK_INT < O || config == Bitmap.Config.ARGB_8888) && mimeType == MIME_TYPE_JPEG
+        return allowRgb565 && (SDK_INT < 26 || config == Bitmap.Config.ARGB_8888) && mimeType == MIME_TYPE_JPEG
     }
 
     /** NOTE: This method assumes [config] is not [Bitmap.Config.HARDWARE] if the image has to be transformed. */
