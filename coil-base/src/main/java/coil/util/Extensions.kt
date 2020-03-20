@@ -12,10 +12,6 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
-import android.os.Build.VERSION_CODES.KITKAT
-import android.os.Build.VERSION_CODES.LOLLIPOP
-import android.os.Build.VERSION_CODES.O
 import android.os.Looper
 import android.os.StatFs
 import android.view.View
@@ -59,7 +55,7 @@ internal fun Bitmap.Config?.getBytesPerPixel(): Int {
         this == Bitmap.Config.ALPHA_8 -> 1
         this == Bitmap.Config.RGB_565 -> 2
         this == Bitmap.Config.ARGB_4444 -> 2
-        SDK_INT >= O && this == Bitmap.Config.RGBA_F16 -> 8
+        SDK_INT >= 26 && this == Bitmap.Config.RGBA_F16 -> 8
         else -> 4
     }
 }
@@ -110,7 +106,7 @@ internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) remo
 internal inline fun <K, V> sortedMapOf(): SortedMap<K, V> = TreeMap()
 
 internal inline fun ActivityManager.isLowRamDeviceCompat(): Boolean {
-    return SDK_INT < KITKAT || isLowRamDevice
+    return SDK_INT < 19 || isLowRamDevice
 }
 
 internal inline fun Bitmap.toDrawable(context: Context): BitmapDrawable = toDrawable(context.resources)
@@ -120,7 +116,7 @@ internal fun Bitmap.getAllocationByteCountCompat(): Int {
     check(!isRecycled) { "Cannot obtain size for recycled Bitmap: $this [$width x $height] + $config" }
 
     return try {
-        if (SDK_INT >= KITKAT) {
+        if (SDK_INT >= 19) {
             allocationByteCount
         } else {
             rowBytes * height
@@ -132,12 +128,12 @@ internal fun Bitmap.getAllocationByteCountCompat(): Int {
 
 @Suppress("DEPRECATION")
 internal inline fun StatFs.getBlockCountCompat(): Long {
-    return if (SDK_INT > JELLY_BEAN_MR2) blockCountLong else blockCount.toLong()
+    return if (SDK_INT > 18) blockCountLong else blockCount.toLong()
 }
 
 @Suppress("DEPRECATION")
 internal inline fun StatFs.getBlockSizeCompat(): Long {
-    return if (SDK_INT > JELLY_BEAN_MR2) blockSizeLong else blockSize.toLong()
+    return if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 }
 
 internal fun MemoryCache.getValue(key: String?): MemoryCache.Value? = key?.let(::get)
@@ -156,7 +152,7 @@ internal inline fun <T> takeIf(take: Boolean, factory: () -> T): T? {
 }
 
 internal val Bitmap.Config.isHardware: Boolean
-    get() = SDK_INT >= O && this == Bitmap.Config.HARDWARE
+    get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
 
 /** Guard against null bitmap configs. */
 internal val Bitmap.safeConfig: Bitmap.Config
@@ -197,7 +193,7 @@ internal val Drawable.height: Int
     get() = (this as? BitmapDrawable)?.bitmap?.width ?: intrinsicWidth
 
 internal val Drawable.isVector: Boolean
-    get() = (this is VectorDrawableCompat) || (SDK_INT > LOLLIPOP && this is VectorDrawable)
+    get() = (this is VectorDrawableCompat) || (SDK_INT > 21 && this is VectorDrawable)
 
 internal fun Closeable.closeQuietly() {
     try {

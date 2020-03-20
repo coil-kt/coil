@@ -2,8 +2,6 @@ package coil.bitmappool.strategy
 
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.KITKAT
-import android.os.Build.VERSION_CODES.O
 import androidx.annotation.Px
 import androidx.annotation.RequiresApi
 import coil.collection.GroupedLinkedMap
@@ -22,14 +20,14 @@ import java.util.TreeMap
  * Adapted from [Glide](https://github.com/bumptech/glide)'s SizeConfigStrategy.
  * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
-@RequiresApi(KITKAT)
+@RequiresApi(19)
 internal class SizeConfigStrategy : BitmapPoolStrategy {
 
     @Suppress("DEPRECATION")
     companion object {
         private const val MAX_SIZE_MULTIPLE = 8
 
-        private val ARGB_8888_IN_CONFIGS: Array<Bitmap.Config> = if (SDK_INT >= O) {
+        private val ARGB_8888_IN_CONFIGS: Array<Bitmap.Config> = if (SDK_INT >= 26) {
             arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
         } else {
             arrayOf(Bitmap.Config.ARGB_8888)
@@ -107,7 +105,7 @@ internal class SizeConfigStrategy : BitmapPoolStrategy {
     @Suppress("DEPRECATION")
     private fun getInConfigs(requested: Bitmap.Config): Array<Bitmap.Config> {
         return when {
-            SDK_INT >= O && Bitmap.Config.RGBA_F16 == requested -> RGBA_F16_IN_CONFIGS
+            SDK_INT >= 26 && Bitmap.Config.RGBA_F16 == requested -> RGBA_F16_IN_CONFIGS
             requested == Bitmap.Config.ARGB_8888 -> ARGB_8888_IN_CONFIGS
             requested == Bitmap.Config.RGB_565 -> RGB_565_IN_CONFIGS
             requested == Bitmap.Config.ARGB_4444 -> ARGB_4444_IN_CONFIGS

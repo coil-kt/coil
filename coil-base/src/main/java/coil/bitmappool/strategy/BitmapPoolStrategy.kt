@@ -2,8 +2,6 @@ package coil.bitmappool.strategy
 
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.KITKAT
-import android.os.Build.VERSION_CODES.M
 import androidx.annotation.Px
 
 internal interface BitmapPoolStrategy {
@@ -11,8 +9,8 @@ internal interface BitmapPoolStrategy {
     companion object {
         operator fun invoke(): BitmapPoolStrategy {
             return when {
-                SDK_INT >= M -> SizeStrategy()
-                SDK_INT >= KITKAT -> SizeConfigStrategy()
+                SDK_INT >= 23 -> SizeStrategy()
+                SDK_INT >= 19 -> SizeConfigStrategy()
                 else -> AttributeStrategy()
             }
         }

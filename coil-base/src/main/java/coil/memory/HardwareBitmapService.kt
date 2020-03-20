@@ -3,8 +3,6 @@ package coil.memory
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
-import android.os.Build.VERSION_CODES.O_MR1
 import android.util.Log
 import androidx.annotation.WorkerThread
 import coil.memory.HardwareBitmapBlacklist.IS_BLACKLISTED
@@ -19,8 +17,8 @@ internal sealed class HardwareBitmapService {
 
     companion object {
         operator fun invoke() = when {
-            SDK_INT < O || IS_BLACKLISTED -> ImmutableHardwareBitmapService(false)
-            SDK_INT == O || SDK_INT == O_MR1 -> LimitedFileDescriptorHardwareBitmapService
+            SDK_INT < 26 || IS_BLACKLISTED -> ImmutableHardwareBitmapService(false)
+            SDK_INT == 26 || SDK_INT == 27 -> LimitedFileDescriptorHardwareBitmapService
             else -> ImmutableHardwareBitmapService(true)
         }
     }
@@ -36,8 +34,8 @@ private class ImmutableHardwareBitmapService(private val allowHardware: Boolean)
 }
 
 /**
- * Android O and O_MR1 have a limited number of file descriptors (1024) per-process.
- * This limit was increased to a safe number in Android P (32768). Each hardware bitmap
+ * API 26 and 27 have a limited number of file descriptors (1024) per-process.
+ * This limit was increased to a safe number in API 28 (32768). Each hardware bitmap
  * allocation consumes, on average, 2 file descriptors. In addition, other non-image loading
  * operations can use file descriptors, which increases competition for these resources.
  * This class exists to disable [Bitmap.Config.HARDWARE] allocation if this process gets
@@ -101,7 +99,7 @@ private object HardwareBitmapBlacklist {
 
     @JvmField
     val IS_BLACKLISTED = when (SDK_INT) {
-        O -> run {
+        26 -> run {
             val model = Build.MODEL ?: return@run false
 
             // Samsung Galaxy (ALL)
@@ -129,7 +127,7 @@ private object HardwareBitmapBlacklist {
                 "N5702L" // NUU Mobile G3
             )
         }
-        O_MR1 -> run {
+        27 -> run {
             val device = Build.DEVICE ?: return@run false
 
             return@run device in arrayOf(

@@ -7,7 +7,6 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.N
 import androidx.annotation.VisibleForTesting
 import coil.memory.MemoryCache.Value
 import coil.util.firstNotNullIndices
@@ -156,7 +155,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
                 }
             } else {
                 // Iterate over the list of values and delete individual entries that have been collected.
-                if (SDK_INT >= N) {
+                if (SDK_INT >= 24) {
                     list.removeIf { it.reference.get() == null }
                 } else {
                     list.removeIfIndices { it.reference.get() == null }

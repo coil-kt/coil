@@ -12,8 +12,6 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
-import android.os.Build.VERSION_CODES.O_MR1
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmappool.BitmapPool
@@ -134,7 +132,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 is OriginalSize -> OriginalSize
             }
 
-            val rawBitmap = if (SDK_INT >= O_MR1 && destSize is PixelSize) {
+            val rawBitmap = if (SDK_INT >= 27 && destSize is PixelSize) {
                 retriever.getScaledFrameAtTime(frameMicros, option, destSize.width, destSize.height)
             } else {
                 retriever.getFrameAtTime(frameMicros, option).also {
@@ -197,7 +195,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 dstHeight = inBitmap.height
             }
         }
-        val safeConfig = if (SDK_INT >= O && options.config == Bitmap.Config.HARDWARE) Bitmap.Config.ARGB_8888 else options.config
+        val safeConfig = if (SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE) Bitmap.Config.ARGB_8888 else options.config
         val outBitmap = pool.get(dstWidth, dstHeight, safeConfig)
         outBitmap.applyCanvas {
             scale(scale, scale)
@@ -210,7 +208,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
     private fun isConfigValid(inBitmap: Bitmap, options: Options): Boolean {
         return inBitmap.config == options.config ||
             (options.allowRgb565 && inBitmap.config == Bitmap.Config.RGB_565) ||
-            (SDK_INT >= O && inBitmap.config == Bitmap.Config.ARGB_8888 && options.config == Bitmap.Config.HARDWARE)
+            (SDK_INT >= 26 && inBitmap.config == Bitmap.Config.ARGB_8888 && options.config == Bitmap.Config.HARDWARE)
     }
 
     private fun isSizeValid(inBitmap: Bitmap, options: Options, size: Size): Boolean {
