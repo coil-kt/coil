@@ -366,7 +366,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      * @see Parameters.Builder.set
      */
     @JvmOverloads
-    fun setParameter(key: String, value: Any?, cacheKey: String? = null): T = self {
+    fun setParameter(key: String, value: Any?, cacheKey: String? = value?.toString()): T = self {
         this.parameters = (this.parameters ?: Parameters.Builder()).apply { set(key, value, cacheKey) }
     }
 
