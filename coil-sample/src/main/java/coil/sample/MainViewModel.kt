@@ -57,7 +57,7 @@ class MainViewModel(application: Application, handle: SavedStateHandle) : Androi
             for (index in 0 until 50) {
                 val videoFrameMicros = Random.nextLong(62000000L)
                 val parameters = Parameters.Builder()
-                    .set(VIDEO_FRAME_MICROS_KEY, videoFrameMicros, videoFrameMicros.toString())
+                    .set(VIDEO_FRAME_MICROS_KEY, videoFrameMicros)
                     .build()
 
                 images += Image(

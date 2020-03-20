@@ -515,9 +515,9 @@ class RealImageLoaderBasicTest {
 
     private fun createFakeParameters(): Parameters {
         return Parameters.Builder()
-            .set("key1", "no_cache")
-            .set("key2", "cached2", "cached2")
-            .set("key3", "cached3", "cached3")
+            .set("key1", "no_cache", cacheKey = null)
+            .set("key2", "cached2")
+            .set("key3", "cached3")
             .build()
     }
 
