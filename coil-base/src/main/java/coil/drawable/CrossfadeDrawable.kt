@@ -9,9 +9,6 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
-import android.os.Build.VERSION_CODES.KITKAT
-import android.os.Build.VERSION_CODES.LOLLIPOP
-import android.os.Build.VERSION_CODES.Q
 import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
@@ -104,7 +101,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
         }
     }
 
-    @RequiresApi(KITKAT)
+    @RequiresApi(19)
     override fun getAlpha() = maxAlpha
 
     override fun setAlpha(alpha: Int) {
@@ -133,7 +130,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
         }
     }
 
-    @RequiresApi(LOLLIPOP)
+    @RequiresApi(21)
     override fun getColorFilter(): ColorFilter? = when (state) {
         STATE_START -> start?.colorFilter
         STATE_RUNNING -> end?.colorFilter ?: start?.colorFilter
@@ -141,7 +138,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
         else -> null
     }
 
-    @RequiresApi(LOLLIPOP)
+    @RequiresApi(21)
     override fun setColorFilter(colorFilter: ColorFilter?) {
         start?.colorFilter = colorFilter
         end?.colorFilter = colorFilter
@@ -174,25 +171,25 @@ class CrossfadeDrawable @JvmOverloads constructor(
 
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
 
-    @RequiresApi(LOLLIPOP)
+    @RequiresApi(21)
     override fun setTint(tintColor: Int) {
         start?.setTint(tintColor)
         end?.setTint(tintColor)
     }
 
-    @RequiresApi(LOLLIPOP)
+    @RequiresApi(21)
     override fun setTintList(tint: ColorStateList?) {
         start?.setTintList(tint)
         end?.setTintList(tint)
     }
 
-    @RequiresApi(LOLLIPOP)
+    @RequiresApi(21)
     override fun setTintMode(tintMode: PorterDuff.Mode?) {
         start?.setTintMode(tintMode)
         end?.setTintMode(tintMode)
     }
 
-    @RequiresApi(Q)
+    @RequiresApi(29)
     override fun setTintBlendMode(blendMode: BlendMode?) {
         start?.setTintBlendMode(blendMode)
         end?.setTintBlendMode(blendMode)

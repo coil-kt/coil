@@ -11,7 +11,6 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.LOLLIPOP
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
@@ -42,7 +41,7 @@ internal interface NetworkObserverStrategy {
             }
 
             return try {
-                if (SDK_INT >= LOLLIPOP) {
+                if (SDK_INT >= 21) {
                     NetworkObserverStrategyApi21(connectivityManager, listener)
                 } else {
                     NetworkObserverStrategyApi14(context, connectivityManager, listener)
@@ -78,7 +77,7 @@ private object EmptyNetworkObserverStrategy : NetworkObserverStrategy {
     override fun isOnline() = true
 }
 
-@RequiresApi(LOLLIPOP)
+@RequiresApi(21)
 @SuppressLint("MissingPermission")
 private class NetworkObserverStrategyApi21(
     private val connectivityManager: ConnectivityManager,

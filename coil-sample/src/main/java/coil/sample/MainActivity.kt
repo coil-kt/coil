@@ -3,7 +3,6 @@
 package coil.sample
 
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.Q
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -31,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        if (SDK_INT >= Q) {
+        if (SDK_INT >= 29) {
             window.decorView.apply {
                 systemUiVisibility = systemUiVisibility or
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE or

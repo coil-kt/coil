@@ -6,8 +6,6 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.KITKAT
-import android.os.Build.VERSION_CODES.O
 import android.util.Log
 import androidx.annotation.Px
 import androidx.collection.arraySetOf
@@ -42,7 +40,7 @@ internal class RealBitmapPool(
                 Bitmap.Config.ARGB_4444,
                 Bitmap.Config.ARGB_8888
             )
-            if (SDK_INT >= O) {
+            if (SDK_INT >= 26) {
                 configs += Bitmap.Config.RGBA_F16
             }
             return configs
@@ -147,7 +145,7 @@ internal class RealBitmapPool(
     private fun normalize(bitmap: Bitmap) {
         bitmap.density = Bitmap.DENSITY_NONE
         bitmap.setHasAlpha(true)
-        if (SDK_INT >= KITKAT) {
+        if (SDK_INT >= 19) {
             bitmap.isPremultiplied = true
         }
     }
@@ -172,7 +170,7 @@ internal class RealBitmapPool(
     }
 
     private fun assertNotHardwareConfig(config: Bitmap.Config) {
-        require(SDK_INT < O || config != Bitmap.Config.HARDWARE) { "Cannot create a mutable hardware Bitmap." }
+        require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE) { "Cannot create a mutable hardware Bitmap." }
     }
 
     private fun dump() {

@@ -3,7 +3,6 @@
 package coil.sample
 
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.P
 import androidx.multidex.MultiDexApplication
 import coil.ImageLoader
 import coil.ImageLoaderFactory
@@ -29,7 +28,7 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
                 add(VideoFrameUriFetcher(this@Application))
 
                 // Decoders
-                if (SDK_INT >= P) {
+                if (SDK_INT >= 28) {
                     add(ImageDecoderDecoder())
                 } else {
                     add(GifDecoder())
@@ -48,7 +47,7 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
                     .cache(cache)
-                    .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before Lollipop.
+                    .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before API 21.
                     .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
             }

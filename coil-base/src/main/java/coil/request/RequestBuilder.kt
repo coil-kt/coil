@@ -8,7 +8,6 @@ import android.graphics.Bitmap
 import android.graphics.ColorSpace
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
@@ -84,7 +83,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         dispatcher = defaults.dispatcher
         transformations = emptyList()
         bitmapConfig = Utils.getDefaultBitmapConfig()
-        if (SDK_INT >= O) {
+        if (SDK_INT >= 26) {
             colorSpace = null
         }
         headers = null
@@ -111,7 +110,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         dispatcher = request.dispatcher
         transformations = request.transformations
         bitmapConfig = request.bitmapConfig
-        if (SDK_INT >= O) {
+        if (SDK_INT >= 26) {
             colorSpace = request.colorSpace
         }
         headers = request.headers.newBuilder()
@@ -267,7 +266,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     /**
      * Set the preferred [ColorSpace].
      */
-    @RequiresApi(O)
+    @RequiresApi(26)
     fun colorSpace(colorSpace: ColorSpace): T = self {
         this.colorSpace = colorSpace
     }

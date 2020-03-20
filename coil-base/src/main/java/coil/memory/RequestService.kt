@@ -3,7 +3,6 @@ package coil.memory
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
@@ -36,7 +35,7 @@ internal class RequestService(private val logger: Logger?) {
 
     companion object {
         /** A whitelist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
-        private val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= O) {
+        private val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
             arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
         } else {
             arrayOf(Bitmap.Config.ARGB_8888)
