@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.MainThread
+import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.base.R
@@ -26,10 +27,6 @@ import coil.util.log
  * @see DelegateService
  */
 internal sealed class TargetDelegate {
-
-    companion object {
-        const val TAG = "TargetDelegate"
-    }
 
     @MainThread
     open fun start(cached: BitmapDrawable?, placeholder: Drawable?) {}
@@ -69,8 +66,10 @@ internal class InvalidatableEmptyTargetDelegate(
  * Invalidate the cached bitmap and the success bitmap.
  */
 internal class InvalidatableTargetDelegate(
-    val target: Target,
+    private val request: Request,
+    private val target: Target,
     override val referenceCounter: BitmapReferenceCounter,
+    private val eventListener: EventListener,
     private val logger: Logger?
 ) : TargetDelegate(), Invalidatable {
 
@@ -81,11 +80,11 @@ internal class InvalidatableTargetDelegate(
 
     override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
         invalidate(result.bitmap)
-        target.onSuccess(result, isMemoryCache, transition, logger)
+        target.onSuccess(request, result, isMemoryCache, transition, eventListener, logger)
     }
 
     override suspend fun error(error: Drawable?, transition: Transition?) {
-        target.onError(error, transition, logger)
+        target.onError(request, error, transition, eventListener, logger)
     }
 }
 
@@ -93,8 +92,10 @@ internal class InvalidatableTargetDelegate(
  * Handle the reference counts for the cached bitmap and the success bitmap.
  */
 internal class PoolableTargetDelegate(
+    private val request: Request,
     override val target: PoolableViewTarget<*>,
     override val referenceCounter: BitmapReferenceCounter,
+    private val eventListener: EventListener,
     private val logger: Logger?
 ) : TargetDelegate(), Poolable {
 
@@ -103,11 +104,11 @@ internal class PoolableTargetDelegate(
     }
 
     override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
-        instrument(result.bitmap) { onSuccess(result, isMemoryCache, transition, logger) }
+        instrument(result.bitmap) { onSuccess(request, result, isMemoryCache, transition, eventListener, logger) }
     }
 
     override suspend fun error(error: Drawable?, transition: Transition?) {
-        instrument(null) { onError(error, transition, logger) }
+        instrument(null) { onError(request, error, transition, eventListener, logger) }
     }
 
     override fun clear() {
@@ -155,9 +156,11 @@ private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarg
 }
 
 private suspend inline fun Target.onSuccess(
+    request: Request,
     result: Drawable,
     isMemoryCache: Boolean,
     transition: Transition?,
+    eventListener: EventListener,
     logger: Logger?
 ) {
     if (transition == null) {
@@ -166,19 +169,23 @@ private suspend inline fun Target.onSuccess(
     }
 
     if (this !is TransitionTarget<*>) {
-        logger?.log(TargetDelegate.TAG, Log.WARN) {
+        logger?.log("TargetDelegate", Log.WARN) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
         onSuccess(result)
         return
     }
 
+    eventListener.transitionStart(request)
     transition.transition(this, Success(result, isMemoryCache))
+    eventListener.transitionEnd(request)
 }
 
 private suspend inline fun Target.onError(
+    request: Request,
     error: Drawable?,
     transition: Transition?,
+    eventListener: EventListener,
     logger: Logger?
 ) {
     if (transition == null) {
@@ -187,12 +194,14 @@ private suspend inline fun Target.onError(
     }
 
     if (this !is TransitionTarget<*>) {
-        logger?.log(TargetDelegate.TAG, Log.WARN) {
+        logger?.log("TargetDelegate", Log.WARN) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
         onError(error)
         return
     }
 
+    eventListener.transitionStart(request)
     transition.transition(this, Error(error))
+    eventListener.transitionEnd(request)
 }
