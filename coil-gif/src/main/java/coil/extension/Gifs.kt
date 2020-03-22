@@ -20,7 +20,7 @@ import coil.request.RequestBuilder
  */
 fun RequestBuilder<*>.repeatCount(repeatCount: Int) {
     require(repeatCount >= MovieDrawable.REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
-    setParameter(REPEAT_COUNT_KEY, repeatCount, repeatCount.toString())
+    setParameter(REPEAT_COUNT_KEY, repeatCount)
 }
 
 /** Get the number of times to repeat the animation if the result is an animated [Drawable]. */

@@ -32,7 +32,7 @@ fun RequestBuilder<*>.videoFrameMillis(frameMillis: Long) = videoFrameMicros(100
  */
 fun RequestBuilder<*>.videoFrameMicros(frameMicros: Long) {
     require(frameMicros >= 0) { "frameMicros must be >= 0" }
-    setParameter(VIDEO_FRAME_MICROS_KEY, frameMicros, frameMicros.toString())
+    setParameter(VIDEO_FRAME_MICROS_KEY, frameMicros)
 }
 
 /**
@@ -50,7 +50,7 @@ fun RequestBuilder<*>.videoFrameOption(option: Int) {
         option == OPTION_NEXT_SYNC ||
         option == OPTION_CLOSEST_SYNC ||
         option == OPTION_CLOSEST) { "Invalid video frame option: $option." }
-    setParameter(VIDEO_FRAME_OPTION_KEY, option, option.toString())
+    setParameter(VIDEO_FRAME_OPTION_KEY, option)
 }
 
 /**
