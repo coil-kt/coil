@@ -161,7 +161,7 @@ internal class RealImageLoader(
         val (lifecycle, mainDispatcher) = requestService.lifecycleInfo(request)
 
         // Wrap the target to support bitmap pooling.
-        val targetDelegate = delegateService.createTargetDelegate(request)
+        val targetDelegate = delegateService.createTargetDelegate(request, eventListener)
 
         val deferred = async<Drawable>(mainDispatcher, CoroutineStart.LAZY) innerJob@{
             // Fail before starting if data is null.
@@ -419,9 +419,7 @@ internal class RealImageLoader(
         ensureActive()
 
         // Apply any transformations and prepare to draw.
-        eventListener.transformStart(request)
-        val finalResult = applyTransformations(this, baseResult, request.transformations, size, options)
-        eventListener.transformEnd(request)
+        val finalResult = applyTransformations(this, baseResult, request, size, options, eventListener)
         (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
 
         return@withContext finalResult
@@ -432,15 +430,18 @@ internal class RealImageLoader(
     internal suspend inline fun applyTransformations(
         scope: CoroutineScope,
         result: DrawableResult,
-        transformations: List<Transformation>,
+        request: Request,
         size: Size,
-        options: Options
+        options: Options,
+        eventListener: EventListener
     ): DrawableResult = scope.run {
+        val transformations = request.transformations
         if (transformations.isEmpty()) {
             return@run result
         }
 
         // Convert the drawable into a bitmap.
+        eventListener.transformStart(request)
         val baseBitmap = if (result.drawable is BitmapDrawable) {
             result.drawable.bitmap
         } else {
@@ -454,7 +455,9 @@ internal class RealImageLoader(
         val transformedBitmap = transformations.fold(baseBitmap) { bitmap, transformation ->
             transformation.transform(bitmapPool, bitmap, size).also { ensureActive() }
         }
-        return@run result.copy(drawable = transformedBitmap.toDrawable(context))
+        val transformedResult = result.copy(drawable = transformedBitmap.toDrawable(context))
+        eventListener.transformEnd(request)
+        return@run transformedResult
     }
 
     override fun onTrimMemory(level: Int) {

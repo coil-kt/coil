@@ -3,6 +3,7 @@ package coil.memory
 import android.content.Context
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
+import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.FakeBitmapPool
@@ -61,7 +62,7 @@ class TargetDelegateTest {
     @Test
     fun `empty target does not invalidate`() {
         val request = createLoadRequest(context)
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
 
         runBlocking {
             val bitmap = createBitmap()
@@ -80,7 +81,7 @@ class TargetDelegateTest {
     @Test
     fun `get request invalidates the success bitmap`() {
         val request = createGetRequest()
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
 
         runBlocking {
             val bitmap = createBitmap()
@@ -95,7 +96,7 @@ class TargetDelegateTest {
         val request = createLoadRequest(context) {
             target(target)
         }
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
 
         runBlocking {
             val bitmap = createBitmap()
@@ -125,7 +126,7 @@ class TargetDelegateTest {
         val request = createLoadRequest(context) {
             target(ImageViewTarget(ImageView(context)))
         }
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
 
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)
@@ -146,7 +147,7 @@ class TargetDelegateTest {
         val request = createLoadRequest(context) {
             target(ImageViewTarget(ImageView(context)))
         }
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
 
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)

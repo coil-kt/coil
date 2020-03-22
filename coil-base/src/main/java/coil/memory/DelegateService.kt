@@ -4,7 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
+import coil.EventListener
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoilApi
 import coil.request.GetRequest
 import coil.request.LoadRequest
 import coil.request.Request
@@ -19,6 +21,7 @@ import kotlinx.coroutines.Deferred
 /**
  * [DelegateService] wraps [Target]s to support [Bitmap] pooling and [Request]s to manage their lifecycle.
  */
+@OptIn(ExperimentalCoilApi::class)
 internal class DelegateService(
     private val imageLoader: ImageLoader,
     private val referenceCounter: BitmapReferenceCounter,
@@ -26,13 +29,16 @@ internal class DelegateService(
 ) {
 
     /** Wrap the [request]'s [Target] to support [Bitmap] pooling. */
-    fun createTargetDelegate(request: Request): TargetDelegate {
+    fun createTargetDelegate(
+        request: Request,
+        eventListener: EventListener
+    ): TargetDelegate {
         return when (request) {
             is GetRequest -> InvalidatableEmptyTargetDelegate(referenceCounter)
             is LoadRequest -> when (val target = request.target) {
                 null -> EmptyTargetDelegate
-                is PoolableViewTarget<*> -> PoolableTargetDelegate(target, referenceCounter, logger)
-                else -> InvalidatableTargetDelegate(target, referenceCounter, logger)
+                is PoolableViewTarget<*> -> PoolableTargetDelegate(request, target, referenceCounter, eventListener, logger)
+                else -> InvalidatableTargetDelegate(request, target, referenceCounter, eventListener, logger)
             }
         }
     }
