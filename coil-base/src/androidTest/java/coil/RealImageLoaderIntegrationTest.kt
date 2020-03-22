@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalCoilApi::class)
-
 package coil
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
@@ -26,14 +24,13 @@ import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.DrawableResult
-import coil.fetch.Fetcher
 import coil.request.CachePolicy
 import coil.request.NullRequestDataException
-import coil.request.Request
 import coil.size.PixelSize
 import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.util.Utils
+import coil.util.createGetRequest
 import coil.util.createMockWebServer
 import coil.util.createOptions
 import coil.util.getDrawableCompat
@@ -51,7 +48,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
@@ -64,6 +60,7 @@ import kotlin.test.assertTrue
 /**
  * Integration tests for [RealImageLoader].
  */
+@OptIn(ExperimentalCoilApi::class)
 class RealImageLoaderIntegrationTest {
 
     companion object {
@@ -302,9 +299,10 @@ class RealImageLoaderIntegrationTest {
                     isSampled = false,
                     dataSource = DataSource.MEMORY
                 ),
-                transformations = listOf(CircleCropTransformation()),
+                request = createGetRequest { transformations(CircleCropTransformation()) },
                 size = size,
-                options = createOptions()
+                options = createOptions(),
+                eventListener = EventListener.EMPTY
             )
         }
 
@@ -325,9 +323,10 @@ class RealImageLoaderIntegrationTest {
                     isSampled = false,
                     dataSource = DataSource.MEMORY
                 ),
-                transformations = emptyList(),
+                request = createGetRequest { transformations(emptyList()) },
                 size = size,
-                options = createOptions()
+                options = createOptions(),
+                eventListener = EventListener.EMPTY
             )
         }
 
@@ -372,89 +371,7 @@ class RealImageLoaderIntegrationTest {
         }
     }
 
-    @Test
-    fun eventListenerMethodsAreCalled() {
-        class MethodChecker(private val eventName: String) {
-
-            private val isCalled = AtomicBoolean(false)
-
-            fun markCalled() {
-                require(!isCalled.getAndSet(true)) { "$eventName was called more than once." }
-            }
-
-            fun requireCalled() {
-                require(isCalled.get()) { "$eventName was NOT called at least once." }
-            }
-
-            fun requireNotCalled() {
-                require(!isCalled.get()) { "$eventName was called once." }
-            }
-        }
-
-        val eventListener = object : EventListener {
-
-            val onStart = MethodChecker("onStart")
-            val mapStart = MethodChecker("mapStart")
-            val mapEnd = MethodChecker("mapEnd")
-            val resolveSizeStart = MethodChecker("resolveSizeStart")
-            val resolveSizeEnd = MethodChecker("resolveSizeEnd")
-            val fetchStart = MethodChecker("fetchStart")
-            val fetchEnd = MethodChecker("fetchEnd")
-            val decodeStart = MethodChecker("decodeStart")
-            val decodeEnd = MethodChecker("decodeEnd")
-            val transformStart = MethodChecker("transformStart")
-            val transformEnd = MethodChecker("transformEnd")
-            val onSuccess = MethodChecker("transformEnd")
-            val onCancel = MethodChecker("transformEnd")
-            val onError = MethodChecker("transformEnd")
-
-            override fun onStart(request: Request) = onStart.markCalled()
-            override fun mapStart(request: Request) = mapStart.markCalled()
-            override fun mapEnd(request: Request, mappedData: Any) = mapEnd.markCalled()
-            override fun resolveSizeStart(request: Request) = resolveSizeStart.markCalled()
-            override fun resolveSizeEnd(request: Request, size: Size) = resolveSizeEnd.markCalled()
-            override fun fetchStart(request: Request, fetcher: Fetcher<*>, options: Options) = fetchStart.markCalled()
-            override fun fetchEnd(request: Request, fetcher: Fetcher<*>, options: Options) = fetchEnd.markCalled()
-            override fun decodeStart(request: Request, decoder: Decoder, options: Options) = decodeStart.markCalled()
-            override fun decodeEnd(request: Request, decoder: Decoder, options: Options) = decodeEnd.markCalled()
-            override fun transformStart(request: Request) = transformStart.markCalled()
-            override fun transformEnd(request: Request) = transformEnd.markCalled()
-            override fun onSuccess(request: Request, source: DataSource) = onSuccess.markCalled()
-            override fun onCancel(request: Request) = onCancel.markCalled()
-            override fun onError(request: Request, throwable: Throwable) = onError.markCalled()
-        }
-
-        runBlocking {
-            val imageLoader = ImageLoader.Builder(context)
-                .eventListener(eventListener)
-                .build()
-
-            testLoad(copyNormalImageAssetToCacheDir(), imageLoader = imageLoader)
-        }
-
-        eventListener.apply {
-            onStart.requireCalled()
-            mapStart.requireCalled()
-            mapEnd.requireCalled()
-            resolveSizeStart.requireCalled()
-            resolveSizeEnd.requireCalled()
-            fetchStart.requireCalled()
-            fetchEnd.requireCalled()
-            decodeStart.requireCalled()
-            decodeEnd.requireCalled()
-            transformStart.requireCalled()
-            transformEnd.requireCalled()
-            onSuccess.requireCalled()
-            onCancel.requireNotCalled()
-            onError.requireNotCalled()
-        }
-    }
-
-    private fun testLoad(
-        data: Any,
-        expectedSize: PixelSize = PixelSize(80, 100),
-        imageLoader: ImageLoader = this.imageLoader
-    ) {
+    private fun testLoad(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
         val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
