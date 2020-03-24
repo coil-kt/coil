@@ -89,7 +89,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - fill`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
         }
@@ -140,7 +140,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - fit`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
         }
@@ -191,7 +191,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - small not sampled cached drawable is valid`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             precision(Precision.INEXACT)
         }
         val cached = createBitmap().toDrawable(context)
@@ -207,7 +207,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - bitmap config must be equal`() {
-        val request = createGetRequest()
+        val request = createGetRequest(context)
 
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config).toDrawable(context)
@@ -233,7 +233,7 @@ class RealImageLoaderBasicTest {
             cachedConfig: Bitmap.Config,
             requestedConfig: Bitmap.Config
         ): Boolean {
-            val request = createGetRequest {
+            val request = createGetRequest(context) {
                 allowRgb565(true)
                 bitmapConfig(requestedConfig)
             }
@@ -261,7 +261,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - allowHardware=false prevents using cached hardware bitmap`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             allowHardware(false)
         }
 

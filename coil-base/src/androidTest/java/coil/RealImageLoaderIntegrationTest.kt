@@ -299,7 +299,7 @@ class RealImageLoaderIntegrationTest {
                     isSampled = false,
                     dataSource = DataSource.MEMORY
                 ),
-                request = createGetRequest { transformations(CircleCropTransformation()) },
+                request = createGetRequest(context) { transformations(CircleCropTransformation()) },
                 size = size,
                 options = createOptions(),
                 eventListener = EventListener.EMPTY
@@ -323,7 +323,7 @@ class RealImageLoaderIntegrationTest {
                     isSampled = false,
                     dataSource = DataSource.MEMORY
                 ),
-                request = createGetRequest { transformations(emptyList()) },
+                request = createGetRequest(context) { transformations(emptyList()) },
                 size = size,
                 options = createOptions(),
                 eventListener = EventListener.EMPTY
