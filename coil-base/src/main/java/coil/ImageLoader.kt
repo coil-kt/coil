@@ -14,7 +14,7 @@ import coil.request.RequestDisposable
 import coil.target.Target
 
 /**
- * Loads images using [launch] and [launch].
+ * A service class that fetches and decodes image data.
  */
 interface ImageLoader {
 
@@ -91,7 +91,7 @@ interface ImageLoader {
 
     /** @see launch */
     @Deprecated(
-        message = "Migrate to launch().",
+        message = "Migrate to launch(request).",
         replaceWith = ReplaceWith("launch(request)"),
         level = DeprecationLevel.ERROR
     )
@@ -99,7 +99,7 @@ interface ImageLoader {
 
     /** @see launch */
     @Deprecated(
-        message = "Migrate to launch().",
+        message = "Migrate to launch(request).",
         replaceWith = ReplaceWith("launch(request)"),
         level = DeprecationLevel.ERROR
     )
