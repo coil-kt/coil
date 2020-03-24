@@ -1,5 +1,5 @@
 @file:JvmName("Coils")
-@file:Suppress("NOTHING_TO_INLINE", "unused")
+@file:Suppress("unused")
 
 package coil.api
 
