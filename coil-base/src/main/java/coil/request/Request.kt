@@ -33,6 +33,7 @@ import okhttp3.Headers
 sealed class Request {
 
     abstract val imageLoader: ImageLoader
+
     abstract val data: Any?
     abstract val key: String?
     abstract val aliasKeys: List<String>
@@ -97,7 +98,7 @@ sealed class Request {
 /**
  * A value object that represents a *load* image request.
  *
- * Instances can be created and executed ad hoc:
+ * Instances can be built and executed ad hoc:
  * ```
  * val disposable = imageLoader.load(context)
  *     .data("https://www.example.com/image.jpg")
@@ -106,14 +107,14 @@ sealed class Request {
  *     .launch()
  * ```
  *
- * Or instances can be created separately from the call that executes them:
+ * Or instances can be built and executed later:
  * ```
- * val request = LoadRequest.Builder(context, imageLoader)
+ * val request = imageLoader.load(context)
  *     .data("https://www.example.com/image.jpg")
  *     .crossfade(true)
  *     .target(imageView)
  *     .build()
- * val disposable = imageLoader.load(request)
+ * val disposable = request.launch()
  * ```
  *
  * @see LoadRequestBuilder
@@ -218,7 +219,7 @@ class LoadRequest internal constructor(
 /**
  * A value object that represents a *get* image request.
  *
- * Instances can be created and executed ad hoc:
+ * Instances can be built and executed ad hoc:
  * ```
  * val drawable = imageLoader.get()
  *     .data("https://www.example.com/image.jpg")
@@ -226,13 +227,13 @@ class LoadRequest internal constructor(
  *     .launch()
  * ```
  *
- * Or instances can be created separately from the call that executes them:
+ * Or instances can be built and executed later:
  * ```
- * val request = GetRequest.Builder(imageLoader)
+ * val request = imageLoader.get()
  *     .data("https://www.example.com/image.jpg")
  *     .size(1080, 1920)
  *     .build()
- * val drawable = imageLoader.get(request)
+ * val drawable = request.launch()
  * ```
  *
  * @see GetRequestBuilder

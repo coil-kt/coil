@@ -47,6 +47,7 @@ import okio.BufferedSource
 sealed class RequestBuilder<T : RequestBuilder<T>> {
 
     protected val imageLoader: ImageLoader
+
     protected var data: Any?
     protected var key: String?
     protected var aliasKeys: List<String>
@@ -84,18 +85,14 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         dispatcher = defaults.dispatcher
         transformations = emptyList()
         bitmapConfig = Utils.getDefaultBitmapConfig()
-        if (SDK_INT >= 26) {
-            colorSpace = null
-        }
-        headers = null
-        parameters = null
-
+        if (SDK_INT >= 26) colorSpace = null
+        allowHardware = defaults.allowHardware
+        allowRgb565 = defaults.allowRgb565
         memoryCachePolicy = defaults.memoryCachePolicy
         diskCachePolicy = defaults.diskCachePolicy
         networkCachePolicy = defaults.networkCachePolicy
-
-        allowHardware = defaults.allowHardware
-        allowRgb565 = defaults.allowRgb565
+        headers = null
+        parameters = null
     }
 
     constructor(request: Request, loader: ImageLoader) {
@@ -112,18 +109,14 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         dispatcher = request.dispatcher
         transformations = request.transformations
         bitmapConfig = request.bitmapConfig
-        if (SDK_INT >= 26) {
-            colorSpace = request.colorSpace
-        }
-        headers = request.headers.newBuilder()
-        parameters = request.parameters.newBuilder()
-
+        if (SDK_INT >= 26) colorSpace = request.colorSpace
+        allowHardware = request.allowHardware
+        allowRgb565 = request.allowRgb565
         networkCachePolicy = request.networkCachePolicy
         diskCachePolicy = request.diskCachePolicy
         memoryCachePolicy = request.memoryCachePolicy
-
-        allowHardware = request.allowHardware
-        allowRgb565 = request.allowRgb565
+        headers = request.headers.newBuilder()
+        parameters = request.parameters.newBuilder()
     }
 
     /**
