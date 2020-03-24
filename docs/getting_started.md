@@ -4,13 +4,15 @@
 
 Coil has 5 artifacts published to `mavenCentral()`:
 
-* `io.coil-kt:coil`: The default artifact, which includes the `Coil` singleton and `ImageView.load` extension functions.
-* `io.coil-kt:coil-base`: The base artifact, which **does not** include the `Coil` singleton and `ImageView.load` extension functions. Prefer this artifact if you want to use dependency injection to inject your [ImageLoader](image_loaders.md) instance(s).
+* `io.coil-kt:coil`: The default artifact which depends on `io.coil-kt:coil-base` and includes the `Coil` singleton and `ImageView.load` extension functions.
+* `io.coil-kt:coil-base`: The base artifact which **does not** include the `Coil` singleton and `ImageView.load` extension functions.
 * `io.coil-kt:coil-gif`: Includes a set of [decoders](../api/coil-base/coil.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
 * `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
 * `io.coil-kt:coil-video`: Includes two [fetchers](../api/coil-base/coil.fetch/-fetcher) to support fetching and decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
 
-If you are a library author depending on Coil, you should depend on `io.coil-kt:coil-base` and not `io.coil-kt:coil` to avoid opting your users into the singleton.
+You should depend on `io.coil-kt:coil-base` and **not** `io.coil-kt:coil` if any of the following is true:
+- You are writing a library that depends on Coil. This is to avoid opting your users into the singleton.
+- You want to use dependency injection to inject your [ImageLoader](image_loaders.md) instance(s).
 
 If you need [transformations](transformations.md) that aren't part of the base Coil artifact, check out the third-party `coil-transformations` library hosted [here](https://github.com/Commit451/coil-transformations).
 
@@ -52,57 +54,116 @@ tasks.withType<KotlinCompile> {
 }
 ```
 
-## API
-
-The heart of Coil's API is the [ImageLoader](image_loaders.md). `ImageLoader`s are service classes that execute `Request` objects that are passed to them. `ImageLoader`s expose two methods for image loading:
-
-* `load`: Starts an asynchronous request to load the data into a [Target](targets.md).
-
-```kotlin
-fun load(request: LoadRequest): RequestDisposable
-```
-
-* `get`: A [suspend](https://kotlinlang.org/docs/reference/coroutines/basics.html) function, which returns a `Drawable`.
-
-```kotlin
-suspend fun get(request: GetRequest): Drawable
-```
-
 ## ImageLoaders
 
-If you're using the `io.coil-kt:coil` artifact, you can set a default [ImageLoader](image_loaders.md) instance like so:
+The main class in Coil's API is the [ImageLoader](image_loaders.md). `ImageLoader`s are service classes that execute `Request`s that are passed to them. New instances can be created and configured using a builder:
 
 ```kotlin
-Coil.setDefaultImageLoader {
-    ImageLoader.Builder(context)
-        .crossfade(true)
-        .okHttpClient {
-            OkHttpClient.Builder()
-                .cache(CoilUtils.createDefaultCache(context))
-                .build()
-        }
-        .build()
+val imageLoader = ImageLoader.Builder(context)
+    .availableMemoryPercentage(0.25)
+    .crossfade(true)
+    .build()
+```
+
+Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache and bitmap pool.
+
+### Requests
+
+There are two types of `Request`s:
+- `LoadRequest`: A request that supports `Target`s, `Transition`s, and more that is scoped to a [`Lifecycle`](https://developer.android.com/jetpack/androidx/releases/lifecycle).
+- `GetRequst`: A request that [suspends](https://kotlinlang.org/docs/reference/coroutines/basics.html) and returns a `Drawable`.
+
+Here are the function definitions on `ImageLoader`:
+
+```kotlin
+interface ImageLoader {
+
+    // Launch a LoadRequest.
+    fun launch(request: LoadRequest): RequestDisposable
+
+    // Launch a GetRequest.
+    suspend fun launch(request: GetRequest): Drawable
 }
 ```
 
-The default `ImageLoader` is used for any `ImageView.load` calls. The best place to call `setDefaultImageLoader` is in your `Application` class.
+New requests can be created using `ImageLoader.load` and `ImageLoader.get`:
 
-Setting a default `ImageLoader` is optional. If you don't set one, Coil will lazily create a default `ImageLoader` when needed.
+```kotlin
+// LoadRequest
+val disposable = imageLoader.load(context)
+    .data("https://www.example.com/image.jpg")
+    .target { drawable ->
+        // Handle the result.
+    }
+    .launch()
+
+// GetRequest
+val drawable = imageLoader.get()
+    .data("https://www.example.com/image.jpg")
+    .launch()
+```
+
+## Singleton
+
+If you are using the `io.coil-kt:coil` artifact, you can set a default [ImageLoader](image_loaders.md) instance by either:
+
+- Implementing `ImageLoaderFactory` on your `Application` class (prefer this method):
+
+```kotlin
+class MyApplication : Application(), ImageLoaderFactory {
+
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(context)
+            .crossfade(true)
+            .okHttpClient {
+                OkHttpClient.Builder()
+                    .cache(CoilUtils.createDefaultCache(context))
+                    .build()
+            }
+            .build()
+    }
+}
+```
+
+**Or** calling `Coil.setImageLoader`:
+
+```kotlin
+val imageLoader = ImageLoader.Builder(context)
+    .crossfade(true)
+    .okHttpClient {
+        OkHttpClient.Builder()
+            .cache(CoilUtils.createDefaultCache(context))
+            .build()
+    }
+    .build()
+Coil.setImageLoader(imageLoader)
+```
+
+Setting a default `ImageLoader` is optional. If you don't set one, Coil will lazily create an `ImageLoader` with the default values.
 
 If you're using the `io.coil-kt:coil-base` artifact, you should create your own `ImageLoader` instance(s) and inject them throughout your app with dependency injection. [Read more about dependency injection here](../image_loaders/#singleton-vs-dependency-injection).
 
 !!! Note
     If you set a custom `OkHttpClient`, you must set a `cache` implementation or the `ImageLoader` will have no disk cache. A default Coil cache instance can be created using [`CoilUtils.createDefaultCache`](../api/coil-base/coil.util/-coil-utils/create-default-cache/).
 
-## Extension Functions
+## ImageView Extension Functions
 
-Coil provides a set of extension functions for `ImageLoader`s, `ImageView`s, and the `Coil` singleton to provide type-safe methods. Here's an example for loading a URL into an `ImageView`:
+The `io.coil-kt:coil` artifact provides a set of type-safe `ImageView` extension functions. Here's an example for loading a URL into an `ImageView`:
 
 ```kotlin
 imageView.load("https://www.example.com/image.jpg")
 ```
 
-By default, requests are initialized with the options from [DefaultRequestOptions](../api/coil-base/coil/-default-request-options/), however each individual request can be configured with an optional trailing lambda param:
+The above call is equivalent to:
+
+```kotlin
+Coil.load(imageView.context)
+    .data("https://www.example.com/image.jpg")
+    .target(imageView)
+    .launch()
+```
+
+`ImageView.load` calls can be configured with an optional trailing lambda param:
 
 ```kotlin
 imageView.load("https://www.example.com/image.jpg") {
@@ -111,6 +172,8 @@ imageView.load("https://www.example.com/image.jpg") {
     transformations(CircleCropTransformation())
 }
 ```
+
+**Important**: You should not call `launch()` inside `ImageView.load`. Doing so will launch the request twice.
 
 See the docs [here](../api/coil-default/coil.api/) and [here](../api/coil-base/coil.api/) for more information.
 
@@ -128,25 +191,28 @@ The base data types that are supported by all `ImageLoader` instances are:
 
 ## Preloading
 
-To preload an image into memory, execute a `load` request without a `Target`:
+To preload an image into memory, launch a `load` request without a `Target`:
 
 ```kotlin
-Coil.load(context, "https://www.example.com/image.jpg")
+Coil.load(context)
+    .data("https://www.example.com/image.jpg")
+    .launch()
 ```
 
-To only preload the image into the disk cache, disable the memory cache for the request:
+To only preload a network image into the disk cache, disable the memory cache for the request:
 
 ```kotlin
-Coil.load(context, "https://www.example.com/image.jpg") {
-    memoryCachePolicy(CachePolicy.DISABLED)
-}
+Coil.load(context)
+    .data("https://www.example.com/image.jpg")
+    .memoryCachePolicy(CachePolicy.DISABLED)
+    .launch()
 ```
 
 ## Cancelling Requests
 
-`load` requests will be automatically cancelled if the associated `View` is detached, the associated `Lifecycle` is destroyed, or another request is started on the same `View`.
+`LoadRequest`s will be automatically cancelled if the associated `View` is detached, the associated `Lifecycle` is destroyed, or another request is started on the same `View`.
 
-Furthermore, each `load` request returns a [RequestDisposable](../api/coil-base/coil.request/-request-disposable), which can be used to check if a request is in flight or dispose the request (effectively cancelling it and freeing its associated resources):
+Furthermore, each `LoadRequest` returns a [RequestDisposable](../api/coil-base/coil.request/-request-disposable), which can be used to check if a request is in flight or dispose the request (effectively cancelling it and freeing its associated resources):
 
 ```kotlin
 val disposable = imageView.load("https://www.example.com/image.jpg")
@@ -155,7 +221,7 @@ val disposable = imageView.load("https://www.example.com/image.jpg")
 disposable.dispose()
 ```
 
-`get` requests will only be cancelled if the coroutine context's job is cancelled.
+`GetRequest`s will only be cancelled if the coroutine context's job is cancelled.
 
 ## Image Sampling
 

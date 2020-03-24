@@ -5,11 +5,20 @@ Targets handle the result of an image request. They often act as "view adapters"
 Here's the easiest way to create a custom target:
 
 ```kotlin
-Coil.load(context, "https://www.example.com/image.jpg") {
-    target { drawable ->
-        // Handle the successful result.
-    }
-}
+Coil.load(context)
+    .data("https://www.example.com/image.jpg")
+    .target(
+        onStart = { drawable ->
+            // Handle the placeholder drawable.
+        },
+        onSuccess = {
+            // Handle the successful result.
+        },
+        onError = {
+            // Handle the error drawable.
+        }
+    )
+    .launch()
 ```
 
 There are 3 types of targets:

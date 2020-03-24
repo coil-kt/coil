@@ -33,22 +33,23 @@ We could write a custom mapper to map it to an `HttpUrl`:
 
 ```kotlin
 class ItemMapper : Mapper<Item, HttpUrl> {
-    override fun map(data: Item): HttpUrl = HttpUrl.get(data.imageUrl)
+    override fun map(data: Item) = data.imageUrl.toHttpUrl()
 }
 ```
 
 After registering it when constructing our `ImageLoader` (see above), we can safely load an `Item`:
 
 ```kotlin
-imageView.loadAny(item)
+imageLoader.load(context)
+    .data(item)
+    .target(imageView)
+    .launch()
 ```
-
-`loadAny` is the type-unsafe version of `load` that accepts any data type.
 
 If you want to know a `Target`'s size when mapping an object, you can extend from [Measured Mapper](../api/coil-base/coil.map/-measured-mapper).
 
 !!! Note
-    Extending from `Measured Mapper` can prevent setting placeholders and or cached drawables synchronously, as they force Coil to wait for the target to be measured. Prefer extending `Mapper` if you do not need to know the `Target`'s size.
+    Extending from `Measured Mapper` can prevent setting placeholders and or cached drawables synchronously, as they force an `ImageLoader` to wait for the target to be measured. Prefer extending `Mapper` if you do not need to know the `Target`'s size.
 
 See [Mapper](../api/coil-base/coil.map/-mapper) and [Measured Mapper](../api/coil-base/coil.map/-measured-mapper) for more information.
 
