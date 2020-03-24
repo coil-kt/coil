@@ -12,136 +12,86 @@ import androidx.annotation.DrawableRes
 import coil.Coil
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
+import coil.request.LoadRequest
 import coil.request.LoadRequestBuilder
 import coil.request.RequestDisposable
 import coil.util.CoilUtils
 import okhttp3.HttpUrl
 import java.io.File
 
-// This file defines a collection of type-safe load extension functions for ImageViews.
-//
-// Example:
-// ```
-// imageView.load("https://www.example.com/image.jpg") {
-//     networkCachePolicy(CachePolicy.DISABLED)
-//     transformations(CircleCropTransformation())
-// }
-// ```
-
-// region URL (String)
-
+/** @see ImageView.loadAny */
 @JvmSynthetic
 inline fun ImageView.load(
     uri: String?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable {
-    return imageLoader.load(context)
-        .data(uri)
-        .target(this)
-        .apply(builder)
-        .launch()
-}
+): RequestDisposable = loadAny(uri, imageLoader, builder)
 
-// endregion
-// region URL (HttpUrl)
-
+/** @see ImageView.loadAny */
 @JvmSynthetic
 inline fun ImageView.load(
     url: HttpUrl?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable {
-    return imageLoader.load(context)
-        .data(url)
-        .target(this)
-        .apply(builder)
-        .launch()
-}
+): RequestDisposable = loadAny(url, imageLoader, builder)
 
-// endregion
-// region Uri
-
+/** @see ImageView.loadAny */
 @JvmSynthetic
 inline fun ImageView.load(
     uri: Uri?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable {
-    return imageLoader.load(context)
-        .data(uri)
-        .target(this)
-        .apply(builder)
-        .launch()
-}
+): RequestDisposable = loadAny(uri, imageLoader, builder)
 
-// endregion
-// region File
-
+/** @see ImageView.loadAny */
 @JvmSynthetic
 inline fun ImageView.load(
     file: File?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable {
-    return imageLoader.load(context)
-        .data(file)
-        .target(this)
-        .apply(builder)
-        .launch()
-}
+): RequestDisposable = loadAny(file, imageLoader, builder)
 
-// endregion
-// region Resource
-
+/** @see ImageView.loadAny */
 @JvmSynthetic
 inline fun ImageView.load(
     @DrawableRes drawableRes: Int,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable {
-    return imageLoader.load(context)
-        .data(drawableRes)
-        .target(this)
-        .apply(builder)
-        .launch()
-}
+): RequestDisposable = loadAny(drawableRes, imageLoader, builder)
 
-// endregion
-// region Drawable
-
+/** @see ImageView.loadAny */
 @JvmSynthetic
 inline fun ImageView.load(
     drawable: Drawable?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable {
-    return imageLoader.load(context)
-        .data(drawable)
-        .target(this)
-        .apply(builder)
-        .launch()
-}
+): RequestDisposable = loadAny(drawable, imageLoader, builder)
 
-// endregion
-// region Bitmap
-
+/** @see ImageView.loadAny */
 @JvmSynthetic
 inline fun ImageView.load(
     bitmap: Bitmap?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable {
-    return imageLoader.load(context)
-        .data(bitmap)
-        .target(this)
-        .apply(builder)
-        .launch()
-}
+): RequestDisposable = loadAny(bitmap, imageLoader, builder)
 
-// endregion
-// region Any
-
+/**
+ * Load the image referenced by [data] and set it on this [ImageView].
+ *
+ * This is the type-unsafe version of [ImageView.load].
+ *
+ * Example usage:
+ * ```
+ * imageView.load("https://www.example.com/image.jpg") {
+ *     crossfade(true)
+ *     transformations(CircleCropTransformation())
+ * }
+ * ```
+ *
+ * @param data The data to load.
+ * @param imageLoader The [ImageLoader] that will be used to create and launch the [LoadRequest].
+ * @param builder An optional lambda to configure the request before it is launched.
+ */
 @JvmSynthetic
 inline fun ImageView.loadAny(
     data: Any?,
@@ -155,14 +105,9 @@ inline fun ImageView.loadAny(
         .launch()
 }
 
-// endregion
-// region Other
-
 /**
- * Cancel any in progress requests and clear any resources associated with this [ImageView].
+ * Cancel any in progress requests and clear all resources associated with this [ImageView].
  */
 fun ImageView.clear() {
     CoilUtils.clear(this)
 }
-
-// endregion
