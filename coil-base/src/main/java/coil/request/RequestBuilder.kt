@@ -122,7 +122,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     /**
      * Set the data to load.
      */
-    fun data(data: Any?) = apply {
+    fun data(data: Any?): T = self {
         this.data = data
     }
 
