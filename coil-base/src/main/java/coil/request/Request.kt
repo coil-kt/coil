@@ -241,7 +241,7 @@ class LoadRequest internal constructor(
  */
 class GetRequest internal constructor(
     override val imageLoader: ImageLoader,
-    override val data: Any,
+    override val data: Any?,
     override val key: String?,
     override val aliasKeys: List<String>,
     override val listener: Listener?,

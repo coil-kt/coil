@@ -120,6 +120,13 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
+     * Set the data to load.
+     */
+    fun data(data: Any?) = apply {
+        this.data = data
+    }
+
+    /**
      * Convenience function to create and set the [Request.Listener].
      */
     inline fun listener(
@@ -428,13 +435,6 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * Set the data to load.
-     */
-    fun data(data: Any?) = apply {
-        this.data = data
-    }
-
-    /**
      * Convenience function to set [imageView] as the [Target].
      */
     fun target(imageView: ImageView) = apply {
@@ -605,19 +605,12 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
     ) : super(request, loader)
 
     /**
-     * Set the data to load.
-     */
-    fun data(data: Any) = apply {
-        this.data = data
-    }
-
-    /**
      * Create a new [GetRequest] instance.
      */
     fun build(): GetRequest {
         return GetRequest(
             imageLoader,
-            checkNotNull(data) { "data == null" },
+            data,
             key,
             aliasKeys,
             listener,
