@@ -61,7 +61,7 @@ public final class coil/DefaultRequestOptions {
 
 public abstract interface class coil/EventListener : coil/request/Request$Listener {
 	public static final field Companion Lcoil/EventListener$Companion;
-	public static final field EMPTY Lcoil/EventListener;
+	public static final field NONE Lcoil/EventListener;
 	public abstract fun decodeEnd (Lcoil/request/Request;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
 	public abstract fun decodeStart (Lcoil/request/Request;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
 	public abstract fun fetchEnd (Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
@@ -120,6 +120,8 @@ public abstract interface class coil/ImageLoader {
 	public static fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 	public abstract fun get (Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getDefaults ()Lcoil/DefaultRequestOptions;
+	public abstract fun launch (Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun launch (Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
 	public abstract fun load (Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
 	public abstract fun shutdown ()V
 }
@@ -129,6 +131,11 @@ public final class coil/ImageLoader$Companion {
 	public final fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 	public final fun invoke (Landroid/content/Context;Lkotlin/jvm/functions/Function1;)Lcoil/ImageLoader;
 	public static synthetic fun invoke$default (Lcoil/ImageLoader$Companion;Landroid/content/Context;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/ImageLoader;
+}
+
+public final class coil/ImageLoader$DefaultImpls {
+	public static fun get (Lcoil/ImageLoader;Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static fun load (Lcoil/ImageLoader;Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
 }
 
 public final class coil/ImageLoaderBuilder {
@@ -436,11 +443,11 @@ public final class coil/request/CachePolicy : java/lang/Enum {
 
 public final class coil/request/GetRequest : coil/request/Request {
 	public static final field Companion Lcoil/request/GetRequest$Companion;
-	public static final fun builder (Lcoil/DefaultRequestOptions;)Lcoil/request/GetRequestBuilder;
+	public static final fun builder ()Lcoil/request/GetRequestBuilder;
 	public static final fun builder (Lcoil/request/GetRequest;)Lcoil/request/GetRequestBuilder;
 	public fun getAliasKeys ()Ljava/util/List;
-	public fun getAllowHardware ()Z
-	public fun getAllowRgb565 ()Z
+	public fun getAllowHardware ()Ljava/lang/Boolean;
+	public fun getAllowRgb565 ()Ljava/lang/Boolean;
 	public fun getBitmapConfig ()Landroid/graphics/Bitmap$Config;
 	public fun getColorSpace ()Landroid/graphics/ColorSpace;
 	public fun getData ()Ljava/lang/Object;
@@ -449,6 +456,7 @@ public final class coil/request/GetRequest : coil/request/Request {
 	public fun getDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public fun getError ()Landroid/graphics/drawable/Drawable;
 	public fun getFallback ()Landroid/graphics/drawable/Drawable;
+	public fun getFetcher ()Lcoil/fetch/Fetcher;
 	public fun getHeaders ()Lokhttp3/Headers;
 	public fun getKey ()Ljava/lang/String;
 	public fun getLifecycle ()Landroidx/lifecycle/Lifecycle;
@@ -467,7 +475,7 @@ public final class coil/request/GetRequest : coil/request/Request {
 }
 
 public final class coil/request/GetRequest$Companion {
-	public final fun builder (Lcoil/DefaultRequestOptions;)Lcoil/request/GetRequestBuilder;
+	public final fun builder ()Lcoil/request/GetRequestBuilder;
 	public final fun builder (Lcoil/request/GetRequest;)Lcoil/request/GetRequestBuilder;
 	public final fun invoke (Lcoil/DefaultRequestOptions;Lkotlin/jvm/functions/Function1;)Lcoil/request/GetRequest;
 	public final fun invoke (Lcoil/request/GetRequest;Lkotlin/jvm/functions/Function1;)Lcoil/request/GetRequest;
@@ -476,19 +484,19 @@ public final class coil/request/GetRequest$Companion {
 }
 
 public final class coil/request/GetRequestBuilder : coil/request/RequestBuilder {
-	public fun <init> (Lcoil/DefaultRequestOptions;)V
+	public fun <init> ()V
 	public fun <init> (Lcoil/request/GetRequest;)V
 	public final fun build ()Lcoil/request/GetRequest;
-	public final fun data (Ljava/lang/Object;)Lcoil/request/GetRequestBuilder;
 }
 
 public final class coil/request/LoadRequest : coil/request/Request {
 	public static final field Companion Lcoil/request/LoadRequest$Companion;
-	public static final fun builder (Landroid/content/Context;Lcoil/DefaultRequestOptions;)Lcoil/request/LoadRequestBuilder;
-	public static final fun builder (Landroid/content/Context;Lcoil/request/LoadRequest;)Lcoil/request/LoadRequestBuilder;
+	public static final fun builder (Landroid/content/Context;)Lcoil/request/LoadRequestBuilder;
+	public static final fun builder (Lcoil/request/LoadRequest;)Lcoil/request/LoadRequestBuilder;
+	public static final fun builder (Lcoil/request/LoadRequest;Landroid/content/Context;)Lcoil/request/LoadRequestBuilder;
 	public fun getAliasKeys ()Ljava/util/List;
-	public fun getAllowHardware ()Z
-	public fun getAllowRgb565 ()Z
+	public fun getAllowHardware ()Ljava/lang/Boolean;
+	public fun getAllowRgb565 ()Ljava/lang/Boolean;
 	public fun getBitmapConfig ()Landroid/graphics/Bitmap$Config;
 	public fun getColorSpace ()Landroid/graphics/ColorSpace;
 	public final fun getContext ()Landroid/content/Context;
@@ -498,6 +506,7 @@ public final class coil/request/LoadRequest : coil/request/Request {
 	public fun getDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public fun getError ()Landroid/graphics/drawable/Drawable;
 	public fun getFallback ()Landroid/graphics/drawable/Drawable;
+	public fun getFetcher ()Lcoil/fetch/Fetcher;
 	public fun getHeaders ()Lokhttp3/Headers;
 	public fun getKey ()Ljava/lang/String;
 	public fun getLifecycle ()Landroidx/lifecycle/Lifecycle;
@@ -518,8 +527,10 @@ public final class coil/request/LoadRequest : coil/request/Request {
 }
 
 public final class coil/request/LoadRequest$Companion {
-	public final fun builder (Landroid/content/Context;Lcoil/DefaultRequestOptions;)Lcoil/request/LoadRequestBuilder;
-	public final fun builder (Landroid/content/Context;Lcoil/request/LoadRequest;)Lcoil/request/LoadRequestBuilder;
+	public final fun builder (Landroid/content/Context;)Lcoil/request/LoadRequestBuilder;
+	public final fun builder (Lcoil/request/LoadRequest;)Lcoil/request/LoadRequestBuilder;
+	public final fun builder (Lcoil/request/LoadRequest;Landroid/content/Context;)Lcoil/request/LoadRequestBuilder;
+	public static synthetic fun builder$default (Lcoil/request/LoadRequest$Companion;Lcoil/request/LoadRequest;Landroid/content/Context;ILjava/lang/Object;)Lcoil/request/LoadRequestBuilder;
 	public final fun invoke (Landroid/content/Context;Lcoil/DefaultRequestOptions;Lkotlin/jvm/functions/Function1;)Lcoil/request/LoadRequest;
 	public final fun invoke (Landroid/content/Context;Lcoil/request/LoadRequest;Lkotlin/jvm/functions/Function1;)Lcoil/request/LoadRequest;
 	public static synthetic fun invoke$default (Lcoil/request/LoadRequest$Companion;Landroid/content/Context;Lcoil/DefaultRequestOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/LoadRequest;
@@ -527,12 +538,13 @@ public final class coil/request/LoadRequest$Companion {
 }
 
 public final class coil/request/LoadRequestBuilder : coil/request/RequestBuilder {
-	public fun <init> (Landroid/content/Context;Lcoil/DefaultRequestOptions;)V
-	public fun <init> (Landroid/content/Context;Lcoil/request/LoadRequest;)V
+	public fun <init> (Landroid/content/Context;)V
+	public fun <init> (Lcoil/request/LoadRequest;)V
+	public fun <init> (Lcoil/request/LoadRequest;Landroid/content/Context;)V
+	public synthetic fun <init> (Lcoil/request/LoadRequest;Landroid/content/Context;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun build ()Lcoil/request/LoadRequest;
 	public final fun crossfade (I)Lcoil/request/LoadRequestBuilder;
 	public final fun crossfade (Z)Lcoil/request/LoadRequestBuilder;
-	public final fun data (Ljava/lang/Object;)Lcoil/request/LoadRequestBuilder;
 	public final fun error (I)Lcoil/request/LoadRequestBuilder;
 	public final fun error (Landroid/graphics/drawable/Drawable;)Lcoil/request/LoadRequestBuilder;
 	public final fun fallback (I)Lcoil/request/LoadRequestBuilder;
@@ -599,8 +611,8 @@ public final class coil/request/Parameters$Entry {
 
 public abstract class coil/request/Request {
 	public abstract fun getAliasKeys ()Ljava/util/List;
-	public abstract fun getAllowHardware ()Z
-	public abstract fun getAllowRgb565 ()Z
+	public abstract fun getAllowHardware ()Ljava/lang/Boolean;
+	public abstract fun getAllowRgb565 ()Ljava/lang/Boolean;
 	public abstract fun getBitmapConfig ()Landroid/graphics/Bitmap$Config;
 	public abstract fun getColorSpace ()Landroid/graphics/ColorSpace;
 	public abstract fun getData ()Ljava/lang/Object;
@@ -609,6 +621,7 @@ public abstract class coil/request/Request {
 	public abstract fun getDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public abstract fun getError ()Landroid/graphics/drawable/Drawable;
 	public abstract fun getFallback ()Landroid/graphics/drawable/Drawable;
+	public abstract fun getFetcher ()Lcoil/fetch/Fetcher;
 	public abstract fun getHeaders ()Lokhttp3/Headers;
 	public abstract fun getKey ()Ljava/lang/String;
 	public abstract fun getLifecycle ()Landroidx/lifecycle/Lifecycle;
@@ -640,7 +653,26 @@ public final class coil/request/Request$Listener$DefaultImpls {
 }
 
 public abstract class coil/request/RequestBuilder {
-	public synthetic fun <init> (Lcoil/DefaultRequestOptions;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	protected field aliasKeys Ljava/util/List;
+	protected field allowHardware Ljava/lang/Boolean;
+	protected field allowRgb565 Ljava/lang/Boolean;
+	protected field bitmapConfig Landroid/graphics/Bitmap$Config;
+	protected field colorSpace Landroid/graphics/ColorSpace;
+	protected field data Ljava/lang/Object;
+	protected field decoder Lcoil/decode/Decoder;
+	protected field diskCachePolicy Lcoil/request/CachePolicy;
+	protected field dispatcher Lkotlinx/coroutines/CoroutineDispatcher;
+	protected field fetcher Lcoil/fetch/Fetcher;
+	protected field headers Lokhttp3/Headers$Builder;
+	protected field key Ljava/lang/String;
+	protected field listener Lcoil/request/Request$Listener;
+	protected field memoryCachePolicy Lcoil/request/CachePolicy;
+	protected field networkCachePolicy Lcoil/request/CachePolicy;
+	protected field parameters Lcoil/request/Parameters$Builder;
+	protected field precision Lcoil/size/Precision;
+	protected field scale Lcoil/size/Scale;
+	protected field sizeResolver Lcoil/size/SizeResolver;
+	protected field transformations Ljava/util/List;
 	public synthetic fun <init> (Lcoil/request/Request;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun addHeader (Ljava/lang/String;Ljava/lang/String;)Lcoil/request/RequestBuilder;
 	public final fun aliasKeys (Ljava/util/List;)Lcoil/request/RequestBuilder;
@@ -649,28 +681,11 @@ public abstract class coil/request/RequestBuilder {
 	public final fun allowRgb565 (Z)Lcoil/request/RequestBuilder;
 	public final fun bitmapConfig (Landroid/graphics/Bitmap$Config;)Lcoil/request/RequestBuilder;
 	public final fun colorSpace (Landroid/graphics/ColorSpace;)Lcoil/request/RequestBuilder;
+	public final fun data (Ljava/lang/Object;)Lcoil/request/RequestBuilder;
 	public final fun decoder (Lcoil/decode/Decoder;)Lcoil/request/RequestBuilder;
 	public final fun diskCachePolicy (Lcoil/request/CachePolicy;)Lcoil/request/RequestBuilder;
 	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/request/RequestBuilder;
-	protected final fun getAliasKeys ()Ljava/util/List;
-	protected final fun getAllowHardware ()Z
-	protected final fun getAllowRgb565 ()Z
-	protected final fun getBitmapConfig ()Landroid/graphics/Bitmap$Config;
-	protected final fun getColorSpace ()Landroid/graphics/ColorSpace;
-	protected final fun getData ()Ljava/lang/Object;
-	protected final fun getDecoder ()Lcoil/decode/Decoder;
-	protected final fun getDiskCachePolicy ()Lcoil/request/CachePolicy;
-	protected final fun getDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
-	protected final fun getHeaders ()Lokhttp3/Headers$Builder;
-	protected final fun getKey ()Ljava/lang/String;
-	protected final fun getListener ()Lcoil/request/Request$Listener;
-	protected final fun getMemoryCachePolicy ()Lcoil/request/CachePolicy;
-	protected final fun getNetworkCachePolicy ()Lcoil/request/CachePolicy;
-	protected final fun getParameters ()Lcoil/request/Parameters$Builder;
-	protected final fun getPrecision ()Lcoil/size/Precision;
-	protected final fun getScale ()Lcoil/size/Scale;
-	protected final fun getSizeResolver ()Lcoil/size/SizeResolver;
-	protected final fun getTransformations ()Ljava/util/List;
+	public final fun fetcher (Lcoil/fetch/Fetcher;)Lcoil/request/RequestBuilder;
 	public final fun headers (Lokhttp3/Headers;)Lcoil/request/RequestBuilder;
 	public final fun key (Ljava/lang/String;)Lcoil/request/RequestBuilder;
 	public final fun listener (Lcoil/request/Request$Listener;)Lcoil/request/RequestBuilder;
@@ -683,29 +698,10 @@ public abstract class coil/request/RequestBuilder {
 	public final fun removeHeader (Ljava/lang/String;)Lcoil/request/RequestBuilder;
 	public final fun removeParameter (Ljava/lang/String;)Lcoil/request/RequestBuilder;
 	public final fun scale (Lcoil/size/Scale;)Lcoil/request/RequestBuilder;
-	protected final fun setAliasKeys (Ljava/util/List;)V
-	protected final fun setAllowHardware (Z)V
-	protected final fun setAllowRgb565 (Z)V
-	protected final fun setBitmapConfig (Landroid/graphics/Bitmap$Config;)V
-	protected final fun setColorSpace (Landroid/graphics/ColorSpace;)V
-	protected final fun setData (Ljava/lang/Object;)V
-	protected final fun setDecoder (Lcoil/decode/Decoder;)V
-	protected final fun setDiskCachePolicy (Lcoil/request/CachePolicy;)V
-	protected final fun setDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)V
 	public final fun setHeader (Ljava/lang/String;Ljava/lang/String;)Lcoil/request/RequestBuilder;
-	protected final fun setHeaders (Lokhttp3/Headers$Builder;)V
-	protected final fun setKey (Ljava/lang/String;)V
-	protected final fun setListener (Lcoil/request/Request$Listener;)V
-	protected final fun setMemoryCachePolicy (Lcoil/request/CachePolicy;)V
-	protected final fun setNetworkCachePolicy (Lcoil/request/CachePolicy;)V
 	public final fun setParameter (Ljava/lang/String;Ljava/lang/Object;)Lcoil/request/RequestBuilder;
 	public final fun setParameter (Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)Lcoil/request/RequestBuilder;
 	public static synthetic fun setParameter$default (Lcoil/request/RequestBuilder;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;ILjava/lang/Object;)Lcoil/request/RequestBuilder;
-	protected final fun setParameters (Lcoil/request/Parameters$Builder;)V
-	protected final fun setPrecision (Lcoil/size/Precision;)V
-	protected final fun setScale (Lcoil/size/Scale;)V
-	protected final fun setSizeResolver (Lcoil/size/SizeResolver;)V
-	protected final fun setTransformations (Ljava/util/List;)V
 	public final fun size (I)Lcoil/request/RequestBuilder;
 	public final fun size (II)Lcoil/request/RequestBuilder;
 	public final fun size (Lcoil/size/Size;)Lcoil/request/RequestBuilder;
@@ -892,7 +888,12 @@ public final class coil/transition/CrossfadeTransition : coil/transition/Transit
 }
 
 public abstract interface class coil/transition/Transition {
+	public static final field Companion Lcoil/transition/Transition$Companion;
+	public static final field NONE Lcoil/transition/Transition;
 	public abstract fun transition (Lcoil/transition/TransitionTarget;Lcoil/transition/TransitionResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil/transition/Transition$Companion {
 }
 
 public abstract class coil/transition/TransitionResult {
