@@ -1,0 +1,99 @@
+public final class coil/Coil {
+	public static final field INSTANCE Lcoil/Coil;
+	public static final fun imageLoader (Landroid/content/Context;)Lcoil/ImageLoader;
+	public static final fun loader ()Lcoil/ImageLoader;
+	public static final fun setDefaultImageLoader (Lcoil/ImageLoader;)V
+	public static final fun setDefaultImageLoader (Lkotlin/jvm/functions/Function0;)V
+	public static final fun setImageLoader (Lcoil/ImageLoader;)V
+	public static final fun setImageLoader (Lcoil/ImageLoaderFactory;)V
+}
+
+public abstract interface class coil/ImageLoaderFactory {
+	public abstract fun newImageLoader ()Lcoil/ImageLoader;
+}
+
+public final class coil/api/Coils {
+	public static final fun get (Lcoil/Coil;ILkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/content/Context;ILkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/content/Context;Landroid/graphics/Bitmap;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/content/Context;Landroid/graphics/drawable/Drawable;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/content/Context;Landroid/net/Uri;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/content/Context;Ljava/io/File;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/content/Context;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/content/Context;Lokhttp3/HttpUrl;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/graphics/Bitmap;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/graphics/drawable/Drawable;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Landroid/net/Uri;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Ljava/io/File;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun get (Lcoil/Coil;Lokhttp3/HttpUrl;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;ILkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/content/Context;ILkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/content/Context;Landroid/graphics/Bitmap;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/content/Context;Landroid/graphics/drawable/Drawable;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/content/Context;Landroid/net/Uri;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/content/Context;Ljava/io/File;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/content/Context;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/content/Context;Lokhttp3/HttpUrl;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/graphics/Bitmap;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/graphics/drawable/Drawable;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Landroid/net/Uri;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Ljava/io/File;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun get$default (Lcoil/Coil;Lokhttp3/HttpUrl;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun getAny (Lcoil/Coil;Landroid/content/Context;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun getAny (Lcoil/Coil;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getAny$default (Lcoil/Coil;Landroid/content/Context;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun getAny$default (Lcoil/Coil;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun load (Lcoil/Coil;Landroid/content/Context;ILkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Lcoil/Coil;Landroid/content/Context;Landroid/graphics/Bitmap;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Lcoil/Coil;Landroid/content/Context;Landroid/graphics/drawable/Drawable;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Lcoil/Coil;Landroid/content/Context;Landroid/net/Uri;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Lcoil/Coil;Landroid/content/Context;Ljava/io/File;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Lcoil/Coil;Landroid/content/Context;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Lcoil/Coil;Landroid/content/Context;Lokhttp3/HttpUrl;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Lcoil/Coil;Landroid/content/Context;ILkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Lcoil/Coil;Landroid/content/Context;Landroid/graphics/Bitmap;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Lcoil/Coil;Landroid/content/Context;Landroid/graphics/drawable/Drawable;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Lcoil/Coil;Landroid/content/Context;Landroid/net/Uri;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Lcoil/Coil;Landroid/content/Context;Ljava/io/File;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Lcoil/Coil;Landroid/content/Context;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Lcoil/Coil;Landroid/content/Context;Lokhttp3/HttpUrl;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static final fun loadAny (Lcoil/Coil;Landroid/content/Context;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static synthetic fun loadAny$default (Lcoil/Coil;Landroid/content/Context;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+}
+
+public final class coil/api/ImageViews {
+	public static final fun clear (Landroid/widget/ImageView;)V
+	public static final fun load (Landroid/widget/ImageView;ILcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Landroid/widget/ImageView;Landroid/graphics/Bitmap;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Landroid/widget/ImageView;Landroid/graphics/drawable/Drawable;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Landroid/widget/ImageView;Landroid/net/Uri;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Landroid/widget/ImageView;Ljava/io/File;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Landroid/widget/ImageView;Ljava/lang/String;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static final fun load (Landroid/widget/ImageView;Lokhttp3/HttpUrl;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;ILcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;Landroid/graphics/Bitmap;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;Landroid/graphics/drawable/Drawable;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;Landroid/net/Uri;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;Ljava/io/File;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;Ljava/lang/String;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;Lokhttp3/HttpUrl;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static final fun loadAny (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
+	public static synthetic fun loadAny$default (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+}
+
+public final class coil/util/CoilContentProvider : android/content/ContentProvider {
+	public static final field Companion Lcoil/util/CoilContentProvider$Companion;
+	public fun <init> ()V
+	public fun delete (Landroid/net/Uri;Ljava/lang/String;[Ljava/lang/String;)I
+	public fun getType (Landroid/net/Uri;)Ljava/lang/String;
+	public fun insert (Landroid/net/Uri;Landroid/content/ContentValues;)Landroid/net/Uri;
+	public fun onCreate ()Z
+	public fun query (Landroid/net/Uri;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/database/Cursor;
+	public fun update (Landroid/net/Uri;Landroid/content/ContentValues;Ljava/lang/String;[Ljava/lang/String;)I
+}
+
+public final class coil/util/CoilContentProvider$Companion {
+}
+

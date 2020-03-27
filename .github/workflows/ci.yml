@@ -34,6 +34,11 @@ jobs:
             - name: Ktlint
               run: ./gradlew ktlintCheck
 
+            # Check if there has been a binary incompatible change to the API specification.
+            # If this change is intentional, run `./gradlew apiDump` and commit the new API files.
+            - name: Check Binary Compatibility
+              run: ./gradlew apiCheck
+
             - name: Unit Tests
               run: ./gradlew testDebugUnitTest
 
