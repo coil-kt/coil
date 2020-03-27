@@ -54,10 +54,10 @@ inline fun ImageView.load(
 /** @see ImageView.loadAny */
 @JvmSynthetic
 inline fun ImageView.load(
-    @DrawableRes drawableRes: Int,
+    @DrawableRes drawableResId: Int,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable = loadAny(drawableRes, imageLoader, builder)
+): RequestDisposable = loadAny(drawableResId, imageLoader, builder)
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
@@ -98,11 +98,12 @@ inline fun ImageView.loadAny(
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
 ): RequestDisposable {
-    return imageLoader.load(context)
+    val request = LoadRequest.Builder(context)
         .data(data)
         .target(this)
         .apply(builder)
-        .launch()
+        .build()
+    return imageLoader.launch(request)
 }
 
 /**

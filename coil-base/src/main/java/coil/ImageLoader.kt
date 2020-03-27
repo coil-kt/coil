@@ -6,9 +6,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.annotation.MainThread
 import coil.request.GetRequest
-import coil.request.GetRequestBuilder
 import coil.request.LoadRequest
-import coil.request.LoadRequestBuilder
 import coil.request.Request
 import coil.request.RequestDisposable
 import coil.target.Target
@@ -46,17 +44,7 @@ interface ImageLoader {
     val defaults: DefaultRequestOptions
 
     /**
-     * Create a new [LoadRequestBuilder].
-     */
-    fun load(context: Context) = LoadRequestBuilder(context, this)
-
-    /**
-     * Create a new [GetRequestBuilder].
-     */
-    fun get() = GetRequestBuilder(this)
-
-    /**
-     * Start an asynchronous operation to load the [request]'s data into its [Target].
+     * Launch an asynchronous operation that executes the [request] and sets the result on its [Target].
      *
      * If the request's target is null, this method preloads the image.
      *
@@ -66,7 +54,7 @@ interface ImageLoader {
     fun launch(request: LoadRequest): RequestDisposable
 
     /**
-     * Load the [request]'s data and suspend until the operation is complete. Return the loaded [Drawable].
+     * Executes the [request] and suspend until the operation is complete. Return the loaded [Drawable].
      *
      * @param request The request to execute.
      * @return The [Drawable] result.
@@ -84,7 +72,7 @@ interface ImageLoader {
      *
      * All associated resources will be freed and any new requests will fail before starting.
      *
-     * In progress load requests will be cancelled. In progress get requests will continue until complete.
+     * In progress [LoadRequest]s will be cancelled. In progress [GetRequest]s will continue until complete.
      */
     @MainThread
     fun shutdown()

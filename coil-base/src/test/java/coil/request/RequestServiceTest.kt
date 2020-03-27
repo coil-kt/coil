@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
+import coil.DefaultRequestOptions
 import coil.memory.RequestService
 import coil.size.Precision
 import coil.target.ViewTarget
@@ -25,7 +26,7 @@ class RequestServiceTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        service = RequestService(null)
+        service = RequestService(DefaultRequestOptions(), null)
     }
 
     @Test
@@ -39,7 +40,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - inexact precision`() {
-        val request = createGetRequest(context) {
+        val request = createGetRequest {
             precision(Precision.INEXACT)
         }
         assertTrue(service.allowInexactSize(request))
@@ -80,7 +81,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - GetRequest`() {
-        val request = createGetRequest(context) {
+        val request = createGetRequest {
             size(100)
         }
         assertFalse(service.allowInexactSize(request))

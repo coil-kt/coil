@@ -5,6 +5,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import coil.ImageLoader
 import coil.request.LoadRequest
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -48,6 +49,7 @@ internal class BaseRequestDelegate(
  * @see ViewTargetRequestManager
  */
 internal class ViewTargetRequestDelegate(
+    private val imageLoader: ImageLoader,
     private val request: LoadRequest,
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
@@ -58,7 +60,7 @@ internal class ViewTargetRequestDelegate(
     /** Repeat this request with the same params. */
     @MainThread
     fun restart() {
-        request.launch()
+        imageLoader.launch(request)
     }
 
     override fun dispose() {

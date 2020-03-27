@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
 import android.net.Uri
@@ -25,6 +27,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import coil.DefaultRequestOptions
 import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
@@ -251,17 +254,27 @@ internal fun Resources.getDrawableCompat(@DrawableRes resId: Int, theme: Resourc
 internal val Configuration.nightMode: Int
     get() = uiMode and Configuration.UI_MODE_NIGHT_MASK
 
+internal val EMPTY_DRAWABLE = ColorDrawable(Color.TRANSPARENT)
+
 private val EMPTY_HEADERS = Headers.Builder().build()
 
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
 
 internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
-internal fun Request.isDiskOnlyPreload(): Boolean {
-    return this is LoadRequest && target == null && !memoryCachePolicy.writeEnabled
-}
-
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 
 internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
+
+internal fun Request.placeholderOrDefault(defaults: () -> DefaultRequestOptions): Drawable? {
+    return if (this is LoadRequest && placeholderDrawable != null) placeholder else defaults().placeholder
+}
+
+internal inline fun Request.errorOrDefault(defaults: () -> DefaultRequestOptions): Drawable? {
+    return if (this is LoadRequest && errorDrawable != null) error else defaults().error
+}
+
+internal inline fun Request.fallbackOrDefault(defaults: () -> DefaultRequestOptions): Drawable? {
+    return if (this is LoadRequest && fallbackDrawable != null) fallback else defaults().fallback
+}

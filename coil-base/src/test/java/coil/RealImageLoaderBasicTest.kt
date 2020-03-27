@@ -17,6 +17,7 @@ import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.WeakMemoryCache
+import coil.request.LoadRequest
 import coil.request.Parameters
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -89,7 +90,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - fill`() {
-        val request = createGetRequest(context) {
+        val request = createGetRequest {
             size(100, 100)
             precision(Precision.INEXACT)
         }
@@ -140,7 +141,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - fit`() {
-        val request = createGetRequest(context) {
+        val request = createGetRequest {
             size(100, 100)
             precision(Precision.INEXACT)
         }
@@ -191,7 +192,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - small not sampled cached drawable is valid`() {
-        val request = createGetRequest(context) {
+        val request = createGetRequest {
             precision(Precision.INEXACT)
         }
         val cached = createBitmap().toDrawable(context)
@@ -207,7 +208,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - bitmap config must be equal`() {
-        val request = createGetRequest(context)
+        val request = createGetRequest()
 
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config).toDrawable(context)
@@ -233,7 +234,7 @@ class RealImageLoaderBasicTest {
             cachedConfig: Bitmap.Config,
             requestedConfig: Bitmap.Config
         ): Boolean {
-            val request = createGetRequest(context) {
+            val request = createGetRequest {
                 allowRgb565(true)
                 bitmapConfig(requestedConfig)
             }
@@ -261,7 +262,7 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `isCachedDrawableValid - allowHardware=false prevents using cached hardware bitmap`() {
-        val request = createGetRequest(context) {
+        val request = createGetRequest {
             allowHardware(false)
         }
 
@@ -428,7 +429,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             var error: Throwable? = null
-            imageLoader.load(context)
+            val request = LoadRequest.Builder(context)
                 .key(key)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                 .size(100, 100)
@@ -448,8 +449,8 @@ class RealImageLoaderBasicTest {
                 .listener(
                     onError = { _, throwable -> error = throwable }
                 )
-                .launch()
-                .await()
+                .build()
+            imageLoader.launch(request).await()
 
             // Rethrow any errors that occurred while loading.
             error?.let { throw it }
@@ -464,7 +465,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             var error: Throwable? = null
-            imageLoader.load(context)
+            val request = LoadRequest.Builder(context)
                 .key(key)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                 .size(100, 100)
@@ -482,8 +483,8 @@ class RealImageLoaderBasicTest {
                 .listener(
                     onError = { _, throwable -> error = throwable }
                 )
-                .launch()
-                .await()
+                .build()
+            imageLoader.launch(request).await()
 
             // Rethrow any errors that occurred while loading.
             error?.let { throw it }
@@ -543,7 +544,8 @@ class RealImageLoaderBasicTest {
             },
             targetDelegate = EmptyTargetDelegate,
             request = createLoadRequest(context),
-            eventListener = EventListener.EMPTY
+            defaults = DefaultRequestOptions(),
+            eventListener = EventListener.NONE
         )
     }
 }

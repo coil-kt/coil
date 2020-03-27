@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
@@ -35,95 +36,133 @@ import coil.target.Target
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
+import coil.util.EMPTY_DRAWABLE
 import coil.util.Utils
 import coil.util.orEmpty
 import coil.util.self
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
-import okio.BufferedSource
+import okhttp3.HttpUrl
+import java.io.File
 
 /** Base class for [LoadRequestBuilder] and [GetRequestBuilder]. */
 @BuilderMarker
 sealed class RequestBuilder<T : RequestBuilder<T>> {
 
-    protected val imageLoader: ImageLoader
-
     protected var data: Any?
     protected var key: String?
     protected var aliasKeys: List<String>
+
     protected var listener: Request.Listener?
-    protected var sizeResolver: SizeResolver?
-    protected var scale: Scale?
-    protected var precision: Precision
-    protected var decoder: Decoder?
-    protected var dispatcher: CoroutineDispatcher
+    protected var dispatcher: CoroutineDispatcher?
     protected var transformations: List<Transformation>
     protected var bitmapConfig: Bitmap.Config
     protected var colorSpace: ColorSpace? = null
+
+    protected var sizeResolver: SizeResolver?
+    protected var scale: Scale?
+    protected var precision: Precision?
+
+    protected var fetcher: Fetcher<*>?
+    protected var decoder: Decoder?
+
+    protected var allowHardware: Boolean?
+    protected var allowRgb565: Boolean?
+
+    protected var memoryCachePolicy: CachePolicy?
+    protected var diskCachePolicy: CachePolicy?
+    protected var networkCachePolicy: CachePolicy?
+
     protected var headers: Headers.Builder?
     protected var parameters: Parameters.Builder?
 
-    protected var memoryCachePolicy: CachePolicy
-    protected var diskCachePolicy: CachePolicy
-    protected var networkCachePolicy: CachePolicy
-
-    protected var allowHardware: Boolean
-    protected var allowRgb565: Boolean
-
-    constructor(loader: ImageLoader) {
-        imageLoader = loader
-
-        val defaults = loader.defaults
+    constructor() {
         data = null
         key = null
         aliasKeys = emptyList()
         listener = null
-        sizeResolver = null
-        scale = null
-        precision = defaults.precision
-        decoder = null
-        dispatcher = defaults.dispatcher
+        dispatcher = null
         transformations = emptyList()
         bitmapConfig = Utils.getDefaultBitmapConfig()
         if (SDK_INT >= 26) colorSpace = null
-        allowHardware = defaults.allowHardware
-        allowRgb565 = defaults.allowRgb565
-        memoryCachePolicy = defaults.memoryCachePolicy
-        diskCachePolicy = defaults.diskCachePolicy
-        networkCachePolicy = defaults.networkCachePolicy
+        sizeResolver = null
+        scale = null
+        precision = null
+        fetcher = null
+        decoder = null
+        allowHardware = null
+        allowRgb565 = null
+        memoryCachePolicy = null
+        diskCachePolicy = null
+        networkCachePolicy = null
         headers = null
         parameters = null
     }
 
-    constructor(request: Request, loader: ImageLoader) {
-        imageLoader = loader
-
+    constructor(request: Request) {
         data = request.data
         key = request.key
         aliasKeys = request.aliasKeys
         listener = request.listener
-        sizeResolver = request.sizeResolver
-        scale = request.scale
-        precision = request.precision
-        decoder = request.decoder
         dispatcher = request.dispatcher
         transformations = request.transformations
         bitmapConfig = request.bitmapConfig
         if (SDK_INT >= 26) colorSpace = request.colorSpace
+        sizeResolver = request.sizeResolver
+        scale = request.scale
+        precision = request.precision
+        fetcher = request.fetcher
+        decoder = request.decoder
         allowHardware = request.allowHardware
         allowRgb565 = request.allowRgb565
-        networkCachePolicy = request.networkCachePolicy
-        diskCachePolicy = request.diskCachePolicy
         memoryCachePolicy = request.memoryCachePolicy
+        diskCachePolicy = request.diskCachePolicy
+        networkCachePolicy = request.networkCachePolicy
         headers = request.headers.newBuilder()
         parameters = request.parameters.newBuilder()
     }
 
     /**
      * Set the data to load.
+     *
+     * The default supported data types are:
+     * - [String] (mapped to a [Uri])
+     * - [HttpUrl]
+     * - [Uri] ("android.resource", "content", "file", "http", and "https" schemes only)
+     * - [File]
+     * - @DrawableRes [Int]
+     * - [Drawable]
+     * - [Bitmap]
      */
     fun data(data: Any?): T = self {
         this.data = data
+    }
+
+    /**
+     * Set the cache key for this request.
+     *
+     * By default, the cache key is computed by the [Fetcher], any [Parameters], and any [Transformation]s.
+     */
+    fun key(key: String?): T = self {
+        this.key = key
+    }
+
+    /**
+     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
+     *
+     * Requests are still written to the memory cache as [key].
+     */
+    fun aliasKeys(vararg aliasKeys: String): T = self {
+        this.aliasKeys = aliasKeys.toList()
+    }
+
+    /**
+     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
+     *
+     * Requests are still written to the memory cache as [key].
+     */
+    fun aliasKeys(aliasKeys: List<String>): T = self {
+        this.aliasKeys = aliasKeys.toList()
     }
 
     /**
@@ -149,6 +188,13 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
+     * Set the [CoroutineDispatcher] to run the fetching, decoding, and transforming work on.
+     */
+    fun dispatcher(dispatcher: CoroutineDispatcher): T = self {
+        this.dispatcher = dispatcher
+    }
+
+    /**
      * Set the list of [Transformation]s to be applied to this request.
      */
     fun transformations(vararg transformations: Transformation): T = self {
@@ -163,10 +209,20 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Set the [CoroutineDispatcher] to run the fetching, decoding, and transforming work on.
+     * Set the preferred [Bitmap.Config].
+     *
+     * This is not guaranteed and a different config may be used in some situations.
      */
-    fun dispatcher(dispatcher: CoroutineDispatcher): T = self {
-        this.dispatcher = dispatcher
+    fun bitmapConfig(bitmapConfig: Bitmap.Config): T = self {
+        this.bitmapConfig = bitmapConfig
+    }
+
+    /**
+     * Set the preferred [ColorSpace].
+     */
+    @RequiresApi(26)
+    fun colorSpace(colorSpace: ColorSpace): T = self {
+        this.colorSpace = colorSpace
     }
 
     /**
@@ -226,9 +282,18 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Set the [Decoder] to handle decoding any image data.
+     * Set the [Fetcher] to handle fetching any image data.
      *
-     * Use this to force the given [Decoder] to handle decoding any [BufferedSource]s returned by [Fetcher.fetch].
+     * If this isn't set, the [ImageLoader] will find an applicable [Fetcher] that's registered in its [ComponentRegistry].
+     *
+     * NOTE: This skips calling [Fetcher.handles] for [fetcher].
+     */
+    fun fetcher(fetcher: Fetcher<*>): T = self {
+        this.fetcher = fetcher
+    }
+
+    /**
+     * Set the [Decoder] to handle decoding any image data.
      *
      * If this isn't set, the [ImageLoader] will find an applicable [Decoder] that's registered in its [ComponentRegistry].
      *
@@ -254,50 +319,6 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun allowRgb565(enable: Boolean): T = self {
         this.allowRgb565 = enable
-    }
-
-    /**
-     * Set the preferred [Bitmap.Config].
-     *
-     * This is not guaranteed and a different config may be used in some situations.
-     */
-    fun bitmapConfig(bitmapConfig: Bitmap.Config): T = self {
-        this.bitmapConfig = bitmapConfig
-    }
-
-    /**
-     * Set the preferred [ColorSpace].
-     */
-    @RequiresApi(26)
-    fun colorSpace(colorSpace: ColorSpace): T = self {
-        this.colorSpace = colorSpace
-    }
-
-    /**
-     * Set the cache key for this request.
-     *
-     * By default, the cache key is computed by the [Fetcher], any [Parameters], and any [Transformation]s.
-     */
-    fun key(key: String?): T = self {
-        this.key = key
-    }
-
-    /**
-     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
-     *
-     * Requests are still written to the memory cache as [key].
-     */
-    fun aliasKeys(vararg aliasKeys: String): T = self {
-        this.aliasKeys = aliasKeys.toList()
-    }
-
-    /**
-     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
-     *
-     * Requests are still written to the memory cache as [key].
-     */
-    fun aliasKeys(aliasKeys: List<String>): T = self {
-        this.aliasKeys = aliasKeys.toList()
     }
 
     /**
@@ -398,34 +419,28 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     private var errorDrawable: Drawable?
     private var fallbackDrawable: Drawable?
 
-    constructor(context: Context, loader: ImageLoader) : super(loader) {
+    constructor(context: Context) : super() {
         this.context = context
-
-        val defaults = loader.defaults
         target = null
         lifecycle = null
-        transition = defaults.transition
-
+        transition = null
         placeholderResId = 0
         errorResId = 0
         fallbackResId = 0
-        placeholderDrawable = defaults.placeholder
-        errorDrawable = defaults.error
-        fallbackDrawable = defaults.fallback
+        placeholderDrawable = null
+        errorDrawable = null
+        fallbackDrawable = null
     }
 
     @JvmOverloads
     constructor(
         request: LoadRequest,
-        context: Context = request.context,
-        loader: ImageLoader = request.imageLoader
-    ) : super(request, loader) {
+        context: Context = request.context
+    ) : super(request) {
         this.context = context
-
         target = request.target
         lifecycle = request.lifecycle
         transition = request.transition
-
         placeholderResId = request.placeholderResId
         errorResId = request.errorResId
         fallbackResId = request.fallbackResId
@@ -497,7 +512,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      * See: [ImageLoaderBuilder.transition]
      */
     @ExperimentalCoilApi
-    fun transition(transition: Transition?) = apply {
+    fun transition(transition: Transition) = apply {
         this.transition = transition
     }
 
@@ -506,14 +521,14 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      */
     fun placeholder(@DrawableRes drawableResId: Int) = apply {
         this.placeholderResId = drawableResId
-        this.placeholderDrawable = null
+        this.placeholderDrawable = EMPTY_DRAWABLE
     }
 
     /**
      * Set the placeholder drawable to use when the request starts.
      */
     fun placeholder(drawable: Drawable?) = apply {
-        this.placeholderDrawable = drawable
+        this.placeholderDrawable = drawable ?: EMPTY_DRAWABLE
         this.placeholderResId = 0
     }
 
@@ -522,14 +537,14 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      */
     fun error(@DrawableRes drawableResId: Int) = apply {
         this.errorResId = drawableResId
-        this.errorDrawable = null
+        this.errorDrawable = EMPTY_DRAWABLE
     }
 
     /**
      * Set the error drawable to use if the request fails.
      */
     fun error(drawable: Drawable?) = apply {
-        this.errorDrawable = drawable
+        this.errorDrawable = drawable ?: EMPTY_DRAWABLE
         this.errorResId = 0
     }
 
@@ -538,14 +553,14 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      */
     fun fallback(@DrawableRes drawableResId: Int) = apply {
         this.fallbackResId = drawableResId
-        this.fallbackDrawable = null
+        this.fallbackDrawable = EMPTY_DRAWABLE
     }
 
     /**
      * Set the fallback drawable to use if [data] is null.
      */
     fun fallback(drawable: Drawable?) = apply {
-        this.fallbackDrawable = drawable
+        this.fallbackDrawable = drawable ?: EMPTY_DRAWABLE
         this.fallbackResId = 0
     }
 
@@ -555,26 +570,26 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     fun build(): LoadRequest {
         return LoadRequest(
             context,
-            imageLoader,
             data,
             key,
             aliasKeys,
             listener,
-            sizeResolver,
-            scale,
-            precision,
-            decoder,
             dispatcher,
             transformations,
             bitmapConfig,
             colorSpace,
-            headers?.build().orEmpty(),
-            parameters?.build().orEmpty(),
+            sizeResolver,
+            scale,
+            precision,
+            fetcher,
+            decoder,
+            allowHardware,
+            allowRgb565,
             memoryCachePolicy,
             diskCachePolicy,
             networkCachePolicy,
-            allowHardware,
-            allowRgb565,
+            headers?.build().orEmpty(),
+            parameters?.build().orEmpty(),
             target,
             lifecycle,
             transition,
@@ -586,54 +601,40 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             fallbackDrawable
         )
     }
-
-    /**
-     * Build and launch this load request.
-     */
-    fun launch(): RequestDisposable = build().launch()
 }
 
 /** Builder for a [GetRequest]. */
 class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
 
-    constructor(loader: ImageLoader) : super(loader)
+    constructor() : super()
 
-    @JvmOverloads
-    constructor(
-        request: GetRequest,
-        loader: ImageLoader = request.imageLoader
-    ) : super(request, loader)
+    constructor(request: GetRequest) : super(request)
 
     /**
      * Create a new [GetRequest] instance.
      */
     fun build(): GetRequest {
         return GetRequest(
-            imageLoader,
             data,
             key,
             aliasKeys,
             listener,
-            sizeResolver,
-            scale,
-            precision,
-            decoder,
             dispatcher,
             transformations,
             bitmapConfig,
             colorSpace,
-            headers?.build().orEmpty(),
-            parameters?.build().orEmpty(),
+            sizeResolver,
+            scale,
+            precision,
+            fetcher,
+            decoder,
+            allowHardware,
+            allowRgb565,
             memoryCachePolicy,
             diskCachePolicy,
             networkCachePolicy,
-            allowHardware,
-            allowRgb565
+            headers?.build().orEmpty(),
+            parameters?.build().orEmpty()
         )
     }
-
-    /**
-     * Build and launch this get request.
-     */
-    suspend inline fun launch(): Drawable = build().launch()
 }

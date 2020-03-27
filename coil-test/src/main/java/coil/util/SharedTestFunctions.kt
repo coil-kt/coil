@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ColorSpace
-import coil.ImageLoader
 import coil.decode.Options
 import coil.request.CachePolicy
 import coil.request.GetRequest
@@ -79,19 +78,12 @@ val Bitmap.size: PixelSize
     get() = PixelSize(width, height)
 
 inline fun createGetRequest(
-    context: Context,
     builder: GetRequestBuilder.() -> Unit = {}
-): GetRequest = createGetRequest(ImageLoader(context), builder)
-
-inline fun createGetRequest(
-    imageLoader: ImageLoader,
-    builder: GetRequestBuilder.() -> Unit = {}
-): GetRequest = GetRequestBuilder(imageLoader).data(Unit).apply(builder).build()
+): GetRequest = GetRequest.Builder().data(Unit).apply(builder).build()
 
 inline fun createLoadRequest(
     context: Context,
-    imageLoader: ImageLoader = ImageLoader(context),
     builder: LoadRequestBuilder.() -> Unit = {}
-): LoadRequest = LoadRequestBuilder(context, imageLoader).data(Unit).apply(builder).build()
+): LoadRequest = LoadRequest.Builder(context).data(Unit).apply(builder).build()
 
 inline fun error(): Nothing = throw IllegalStateException()
