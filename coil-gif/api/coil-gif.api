@@ -1,0 +1,80 @@
+public final class coil/decode/GifDecoder : coil/decode/Decoder {
+	public static final field Companion Lcoil/decode/GifDecoder$Companion;
+	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
+	public fun <init> ()V
+	public fun decode (Lcoil/bitmappool/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
+}
+
+public final class coil/decode/GifDecoder$Companion {
+}
+
+public final class coil/decode/ImageDecoderDecoder : coil/decode/Decoder {
+	public static final field Companion Lcoil/decode/ImageDecoderDecoder$Companion;
+	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
+	public fun <init> ()V
+	public fun decode (Lcoil/bitmappool/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
+}
+
+public final class coil/decode/ImageDecoderDecoder$Companion {
+}
+
+public final class coil/drawable/MovieDrawable : android/graphics/drawable/Drawable, androidx/vectordrawable/graphics/drawable/Animatable2Compat {
+	public static final field Companion Lcoil/drawable/MovieDrawable$Companion;
+	public static final field REPEAT_INFINITE I
+	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmappool/BitmapPool;)V
+	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap$Config;)V
+	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap$Config;Lcoil/size/Scale;)V
+	public synthetic fun <init> (Landroid/graphics/Movie;Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap$Config;Lcoil/size/Scale;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun clearAnimationCallbacks ()V
+	public fun draw (Landroid/graphics/Canvas;)V
+	public final fun getConfig ()Landroid/graphics/Bitmap$Config;
+	public fun getIntrinsicHeight ()I
+	public fun getIntrinsicWidth ()I
+	public fun getOpacity ()I
+	public final fun getRepeatCount ()I
+	public final fun getScale ()Lcoil/size/Scale;
+	public fun isRunning ()Z
+	public fun registerAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)V
+	public fun setAlpha (I)V
+	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
+	public final fun setRepeatCount (I)V
+	public fun start ()V
+	public fun stop ()V
+	public fun unregisterAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)Z
+}
+
+public final class coil/drawable/MovieDrawable$Companion {
+}
+
+public final class coil/drawable/ScaleDrawable : android/graphics/drawable/Drawable, android/graphics/drawable/Animatable, android/graphics/drawable/Drawable$Callback {
+	public fun <init> (Landroid/graphics/drawable/Drawable;)V
+	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/size/Scale;)V
+	public synthetic fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/size/Scale;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun draw (Landroid/graphics/Canvas;)V
+	public fun getAlpha ()I
+	public final fun getChild ()Landroid/graphics/drawable/Drawable;
+	public fun getColorFilter ()Landroid/graphics/ColorFilter;
+	public fun getIntrinsicHeight ()I
+	public fun getIntrinsicWidth ()I
+	public fun getOpacity ()I
+	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
+	public fun isRunning ()Z
+	public fun scheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;J)V
+	public fun setAlpha (I)V
+	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
+	public fun setTint (I)V
+	public fun setTintBlendMode (Landroid/graphics/BlendMode;)V
+	public fun setTintList (Landroid/content/res/ColorStateList;)V
+	public fun setTintMode (Landroid/graphics/PorterDuff$Mode;)V
+	public fun start ()V
+	public fun stop ()V
+	public fun unscheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;)V
+}
+
+public final class coil/extension/Gifs {
+	public static final fun repeatCount (Lcoil/request/Parameters;)Ljava/lang/Integer;
+	public static final fun repeatCount (Lcoil/request/RequestBuilder;I)V
+}
+
