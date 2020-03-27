@@ -49,32 +49,32 @@ import java.io.File
 @BuilderMarker
 sealed class RequestBuilder<T : RequestBuilder<T>> {
 
-    protected var data: Any?
-    protected var key: String?
-    protected var aliasKeys: List<String>
+    @JvmField protected var data: Any?
+    @JvmField protected var key: String?
+    @JvmField protected var aliasKeys: List<String>
 
-    protected var listener: Request.Listener?
-    protected var dispatcher: CoroutineDispatcher?
-    protected var transformations: List<Transformation>
-    protected var bitmapConfig: Bitmap.Config
-    protected var colorSpace: ColorSpace? = null
+    @JvmField protected var listener: Request.Listener?
+    @JvmField protected var dispatcher: CoroutineDispatcher?
+    @JvmField protected var transformations: List<Transformation>
+    @JvmField protected var bitmapConfig: Bitmap.Config
+    @JvmField protected var colorSpace: ColorSpace? = null
 
-    protected var sizeResolver: SizeResolver?
-    protected var scale: Scale?
-    protected var precision: Precision?
+    @JvmField protected var sizeResolver: SizeResolver?
+    @JvmField protected var scale: Scale?
+    @JvmField protected var precision: Precision?
 
-    protected var fetcher: Fetcher<*>?
-    protected var decoder: Decoder?
+    @JvmField protected var fetcher: Fetcher<*>?
+    @JvmField protected var decoder: Decoder?
 
-    protected var allowHardware: Boolean?
-    protected var allowRgb565: Boolean?
+    @JvmField protected var allowHardware: Boolean?
+    @JvmField protected var allowRgb565: Boolean?
 
-    protected var memoryCachePolicy: CachePolicy?
-    protected var diskCachePolicy: CachePolicy?
-    protected var networkCachePolicy: CachePolicy?
+    @JvmField protected var memoryCachePolicy: CachePolicy?
+    @JvmField protected var diskCachePolicy: CachePolicy?
+    @JvmField protected var networkCachePolicy: CachePolicy?
 
-    protected var headers: Headers.Builder?
-    protected var parameters: Parameters.Builder?
+    @JvmField protected var headers: Headers.Builder?
+    @JvmField protected var parameters: Parameters.Builder?
 
     constructor() {
         data = null
