@@ -80,7 +80,7 @@ inline fun ImageView.load(
  *
  * This is the type-unsafe version of [ImageView.load].
  *
- * Example usage:
+ * Example:
  * ```
  * imageView.load("https://www.example.com/image.jpg") {
  *     crossfade(true)
