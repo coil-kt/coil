@@ -74,6 +74,7 @@ import coil.util.putValue
 import coil.util.requestManager
 import coil.util.takeIf
 import coil.util.toDrawable
+import coil.util.validateFetcher
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -195,8 +196,7 @@ internal class RealImageLoader(
             eventListener.mapEnd(request, mappedData)
 
             // Compute the cache key.
-            @Suppress("UNCHECKED_CAST")
-            val fetcher = request.fetcher as Fetcher<Any>? ?: registry.requireFetcher(mappedData)
+            val fetcher = request.validateFetcher(mappedData) ?: registry.requireFetcher(mappedData)
             val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, lazySizeResolver)
 
             // Check the memory cache.

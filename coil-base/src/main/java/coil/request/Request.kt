@@ -50,7 +50,7 @@ sealed class Request {
     abstract val scale: Scale?
     abstract val precision: Precision?
 
-    abstract val fetcher: Fetcher<*>?
+    abstract val fetcher: Pair<Class<*>, Fetcher<*>>?
     abstract val decoder: Decoder?
 
     abstract val allowHardware: Boolean?
@@ -139,7 +139,7 @@ class LoadRequest internal constructor(
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
     override val precision: Precision?,
-    override val fetcher: Fetcher<*>?,
+    override val fetcher: Pair<Class<*>, Fetcher<*>>?,
     override val decoder: Decoder?,
     override val allowHardware: Boolean?,
     override val allowRgb565: Boolean?,
@@ -249,7 +249,7 @@ class GetRequest internal constructor(
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
     override val precision: Precision?,
-    override val fetcher: Fetcher<*>?,
+    override val fetcher: Pair<Class<*>, Fetcher<*>>?,
     override val decoder: Decoder?,
     override val allowHardware: Boolean?,
     override val allowRgb565: Boolean?,

@@ -30,6 +30,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.DefaultRequestOptions
 import coil.base.R
 import coil.decode.DataSource
+import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.memory.ViewTargetRequestManager
 import coil.request.LoadRequest
@@ -277,4 +278,16 @@ internal inline fun Request.errorOrDefault(defaults: () -> DefaultRequestOptions
 
 internal inline fun Request.fallbackOrDefault(defaults: () -> DefaultRequestOptions): Drawable? {
     return if (this is LoadRequest && fallbackDrawable != null) fallback else defaults().fallback
+}
+
+/** Ensure [Request.fetcher] is valid for [data]. */
+@Suppress("UNCHECKED_CAST")
+internal fun <T : Any> Request.validateFetcher(data: T): Fetcher<T>? {
+    val (type, fetcher) = fetcher ?: return null
+
+    check(type.isAssignableFrom(data::class.java)) {
+        "${fetcher.javaClass.name} cannot handle data with type ${data.javaClass.name}."
+    }
+
+    return fetcher as Fetcher<T>
 }

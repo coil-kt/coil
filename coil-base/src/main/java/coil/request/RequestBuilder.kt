@@ -63,7 +63,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     @JvmField protected var scale: Scale?
     @JvmField protected var precision: Precision?
 
-    @JvmField protected var fetcher: Fetcher<*>?
+    @JvmField protected var fetcher: Pair<Class<*>, Fetcher<*>>?
     @JvmField protected var decoder: Decoder?
 
     @JvmField protected var allowHardware: Boolean?
@@ -288,8 +288,14 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      *
      * NOTE: This skips calling [Fetcher.handles] for [fetcher].
      */
-    fun fetcher(fetcher: Fetcher<*>): T = self {
-        this.fetcher = fetcher
+    inline fun <reified R : Any> fetcher(fetcher: Fetcher<R>) = fetcher(R::class.java, fetcher)
+
+    /**
+     * @see RequestBuilder.fetcher
+     */
+    @PublishedApi
+    internal fun <R : Any> fetcher(type: Class<R>, fetcher: Fetcher<R>): T = self {
+        this.fetcher = type to fetcher
     }
 
     /**
