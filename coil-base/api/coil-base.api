@@ -456,7 +456,7 @@ public final class coil/request/GetRequest : coil/request/Request {
 	public fun getDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public fun getError ()Landroid/graphics/drawable/Drawable;
 	public fun getFallback ()Landroid/graphics/drawable/Drawable;
-	public fun getFetcher ()Lcoil/fetch/Fetcher;
+	public fun getFetcher ()Lkotlin/Pair;
 	public fun getHeaders ()Lokhttp3/Headers;
 	public fun getKey ()Ljava/lang/String;
 	public fun getLifecycle ()Landroidx/lifecycle/Lifecycle;
@@ -506,7 +506,7 @@ public final class coil/request/LoadRequest : coil/request/Request {
 	public fun getDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public fun getError ()Landroid/graphics/drawable/Drawable;
 	public fun getFallback ()Landroid/graphics/drawable/Drawable;
-	public fun getFetcher ()Lcoil/fetch/Fetcher;
+	public fun getFetcher ()Lkotlin/Pair;
 	public fun getHeaders ()Lokhttp3/Headers;
 	public fun getKey ()Ljava/lang/String;
 	public fun getLifecycle ()Landroidx/lifecycle/Lifecycle;
@@ -621,7 +621,7 @@ public abstract class coil/request/Request {
 	public abstract fun getDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public abstract fun getError ()Landroid/graphics/drawable/Drawable;
 	public abstract fun getFallback ()Landroid/graphics/drawable/Drawable;
-	public abstract fun getFetcher ()Lcoil/fetch/Fetcher;
+	public abstract fun getFetcher ()Lkotlin/Pair;
 	public abstract fun getHeaders ()Lokhttp3/Headers;
 	public abstract fun getKey ()Ljava/lang/String;
 	public abstract fun getLifecycle ()Landroidx/lifecycle/Lifecycle;
@@ -662,7 +662,7 @@ public abstract class coil/request/RequestBuilder {
 	protected field decoder Lcoil/decode/Decoder;
 	protected field diskCachePolicy Lcoil/request/CachePolicy;
 	protected field dispatcher Lkotlinx/coroutines/CoroutineDispatcher;
-	protected field fetcher Lcoil/fetch/Fetcher;
+	protected field fetcher Lkotlin/Pair;
 	protected field headers Lokhttp3/Headers$Builder;
 	protected field key Ljava/lang/String;
 	protected field listener Lcoil/request/Request$Listener;
@@ -685,7 +685,7 @@ public abstract class coil/request/RequestBuilder {
 	public final fun decoder (Lcoil/decode/Decoder;)Lcoil/request/RequestBuilder;
 	public final fun diskCachePolicy (Lcoil/request/CachePolicy;)Lcoil/request/RequestBuilder;
 	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/request/RequestBuilder;
-	public final fun fetcher (Lcoil/fetch/Fetcher;)Lcoil/request/RequestBuilder;
+	public final fun fetcher (Ljava/lang/Class;Lcoil/fetch/Fetcher;)Lcoil/request/RequestBuilder;
 	public final fun headers (Lokhttp3/Headers;)Lcoil/request/RequestBuilder;
 	public final fun key (Ljava/lang/String;)Lcoil/request/RequestBuilder;
 	public final fun listener (Lcoil/request/Request$Listener;)Lcoil/request/RequestBuilder;
