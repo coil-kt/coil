@@ -78,7 +78,7 @@ Picasso.get()
     })
 
 // Coil
-Coil.load(context)
+val request = LoadRequest.Builder(context)
     .data(url)
     .target(
         onStart = { drawable ->
@@ -91,7 +91,8 @@ Coil.load(context)
             // Handle the error drawable.
         }
     )
-    .launch()
+    .build()
+Coil.imageLoader(context).execute(request)
 ```
 
 ### Background Thread
@@ -110,8 +111,9 @@ val drawable = Picasso.get()
     .get()
 
 // Coil (suspends the current context; thread safe)
-val drawable = Coil.get(context)
+val request = GetRequest.Builder()
     .data(url)
     .size(width, height)
-    .launch()
+    .build()
+Coil.imageLoader(context).execute(request)
 ```

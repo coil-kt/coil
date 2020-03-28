@@ -10,7 +10,8 @@ Coil has 5 artifacts published to `mavenCentral()`:
 * `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
 * `io.coil-kt:coil-video`: Includes two [fetchers](../api/coil-base/coil.fetch/-fetcher) to support fetching and decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
 
-You should depend on `io.coil-kt:coil-base` and **not** `io.coil-kt:coil` if any of the following is true:
+You should depend on `io.coil-kt:coil-base` and **not** `io.coil-kt:coil` if either of the following is true:
+
 - You are writing a library that depends on Coil. This is to avoid opting your users into the singleton.
 - You want to use dependency injection to inject your [ImageLoader](image_loaders.md) instance(s).
 
@@ -65,17 +66,18 @@ val imageLoader = ImageLoader.Builder(context)
     .build()
 ```
 
-Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache and bitmap pool.
+Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
 
-### Requests
+## Requests
 
 There are two types of `Request`s:
+
 - `LoadRequest`: A request that supports `Target`s, `Transition`s, and more that is scoped to a [`Lifecycle`](https://developer.android.com/jetpack/androidx/releases/lifecycle).
 - `GetRequst`: A request that [suspends](https://kotlinlang.org/docs/reference/coroutines/basics.html) and returns a `Drawable`.
 
 New requests can be created using their respective builder.
 
-All requests should have their `data` set (url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to figure where to fetch the image data from.
+All requests should set `data` (i.e. url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to figure where to fetch the image data from.
 
 Additionally, you likely want to set a `target` when creating a `LoadRequest`. It's optional, but the `target` is what will receive the loaded placeholder/success/error drawables. If you don't set a `target`, the `ImageLoader` will execute the request as normal effectively preloading the image.
 
