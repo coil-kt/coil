@@ -73,34 +73,27 @@ There are two types of `Request`s:
 - `LoadRequest`: A request that supports `Target`s, `Transition`s, and more that is scoped to a [`Lifecycle`](https://developer.android.com/jetpack/androidx/releases/lifecycle).
 - `GetRequst`: A request that [suspends](https://kotlinlang.org/docs/reference/coroutines/basics.html) and returns a `Drawable`.
 
-Here are the function definitions on `ImageLoader`:
+New requests can be created using their respective builder.
 
-```kotlin
-interface ImageLoader {
+All requests should have their `data` set (url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to figure where to fetch the image data from.
 
-    // Launch a LoadRequest.
-    fun launch(request: LoadRequest): RequestDisposable
+Additionally, you likely want to set a `target` when creating a `LoadRequest`. It's optional, but the `target` is what will receive the loaded placeholder/success/error drawables. If you don't set a `target`, the `ImageLoader` will execute the request as normal effectively preloading the image.
 
-    // Launch a GetRequest.
-    suspend fun launch(request: GetRequest): Drawable
-}
-```
-
-New requests can be created using `ImageLoader.load` and `ImageLoader.get`:
+Here's an example:
 
 ```kotlin
 // LoadRequest
-val disposable = imageLoader.load(context)
+val request = LoadRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
-    .target { drawable ->
-        // Handle the result.
-    }
-    .launch()
+    .target(imageView)
+    .build()
+val disposable = imageLoader.execute(request)
 
 // GetRequest
-val drawable = imageLoader.get()
+val request = GetRequest.Builder()
     .data("https://www.example.com/image.jpg")
-    .launch()
+    .build()
+val drawable = imageLoader.execute(request)
 ```
 
 ## Singleton
@@ -157,13 +150,14 @@ imageView.load("https://www.example.com/image.jpg")
 The above call is equivalent to:
 
 ```kotlin
-Coil.load(imageView.context)
+val request = LoadRequest.Builder(imageView.context)
     .data("https://www.example.com/image.jpg")
     .target(imageView)
-    .launch()
+    .build()
+Coil.imageLoader(imageView.context).execute(request)
 ```
 
-`ImageView.load` calls can be configured with an optional trailing lambda param:
+`ImageView.load` calls can be configured with an optional trailing lambda parameter:
 
 ```kotlin
 imageView.load("https://www.example.com/image.jpg") {
@@ -172,8 +166,6 @@ imageView.load("https://www.example.com/image.jpg") {
     transformations(CircleCropTransformation())
 }
 ```
-
-**Important**: You should not call `launch()` inside `ImageView.load`. Doing so will launch the request twice.
 
 See the docs [here](../api/coil-default/coil.api/) and [here](../api/coil-base/coil.api/) for more information.
 
@@ -191,21 +183,25 @@ The base data types that are supported by all `ImageLoader` instances are:
 
 ## Preloading
 
-To preload an image into memory, launch a `load` request without a `Target`:
+To preload an image into memory, execute a `LoadRequest` without a `Target`:
 
 ```kotlin
-Coil.load(context)
+val request = LoadRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
-    .launch()
+    // Optional, but setting a ViewSizeResolver will conserve memory by limiting the size the image should be preloaded into memory at.
+    .size(ViewSizeResolver(imageView))
+    .build()
+imageLoader.execute(request)
 ```
 
-To only preload a network image into the disk cache, disable the memory cache for the request:
+To preload a network image only into the disk cache, disable the memory cache for the request:
 
 ```kotlin
-Coil.load(context)
+val request = LoadRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .memoryCachePolicy(CachePolicy.DISABLED)
-    .launch()
+    .build()
+imageLoader.execute(request)
 ```
 
 ## Cancelling Requests

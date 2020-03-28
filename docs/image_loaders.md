@@ -67,14 +67,14 @@ val fakeImageLoader = object : ImageLoader {
     
     override val defaults = DefaultRequestOptions()
 
-    override fun launch(request: LoadRequest): RequestDisposable {
+    override fun execute(request: LoadRequest): RequestDisposable {
         // Always call onStart before onSuccess.
         request.target?.onStart(drawable)
         request.target?.onSuccess(drawable)
         return disposable
     }
 
-    override suspend fun launch(request: GetRequest) = drawable
+    override suspend fun execute(request: GetRequest) = drawable
 
     override fun clearMemory() {}
 

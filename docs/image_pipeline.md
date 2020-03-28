@@ -40,10 +40,11 @@ class ItemMapper : Mapper<Item, HttpUrl> {
 After registering it when constructing our `ImageLoader` (see above), we can safely load an `Item`:
 
 ```kotlin
-imageLoader.load(context)
+val request = LoadRequest.Builder(context)
     .data(item)
     .target(imageView)
-    .launch()
+    .build()
+imageLoader.execute(request)
 ```
 
 If you want to know a `Target`'s size when mapping an object, you can extend from [Measured Mapper](../api/coil-base/coil.map/-measured-mapper).
