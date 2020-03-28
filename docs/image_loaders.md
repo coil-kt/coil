@@ -49,6 +49,10 @@ However, if you'd prefer a singleton the `io.coil-kt:coil` artifact provides a d
 !!! Note
     Use the `io.coil-kt:coil-base` artifact if you are using dependency injection.
 
+## Shutdown
+
+When you're done with an `ImageLoader` you should call `ImageLoader.shutdown()`. This releases all resources and observers used by the image loader and stops any new requests from being executed. Failure to call `ImageLoader.shutdown()` can leak the observers used internally.
+
 ## Testing
 
 `ImageLoader` is an interface, which you can replace with a fake implementation.
