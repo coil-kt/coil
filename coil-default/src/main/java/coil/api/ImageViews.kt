@@ -103,7 +103,7 @@ inline fun ImageView.loadAny(
         .target(this)
         .apply(builder)
         .build()
-    return imageLoader.launch(request)
+    return imageLoader.execute(request)
 }
 
 /**

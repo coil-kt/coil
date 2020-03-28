@@ -138,7 +138,7 @@ internal class RealImageLoader(
         context.registerComponentCallbacks(this)
     }
 
-    override fun launch(request: LoadRequest): RequestDisposable {
+    override fun execute(request: LoadRequest): RequestDisposable {
         // Start loading the data.
         val job = loaderScope.launch(exceptionHandler) { execute(request) }
 
@@ -150,9 +150,9 @@ internal class RealImageLoader(
         }
     }
 
-    override suspend fun launch(request: GetRequest) = execute(request)
+    override suspend fun execute(request: GetRequest): Drawable = executeRequest(request)
 
-    private suspend fun execute(request: Request) = withContext(Dispatchers.Main.immediate) outerJob@{
+    private suspend fun executeRequest(request: Request): Drawable = withContext(Dispatchers.Main.immediate) outerJob@{
         // Ensure this image loader isn't shutdown.
         assertNotShutdown()
 

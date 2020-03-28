@@ -120,11 +120,11 @@ sealed class Request {
  *     .data("https://www.example.com/image.jpg")
  *     .target(imageView)
  *     .build()
- * val disposable = imageLoader.launch(request)
+ * val disposable = imageLoader.execute(request)
  * ```
  *
  * @see LoadRequestBuilder
- * @see ImageLoader.launch
+ * @see ImageLoader.execute
  */
 class LoadRequest internal constructor(
     val context: Context,
@@ -231,7 +231,7 @@ class LoadRequest internal constructor(
  *     .data("https://www.example.com/image.jpg")
  *     .size(256, 256)
  *     .build()
- * val drawable = imageLoader.launch(request)
+ * val drawable = imageLoader.execute(request)
  * ```
  *
  * @see GetRequestBuilder

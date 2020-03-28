@@ -12,7 +12,11 @@ import coil.request.RequestDisposable
 import coil.target.Target
 
 /**
- * A service class that fetches and decodes image data.
+ * A service class that loads images by executing [Request]s. Image loaders handle caching, source fetching,
+ * image decoding, request management, bitmap pooling, memory management, and more.
+ *
+ * Image loaders are designed to be shareable and work best when you create a single instance and
+ * share it throughout your app.
  */
 interface ImageLoader {
 
@@ -39,30 +43,28 @@ interface ImageLoader {
     }
 
     /**
-     * The default options for any [Request]s created by this image loader.
+     * The default options that are used to fill in unset [Request] values.
      */
     val defaults: DefaultRequestOptions
 
     /**
-     * Launch an asynchronous operation that executes the [request] and sets the result on its [Target].
-     *
-     * If the request's target is null, this method preloads the image.
+     * Launch an asynchronous operation that executes the [LoadRequest] and sets the result on its [Target].
      *
      * @param request The request to execute.
      * @return A [RequestDisposable] which can be used to cancel or check the status of the request.
      */
-    fun launch(request: LoadRequest): RequestDisposable
+    fun execute(request: LoadRequest): RequestDisposable
 
     /**
-     * Executes the [request] and suspend until the operation is complete. Return the loaded [Drawable].
+     * Suspends and executes the [GetRequest]. Returns the loaded [Drawable] when complete.
      *
      * @param request The request to execute.
      * @return The [Drawable] result.
      */
-    suspend fun launch(request: GetRequest): Drawable
+    suspend fun execute(request: GetRequest): Drawable
 
     /**
-     * Completely clear this image loader's memory cache and bitmap pool.
+     * Clear this image loader's memory cache and bitmap pool.
      */
     @MainThread
     fun clearMemory()
@@ -77,19 +79,19 @@ interface ImageLoader {
     @MainThread
     fun shutdown()
 
-    /** @see launch */
+    /** @see execute */
     @Deprecated(
-        message = "Migrate to launch(request).",
-        replaceWith = ReplaceWith("launch(request)"),
+        message = "Migrate to execute(request).",
+        replaceWith = ReplaceWith("this.execute(request)"),
         level = DeprecationLevel.ERROR
     )
-    fun load(request: LoadRequest): RequestDisposable = launch(request)
+    fun load(request: LoadRequest): RequestDisposable = execute(request)
 
-    /** @see launch */
+    /** @see execute */
     @Deprecated(
-        message = "Migrate to launch(request).",
-        replaceWith = ReplaceWith("launch(request)"),
+        message = "Migrate to execute(request).",
+        replaceWith = ReplaceWith("this.execute(request)"),
         level = DeprecationLevel.ERROR
     )
-    suspend fun get(request: GetRequest): Drawable = launch(request)
+    suspend fun get(request: GetRequest): Drawable = execute(request)
 }

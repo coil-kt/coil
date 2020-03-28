@@ -450,7 +450,7 @@ class RealImageLoaderBasicTest {
                     onError = { _, throwable -> error = throwable }
                 )
                 .build()
-            imageLoader.launch(request).await()
+            imageLoader.execute(request).await()
 
             // Rethrow any errors that occurred while loading.
             error?.let { throw it }
@@ -484,7 +484,7 @@ class RealImageLoaderBasicTest {
                     onError = { _, throwable -> error = throwable }
                 )
                 .build()
-            imageLoader.launch(request).await()
+            imageLoader.execute(request).await()
 
             // Rethrow any errors that occurred while loading.
             error?.let { throw it }

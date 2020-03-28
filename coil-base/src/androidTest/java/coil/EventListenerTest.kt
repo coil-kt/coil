@@ -149,7 +149,7 @@ class EventListenerTest {
             )
             .apply(builder)
             .build()
-        launch(request)
+        execute(request)
     }
 
     private class MethodChecker(private val callExpected: Boolean) {

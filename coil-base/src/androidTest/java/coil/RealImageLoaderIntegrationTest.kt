@@ -237,7 +237,7 @@ class RealImageLoaderIntegrationTest {
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
                     .build()
-                imageLoader.launch(request)
+                imageLoader.execute(request)
             }
         }
 
@@ -281,7 +281,7 @@ class RealImageLoaderIntegrationTest {
                 .data(url)
                 .memoryCachePolicy(CachePolicy.DISABLED)
                 .build()
-            imageLoader.launch(request)
+            imageLoader.execute(request)
         }
 
         val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
@@ -370,7 +370,7 @@ class RealImageLoaderIntegrationTest {
                         }
                     )
                     .build()
-                imageLoader.launch(request)
+                imageLoader.execute(request)
             }
         }
     }
@@ -393,7 +393,7 @@ class RealImageLoaderIntegrationTest {
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
                     .build()
-                imageLoader.launch(request)
+                imageLoader.execute(request)
             }
         }
 
@@ -408,7 +408,7 @@ class RealImageLoaderIntegrationTest {
                 .data(data)
                 .size(100, 100)
                 .build()
-            imageLoader.launch(request)
+            imageLoader.execute(request)
         }
 
         assertTrue(drawable is BitmapDrawable)

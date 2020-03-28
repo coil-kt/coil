@@ -60,7 +60,7 @@ internal class ViewTargetRequestDelegate(
     /** Repeat this request with the same params. */
     @MainThread
     fun restart() {
-        imageLoader.launch(request)
+        imageLoader.execute(request)
     }
 
     override fun dispose() {

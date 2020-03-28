@@ -118,10 +118,10 @@ public abstract interface class coil/ImageLoader {
 	public static fun builder (Landroid/content/Context;)Lcoil/ImageLoaderBuilder;
 	public abstract fun clearMemory ()V
 	public static fun create (Landroid/content/Context;)Lcoil/ImageLoader;
+	public abstract fun execute (Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun execute (Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
 	public abstract fun get (Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getDefaults ()Lcoil/DefaultRequestOptions;
-	public abstract fun launch (Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun launch (Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
 	public abstract fun load (Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
 	public abstract fun shutdown ()V
 }

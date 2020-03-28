@@ -12,7 +12,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 /**
- * A request options which are used as default values for unset [Request] options.
+ * A set of default options that are used to fill in unset [Request] values.
  *
  * @see ImageLoader.defaults
  */
