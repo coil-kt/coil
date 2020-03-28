@@ -15,8 +15,7 @@ import coil.target.Target
 interface Transition {
 
     companion object {
-        @JvmField
-        val NONE: Transition = EmptyTransition
+        @JvmField val NONE: Transition = EmptyTransition
     }
 
     /**
