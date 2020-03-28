@@ -141,7 +141,7 @@ internal class RealImageLoader(
 
     override fun execute(request: LoadRequest): RequestDisposable {
         // Start loading the data.
-        val job = loaderScope.launch(exceptionHandler) { execute(request) }
+        val job = loaderScope.launch(exceptionHandler) { executeRequest(request) }
 
         return if (request.target is ViewTarget<*>) {
             val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
