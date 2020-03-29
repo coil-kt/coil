@@ -232,7 +232,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
     }
 
-    /** Wrap [delegate] so that it always returns [Int.MAX_VALUE] for [available]. */
+    /** Wrap [delegate] so that it always returns 1GB for [available]. */
     private class AlwaysAvailableInputStream(private val delegate: InputStream) : InputStream() {
 
         override fun read() = delegate.read()
@@ -243,7 +243,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
         override fun skip(n: Long) = delegate.skip(n)
 
-        override fun available() = Int.MAX_VALUE
+        override fun available() = 1024 * 1024 * 1024 // 1GB
 
         override fun close() = delegate.close()
 
