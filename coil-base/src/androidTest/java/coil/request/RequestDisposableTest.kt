@@ -9,7 +9,6 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.api.load
 import coil.util.CoilUtils
 import coil.util.requestManager
 import kotlinx.coroutines.Dispatchers
@@ -42,10 +41,12 @@ class RequestDisposableTest {
     @Test
     fun baseTargetRequestDisposable_dispose() {
         val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
-        val disposable = imageLoader.load(context, data) {
-            target { /* Do nothing. */ }
-            listener(onError = { _, throwable -> throw throwable })
-        }
+        val request = LoadRequest.Builder(context)
+            .data(data)
+            .target { /* Do nothing. */ }
+            .listener(onError = { _, throwable -> throw throwable })
+            .build()
+        val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
         assertFalse(disposable.isDisposed)
@@ -57,10 +58,12 @@ class RequestDisposableTest {
     fun baseTargetRequestDisposable_await() {
         val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         var result: Drawable? = null
-        val disposable = imageLoader.load(context, data) {
-            target { result = it }
-            listener(onError = { _, throwable -> throw throwable })
-        }
+        val request = LoadRequest.Builder(context)
+            .data(data)
+            .target { result = it }
+            .listener(onError = { _, throwable -> throw throwable })
+            .build()
+        val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
         assertNull(result)
@@ -74,11 +77,13 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_dispose() {
         val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
-        val disposable = imageLoader.load(context, data) {
-            target(imageView)
-            size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            listener(onError = { _, throwable -> throw throwable })
-        }
+        val request = LoadRequest.Builder(context)
+            .data(data)
+            .target(imageView)
+            .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .listener(onError = { _, throwable -> throw throwable })
+            .build()
+        val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is ViewTargetRequestDisposable)
         assertFalse(disposable.isDisposed)
@@ -90,11 +95,13 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_await() {
         val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
-        val disposable = imageLoader.load(context, data) {
-            target(imageView)
-            size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            listener(onError = { _, throwable -> throw throwable })
-        }
+        val request = LoadRequest.Builder(context)
+            .data(data)
+            .target(imageView)
+            .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .listener(onError = { _, throwable -> throw throwable })
+            .build()
+        val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is ViewTargetRequestDisposable)
         assertNull(imageView.drawable)
@@ -108,11 +115,13 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_restart() {
         val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
-        val disposable = imageLoader.load(context, data) {
-            target(imageView)
-            size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            listener(onError = { _, throwable -> throw throwable })
-        }
+        val request = LoadRequest.Builder(context)
+            .data(data)
+            .target(imageView)
+            .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .listener(onError = { _, throwable -> throw throwable })
+            .build()
+        val disposable = imageLoader.execute(request)
 
         runBlocking(Dispatchers.Main.immediate) {
             assertTrue(disposable is ViewTargetRequestDisposable)
@@ -138,11 +147,13 @@ class RequestDisposableTest {
         val imageView = ImageView(context)
 
         fun launchNewRequest(): RequestDisposable {
-            return imageLoader.load(context, data) {
-                target(imageView)
-                size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-                listener(onError = { _, throwable -> throw throwable })
-            }
+            val request = LoadRequest.Builder(context)
+                .data(data)
+                .target(imageView)
+                .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+                .listener(onError = { _, throwable -> throw throwable })
+                .build()
+            return imageLoader.execute(request)
         }
 
         val disposable1 = launchNewRequest()
@@ -161,11 +172,13 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_clear() {
         val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
-        val disposable = imageLoader.load(context, data) {
-            target(imageView)
-            size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            listener(onError = { _, throwable -> throw throwable })
-        }
+        val request = LoadRequest.Builder(context)
+            .data(data)
+            .target(imageView)
+            .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .listener(onError = { _, throwable -> throw throwable })
+            .build()
+        val disposable = imageLoader.execute(request)
 
         assertFalse(disposable.isDisposed)
         CoilUtils.clear(imageView)

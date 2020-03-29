@@ -14,6 +14,10 @@ import coil.target.Target
 @ExperimentalCoilApi
 interface Transition {
 
+    companion object {
+        @JvmField val NONE: Transition = EmptyTransition
+    }
+
     /**
      * Start the transition animation and suspend until it completes or is cancelled.
      *

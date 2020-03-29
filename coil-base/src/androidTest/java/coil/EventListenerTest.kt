@@ -10,11 +10,11 @@ import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.Fetcher
+import coil.request.LoadRequest
 import coil.request.LoadRequestBuilder
 import coil.request.Request
 import coil.size.Size
 import coil.transform.CircleCropTransformation
-import coil.util.createLoadRequest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -139,17 +139,17 @@ class EventListenerTest {
     private suspend fun ImageLoader.testLoad(
         builder: LoadRequestBuilder.() -> Unit
     ) = suspendCancellableCoroutine<Unit> { continuation ->
-        val request = createLoadRequest(context) {
-            size(100, 100)
-            target(ImageView(context))
-            listener(
+        val request = LoadRequest.Builder(context)
+            .size(100, 100)
+            .target(ImageView(context))
+            .listener(
                 onSuccess = { _, _ -> continuation.resume(Unit) },
                 onError = { _, throwable -> continuation.resumeWithException(throwable) },
                 onCancel = { continuation.resumeWithException(CancellationException()) }
             )
-            builder()
-        }
-        load(request)
+            .apply(builder)
+            .build()
+        execute(request)
     }
 
     private class MethodChecker(private val callExpected: Boolean) {

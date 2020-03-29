@@ -1,9 +1,9 @@
 public final class coil/extension/Videos {
 	public static final fun videoFrameMicros (Lcoil/request/Parameters;)Ljava/lang/Long;
-	public static final fun videoFrameMicros (Lcoil/request/RequestBuilder;J)V
-	public static final fun videoFrameMillis (Lcoil/request/RequestBuilder;J)V
+	public static final fun videoFrameMicros (Lcoil/request/RequestBuilder;J)Lcoil/request/RequestBuilder;
+	public static final fun videoFrameMillis (Lcoil/request/RequestBuilder;J)Lcoil/request/RequestBuilder;
 	public static final fun videoFrameOption (Lcoil/request/Parameters;)Ljava/lang/Integer;
-	public static final fun videoFrameOption (Lcoil/request/RequestBuilder;I)V
+	public static final fun videoFrameOption (Lcoil/request/RequestBuilder;I)Lcoil/request/RequestBuilder;
 }
 
 public abstract class coil/fetch/VideoFrameFetcher : coil/fetch/Fetcher {
@@ -13,7 +13,7 @@ public abstract class coil/fetch/VideoFrameFetcher : coil/fetch/Fetcher {
 	public fun <init> (Landroid/content/Context;)V
 	public fun fetch (Lcoil/bitmappool/BitmapPool;Ljava/lang/Object;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun handles (Ljava/lang/Object;)Z
-	public abstract fun setDataSource (Landroid/media/MediaMetadataRetriever;Ljava/lang/Object;)V
+	protected abstract fun setDataSource (Landroid/media/MediaMetadataRetriever;Ljava/lang/Object;)V
 }
 
 public final class coil/fetch/VideoFrameFetcher$Companion {
@@ -25,7 +25,6 @@ public final class coil/fetch/VideoFrameFileFetcher : coil/fetch/VideoFrameFetch
 	public synthetic fun handles (Ljava/lang/Object;)Z
 	public fun key (Ljava/io/File;)Ljava/lang/String;
 	public synthetic fun key (Ljava/lang/Object;)Ljava/lang/String;
-	public fun setDataSource (Landroid/media/MediaMetadataRetriever;Ljava/io/File;)V
 	public synthetic fun setDataSource (Landroid/media/MediaMetadataRetriever;Ljava/lang/Object;)V
 }
 
@@ -35,7 +34,6 @@ public final class coil/fetch/VideoFrameUriFetcher : coil/fetch/VideoFrameFetche
 	public synthetic fun handles (Ljava/lang/Object;)Z
 	public fun key (Landroid/net/Uri;)Ljava/lang/String;
 	public synthetic fun key (Ljava/lang/Object;)Ljava/lang/String;
-	public fun setDataSource (Landroid/media/MediaMetadataRetriever;Landroid/net/Uri;)V
 	public synthetic fun setDataSource (Landroid/media/MediaMetadataRetriever;Ljava/lang/Object;)V
 }
 

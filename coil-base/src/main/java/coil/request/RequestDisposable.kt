@@ -1,7 +1,6 @@
 package coil.request
 
 import android.view.View
-import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.target.ViewTarget
 import coil.util.requestManager
@@ -9,7 +8,7 @@ import kotlinx.coroutines.Job
 import java.util.UUID
 
 /**
- * Represents the work of an [ImageLoader.load] request.
+ * Represents the work of a launched [LoadRequest].
  */
 interface RequestDisposable {
 

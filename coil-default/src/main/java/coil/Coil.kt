@@ -17,7 +17,7 @@ object Coil {
     /** @see imageLoader */
     @Deprecated(
         message = "Migrate to imageLoader(context).",
-        replaceWith = ReplaceWith("imageLoader(context)")
+        replaceWith = ReplaceWith("this.imageLoader(context)")
     )
     @JvmStatic
     fun loader(): ImageLoader = imageLoader(CoilContentProvider.context)
@@ -59,7 +59,7 @@ object Coil {
     /** @see setImageLoader */
     @Deprecated(
         message = "Migrate to setImageLoader(loader).",
-        replaceWith = ReplaceWith("setImageLoader(loader)")
+        replaceWith = ReplaceWith("this.setImageLoader(loader)")
     )
     @JvmStatic
     fun setDefaultImageLoader(loader: ImageLoader) = setImageLoader(loader)
@@ -67,7 +67,7 @@ object Coil {
     /** @see setImageLoader */
     @Deprecated(
         message = "Migrate to setDefaultImageLoader(ImageLoaderFactory).",
-        replaceWith = ReplaceWith("setImageLoader(object : ImageLoaderFactory { override fun getImageLoader() = initializer() })")
+        replaceWith = ReplaceWith("this.setImageLoader(object : ImageLoaderFactory { override fun getImageLoader() = initializer() })")
     )
     @JvmStatic
     fun setDefaultImageLoader(initializer: () -> ImageLoader) {

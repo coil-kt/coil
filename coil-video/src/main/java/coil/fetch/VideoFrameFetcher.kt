@@ -75,7 +75,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
 
     companion object {
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
-        internal val SUPPORTED_FILE_EXTENSIONS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
+        @JvmField internal val SUPPORTED_FILE_EXTENSIONS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
 
         internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
@@ -85,7 +85,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-    abstract fun MediaMetadataRetriever.setDataSource(data: T)
+    protected abstract fun MediaMetadataRetriever.setDataSource(data: T)
 
     override suspend fun fetch(
         pool: BitmapPool,

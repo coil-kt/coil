@@ -27,8 +27,7 @@ import coil.transition.TransitionTarget
 interface EventListener : Request.Listener {
 
     companion object {
-        @JvmField
-        val EMPTY = object : EventListener {}
+        @JvmField val NONE = object : EventListener {}
     }
 
     /**
@@ -160,8 +159,7 @@ interface EventListener : Request.Listener {
     interface Factory {
 
         companion object {
-            @JvmField
-            val EMPTY = Factory(EventListener.EMPTY)
+            @JvmField val NONE = Factory(EventListener.NONE)
 
             /** Create an [EventListener.Factory] that returns the same [listener]. */
             @JvmStatic

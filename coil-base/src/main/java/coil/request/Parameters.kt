@@ -15,8 +15,7 @@ class Parameters private constructor(
     constructor() : this(sortedMapOf())
 
     companion object {
-        @JvmField
-        val EMPTY = Parameters()
+        @JvmField val EMPTY = Parameters()
 
         /** Create a new [Parameters] instance. */
         @Deprecated(
