@@ -64,8 +64,8 @@ sealed class Request {
     abstract val parameters: Parameters
 
     abstract val target: Target?
-    abstract val lifecycle: Lifecycle?
     abstract val transition: Transition?
+    abstract val lifecycle: Lifecycle?
 
     abstract val placeholder: Drawable?
     abstract val error: Drawable?
@@ -149,8 +149,8 @@ class LoadRequest internal constructor(
     override val headers: Headers,
     override val parameters: Parameters,
     override val target: Target?,
-    override val lifecycle: Lifecycle?,
     override val transition: Transition?,
+    override val lifecycle: Lifecycle?,
     @DrawableRes internal val placeholderResId: Int,
     @DrawableRes internal val errorResId: Int,
     @DrawableRes internal val fallbackResId: Int,
@@ -294,8 +294,8 @@ class GetRequest internal constructor(
     }
 
     override val target: Target? = null
-    override val lifecycle: Lifecycle? = null
     override val transition: Transition? = null
+    override val lifecycle: Lifecycle? = null
     override val placeholder: Drawable? = null
     override val error: Drawable? = null
     override val fallback: Drawable? = null
