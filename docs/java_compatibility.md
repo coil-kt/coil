@@ -34,7 +34,7 @@ object ImageLoaderCompat {
 Then call the `ImageLoaderCompat` function from Java:
 
 ```java
-GetRequest request = GetRequest.Builder()
+GetRequest request = GetRequest.builder()
     .data("https://www.example.com/image.jpg")
     .size(1080, 1920)
     .build();
