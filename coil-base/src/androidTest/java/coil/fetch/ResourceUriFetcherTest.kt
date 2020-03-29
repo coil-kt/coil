@@ -3,6 +3,7 @@ package coil.fetch
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build.VERSION.SDK_INT
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
@@ -12,6 +13,7 @@ import coil.map.ResourceUriMapper
 import coil.size.PixelSize
 import coil.util.createOptions
 import kotlinx.coroutines.runBlocking
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -66,8 +68,7 @@ class ResourceUriFetcherTest {
     @Test
     fun externalPackageRasterDrawable() {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/regulatory_info.png
-        val packageName = "com.android.settings"
-        val rawUri = "$SCHEME_ANDROID_RESOURCE://$packageName/drawable/regulatory_info".toUri()
+        val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/regulatory_info".toUri()
         val uri = ResourceUriMapper(context).map(rawUri)
 
         assertTrue(fetcher.handles(uri))
@@ -83,9 +84,11 @@ class ResourceUriFetcherTest {
 
     @Test
     fun externalPackageVectorDrawable() {
+        // com.android.settings/drawable/ic_cancel was added in API 23.
+        assumeTrue(SDK_INT >= 23)
+
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/ic_cancel.xml
-        val packageName = "com.android.settings"
-        val rawUri = "$SCHEME_ANDROID_RESOURCE://$packageName/drawable/ic_cancel".toUri()
+        val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/ic_cancel".toUri()
         val uri = ResourceUriMapper(context).map(rawUri)
 
         assertTrue(fetcher.handles(uri))
