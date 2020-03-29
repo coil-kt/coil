@@ -497,26 +497,6 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * Set the [Lifecycle] for this request.
-     */
-    fun lifecycle(owner: LifecycleOwner?) = apply {
-        lifecycle(owner?.lifecycle)
-    }
-
-    /**
-     * Set the [Lifecycle] for this request.
-     *
-     * Requests are queued while the lifecycle is not at least [Lifecycle.State.STARTED].
-     * Requests are cancelled when the lifecycle reaches [Lifecycle.State.DESTROYED].
-     *
-     * If this isn't set, Coil will attempt to find the lifecycle for this request
-     * using the logic in [RequestService.lifecycleInfo].
-     */
-    fun lifecycle(lifecycle: Lifecycle?) = apply {
-        this.lifecycle = lifecycle
-    }
-
-    /**
      * See: [ImageLoaderBuilder.crossfade]
      */
     fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
@@ -534,6 +514,26 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     @ExperimentalCoilApi
     fun transition(transition: Transition) = apply {
         this.transition = transition
+    }
+
+    /**
+     * Set the [Lifecycle] for this request.
+     */
+    fun lifecycle(owner: LifecycleOwner?) = apply {
+        lifecycle(owner?.lifecycle)
+    }
+
+    /**
+     * Set the [Lifecycle] for this request.
+     *
+     * Requests are queued while the lifecycle is not at least [Lifecycle.State.STARTED].
+     * Requests are cancelled when the lifecycle reaches [Lifecycle.State.DESTROYED].
+     *
+     * If this isn't set, Coil will attempt to find the lifecycle for this request
+     * using the logic in [RequestService.lifecycleInfo].
+     */
+    fun lifecycle(lifecycle: Lifecycle?) = apply {
+        this.lifecycle = lifecycle
     }
 
     /**
@@ -611,8 +611,8 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             headers?.build().orEmpty(),
             parameters?.build().orEmpty(),
             target,
-            lifecycle,
             transition,
+            lifecycle,
             placeholderResId,
             errorResId,
             fallbackResId,
