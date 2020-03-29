@@ -75,11 +75,13 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
             outWidth <= 0 || outHeight <= 0 -> {
                 // This occurs if there was an error decoding the image's size.
                 inSampleSize = 1
+                inScaled = false
                 inBitmap = null
             }
             size !is PixelSize -> {
                 // This occurs if size is OriginalSize.
                 inSampleSize = 1
+                inScaled = false
 
                 if (inMutable) {
                     inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
@@ -115,15 +117,26 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 }
 
                 if (inMutable) {
-                    // Allocate a slightly larger bitmap than necessary as the output bitmap's dimensions may not match the
-                    // requested dimensions exactly. This is due to intricacies in Android's downsampling algorithm.
-                    val sampledOutWidth = outWidth / inSampleSize.toDouble()
-                    val sampledOutHeight = outHeight / inSampleSize.toDouble()
-                    inBitmap = pool.getDirtyOrNull(
-                        width = ceil(scale * sampledOutWidth + 0.5).toInt(),
-                        height = ceil(scale * sampledOutHeight + 0.5).toInt(),
-                        config = inPreferredConfig
-                    )
+                    inBitmap = when {
+                        // If we're not scaling the image, use the image's source dimensions.
+                        inSampleSize == 1 && !inScaled -> {
+                            pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
+                        }
+                        // We can only re-use bitmaps that don't match the image's source dimensions on API 19 and above.
+                        SDK_INT >= 19 -> {
+                            // Request a slightly larger bitmap than necessary as the output bitmap's dimensions
+                            // may not match the requested dimensions exactly. This is due to intricacies in Android's
+                            // downsampling algorithm across different API levels.
+                            val sampledOutWidth = outWidth / inSampleSize.toDouble()
+                            val sampledOutHeight = outHeight / inSampleSize.toDouble()
+                            pool.getDirtyOrNull(
+                                width = ceil(scale * sampledOutWidth + 0.5).toInt(),
+                                height = ceil(scale * sampledOutHeight + 0.5).toInt(),
+                                config = inPreferredConfig
+                            )
+                        }
+                        else -> null
+                    }
                 }
             }
         }
