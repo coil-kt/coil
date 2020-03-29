@@ -525,7 +525,7 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      * See: [ImageLoaderBuilder.crossfade]
      */
     fun crossfade(durationMillis: Int) = apply {
-        this.transition = if (durationMillis > 0) CrossfadeTransition(durationMillis) else null
+        this.transition = if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE
     }
 
     /**
