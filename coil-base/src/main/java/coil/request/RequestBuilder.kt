@@ -467,7 +467,6 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
         message = "Migrate to LoadRequest.Builder(request, context).",
         replaceWith = ReplaceWith("LoadRequest.Builder(request, context)")
     )
-    @Suppress("UNUSED_PARAMETER")
     constructor(context: Context, request: LoadRequest) : this(request, context)
 
     /**
