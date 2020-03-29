@@ -59,6 +59,18 @@ class MemoryCacheTest {
     }
 
     @Test
+    fun `value is gone after clearMemory(key) is called`() {
+        val weakMemoryCache = RealWeakMemoryCache()
+        val pool = BitmapPool(Long.MAX_VALUE)
+        val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
+        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt(), null)
+        val bitmap = createBitmap()
+        cache.set("1", bitmap, false)
+        cache.invalidate("1")
+        assertNull(cache.get("1"))
+    }
+
+    @Test
     fun `valid evicted item is added to bitmap pool`() {
         val weakMemoryCache = RealWeakMemoryCache()
         val pool = BitmapPool(Long.MAX_VALUE)
