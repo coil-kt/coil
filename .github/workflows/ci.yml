@@ -8,7 +8,7 @@ jobs:
     check:
         name: Check
         runs-on: ubuntu-latest
-        timeout-minutes: 15
+        timeout-minutes: 10
         steps:
             - uses: actions/checkout@v2
             - uses: gradle/wrapper-validation-action@v1
@@ -31,7 +31,7 @@ jobs:
     unit-tests:
         name: Unit tests
         runs-on: ubuntu-latest
-        timeout-minutes: 15
+        timeout-minutes: 10
         steps:
             - uses: actions/checkout@v2
             - uses: gradle/wrapper-validation-action@v1
@@ -49,7 +49,7 @@ jobs:
     instrumentation-tests:
         name: Instrumentation tests
         runs-on: macOS-latest
-        timeout-minutes: 15
+        timeout-minutes: 10
         strategy:
             matrix:
                 api-level: [16, 19, 21, 25, 29]
@@ -83,7 +83,7 @@ jobs:
     deploy-snapshot:
         name: Deploy snapshot
         runs-on: ubuntu-latest
-        timeout-minutes: 15
+        timeout-minutes: 10
         if: github.ref == 'refs/heads/master'
         needs: [check, unit-tests, instrumentation-tests]
         steps:
