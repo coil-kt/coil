@@ -14,7 +14,7 @@ class FakeLifecycle : Lifecycle() {
     }
 
     override fun removeObserver(observer: LifecycleObserver) {
-        observers.remove(observer)
+        observers -= observer
     }
 
     override fun getCurrentState() = state

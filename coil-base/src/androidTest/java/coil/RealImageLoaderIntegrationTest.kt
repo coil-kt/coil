@@ -1,28 +1,38 @@
 package coil
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
+import android.content.ContentResolver.SCHEME_CONTENT
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
+import android.graphics.drawable.ColorDrawable
 import android.widget.ImageView
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
-import coil.api.get
-import coil.api.getAny
-import coil.api.load
-import coil.api.loadAny
+import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.bitmappool.BitmapPool
 import coil.decode.BitmapFactoryDecoder
+import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
-import coil.fetch.AssetUriFetcher
+import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
+import coil.fetch.DrawableResult
 import coil.request.CachePolicy
+import coil.request.GetRequest
+import coil.request.LoadRequest
+import coil.request.NullRequestDataException
 import coil.size.PixelSize
 import coil.size.Size
+import coil.transform.CircleCropTransformation
 import coil.util.Utils
+import coil.util.createGetRequest
 import coil.util.createMockWebServer
+import coil.util.createOptions
 import coil.util.getDrawableCompat
+import coil.util.size
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -42,11 +52,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 /**
  * Integration tests for [RealImageLoader].
  */
+@OptIn(ExperimentalCoilApi::class)
 class RealImageLoaderIntegrationTest {
 
     companion object {
@@ -54,15 +66,15 @@ class RealImageLoaderIntegrationTest {
         private const val IMAGE_SIZE = 443291L
     }
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var server: MockWebServer
-    private lateinit var imageLoader: ImageLoader
+    private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
-        imageLoader = ImageLoader(context)
+        imageLoader = ImageLoader(context) as RealImageLoader
     }
 
     @After
@@ -82,7 +94,7 @@ class RealImageLoaderIntegrationTest {
 
     @Test
     fun httpUri() {
-        val data = Uri.parse(server.url(IMAGE_NAME).toString())
+        val data = server.url(IMAGE_NAME).toString().toUri()
         testLoad(data)
         testGet(data)
     }
@@ -110,28 +122,28 @@ class RealImageLoaderIntegrationTest {
 
     @Test
     fun resourceUriInt() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.normal}")
+        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
         testLoad(data)
         testGet(data)
     }
 
     @Test
     fun resourceUriIntVector() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.ic_android}")
+        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
         testLoad(data, PixelSize(100, 100))
         testGet(data, PixelSize(100, 100))
     }
 
     @Test
     fun resourceUriString() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/normal")
+        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/normal".toUri()
         testLoad(data)
         testGet(data)
     }
 
     @Test
     fun resourceUriStringVector() {
-        val data = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/drawable/ic_android")
+        val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/ic_android".toUri()
         testLoad(data, PixelSize(100, 100))
         testGet(data, PixelSize(100, 100))
     }
@@ -145,21 +157,21 @@ class RealImageLoaderIntegrationTest {
 
     @Test
     fun fileUri() {
-        val data = Uri.fromFile(copyNormalImageAssetToCacheDir())
+        val data = copyNormalImageAssetToCacheDir().toUri()
         testLoad(data)
         testGet(data)
     }
 
     @Test
     fun assetUri() {
-        val data = Uri.parse("${ContentResolver.SCHEME_FILE}:///${AssetUriFetcher.ASSET_FILE_PATH_ROOT}/exif/large_metadata.jpg")
+        val data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
         testLoad(data, PixelSize(75, 100))
         testGet(data, PixelSize(100, 133))
     }
 
     @Test
     fun contentUri() {
-        val data = Uri.parse("${ContentResolver.SCHEME_CONTENT}://coil/$IMAGE_NAME")
+        val data = "$SCHEME_CONTENT://coil/$IMAGE_NAME".toUri()
         testLoad(data)
         testGet(data)
     }
@@ -190,9 +202,9 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
-    fun preloadWithMemoryCacheDisabledDoesNotDecode() {
-        val imageLoader = ImageLoader(context) {
-            componentRegistry {
+    fun memoryCacheDisabled_preloadDoesNotDecode() {
+        val imageLoader = ImageLoader.Builder(context)
+            .componentRegistry {
                 add(object : Decoder {
                     override fun handles(source: BufferedSource, mimeType: String?) = true
 
@@ -204,7 +216,7 @@ class RealImageLoaderIntegrationTest {
                     ) = throw IllegalStateException("Decode should not be called.")
                 })
             }
-        }
+            .build()
 
         val url = server.url(IMAGE_NAME)
         val cacheFolder = Utils.getDefaultCacheDirectory(context).apply {
@@ -212,30 +224,32 @@ class RealImageLoaderIntegrationTest {
             mkdirs()
         }
 
-        assertTrue(cacheFolder.listFiles().isEmpty())
+        assertTrue(cacheFolder.listFiles().isNullOrEmpty())
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                imageLoader.load(context, url) {
-                    memoryCachePolicy(CachePolicy.DISABLED)
-                    listener(
+                val request = LoadRequest.Builder(context)
+                    .data(url)
+                    .memoryCachePolicy(CachePolicy.DISABLED)
+                    .listener(
                         onSuccess = { _, _ -> continuation.resume(Unit) },
                         onError = { _, throwable -> continuation.resumeWithException(throwable) },
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
-                }
+                    .build()
+                imageLoader.execute(request)
             }
         }
 
-        val cacheFile = cacheFolder.listFiles().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
+        val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
         assertNotNull(cacheFile, "Did not find the image file in the disk cache.")
     }
 
     @Test
-    fun getWithMemoryCacheDisabledDoesDecode() {
+    fun memoryCacheDisabled_getDoesDecode() {
         var numDecodes = 0
-        val imageLoader = ImageLoader(context) {
-            componentRegistry {
+        val imageLoader = ImageLoader.Builder(context)
+            .componentRegistry {
                 add(object : Decoder {
                     private val delegate = BitmapFactoryDecoder(context)
 
@@ -252,7 +266,7 @@ class RealImageLoaderIntegrationTest {
                     }
                 })
             }
-        }
+            .build()
 
         val url = server.url(IMAGE_NAME)
         val cacheFolder = Utils.getDefaultCacheDirectory(context).apply {
@@ -260,17 +274,105 @@ class RealImageLoaderIntegrationTest {
             mkdirs()
         }
 
-        assertTrue(cacheFolder.listFiles().isEmpty())
+        assertTrue(cacheFolder.listFiles().isNullOrEmpty())
 
         runBlocking {
-            imageLoader.get(url) {
-                memoryCachePolicy(CachePolicy.DISABLED)
-            }
+            val request = GetRequest.Builder()
+                .data(url)
+                .memoryCachePolicy(CachePolicy.DISABLED)
+                .build()
+            imageLoader.execute(request)
         }
 
-        val cacheFile = cacheFolder.listFiles().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
+        val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
         assertNotNull(cacheFile, "Did not find the image file in the disk cache.")
         assertEquals(1, numDecodes)
+    }
+
+    @Test
+    fun applyTransformations_transformationsConvertDrawableToBitmap() {
+        val drawable = ColorDrawable(Color.BLACK)
+        val size = PixelSize(100, 100)
+        val result = runBlocking {
+            imageLoader.applyTransformations(
+                scope = this,
+                result = DrawableResult(
+                    drawable = drawable,
+                    isSampled = false,
+                    dataSource = DataSource.MEMORY
+                ),
+                request = createGetRequest { transformations(CircleCropTransformation()) },
+                size = size,
+                options = createOptions(),
+                eventListener = EventListener.NONE
+            )
+        }
+
+        val resultDrawable = result.drawable
+        assertTrue(resultDrawable is BitmapDrawable)
+        assertEquals(resultDrawable.bitmap.size, size)
+    }
+
+    @Test
+    fun applyTransformations_emptyTransformationsDoesNotConvertDrawable() {
+        val drawable = ColorDrawable(Color.BLACK)
+        val size = PixelSize(100, 100)
+        val result = runBlocking {
+            imageLoader.applyTransformations(
+                scope = this,
+                result = DrawableResult(
+                    drawable = drawable,
+                    isSampled = false,
+                    dataSource = DataSource.MEMORY
+                ),
+                request = createGetRequest { transformations(emptyList()) },
+                size = size,
+                options = createOptions(),
+                eventListener = EventListener.NONE
+            )
+        }
+
+        assertSame(drawable, result.drawable)
+    }
+
+    @Test
+    fun nullRequestDataShowsFallbackDrawable() {
+        val error = ColorDrawable(Color.BLUE)
+        val fallback = ColorDrawable(Color.BLACK)
+
+        runBlocking {
+            suspendCancellableCoroutine<Unit> { continuation ->
+                var hasCalledTargetOnError = false
+
+                val request = LoadRequest.Builder(context)
+                    .data(null)
+                    .size(100, 100)
+                    .error(error)
+                    .fallback(fallback)
+                    .target(
+                        onStart = { throw IllegalStateException() },
+                        onError = { drawable ->
+                            check(drawable === fallback)
+                            hasCalledTargetOnError = true
+                        },
+                        onSuccess = { throw IllegalStateException() }
+                    )
+                    .listener(
+                        onStart = { throw IllegalStateException() },
+                        onSuccess = { _, _ -> throw IllegalStateException() },
+                        onCancel = { throw IllegalStateException() },
+                        onError = { _, throwable ->
+                            if (hasCalledTargetOnError && throwable is NullRequestDataException) {
+                                continuation.resume(Unit)
+                            } else {
+                                continuation.resumeWithException(throwable)
+                            }
+                        }
+                    )
+                    .build()
+                imageLoader.execute(request)
+            }
+        }
     }
 
     private fun testLoad(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
@@ -281,37 +383,43 @@ class RealImageLoaderIntegrationTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                imageLoader.loadAny(context, data) {
-                    target(imageView)
-                    size(100, 100)
-                    listener(
+                val request = LoadRequest.Builder(context)
+                    .data(data)
+                    .target(imageView)
+                    .size(100, 100)
+                    .listener(
                         onSuccess = { _, _ -> continuation.resume(Unit) },
                         onError = { _, throwable -> continuation.resumeWithException(throwable) },
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
-                }
+                    .build()
+                imageLoader.execute(request)
             }
         }
 
         val drawable = imageView.drawable
         assertTrue(drawable is BitmapDrawable)
-        assertEquals(expectedSize, drawable.bitmap.run { PixelSize(width, height) })
+        assertEquals(expectedSize, drawable.bitmap.size)
     }
 
     private fun testGet(data: Any, expectedSize: PixelSize = PixelSize(100, 125)) {
         val drawable = runBlocking {
-            imageLoader.getAny(data) {
-                size(100, 100)
-            }
+            val request = GetRequest.Builder()
+                .data(data)
+                .size(100, 100)
+                .build()
+            imageLoader.execute(request)
         }
 
         assertTrue(drawable is BitmapDrawable)
-        assertEquals(expectedSize, drawable.bitmap.run { PixelSize(width, height) })
+        assertEquals(expectedSize, drawable.bitmap.size)
     }
 
     private fun copyNormalImageAssetToCacheDir(): File {
-        return File(context.cacheDir, IMAGE_NAME).apply {
-            sink().buffer().writeAll(context.assets.open(IMAGE_NAME).source())
-        }
+        val file = File(context.cacheDir, IMAGE_NAME)
+        val source = context.assets.open(IMAGE_NAME).source()
+        val sink = file.sink().buffer()
+        source.use { sink.use { sink.writeAll(source) } }
+        return file
     }
 }

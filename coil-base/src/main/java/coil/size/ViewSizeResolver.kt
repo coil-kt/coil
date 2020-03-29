@@ -1,33 +1,40 @@
 package coil.size
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import coil.util.log
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.math.max
 
-/**
- * A [SizeResolver] that measures the size of a [View].
- */
+/** A [SizeResolver] that measures the size of a [View]. */
 interface ViewSizeResolver<T : View> : SizeResolver {
 
     companion object {
-        private const val TAG = "ViewSizeResolver"
-
         /**
-         * Construct a [ViewSizeResolver] instance using the default [View] measurement implementation.
+         * Create a [ViewSizeResolver] using the default [View] measurement implementation.
+         *
+         * @param view The [View] to measure.
+         * @param subtractPadding If true, the [view]'s padding will be subtracted from its size.
          */
-        operator fun <T : View> invoke(view: T): ViewSizeResolver<T> {
+        @JvmStatic
+        @JvmName("create")
+        operator fun <T : View> invoke(
+            view: T,
+            subtractPadding: Boolean = true
+        ): ViewSizeResolver<T> {
             return object : ViewSizeResolver<T> {
                 override val view = view
+                override val subtractPadding = subtractPadding
             }
         }
     }
 
+    /** The [View] to measure. */
     val view: T
+
+    /** If true, the [view]'s padding will be subtracted from its size. */
+    val subtractPadding: Boolean
+        get() = true
 
     override suspend fun size(): Size {
         // Fast path: we don't need to wait for the view to be measured.
@@ -72,8 +79,9 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         return getDimension(
             paramSize = view.layoutParams?.width ?: -1,
             viewSize = view.width,
-            paddingSize = view.paddingLeft + view.paddingRight,
-            isLayoutRequested = isLayoutRequested
+            paddingSize = if (subtractPadding) view.paddingLeft + view.paddingRight else 0,
+            isLayoutRequested = isLayoutRequested,
+            isWidth = true
         )
     }
 
@@ -81,8 +89,9 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         return getDimension(
             paramSize = view.layoutParams?.height ?: -1,
             viewSize = view.height,
-            paddingSize = view.paddingTop + view.paddingBottom,
-            isLayoutRequested = isLayoutRequested
+            paddingSize = if (subtractPadding) view.paddingTop + view.paddingBottom else 0,
+            isLayoutRequested = isLayoutRequested,
+            isWidth = false
         )
     }
 
@@ -91,7 +100,8 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         paramSize: Int,
         viewSize: Int,
         paddingSize: Int,
-        isLayoutRequested: Boolean
+        isLayoutRequested: Boolean,
+        isWidth: Boolean
     ): Int {
         // Assume the dimension will match the value in the View's layout params.
         val insetParamSize = paramSize - paddingSize
@@ -107,8 +117,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
 
         // If the dimension is set to WRAP_CONTENT and the View is fully laid out, fallback to the size of the display.
         if (!isLayoutRequested && paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            log(TAG, Log.INFO) { "A View's width and/or height is set to WRAP_CONTENT. Falling back to the size of the display." }
-            return view.context.resources.displayMetrics.run { max(widthPixels, heightPixels) }
+            return view.context.resources.displayMetrics.run { if (isWidth) widthPixels else heightPixels }
         }
 
         // Unable to resolve the dimension's size.

@@ -1,6 +1,6 @@
 # Image Loaders
 
-Image Loaders are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that handle image requests with `load` and `get`. They handle caching, image decoding, request management, bitmap pooling, memory management, and more.
+Image Loaders are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute `Request`s. They handle caching, image decoding, request management, bitmap pooling, memory management, and more.
 
 New instances can be created like so:
 
@@ -8,71 +8,50 @@ New instances can be created like so:
 val imageLoader = ImageLoader(context)
 ```
 
-Similar to [Requests](requests.md), `Image Loader`s can be configured with an optional trailing lambda param:
+Similar to [Requests](requests.md), `ImageLoader`s can be configured by using a builder:
 
 ```kotlin
-val imageLoader = ImageLoader(context) {
-    availableMemoryPercentage(0.5)
-    bitmapPoolPercentage(0.5)
-    crossfade(true)
-}
+val imageLoader = ImageLoader.Builder(context)
+    .availableMemoryPercentage(0.25)
+    .bitmapPoolPercentage(0.5)
+    .crossfade(true)
+    .build()
 ```
 
 Internally, this constructs a `RealImageLoader` using [ImageLoaderBuilder](../api/coil-base/coil/-image-loader-builder).
 
-If you're using the Coil singleton, you can then replace its `ImageLoader` instance with `Coil.setDefaultImageLoader`. The best place to set the default `ImageLoader` is in your `Application` class.
-
 ## Caching
 
-Each Image Loader keeps a memory cache of recently loaded `BitmapDrawable`s as well as a reusable pool of `Bitmap`s.
+Each `ImageLoader` keeps a memory cache of recently loaded `BitmapDrawable`s as well as a reusable pool of `Bitmap`s.
 
-Coil relies on `OkHttpClient` to handle disk caching. **By default, every `ImageLoader` is already set up for disk caching** and will set a max cache size of between 10-250MB depending on the remaining space on the user's device.
+`ImageLoader`s rely on `OkHttpClient` to handle disk caching. **By default, every `ImageLoader` is already set up for disk caching** and will set a max cache size of between 10-250MB depending on the remaining space on the user's device.
 
 However, if you set a custom `OkHttpClient`, you'll need to add the disk cache yourself. To get a `Cache` instance that's optimized for Coil, you can use [`CoilUtils.createDefaultCache`](../api/coil-base/coil.util/-coil-utils/create-default-cache/). Optionally, you can create your own `Cache` instance with a different size + location. Here's an example:
 
 ```kotlin
-val imageLoader = ImageLoader(context) {
-    okHttpClient {
+val imageLoader = ImageLoader.Builder(context)
+    .okHttpClient {
         OkHttpClient.Builder()
             .cache(CoilUtils.createDefaultCache(context))
             .build()
     }
-}
+    .build()
 ```
 
 ## Singleton vs. Dependency Injection
 
-Ideally, you should construct and inject your `ImageLoader` instance(s) using dependency injection. This will scale well as your app grows and it is the best way to manage multiple `ImageLoader` instances.
+Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache and bitmap pool.
 
-However, for simple use cases the `io.coil-kt:coil` artifact provides a default `ImageLoader` instance that can be accessed with `Coil.loader()`. Both `ImageView.load` and `Coil.load` use the default `ImageLoader` instance as a default parameter:
+If you use a dependency injector like [Dagger](https://github.com/google/dagger), then you should create a single `ImageLoader` instance and inject it throughout your app.
 
-```kotlin
-inline fun ImageView.load(
-    url: String?,
-    imageLoader: ImageLoader = Coil.loader(),
-    builder: LoadRequestBuilder.() -> Unit = {}
-): RequestDisposable {
-    return imageLoader.load(context, url) {
-        target(this@load)
-        builder()
-    }
-}
-```
-
-The `ImageView` extension function can be called with a specific `ImageLoader` like so:
-
-```kotlin
-imageView.load("https://www.example.com/image.jpg", imageLoader) {
-    crossfade(true)
-    placeholder(R.drawable.image)
-    transformations(CircleCropTransformation())
-}
-```
-
-The default `ImageLoader` is instantiated lazily and can be replaced with `Coil.setDefaultImageLoader`.
+However, if you'd prefer a singleton the `io.coil-kt:coil` artifact provides a default `ImageLoader` instance that can be accessed with `Coil.imageLoader(context)`. [Read here](../getting_started/#singleton) for how to initialize the singleton `ImageLoader` instance.
 
 !!! Note
     Use the `io.coil-kt:coil-base` artifact if you are using dependency injection.
+
+## Shutdown
+
+When you're done with an `ImageLoader` you should call `ImageLoader.shutdown()`. This releases all resources and observers used by the image loader and stops any new requests from being executed. Failure to call `ImageLoader.shutdown()` can leak the observers used internally.
 
 ## Testing
 
@@ -92,14 +71,14 @@ val fakeImageLoader = object : ImageLoader {
     
     override val defaults = DefaultRequestOptions()
 
-    override fun load(request: LoadRequest): RequestDisposable {
+    override fun execute(request: LoadRequest): RequestDisposable {
         // Always call onStart before onSuccess.
         request.target?.onStart(drawable)
         request.target?.onSuccess(drawable)
         return disposable
     }
 
-    override suspend fun get(request: GetRequest) = drawable
+    override suspend fun execute(request: GetRequest) = drawable
 
     override fun clearMemory() {}
 

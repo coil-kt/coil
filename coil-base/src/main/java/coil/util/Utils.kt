@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import android.os.StatFs
 import androidx.annotation.Px
 import java.io.File
@@ -38,7 +37,7 @@ internal object Utils {
             val cacheDir = StatFs(cacheDirectory.absolutePath)
             val size = DISK_CACHE_PERCENTAGE * cacheDir.getBlockCountCompat() * cacheDir.getBlockSizeCompat()
             return size.toLong().coerceIn(MIN_DISK_CACHE_SIZE, MAX_DISK_CACHE_SIZE)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             MIN_DISK_CACHE_SIZE
         }
     }
@@ -53,18 +52,18 @@ internal object Utils {
 
     fun getDefaultAvailableMemoryPercentage(context: Context): Double {
         val activityManager: ActivityManager = context.requireSystemService()
-        return if (activityManager.isLowRawDeviceCompat()) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
+        return if (activityManager.isLowRamDeviceCompat()) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
     }
 
     fun getDefaultBitmapPoolPercentage(): Double {
-        // Allocate less memory for bitmap pooling on Android O and above since we default to
+        // Allocate less memory for bitmap pooling on API 26 and above since we default to
         // hardware bitmaps, which cannot be added to the pool.
-        return if (SDK_INT >= O) 0.25 else 0.5
+        return if (SDK_INT >= 26) 0.25 else 0.5
     }
 
     fun getDefaultBitmapConfig(): Bitmap.Config {
-        // Prefer hardware bitmaps on Android O and above since they are optimized for drawing
+        // Prefer hardware bitmaps on API 26 and above since they are optimized for drawing
         // without transformations.
-        return if (SDK_INT >= O) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
+        return if (SDK_INT >= 26) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
     }
 }

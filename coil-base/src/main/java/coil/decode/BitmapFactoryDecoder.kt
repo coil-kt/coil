@@ -7,13 +7,10 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.KITKAT
-import android.os.Build.VERSION_CODES.O
 import androidx.core.graphics.applyCanvas
 import androidx.exifinterface.media.ExifInterface
 import coil.bitmappool.BitmapPool
 import coil.size.PixelSize
-import coil.size.Scale
 import coil.size.Size
 import coil.util.normalize
 import coil.util.toDrawable
@@ -24,13 +21,9 @@ import okio.Source
 import okio.buffer
 import java.io.InputStream
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
-/**
- * The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource].
- */
+/** The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource]. */
 internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
     companion object {
@@ -67,15 +60,15 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         val srcWidth = if (isSwapped) outHeight else outWidth
         val srcHeight = if (isSwapped) outWidth else outHeight
 
-        // Disable hardware Bitmaps if we need to perform EXIF transformations.
+        // Disable hardware bitmaps if we need to perform EXIF transformations.
         val safeConfig = if (isFlipped || isRotated) options.config.normalize() else options.config
         inPreferredConfig = if (allowRgb565(options.allowRgb565, safeConfig, outMimeType)) Bitmap.Config.RGB_565 else safeConfig
 
-        if (SDK_INT >= O && options.colorSpace != null) {
+        if (SDK_INT >= 26 && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
         }
 
-        inMutable = SDK_INT < O || inPreferredConfig != Bitmap.Config.HARDWARE
+        inMutable = SDK_INT < 26 || inPreferredConfig != Bitmap.Config.HARDWARE
         inScaled = false
 
         when {
@@ -92,28 +85,37 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                     inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
                 }
             }
-            SDK_INT >= KITKAT -> {
+            SDK_INT >= 19 -> {
                 val (width, height) = size
                 inSampleSize = DecodeUtils.calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
 
                 // Calculate the image's density scaling multiple.
-                val sampledSrcWidth = srcWidth / inSampleSize.toDouble()
-                val sampledSrcHeight = srcHeight / inSampleSize.toDouble()
-                val widthPercent = min(1.0, width / sampledSrcWidth)
-                val heightPercent = min(1.0, height / sampledSrcHeight)
-                val scale = when (options.scale) {
-                    Scale.FILL -> max(widthPercent, heightPercent)
-                    Scale.FIT -> min(widthPercent, heightPercent)
-                }
+                val rawScale = DecodeUtils.computeSizeMultiplier(
+                    srcWidth = srcWidth / inSampleSize.toDouble(),
+                    srcHeight = srcHeight / inSampleSize.toDouble(),
+                    dstWidth = width.toDouble(),
+                    dstHeight = height.toDouble(),
+                    scale = options.scale
+                )
+
+                // Avoid loading the image larger than its original dimensions if allowed.
+                val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
 
                 inScaled = scale != 1.0
                 if (inScaled) {
-                    inDensity = Int.MAX_VALUE
-                    inTargetDensity = (scale * Int.MAX_VALUE).roundToInt()
+                    if (scale > 1) {
+                        // Upscale
+                        inDensity = (Int.MAX_VALUE / scale).roundToInt()
+                        inTargetDensity = Int.MAX_VALUE
+                    } else {
+                        // Downscale
+                        inDensity = Int.MAX_VALUE
+                        inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
+                    }
                 }
 
                 if (inMutable) {
-                    // Allocate a slightly larger Bitmap than necessary as the output Bitmap's dimensions may not match the
+                    // Allocate a slightly larger bitmap than necessary as the output bitmap's dimensions may not match the
                     // requested dimensions exactly. This is due to intricacies in Android's downsampling algorithm.
                     val sampledOutWidth = outWidth / inSampleSize.toDouble()
                     val sampledOutHeight = outHeight / inSampleSize.toDouble()
@@ -125,12 +127,12 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 }
             }
             else -> {
-                // We can only re-use Bitmaps that exactly match the size of the image.
+                // We can only re-use bitmaps that exactly match the size of the image.
                 if (inMutable) {
                     inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
                 }
 
-                // Sample size must be 1 if we are re-using a Bitmap.
+                // Sample size must be 1 if we are re-using a bitmap.
                 inSampleSize = if (inBitmap != null) {
                     1
                 } else {
@@ -139,7 +141,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
             }
         }
 
-        // Decode the Bitmap.
+        // Decode the bitmap.
         val rawBitmap: Bitmap? = safeBufferedSource.use {
             BitmapFactory.decodeStream(it.inputStream(), null, this)
         }
@@ -149,7 +151,10 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
 
         // Apply any EXIF transformations.
-        checkNotNull(rawBitmap) { "BitmapFactory returned a null Bitmap." }
+        checkNotNull(rawBitmap) {
+            "BitmapFactory returned a null Bitmap. Often this means BitmapFactory could not decode the image data " +
+                "read from the input source (e.g. network or disk) as it's not encoded as a valid image format."
+        }
         val bitmap = applyExifTransformations(pool, rawBitmap, inPreferredConfig, isFlipped, rotationDegrees)
         bitmap.density = Bitmap.DENSITY_NONE
 
@@ -165,7 +170,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         config: Bitmap.Config,
         mimeType: String?
     ): Boolean {
-        return allowRgb565 && (SDK_INT < O || config == Bitmap.Config.ARGB_8888) && mimeType == MIME_TYPE_JPEG
+        return allowRgb565 && (SDK_INT < 26 || config == Bitmap.Config.ARGB_8888) && mimeType == MIME_TYPE_JPEG
     }
 
     /** NOTE: This method assumes [config] is not [Bitmap.Config.HARDWARE] if the image has to be transformed. */

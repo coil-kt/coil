@@ -9,6 +9,7 @@ import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.util.MultiList
 import coil.util.MultiMutableList
+import coil.util.findIndices
 import okio.BufferedSource
 
 /**
@@ -23,22 +24,23 @@ class ComponentRegistry private constructor(
     internal val decoders: List<Decoder>
 ) {
 
+    constructor() : this(emptyList(), emptyList(), emptyList(), emptyList())
+
     companion object {
-        /**
-         * Create a new [ComponentRegistry] instance.
-         *
-         * Example:
-         * ```
-         * val registry = ComponentRegistry {
-         *     add(GifDecoder())
-         * }
-         * ```
-         */
+        /** Create a new [ComponentRegistry] instance. */
+        @Deprecated(
+            message = "Use ComponentRegistry.Builder to create new instances.",
+            replaceWith = ReplaceWith("ComponentRegistry.Builder().apply(builder).build()")
+        )
         inline operator fun invoke(
             builder: Builder.() -> Unit = {}
         ): ComponentRegistry = Builder().apply(builder).build()
 
         /** Create a new [ComponentRegistry] instance. */
+        @Deprecated(
+            message = "Use ComponentRegistry.Builder to create new instances.",
+            replaceWith = ReplaceWith("ComponentRegistry.Builder(registry).apply(builder).build()")
+        )
         inline operator fun invoke(
             registry: ComponentRegistry,
             builder: Builder.() -> Unit = {}
@@ -47,7 +49,7 @@ class ComponentRegistry private constructor(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getMapper(data: T): Mapper<T, *>? {
-        val result = mappers.find { (type, mapper) ->
+        val result = mappers.findIndices { (type, mapper) ->
             type.isAssignableFrom(data::class.java) && (mapper as Mapper<Any, *>).handles(data)
         }
         return result?.second as Mapper<T, *>?
@@ -55,7 +57,7 @@ class ComponentRegistry private constructor(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getMeasuredMapper(data: T): MeasuredMapper<T, *>? {
-        val result = measuredMappers.find { (type, mapper) ->
+        val result = measuredMappers.findIndices { (type, mapper) ->
             type.isAssignableFrom(data::class.java) && (mapper as MeasuredMapper<Any, *>).handles(data)
         }
         return result?.second as MeasuredMapper<T, *>?
@@ -63,7 +65,7 @@ class ComponentRegistry private constructor(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> requireFetcher(data: T): Fetcher<T> {
-        val result = fetchers.find { (type, fetcher) ->
+        val result = fetchers.findIndices { (type, fetcher) ->
             type.isAssignableFrom(data::class.java) && (fetcher as Fetcher<Any>).handles(data)
         }
         checkNotNull(result) { "Unable to fetch data. No fetcher supports: $data" }
@@ -75,7 +77,7 @@ class ComponentRegistry private constructor(
         source: BufferedSource,
         mimeType: String?
     ): Decoder {
-        val decoder = decoders.find { it.handles(source, mimeType) }
+        val decoder = decoders.findIndices { it.handles(source, mimeType) }
         return checkNotNull(decoder) { "Unable to decode data. No decoder supports: $data" }
     }
 
@@ -103,7 +105,7 @@ class ComponentRegistry private constructor(
             decoders = registry.decoders.toMutableList()
         }
 
-        /** Add a custom [Mapper]. */
+        /** Register a [Mapper]. */
         inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(T::class.java, mapper)
 
         @PublishedApi
@@ -111,7 +113,7 @@ class ComponentRegistry private constructor(
             mappers += type to mapper
         }
 
-        /** Add a custom [MeasuredMapper]. */
+        /** Register a [MeasuredMapper]. */
         inline fun <reified T : Any> add(measuredMapper: MeasuredMapper<T, *>) = add(T::class.java, measuredMapper)
 
         @PublishedApi
@@ -119,7 +121,7 @@ class ComponentRegistry private constructor(
             measuredMappers += type to measuredMapper
         }
 
-        /** Add a custom [Fetcher]. */
+        /** Register a [Fetcher]. */
         inline fun <reified T : Any> add(fetcher: Fetcher<T>) = add(T::class.java, fetcher)
 
         @PublishedApi
@@ -127,17 +129,17 @@ class ComponentRegistry private constructor(
             fetchers += type to fetcher
         }
 
-        /** Add a custom [Decoder]. */
+        /** Register a [Decoder]. */
         fun add(decoder: Decoder) = apply {
             decoders += decoder
         }
 
         fun build(): ComponentRegistry {
             return ComponentRegistry(
-                mappers,
-                measuredMappers,
-                fetchers,
-                decoders
+                mappers.toList(),
+                measuredMappers.toList(),
+                fetchers.toList(),
+                decoders.toList()
             )
         }
     }

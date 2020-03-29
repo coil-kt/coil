@@ -5,7 +5,6 @@ package coil.transform
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Paint
-import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
 import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
@@ -13,12 +12,19 @@ import android.renderscript.ScriptIntrinsicBlur
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.applyCanvas
 import coil.bitmappool.BitmapPool
+import coil.size.Size
+import coil.util.safeConfig
 
 /**
  * A [Transformation] that applies a Gaussian blur to an image.
+ *
+ * @param context The [Context] used to create a [RenderScript] instance.
+ * @param radius The radius of the blur.
+ * @param sampling The sampling multiplier used to scale the image. Values > 1
+ *  will downscale the image. Values between 0 and 1 will upscale the image.
  */
-@RequiresApi(JELLY_BEAN_MR2)
-class BlurTransformation(
+@RequiresApi(18)
+class BlurTransformation @JvmOverloads constructor(
     private val context: Context,
     private val radius: Float = DEFAULT_RADIUS,
     private val sampling: Float = DEFAULT_SAMPLING
@@ -30,18 +36,18 @@ class BlurTransformation(
     }
 
     init {
-        require(radius >= 0) { "Radius must be >= 0." }
-        require(sampling > 0) { "Sampling must be > 0." }
+        require(radius in 0.0..25.0) { "radius must be in [0, 25]." }
+        require(sampling > 0) { "sampling must be > 0." }
     }
 
     override fun key(): String = "${BlurTransformation::class.java.name}-$radius-$sampling"
 
-    override suspend fun transform(pool: BitmapPool, input: Bitmap): Bitmap {
+    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-        val scaledWidth = input.width / sampling
-        val scaledHeight = input.height / sampling
-        val output = pool.get(scaledWidth.toInt(), scaledHeight.toInt(), input.config)
+        val scaledWidth = (input.width / sampling).toInt()
+        val scaledHeight = (input.height / sampling).toInt()
+        val output = pool.get(scaledWidth, scaledHeight, input.safeConfig)
         output.applyCanvas {
             scale(1 / sampling, 1 / sampling)
             drawBitmap(input, 0f, 0f, paint)

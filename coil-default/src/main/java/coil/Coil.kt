@@ -1,8 +1,9 @@
-@file:JvmName("Coil")
 @file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package coil
 
+import android.app.Application
+import android.content.Context
 import coil.util.CoilContentProvider
 
 /**
@@ -11,44 +12,82 @@ import coil.util.CoilContentProvider
 object Coil {
 
     private var imageLoader: ImageLoader? = null
-    private var imageLoaderInitializer: (() -> ImageLoader)? = null
+    private var imageLoaderFactory: ImageLoaderFactory? = null
+
+    /** @see imageLoader */
+    @Deprecated(
+        message = "Migrate to imageLoader(context).",
+        replaceWith = ReplaceWith("this.imageLoader(context)")
+    )
+    @JvmStatic
+    fun loader(): ImageLoader = imageLoader(CoilContentProvider.context)
 
     /**
-     * Get the default [ImageLoader] instance. Creates a new instance if none has been set.
+     * Get the default [ImageLoader]. Creates a new instance if none has been set.
      */
     @JvmStatic
-    fun loader(): ImageLoader = imageLoader ?: buildDefaultImageLoader()
+    fun imageLoader(context: Context): ImageLoader = imageLoader ?: newImageLoader(context)
 
     /**
-     * Set the default [ImageLoader] instance. Shutdown the current instance.
+     * Set the default [ImageLoader]. Shutdown the current instance if there is one.
      */
     @JvmStatic
-    fun setDefaultImageLoader(loader: ImageLoader) {
-        imageLoader?.shutdown()
-        imageLoader = loader
-        imageLoaderInitializer = null
+    fun setImageLoader(loader: ImageLoader) {
+        setImageLoader(object : ImageLoaderFactory {
+            override fun newImageLoader() = loader
+        })
     }
 
     /**
-     * Set a lazy callback to create the default [ImageLoader] instance. Shutdown the current instance.
+     * Set the [ImageLoaderFactory] that will be used to create the default [ImageLoader].
+     * Shutdown the current instance if there is one. The [factory] is guaranteed to be called at most once.
      *
-     * The [initializer] is guaranteed to only be called once. This enables lazy instantiation of the default [ImageLoader].
+     * Using this method to set an explicit [factory] takes precedence over an [Application] that
+     * implements [ImageLoaderFactory].
      */
+    @JvmStatic
+    @Synchronized
+    fun setImageLoader(factory: ImageLoaderFactory) {
+        imageLoaderFactory = factory
+
+        // Shutdown the image loader after clearing the reference.
+        val loader = imageLoader
+        imageLoader = null
+        loader?.shutdown()
+    }
+
+    /** @see setImageLoader */
+    @Deprecated(
+        message = "Migrate to setImageLoader(loader).",
+        replaceWith = ReplaceWith("this.setImageLoader(loader)")
+    )
+    @JvmStatic
+    fun setDefaultImageLoader(loader: ImageLoader) = setImageLoader(loader)
+
+    /** @see setImageLoader */
+    @Deprecated(
+        message = "Migrate to setDefaultImageLoader(ImageLoaderFactory).",
+        replaceWith = ReplaceWith("this.setImageLoader(object : ImageLoaderFactory { override fun getImageLoader() = initializer() })")
+    )
     @JvmStatic
     fun setDefaultImageLoader(initializer: () -> ImageLoader) {
-        imageLoader?.shutdown()
-        imageLoaderInitializer = initializer
-        imageLoader = null
+        setImageLoader(object : ImageLoaderFactory {
+            override fun newImageLoader() = initializer()
+        })
     }
 
+    /** Create and set the new default [ImageLoader]. */
     @Synchronized
-    private fun buildDefaultImageLoader(): ImageLoader {
+    private fun newImageLoader(context: Context): ImageLoader {
         // Check again in case imageLoader was just set.
-        return imageLoader ?: run {
-            val loader = imageLoaderInitializer?.invoke() ?: ImageLoader(CoilContentProvider.context)
-            imageLoaderInitializer = null
-            setDefaultImageLoader(loader)
-            loader
-        }
+        imageLoader?.let { return it }
+
+        // Create a new ImageLoader.
+        val loader = imageLoaderFactory?.newImageLoader()
+            ?: (context.applicationContext as? ImageLoaderFactory)?.newImageLoader()
+            ?: ImageLoader(context)
+        imageLoaderFactory = null
+        setImageLoader(loader)
+        return loader
     }
 }

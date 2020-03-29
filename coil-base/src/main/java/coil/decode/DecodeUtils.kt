@@ -20,6 +20,12 @@ object DecodeUtils {
     private val WEBP_HEADER_WEBP = "WEBP".encodeUtf8()
     private val WEBP_HEADER_VPX8 = "VP8X".encodeUtf8()
 
+    // https://nokiatech.github.io/heif/technical.html
+    private val HEIF_HEADER_FTYP = "ftyp".encodeUtf8()
+    private val HEIF_HEADER_MSF1 = "msf1".encodeUtf8()
+    private val HEIF_HEADER_HEVC = "hevc".encodeUtf8()
+    private val HEIF_HEADER_HEVX = "hevx".encodeUtf8()
+
     /** Return true if the [source] contains a GIF image. The [source] is not consumed. */
     @JvmStatic
     fun isGif(source: BufferedSource): Boolean {
@@ -41,23 +47,92 @@ object DecodeUtils {
             (source.buffer[16] and 0b00000010) > 0
     }
 
+    /** Return true if the [source] contains an HEIF image. The [source] is not consumed. */
+    @JvmStatic
+    fun isHeif(source: BufferedSource): Boolean {
+        return source.rangeEquals(4, HEIF_HEADER_FTYP)
+    }
+
+    /** Return true if the [source] contains an animated HEIF image sequence. The [source] is not consumed. */
+    @JvmStatic
+    fun isAnimatedHeif(source: BufferedSource): Boolean {
+        return isHeif(source) &&
+            (source.rangeEquals(8, HEIF_HEADER_MSF1) ||
+                source.rangeEquals(8, HEIF_HEADER_HEVC) ||
+                source.rangeEquals(8, HEIF_HEADER_HEVX))
+    }
+
     /**
-     * Calculate the [BitmapFactory.Options.inSampleSize] given the source dimensions of the image ([inWidth] and [inHeight]),
-     * the output dimensions ([outWidth], [outHeight]), and the [scale].
+     * Calculate the [BitmapFactory.Options.inSampleSize] given the source dimensions of the image
+     * ([srcWidth] and [srcHeight]), the output dimensions ([dstWidth], [dstHeight]), and the [scale].
      */
     @JvmStatic
     fun calculateInSampleSize(
-        @Px inWidth: Int,
-        @Px inHeight: Int,
-        @Px outWidth: Int,
-        @Px outHeight: Int,
+        @Px srcWidth: Int,
+        @Px srcHeight: Int,
+        @Px dstWidth: Int,
+        @Px dstHeight: Int,
         scale: Scale
     ): Int {
-        val widthInSampleSize = max(1, Integer.highestOneBit(inWidth / outWidth))
-        val heightInSampleSize = max(1, Integer.highestOneBit(inHeight / outHeight))
+        val widthInSampleSize = Integer.highestOneBit(srcWidth / dstWidth).coerceAtLeast(1)
+        val heightInSampleSize = Integer.highestOneBit(srcHeight / dstHeight).coerceAtLeast(1)
         return when (scale) {
             Scale.FILL -> min(widthInSampleSize, heightInSampleSize)
             Scale.FIT -> max(widthInSampleSize, heightInSampleSize)
+        }
+    }
+
+    /**
+     * Calculate the percentage to multiply the source dimensions by to fit/fill the
+     * destination dimensions while preserving aspect ratio.
+     */
+    @JvmStatic
+    fun computeSizeMultiplier(
+        @Px srcWidth: Int,
+        @Px srcHeight: Int,
+        @Px dstWidth: Int,
+        @Px dstHeight: Int,
+        scale: Scale
+    ): Double {
+        val widthPercent = dstWidth / srcWidth.toDouble()
+        val heightPercent = dstHeight / srcHeight.toDouble()
+        return when (scale) {
+            Scale.FILL -> max(widthPercent, heightPercent)
+            Scale.FIT -> min(widthPercent, heightPercent)
+        }
+    }
+
+    /** @see computeSizeMultiplier */
+    @JvmStatic
+    fun computeSizeMultiplier(
+        @Px srcWidth: Float,
+        @Px srcHeight: Float,
+        @Px dstWidth: Float,
+        @Px dstHeight: Float,
+        scale: Scale
+    ): Float {
+        val widthPercent = dstWidth / srcWidth
+        val heightPercent = dstHeight / srcHeight
+        return when (scale) {
+            Scale.FILL -> max(widthPercent, heightPercent)
+            Scale.FIT -> min(widthPercent, heightPercent)
+        }
+    }
+
+    /** @see computeSizeMultiplier */
+    @JvmStatic
+    fun computeSizeMultiplier(
+        @Px srcWidth: Double,
+        @Px srcHeight: Double,
+        @Px dstWidth: Double,
+        @Px dstHeight: Double,
+        scale: Scale
+    ): Double {
+        val widthPercent = dstWidth / srcWidth
+        val heightPercent = dstHeight / srcHeight
+        return when (scale) {
+            Scale.FILL -> max(widthPercent, heightPercent)
+            Scale.FIT -> min(widthPercent, heightPercent)
         }
     }
 }

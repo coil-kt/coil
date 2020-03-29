@@ -5,7 +5,10 @@ package coil
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.kotlin
+import org.gradle.kotlin.dsl.project
 import kotlin.math.pow
 
 val Project.minSdk: Int
@@ -24,17 +27,15 @@ val Project.versionName: String
     get() = stringProperty("VERSION_NAME")
 
 val Project.versionCode: Int
-    get() {
-        return versionName
-            .trimEnd { !it.isDigit() }
-            .split('.')
-            .map { it.toInt() }
-            .reversed()
-            .sumByIndexed { index, unit ->
-                // 1.2.3 -> 102030
-                (unit * 10.0.pow(2 * index + 1)).toInt()
-            }
-    }
+    get() = versionName
+        .trimEnd { !it.isDigit() }
+        .split('.')
+        .map { it.toInt() }
+        .reversed()
+        .sumByIndexed { index, unit ->
+            // 1.2.3 -> 102030
+            (unit * 10.0.pow(2 * index + 1)).toInt()
+        }
 
 private fun Project.intProperty(name: String): Int {
     return (property(name) as String).toInt()
@@ -53,16 +54,22 @@ private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
     return sum
 }
 
-fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? {
+private fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? {
     return add("testImplementation", dependencyNotation)
 }
 
-fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? {
+private fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? {
     return add("androidTestImplementation", dependencyNotation)
 }
 
-fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
+fun DependencyHandler.addTestDependencies(kotlinVersion: String, includeTestProject: Boolean = true) {
+    if (includeTestProject) {
+        testImplementation(project(":coil-test"))
+    }
+
+    testImplementation(Library.JUNIT)
     testImplementation(kotlin("test-junit", kotlinVersion))
+
     testImplementation(Library.KOTLINX_COROUTINES_TEST)
 
     testImplementation(Library.ANDROIDX_TEST_CORE)
@@ -71,10 +78,19 @@ fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
     testImplementation(Library.ANDROIDX_TEST_RUNNER)
 
     testImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
-    testImplementation(Library.ROBOLECTRIC)
+
+    // https://github.com/robolectric/robolectric/issues/5245
+    add("testImplementation", Library.ROBOLECTRIC) {
+        exclude(group = "com.google.auto.service", module = "auto-service")
+    }
 }
 
-fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String) {
+fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeTestProject: Boolean = true) {
+    if (includeTestProject) {
+        androidTestImplementation(project(":coil-test"))
+    }
+
+    androidTestImplementation(Library.JUNIT)
     androidTestImplementation(kotlin("test-junit", kotlinVersion))
 
     androidTestImplementation(Library.ANDROIDX_TEST_CORE)

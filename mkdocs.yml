@@ -1,7 +1,7 @@
 # Project information
 site_name: 'Coil'
 site_description: 'An image loading library for Android backed by Kotlin Coroutines'
-site_author: '2019 Coil Contributors'
+site_author: '2020 Coil Contributors'
 site_url: 'https://coil-kt.github.io/coil/'
 remote_branch: gh-pages
 
@@ -10,7 +10,7 @@ repo_name: 'Coil'
 repo_url: 'https://github.com/coil-kt/coil'
 
 # Copyright
-copyright: 'Copyright &copy; 2019 Coil Contributors'
+copyright: 'Copyright &copy; 2020 Coil Contributors'
 
 # Configuration
 theme:
@@ -40,16 +40,19 @@ nav:
   - 'Requests': requests.md
   - 'Targets': targets.md
   - 'Transformations': transformations.md
+  - 'Transitions': transitions.md
   - 'Extending the Image Pipeline': image_pipeline.md
   - 'Java Compatibility': java_compatibility.md
   - 'GIFs': gifs.md
   - 'SVGs': svgs.md
+  - 'Video Frames': videos.md
   - 'FAQ': faq.md
   - 'API':
     - 'coil': api/coil-default/index.md
     - 'coil-base': api/coil-base/index.md
     - 'coil-gif': api/coil-gif/index.md
     - 'coil-svg': api/coil-svg/index.md
+    - 'coil-video': api/coil-video/index.md
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md

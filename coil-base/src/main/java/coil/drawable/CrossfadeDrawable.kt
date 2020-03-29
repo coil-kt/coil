@@ -1,62 +1,83 @@
 package coil.drawable
 
+import android.content.res.ColorStateList
+import android.graphics.BlendMode
 import android.graphics.Canvas
 import android.graphics.ColorFilter
+import android.graphics.PixelFormat
+import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
+import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
+import coil.decode.DecodeUtils
 import coil.size.Scale
+import coil.util.forEachIndices
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
  * A [Drawable] that crossfades from [start] to [end].
  *
- * NOTE: The transition can only be executed once as the [start] drawable is dereferenced at the end of the transition.
+ * NOTE: The animation can only be executed once as the [start] drawable is dereferenced at the end of the transition.
  *
- * @param start The Drawable to crossfade from.
- * @param end The Drawable to crossfade to.
+ * @param start The [Drawable] to crossfade from.
+ * @param end The [Drawable] to crossfade to.
  * @param scale The scaling algorithm for [start] and [end].
- * @param duration The duration of the crossfade animation.
- * @param onEnd A callback for when the animation completes.
+ * @param durationMillis The duration of the crossfade animation.
  */
-class CrossfadeDrawable(
+class CrossfadeDrawable @JvmOverloads constructor(
     private var start: Drawable?,
-    val end: Drawable,
-    private val scale: Scale = Scale.FIT,
-    private val duration: Int = DEFAULT_DURATION,
-    private val onEnd: (() -> Unit)? = null
-) : Drawable(), Drawable.Callback, Animatable {
+    val end: Drawable?,
+    val scale: Scale = Scale.FIT,
+    val durationMillis: Int = DEFAULT_DURATION
+) : Drawable(), Drawable.Callback, Animatable2Compat {
 
     companion object {
+        private const val STATE_START = 0
+        private const val STATE_RUNNING = 1
+        private const val STATE_DONE = 2
+
         const val DEFAULT_DURATION = 100
     }
 
-    private val width = max(start?.intrinsicWidth ?: -1, end.intrinsicWidth)
-    private val height = max(start?.intrinsicHeight ?: -1, end.intrinsicHeight)
+    private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
+
+    private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth, end?.intrinsicWidth)
+    private val intrinsicHeight = computeIntrinsicDimension(start?.intrinsicHeight, end?.intrinsicHeight)
 
     private var startTimeMillis = 0L
     private var maxAlpha = 255
-    private var isDone = false
-    private var isRunning = false
+    private var state = STATE_START
 
     init {
+        require(durationMillis > 0) { "durationMillis must be > 0." }
+
         start?.callback = this
-        end.callback = this
+        end?.callback = this
     }
 
     override fun draw(canvas: Canvas) {
-        if (!isRunning || isDone) {
-            start = null
-            end.alpha = maxAlpha
-            end.draw(canvas)
+        if (state == STATE_START) {
+            start?.apply {
+                alpha = maxAlpha
+                draw(canvas)
+            }
             return
         }
 
-        val percent = (SystemClock.uptimeMillis() - startTimeMillis) / duration.toDouble()
+        if (state == STATE_DONE) {
+            end?.apply {
+                alpha = maxAlpha
+                draw(canvas)
+            }
+            return
+        }
+
+        val percent = (SystemClock.uptimeMillis() - startTimeMillis) / durationMillis.toDouble()
         val isDone = percent >= 1.0
 
         // Draw the start Drawable.
@@ -68,8 +89,10 @@ class CrossfadeDrawable(
         }
 
         // Draw the end Drawable.
-        end.alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
-        end.draw(canvas)
+        end?.apply {
+            alpha = (percent.coerceIn(0.0, 1.0) * maxAlpha).toInt()
+            draw(canvas)
+        }
 
         if (isDone) {
             markDone()
@@ -78,33 +101,69 @@ class CrossfadeDrawable(
         }
     }
 
+    @RequiresApi(19)
+    override fun getAlpha() = maxAlpha
+
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }
         maxAlpha = alpha
     }
 
+    @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
         val start = start
-        return if (isRunning && start != null) {
-            resolveOpacity(start.opacity, end.opacity)
-        } else {
-            end.opacity
+        val end = end
+
+        if (state == STATE_START) {
+            return start?.opacity ?: PixelFormat.TRANSPARENT
+        }
+
+        if (state == STATE_DONE) {
+            return end?.opacity ?: PixelFormat.TRANSPARENT
+        }
+
+        return when {
+            start != null && end != null -> resolveOpacity(start.opacity, end.opacity)
+            start != null -> start.opacity
+            end != null -> end.opacity
+            else -> PixelFormat.TRANSPARENT
         }
     }
 
+    @RequiresApi(21)
+    override fun getColorFilter(): ColorFilter? = when (state) {
+        STATE_START -> start?.colorFilter
+        STATE_RUNNING -> end?.colorFilter ?: start?.colorFilter
+        STATE_DONE -> end?.colorFilter
+        else -> null
+    }
+
+    @RequiresApi(21)
     override fun setColorFilter(colorFilter: ColorFilter?) {
         start?.colorFilter = colorFilter
-        end.colorFilter = colorFilter
+        end?.colorFilter = colorFilter
     }
 
     override fun onBoundsChange(bounds: Rect) {
         start?.let { updateBounds(it, bounds) }
-        updateBounds(end, bounds)
+        end?.let { updateBounds(it, bounds) }
     }
 
-    override fun getIntrinsicWidth() = width
+    override fun onLevelChange(level: Int): Boolean {
+        val startChanged = start?.setLevel(level) ?: false
+        val endChanged = end?.setLevel(level) ?: false
+        return startChanged || endChanged
+    }
 
-    override fun getIntrinsicHeight() = height
+    override fun onStateChange(state: IntArray): Boolean {
+        val startChanged = start?.setState(state) ?: false
+        val endChanged = end?.setState(state) ?: false
+        return startChanged || endChanged
+    }
+
+    override fun getIntrinsicWidth() = intrinsicWidth
+
+    override fun getIntrinsicHeight() = intrinsicHeight
 
     override fun unscheduleDrawable(who: Drawable, what: Runnable) = unscheduleSelf(what)
 
@@ -112,18 +171,43 @@ class CrossfadeDrawable(
 
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
 
-    override fun isRunning() = isRunning
+    @RequiresApi(21)
+    override fun setTint(tintColor: Int) {
+        start?.setTint(tintColor)
+        end?.setTint(tintColor)
+    }
+
+    @RequiresApi(21)
+    override fun setTintList(tint: ColorStateList?) {
+        start?.setTintList(tint)
+        end?.setTintList(tint)
+    }
+
+    @RequiresApi(21)
+    override fun setTintMode(tintMode: PorterDuff.Mode?) {
+        start?.setTintMode(tintMode)
+        end?.setTintMode(tintMode)
+    }
+
+    @RequiresApi(29)
+    override fun setTintBlendMode(blendMode: BlendMode?) {
+        start?.setTintBlendMode(blendMode)
+        end?.setTintBlendMode(blendMode)
+    }
+
+    override fun isRunning() = state == STATE_RUNNING
 
     override fun start() {
-        if (isRunning || isDone) {
+        (start as? Animatable)?.start()
+        (end as? Animatable)?.start()
+
+        if (state != STATE_START) {
             return
         }
 
-        isRunning = true
+        state = STATE_RUNNING
         startTimeMillis = SystemClock.uptimeMillis()
-
-        (start as? Animatable)?.start()
-        (end as? Animatable)?.start()
+        callbacks.forEachIndices { it.onAnimationStart(this) }
 
         invalidateSelf()
     }
@@ -132,12 +216,22 @@ class CrossfadeDrawable(
         (start as? Animatable)?.stop()
         (end as? Animatable)?.stop()
 
-        if (!isDone) {
+        if (state != STATE_DONE) {
             markDone()
         }
     }
 
-    /** Scale and position the [Drawable] inside [targetBounds] preserving aspect ratio. */
+    override fun registerAnimationCallback(callback: Animatable2Compat.AnimationCallback) {
+        callbacks.add(callback)
+    }
+
+    override fun unregisterAnimationCallback(callback: Animatable2Compat.AnimationCallback): Boolean {
+        return callbacks.remove(callback)
+    }
+
+    override fun clearAnimationCallbacks() = callbacks.clear()
+
+    /** Update the [Drawable]'s bounds inside [targetBounds] preserving aspect ratio. */
     @VisibleForTesting
     internal fun updateBounds(drawable: Drawable, targetBounds: Rect) {
         val width = drawable.intrinsicWidth
@@ -149,14 +243,9 @@ class CrossfadeDrawable(
 
         val targetWidth = targetBounds.width()
         val targetHeight = targetBounds.height()
-        val widthPercent = targetWidth / width.toFloat()
-        val heightPercent = targetHeight / height.toFloat()
-        val scale = when (scale) {
-            Scale.FIT -> min(widthPercent, heightPercent)
-            Scale.FILL -> max(widthPercent, heightPercent)
-        }
-        val dx = ((targetWidth - scale * width) / 2).roundToInt()
-        val dy = ((targetHeight - scale * height) / 2).roundToInt()
+        val multiplier = DecodeUtils.computeSizeMultiplier(width, height, targetWidth, targetHeight, scale)
+        val dx = ((targetWidth - multiplier * width) / 2).roundToInt()
+        val dy = ((targetHeight - multiplier * height) / 2).roundToInt()
 
         val left = targetBounds.left + dx
         val top = targetBounds.top + dy
@@ -165,10 +254,13 @@ class CrossfadeDrawable(
         drawable.setBounds(left, top, right, bottom)
     }
 
+    private fun computeIntrinsicDimension(startSize: Int?, endSize: Int?): Int {
+        return if (startSize == -1 || endSize == -1) -1 else max(startSize ?: -1, endSize ?: -1)
+    }
+
     private fun markDone() {
-        isDone = true
-        isRunning = false
+        state = STATE_DONE
         start = null
-        onEnd?.invoke()
+        callbacks.forEachIndices { it.onAnimationEnd(this) }
     }
 }

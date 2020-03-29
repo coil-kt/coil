@@ -1,9 +1,12 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="coil.resource">
+    package="coil.base">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
 
     <application android:usesCleartextTraffic="true">
         <provider

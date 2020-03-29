@@ -2,27 +2,20 @@
 
 package coil.sample
 
-import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.IdRes
+import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.LiveData
 import coil.size.PixelSize
+import kotlin.random.Random
 
 inline fun <reified V : View> ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): V {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot) as V
-}
-
-inline fun <T> unsafeLazy(noinline initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)
-
-inline fun <reified T : ViewModel> FragmentActivity.bindViewModel() = unsafeLazy {
-    ViewModelProviders.of(this).get(T::class.java)
 }
 
 inline fun <reified R : Any> Array<*>.findInstance(): R? = find { it is R } as R?
@@ -30,7 +23,7 @@ inline fun <reified R : Any> Array<*>.findInstance(): R? = find { it is R } as R
 inline val AndroidViewModel.context: Context
     get() = getApplication()
 
-fun <V : View> Activity.bindView(@IdRes id: Int) = unsafeLazy { findViewById<V>(id) }
+inline fun <T> LiveData<T>.requireValue(): T = value!!
 
 fun Context.getDisplaySize(): PixelSize {
     return resources.displayMetrics.run { PixelSize(widthPixels, heightPixels) }
@@ -38,4 +31,9 @@ fun Context.getDisplaySize(): PixelSize {
 
 fun Int.dp(context: Context): Float {
     return this * context.resources.displayMetrics.density
+}
+
+@ColorInt
+fun randomColor(): Int {
+    return Color.argb(128, Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
 }

@@ -1,54 +1,104 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package coil.sample
 
-import android.graphics.drawable.ColorDrawable
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.widget.ImageView
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.view.updatePadding
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil.api.load
+import coil.sample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by bindViewModel()
+    private val viewModel: MainViewModel by viewModels()
 
-    private val toolbar: Toolbar by bindView(R.id.toolbar)
-    private val list: RecyclerView by bindView(R.id.list)
-    private val detail: ImageView by bindView(R.id.detail)
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var listAdapter: ImageListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
-        val listAdapter = ImageListAdapter(this, viewModel.screenLiveData::setValue)
-        list.apply {
+        if (SDK_INT >= 29) {
+            window.decorView.apply {
+                systemUiVisibility = systemUiVisibility or
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            }
+            binding.toolbar.setOnApplyWindowInsetsListener { view, insets ->
+                view.updatePadding(top = insets.systemWindowInsetTop)
+                insets
+            }
+        }
+
+        listAdapter = ImageListAdapter(this, viewModel::setScreen)
+        binding.list.apply {
             setHasFixedSize(true)
-            layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, VERTICAL)
             adapter = listAdapter
         }
 
-        viewModel.screenLiveData.observe(this, Observer(::setScreen))
-        viewModel.imagesLiveData.observe(this, Observer(listAdapter::submitList))
+        viewModel.screens().observe(this, ::setScreen)
+        viewModel.images().observe(this, ::setImages)
+        viewModel.assetTypes().observe(this, ::setAssetType)
     }
 
     private fun setScreen(screen: Screen) {
         when (screen) {
             is Screen.List -> {
-                list.isVisible = true
-                detail.isVisible = false
+                binding.list.isVisible = true
+                binding.detail.isVisible = false
             }
             is Screen.Detail -> {
-                list.isVisible = false
-                detail.isVisible = true
-                detail.load(screen.image.url) {
-                    placeholder(ColorDrawable(screen.image.color))
+                binding.list.isVisible = false
+                binding.detail.isVisible = true
+                binding.detail.load(screen.image.uri) {
+                    parameters(screen.image.parameters)
                 }
             }
         }
+    }
+
+    private fun setImages(images: List<Image>) {
+        listAdapter.submitList(images) {
+            // Ensure we're at the top of the list when the list items are updated.
+            binding.list.scrollToPosition(0)
+        }
+    }
+
+    private fun setAssetType(assetType: AssetType) {
+        invalidateOptionsMenu()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val title = viewModel.assetTypes().requireValue().name
+        val item = menu.add(Menu.NONE, R.id.action_toggle_asset_type, Menu.NONE, title)
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_toggle_asset_type -> {
+                val values = AssetType.values()
+                val currentAssetType = viewModel.assetTypes().requireValue()
+                val newAssetType = values[(values.indexOf(currentAssetType) + 1) % values.count()]
+                viewModel.setAssetType(newAssetType)
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
     }
 
     override fun onBackPressed() {

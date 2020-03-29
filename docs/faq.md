@@ -14,6 +14,13 @@ Yes! [Read here](java_compatibility.md).
 
 [Read here](../image_loaders/#caching).
 
+## How do I enable logging?
+
+Set `logger(DebugLogger())` when constructing your `ImageLoader`.
+
+!!! Note
+    `DebugLogger` should only be used in debug builds.
+
 ## How do I get development snapshots?
 
 Add the snapshots repository to your list of repositories:

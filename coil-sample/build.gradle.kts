@@ -30,24 +30,23 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    testOptions {
-        unitTests.isIncludeAndroidResources = true
+    viewBinding {
+        isEnabled = true
     }
 }
 
 dependencies {
     implementation(project(":coil-default"))
+    implementation(project(":coil-gif"))
+    implementation(project(":coil-svg"))
+    implementation(project(":coil-video"))
 
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
 
+    implementation(Library.ANDROIDX_ACTIVITY)
     implementation(Library.ANDROIDX_APPCOMPAT)
     implementation(Library.ANDROIDX_CONSTRAINT_LAYOUT)
     implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_LIFECYCLE_EXTENSIONS)
     implementation(Library.ANDROIDX_LIFECYCLE_LIVE_DATA)
     implementation(Library.ANDROIDX_LIFECYCLE_VIEW_MODEL)
     implementation(Library.ANDROIDX_MULTIDEX)

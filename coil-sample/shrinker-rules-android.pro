@@ -32,7 +32,6 @@
     public static ** valueOf(java.lang.String);
 }
 -keepclassmembers class * implements android.os.Parcelable { public static final ** CREATOR; }
--keepclassmembers class **.R$* { public static <fields>; }
 
 # Preserve annotated Javascript interface methods.
 -keepclassmembers class * { @android.webkit.JavascriptInterface <methods>; }

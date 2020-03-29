@@ -4,13 +4,18 @@ import android.annotation.SuppressLint
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting.PACKAGE_PRIVATE
 import coil.Coil
 
 /**
  * A [ContentProvider] whose [Context] is used to initialize the [Coil] singleton.
  */
-internal class CoilContentProvider : ContentProvider() {
+@Deprecated("CoilContentProvider will be removed in a future release in favor of deferred initialization through Coil.imageLoader(context).")
+@VisibleForTesting(otherwise = PACKAGE_PRIVATE)
+class CoilContentProvider : ContentProvider() {
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -27,7 +32,7 @@ internal class CoilContentProvider : ContentProvider() {
     override fun insert(
         uri: Uri,
         values: ContentValues?
-    ) = null
+    ): Uri? = null
 
     override fun query(
         uri: Uri,
@@ -35,7 +40,7 @@ internal class CoilContentProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<String>?,
         sortOrder: String?
-    ) = null
+    ): Cursor? = null
 
     override fun update(
         uri: Uri,
@@ -50,5 +55,5 @@ internal class CoilContentProvider : ContentProvider() {
         selectionArgs: Array<String>?
     ) = 0
 
-    override fun getType(uri: Uri) = null
+    override fun getType(uri: Uri): String? = null
 }

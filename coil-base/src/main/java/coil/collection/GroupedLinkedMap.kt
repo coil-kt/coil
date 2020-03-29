@@ -1,12 +1,14 @@
 package coil.collection
 
-import coil.util.orEmpty
 import coil.util.removeLast
 import java.util.HashMap
 
 /**
  * Similar to [LinkedHashMap] when access ordered except that it is access ordered
  * on groups of objects rather than an individual object.
+ *
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s GroupedLinkedMap.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 internal class GroupedLinkedMap<K, V> {
 
@@ -111,7 +113,7 @@ internal class GroupedLinkedMap<K, V> {
         fun size(): Int = values?.count() ?: 0
 
         fun add(value: V) {
-            values = values.orEmpty().apply { add(value) }
+            values = (values ?: mutableListOf()).apply { add(value) }
         }
     }
 }

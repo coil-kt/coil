@@ -1,10 +1,12 @@
 package coil.fetch
 
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
-import coil.bitmappool.FakeBitmapPool
+import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.size.PixelSize
 import coil.util.createOptions
 import kotlinx.coroutines.runBlocking
@@ -16,20 +18,20 @@ import kotlin.test.assertTrue
 
 class AssetUriFetcherTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var fetcher: AssetUriFetcher
     private lateinit var pool: BitmapPool
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         fetcher = AssetUriFetcher(context)
-        pool = FakeBitmapPool()
+        pool = BitmapPool(0)
     }
 
     @Test
     fun basic() {
-        val uri = Uri.parse("file:///android_asset/normal.jpg")
+        val uri = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg".toUri()
 
         assertTrue(fetcher.handles(uri))
         assertUriFetchesCorrectly(uri)
@@ -37,7 +39,7 @@ class AssetUriFetcherTest {
 
     @Test
     fun nestedPath() {
-        val uri = Uri.parse("file:///android_asset/exif/large_metadata.jpg")
+        val uri = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
 
         assertTrue(fetcher.handles(uri))
         assertUriFetchesCorrectly(uri)

@@ -1,11 +1,11 @@
 ﻿![Coil](logo.svg)
 
-Coil은 Android 백앤드를 위해 Kotlin Coroutines으로 만들어진 이미지 로딩 라이브러리입니다. Coil 은:
+Coil은 Kotlin Coroutines으로 만들어진 Android 백앤드 이미지 로딩 라이브러리입니다. Coil 은:
 
-- **빠르다**: Coil은 메모리와 디스크 캐싱, 메모리의 이미지 다운 샘플링, Bitmap 재사용, 자동 요청사항 일시정지/취소 등의 수많은 최적화를 수행합니다.
-- **가볍다**: Coil은 최댁 1500개의 method들을 APK에 추가합니다 OkHttp와 Coroutines을 이미 사용 중인 앱), 이는 Picasso 비슷한 수준이며 Glide와 Fresco. 보다는 적습니다.
-- **사용하기 쉽다**: Coil의 API는 심플함과 최소한의 boilerplate를 위해 Kotlin의 언어 기능을 활용합니다.
-- **현대적이다**: Coil은 Kotlin 우선이며 Coroutines, OkHttp, Okio, AndroidX Lifecycles등의 최신 라이브러리를 사용합니다.
+-   **빠르다**: Coil은 메모리와 디스크의 캐싱, 메모리의 이미지 다운 샘플링, Bitmap 재사용, 일시정지/취소의 자동화 등등 수 많은 최적화 작업을 수행합니다.
+-   **가볍다**: Coil은 최대 1500개의 method들을 APK에 추가합니다(이미 OkHttp와 Coroutines을 사용중인 앱에 한하여), 이는 Picasso 비슷한 수준이며 Glide와 Fresco보다는 적습니다.
+-   **사용하기 쉽다**: Coil API는 심플함과 최소한의 boilerplate를 위하여 Kotlin의 기능을 활용합니다.
+-   **현대적이다**: Coil은 Kotlin 우선이며 Coroutines, OkHttp, Okio, AndroidX Lifecycles등의 최신 라이브러리를 사용합니다.
 
 Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
 
@@ -13,15 +13,15 @@ Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
 
 ## 다운로드
 
-Coil은`mavenCentral()`로 이용 가능합니다.
+Coil은 `mavenCentral()`로 이용 가능합니다.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.7.0")
+implementation("io.coil-kt:coil:0.9.5")
 ```
 
 ## 빠른 시작
 
-`ImageView`에 이미지를 불러오기 위해, `load` Extension functions을 사용합니다.
+`ImageView`로 이미지를 불러오기 위해, `load` 확장 함수를 사용합니다.
 
 ```kotlin
 // URL
@@ -36,7 +36,7 @@ imageView.load(File("/path/to/image.jpg"))
 // And more...
 ```
 
-Requests는 추가적인 trailing lambda식 으로 구성될 수 있습니다:
+Requests는 trailing lambda 식을 이용하여 추가 설정을 할 수 있습니다:
 
 ```kotlin
 imageView.load("https://www.example.com/image.jpg") {
@@ -46,19 +46,19 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-이미지를 급하게 가져오기 위해서, `get` [suspend](https://kotlinlang.org/docs/reference/coroutines/basics.html) function을 사용합니다:
+이미지를 직접적으로 가져오기 위해서, `get` [suspend](https://kotlinlang.org/docs/reference/coroutines/basics.html) function을 사용합니다:
 
 ```kotlin
 val drawable = Coil.get("https://www.example.com/image.jpg")
 ```
 
-Coil's [전체 문서](https://coil-kt.github.io/coil/)를 여기서 확인하세요.
+[여기서 Coil의 전체 문서](https://coil-kt.github.io/coil/)를 확인하세요.
 
 ## 요구사항
 
 - AndroidX
 - Min SDK 14+
-- Compile SDK: 28+
+- Compile SDK: 29+
 - Java 8+
 
 ## R8 / Proguard
@@ -69,7 +69,7 @@ Proguard를 사용할 경우, [Coroutines](https://github.com/Kotlin/kotlinx.cor
 
 ## 라이선스
 
-    Copyright 2019 Coil Contributors
+    Copyright 2020 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

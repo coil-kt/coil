@@ -1,8 +1,6 @@
 package coil.bitmappool.strategy
 
 import android.graphics.Bitmap
-import android.os.Build.VERSION_CODES.KITKAT
-import android.os.Build.VERSION_CODES.M
 import androidx.annotation.Px
 import androidx.annotation.RequiresApi
 import coil.collection.GroupedLinkedMap
@@ -14,12 +12,15 @@ import java.util.TreeMap
  * A strategy for reusing bitmaps that relies on [Bitmap.reconfigure].
  *
  * Keys [Bitmap]s using [Bitmap.getAllocationByteCountCompat].
- * This improves the hit rate over [SizeConfigStrategy], as it allows re-use of Bitmaps with different configs.
+ * This improves the hit rate over [SizeConfigStrategy], as it allows re-use of bitmaps with different configs.
  *
- * Technically, the APIs for this strategy are available since [KITKAT], however we shouldn't use this strategy until
- * [M] due to framework bugs.
+ * Technically, the APIs for this strategy are available since API 19, however we shouldn't use this strategy until
+ * API 23 due to framework bugs.
+ *
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s SizeStrategy.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
-@RequiresApi(M)
+@RequiresApi(23)
 internal class SizeStrategy : BitmapPoolStrategy {
 
     companion object {

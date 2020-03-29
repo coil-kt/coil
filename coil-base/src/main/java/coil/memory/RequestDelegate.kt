@@ -1,5 +1,6 @@
 package coil.memory
 
+import androidx.annotation.MainThread
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -11,30 +12,19 @@ import kotlinx.coroutines.Job
 
 internal sealed class RequestDelegate : DefaultLifecycleObserver {
 
-    /**
-     * Repeat this request with the same params.
-     */
-    open fun restart() {}
-
-    /**
-     * Free resources associated with this delegate.
-     */
+    /** Cancel any in progress work and free any resources associated with this delegate. */
+    @MainThread
     open fun dispose() {}
 
-    /**
-     * Called when the load completes.
-     */
+    /** Called when the image request completes for any reason. */
+    @MainThread
     open fun onComplete() {}
 }
 
-/**
- * An empty request delegate.
- */
+/** An empty request delegate. */
 internal object EmptyRequestDelegate : RequestDelegate()
 
-/**
- * A simple request delegate that does not support restarting.
- */
+/** A simple request delegate for a one-shot request. */
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
     private val dispatcher: CoroutineDispatcher,
@@ -59,16 +49,18 @@ internal class BaseRequestDelegate(
  * @see ViewTargetRequestManager
  */
 internal class ViewTargetRequestDelegate(
-    private val loader: ImageLoader,
-    internal val request: LoadRequest,
+    private val imageLoader: ImageLoader,
+    private val request: LoadRequest,
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
     private val dispatcher: CoroutineDispatcher,
     private val job: Job
 ) : RequestDelegate() {
 
-    override fun restart() {
-        loader.load(request)
+    /** Repeat this request with the same params. */
+    @MainThread
+    fun restart() {
+        imageLoader.execute(request)
     }
 
     override fun dispose() {

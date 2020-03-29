@@ -11,11 +11,11 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.LOLLIPOP
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import coil.network.NetworkObserverStrategy.Listener
+import coil.util.Logger
 import coil.util.isPermissionGranted
 import coil.util.log
 
@@ -32,49 +32,39 @@ internal interface NetworkObserverStrategy {
     companion object {
         private const val TAG = "NetworkObserverStrategy"
 
-        /**
-         * Create a new [NetworkObserverStrategy] instance.
-         */
-        operator fun invoke(context: Context, listener: Listener): NetworkObserverStrategy {
+        /** Create a new [NetworkObserverStrategy] instance. */
+        operator fun invoke(context: Context, listener: Listener, logger: Logger?): NetworkObserverStrategy {
             val connectivityManager: ConnectivityManager? = context.getSystemService()
             if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
-                log(TAG, Log.WARN) { "Unable to register network observer." }
+                logger?.log(TAG, Log.WARN) { "Unable to register network observer." }
                 return EmptyNetworkObserverStrategy
             }
 
             return try {
-                if (SDK_INT >= LOLLIPOP) {
+                if (SDK_INT >= 21) {
                     NetworkObserverStrategyApi21(connectivityManager, listener)
                 } else {
                     NetworkObserverStrategyApi14(context, connectivityManager, listener)
                 }
             } catch (e: Exception) {
-                log(TAG, RuntimeException("Failed to register network observer.", e))
+                logger?.log(TAG, RuntimeException("Failed to register network observer.", e))
                 EmptyNetworkObserverStrategy
             }
         }
     }
 
-    /**
-     * Calls [onConnectivityChange] when a connectivity change event occurs.
-     */
+    /** Calls [onConnectivityChange] when a connectivity change event occurs. */
     interface Listener {
         fun onConnectivityChange(isOnline: Boolean)
     }
 
-    /**
-     * Start observing network changes.
-     */
+    /** Start observing network changes. */
     fun start()
 
-    /**
-     * Stop observing network changes.
-     */
+    /** Stop observing network changes. */
     fun stop()
 
-    /**
-     * Synchronously checks if the device is online.
-     */
+    /** Synchronously checks if the device is online. */
     fun isOnline(): Boolean
 }
 
@@ -87,7 +77,7 @@ private object EmptyNetworkObserverStrategy : NetworkObserverStrategy {
     override fun isOnline() = true
 }
 
-@RequiresApi(LOLLIPOP)
+@RequiresApi(21)
 @SuppressLint("MissingPermission")
 private class NetworkObserverStrategyApi21(
     private val connectivityManager: ConnectivityManager,

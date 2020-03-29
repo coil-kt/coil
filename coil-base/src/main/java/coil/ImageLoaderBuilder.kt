@@ -1,4 +1,5 @@
 @file:Suppress("MemberVisibilityCanBePrivate", "unused")
+@file:OptIn(ExperimentalCoilApi::class)
 
 package coil
 
@@ -8,9 +9,20 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.BuilderMarker
+import coil.annotation.ExperimentalCoilApi
+import coil.bitmappool.BitmapPool
 import coil.drawable.CrossfadeDrawable
-import coil.target.ImageViewTarget
+import coil.memory.BitmapReferenceCounter
+import coil.memory.EmptyWeakMemoryCache
+import coil.memory.MemoryCache
+import coil.memory.RealWeakMemoryCache
+import coil.request.CachePolicy
+import coil.request.Request
+import coil.size.Precision
+import coil.transition.CrossfadeTransition
+import coil.transition.Transition
 import coil.util.CoilUtils
+import coil.util.Logger
 import coil.util.Utils
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
@@ -21,16 +33,19 @@ import okhttp3.OkHttpClient
 
 /** Builder for an [ImageLoader]. */
 @BuilderMarker
-class ImageLoaderBuilder(private val context: Context) {
+class ImageLoaderBuilder(context: Context) {
+
+    private val applicationContext = context.applicationContext
 
     private var callFactory: Call.Factory? = null
-
+    private var eventListenerFactory: EventListener.Factory? = null
     private var registry: ComponentRegistry? = null
-
-    private var availableMemoryPercentage: Double = Utils.getDefaultAvailableMemoryPercentage(context)
-    private var bitmapPoolPercentage: Double = Utils.getDefaultBitmapPoolPercentage()
-
+    private var logger: Logger? = null
     private var defaults = DefaultRequestOptions()
+
+    private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
+    private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
+    private var trackWeakReferences = true
 
     /**
      * Set the [OkHttpClient] used for network requests.
@@ -84,9 +99,10 @@ class ImageLoaderBuilder(private val context: Context) {
     /**
      * Build and set the [ComponentRegistry].
      */
+    @JvmSynthetic
     inline fun componentRegistry(
         builder: ComponentRegistry.Builder.() -> Unit
-    ) = componentRegistry(ComponentRegistry(builder))
+    ) = componentRegistry(ComponentRegistry.Builder().apply(builder).build())
 
     /**
      * Set the [ComponentRegistry].
@@ -136,7 +152,7 @@ class ImageLoaderBuilder(private val context: Context) {
      *
      * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
      *
-     * NOTE: Setting this to false this will reduce performance on Android O and above. Only disable if necessary.
+     * NOTE: Setting this to false this will reduce performance on API 26 and above. Only disable if necessary.
      *
      * Default: true
      */
@@ -158,32 +174,74 @@ class ImageLoaderBuilder(private val context: Context) {
     }
 
     /**
-     * Enable a crossfade animation with duration [CrossfadeDrawable.DEFAULT_DURATION] milliseconds when loading
-     * images into an [ImageViewTarget].
+     * Enables weak reference tracking of loaded images.
      *
-     * NOTE: Crossfading only applies to [ImageViewTarget]s.
+     * This allows the image loader to hold weak references to loaded images.
+     * This ensures that if an image is still in memory it will be returned from the memory cache.
      *
-     * Default: false
+     * Default: true
      */
-    fun crossfade(enable: Boolean) = apply {
-        this.defaults = this.defaults.copy(crossfadeMillis = if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+    fun trackWeakReferences(enable: Boolean) = apply {
+        this.trackWeakReferences = enable
     }
 
     /**
-     * Enable a crossfade animation with [durationMillis] milliseconds when loading images into an [ImageViewTarget].
+     * Set a single [EventListener] that will receive all callbacks for requests launched by this image loader.
+     */
+    @ExperimentalCoilApi
+    fun eventListener(listener: EventListener) = eventListener(EventListener.Factory(listener))
+
+    /**
+     * Set the [EventListener.Factory] to create per-request [EventListener]s.
+     *
+     * @see eventListener
+     */
+    @ExperimentalCoilApi
+    fun eventListener(factory: EventListener.Factory) = apply {
+        this.eventListenerFactory = factory
+    }
+
+    /**
+     * Enable a crossfade animation with duration [CrossfadeDrawable.DEFAULT_DURATION] milliseconds
+     * when a request completes successfully.
+     *
+     * Default: false
+     */
+    fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+
+    /**
+     * Enable a crossfade animation with [durationMillis] milliseconds when a request completes successfully.
      *
      * @see `crossfade(Boolean)`
      */
     fun crossfade(durationMillis: Int) = apply {
-        require(durationMillis >= 0) { "Duration must be >= 0." }
-        this.defaults = this.defaults.copy(crossfadeMillis = durationMillis)
+        val factory = if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE
+        this.defaults = this.defaults.copy(transition = factory)
+    }
+
+    /**
+     * Set the default [Transition] for each request.
+     */
+    @ExperimentalCoilApi
+    fun transition(transition: Transition) = apply {
+        this.defaults = this.defaults.copy(transition = transition)
+    }
+
+    /**
+     * Set the default precision for a request. [Precision] controls whether the size of the
+     * loaded image must match the request's size exactly or not.
+     *
+     * Default: [Precision.AUTOMATIC]
+     */
+    fun precision(precision: Precision) = apply {
+        this.defaults = this.defaults.copy(precision = precision)
     }
 
     /**
      * Set the default placeholder drawable to use when a request starts.
      */
     fun placeholder(@DrawableRes drawableResId: Int) = apply {
-        this.defaults = this.defaults.copy(placeholder = context.getDrawableCompat(drawableResId))
+        this.defaults = this.defaults.copy(placeholder = applicationContext.getDrawableCompat(drawableResId))
     }
 
     /**
@@ -197,7 +255,7 @@ class ImageLoaderBuilder(private val context: Context) {
      * Set the default error drawable to use when a request fails.
      */
     fun error(@DrawableRes drawableResId: Int) = apply {
-        this.defaults = this.defaults.copy(error = context.getDrawableCompat(drawableResId))
+        this.defaults = this.defaults.copy(error = applicationContext.getDrawableCompat(drawableResId))
     }
 
     /**
@@ -208,26 +266,81 @@ class ImageLoaderBuilder(private val context: Context) {
     }
 
     /**
+     * Set the default fallback drawable to use if [Request.data] is null.
+     */
+    fun fallback(@DrawableRes drawableResId: Int) = apply {
+        this.defaults = this.defaults.copy(error = applicationContext.getDrawableCompat(drawableResId))
+    }
+
+    /**
+     * Set the default fallback drawable to use if [Request.data] is null.
+     */
+    fun fallback(drawable: Drawable?) = apply {
+        this.defaults = this.defaults.copy(error = drawable)
+    }
+
+    /**
+     * Set the default memory cache policy.
+     */
+    fun memoryCachePolicy(policy: CachePolicy) = apply {
+        this.defaults = this.defaults.copy(memoryCachePolicy = policy)
+    }
+
+    /**
+     * Set the default disk cache policy.
+     */
+    fun diskCachePolicy(policy: CachePolicy) = apply {
+        this.defaults = this.defaults.copy(diskCachePolicy = policy)
+    }
+
+    /**
+     * Set the default network cache policy.
+     *
+     * NOTE: Disabling writes has no effect.
+     */
+    fun networkCachePolicy(policy: CachePolicy) = apply {
+        this.defaults = this.defaults.copy(networkCachePolicy = policy)
+    }
+
+    /**
+     * Set the [Logger] to write logs to.
+     *
+     * NOTE: Setting a non-null [Logger] can reduce performance and should be avoided in release builds.
+     */
+    fun logger(logger: Logger?) = apply {
+        this.logger = logger
+    }
+
+    /**
      * Create a new [ImageLoader] instance.
      */
     fun build(): ImageLoader {
-        val availableMemorySize = Utils.calculateAvailableMemorySize(context, availableMemoryPercentage)
+        val availableMemorySize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
         val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toLong()
         val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
+        val bitmapPool = BitmapPool(bitmapPoolSize, logger)
+        val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache() else EmptyWeakMemoryCache
+        val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
+        val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
+
         return RealImageLoader(
-            context = context,
+            context = applicationContext,
             defaults = defaults,
-            bitmapPoolSize = bitmapPoolSize,
-            memoryCacheSize = memoryCacheSize,
+            bitmapPool = bitmapPool,
+            referenceCounter = referenceCounter,
+            memoryCache = memoryCache,
+            weakMemoryCache = weakMemoryCache,
             callFactory = callFactory ?: buildDefaultCallFactory(),
-            registry = registry ?: ComponentRegistry()
+            eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
+            registry = registry ?: ComponentRegistry(),
+            logger = logger
         )
     }
 
     private fun buildDefaultCallFactory() = lazyCallFactory {
         OkHttpClient.Builder()
-            .cache(CoilUtils.createDefaultCache(context))
+            .cache(CoilUtils.createDefaultCache(applicationContext))
             .build()
     }
 }

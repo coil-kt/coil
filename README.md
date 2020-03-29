@@ -16,7 +16,7 @@ Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한�
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.7.0")
+implementation("io.coil-kt:coil:0.9.5")
 ```
 
 ## Quick Start
@@ -60,7 +60,7 @@ Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
 
 - AndroidX
 - Min SDK 14+
-- Compile SDK: 28+
+- Compile SDK: 29+
 - Java 8+
 
 ## R8 / Proguard
@@ -71,7 +71,7 @@ If you use Proguard, you may need to add rules for [Coroutines](https://github.c
 
 ## License
 
-    Copyright 2019 Coil Contributors
+    Copyright 2020 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

@@ -5,29 +5,37 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.setPadding
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.math.max
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class ViewSizeResolverTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var view: View
     private lateinit var resolver: ViewSizeResolver<View>
+    private lateinit var scope: CoroutineScope
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         view = View(context)
         resolver = ViewSizeResolver(view)
+        scope = CoroutineScope(Dispatchers.Main.immediate)
+    }
+
+    @After
+    fun after() {
+        scope.cancel()
     }
 
     @Test
@@ -43,8 +51,21 @@ class ViewSizeResolverTest {
     }
 
     @Test
+    fun `view padding is ignored`() {
+        resolver = ViewSizeResolver(view, subtractPadding = false)
+        view.layoutParams = ViewGroup.LayoutParams(100, 100)
+        view.setPadding(10)
+
+        val size = runBlocking {
+            resolver.size()
+        }
+
+        assertEquals(PixelSize(100, 100), size)
+    }
+
+    @Test
     fun `suspend until view is measured`() {
-        val deferred = GlobalScope.async(Dispatchers.Main.immediate) {
+        val deferred = scope.async(Dispatchers.Main.immediate) {
             resolver.size()
         }
 
@@ -62,8 +83,8 @@ class ViewSizeResolverTest {
 
     @Test
     fun `wrap_content is resolved to the size of the display`() {
-        val expectedWidth = view.context.resources.displayMetrics.run { max(widthPixels, heightPixels) }
-        val deferred = GlobalScope.async(Dispatchers.Main.immediate) {
+        val expectedWidth = view.context.resources.displayMetrics.widthPixels
+        val deferred = scope.async(Dispatchers.Main.immediate) {
             resolver.size()
         }
 

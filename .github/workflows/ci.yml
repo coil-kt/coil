@@ -1,0 +1,58 @@
+name: CI
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+jobs:
+    ci:
+        name: Build + Test
+        runs-on: macOS-latest
+        timeout-minutes: 30
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Set Up Java
+              uses: actions/setup-java@v1
+              with:
+                  java-version: 11
+
+            # Validate the Gradle wrapper JAR files.
+            - uses: gradle/wrapper-validation-action@v1
+
+            # Ensure .gradle/caches is empty before writing to it.
+            # This helps us stay within Github's cache size limits.
+            - name: Clean Cache
+              run: rm -rf ~/.gradle/caches
+
+            # Restore the cache.
+            # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
+            - uses: actions/cache@v1
+              with:
+                  path: ~/.gradle/caches
+                  key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+
+            - name: Ktlint
+              run: ./gradlew ktlintCheck
+
+            # Check if there has been a binary incompatible change to the API.
+            # If this change is intentional, run `./gradlew apiDump` and commit the new API files.
+            - name: Check Binary Compatibility
+              run: ./gradlew apiCheck
+
+            - name: Unit Tests
+              run: ./gradlew testDebugUnitTest
+
+            - name: Instrumentation Tests
+              uses: reactivecircus/android-emulator-runner@v2
+              with:
+                  api-level: 25
+                  arch: x86
+                  script: ./gradlew connectedDebugAndroidTest
+
+            - name: Deploy Snapshot
+              if: github.ref == 'refs/heads/master'
+              env:
+                  SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+                  SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+              run: ./upload_archives.sh

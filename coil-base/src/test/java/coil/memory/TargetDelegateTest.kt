@@ -1,20 +1,26 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE")
-
 package coil.memory
 
 import android.content.Context
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
+import coil.EventListener
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.FakeBitmapPool
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
+import coil.transition.Transition
+import coil.transition.TransitionResult
+import coil.transition.TransitionTarget
 import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
 import coil.util.createTestMainDispatcher
+import coil.util.isInvalid
 import coil.util.toDrawable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -27,10 +33,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class)
 class TargetDelegateTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var imageLoader: ImageLoader
     private lateinit var pool: FakeBitmapPool
@@ -39,11 +45,12 @@ class TargetDelegateTest {
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
         imageLoader = ImageLoader(context)
         pool = FakeBitmapPool()
-        counter = BitmapReferenceCounter(pool)
-        delegateService = DelegateService(imageLoader, counter)
+        counter = BitmapReferenceCounter(EmptyWeakMemoryCache, pool, null)
+        delegateService = DelegateService(imageLoader, counter, null)
     }
 
     @After
@@ -55,31 +62,31 @@ class TargetDelegateTest {
     @Test
     fun `empty target does not invalidate`() {
         val request = createLoadRequest(context)
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
             val drawable = bitmap.toDrawable(context)
             delegate.start(drawable, drawable)
-            assertFalse(counter.invalid(bitmap))
+            assertFalse(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), 0)
-            assertFalse(counter.invalid(bitmap))
+            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
+            assertFalse(counter.isInvalid(bitmap))
         }
     }
 
     @Test
     fun `get request invalidates the success bitmap`() {
         val request = createGetRequest()
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), 0)
-            assertTrue(counter.invalid(bitmap))
+            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
+            assertTrue(counter.isInvalid(bitmap))
         }
     }
 
@@ -89,28 +96,28 @@ class TargetDelegateTest {
         val request = createLoadRequest(context) {
             target(target)
         }
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
             val drawable = bitmap.toDrawable(context)
             delegate.start(drawable, null)
             assertTrue(target.start)
-            assertTrue(counter.invalid(bitmap))
+            assertTrue(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), 0)
+            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
             assertTrue(target.success)
-            assertTrue(counter.invalid(bitmap))
+            assertTrue(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.error(bitmap.toDrawable(context), 0)
+            delegate.error(bitmap.toDrawable(context), Transition.NONE)
             assertTrue(target.error)
-            assertFalse(counter.invalid(bitmap))
+            assertFalse(counter.isInvalid(bitmap))
         }
     }
 
@@ -119,21 +126,51 @@ class TargetDelegateTest {
         val request = createLoadRequest(context) {
             target(ImageViewTarget(ImageView(context)))
         }
-        val delegate = delegateService.createTargetDelegate(request)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         val initialBitmap = createBitmap()
-        runBlocking {
-            val drawable = initialBitmap.toDrawable(context)
-            delegate.start(drawable, drawable)
-            assertFalse(counter.invalid(initialBitmap))
-        }
+        val initialDrawable = initialBitmap.toDrawable(context)
+        delegate.start(initialDrawable, initialDrawable)
+        assertFalse(counter.isInvalid(initialBitmap))
+        assertFalse(pool.bitmaps.contains(initialBitmap))
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), 0)
-            assertFalse(counter.invalid(bitmap))
+            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
+            assertFalse(counter.isInvalid(bitmap))
+            assertTrue(pool.bitmaps.contains(initialBitmap))
         }
+    }
 
-        assertTrue(pool.bitmaps.contains(initialBitmap))
+    @Test
+    fun `request suspends until transition is complete`() {
+        val request = createLoadRequest(context) {
+            target(ImageViewTarget(ImageView(context)))
+        }
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
+
+        val initialBitmap = createBitmap()
+        val initialDrawable = initialBitmap.toDrawable(context)
+        delegate.start(initialDrawable, initialDrawable)
+        assertFalse(counter.isInvalid(initialBitmap))
+        assertFalse(pool.bitmaps.contains(initialBitmap))
+
+        runBlocking {
+            val bitmap = createBitmap()
+            var isRunning = true
+            val transition = object : Transition {
+                override suspend fun transition(target: TransitionTarget<*>, result: TransitionResult) {
+                    assertFalse(pool.bitmaps.contains(initialBitmap))
+                    delay(100) // Simulate an animation.
+                    assertFalse(pool.bitmaps.contains(initialBitmap))
+                    isRunning = false
+                }
+            }
+            delegate.success(bitmap.toDrawable(context), false, transition)
+
+            // Ensure that the animation completed and the initial bitmap was not pooled until this method completes.
+            assertFalse(isRunning)
+            assertTrue(pool.bitmaps.contains(initialBitmap))
+        }
     }
 }

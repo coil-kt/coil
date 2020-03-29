@@ -5,12 +5,13 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
-import coil.bitmappool.FakeBitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
+import coil.size.Scale
 import coil.size.Size
 import coil.util.createOptions
 import coil.util.isSimilarTo
+import coil.util.size
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.source
@@ -22,19 +23,19 @@ import kotlin.test.assertTrue
 
 class BitmapFactoryDecoderTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
+    private lateinit var context: Context
     private lateinit var pool: BitmapPool
     private lateinit var service: BitmapFactoryDecoder
 
     @Before
     fun before() {
-        pool = FakeBitmapPool()
+        context = ApplicationProvider.getApplicationContext()
+        pool = BitmapPool(0)
         service = BitmapFactoryDecoder(context)
     }
 
     @Test
-    fun basicDecode() {
+    fun basic() {
         val source = context.assets.open("normal.jpg").source().buffer()
         val (drawable, isSampled) = runBlocking {
             service.decode(
@@ -49,7 +50,7 @@ class BitmapFactoryDecoderTest {
         assertEquals("closed", exception.message)
         assertTrue(isSampled)
         assertTrue(drawable is BitmapDrawable)
-        assertEquals(PixelSize(100, 125), drawable.bitmap.run { PixelSize(width, height) })
+        assertEquals(PixelSize(100, 125), drawable.bitmap.size)
         assertEquals(drawable.bitmap.config, Bitmap.Config.ARGB_8888)
     }
 
@@ -86,7 +87,7 @@ class BitmapFactoryDecoderTest {
     fun originalSizeDimensionsAreResolvedCorrectly() {
         val size = OriginalSize
         val normal = decode("normal.jpg", size)
-        assertTrue(normal.width == 1080 && normal.height == 1350)
+        assertEquals(PixelSize(1080, 1350), normal.run { PixelSize(width, height) })
     }
 
     @Test
@@ -104,16 +105,40 @@ class BitmapFactoryDecoderTest {
     fun largeExifMetadata() {
         val size = PixelSize(500, 500)
         val normal = decode("exif/large_metadata_normalized.jpg", size)
-        val largeExifMetadata = decode("exif/large_metadata_normalized.jpg", size)
-        assertTrue(normal.isSimilarTo(largeExifMetadata))
+        val actual = decode("exif/large_metadata_normalized.jpg", size)
+        assertTrue(normal.isSimilarTo(actual))
     }
 
-    private fun decode(fileName: String, size: Size): Bitmap = runBlocking {
+    @Test
+    fun allowInexactSize_True() {
+        val result = decode(
+            fileName = "normal.jpg",
+            size = PixelSize(1500, 1500),
+            options = { createOptions(scale = Scale.FIT, allowInexactSize = true) }
+        )
+        assertEquals(PixelSize(1080, 1350), result.run { PixelSize(width, height) })
+    }
+
+    @Test
+    fun allowInexactSize_False() {
+        val result = decode(
+            fileName = "normal.jpg",
+            size = PixelSize(1500, 1500),
+            options = { createOptions(scale = Scale.FIT, allowInexactSize = false) }
+        )
+        assertEquals(PixelSize(1200, 1500), result.run { PixelSize(width, height) })
+    }
+
+    private fun decode(
+        fileName: String,
+        size: Size,
+        options: () -> Options = { createOptions() }
+    ): Bitmap = runBlocking {
         val result = service.decode(
             pool = pool,
             source = context.assets.open(fileName).source().buffer(),
             size = size,
-            options = createOptions()
+            options = options()
         )
         return@runBlocking (result.drawable as BitmapDrawable).bitmap
     }

@@ -16,13 +16,9 @@ import coil.target.Target
  */
 interface MeasuredMapper<T : Any, V : Any> {
 
-    /**
-     * Return true if this can convert [data].
-     */
+    /** Return true if this can convert [data]. */
     fun handles(data: T): Boolean = true
 
-    /**
-     * Convert [data] into [V].
-     */
+    /** Convert [data] into [V]. */
     fun map(data: T, size: Size): V
 }

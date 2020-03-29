@@ -1,6 +1,10 @@
 # Contributing
 
-In an effort to keep the library small and stable, please keep contributions limited to bug fixes, documentation improvements, and test improvements. If you have a new feature idea, please build it in an external library.
+In an effort to keep the library small and stable, please keep contributions limited to bug fixes, documentation improvements, and test improvements.
+
+Issues that are tagged as [help wanted](https://github.com/coil-kt/coil/labels/help%20wanted) are great issues to get started contributing to Coil.
+
+If you have a new feature idea, please [create an enhancement request](https://github.com/coil-kt/coil/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=) so it can be discussed or build it in an external library.
 
 If you’ve found a bug, please contribute a failing test case so we can study and fix it.
 

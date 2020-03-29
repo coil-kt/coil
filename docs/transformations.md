@@ -7,4 +7,4 @@ By default, Coil comes packaged with 4 transformations: [blur](../api/coil-base/
 See the [API doc](../api/coil-base/coil.transform/-transformation/) for more information.
 
 !!! Note
-    Transformations are only applied to `BitmapDrawable`s.
+    If the `Drawable` returned by the image pipeline is not a `BitmapDrawable`, it will be converted to one. This will cause animated drawables to only draw the first frame of their animation.

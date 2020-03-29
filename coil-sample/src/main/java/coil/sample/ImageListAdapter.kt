@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import coil.sample.ImageListAdapter.ViewHolder
 import kotlin.math.ceil
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class ImageListAdapter(
@@ -22,7 +21,7 @@ class ImageListAdapter(
 
     private val maxColumnWidth = 320.dp(context)
     private val displayWidth = context.getDisplaySize().width
-    val numColumns = ceil(displayWidth / maxColumnWidth).toInt()
+    val numColumns = ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(2)
     private val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,12 +33,13 @@ class ImageListAdapter(
             val item = getItem(position)
 
             updateLayoutParams {
-                val scale = min(1.0, columnWidth / item.width.toDouble())
+                val scale = columnWidth / item.width.toDouble()
                 height = (scale * item.height).roundToInt()
                 width = columnWidth
             }
 
-            load(item.url) {
+            load(item.uri) {
+                parameters(item.parameters)
                 placeholder(ColorDrawable(item.color))
             }
 
@@ -54,7 +54,7 @@ class ImageListAdapter(
     }
 
     private object Callback : DiffUtil.ItemCallback<Image>() {
-        override fun areItemsTheSame(old: Image, new: Image) = old.url == new.url
+        override fun areItemsTheSame(old: Image, new: Image) = old.uri == new.uri
         override fun areContentsTheSame(old: Image, new: Image) = old == new
     }
 }
