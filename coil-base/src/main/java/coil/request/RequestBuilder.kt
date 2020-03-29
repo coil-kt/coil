@@ -463,6 +463,13 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     @Suppress("UNUSED_PARAMETER")
     constructor(context: Context, defaults: DefaultRequestOptions) : this(context)
 
+    @Deprecated(
+        message = "Migrate to LoadRequest.Builder(request, context).",
+        replaceWith = ReplaceWith("LoadRequest.Builder(request, context)")
+    )
+    @Suppress("UNUSED_PARAMETER")
+    constructor(context: Context, request: LoadRequest) : this(request, context)
+
     /**
      * Convenience function to set [imageView] as the [Target].
      */
