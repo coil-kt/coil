@@ -12,7 +12,7 @@ import coil.request.RequestDisposable
 import coil.target.Target
 
 /**
- * A service class that loads images by executing [Request]s. Image loaders handle caching, source fetching,
+ * A service class that loads images by executing [Request]s. Image loaders handle caching, data fetching,
  * image decoding, request management, bitmap pooling, memory management, and more.
  *
  * Image loaders are designed to be shareable and work best when you create a single instance and
