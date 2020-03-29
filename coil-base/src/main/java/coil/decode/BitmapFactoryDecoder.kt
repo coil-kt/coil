@@ -85,7 +85,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                     inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
                 }
             }
-            SDK_INT >= 19 -> {
+            else -> {
                 val (width, height) = size
                 inSampleSize = DecodeUtils.calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
 
@@ -124,19 +124,6 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                         height = ceil(scale * sampledOutHeight + 0.5).toInt(),
                         config = inPreferredConfig
                     )
-                }
-            }
-            else -> {
-                // We can only re-use bitmaps that exactly match the size of the image.
-                if (inMutable) {
-                    inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
-                }
-
-                // Sample size must be 1 if we are re-using a bitmap.
-                inSampleSize = if (inBitmap != null) {
-                    1
-                } else {
-                    DecodeUtils.calculateInSampleSize(srcWidth, srcHeight, size.width, size.height, options.scale)
                 }
             }
         }
