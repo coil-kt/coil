@@ -159,7 +159,7 @@ interface EventListener : Request.Listener {
     interface Factory {
 
         companion object {
-            @JvmField val EMPTY = Factory(NONE)
+            @JvmField val NONE = Factory(EventListener.NONE)
 
             /** Create an [EventListener.Factory] that returns the same [listener]. */
             @JvmStatic

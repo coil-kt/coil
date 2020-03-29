@@ -104,7 +104,7 @@ public final class coil/EventListener$DefaultImpls {
 
 public abstract interface class coil/EventListener$Factory {
 	public static final field Companion Lcoil/EventListener$Factory$Companion;
-	public static final field EMPTY Lcoil/EventListener$Factory;
+	public static final field NONE Lcoil/EventListener$Factory;
 	public static fun create (Lcoil/EventListener;)Lcoil/EventListener$Factory;
 	public abstract fun newListener (Lcoil/request/Request;)Lcoil/EventListener;
 }

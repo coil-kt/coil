@@ -332,7 +332,7 @@ class ImageLoaderBuilder(context: Context) {
             memoryCache = memoryCache,
             weakMemoryCache = weakMemoryCache,
             callFactory = callFactory ?: buildDefaultCallFactory(),
-            eventListenerFactory = eventListenerFactory ?: EventListener.Factory.EMPTY,
+            eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
             registry = registry ?: ComponentRegistry(),
             logger = logger
         )

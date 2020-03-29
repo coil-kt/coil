@@ -77,7 +77,7 @@ class RealImageLoaderBasicTest {
             memoryCache,
             weakMemoryCache,
             OkHttpClient(),
-            EventListener.Factory.EMPTY,
+            EventListener.Factory.NONE,
             ComponentRegistry(),
             null
         )
