@@ -97,7 +97,7 @@ class BitmapFactoryDecoderTest {
 
         for (index in 1..8) {
             val other = decode("exif/$index.jpg", size)
-            assertTrue(normal.isSimilarTo(other), "Image with index $index is incorrect.")
+            assertTrue(normal.isSimilarTo(other, threshold = 0.95), "Image with index $index is incorrect.")
         }
     }
 
