@@ -7,7 +7,7 @@ on:
 jobs:
     check:
         name: Check
-        runs-on: macOS-latest
+        runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
             - uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
 
     unit-tests:
         name: Unit tests
-        runs-on: macOS-latest
+        runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
             - uses: actions/checkout@v2
@@ -86,7 +86,7 @@ jobs:
 
     deploy-snapshot:
         name: Deploy snapshot
-        runs-on: macOS-latest
+        runs-on: ubuntu-latest
         timeout-minutes: 15
         if: github.ref == 'refs/heads/master'
         needs: [check, unit-tests, instrumentation-tests]
