@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
@@ -36,92 +37,133 @@ import coil.target.Target
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
+import coil.util.EMPTY_DRAWABLE
 import coil.util.Utils
 import coil.util.orEmpty
 import coil.util.self
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
-import okio.BufferedSource
+import okhttp3.HttpUrl
+import java.io.File
 
 /** Base class for [LoadRequestBuilder] and [GetRequestBuilder]. */
 @BuilderMarker
 sealed class RequestBuilder<T : RequestBuilder<T>> {
 
-    protected var data: Any?
+    @JvmField protected var data: Any?
+    @JvmField protected var key: String?
+    @JvmField protected var aliasKeys: List<String>
 
-    protected var key: String?
-    protected var aliasKeys: List<String>
-    protected var listener: Request.Listener?
-    protected var sizeResolver: SizeResolver?
-    protected var scale: Scale?
-    protected var precision: Precision
-    protected var decoder: Decoder?
-    protected var dispatcher: CoroutineDispatcher
-    protected var transformations: List<Transformation>
-    protected var bitmapConfig: Bitmap.Config
-    protected var colorSpace: ColorSpace? = null
-    protected var headers: Headers.Builder?
-    protected var parameters: Parameters.Builder?
+    @JvmField protected var listener: Request.Listener?
+    @JvmField protected var dispatcher: CoroutineDispatcher?
+    @JvmField protected var transformations: List<Transformation>
+    @JvmField protected var bitmapConfig: Bitmap.Config
+    @JvmField protected var colorSpace: ColorSpace? = null
 
-    protected var memoryCachePolicy: CachePolicy
-    protected var diskCachePolicy: CachePolicy
-    protected var networkCachePolicy: CachePolicy
+    @JvmField protected var sizeResolver: SizeResolver?
+    @JvmField protected var scale: Scale?
+    @JvmField protected var precision: Precision?
 
-    protected var allowHardware: Boolean
-    protected var allowRgb565: Boolean
+    @JvmField protected var fetcher: Pair<Class<*>, Fetcher<*>>?
+    @JvmField protected var decoder: Decoder?
 
-    constructor(defaults: DefaultRequestOptions) {
+    @JvmField protected var allowHardware: Boolean?
+    @JvmField protected var allowRgb565: Boolean?
+
+    @JvmField protected var memoryCachePolicy: CachePolicy?
+    @JvmField protected var diskCachePolicy: CachePolicy?
+    @JvmField protected var networkCachePolicy: CachePolicy?
+
+    @JvmField protected var headers: Headers.Builder?
+    @JvmField protected var parameters: Parameters.Builder?
+
+    constructor() {
         data = null
-
         key = null
         aliasKeys = emptyList()
         listener = null
-        sizeResolver = null
-        scale = null
-        precision = defaults.precision
-        decoder = null
-        dispatcher = defaults.dispatcher
+        dispatcher = null
         transformations = emptyList()
         bitmapConfig = Utils.getDefaultBitmapConfig()
-        if (SDK_INT >= 26) {
-            colorSpace = null
-        }
+        if (SDK_INT >= 26) colorSpace = null
+        sizeResolver = null
+        scale = null
+        precision = null
+        fetcher = null
+        decoder = null
+        allowHardware = null
+        allowRgb565 = null
+        memoryCachePolicy = null
+        diskCachePolicy = null
+        networkCachePolicy = null
         headers = null
         parameters = null
-
-        memoryCachePolicy = defaults.memoryCachePolicy
-        diskCachePolicy = defaults.diskCachePolicy
-        networkCachePolicy = defaults.networkCachePolicy
-
-        allowHardware = defaults.allowHardware
-        allowRgb565 = defaults.allowRgb565
     }
 
     constructor(request: Request) {
         data = request.data
-
         key = request.key
         aliasKeys = request.aliasKeys
         listener = request.listener
-        sizeResolver = request.sizeResolver
-        scale = request.scale
-        precision = request.precision
-        decoder = request.decoder
         dispatcher = request.dispatcher
         transformations = request.transformations
         bitmapConfig = request.bitmapConfig
-        if (SDK_INT >= 26) {
-            colorSpace = request.colorSpace
-        }
-        headers = request.headers.newBuilder()
-        parameters = request.parameters.newBuilder()
-
-        networkCachePolicy = request.networkCachePolicy
-        diskCachePolicy = request.diskCachePolicy
-        memoryCachePolicy = request.memoryCachePolicy
-
+        if (SDK_INT >= 26) colorSpace = request.colorSpace
+        sizeResolver = request.sizeResolver
+        scale = request.scale
+        precision = request.precision
+        fetcher = request.fetcher
+        decoder = request.decoder
         allowHardware = request.allowHardware
         allowRgb565 = request.allowRgb565
+        memoryCachePolicy = request.memoryCachePolicy
+        diskCachePolicy = request.diskCachePolicy
+        networkCachePolicy = request.networkCachePolicy
+        headers = request.headers.newBuilder()
+        parameters = request.parameters.newBuilder()
+    }
+
+    /**
+     * Set the data to load.
+     *
+     * The default supported data types are:
+     * - [String] (mapped to a [Uri])
+     * - [HttpUrl]
+     * - [Uri] ("android.resource", "content", "file", "http", and "https" schemes only)
+     * - [File]
+     * - @DrawableRes [Int]
+     * - [Drawable]
+     * - [Bitmap]
+     */
+    fun data(data: Any?): T = self {
+        this.data = data
+    }
+
+    /**
+     * Set the cache key for this request.
+     *
+     * By default, the cache key is computed by the [Fetcher], any [Parameters], and any [Transformation]s.
+     */
+    fun key(key: String?): T = self {
+        this.key = key
+    }
+
+    /**
+     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
+     *
+     * Requests are still written to the memory cache as [key].
+     */
+    fun aliasKeys(vararg aliasKeys: String): T = self {
+        this.aliasKeys = aliasKeys.toList()
+    }
+
+    /**
+     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
+     *
+     * Requests are still written to the memory cache as [key].
+     */
+    fun aliasKeys(aliasKeys: List<String>): T = self {
+        this.aliasKeys = aliasKeys.toList()
     }
 
     /**
@@ -147,6 +189,13 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
+     * Set the [CoroutineDispatcher] to run the fetching, decoding, and transforming work on.
+     */
+    fun dispatcher(dispatcher: CoroutineDispatcher): T = self {
+        this.dispatcher = dispatcher
+    }
+
+    /**
      * Set the list of [Transformation]s to be applied to this request.
      */
     fun transformations(vararg transformations: Transformation): T = self {
@@ -161,10 +210,20 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Set the [CoroutineDispatcher] to run the fetching, decoding, and transforming work on.
+     * Set the preferred [Bitmap.Config].
+     *
+     * This is not guaranteed and a different config may be used in some situations.
      */
-    fun dispatcher(dispatcher: CoroutineDispatcher): T = self {
-        this.dispatcher = dispatcher
+    fun bitmapConfig(bitmapConfig: Bitmap.Config): T = self {
+        this.bitmapConfig = bitmapConfig
+    }
+
+    /**
+     * Set the preferred [ColorSpace].
+     */
+    @RequiresApi(26)
+    fun colorSpace(colorSpace: ColorSpace): T = self {
+        this.colorSpace = colorSpace
     }
 
     /**
@@ -224,9 +283,24 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Set the [Decoder] to handle decoding any image data.
+     * Set the [Fetcher] to handle fetching any image data.
      *
-     * Use this to force the given [Decoder] to handle decoding any [BufferedSource]s returned by [Fetcher.fetch].
+     * If this isn't set, the [ImageLoader] will find an applicable [Fetcher] that's registered in its [ComponentRegistry].
+     *
+     * NOTE: This skips calling [Fetcher.handles] for [fetcher].
+     */
+    inline fun <reified R : Any> fetcher(fetcher: Fetcher<R>) = fetcher(R::class.java, fetcher)
+
+    /**
+     * @see RequestBuilder.fetcher
+     */
+    @PublishedApi
+    internal fun <R : Any> fetcher(type: Class<R>, fetcher: Fetcher<R>): T = self {
+        this.fetcher = type to fetcher
+    }
+
+    /**
+     * Set the [Decoder] to handle decoding any image data.
      *
      * If this isn't set, the [ImageLoader] will find an applicable [Decoder] that's registered in its [ComponentRegistry].
      *
@@ -252,50 +326,6 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
      */
     fun allowRgb565(enable: Boolean): T = self {
         this.allowRgb565 = enable
-    }
-
-    /**
-     * Set the preferred [Bitmap.Config].
-     *
-     * This is not guaranteed and a different config may be used in some situations.
-     */
-    fun bitmapConfig(bitmapConfig: Bitmap.Config): T = self {
-        this.bitmapConfig = bitmapConfig
-    }
-
-    /**
-     * Set the preferred [ColorSpace].
-     */
-    @RequiresApi(26)
-    fun colorSpace(colorSpace: ColorSpace): T = self {
-        this.colorSpace = colorSpace
-    }
-
-    /**
-     * Set the cache key for this request.
-     *
-     * By default, the cache key is computed by the [Fetcher], any [Parameters], and any [Transformation]s.
-     */
-    fun key(key: String?): T = self {
-        this.key = key
-    }
-
-    /**
-     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
-     *
-     * Requests are still written to the memory cache as [key].
-     */
-    fun aliasKeys(vararg aliasKeys: String): T = self {
-        this.aliasKeys = aliasKeys.toList()
-    }
-
-    /**
-     * Set a list of supplementary cache keys that are used to check if this request is cached in the memory cache.
-     *
-     * Requests are still written to the memory cache as [key].
-     */
-    fun aliasKeys(aliasKeys: List<String>): T = self {
-        this.aliasKeys = aliasKeys.toList()
     }
 
     /**
@@ -396,28 +426,28 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     private var errorDrawable: Drawable?
     private var fallbackDrawable: Drawable?
 
-    constructor(context: Context, defaults: DefaultRequestOptions) : super(defaults) {
+    constructor(context: Context) : super() {
         this.context = context
-
         target = null
         lifecycle = null
-        transition = defaults.transition
-
+        transition = null
         placeholderResId = 0
         errorResId = 0
         fallbackResId = 0
-        placeholderDrawable = defaults.placeholder
-        errorDrawable = defaults.error
-        fallbackDrawable = defaults.fallback
+        placeholderDrawable = null
+        errorDrawable = null
+        fallbackDrawable = null
     }
 
-    constructor(context: Context, request: LoadRequest) : super(request) {
+    @JvmOverloads
+    constructor(
+        request: LoadRequest,
+        context: Context = request.context
+    ) : super(request) {
         this.context = context
-
         target = request.target
         lifecycle = request.lifecycle
         transition = request.transition
-
         placeholderResId = request.placeholderResId
         errorResId = request.errorResId
         fallbackResId = request.fallbackResId
@@ -426,12 +456,18 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
         fallbackDrawable = request.fallbackDrawable
     }
 
-    /**
-     * Set the data to load.
-     */
-    fun data(data: Any?) = apply {
-        this.data = data
-    }
+    @Deprecated(
+        message = "Migrate to LoadRequest.Builder(context).",
+        replaceWith = ReplaceWith("LoadRequest.Builder(context)")
+    )
+    @Suppress("UNUSED_PARAMETER")
+    constructor(context: Context, defaults: DefaultRequestOptions) : this(context)
+
+    @Deprecated(
+        message = "Migrate to LoadRequest.Builder(request, context).",
+        replaceWith = ReplaceWith("LoadRequest.Builder(request, context)")
+    )
+    constructor(context: Context, request: LoadRequest) : this(request, context)
 
     /**
      * Convenience function to set [imageView] as the [Target].
@@ -489,14 +525,14 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      * See: [ImageLoaderBuilder.crossfade]
      */
     fun crossfade(durationMillis: Int) = apply {
-        this.transition = if (durationMillis > 0) CrossfadeTransition(durationMillis) else null
+        this.transition = if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE
     }
 
     /**
      * See: [ImageLoaderBuilder.transition]
      */
     @ExperimentalCoilApi
-    fun transition(transition: Transition?) = apply {
+    fun transition(transition: Transition) = apply {
         this.transition = transition
     }
 
@@ -505,14 +541,14 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      */
     fun placeholder(@DrawableRes drawableResId: Int) = apply {
         this.placeholderResId = drawableResId
-        this.placeholderDrawable = null
+        this.placeholderDrawable = EMPTY_DRAWABLE
     }
 
     /**
      * Set the placeholder drawable to use when the request starts.
      */
     fun placeholder(drawable: Drawable?) = apply {
-        this.placeholderDrawable = drawable
+        this.placeholderDrawable = drawable ?: EMPTY_DRAWABLE
         this.placeholderResId = 0
     }
 
@@ -521,14 +557,14 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      */
     fun error(@DrawableRes drawableResId: Int) = apply {
         this.errorResId = drawableResId
-        this.errorDrawable = null
+        this.errorDrawable = EMPTY_DRAWABLE
     }
 
     /**
      * Set the error drawable to use if the request fails.
      */
     fun error(drawable: Drawable?) = apply {
-        this.errorDrawable = drawable
+        this.errorDrawable = drawable ?: EMPTY_DRAWABLE
         this.errorResId = 0
     }
 
@@ -537,14 +573,14 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
      */
     fun fallback(@DrawableRes drawableResId: Int) = apply {
         this.fallbackResId = drawableResId
-        this.fallbackDrawable = null
+        this.fallbackDrawable = EMPTY_DRAWABLE
     }
 
     /**
      * Set the fallback drawable to use if [data] is null.
      */
     fun fallback(drawable: Drawable?) = apply {
-        this.fallbackDrawable = drawable
+        this.fallbackDrawable = drawable ?: EMPTY_DRAWABLE
         this.fallbackResId = 0
     }
 
@@ -555,27 +591,28 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
         return LoadRequest(
             context,
             data,
-            target,
-            lifecycle,
-            transition,
             key,
             aliasKeys,
             listener,
-            sizeResolver,
-            scale,
-            precision,
-            decoder,
             dispatcher,
             transformations,
             bitmapConfig,
             colorSpace,
-            headers?.build().orEmpty(),
-            parameters?.build().orEmpty(),
+            sizeResolver,
+            scale,
+            precision,
+            fetcher,
+            decoder,
+            allowHardware,
+            allowRgb565,
             memoryCachePolicy,
             diskCachePolicy,
             networkCachePolicy,
-            allowHardware,
-            allowRgb565,
+            headers?.build().orEmpty(),
+            parameters?.build().orEmpty(),
+            target,
+            lifecycle,
+            transition,
             placeholderResId,
             errorResId,
             fallbackResId,
@@ -589,41 +626,42 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 /** Builder for a [GetRequest]. */
 class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
 
-    constructor(defaults: DefaultRequestOptions) : super(defaults)
+    constructor() : super()
 
     constructor(request: GetRequest) : super(request)
 
-    /**
-     * Set the data to load.
-     */
-    fun data(data: Any) = apply {
-        this.data = data
-    }
+    @Deprecated(
+        message = "Migrate to GetRequest.Builder().",
+        replaceWith = ReplaceWith("GetRequest.Builder()")
+    )
+    @Suppress("UNUSED_PARAMETER")
+    constructor(defaults: DefaultRequestOptions) : this()
 
     /**
      * Create a new [GetRequest] instance.
      */
     fun build(): GetRequest {
         return GetRequest(
-            checkNotNull(data) { "data == null" },
+            data,
             key,
             aliasKeys,
             listener,
-            sizeResolver,
-            scale,
-            precision,
-            decoder,
             dispatcher,
             transformations,
             bitmapConfig,
             colorSpace,
-            headers?.build().orEmpty(),
-            parameters?.build().orEmpty(),
+            sizeResolver,
+            scale,
+            precision,
+            fetcher,
+            decoder,
+            allowHardware,
+            allowRgb565,
             memoryCachePolicy,
             diskCachePolicy,
             networkCachePolicy,
-            allowHardware,
-            allowRgb565
+            headers?.build().orEmpty(),
+            parameters?.build().orEmpty()
         )
     }
 }

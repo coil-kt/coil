@@ -97,8 +97,7 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
  */
 private object HardwareBitmapBlacklist {
 
-    @JvmField
-    val IS_BLACKLISTED = when (SDK_INT) {
+    @JvmField val IS_BLACKLISTED = when (SDK_INT) {
         26 -> run {
             val model = Build.MODEL ?: return@run false
 

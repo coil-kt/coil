@@ -15,50 +15,57 @@ import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.decode.Decoder
+import coil.fetch.Fetcher
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.SizeResolver
+import coil.target.PoolableViewTarget
 import coil.target.Target
 import coil.transform.Transformation
 import coil.transition.Transition
+import coil.util.EMPTY_DRAWABLE
 import coil.util.getDrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import okhttp3.Headers
 
 /**
- * A value object that represents an image request.
+ * The base class for an image request.
  *
- * @see LoadRequest
- * @see GetRequest
+ * There are two types of image requests: [LoadRequest]s and [GetRequest]s.
  */
 sealed class Request {
 
     abstract val data: Any?
+    abstract val key: String?
+    abstract val aliasKeys: List<String>
+
+    abstract val listener: Listener?
+    abstract val dispatcher: CoroutineDispatcher?
+    abstract val transformations: List<Transformation>
+    abstract val bitmapConfig: Bitmap.Config
+    abstract val colorSpace: ColorSpace?
+
+    abstract val sizeResolver: SizeResolver?
+    abstract val scale: Scale?
+    abstract val precision: Precision?
+
+    abstract val fetcher: Pair<Class<*>, Fetcher<*>>?
+    abstract val decoder: Decoder?
+
+    abstract val allowHardware: Boolean?
+    abstract val allowRgb565: Boolean?
+
+    abstract val memoryCachePolicy: CachePolicy?
+    abstract val diskCachePolicy: CachePolicy?
+    abstract val networkCachePolicy: CachePolicy?
+
+    abstract val headers: Headers
+    abstract val parameters: Parameters
 
     abstract val target: Target?
     abstract val lifecycle: Lifecycle?
     abstract val transition: Transition?
-
-    abstract val key: String?
-    abstract val aliasKeys: List<String>
-    abstract val listener: Listener?
-    abstract val sizeResolver: SizeResolver?
-    abstract val scale: Scale?
-    abstract val precision: Precision
-    abstract val decoder: Decoder?
-    abstract val dispatcher: CoroutineDispatcher
-    abstract val transformations: List<Transformation>
-    abstract val bitmapConfig: Bitmap.Config
-    abstract val colorSpace: ColorSpace?
-    abstract val headers: Headers
-    abstract val parameters: Parameters
-
-    abstract val memoryCachePolicy: CachePolicy
-    abstract val diskCachePolicy: CachePolicy
-    abstract val networkCachePolicy: CachePolicy
-
-    abstract val allowHardware: Boolean
-    abstract val allowRgb565: Boolean
 
     abstract val placeholder: Drawable?
     abstract val error: Drawable?
@@ -96,53 +103,54 @@ sealed class Request {
 }
 
 /**
- * A value object that represents a *load* image request.
+ * [LoadRequest]s asynchronously load an image into a [Target].
  *
- * Instances can be created and executed ad hoc:
- * ```
- * imageLoader.load(context, "https://www.example.com/image.jpg") {
- *     crossfade(true)
- *     target(imageView)
- * }
- * ```
+ * [Request.data] must be set to a non-null value or the request
+ * will fail with [NullRequestDataException] when executed.
  *
- * Or instances can be created separately from the call that executes them:
+ * - They are scoped to a [Lifecycle]. Requests aren't started until the lifecycle is
+ *   started and are automatically cancelled when the lifecycle is destroyed.
+ * - They support [placeholder], [error], and [fallback] drawables.
+ * - They support [Transition]s.
+ * - They support bitmap pooling (if [target] implements [PoolableViewTarget]).
+ *
+ * Example:
  * ```
- * val request = LoadRequest.Builder(context, imageLoader.defaults)
+ * val request = LoadRequest.Builder(context)
  *     .data("https://www.example.com/image.jpg")
- *     .crossfade(true)
  *     .target(imageView)
  *     .build()
- * imageLoader.load(request)
+ * val disposable = imageLoader.execute(request)
  * ```
  *
  * @see LoadRequestBuilder
- * @see ImageLoader.load
+ * @see ImageLoader.execute
  */
 class LoadRequest internal constructor(
     val context: Context,
     override val data: Any?,
-    override val target: Target?,
-    override val lifecycle: Lifecycle?,
-    override val transition: Transition?,
     override val key: String?,
     override val aliasKeys: List<String>,
     override val listener: Listener?,
-    override val sizeResolver: SizeResolver?,
-    override val scale: Scale?,
-    override val precision: Precision,
-    override val decoder: Decoder?,
-    override val dispatcher: CoroutineDispatcher,
+    override val dispatcher: CoroutineDispatcher?,
     override val transformations: List<Transformation>,
     override val bitmapConfig: Bitmap.Config,
     override val colorSpace: ColorSpace?,
+    override val sizeResolver: SizeResolver?,
+    override val scale: Scale?,
+    override val precision: Precision?,
+    override val fetcher: Pair<Class<*>, Fetcher<*>>?,
+    override val decoder: Decoder?,
+    override val allowHardware: Boolean?,
+    override val allowRgb565: Boolean?,
+    override val memoryCachePolicy: CachePolicy?,
+    override val diskCachePolicy: CachePolicy?,
+    override val networkCachePolicy: CachePolicy?,
     override val headers: Headers,
     override val parameters: Parameters,
-    override val memoryCachePolicy: CachePolicy,
-    override val diskCachePolicy: CachePolicy,
-    override val networkCachePolicy: CachePolicy,
-    override val allowHardware: Boolean,
-    override val allowRgb565: Boolean,
+    override val target: Target?,
+    override val lifecycle: Lifecycle?,
+    override val transition: Transition?,
     @DrawableRes internal val placeholderResId: Int,
     @DrawableRes internal val errorResId: Int,
     @DrawableRes internal val fallbackResId: Int,
@@ -152,35 +160,42 @@ class LoadRequest internal constructor(
 ) : Request() {
 
     companion object {
+        /** Alias for [LoadRequestBuilder]. */
         @JvmStatic
         @JvmName("builder")
-        inline fun Builder(context: Context, defaults: DefaultRequestOptions) = LoadRequestBuilder(context, defaults)
+        inline fun Builder(context: Context) = LoadRequestBuilder(context)
 
+        /** Alias for [LoadRequestBuilder]. */
         @JvmStatic
+        @JvmOverloads
         @JvmName("builder")
-        inline fun Builder(context: Context, request: LoadRequest) = LoadRequestBuilder(context, request)
+        inline fun Builder(
+            request: LoadRequest,
+            context: Context = request.context
+        ) = LoadRequestBuilder(request, context)
 
-        /** Create a new [LoadRequest] instance. */
+        /** Create a new [LoadRequest]. */
         @Deprecated(
             message = "Use LoadRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("LoadRequest.Builder(context, defaults).apply(builder).build()")
+            replaceWith = ReplaceWith("LoadRequest.Builder(context).apply(builder).build()")
         )
+        @Suppress("UNUSED_PARAMETER")
         inline operator fun invoke(
             context: Context,
             defaults: DefaultRequestOptions,
             builder: LoadRequestBuilder.() -> Unit = {}
-        ): LoadRequest = LoadRequestBuilder(context, defaults).apply(builder).build()
+        ): LoadRequest = LoadRequestBuilder(context).apply(builder).build()
 
-        /** Create a new [LoadRequest] instance. */
+        /** Create a new [LoadRequest]. */
         @Deprecated(
             message = "Use LoadRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("LoadRequest.Builder(context, request).apply(builder).build()")
+            replaceWith = ReplaceWith("LoadRequest.Builder(request, context).apply(builder).build()")
         )
         inline operator fun invoke(
             context: Context,
             request: LoadRequest,
             builder: LoadRequestBuilder.() -> Unit = {}
-        ): LoadRequest = LoadRequestBuilder(context, request).apply(builder).build()
+        ): LoadRequest = LoadRequestBuilder(request, context).apply(builder).build()
     }
 
     override val placeholder: Drawable?
@@ -193,78 +208,81 @@ class LoadRequest internal constructor(
         get() = context.getDrawable(fallbackDrawable, fallbackResId)
 
     private fun Context.getDrawable(drawable: Drawable?, @DrawableRes resId: Int): Drawable? {
-        return drawable ?: if (resId != 0) getDrawableCompat(resId) else null
+        return drawable.takeIf { it !== EMPTY_DRAWABLE } ?: if (resId != 0) getDrawableCompat(resId) else null
     }
 
     /** Create a new [LoadRequestBuilder] instance using this as a base. */
     @JvmOverloads
-    fun newBuilder(context: Context = this.context) = LoadRequestBuilder(context, this)
+    fun newBuilder(context: Context = this.context) = LoadRequestBuilder(this, context)
 }
 
 /**
- * A value object that represents a *get* image request.
+ * [GetRequest]s suspend the current coroutine and return the drawable directly to the caller.
  *
- * Instances can be created and executed ad hoc:
- * ```
- * val drawable = imageLoader.get("https://www.example.com/image.jpg") {
- *     size(1080, 1920)
- * }
- * ```
+ * [Request.data] must be set to a non-null value or the request
+ * will fail with [NullRequestDataException] when executed.
  *
- * Or instances can be created separately from the call that executes them:
+ * - They are scoped to the [CoroutineScope] that they are launched in. They are **not** scoped to a [Lifecycle].
+ * - They do not support a [Target], [Transition], [placeholder], [error], or [fallback].
+ *
+ * Example:
  * ```
- * val request = GetRequest.Builder(imageLoader.defaults)
+ * val request = GetRequest.Builder()
  *     .data("https://www.example.com/image.jpg")
- *     .size(1080, 1920)
+ *     .size(256, 256)
  *     .build()
- * imageLoader.get(request)
+ * val drawable = imageLoader.execute(request)
  * ```
  *
  * @see GetRequestBuilder
  * @see ImageLoader.get
  */
 class GetRequest internal constructor(
-    override val data: Any,
+    override val data: Any?,
     override val key: String?,
     override val aliasKeys: List<String>,
     override val listener: Listener?,
-    override val sizeResolver: SizeResolver?,
-    override val scale: Scale?,
-    override val precision: Precision,
-    override val decoder: Decoder?,
-    override val dispatcher: CoroutineDispatcher,
+    override val dispatcher: CoroutineDispatcher?,
     override val transformations: List<Transformation>,
     override val bitmapConfig: Bitmap.Config,
     override val colorSpace: ColorSpace?,
+    override val sizeResolver: SizeResolver?,
+    override val scale: Scale?,
+    override val precision: Precision?,
+    override val fetcher: Pair<Class<*>, Fetcher<*>>?,
+    override val decoder: Decoder?,
+    override val allowHardware: Boolean?,
+    override val allowRgb565: Boolean?,
+    override val memoryCachePolicy: CachePolicy?,
+    override val diskCachePolicy: CachePolicy?,
+    override val networkCachePolicy: CachePolicy?,
     override val headers: Headers,
-    override val parameters: Parameters,
-    override val memoryCachePolicy: CachePolicy,
-    override val diskCachePolicy: CachePolicy,
-    override val networkCachePolicy: CachePolicy,
-    override val allowHardware: Boolean,
-    override val allowRgb565: Boolean
+    override val parameters: Parameters
 ) : Request() {
 
     companion object {
+        /** Alias for [GetRequestBuilder]. */
         @JvmStatic
         @JvmName("builder")
-        inline fun Builder(defaults: DefaultRequestOptions) = GetRequestBuilder(defaults)
+        inline fun Builder() = GetRequestBuilder()
 
+        /** Alias for [GetRequestBuilder]. */
         @JvmStatic
         @JvmName("builder")
         inline fun Builder(request: GetRequest) = GetRequestBuilder(request)
 
-        /** Create a new [GetRequest] instance. */
+        /** Create a new [GetRequest]. */
         @Deprecated(
             message = "Use GetRequest.Builder to create new instances.",
             replaceWith = ReplaceWith("GetRequest.Builder(defaults).apply(builder).build()")
         )
+        @Suppress("UNUSED_PARAMETER")
         inline operator fun invoke(
             defaults: DefaultRequestOptions,
             builder: GetRequestBuilder.() -> Unit = {}
-        ): GetRequest = GetRequestBuilder(defaults).apply(builder).build()
+        ): GetRequest = GetRequestBuilder().apply(builder).build()
 
-        /** Create a new [GetRequest] instance. */
+        /** Create a new [GetRequest]. */
         @Deprecated(
             message = "Use GetRequest.Builder to create new instances.",
             replaceWith = ReplaceWith("GetRequest.Builder(request).apply(builder).build()")

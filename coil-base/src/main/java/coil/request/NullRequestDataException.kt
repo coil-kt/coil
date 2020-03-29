@@ -1,10 +1,9 @@
 package coil.request
 
 import coil.ImageLoader
+import kotlin.coroutines.CoroutineContext
 
 /**
- * Exception for when null [Request.data] is passed to [ImageLoader.load].
- *
- * @see Request.fallback
+ * Exception thrown by [ImageLoader.execute] (inside the [CoroutineContext]) when [Request.data] is null.
  */
 class NullRequestDataException : RuntimeException("The request's data is null.")

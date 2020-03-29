@@ -49,7 +49,7 @@ internal class BaseRequestDelegate(
  * @see ViewTargetRequestManager
  */
 internal class ViewTargetRequestDelegate(
-    private val loader: ImageLoader,
+    private val imageLoader: ImageLoader,
     private val request: LoadRequest,
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
@@ -60,7 +60,7 @@ internal class ViewTargetRequestDelegate(
     /** Repeat this request with the same params. */
     @MainThread
     fun restart() {
-        loader.load(request)
+        imageLoader.execute(request)
     }
 
     override fun dispose() {

@@ -62,7 +62,7 @@ class TargetDelegateTest {
     @Test
     fun `empty target does not invalidate`() {
         val request = createLoadRequest(context)
-        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
@@ -73,7 +73,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), false, null)
+            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
             assertFalse(counter.isInvalid(bitmap))
         }
     }
@@ -81,11 +81,11 @@ class TargetDelegateTest {
     @Test
     fun `get request invalidates the success bitmap`() {
         val request = createGetRequest()
-        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), false, null)
+            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
             assertTrue(counter.isInvalid(bitmap))
         }
     }
@@ -96,7 +96,7 @@ class TargetDelegateTest {
         val request = createLoadRequest(context) {
             target(target)
         }
-        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
@@ -108,14 +108,14 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), false, null)
+            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
             assertTrue(target.success)
             assertTrue(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.error(bitmap.toDrawable(context), null)
+            delegate.error(bitmap.toDrawable(context), Transition.NONE)
             assertTrue(target.error)
             assertFalse(counter.isInvalid(bitmap))
         }
@@ -126,7 +126,7 @@ class TargetDelegateTest {
         val request = createLoadRequest(context) {
             target(ImageViewTarget(ImageView(context)))
         }
-        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)
@@ -136,7 +136,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), false, null)
+            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
             assertFalse(counter.isInvalid(bitmap))
             assertTrue(pool.bitmaps.contains(initialBitmap))
         }
@@ -147,7 +147,7 @@ class TargetDelegateTest {
         val request = createLoadRequest(context) {
             target(ImageViewTarget(ImageView(context)))
         }
-        val delegate = delegateService.createTargetDelegate(request, EventListener.EMPTY)
+        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)

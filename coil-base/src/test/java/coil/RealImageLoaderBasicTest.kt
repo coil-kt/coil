@@ -8,7 +8,6 @@ import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
-import coil.api.newLoadBuilder
 import coil.bitmappool.BitmapPool
 import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
@@ -18,6 +17,7 @@ import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.WeakMemoryCache
+import coil.request.LoadRequest
 import coil.request.Parameters
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -77,7 +77,7 @@ class RealImageLoaderBasicTest {
             memoryCache,
             weakMemoryCache,
             OkHttpClient(),
-            EventListener.Factory.EMPTY,
+            EventListener.Factory.NONE,
             ComponentRegistry(),
             null
         )
@@ -429,7 +429,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             var error: Throwable? = null
-            val request = imageLoader.newLoadBuilder(context)
+            val request = LoadRequest.Builder(context)
                 .key(key)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                 .size(100, 100)
@@ -450,7 +450,7 @@ class RealImageLoaderBasicTest {
                     onError = { _, throwable -> error = throwable }
                 )
                 .build()
-            imageLoader.load(request).await()
+            imageLoader.execute(request).await()
 
             // Rethrow any errors that occurred while loading.
             error?.let { throw it }
@@ -465,7 +465,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             var error: Throwable? = null
-            val request = imageLoader.newLoadBuilder(context)
+            val request = LoadRequest.Builder(context)
                 .key(key)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                 .size(100, 100)
@@ -484,7 +484,7 @@ class RealImageLoaderBasicTest {
                     onError = { _, throwable -> error = throwable }
                 )
                 .build()
-            imageLoader.load(request).await()
+            imageLoader.execute(request).await()
 
             // Rethrow any errors that occurred while loading.
             error?.let { throw it }
@@ -544,7 +544,8 @@ class RealImageLoaderBasicTest {
             },
             targetDelegate = EmptyTargetDelegate,
             request = createLoadRequest(context),
-            eventListener = EventListener.EMPTY
+            defaults = DefaultRequestOptions(),
+            eventListener = EventListener.NONE
         )
     }
 }

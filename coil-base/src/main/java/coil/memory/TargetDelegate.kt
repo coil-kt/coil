@@ -32,10 +32,10 @@ internal sealed class TargetDelegate {
     open fun start(cached: BitmapDrawable?, placeholder: Drawable?) {}
 
     @MainThread
-    open suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {}
+    open suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition) {}
 
     @MainThread
-    open suspend fun error(error: Drawable?, transition: Transition?) {}
+    open suspend fun error(error: Drawable?, transition: Transition) {}
 
     @MainThread
     open fun clear() {}
@@ -57,7 +57,7 @@ internal class InvalidatableEmptyTargetDelegate(
     override val referenceCounter: BitmapReferenceCounter
 ) : TargetDelegate(), Invalidatable {
 
-    override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
+    override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition) {
         invalidate(result.bitmap)
     }
 }
@@ -78,12 +78,12 @@ internal class InvalidatableTargetDelegate(
         target.onStart(placeholder)
     }
 
-    override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
+    override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition) {
         invalidate(result.bitmap)
         target.onSuccess(request, result, isMemoryCache, transition, eventListener, logger)
     }
 
-    override suspend fun error(error: Drawable?, transition: Transition?) {
+    override suspend fun error(error: Drawable?, transition: Transition) {
         target.onError(request, error, transition, eventListener, logger)
     }
 }
@@ -103,11 +103,11 @@ internal class PoolableTargetDelegate(
         instrument(cached?.bitmap) { onStart(placeholder) }
     }
 
-    override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition?) {
+    override suspend fun success(result: Drawable, isMemoryCache: Boolean, transition: Transition) {
         instrument(result.bitmap) { onSuccess(request, result, isMemoryCache, transition, eventListener, logger) }
     }
 
-    override suspend fun error(error: Drawable?, transition: Transition?) {
+    override suspend fun error(error: Drawable?, transition: Transition) {
         instrument(null) { onError(request, error, transition, eventListener, logger) }
     }
 
@@ -159,11 +159,12 @@ private suspend inline fun Target.onSuccess(
     request: Request,
     result: Drawable,
     isMemoryCache: Boolean,
-    transition: Transition?,
+    transition: Transition,
     eventListener: EventListener,
     logger: Logger?
 ) {
-    if (transition == null) {
+    // Short circuit if this is the empty transition.
+    if (transition === Transition.NONE) {
         onSuccess(result)
         return
     }
@@ -184,11 +185,12 @@ private suspend inline fun Target.onSuccess(
 private suspend inline fun Target.onError(
     request: Request,
     error: Drawable?,
-    transition: Transition?,
+    transition: Transition,
     eventListener: EventListener,
     logger: Logger?
 ) {
-    if (transition == null) {
+    // Short circuit if this is the empty transition.
+    if (transition === Transition.NONE) {
         onError(error)
         return
     }

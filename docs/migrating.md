@@ -77,12 +77,22 @@ Picasso.get()
         }
     })
 
-// Coil (has optional callbacks for start and error)
-Coil.load(context, url) {
-    target { drawable ->
-        // Handle the successful result.
-    }
-}
+// Coil
+val request = LoadRequest.Builder(context)
+    .data(url)
+    .target(
+        onStart = { drawable ->
+            // Handle the placeholder drawable.
+        },
+        onSuccess = {
+            // Handle the successful result.
+        },
+        onError = {
+            // Handle the error drawable.
+        }
+    )
+    .build()
+Coil.imageLoader(context).execute(request)
 ```
 
 ### Background Thread
@@ -101,7 +111,9 @@ val drawable = Picasso.get()
     .get()
 
 // Coil (suspends the current context; thread safe)
-val drawable = Coil.get(context, url) {
-    size(width, height)
-}
+val request = GetRequest.Builder()
+    .data(url)
+    .size(width, height)
+    .build()
+Coil.imageLoader(context).execute(request)
 ```

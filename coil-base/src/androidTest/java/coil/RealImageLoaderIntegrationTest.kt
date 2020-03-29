@@ -11,10 +11,6 @@ import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
-import coil.api.get
-import coil.api.getAny
-import coil.api.load
-import coil.api.loadAny
 import coil.base.test.R
 import coil.bitmappool.BitmapPool
 import coil.decode.BitmapFactoryDecoder
@@ -25,6 +21,8 @@ import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.DrawableResult
 import coil.request.CachePolicy
+import coil.request.GetRequest
+import coil.request.LoadRequest
 import coil.request.NullRequestDataException
 import coil.size.PixelSize
 import coil.size.Size
@@ -230,14 +228,16 @@ class RealImageLoaderIntegrationTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                imageLoader.load(context, url) {
-                    memoryCachePolicy(CachePolicy.DISABLED)
-                    listener(
+                val request = LoadRequest.Builder(context)
+                    .data(url)
+                    .memoryCachePolicy(CachePolicy.DISABLED)
+                    .listener(
                         onSuccess = { _, _ -> continuation.resume(Unit) },
                         onError = { _, throwable -> continuation.resumeWithException(throwable) },
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
-                }
+                    .build()
+                imageLoader.execute(request)
             }
         }
 
@@ -277,9 +277,11 @@ class RealImageLoaderIntegrationTest {
         assertTrue(cacheFolder.listFiles().isNullOrEmpty())
 
         runBlocking {
-            imageLoader.get(url) {
-                memoryCachePolicy(CachePolicy.DISABLED)
-            }
+            val request = GetRequest.Builder()
+                .data(url)
+                .memoryCachePolicy(CachePolicy.DISABLED)
+                .build()
+            imageLoader.execute(request)
         }
 
         val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
@@ -302,7 +304,7 @@ class RealImageLoaderIntegrationTest {
                 request = createGetRequest { transformations(CircleCropTransformation()) },
                 size = size,
                 options = createOptions(),
-                eventListener = EventListener.EMPTY
+                eventListener = EventListener.NONE
             )
         }
 
@@ -326,7 +328,7 @@ class RealImageLoaderIntegrationTest {
                 request = createGetRequest { transformations(emptyList()) },
                 size = size,
                 options = createOptions(),
-                eventListener = EventListener.EMPTY
+                eventListener = EventListener.NONE
             )
         }
 
@@ -342,11 +344,12 @@ class RealImageLoaderIntegrationTest {
             suspendCancellableCoroutine<Unit> { continuation ->
                 var hasCalledTargetOnError = false
 
-                imageLoader.loadAny(context, null) {
-                    size(100, 100)
-                    error(error)
-                    fallback(fallback)
-                    target(
+                val request = LoadRequest.Builder(context)
+                    .data(null)
+                    .size(100, 100)
+                    .error(error)
+                    .fallback(fallback)
+                    .target(
                         onStart = { throw IllegalStateException() },
                         onError = { drawable ->
                             check(drawable === fallback)
@@ -354,7 +357,7 @@ class RealImageLoaderIntegrationTest {
                         },
                         onSuccess = { throw IllegalStateException() }
                     )
-                    listener(
+                    .listener(
                         onStart = { throw IllegalStateException() },
                         onSuccess = { _, _ -> throw IllegalStateException() },
                         onCancel = { throw IllegalStateException() },
@@ -366,7 +369,8 @@ class RealImageLoaderIntegrationTest {
                             }
                         }
                     )
-                }
+                    .build()
+                imageLoader.execute(request)
             }
         }
     }
@@ -379,15 +383,17 @@ class RealImageLoaderIntegrationTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                imageLoader.loadAny(context, data) {
-                    target(imageView)
-                    size(100, 100)
-                    listener(
+                val request = LoadRequest.Builder(context)
+                    .data(data)
+                    .target(imageView)
+                    .size(100, 100)
+                    .listener(
                         onSuccess = { _, _ -> continuation.resume(Unit) },
                         onError = { _, throwable -> continuation.resumeWithException(throwable) },
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
-                }
+                    .build()
+                imageLoader.execute(request)
             }
         }
 
@@ -398,9 +404,11 @@ class RealImageLoaderIntegrationTest {
 
     private fun testGet(data: Any, expectedSize: PixelSize = PixelSize(100, 125)) {
         val drawable = runBlocking {
-            imageLoader.getAny(data) {
-                size(100, 100)
-            }
+            val request = GetRequest.Builder()
+                .data(data)
+                .size(100, 100)
+                .build()
+            imageLoader.execute(request)
         }
 
         assertTrue(drawable is BitmapDrawable)

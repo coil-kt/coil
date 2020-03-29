@@ -21,7 +21,9 @@ import coil.request.RequestBuilder
  *
  * @see VideoFrameFetcher
  */
-fun RequestBuilder<*>.videoFrameMillis(frameMillis: Long) = videoFrameMicros(1000 * frameMillis)
+fun <T : RequestBuilder<T>> RequestBuilder<T>.videoFrameMillis(frameMillis: Long): T {
+    return videoFrameMicros(1000 * frameMillis)
+}
 
 /**
  * Set the time **in microseconds** of the frame to extract from a video.
@@ -30,9 +32,9 @@ fun RequestBuilder<*>.videoFrameMillis(frameMillis: Long) = videoFrameMicros(100
  *
  * @see VideoFrameFetcher
  */
-fun RequestBuilder<*>.videoFrameMicros(frameMicros: Long) {
+fun <T : RequestBuilder<T>> RequestBuilder<T>.videoFrameMicros(frameMicros: Long): T {
     require(frameMicros >= 0) { "frameMicros must be >= 0" }
-    setParameter(VIDEO_FRAME_MICROS_KEY, frameMicros)
+    return setParameter(VIDEO_FRAME_MICROS_KEY, frameMicros)
 }
 
 /**
@@ -45,12 +47,12 @@ fun RequestBuilder<*>.videoFrameMicros(frameMicros: Long) {
  * @see MediaMetadataRetriever
  * @see VideoFrameFetcher
  */
-fun RequestBuilder<*>.videoFrameOption(option: Int) {
+fun <T : RequestBuilder<T>> RequestBuilder<T>.videoFrameOption(option: Int): T {
     require(option == OPTION_PREVIOUS_SYNC ||
         option == OPTION_NEXT_SYNC ||
         option == OPTION_CLOSEST_SYNC ||
         option == OPTION_CLOSEST) { "Invalid video frame option: $option." }
-    setParameter(VIDEO_FRAME_OPTION_KEY, option)
+    return setParameter(VIDEO_FRAME_OPTION_KEY, option)
 }
 
 /**

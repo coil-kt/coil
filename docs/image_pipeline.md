@@ -2,7 +2,7 @@
 
 Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, TIFF, etc.)
 
-Fortunately, [ImageLoaders](image_loaders.md) support pluggable components to add new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of three main parts: [Mappers](../api/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
+Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of three main parts: [Mappers](../api/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
 
 Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-base/coil/-component-registry):
 
@@ -10,7 +10,7 @@ Custom components must be added to the `ImageLoader` when constructing it throug
 val imageLoader = ImageLoader.Builder(context)
     .componentRegistry {
         add(ItemMapper())
-        add(ProtocolBufferFetcher())
+        add(CronetFetcher())
         add(GifDecoder())
     }
     .build()
@@ -29,26 +29,28 @@ data class Item(
 )
 ```
 
-We could write a custom mapper to map it to an `HttpUrl`:
+We could write a custom mapper to map it to its URL, which will be handled later in the pipeline:
 
 ```kotlin
-class ItemMapper : Mapper<Item, HttpUrl> {
-    override fun map(data: Item): HttpUrl = HttpUrl.get(data.imageUrl)
+class ItemMapper : Mapper<Item, String> {
+    override fun map(data: Item) = data.imageUrl
 }
 ```
 
-After registering it when constructing our `ImageLoader` (see above), we can safely load an `Item`:
+After registering it when building our `ImageLoader` (see above), we can safely load an `Item`:
 
 ```kotlin
-imageView.loadAny(item)
+val request = LoadRequest.Builder(context)
+    .data(item)
+    .target(imageView)
+    .build()
+imageLoader.execute(request)
 ```
 
-`loadAny` is the type-unsafe version of `load` that accepts any data type.
-
-If you want to know a `Target`'s size when mapping an object, you can extend from [Measured Mapper](../api/coil-base/coil.map/-measured-mapper).
+If you want to know a request's size when mapping an object, you can implement [MeasuredMapper](../api/coil-base/coil.map/-measured-mapper) instead of [Mapper](../api/coil-base/coil.map/-mapper).
 
 !!! Note
-    Extending from `Measured Mapper` can prevent setting placeholders and or cached drawables synchronously, as they force Coil to wait for the target to be measured. Prefer extending `Mapper` if you do not need to know the `Target`'s size.
+    `MeasuredMapper`s force the request to suspend until the size is measured. This can prevent setting placeholders and or cached drawables synchronously. Prefer extending `Mapper` if you do not need to know the request's size.
 
 See [Mapper](../api/coil-base/coil.map/-mapper) and [Measured Mapper](../api/coil-base/coil.map/-measured-mapper) for more information.
 
