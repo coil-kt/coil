@@ -60,10 +60,13 @@ class MemoryCacheTest {
 
     @Test
     fun `value is gone after clearMemory(key) is called`() {
-        val cache = MemoryCache(counter, (2 * DEFAULT_BITMAP_SIZE).toInt())
+        val weakMemoryCache = RealWeakMemoryCache()
+        val pool = BitmapPool(Long.MAX_VALUE)
+        val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
+        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt(), null)
         val bitmap = createBitmap()
         cache.set("1", bitmap, false)
-        cache.clearMemory("1")
+        cache.invalidate("1")
         assertNull(cache.get("1"))
     }
 

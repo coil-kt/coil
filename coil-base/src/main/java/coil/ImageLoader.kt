@@ -72,7 +72,7 @@ interface ImageLoader {
     /**
      * Remove a single item from memory cache.
      */
-    fun clearMemory(key: String)
+    fun invalidate(key: String)
 
     /**
      * Shutdown this image loader.

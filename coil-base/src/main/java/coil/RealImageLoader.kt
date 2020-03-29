@@ -482,7 +482,7 @@ internal class RealImageLoader(
         bitmapPool.clear()
     }
 
-    override fun clearMemory(key: String) = memoryCache.clearMemory(key)
+    override fun invalidate(key: String) = memoryCache.invalidate(key)
 
     @Synchronized
     override fun shutdown() {

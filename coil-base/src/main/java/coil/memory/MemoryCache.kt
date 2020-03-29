@@ -48,7 +48,8 @@ internal interface MemoryCache {
     /** @see ComponentCallbacks2.onTrimMemory */
     fun trimMemory(level: Int)
 
-    fun clearMemory(key: String)
+    /** Remove one value from this cache. */
+    fun invalidate(key: String)
 
     interface Value {
         val bitmap: Bitmap
@@ -69,7 +70,7 @@ private object EmptyMemoryCache : MemoryCache {
 
     override fun clearMemory() {}
 
-    override fun clearMemory(key: String) {}
+    override fun invalidate(key: String) {}
 
     override fun trimMemory(level: Int) {}
 }
@@ -92,6 +93,8 @@ private class ForwardingMemoryCache(
     override fun clearMemory() {}
 
     override fun trimMemory(level: Int) {}
+
+    override fun invalidate(key: String) = get(key)?.bitmap?.let { weakMemoryCache.invalidate(it) } ?: Unit
 }
 
 /** A [MemoryCache] implementation backed by an [LruCache]. */
@@ -151,8 +154,8 @@ private class RealMemoryCache(
         cache.trimToSize(-1)
     }
 
-    override fun clearMemory(key: String) {
-        log(TAG, Log.DEBUG) { "clearMemory($key)" }
+    override fun invalidate(key: String) {
+        logger?.log(TAG, Log.DEBUG) { "invalidate($key)" }
         cache.remove(key)
     }
 
