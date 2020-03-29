@@ -36,9 +36,9 @@ class ResourceUriMapperTest {
 
     @Test
     fun externalResourceNameUri() {
-        // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/regulatory_info.png
+        // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable-xhdpi/ic_power_system.png
         val packageName = "com.android.settings"
-        val input = "$SCHEME_ANDROID_RESOURCE://$packageName/drawable/regulatory_info".toUri()
+        val input = "$SCHEME_ANDROID_RESOURCE://$packageName/drawable/ic_power_system".toUri()
 
         assertTrue(mapper.handles(input))
 

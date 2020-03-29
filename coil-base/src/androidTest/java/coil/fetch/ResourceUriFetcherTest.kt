@@ -67,8 +67,8 @@ class ResourceUriFetcherTest {
 
     @Test
     fun externalPackageRasterDrawable() {
-        // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/regulatory_info.png
-        val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/regulatory_info".toUri()
+        // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable-xhdpi/ic_power_system.png
+        val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/ic_power_system".toUri()
         val uri = ResourceUriMapper(context).map(rawUri)
 
         assertTrue(fetcher.handles(uri))
