@@ -49,7 +49,7 @@ jobs:
     instrumentation-tests:
         name: Instrumentation tests
         runs-on: macOS-latest
-        timeout-minutes: 10
+        timeout-minutes: 20
         strategy:
             fail-fast: false
             matrix:
