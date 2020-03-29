@@ -87,7 +87,7 @@ class BitmapFactoryDecoderTest {
     fun originalSizeDimensionsAreResolvedCorrectly() {
         val size = OriginalSize
         val normal = decode("normal.jpg", size)
-        assertEquals(PixelSize(1080, 1350), normal.run { PixelSize(width, height) })
+        assertEquals(PixelSize(1080, 1350), normal.size)
     }
 
     @Test
@@ -116,7 +116,7 @@ class BitmapFactoryDecoderTest {
             size = PixelSize(1500, 1500),
             options = { createOptions(scale = Scale.FIT, allowInexactSize = true) }
         )
-        assertEquals(PixelSize(1080, 1350), result.run { PixelSize(width, height) })
+        assertEquals(PixelSize(1080, 1350), result.size)
     }
 
     @Test
@@ -126,7 +126,7 @@ class BitmapFactoryDecoderTest {
             size = PixelSize(1500, 1500),
             options = { createOptions(scale = Scale.FIT, allowInexactSize = false) }
         )
-        assertEquals(PixelSize(1200, 1500), result.run { PixelSize(width, height) })
+        assertEquals(PixelSize(1200, 1500), result.size)
     }
 
     private fun decode(
