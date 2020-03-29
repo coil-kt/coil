@@ -122,6 +122,7 @@ public abstract interface class coil/ImageLoader {
 	public abstract fun execute (Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
 	public abstract fun get (Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getDefaults ()Lcoil/DefaultRequestOptions;
+	public abstract fun invalidate (Ljava/lang/String;)V
 	public abstract fun load (Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
 	public abstract fun shutdown ()V
 }
