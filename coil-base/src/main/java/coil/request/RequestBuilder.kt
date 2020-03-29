@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
+import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.ImageLoaderBuilder
 import coil.annotation.BuilderMarker
@@ -455,6 +456,13 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
         fallbackDrawable = request.fallbackDrawable
     }
 
+    @Deprecated(
+        message = "Migrate to LoadRequest.Builder(context).",
+        replaceWith = ReplaceWith("LoadRequest.Builder(context)")
+    )
+    @Suppress("UNUSED_PARAMETER")
+    constructor(context: Context, defaults: DefaultRequestOptions) : this(context)
+
     /**
      * Convenience function to set [imageView] as the [Target].
      */
@@ -615,6 +623,13 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
     constructor() : super()
 
     constructor(request: GetRequest) : super(request)
+
+    @Deprecated(
+        message = "Migrate to GetRequest.Builder().",
+        replaceWith = ReplaceWith("GetRequest.Builder()")
+    )
+    @Suppress("UNUSED_PARAMETER")
+    constructor(defaults: DefaultRequestOptions) : this()
 
     /**
      * Create a new [GetRequest] instance.
