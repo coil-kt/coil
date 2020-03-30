@@ -5,25 +5,66 @@ on:
             - master
     pull_request:
 jobs:
-    ci:
-        name: Build + Test
-        runs-on: macOS-latest
-        timeout-minutes: 30
+    check:
+        name: Check
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
         steps:
             - uses: actions/checkout@v2
+            - uses: gradle/wrapper-validation-action@v1
+            - uses: actions/setup-java@v1
+              with:
+                  java-version: 11
+            - uses: actions/cache@v1
+              with:
+                  path: ~/.gradle/caches
+                  key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
-            - name: Set Up Java
-              uses: actions/setup-java@v1
+            - name: Check style
+              run: ./gradlew ktlintCheck
+
+            # Check if there has been a binary incompatible change to the API.
+            # If this change is intentional, run `./gradlew apiDump` and commit the new API files.
+            - name: Check binary compatibility
+              run: ./gradlew apiCheck
+
+    unit-tests:
+        name: Unit tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@v2
+            - uses: gradle/wrapper-validation-action@v1
+            - uses: actions/setup-java@v1
+              with:
+                  java-version: 11
+            - uses: actions/cache@v1
+              with:
+                  path: ~/.gradle/caches
+                  key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+
+            - name: Unit tests
+              run: ./gradlew testDebugUnitTest
+
+    instrumentation-tests:
+        name: Instrumentation tests
+        runs-on: macOS-latest
+        timeout-minutes: 20
+        strategy:
+            matrix:
+                api-level: [15, 19, 21, 25, 29]
+        steps:
+            - uses: actions/checkout@v2
+            - uses: gradle/wrapper-validation-action@v1
+            - uses: actions/setup-java@v1
               with:
                   java-version: 11
 
-            # Validate the Gradle wrapper JAR files.
-            - uses: gradle/wrapper-validation-action@v1
-
             # Ensure .gradle/caches is empty before writing to it.
             # This helps us stay within Github's cache size limits.
-            - name: Clean Cache
-              run: rm -rf ~/.gradle/caches
+            # Rename the folder instead of deleting it as it's faster.
+            - name: Clean cache
+              run: mv ~/.gradle/caches ~/.gradle/.invalid_caches
 
             # Restore the cache.
             # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
@@ -32,26 +73,31 @@ jobs:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
-            - name: Ktlint
-              run: ./gradlew ktlintCheck
-
-            # Check if there has been a binary incompatible change to the API.
-            # If this change is intentional, run `./gradlew apiDump` and commit the new API files.
-            - name: Check Binary Compatibility
-              run: ./gradlew apiCheck
-
-            - name: Unit Tests
-              run: ./gradlew testDebugUnitTest
-
-            - name: Instrumentation Tests
+            - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
-                  api-level: 25
+                  api-level: ${{ matrix.api-level }}
                   arch: x86
                   script: ./gradlew connectedDebugAndroidTest
 
+    deploy-snapshot:
+        name: Deploy snapshot
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        if: github.ref == 'refs/heads/master'
+        needs: [check, unit-tests, instrumentation-tests]
+        steps:
+            - uses: actions/checkout@v2
+            - uses: gradle/wrapper-validation-action@v1
+            - uses: actions/setup-java@v1
+              with:
+                  java-version: 11
+            - uses: actions/cache@v1
+              with:
+                  path: ~/.gradle/caches
+                  key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+
             - name: Deploy Snapshot
-              if: github.ref == 'refs/heads/master'
               env:
                   SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
                   SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}

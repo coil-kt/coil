@@ -102,10 +102,16 @@ class ContentUriFetcherTest {
 
         val contentUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, id)
         val photoUri = Uri.withAppendedPath(contentUri, RawContacts.DisplayPhoto.CONTENT_DIRECTORY)
-        checkNotNull(context.contentResolver.openAssetFileDescriptor(photoUri, "rw")).use { fd ->
+        val fd = checkNotNull(context.contentResolver.openAssetFileDescriptor(photoUri, "rw"))
+
+        // AssetFileDescriptor does not implement Closable on pre-API 19 so we can't use `use`.
+        @Suppress("ConvertTryFinallyToUseCall")
+        try {
             val source = context.assets.open("normal.jpg").source()
             val sink = fd.createOutputStream().sink().buffer()
             source.use { sink.use { sink.writeAll(source) } }
+        } finally {
+            fd.close()
         }
 
         // Wait for the display image to be parsed by the system.

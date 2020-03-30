@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ColorSpace
+import androidx.annotation.RequiresApi
 import coil.decode.Options
 import coil.request.CachePolicy
 import coil.request.GetRequest
@@ -35,6 +36,32 @@ fun createMockWebServer(context: Context, vararg images: String): MockWebServer 
     }
 }
 
+fun createOptions(
+    config: Bitmap.Config = Bitmap.Config.ARGB_8888,
+    scale: Scale = Scale.FILL,
+    allowInexactSize: Boolean = false,
+    allowRgb565: Boolean = false,
+    headers: Headers = Headers.Builder().build(),
+    parameters: Parameters = Parameters.Builder().build(),
+    memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    networkCachePolicy: CachePolicy = CachePolicy.ENABLED
+): Options {
+    return Options(
+        config,
+        null,
+        scale,
+        allowInexactSize,
+        allowRgb565,
+        headers,
+        parameters,
+        memoryCachePolicy,
+        diskCachePolicy,
+        networkCachePolicy
+    )
+}
+
+@RequiresApi(26)
 fun createOptions(
     config: Bitmap.Config = Bitmap.Config.ARGB_8888,
     colorSpace: ColorSpace? = null,
