@@ -56,9 +56,11 @@ internal object Utils {
     }
 
     fun getDefaultBitmapPoolPercentage(): Double {
+        // Allocate less memory for bitmap pooling on API 18 and below as the requirements
+        // for bitmap reuse are quite strict.
         // Allocate less memory for bitmap pooling on API 26 and above since we default to
-        // hardware bitmaps, which cannot be added to the pool.
-        return if (SDK_INT >= 26) 0.25 else 0.5
+        // hardware bitmaps, which cannot be reused.
+        return if (SDK_INT in 19..25) 0.5 else 0.25
     }
 
     fun getDefaultBitmapConfig(): Bitmap.Config {

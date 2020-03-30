@@ -3,6 +3,7 @@ package coil.decode
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
@@ -30,7 +31,7 @@ class BitmapFactoryDecoderTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        pool = BitmapPool(0)
+        pool = BitmapPool(Long.MAX_VALUE)
         service = BitmapFactoryDecoder(context)
     }
 
@@ -87,7 +88,7 @@ class BitmapFactoryDecoderTest {
     fun originalSizeDimensionsAreResolvedCorrectly() {
         val size = OriginalSize
         val normal = decode("normal.jpg", size)
-        assertEquals(PixelSize(1080, 1350), normal.run { PixelSize(width, height) })
+        assertEquals(PixelSize(1080, 1350), normal.size)
     }
 
     @Test
@@ -116,7 +117,7 @@ class BitmapFactoryDecoderTest {
             size = PixelSize(1500, 1500),
             options = { createOptions(scale = Scale.FIT, allowInexactSize = true) }
         )
-        assertEquals(PixelSize(1080, 1350), result.run { PixelSize(width, height) })
+        assertEquals(PixelSize(1080, 1350), result.size)
     }
 
     @Test
@@ -126,7 +127,48 @@ class BitmapFactoryDecoderTest {
             size = PixelSize(1500, 1500),
             options = { createOptions(scale = Scale.FIT, allowInexactSize = false) }
         )
-        assertEquals(PixelSize(1200, 1500), result.run { PixelSize(width, height) })
+        assertEquals(PixelSize(1200, 1500), result.size)
+    }
+
+    @Test
+    fun pooledBitmap_exactSize() {
+        val pooledBitmap = Bitmap.createBitmap(1080, 1350, Bitmap.Config.ARGB_8888)
+        pool.put(pooledBitmap)
+
+        val result = decode(
+            fileName = "normal.jpg",
+            size = PixelSize(1080, 1350),
+            options = {
+                createOptions(
+                    config = Bitmap.Config.ARGB_8888,
+                    scale = Scale.FIT,
+                    allowInexactSize = false
+                )
+            }
+        )
+        assertEquals(PixelSize(1080, 1350), result.size)
+        assertEquals(pooledBitmap, result)
+    }
+
+    @Test
+    fun pooledBitmap_inexactSize() {
+        val pooledBitmap = Bitmap.createBitmap(1080, 1350, Bitmap.Config.ARGB_8888)
+        pool.put(pooledBitmap)
+
+        val result = decode(
+            fileName = "normal.jpg",
+            size = PixelSize(500, 500),
+            options = {
+                createOptions(
+                    config = Bitmap.Config.ARGB_8888,
+                    scale = Scale.FILL,
+                    allowInexactSize = false
+                )
+            }
+        )
+        assertEquals(PixelSize(500, 625), result.size)
+        // The bitmap should not be re-used on pre-API 19.
+        assertEquals(pooledBitmap === result, SDK_INT >= 19)
     }
 
     private fun decode(

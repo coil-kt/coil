@@ -101,8 +101,8 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
             val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
-            // Resolve the dimensions to decode the video frame at
-            // accounting for the source's aspect ratio and the target's size.
+            // Resolve the dimensions to decode the video frame at accounting
+            // for the source's aspect ratio and the target's size.
             var srcWidth = 0
             var srcHeight = 0
             val destSize = when (size) {
@@ -132,14 +132,17 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 is OriginalSize -> OriginalSize
             }
 
-            val rawBitmap = if (SDK_INT >= 27 && destSize is PixelSize) {
+            val rawBitmap: Bitmap? = if (SDK_INT >= 27 && destSize is PixelSize) {
                 retriever.getScaledFrameAtTime(frameMicros, option, destSize.width, destSize.height)
             } else {
-                retriever.getFrameAtTime(frameMicros, option).also {
+                retriever.getFrameAtTime(frameMicros, option)?.also {
                     srcWidth = it.width
                     srcHeight = it.height
                 }
             }
+
+            // If you encounter this exception, ensure your video is encoded in a supported codec.
+            // https://developer.android.com/guide/topics/media/media-formats#video-formats
             checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
             val bitmap = normalizeBitmap(pool, rawBitmap, destSize, options)
