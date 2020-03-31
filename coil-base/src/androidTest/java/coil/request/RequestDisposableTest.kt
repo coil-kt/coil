@@ -4,14 +4,21 @@ import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
+import coil.transition.Transition
+import coil.transition.TransitionResult
+import coil.transition.TransitionTarget
 import coil.util.CoilUtils
 import coil.util.requestManager
-import kotlinx.coroutines.Dispatchers
+import coil.util.runBlockingTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -21,7 +28,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoilApi::class)
+@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class, FlowPreview::class)
 class RequestDisposableTest {
 
     private lateinit var context: Context
@@ -40,11 +47,9 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_dispose() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val request = LoadRequest.Builder(context)
-            .data(data)
-            .target { /* Do nothing. */ }
-            .listener(onError = { _, throwable -> throw throwable })
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .target { /** Do nothing. */ }
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -56,32 +61,29 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_await() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         var result: Drawable? = null
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target { result = it }
-            .listener(onError = { _, throwable -> throw throwable })
             .build()
         val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
         assertNull(result)
-        runBlocking {
-            disposable.await()
-        }
+        runBlocking { disposable.await() }
         assertNotNull(result)
     }
 
     @Test
     fun viewTargetRequestDisposable_dispose() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
+        val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .size(100, 100)
+            .transition(transition)
             .target(imageView)
-            .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(onError = { _, throwable -> throw throwable })
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -93,65 +95,66 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_await() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
+        val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .size(100, 100)
+            .transition(transition)
             .target(imageView)
-            .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(onError = { _, throwable -> throw throwable })
             .build()
         val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is ViewTargetRequestDisposable)
         assertNull(imageView.drawable)
-        runBlocking {
-            disposable.await()
-        }
+        transition.open()
+        runBlocking { disposable.await() }
         assertNotNull(imageView.drawable)
     }
 
     @Test
-    fun viewTargetRequestDisposable_restart() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
+    fun viewTargetRequestDisposable_restart() = runBlockingTest {
+        val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .size(100, 100)
+            .transition(transition)
             .target(imageView)
-            .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(onError = { _, throwable -> throw throwable })
             .build()
         val disposable = imageLoader.execute(request)
 
-        runBlocking(Dispatchers.Main.immediate) {
-            assertTrue(disposable is ViewTargetRequestDisposable)
-            assertFalse(disposable.isDisposed)
+        assertTrue(disposable is ViewTargetRequestDisposable)
+        assertFalse(disposable.isDisposed)
 
-            disposable.await()
-            assertFalse(disposable.isDisposed)
+        transition.open()
+        disposable.await()
+        assertFalse(disposable.isDisposed)
 
-            imageView.requestManager.onViewDetachedFromWindow(imageView)
-            assertFalse(disposable.isDisposed)
+        imageView.requestManager.onViewDetachedFromWindow(imageView)
+        assertFalse(disposable.isDisposed)
 
-            imageView.requestManager.onViewAttachedToWindow(imageView)
-            assertFalse(disposable.isDisposed)
+        imageView.requestManager.onViewAttachedToWindow(imageView)
+        assertFalse(disposable.isDisposed)
 
-            disposable.dispose()
-            assertTrue(disposable.isDisposed)
-        }
+        disposable.dispose()
+        assertTrue(disposable.isDisposed)
     }
 
     @Test
-    fun viewTargetRequestDisposable_replace() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
+    fun viewTargetRequestDisposable_replace() = runBlockingTest {
+        val transition = GateTransition()
         val imageView = ImageView(context)
 
         fun launchNewRequest(): RequestDisposable {
             val request = LoadRequest.Builder(context)
-                .data(data)
+                .data("$SCHEME_CONTENT://coil/normal.jpg")
+                // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+                .size(100, 100)
+                .transition(transition)
                 .target(imageView)
-                .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-                .listener(onError = { _, throwable -> throw throwable })
                 .build()
             return imageLoader.execute(request)
         }
@@ -169,19 +172,42 @@ class RequestDisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_clear() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
+    fun viewTargetRequestDisposable_clear() = runBlockingTest {
+        val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .size(100, 100)
+            .transition(transition)
             .target(imageView)
-            .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(onError = { _, throwable -> throw throwable })
             .build()
         val disposable = imageLoader.execute(request)
 
         assertFalse(disposable.isDisposed)
         CoilUtils.clear(imageView)
         assertTrue(disposable.isDisposed)
+    }
+
+    /**
+     * Prevent completing the [LoadRequest] until [open] is called.
+     * This is to avoid our test assertions racing the image request.
+     */
+    private class GateTransition : Transition {
+
+        private val isOpen = ConflatedBroadcastChannel(false)
+
+        override suspend fun transition(
+            target: TransitionTarget<*>,
+            result: TransitionResult
+        ) {
+            // Suspend until the gate is open.
+            isOpen.asFlow().first { it }
+
+            // Delegate to the empty transition.
+            Transition.NONE.transition(target, result)
+        }
+
+        fun open() = isOpen.offer(true)
     }
 }
