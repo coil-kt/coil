@@ -64,15 +64,18 @@ interface ImageLoader {
     suspend fun execute(request: GetRequest): Drawable
 
     /**
+     * Remove the value referenced by [key] from the memory cache.
+     *
+     * @param key The cache key to remove.
+     */
+    @MainThread
+    fun invalidate(key: String)
+
+    /**
      * Clear this image loader's memory cache and bitmap pool.
      */
     @MainThread
     fun clearMemory()
-
-    /**
-     * Remove a single item from memory cache.
-     */
-    fun invalidate(key: String)
 
     /**
      * Shutdown this image loader.
