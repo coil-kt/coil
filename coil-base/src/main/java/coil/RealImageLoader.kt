@@ -470,6 +470,11 @@ internal class RealImageLoader(
         return@run transformedResult
     }
 
+    override fun invalidate(key: String) {
+        memoryCache.invalidate(key)
+        weakMemoryCache.invalidate(key)
+    }
+
     override fun onTrimMemory(level: Int) {
         memoryCache.trimMemory(level)
         weakMemoryCache.trimMemory(level)
@@ -482,9 +487,6 @@ internal class RealImageLoader(
         bitmapPool.clear()
     }
 
-    override fun invalidate(key: String) = memoryCache.invalidate(key)
-
-    @Synchronized
     override fun shutdown() {
         if (isShutdown) return
         isShutdown = true
