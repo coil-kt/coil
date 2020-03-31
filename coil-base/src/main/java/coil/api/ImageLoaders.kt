@@ -256,13 +256,19 @@ suspend inline fun ImageLoader.getAny(
 
 @Deprecated(
     message = "Replace with the LoadRequest.Builder API.",
-    replaceWith = ReplaceWith("LoadRequest.Builder(context)")
+    replaceWith = ReplaceWith(
+        expression = "LoadRequest.Builder(context)",
+        imports = ["coil.request.LoadRequest"]
+    )
 )
 inline fun ImageLoader.newLoadBuilder(context: Context) = LoadRequest.Builder(context)
 
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
-    replaceWith = ReplaceWith("GetRequest.Builder()")
+    replaceWith = ReplaceWith(
+        expression = "GetRequest.Builder()",
+        imports = ["coil.request.GetRequest"]
+    )
 )
 inline fun ImageLoader.newGetBuilder() = GetRequest.Builder()
 
