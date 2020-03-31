@@ -133,6 +133,7 @@ internal class RealImageLoader(
         .add(BitmapFactoryDecoder(context))
         .build()
 
+    // isShutdown is only accessed from the main thread.
     private var isShutdown = false
 
     init {
@@ -155,7 +156,7 @@ internal class RealImageLoader(
 
     private suspend fun executeRequest(request: Request): Drawable = withContext(Dispatchers.Main.immediate) outerJob@{
         // Ensure this image loader isn't shutdown.
-        assertNotShutdown()
+        check(!isShutdown) { "The image loader is shutdown." }
 
         // Create a new event listener.
         val eventListener = eventListenerFactory.newListener(request)
@@ -495,10 +496,6 @@ internal class RealImageLoader(
         context.unregisterComponentCallbacks(this)
         networkObserver.shutdown()
         clearMemory()
-    }
-
-    private fun assertNotShutdown() {
-        check(!isShutdown) { "The image loader is shutdown!" }
     }
 
     /** Lazily resolves and caches a request's size. Responsible for calling [Target.onStart]. */
