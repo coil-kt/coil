@@ -40,11 +40,15 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_dispose() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val request = LoadRequest.Builder(context)
-            .data(data)
-            .target { /* Do nothing. */ }
-            .listener(onError = { _, throwable -> throw throwable })
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .target { /** Do nothing. */ }
+            .listener(
+                onError = { _, throwable ->
+                    // Fail the test.
+                    Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
+                }
+            )
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -56,10 +60,9 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_await() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         var result: Drawable? = null
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target { result = it }
             .listener(onError = { _, throwable -> throw throwable })
             .build()
@@ -75,13 +78,17 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_dispose() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target(imageView)
             .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(onError = { _, throwable -> throw throwable })
+            .listener(
+                onError = { _, throwable ->
+                    // Fail the test.
+                    Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
+                }
+            )
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -93,13 +100,17 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_await() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target(imageView)
             .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(onError = { _, throwable -> throw throwable })
+            .listener(
+                onError = { _, throwable ->
+                    // Fail the test.
+                    Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
+                }
+            )
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -112,46 +123,52 @@ class RequestDisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_restart() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
+    fun viewTargetRequestDisposable_restart() = runBlocking(Dispatchers.Main.immediate) {
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target(imageView)
             .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(onError = { _, throwable -> throw throwable })
+            .listener(
+                onError = { _, throwable ->
+                    // Fail the test.
+                    Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
+                }
+            )
             .build()
         val disposable = imageLoader.execute(request)
 
-        runBlocking(Dispatchers.Main.immediate) {
-            assertTrue(disposable is ViewTargetRequestDisposable)
-            assertFalse(disposable.isDisposed)
+        assertTrue(disposable is ViewTargetRequestDisposable)
+        assertFalse(disposable.isDisposed)
 
-            disposable.await()
-            assertFalse(disposable.isDisposed)
+        disposable.await()
+        assertFalse(disposable.isDisposed)
 
-            imageView.requestManager.onViewDetachedFromWindow(imageView)
-            assertFalse(disposable.isDisposed)
+        imageView.requestManager.onViewDetachedFromWindow(imageView)
+        assertFalse(disposable.isDisposed)
 
-            imageView.requestManager.onViewAttachedToWindow(imageView)
-            assertFalse(disposable.isDisposed)
+        imageView.requestManager.onViewAttachedToWindow(imageView)
+        assertFalse(disposable.isDisposed)
 
-            disposable.dispose()
-            assertTrue(disposable.isDisposed)
-        }
+        disposable.dispose()
+        assertTrue(disposable.isDisposed)
     }
 
     @Test
     fun viewTargetRequestDisposable_replace() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
 
         fun launchNewRequest(): RequestDisposable {
             val request = LoadRequest.Builder(context)
-                .data(data)
+                .data("$SCHEME_CONTENT://coil/normal.jpg")
                 .target(imageView)
                 .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-                .listener(onError = { _, throwable -> throw throwable })
+                .listener(
+                    onError = { _, throwable ->
+                        // Fail the test.
+                        Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
+                    }
+                )
                 .build()
             return imageLoader.execute(request)
         }
