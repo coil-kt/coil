@@ -4,7 +4,6 @@ import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
@@ -20,6 +19,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 @OptIn(ExperimentalCoilApi::class)
 class RequestDisposableTest {
@@ -43,12 +43,7 @@ class RequestDisposableTest {
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target { /** Do nothing. */ }
-            .listener(
-                onError = { _, throwable ->
-                    // Fail the test.
-                    Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
-                }
-            )
+            .listener(onError = { _, _ -> fail() })
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -64,7 +59,7 @@ class RequestDisposableTest {
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target { result = it }
-            .listener(onError = { _, throwable -> throw throwable })
+            .listener(onError = { _, _ -> fail() })
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -83,12 +78,7 @@ class RequestDisposableTest {
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target(imageView)
             .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(
-                onError = { _, throwable ->
-                    // Fail the test.
-                    Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
-                }
-            )
+            .listener(onError = { _, _ -> fail() })
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -105,12 +95,7 @@ class RequestDisposableTest {
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target(imageView)
             .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(
-                onError = { _, throwable ->
-                    // Fail the test.
-                    Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
-                }
-            )
+            .listener(onError = { _, _ -> fail() })
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -129,12 +114,7 @@ class RequestDisposableTest {
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target(imageView)
             .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(
-                onError = { _, throwable ->
-                    // Fail the test.
-                    Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
-                }
-            )
+            .listener(onError = { _, _ -> fail() })
             .build()
         val disposable = imageLoader.execute(request)
 
@@ -163,12 +143,7 @@ class RequestDisposableTest {
                 .data("$SCHEME_CONTENT://coil/normal.jpg")
                 .target(imageView)
                 .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-                .listener(
-                    onError = { _, throwable ->
-                        // Fail the test.
-                        Thread.getDefaultUncaughtExceptionHandler()!!.uncaughtException(Thread.currentThread(), throwable)
-                    }
-                )
+                .listener(onError = { _, _ -> fail() })
                 .build()
             return imageLoader.execute(request)
         }
@@ -187,13 +162,12 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_clear() {
-        val data = "$SCHEME_CONTENT://coil/normal.jpg".toUri()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data(data)
+            .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target(imageView)
             .size(100) // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
-            .listener(onError = { _, throwable -> throw throwable })
+            .listener(onError = { _, _ -> fail() })
             .build()
         val disposable = imageLoader.execute(request)
 
