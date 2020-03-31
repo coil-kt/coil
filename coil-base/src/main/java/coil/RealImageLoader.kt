@@ -87,6 +87,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
+import java.util.concurrent.atomic.AtomicBoolean
 
 @OptIn(ExperimentalCoilApi::class)
 internal class RealImageLoader(
@@ -133,7 +134,7 @@ internal class RealImageLoader(
         .add(BitmapFactoryDecoder(context))
         .build()
 
-    private var isShutdown = false
+    private val isShutdown = AtomicBoolean(false)
 
     init {
         context.registerComponentCallbacks(this)
@@ -488,9 +489,7 @@ internal class RealImageLoader(
     }
 
     override fun shutdown() {
-        if (isShutdown) return
-        isShutdown = true
-
+        if (isShutdown.getAndSet(true)) return
         loaderScope.cancel()
         context.unregisterComponentCallbacks(this)
         networkObserver.shutdown()
@@ -498,7 +497,7 @@ internal class RealImageLoader(
     }
 
     private fun assertNotShutdown() {
-        check(!isShutdown) { "The image loader is shutdown!" }
+        check(!isShutdown.get()) { "The image loader is shutdown!" }
     }
 
     /** Lazily resolves and caches a request's size. Responsible for calling [Target.onStart]. */
