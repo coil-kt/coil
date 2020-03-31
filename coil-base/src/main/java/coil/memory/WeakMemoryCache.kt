@@ -30,6 +30,9 @@ internal interface WeakMemoryCache {
     /** Set the value associated with [key]. */
     fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int)
 
+    /** Remove the value referenced by [key] from the cache if it is present. */
+    fun invalidate(key: String)
+
     /** Remove [bitmap] from the cache if it is present. */
     fun invalidate(bitmap: Bitmap)
 
@@ -46,6 +49,8 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
     override fun get(key: String): Value? = null
 
     override fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int) {}
+
+    override fun invalidate(key: String) {}
 
     override fun invalidate(bitmap: Bitmap) {}
 
@@ -100,6 +105,13 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         }
 
         cleanUpIfNecessary()
+    }
+
+    override fun invalidate(key: String) {
+        val value = get(key)
+        if (value != null) {
+            invalidate(value.bitmap)
+        }
     }
 
     override fun invalidate(bitmap: Bitmap) {

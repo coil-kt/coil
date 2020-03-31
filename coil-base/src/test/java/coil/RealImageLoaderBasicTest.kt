@@ -422,7 +422,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun cachedHardwareBitmap_disallowHardware() {
+    fun `cachedHardwareBitmap - disallowHardware`() {
         val key = "fake_key"
         val fileName = "normal.jpg"
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
@@ -458,7 +458,7 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun cachedHardwareBitmap_allowHardware() {
+    fun `cachedHardwareBitmap - allowHardware`() {
         val key = "fake_key"
         val fileName = "normal.jpg"
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)

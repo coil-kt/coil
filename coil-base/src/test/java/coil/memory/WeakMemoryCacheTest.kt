@@ -155,6 +155,15 @@ class WeakMemoryCacheTest {
         assertNull(weakMemoryCache.get("key3"))
     }
 
+    @Test
+    fun `value is removed after invalidate is called`() {
+        val bitmap = createBitmap()
+        weakMemoryCache.set("1", bitmap, false, bitmap.getAllocationByteCountCompat())
+        weakMemoryCache.invalidate("1")
+
+        assertNull(weakMemoryCache.get("1"))
+    }
+
     /** Hold a strong reference to the value for the duration of the test to prevent it from being garbage collected. */
     private fun <T : Any> reference(value: T): T {
         references.add(value)
