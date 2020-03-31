@@ -16,6 +16,9 @@ import coil.request.LoadRequestBuilder
 import coil.request.Parameters
 import coil.size.PixelSize
 import coil.size.Scale
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import okhttp3.Headers
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -24,6 +27,7 @@ import okio.buffer
 import okio.sink
 import okio.source
 import java.io.File
+import kotlin.coroutines.CoroutineContext
 
 fun createMockWebServer(context: Context, vararg images: String): MockWebServer {
     return MockWebServer().apply {
@@ -114,3 +118,9 @@ inline fun createLoadRequest(
 ): LoadRequest = LoadRequest.Builder(context).data(Unit).apply(builder).build()
 
 inline fun error(): Nothing = throw IllegalStateException()
+
+/** Runs the given [block] on the main thread by default and returns [Unit]. */
+fun runBlockingTest(
+    context: CoroutineContext = Dispatchers.Main.immediate,
+    block: suspend CoroutineScope.() -> Unit
+) = runBlocking(context, block)
