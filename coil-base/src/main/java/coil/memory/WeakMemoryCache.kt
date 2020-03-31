@@ -30,10 +30,10 @@ internal interface WeakMemoryCache {
     /** Set the value associated with [key]. */
     fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int)
 
-    /** Remove the value referenced by [key] from the cache if it is present. */
+    /** Remove the value referenced by [key] from this cache if it is present. */
     fun invalidate(key: String)
 
-    /** Remove [bitmap] from the cache if it is present. */
+    /** Remove [bitmap] from this cache if it is present. */
     fun invalidate(bitmap: Bitmap)
 
     /** Remove all values from this cache. */

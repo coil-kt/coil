@@ -42,7 +42,7 @@ internal interface MemoryCache {
     /** Return the **maximum size** of the memory cache in bytes. */
     fun maxSize(): Int
 
-    /** Remove the value referenced by [key] from the cache if it is present. */
+    /** Remove the value referenced by [key] from this cache if it is present. */
     fun invalidate(key: String)
 
     /** Remove all values from this cache. */
