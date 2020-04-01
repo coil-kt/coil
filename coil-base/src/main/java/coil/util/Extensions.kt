@@ -163,7 +163,7 @@ internal val Bitmap.safeConfig: Bitmap.Config
     get() = config ?: Bitmap.Config.ARGB_8888
 
 /** Convert null and [Bitmap.Config.HARDWARE] configs to [Bitmap.Config.ARGB_8888]. */
-internal fun Bitmap.Config?.normalize(): Bitmap.Config {
+internal fun Bitmap.Config?.toSoftware(): Bitmap.Config {
     return if (this == null || isHardware) Bitmap.Config.ARGB_8888 else this
 }
 

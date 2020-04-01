@@ -12,8 +12,8 @@ import androidx.exifinterface.media.ExifInterface
 import coil.bitmappool.BitmapPool
 import coil.size.PixelSize
 import coil.size.Size
-import coil.util.normalize
 import coil.util.toDrawable
+import coil.util.toSoftware
 import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
@@ -61,7 +61,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         val srcHeight = if (isSwapped) outWidth else outHeight
 
         // Disable hardware bitmaps if we need to perform EXIF transformations.
-        val safeConfig = if (isFlipped || isRotated) options.config.normalize() else options.config
+        val safeConfig = if (isFlipped || isRotated) options.config.toSoftware() else options.config
         inPreferredConfig = if (allowRgb565(options.allowRgb565, safeConfig, outMimeType)) Bitmap.Config.RGB_565 else safeConfig
 
         if (SDK_INT >= 26 && options.colorSpace != null) {
