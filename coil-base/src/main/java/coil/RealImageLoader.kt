@@ -68,12 +68,13 @@ import coil.util.firstNotNullIndices
 import coil.util.forEachIndices
 import coil.util.getValue
 import coil.util.log
-import coil.util.normalize
 import coil.util.placeholderOrDefault
 import coil.util.putValue
 import coil.util.requestManager
+import coil.util.safeConfig
 import coil.util.takeIf
 import coil.util.toDrawable
+import coil.util.toSoftware
 import coil.util.validateFetcher
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -208,7 +209,7 @@ internal class RealImageLoader(
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
             val cachedDrawable = cachedValue?.bitmap
-                ?.takeIf { requestService.isConfigValidForHardware(request, it.config) }
+                ?.takeIf { requestService.isConfigValidForHardware(request, it.safeConfig) }
                 ?.toDrawable(context)
 
             // If we didn't resolve the size earlier, resolve it now.
@@ -358,7 +359,7 @@ internal class RealImageLoader(
         }
 
         // Ensure we don't return a hardware bitmap if the request doesn't allow it.
-        if (!requestService.isConfigValidForHardware(request, bitmap.config)) {
+        if (!requestService.isConfigValidForHardware(request, bitmap.safeConfig)) {
             return false
         }
 
@@ -368,7 +369,7 @@ internal class RealImageLoader(
         }
 
         // The cached bitmap is valid if its config matches the requested config.
-        return bitmap.config.normalize() == request.bitmapConfig.normalize()
+        return bitmap.config.toSoftware() == request.bitmapConfig.toSoftware()
     }
 
     /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */

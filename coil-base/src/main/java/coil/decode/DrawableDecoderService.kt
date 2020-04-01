@@ -14,7 +14,7 @@ import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
-import coil.util.normalize
+import coil.util.toSoftware
 import kotlin.math.roundToInt
 
 internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
@@ -31,12 +31,12 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
         config: Bitmap.Config
     ): Bitmap {
         // Treat HARDWARE configs as ARGB_8888.
-        val safeConfig = config.normalize()
+        val safeConfig = config.toSoftware()
 
         // Fast path to return the bitmap.
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
-            if (bitmap.config.normalize() == safeConfig) {
+            if (bitmap.config.toSoftware() == safeConfig) {
                 return bitmap
             }
         }
