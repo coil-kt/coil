@@ -8,11 +8,11 @@ Yes! [Read here](java_compatibility.md).
 
 ## How do I preload an image?
 
-[Read here](../getting_started/#preloading).
+[Read here](getting_started.md#preloading).
 
 ## How do I set up disk caching?
 
-[Read here](../image_loaders/#caching).
+[Read here](image_loaders.md#caching).
 
 ## How do I enable logging?
 
