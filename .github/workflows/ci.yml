@@ -49,7 +49,7 @@ jobs:
     instrumentation-tests:
         name: Instrumentation tests
         runs-on: macOS-latest
-        timeout-minutes: 20
+        timeout-minutes: 60
         strategy:
             matrix:
                 api-level: [15, 19, 21, 25, 29]
