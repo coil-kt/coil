@@ -30,10 +30,6 @@ android {
     }
 }
 
-mavenPublish {
-    useLegacyMode = false
-}
-
 afterEvaluate {
     tasks.withType<DokkaTask> {
         outputDirectory = "$rootDir/docs/api"
