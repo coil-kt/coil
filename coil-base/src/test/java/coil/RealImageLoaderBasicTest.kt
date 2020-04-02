@@ -401,7 +401,7 @@ class RealImageLoaderBasicTest {
             imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations, size)
         }
 
-        assertEquals("base_key#key2=cached2#key3=cached3#key1#key2#OriginalSize", result)
+        assertEquals("base_key#key2=cached2#key3=cached3#key1#key2#coil.size.OriginalSize", result)
     }
 
     @Test
