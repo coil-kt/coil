@@ -8,7 +8,6 @@ import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.drawable.CrossfadeDrawable
 import coil.util.createTestMainDispatcher
-import coil.util.error
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -22,6 +21,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class)
@@ -119,9 +119,9 @@ class CrossfadeTransitionTest {
     }
 
     private inline fun createTransitionTarget(
-        crossinline onStart: (placeholder: Drawable?) -> Unit = { error() },
-        crossinline onError: (error: Drawable?) -> Unit = { error() },
-        crossinline onSuccess: (result: Drawable) -> Unit = { error() }
+        crossinline onStart: (placeholder: Drawable?) -> Unit = { fail() },
+        crossinline onError: (error: Drawable?) -> Unit = { fail() },
+        crossinline onSuccess: (result: Drawable) -> Unit = { fail() }
     ): TransitionTarget<*> {
         return object : TransitionTarget<ImageView> {
             override val view = ImageView(context)

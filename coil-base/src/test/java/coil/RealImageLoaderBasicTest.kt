@@ -30,7 +30,6 @@ import coil.util.createBitmap
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
 import coil.util.decodeBitmapAsset
-import coil.util.error
 import coil.util.toDrawable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +46,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 /**
  * Basic tests for [RealImageLoader] that don't touch Android's graphics pipeline ([BitmapFactory], [ImageDecoder], etc.).
@@ -504,11 +504,11 @@ class RealImageLoaderBasicTest {
         return listOf(
             object : Transformation {
                 override fun key() = "key1"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = error()
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = fail()
             },
             object : Transformation {
                 override fun key() = "key2"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = error()
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = fail()
             }
         )
     }
@@ -530,12 +530,12 @@ class RealImageLoaderBasicTest {
                 data: Any,
                 size: Size,
                 options: Options
-            ) = error()
+            ) = fail()
         }
     }
 
     private fun createFakeLazySizeResolver(
-        block: suspend () -> Size = { error() }
+        block: suspend () -> Size = { fail() }
     ): RealImageLoader.LazySizeResolver {
         return RealImageLoader.LazySizeResolver(
             scope = CoroutineScope(Job()), // Pass a fake scope.

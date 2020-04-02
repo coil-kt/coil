@@ -117,8 +117,6 @@ inline fun createLoadRequest(
     builder: LoadRequestBuilder.() -> Unit = {}
 ): LoadRequest = LoadRequest.Builder(context).data(Unit).apply(builder).build()
 
-inline fun error(): Nothing = throw IllegalStateException()
-
 /** Runs the given [block] on the main thread by default and returns [Unit]. */
 fun runBlockingTest(
     context: CoroutineContext = Dispatchers.Main.immediate,
