@@ -13,7 +13,7 @@ sealed class Size
 
 /** Represents the width and height of the source image. */
 object OriginalSize : Size() {
-    override fun toString() = "OriginalSize"
+    override fun toString() = "coil.size.OriginalSize"
 }
 
 /** A positive width and height in pixels. */
