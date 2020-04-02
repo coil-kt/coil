@@ -25,6 +25,7 @@ import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.Logger
+import coil.util.bitmapConfigOrDefault
 import coil.util.getLifecycle
 import coil.util.isHardware
 import coil.util.scale
@@ -127,7 +128,7 @@ internal class RequestService(
     ): Options {
         // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
         val isValidConfig = isConfigValidForTransformations(request) && isConfigValidForHardwareAllocation(request, size)
-        val bitmapConfig = if (isValidConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
+        val bitmapConfig = if (isValidConfig) request.bitmapConfigOrDefault(defaults) else Bitmap.Config.ARGB_8888
 
         // Disable fetching from the network if we know we're offline.
         val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
@@ -173,12 +174,12 @@ internal class RequestService(
      */
     @WorkerThread
     private fun isConfigValidForHardwareAllocation(request: Request, size: Size): Boolean {
-        return isConfigValidForHardware(request, request.bitmapConfig) && hardwareBitmapService.allowHardware(size, logger)
+        return isConfigValidForHardware(request, request.bitmapConfigOrDefault(defaults)) && hardwareBitmapService.allowHardware(size, logger)
     }
 
     /** Return true if [Request.bitmapConfig] is valid given its [Transformation]s. */
     private fun isConfigValidForTransformations(request: Request): Boolean {
-        return request.transformations.isEmpty() || request.bitmapConfig in VALID_TRANSFORMATION_CONFIGS
+        return request.transformations.isEmpty() || request.bitmapConfigOrDefault(defaults) in VALID_TRANSFORMATION_CONFIGS
     }
 
     private fun LoadRequest.getLifecycle(): Lifecycle? {

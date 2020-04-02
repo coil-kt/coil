@@ -60,6 +60,7 @@ import coil.transform.Transformation
 import coil.util.ComponentCallbacks
 import coil.util.Emoji
 import coil.util.Logger
+import coil.util.bitmapConfigOrDefault
 import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.errorOrDefault
@@ -260,9 +261,9 @@ internal class RealImageLoader(
                 } else {
                     logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - $throwable" }
                     val drawable = if (throwable is NullRequestDataException) {
-                        request.fallbackOrDefault { defaults }
+                        request.fallbackOrDefault(defaults)
                     } else {
-                        request.errorOrDefault { defaults }
+                        request.errorOrDefault(defaults)
                     }
                     targetDelegate.error(drawable, request.transition ?: defaults.transition)
                     eventListener.onError(request, throwable)
@@ -369,7 +370,7 @@ internal class RealImageLoader(
         }
 
         // The cached bitmap is valid if its config matches the requested config.
-        return bitmap.config.toSoftware() == request.bitmapConfig.toSoftware()
+        return bitmap.config.toSoftware() == request.bitmapConfigOrDefault(defaults).toSoftware()
     }
 
     /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
@@ -517,7 +518,7 @@ internal class RealImageLoader(
             size?.let { return@run it }
 
             // Call the target's onStart before resolving the size.
-            targetDelegate.start(cached, cached ?: request.placeholderOrDefault { defaults })
+            targetDelegate.start(cached, cached ?: request.placeholderOrDefault(defaults))
 
             eventListener.resolveSizeStart(request)
             val size = sizeResolver.size().also { size = it }

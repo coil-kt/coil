@@ -57,7 +57,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     @JvmField protected var listener: Request.Listener?
     @JvmField protected var dispatcher: CoroutineDispatcher?
     @JvmField protected var transformations: List<Transformation>
-    @JvmField protected var bitmapConfig: Bitmap.Config
+    @JvmField protected var bitmapConfig: Bitmap.Config?
     @JvmField protected var colorSpace: ColorSpace? = null
 
     @JvmField protected var sizeResolver: SizeResolver?
@@ -210,9 +210,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * Set the preferred [Bitmap.Config].
-     *
-     * This is not guaranteed and a different config may be used in some situations.
+     * @see ImageLoaderBuilder.bitmapConfig
      */
     fun bitmapConfig(bitmapConfig: Bitmap.Config): T = self {
         this.bitmapConfig = bitmapConfig
@@ -322,7 +320,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * See: [ImageLoaderBuilder.allowRgb565]
+     * @see ImageLoaderBuilder.allowRgb565
      */
     fun allowRgb565(enable: Boolean): T = self {
         this.allowRgb565 = enable
@@ -497,19 +495,19 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * See: [ImageLoaderBuilder.crossfade]
+     * @see ImageLoaderBuilder.crossfade
      */
     fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
     /**
-     * See: [ImageLoaderBuilder.crossfade]
+     * @see ImageLoaderBuilder.crossfade
      */
     fun crossfade(durationMillis: Int) = apply {
         this.transition = if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE
     }
 
     /**
-     * See: [ImageLoaderBuilder.transition]
+     * @see ImageLoaderBuilder.transition
      */
     @ExperimentalCoilApi
     fun transition(transition: Transition) = apply {
