@@ -458,14 +458,20 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 
     @Deprecated(
         message = "Migrate to LoadRequest.Builder(context).",
-        replaceWith = ReplaceWith("LoadRequest.Builder(context)")
+        replaceWith = ReplaceWith(
+            expression = "LoadRequest.Builder(context)",
+            imports = ["coil.request.LoadRequest"]
+        )
     )
     @Suppress("UNUSED_PARAMETER")
     constructor(context: Context, defaults: DefaultRequestOptions) : this(context)
 
     @Deprecated(
         message = "Migrate to LoadRequest.Builder(request, context).",
-        replaceWith = ReplaceWith("LoadRequest.Builder(request, context)")
+        replaceWith = ReplaceWith(
+            expression = "LoadRequest.Builder(request, context)",
+            imports = ["coil.request.LoadRequest"]
+        )
     )
     constructor(context: Context, request: LoadRequest) : this(request, context)
 
@@ -632,7 +638,10 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
 
     @Deprecated(
         message = "Migrate to GetRequest.Builder().",
-        replaceWith = ReplaceWith("GetRequest.Builder()")
+        replaceWith = ReplaceWith(
+            expression = "GetRequest.Builder()",
+            imports = ["coil.request.GetRequest"]
+        )
     )
     @Suppress("UNUSED_PARAMETER")
     constructor(defaults: DefaultRequestOptions) : this()
