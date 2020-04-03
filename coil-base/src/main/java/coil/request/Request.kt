@@ -43,7 +43,7 @@ sealed class Request {
     abstract val listener: Listener?
     abstract val dispatcher: CoroutineDispatcher?
     abstract val transformations: List<Transformation>
-    abstract val bitmapConfig: Bitmap.Config
+    abstract val bitmapConfig: Bitmap.Config?
     abstract val colorSpace: ColorSpace?
 
     abstract val sizeResolver: SizeResolver?
@@ -134,7 +134,7 @@ class LoadRequest internal constructor(
     override val listener: Listener?,
     override val dispatcher: CoroutineDispatcher?,
     override val transformations: List<Transformation>,
-    override val bitmapConfig: Bitmap.Config,
+    override val bitmapConfig: Bitmap.Config?,
     override val colorSpace: ColorSpace?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
@@ -244,7 +244,7 @@ class GetRequest internal constructor(
     override val listener: Listener?,
     override val dispatcher: CoroutineDispatcher?,
     override val transformations: List<Transformation>,
-    override val bitmapConfig: Bitmap.Config,
+    override val bitmapConfig: Bitmap.Config?,
     override val colorSpace: ColorSpace?,
     override val sizeResolver: SizeResolver?,
     override val scale: Scale?,
