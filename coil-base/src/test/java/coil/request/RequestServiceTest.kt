@@ -55,6 +55,15 @@ class RequestServiceTest {
     }
 
     @Test
+    fun `allowInexactSize - ImageViewTarget explicit size`() {
+        val request = createLoadRequest(context) {
+            target(ImageView(context))
+            size(100, 100)
+        }
+        assertFalse(service.allowInexactSize(request))
+    }
+
+    @Test
     fun `allowInexactSize - NullSizeResolver`() {
         val request = createLoadRequest(context)
         assertTrue(service.allowInexactSize(request))

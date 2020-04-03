@@ -107,11 +107,14 @@ internal class RequestService(
             Precision.EXACT -> false
             Precision.INEXACT -> true
             Precision.AUTOMATIC -> {
-                // ImageViews will automatically scale the image.
-                if ((request.target as? ViewTarget<*>)?.view is ImageView) return true
+                // There must not be an explicit size resolver.
+                if (request.sizeResolver == null) {
+                    // ImageViews will automatically scale the image.
+                    if ((request.target as? ViewTarget<*>)?.view is ImageView) return true
 
-                // If we fall back to a DisplaySizeResolver, allow the dimensions to be inexact.
-                if (request.sizeResolver == null && request.target !is ViewTarget<*>) return true
+                    // If we fall back to a DisplaySizeResolver, allow the dimensions to be inexact.
+                    if (request.target !is ViewTarget<*>) return true
+                }
 
                 // Else, require the dimensions to be exact.
                 return false
