@@ -268,16 +268,20 @@ internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
 
-internal fun Request.placeholderOrDefault(defaults: () -> DefaultRequestOptions): Drawable? {
-    return if (this is LoadRequest && placeholderDrawable != null) placeholder else defaults().placeholder
+internal inline fun Request.placeholderOrDefault(defaults: DefaultRequestOptions): Drawable? {
+    return if (this is LoadRequest && placeholderDrawable != null) placeholder else defaults.placeholder
 }
 
-internal inline fun Request.errorOrDefault(defaults: () -> DefaultRequestOptions): Drawable? {
-    return if (this is LoadRequest && errorDrawable != null) error else defaults().error
+internal inline fun Request.errorOrDefault(defaults: DefaultRequestOptions): Drawable? {
+    return if (this is LoadRequest && errorDrawable != null) error else defaults.error
 }
 
-internal inline fun Request.fallbackOrDefault(defaults: () -> DefaultRequestOptions): Drawable? {
-    return if (this is LoadRequest && fallbackDrawable != null) fallback else defaults().fallback
+internal inline fun Request.fallbackOrDefault(defaults: DefaultRequestOptions): Drawable? {
+    return if (this is LoadRequest && fallbackDrawable != null) fallback else defaults.fallback
+}
+
+internal inline fun Request.bitmapConfigOrDefault(defaults: DefaultRequestOptions): Bitmap.Config {
+    return bitmapConfig ?: defaults.bitmapConfig
 }
 
 /** Ensure [Request.fetcher] is valid for [data]. */

@@ -238,6 +238,17 @@ class ImageLoaderBuilder(context: Context) {
     }
 
     /**
+     * Set the preferred [Bitmap.Config].
+     *
+     * This is not guaranteed and a different config may be used in some situations.
+     *
+     * Default: [Utils.getDefaultBitmapConfig]
+     */
+    fun bitmapConfig(bitmapConfig: Bitmap.Config) = apply {
+        this.defaults = this.defaults.copy(bitmapConfig = bitmapConfig)
+    }
+
+    /**
      * Set the default placeholder drawable to use when a request starts.
      */
     fun placeholder(@DrawableRes drawableResId: Int) = apply {
