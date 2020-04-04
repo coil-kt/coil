@@ -150,17 +150,17 @@ private class RealMemoryCache(
     override fun maxSize() = cache.maxSize()
 
     override fun invalidate(key: String) {
-        logger?.log(TAG, Log.DEBUG) { "invalidate, key=$key" }
+        logger?.log(TAG, Log.VERBOSE) { "invalidate, key=$key" }
         cache.remove(key)
     }
 
     override fun clearMemory() {
-        logger?.log(TAG, Log.DEBUG) { "clearMemory" }
+        logger?.log(TAG, Log.VERBOSE) { "clearMemory" }
         cache.trimToSize(-1)
     }
 
     override fun trimMemory(level: Int) {
-        logger?.log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
+        logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
