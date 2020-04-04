@@ -5,7 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.annotation.MainThread
 import coil.DefaultRequestOptions
-import coil.RealImageLoader
+import coil.RealImageLoader.LazySizeResolver
 import coil.decode.DecodeUtils
 import coil.extension.isNotEmpty
 import coil.fetch.Fetcher
@@ -42,7 +42,7 @@ internal class MemoryCacheService(
         data: T,
         parameters: Parameters,
         transformations: List<Transformation>,
-        lazySizeResolver: RealImageLoader.LazySizeResolver
+        lazySizeResolver: LazySizeResolver
     ): String? {
         val baseCacheKey = fetcher.key(data) ?: return null
 
