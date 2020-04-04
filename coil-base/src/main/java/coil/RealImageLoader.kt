@@ -229,7 +229,7 @@ internal class RealImageLoader(
             }
 
             // Fetch and decode the image.
-            val (drawable, isSampled, source) = loadData(data, mappedData, fetcher, request, sizeResolver, size, scale, eventListener)
+            val (drawable, isSampled, source) = loadData(mappedData, fetcher, request, sizeResolver, size, scale, eventListener)
 
             // Cache the result.
             if (memoryCachePolicy.writeEnabled) {
@@ -374,9 +374,8 @@ internal class RealImageLoader(
         return bitmap.config.toSoftware() == request.bitmapConfigOrDefault(defaults).toSoftware()
     }
 
-    /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
+    /** Load the [mappedData] as a [Drawable]. Apply any [Transformation]s. */
     private suspend inline fun loadData(
-        data: Any,
         mappedData: Any,
         fetcher: Fetcher<Any>,
         request: Request,
@@ -405,7 +404,7 @@ internal class RealImageLoader(
                         // Instead, we exhaust the source and return an empty result.
                         EmptyDecoder
                     } else {
-                        request.decoder ?: registry.requireDecoder(data, fetchResult.source, fetchResult.mimeType)
+                        request.decoder ?: registry.requireDecoder(request.data!!, fetchResult.source, fetchResult.mimeType)
                     }
 
                     // Decode the stream.
