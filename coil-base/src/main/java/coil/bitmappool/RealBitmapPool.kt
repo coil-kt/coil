@@ -107,7 +107,7 @@ internal class RealBitmapPool(
 
         val result = strategy.get(width, height, config)
         if (result == null) {
-            logger?.log(TAG, Log.DEBUG) { "Missing bitmap=${strategy.logBitmap(width, height, config)}" }
+            logger?.log(TAG, Log.VERBOSE) { "Missing bitmap=${strategy.logBitmap(width, height, config)}" }
             misses++
         } else {
             hits++
@@ -124,13 +124,13 @@ internal class RealBitmapPool(
     override fun clear() = clearMemory()
 
     fun clearMemory() {
-        logger?.log(TAG, Log.DEBUG) { "clearMemory" }
+        logger?.log(TAG, Log.VERBOSE) { "clearMemory" }
         trimToSize(-1)
     }
 
     @Synchronized
     override fun trimMemory(level: Int) {
-        logger?.log(TAG, Log.DEBUG) { "trimMemory, level=$level" }
+        logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
@@ -162,7 +162,7 @@ internal class RealBitmapPool(
             currentSize -= removed.getAllocationByteCountCompat()
             evictions++
 
-            logger?.log(TAG, Log.DEBUG) { "Evicting bitmap=${strategy.logBitmap(removed)}" }
+            logger?.log(TAG, Log.VERBOSE) { "Evicting bitmap=${strategy.logBitmap(removed)}" }
             dump()
 
             removed.recycle()
