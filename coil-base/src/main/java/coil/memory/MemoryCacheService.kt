@@ -46,7 +46,7 @@ internal class MemoryCacheService(
     ): String? {
         val baseCacheKey = fetcher.key(data) ?: return null
 
-        return buildString {
+        return buildString(baseCacheKey.count()) {
             append(baseCacheKey)
 
             // Check isNotEmpty first to avoid allocating an Iterator.
