@@ -25,7 +25,6 @@ import coil.util.createGetRequest
 import coil.util.createLoadRequest
 import coil.util.toDrawable
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -39,7 +38,7 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
-@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoilApi::class)
 class MemoryCacheServiceTest {
 
     private lateinit var context: Context
