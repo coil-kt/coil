@@ -102,16 +102,25 @@ internal class RequestService(
         return Scale.FILL
     }
 
-    fun allowInexactSize(request: Request): Boolean {
+    fun allowInexactSize(request: Request, sizeResolver: SizeResolver): Boolean {
         return when (request.precision ?: defaults.precision) {
             Precision.EXACT -> false
             Precision.INEXACT -> true
             Precision.AUTOMATIC -> {
-                // ImageViews will automatically scale the image.
-                if ((request.target as? ViewTarget<*>)?.view is ImageView) return true
+                // If both our target and size resolver reference the same ImageView, allow the
+                // dimensions to be inexact as the ImageView will scale the output image automatically.
+                val target = request.target
+                if (target is ViewTarget<*> &&
+                    target.view is ImageView &&
+                    sizeResolver is ViewSizeResolver<*> &&
+                    sizeResolver.view === target.view) {
+                    return true
+                }
 
-                // If we fall back to a DisplaySizeResolver, allow the dimensions to be inexact.
-                if (request.sizeResolver == null && request.target !is ViewTarget<*>) return true
+                // If we implicitly fall back to a DisplaySizeResolver, allow the dimensions to be inexact.
+                if (request.sizeResolver == null && sizeResolver is DisplaySizeResolver) {
+                    return true
+                }
 
                 // Else, require the dimensions to be exact.
                 return false
@@ -122,6 +131,7 @@ internal class RequestService(
     @WorkerThread
     fun options(
         request: Request,
+        sizeResolver: SizeResolver,
         size: Size,
         scale: Scale,
         isOnline: Boolean
@@ -141,7 +151,7 @@ internal class RequestService(
             config = bitmapConfig,
             colorSpace = request.colorSpace,
             scale = scale,
-            allowInexactSize = allowInexactSize(request),
+            allowInexactSize = allowInexactSize(request, sizeResolver),
             allowRgb565 = allowRgb565,
             headers = request.headers,
             parameters = request.parameters,

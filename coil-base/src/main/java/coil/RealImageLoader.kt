@@ -220,7 +220,7 @@ internal class RealImageLoader(
             val scale = requestService.scale(request, sizeResolver)
 
             // Short circuit if the cached drawable is valid for the target.
-            if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, size, scale, request)) {
+            if (cachedDrawable != null && isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, request, sizeResolver, size, scale)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
                 targetDelegate.success(cachedDrawable, true, request.transition ?: defaults.transition)
                 eventListener.onSuccess(request, DataSource.MEMORY)
@@ -229,7 +229,7 @@ internal class RealImageLoader(
             }
 
             // Fetch and decode the image.
-            val (drawable, isSampled, source) = loadData(data, request, fetcher, mappedData, size, scale, eventListener)
+            val (drawable, isSampled, source) = loadData(data, mappedData, fetcher, request, sizeResolver, size, scale, eventListener)
 
             // Cache the result.
             if (memoryCachePolicy.writeEnabled) {
@@ -330,9 +330,10 @@ internal class RealImageLoader(
     internal fun isCachedDrawableValid(
         cached: BitmapDrawable,
         isSampled: Boolean,
+        request: Request,
+        sizeResolver: SizeResolver,
         size: Size,
-        scale: Scale,
-        request: Request
+        scale: Scale
     ): Boolean {
         // Ensure the size is valid for the target.
         val bitmap = cached.bitmap
@@ -350,7 +351,7 @@ internal class RealImageLoader(
                     dstHeight = size.height,
                     scale = scale
                 )
-                if (multiple != 1.0 && !requestService.allowInexactSize(request)) {
+                if (multiple != 1.0 && !requestService.allowInexactSize(request, sizeResolver)) {
                     return false
                 }
                 if (multiple > 1.0 && isSampled) {
@@ -376,14 +377,15 @@ internal class RealImageLoader(
     /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
     private suspend inline fun loadData(
         data: Any,
-        request: Request,
-        fetcher: Fetcher<Any>,
         mappedData: Any,
+        fetcher: Fetcher<Any>,
+        request: Request,
+        sizeResolver: SizeResolver,
         size: Size,
         scale: Scale,
         eventListener: EventListener
     ): DrawableResult = withContext(request.dispatcher ?: defaults.dispatcher) {
-        val options = requestService.options(request, size, scale, networkObserver.isOnline())
+        val options = requestService.options(request, sizeResolver, size, scale, networkObserver.isOnline())
 
         eventListener.fetchStart(request, fetcher, options)
         val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)
