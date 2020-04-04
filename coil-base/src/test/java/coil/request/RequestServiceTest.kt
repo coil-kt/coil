@@ -7,6 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import coil.DefaultRequestOptions
 import coil.memory.RequestService
 import coil.size.Precision
+import coil.size.ViewSizeResolver
 import coil.target.ViewTarget
 import coil.util.createGetRequest
 import coil.util.createLoadRequest
@@ -64,6 +65,33 @@ class RequestServiceTest {
     }
 
     @Test
+    fun `allowInexactSize - ImageViewTarget explicit view size resolver`() {
+        val request = createLoadRequest(context) {
+            val imageView = ImageView(context)
+            target(imageView)
+            size(ViewSizeResolver(imageView))
+        }
+        assertTrue(service.allowInexactSize(request))
+    }
+
+    @Test
+    fun `allowInexactSize - ImageViewTarget explicit view size resolver, different views`() {
+        val request = createLoadRequest(context) {
+            target(ImageView(context))
+            size(ViewSizeResolver(ImageView(context)))
+        }
+        assertFalse(service.allowInexactSize(request))
+    }
+
+    @Test
+    fun `allowInexactSize - DisplaySizeResolver explicit`() {
+        val request = createLoadRequest(context) {
+            target { /** Empty. */ }
+        }
+        assertTrue(service.allowInexactSize(request))
+    }
+
+    @Test
     fun `allowInexactSize - NullSizeResolver`() {
         val request = createLoadRequest(context)
         assertTrue(service.allowInexactSize(request))
@@ -73,7 +101,7 @@ class RequestServiceTest {
     fun `allowInexactSize - CustomTarget`() {
         val request = createLoadRequest(context) {
             target { /** Empty. */ }
-            size(100)
+            size(100, 100)
         }
         assertFalse(service.allowInexactSize(request))
     }
@@ -91,8 +119,12 @@ class RequestServiceTest {
     @Test
     fun `allowInexactSize - GetRequest`() {
         val request = createGetRequest {
-            size(100)
+            size(100, 100)
         }
         assertFalse(service.allowInexactSize(request))
+    }
+
+    private fun RequestService.allowInexactSize(request: Request): Boolean {
+        return allowInexactSize(request, service.sizeResolver(request, context))
     }
 }

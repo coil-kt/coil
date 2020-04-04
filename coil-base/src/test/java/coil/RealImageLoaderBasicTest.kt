@@ -16,9 +16,11 @@ import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
+import coil.memory.RequestService
 import coil.memory.WeakMemoryCache
 import coil.request.LoadRequest
 import coil.request.Parameters
+import coil.request.Request
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
@@ -60,6 +62,7 @@ class RealImageLoaderBasicTest {
     private lateinit var referenceCounter: BitmapReferenceCounter
     private lateinit var memoryCache: MemoryCache
     private lateinit var weakMemoryCache: WeakMemoryCache
+    private lateinit var requestService: RequestService
     private lateinit var imageLoader: RealImageLoader
 
     @Before
@@ -69,9 +72,11 @@ class RealImageLoaderBasicTest {
         weakMemoryCache = RealWeakMemoryCache()
         referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        val defaults = DefaultRequestOptions()
+        requestService = RequestService(defaults, null)
         imageLoader = RealImageLoader(
             context,
-            DefaultRequestOptions(),
+            defaults,
             bitmapPool,
             referenceCounter,
             memoryCache,
@@ -98,44 +103,44 @@ class RealImageLoaderBasicTest {
         assertFalse(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(200, 200),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertFalse(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(150, 50),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(100, 100),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(50, 100),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(50, 50),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 400, height = 200).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(400, 200),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
     }
 
@@ -149,44 +154,44 @@ class RealImageLoaderBasicTest {
         assertFalse(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(200, 200),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(150, 50),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(100, 100),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(50, 100),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = true,
+            request = request,
             size = PixelSize(50, 50),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
         assertFalse(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 200, height = 400).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(400, 800),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
     }
 
@@ -199,9 +204,9 @@ class RealImageLoaderBasicTest {
         val isValid = imageLoader.isCachedDrawableValid(
             cached = cached,
             isSampled = false,
+            request = request,
             size = PixelSize(200, 200),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         )
         assertTrue(isValid)
     }
@@ -215,9 +220,9 @@ class RealImageLoaderBasicTest {
             return imageLoader.isCachedDrawableValid(
                 cached = cached,
                 isSampled = true,
+                request = request,
                 size = PixelSize(100, 100),
-                scale = Scale.FILL,
-                request = request
+                scale = Scale.FILL
             )
         }
 
@@ -241,9 +246,9 @@ class RealImageLoaderBasicTest {
             return imageLoader.isCachedDrawableValid(
                 cached = createBitmap(config = cachedConfig).toDrawable(context),
                 isSampled = true,
+                request = request,
                 size = PixelSize(100, 100),
-                scale = Scale.FILL,
-                request = request
+                scale = Scale.FILL
             )
         }
 
@@ -271,9 +276,9 @@ class RealImageLoaderBasicTest {
             return imageLoader.isCachedDrawableValid(
                 cached = cached,
                 isSampled = true,
+                request = request,
                 size = PixelSize(100, 100),
-                scale = Scale.FILL,
-                request = request
+                scale = Scale.FILL
             )
         }
 
@@ -290,58 +295,58 @@ class RealImageLoaderBasicTest {
         assertFalse(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 100, height = 100).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(50, 50),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertFalse(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 100, height = 100).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(50, 50),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 100, height = 100).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(100, 50),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertFalse(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 100, height = 100).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(100, 50),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 100, height = 100).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(100, 100),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 100, height = 100).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(100, 100),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
         assertTrue(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 400, height = 200).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(400, 200),
-            scale = Scale.FILL,
-            request = request
+            scale = Scale.FILL
         ))
         assertFalse(imageLoader.isCachedDrawableValid(
             cached = createBitmap(width = 200, height = 400).toDrawable(context),
             isSampled = true,
+            request = request,
             size = PixelSize(400, 800),
-            scale = Scale.FIT,
-            request = request
+            scale = Scale.FIT
         ))
     }
 
@@ -548,4 +553,12 @@ class RealImageLoaderBasicTest {
             eventListener = EventListener.NONE
         )
     }
+
+    private fun RealImageLoader.isCachedDrawableValid(
+        cached: BitmapDrawable,
+        isSampled: Boolean,
+        request: Request,
+        size: Size,
+        scale: Scale
+    ): Boolean = isCachedDrawableValid(cached, isSampled, request, SizeResolver(size), size, scale)
 }
