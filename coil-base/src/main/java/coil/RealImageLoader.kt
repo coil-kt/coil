@@ -340,6 +340,9 @@ internal class RealImageLoader(
         when (size) {
             is OriginalSize -> {
                 if (isSampled) {
+                    logger?.log(TAG, Log.DEBUG) {
+                        "isCachedDrawableValid (${request.data}): Requested original size, but cached image is sampled."
+                    }
                     return false
                 }
             }
@@ -352,9 +355,17 @@ internal class RealImageLoader(
                     scale = scale
                 )
                 if (multiple != 1.0 && !requestService.allowInexactSize(request, sizeResolver)) {
+                    logger?.log(TAG, Log.DEBUG) {
+                        "isCachedDrawableValid (${request.data}): Cached image's size (${bitmap.width}, ${bitmap.height}) " +
+                            "does not exactly match the requested size (${size.width}, ${size.height})."
+                    }
                     return false
                 }
                 if (multiple > 1.0 && isSampled) {
+                    logger?.log(TAG, Log.DEBUG) {
+                        "isCachedDrawableValid (${request.data}): Cached image's size (${bitmap.width}, ${bitmap.height}) " +
+                            "is smaller than the requested size (${size.width}, ${size.height})."
+                    }
                     return false
                 }
             }
@@ -362,6 +373,9 @@ internal class RealImageLoader(
 
         // Ensure we don't return a hardware bitmap if the request doesn't allow it.
         if (!requestService.isConfigValidForHardware(request, bitmap.safeConfig)) {
+            logger?.log(TAG, Log.DEBUG) {
+                "isCachedDrawableValid (${request.data}): Cached bitmap is hardware-backed, which is incompatible with the request."
+            }
             return false
         }
 
@@ -370,8 +384,19 @@ internal class RealImageLoader(
             return true
         }
 
-        // The cached bitmap is valid if its config matches the requested config.
-        return bitmap.config.toSoftware() == request.bitmapConfigOrDefault(defaults).toSoftware()
+        // Ensure the requested config matches the cached config.
+        // Hardware and ARGB_8888 bitmaps are treated as equal for this comparison.
+        val cachedConfig = bitmap.config.toSoftware()
+        val requestedConfig = request.bitmapConfigOrDefault(defaults).toSoftware()
+        if (cachedConfig != requestedConfig) {
+            logger?.log(TAG, Log.DEBUG) {
+                "isCachedDrawableValid (${request.data}): Cached bitmap's config ($cachedConfig) " +
+                    "does not match the requested config ($requestedConfig)."
+            }
+            return false
+        }
+
+        return true
     }
 
     /** Load the [mappedData] as a [Drawable]. Apply any [Transformation]s. */
