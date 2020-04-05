@@ -14,7 +14,7 @@ sealed class RequestResult {
 }
 
 /**
- * Denotes that the request completed successfully.
+ * Indicates that the request completed successfully.
  *
  * @param drawable The result drawable.
  * @param source The data source that the image was loaded from.
@@ -25,7 +25,7 @@ data class SuccessResult(
 ) : RequestResult()
 
 /**
- * Denotes that an error occurred while executing the request.
+ * Indicates that an error occurred while executing the request.
  *
  * @param drawable The error drawable.
  * @param throwable The error that failed the request.
