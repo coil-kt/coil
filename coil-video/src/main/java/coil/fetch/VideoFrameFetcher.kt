@@ -125,7 +125,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                     } else {
                         // We were unable to decode the video's dimensions.
                         // Fall back to decoding the video frame at the original size.
-                        // We'll scale the resulting bitmap after decoding, if necessary.
+                        // We'll scale the resulting bitmap after decoding if necessary.
                         OriginalSize
                     }
                 }

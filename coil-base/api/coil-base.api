@@ -69,8 +69,9 @@ public abstract interface class coil/EventListener : coil/request/Request$Listen
 	public abstract fun fetchEnd (Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
 	public abstract fun fetchStart (Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
 	public abstract fun mapEnd (Lcoil/request/Request;Ljava/lang/Object;)V
-	public abstract fun mapStart (Lcoil/request/Request;)V
+	public abstract fun mapStart (Lcoil/request/Request;Ljava/lang/Object;)V
 	public abstract fun onCancel (Lcoil/request/Request;)V
+	public abstract fun onDispatch (Lcoil/request/Request;)V
 	public abstract fun onError (Lcoil/request/Request;Ljava/lang/Throwable;)V
 	public abstract fun onStart (Lcoil/request/Request;)V
 	public abstract fun onSuccess (Lcoil/request/Request;Lcoil/decode/DataSource;)V
@@ -91,8 +92,9 @@ public final class coil/EventListener$DefaultImpls {
 	public static fun fetchEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
 	public static fun fetchStart (Lcoil/EventListener;Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
 	public static fun mapEnd (Lcoil/EventListener;Lcoil/request/Request;Ljava/lang/Object;)V
-	public static fun mapStart (Lcoil/EventListener;Lcoil/request/Request;)V
+	public static fun mapStart (Lcoil/EventListener;Lcoil/request/Request;Ljava/lang/Object;)V
 	public static fun onCancel (Lcoil/EventListener;Lcoil/request/Request;)V
+	public static fun onDispatch (Lcoil/EventListener;Lcoil/request/Request;)V
 	public static fun onError (Lcoil/EventListener;Lcoil/request/Request;Ljava/lang/Throwable;)V
 	public static fun onStart (Lcoil/EventListener;Lcoil/request/Request;)V
 	public static fun onSuccess (Lcoil/EventListener;Lcoil/request/Request;Lcoil/decode/DataSource;)V
@@ -108,7 +110,7 @@ public abstract interface class coil/EventListener$Factory {
 	public static final field Companion Lcoil/EventListener$Factory$Companion;
 	public static final field NONE Lcoil/EventListener$Factory;
 	public static fun create (Lcoil/EventListener;)Lcoil/EventListener$Factory;
-	public abstract fun newListener (Lcoil/request/Request;)Lcoil/EventListener;
+	public abstract fun create (Lcoil/request/Request;)Lcoil/EventListener;
 }
 
 public final class coil/EventListener$Factory$Companion {

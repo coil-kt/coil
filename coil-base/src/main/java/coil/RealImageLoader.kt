@@ -50,7 +50,6 @@ import coil.request.ViewTargetRequestDisposable
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
-import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.ComponentCallbacks
@@ -156,7 +155,7 @@ internal class RealImageLoader(
         check(!isShutdown) { "The image loader is shutdown." }
 
         // Create a new event listener.
-        val eventListener = eventListenerFactory.newListener(request)
+        val eventListener = eventListenerFactory.create(request)
 
         // Compute lifecycle info on the main thread.
         val (lifecycle, mainDispatcher) = requestService.lifecycleInfo(request)
@@ -168,9 +167,8 @@ internal class RealImageLoader(
             // Fail before starting if data is null.
             val data = request.data ?: throw NullRequestDataException()
 
-            // Notify the listener that the request has started.
-            eventListener.onStart(request)
-            request.listener?.onStart(request)
+            // Notify the event listener that the request has been dispatched.
+            eventListener.onDispatch(request)
 
             // Invalidate the bitmap if it was provided as input.
             when (data) {
@@ -178,7 +176,7 @@ internal class RealImageLoader(
                 is Bitmap -> referenceCounter.invalidate(data)
             }
 
-            // Add the target as a lifecycle observer, if necessary.
+            // Add the target as a lifecycle observer if necessary.
             val target = request.target
             if (target is ViewTarget<*> && target is LifecycleObserver) {
                 lifecycle.addObserver(target)
@@ -189,7 +187,7 @@ internal class RealImageLoader(
             val lazySizeResolver = LazySizeResolver(this, sizeResolver, targetDelegate, request, defaults, eventListener)
 
             // Perform any data mapping.
-            eventListener.mapStart(request)
+            eventListener.mapStart(request, data)
             val mappedData = mapData(data, lazySizeResolver)
             eventListener.mapEnd(request, mappedData)
 
@@ -329,7 +327,7 @@ internal class RealImageLoader(
                     decodeResult
                 } catch (rethrown: Exception) {
                     // NOTE: We only close the stream automatically if there is an uncaught exception.
-                    // This allows custom decoders to continue to read the source after returning a Drawable.
+                    // This allows custom decoders to continue to read the source after returning a drawable.
                     fetchResult.source.closeQuietly()
                     throw rethrown
                 }
@@ -416,7 +414,7 @@ internal class RealImageLoader(
         clearMemory()
     }
 
-    /** Lazily resolves and caches a request's size. Responsible for calling [Target.onStart]. */
+    /** Lazily resolves and caches a request's size. Responsible for calling onStart. */
     class LazySizeResolver(
         private val scope: CoroutineScope,
         private val sizeResolver: SizeResolver,
@@ -432,9 +430,12 @@ internal class RealImageLoader(
         suspend inline fun size(cached: BitmapDrawable? = null): Size = scope.run {
             size?.let { return@run it }
 
-            // Call the target's onStart before resolving the size.
+            // Call onStart before resolving the request's size.
             targetDelegate.start(cached, cached ?: request.placeholderOrDefault(defaults))
+            eventListener.onStart(request)
+            request.listener?.onStart(request)
 
+            // Resolve the request's size and cache it.
             eventListener.resolveSizeStart(request)
             val size = sizeResolver.size().also { size = it }
             eventListener.resolveSizeEnd(request, size)

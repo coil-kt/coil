@@ -9,7 +9,7 @@ import androidx.lifecycle.LifecycleObserver
  *
  * If the loaded [Drawable] will only be used with one [View], prefer this to [Target].
  *
- * Unlike [Target]s, [ViewTarget]s can have their lifecycle methods called multiple times.
+ * [ViewTarget]s can have their lifecycle methods called multiple times.
  *
  * Optionally, a [ViewTarget] can be declared as a [LifecycleObserver]. It is automatically registered when the request
  * starts and unregistered when the request is disposed.
