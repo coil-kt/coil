@@ -31,16 +31,18 @@ interface EventListener : Request.Listener {
     }
 
     /**
-     * @see Request.Listener.onStart
+     * Called immediately after the request is dispatched.
      */
     @MainThread
-    override fun onStart(request: Request) {}
+    fun onDispatch(request: Request) {}
 
     /**
      * Called before any [Mapper]s and/or [MeasuredMapper]s are called to convert the request's data.
+     *
+     * @param data The data that will be converted.
      */
     @MainThread
-    fun mapStart(request: Request) {}
+    fun mapStart(request: Request, data: Any) {}
 
     /**
      * Called after the request's data has been converted by all applicable [Mapper]s and/or [MeasuredMapper]s.
@@ -50,6 +52,12 @@ interface EventListener : Request.Listener {
      */
     @MainThread
     fun mapEnd(request: Request, mappedData: Any) {}
+
+    /**
+     * @see Request.Listener.onStart
+     */
+    @MainThread
+    override fun onStart(request: Request) {}
 
     /**
      * Called before [SizeResolver.size].
@@ -124,7 +132,8 @@ interface EventListener : Request.Listener {
     /**
      * Called before [Transition.transition].
      *
-     * This is skipped if [Request.transition] is null or [Request.target] does not implement [TransitionTarget].
+     * This is skipped if [Request.transition] is [Transition.NONE]
+     * or [Request.target] does not implement [TransitionTarget].
      */
     @MainThread
     fun transitionStart(request: Request) {}
@@ -132,7 +141,8 @@ interface EventListener : Request.Listener {
     /**
      * Called after [Transition.transition].
      *
-     * This is skipped if [Request.transition] is null or [Request.target] does not implement [TransitionTarget].
+     * This is skipped if [Request.transition] is [Transition.NONE]
+     * or [Request.target] does not implement [TransitionTarget].
      */
     @MainThread
     fun transitionEnd(request: Request) {}
@@ -161,17 +171,17 @@ interface EventListener : Request.Listener {
         companion object {
             @JvmField val NONE = Factory(EventListener.NONE)
 
-            /** Create an [EventListener.Factory] that returns the same [listener]. */
+            /** Create an [EventListener.Factory] that always returns [listener]. */
             @JvmStatic
             @JvmName("create")
             operator fun invoke(listener: EventListener): Factory {
                 return object : Factory {
-                    override fun newListener(request: Request) = listener
+                    override fun create(request: Request) = listener
                 }
             }
         }
 
         /** Return a new [EventListener]. */
-        fun newListener(request: Request): EventListener
+        fun create(request: Request): EventListener
     }
 }

@@ -77,25 +77,25 @@ sealed class Request {
     interface Listener {
 
         /**
-         * Called when the request is dispatched and starts loading the image.
+         * Called immediately after [Target.onStart].
          */
         @MainThread
         fun onStart(request: Request) {}
 
         /**
-         * Called when the request successfully loads the image.
+         * Called if the request completes successfully.
          */
         @MainThread
         fun onSuccess(request: Request, source: DataSource) {}
 
         /**
-         * Called when the request is cancelled.
+         * Called if the request is cancelled.
          */
         @MainThread
         fun onCancel(request: Request) {}
 
         /**
-         * Called when the request fails to load the image.
+         * Called if an error occurs while executing the request.
          */
         @MainThread
         fun onError(request: Request, throwable: Throwable) {}

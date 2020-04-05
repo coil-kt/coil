@@ -4,26 +4,24 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.MainThread
 
 /**
- * A listener that accepts the result of an image load.
- *
- * Each lifecycle method is called at most once. [onSuccess] and [onError] are mutually exclusive.
+ * A listener that accepts the result of an image request.
  */
 interface Target {
 
     /**
-     * Called when the image request starts.
+     * Called when the request starts.
      */
     @MainThread
     fun onStart(placeholder: Drawable?) {}
 
     /**
-     * Called if the image request is successful.
+     * Called if the request completes successfully.
      */
     @MainThread
     fun onSuccess(result: Drawable) {}
 
     /**
-     * Called if the image request fails.
+     * Called if an error occurs while executing the request.
      */
     @MainThread
     fun onError(error: Drawable?) {}
