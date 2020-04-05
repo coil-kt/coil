@@ -91,7 +91,7 @@ internal inline fun <T> List<T>.findIndices(predicate: (T) -> Boolean): T? {
 }
 
 /** Functionally the same as [Iterable.fold] except it generates an index-based loop that doesn't use an [Iterator]. */
-internal inline fun <T, R> List<T>.foldIndices(initial: R, operation: (acc: R, T) -> R): R {
+internal inline fun <T, R> List<T>.foldIndices(initial: R, operation: (R, T) -> R): R {
     var accumulator = initial
     for (i in indices) {
         accumulator = operation(accumulator, get(i))
