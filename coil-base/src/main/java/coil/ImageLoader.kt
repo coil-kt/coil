@@ -59,10 +59,11 @@ interface ImageLoader {
     fun execute(request: LoadRequest): RequestDisposable
 
     /**
-     * Suspends and executes the [GetRequest]. Returns the loaded [Drawable] when complete.
+     * Suspends and executes the [GetRequest]. Returns either [SuccessResult] or [ErrorResult] depending
+     * on how the request completed.
      *
      * @param request The request to execute.
-     * @return The [Drawable] result.
+     * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
      */
     suspend fun execute(request: GetRequest): RequestResult
 
