@@ -45,11 +45,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val request = GetRequest.Builder().build()
-        runBlocking {
-            Coil.imageLoader(this@MainActivity).get(request)
-        }
-
         listAdapter = ImageListAdapter(this, viewModel::setScreen)
         binding.list.apply {
             setHasFixedSize(true)
