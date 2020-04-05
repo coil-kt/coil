@@ -60,6 +60,7 @@ import coil.util.emoji
 import coil.util.errorOrDefault
 import coil.util.fallbackOrDefault
 import coil.util.firstNotNullIndices
+import coil.util.foldIndices
 import coil.util.forEachIndices
 import coil.util.getValue
 import coil.util.log
@@ -379,7 +380,7 @@ internal class RealImageLoader(
             drawableDecoder.convert(result.drawable, size, options.config)
         }
 
-        val transformedBitmap = transformations.fold(baseBitmap) { bitmap, transformation ->
+        val transformedBitmap = transformations.foldIndices(baseBitmap) { bitmap, transformation ->
             transformation.transform(bitmapPool, bitmap, size).also { ensureActive() }
         }
         val transformedResult = result.copy(drawable = transformedBitmap.toDrawable(context))
