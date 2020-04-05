@@ -254,6 +254,7 @@ public final class coil/collection/SparseIntArraySet {
 public final class coil/decode/DataSource : java/lang/Enum {
 	public static final field DISK Lcoil/decode/DataSource;
 	public static final field MEMORY Lcoil/decode/DataSource;
+	public static final field MEMORY_CACHE Lcoil/decode/DataSource;
 	public static final field NETWORK Lcoil/decode/DataSource;
 	public static fun valueOf (Ljava/lang/String;)Lcoil/decode/DataSource;
 	public static fun values ()[Lcoil/decode/DataSource;
@@ -446,6 +447,19 @@ public final class coil/request/CachePolicy : java/lang/Enum {
 	public final fun getWriteEnabled ()Z
 	public static fun valueOf (Ljava/lang/String;)Lcoil/request/CachePolicy;
 	public static fun values ()[Lcoil/request/CachePolicy;
+}
+
+public final class coil/request/ErrorResult : coil/request/RequestResult {
+	public fun <init> (Landroid/graphics/drawable/Drawable;Ljava/lang/Throwable;)V
+	public final fun component1 ()Landroid/graphics/drawable/Drawable;
+	public final fun component2 ()Ljava/lang/Throwable;
+	public final fun copy (Landroid/graphics/drawable/Drawable;Ljava/lang/Throwable;)Lcoil/request/ErrorResult;
+	public static synthetic fun copy$default (Lcoil/request/ErrorResult;Landroid/graphics/drawable/Drawable;Ljava/lang/Throwable;ILjava/lang/Object;)Lcoil/request/ErrorResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
+	public final fun getThrowable ()Ljava/lang/Throwable;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/request/GetRequest : coil/request/Request {
@@ -728,6 +742,23 @@ public abstract interface class coil/request/RequestDisposable {
 	public abstract fun isDisposed ()Z
 }
 
+public abstract class coil/request/RequestResult {
+	public abstract fun getDrawable ()Landroid/graphics/drawable/Drawable;
+}
+
+public final class coil/request/SuccessResult : coil/request/RequestResult {
+	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;)V
+	public final fun component1 ()Landroid/graphics/drawable/Drawable;
+	public final fun component2 ()Lcoil/decode/DataSource;
+	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;)Lcoil/request/SuccessResult;
+	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/request/SuccessResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
+	public final fun getSource ()Lcoil/decode/DataSource;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class coil/size/DisplaySizeResolver : coil/size/SizeResolver {
 	public fun <init> (Landroid/content/Context;)V
 	public fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -896,30 +927,16 @@ public final class coil/transition/CrossfadeTransition : coil/transition/Transit
 	public fun <init> (I)V
 	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDurationMillis ()I
-	public fun transition (Lcoil/transition/TransitionTarget;Lcoil/transition/TransitionResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun transition (Lcoil/transition/TransitionTarget;Lcoil/request/RequestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class coil/transition/Transition {
 	public static final field Companion Lcoil/transition/Transition$Companion;
 	public static final field NONE Lcoil/transition/Transition;
-	public abstract fun transition (Lcoil/transition/TransitionTarget;Lcoil/transition/TransitionResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun transition (Lcoil/transition/TransitionTarget;Lcoil/request/RequestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/transition/Transition$Companion {
-}
-
-public abstract class coil/transition/TransitionResult {
-}
-
-public final class coil/transition/TransitionResult$Error : coil/transition/TransitionResult {
-	public fun <init> (Landroid/graphics/drawable/Drawable;)V
-	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
-}
-
-public final class coil/transition/TransitionResult$Success : coil/transition/TransitionResult {
-	public fun <init> (Landroid/graphics/drawable/Drawable;Z)V
-	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
-	public final fun isMemoryCache ()Z
 }
 
 public abstract interface class coil/transition/TransitionTarget : coil/target/ViewTarget {

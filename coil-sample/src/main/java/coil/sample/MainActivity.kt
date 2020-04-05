@@ -14,8 +14,11 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
+import coil.Coil
 import coil.api.load
+import coil.request.GetRequest
 import coil.sample.databinding.ActivityMainBinding
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,6 +43,11 @@ class MainActivity : AppCompatActivity() {
                 view.updatePadding(top = insets.systemWindowInsetTop)
                 insets
             }
+        }
+
+        val request = GetRequest.Builder().build()
+        runBlocking {
+            Coil.imageLoader(this@MainActivity).get(request)
         }
 
         listAdapter = ImageListAdapter(this, viewModel::setScreen)

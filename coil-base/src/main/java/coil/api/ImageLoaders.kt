@@ -46,14 +46,14 @@ inline fun ImageLoader.load(
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.execute(GetRequest.Builder().data(uri).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder().data(uri).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
     )
 )
 suspend inline fun ImageLoader.get(
     uri: String,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = execute(GetRequest.Builder().data(uri).apply(builder).build())
+): Drawable = get(GetRequest.Builder().data(uri).apply(builder).build())
 
 // endregion
 // region URL (HttpUrl)
@@ -74,14 +74,14 @@ inline fun ImageLoader.load(
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.execute(GetRequest.Builder().data(url).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder().data(url).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
     )
 )
 suspend inline fun ImageLoader.get(
     url: HttpUrl,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = execute(GetRequest.Builder().data(url).apply(builder).build())
+): Drawable = get(GetRequest.Builder().data(url).apply(builder).build())
 
 // endregion
 // region Uri
@@ -102,14 +102,14 @@ inline fun ImageLoader.load(
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.execute(GetRequest.Builder().data(uri).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder().data(uri).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
     )
 )
 suspend inline fun ImageLoader.get(
     uri: Uri,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = execute(GetRequest.Builder().data(uri).apply(builder).build())
+): Drawable = get(GetRequest.Builder().data(uri).apply(builder).build())
 
 // endregion
 // region File
@@ -130,14 +130,14 @@ inline fun ImageLoader.load(
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.execute(GetRequest.Builder().data(file).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder().data(file).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
     )
 )
 suspend inline fun ImageLoader.get(
     file: File,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = execute(GetRequest.Builder().data(file).apply(builder).build())
+): Drawable = get(GetRequest.Builder().data(file).apply(builder).build())
 
 // endregion
 // region Resource
@@ -158,14 +158,14 @@ inline fun ImageLoader.load(
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.execute(GetRequest.Builder().data(drawableRes).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder().data(drawableRes).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
     )
 )
 suspend inline fun ImageLoader.get(
     @DrawableRes drawableRes: Int,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = execute(GetRequest.Builder().data(drawableRes).apply(builder).build())
+): Drawable = get(GetRequest.Builder().data(drawableRes).apply(builder).build())
 
 // endregion
 // region Drawable
@@ -186,14 +186,14 @@ inline fun ImageLoader.load(
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.execute(GetRequest.Builder().data(drawable).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder().data(drawable).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
     )
 )
 suspend inline fun ImageLoader.get(
     drawable: Drawable,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = execute(GetRequest.Builder().data(drawable).apply(builder).build())
+): Drawable = get(GetRequest.Builder().data(drawable).apply(builder).build())
 
 // endregion
 // region Bitmap
@@ -214,14 +214,14 @@ inline fun ImageLoader.load(
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.execute(GetRequest.Builder().data(bitmap).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder().data(bitmap).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
     )
 )
 suspend inline fun ImageLoader.get(
     bitmap: Bitmap,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = execute(GetRequest.Builder().data(bitmap).apply(builder).build())
+): Drawable = get(GetRequest.Builder().data(bitmap).apply(builder).build())
 
 // endregion
 // region Any
@@ -242,14 +242,14 @@ inline fun ImageLoader.loadAny(
 @Deprecated(
     message = "Replace with the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.execute(GetRequest.Builder().data(data).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder().data(data).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
     )
 )
 suspend inline fun ImageLoader.getAny(
     data: Any,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = execute(GetRequest.Builder().data(data).apply(builder).build())
+): Drawable = get(GetRequest.Builder().data(data).apply(builder).build())
 
 // endregion
 // region Request Creation

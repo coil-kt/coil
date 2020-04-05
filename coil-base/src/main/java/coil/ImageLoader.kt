@@ -5,10 +5,13 @@ package coil
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.annotation.MainThread
+import coil.request.ErrorResult
 import coil.request.GetRequest
 import coil.request.LoadRequest
 import coil.request.Request
 import coil.request.RequestDisposable
+import coil.request.RequestResult
+import coil.request.SuccessResult
 import coil.target.Target
 
 /**
@@ -61,7 +64,7 @@ interface ImageLoader {
      * @param request The request to execute.
      * @return The [Drawable] result.
      */
-    suspend fun execute(request: GetRequest): Drawable
+    suspend fun execute(request: GetRequest): RequestResult
 
     /**
      * Remove the value referenced by [key] from the memory cache.
@@ -90,16 +93,26 @@ interface ImageLoader {
     /** @see execute */
     @Deprecated(
         message = "Migrate to execute(request).",
-        replaceWith = ReplaceWith("this.execute(request)"),
-        level = DeprecationLevel.ERROR
+        replaceWith = ReplaceWith("this.execute(request)")
     )
     fun load(request: LoadRequest): RequestDisposable = execute(request)
 
     /** @see execute */
     @Deprecated(
         message = "Migrate to execute(request).",
-        replaceWith = ReplaceWith("this.execute(request)"),
-        level = DeprecationLevel.ERROR
+        replaceWith = ReplaceWith(
+            expression = "" +
+                "when (val result = this.execute(request)) {\n" +
+                "    is SuccessResult -> result.drawable\n" +
+                "    is ErrorResult -> throw result.throwable\n" +
+                "}",
+            imports = ["coil.request.SuccessResult", "coil.request.ErrorResult"]
+        )
     )
-    suspend fun get(request: GetRequest): Drawable = execute(request)
+    suspend fun get(request: GetRequest): Drawable {
+        return when (val result = execute(request)) {
+            is SuccessResult -> result.drawable
+            is ErrorResult -> throw result.throwable
+        }
+    }
 }

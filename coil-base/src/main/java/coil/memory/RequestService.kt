@@ -12,8 +12,10 @@ import coil.decode.Options
 import coil.lifecycle.GlobalLifecycle
 import coil.lifecycle.LifecycleCoroutineDispatcher
 import coil.request.CachePolicy
+import coil.request.ErrorResult
 import coil.request.GetRequest
 import coil.request.LoadRequest
+import coil.request.NullRequestDataException
 import coil.request.Request
 import coil.size.DisplaySizeResolver
 import coil.size.Precision
@@ -26,6 +28,8 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.Logger
 import coil.util.bitmapConfigOrDefault
+import coil.util.errorOrDefault
+import coil.util.fallbackOrDefault
 import coil.util.getLifecycle
 import coil.util.isHardware
 import coil.util.scale
@@ -48,6 +52,15 @@ internal class RequestService(
     }
 
     private val hardwareBitmapService = HardwareBitmapService()
+
+    fun errorResult(request: Request, throwable: Throwable): ErrorResult {
+        val drawable = if (throwable is NullRequestDataException) {
+            request.fallbackOrDefault(defaults)
+        } else {
+            request.errorOrDefault(defaults)
+        }
+        return ErrorResult(drawable, throwable)
+    }
 
     @MainThread
     fun lifecycleInfo(request: Request): LifecycleInfo {

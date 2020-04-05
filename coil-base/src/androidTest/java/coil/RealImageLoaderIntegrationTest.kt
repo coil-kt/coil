@@ -21,9 +21,11 @@ import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.DrawableResult
 import coil.request.CachePolicy
+import coil.request.ErrorResult
 import coil.request.GetRequest
 import coil.request.LoadRequest
 import coil.request.NullRequestDataException
+import coil.request.SuccessResult
 import coil.size.PixelSize
 import coil.size.Size
 import coil.transform.CircleCropTransformation
@@ -403,7 +405,7 @@ class RealImageLoaderIntegrationTest {
     }
 
     private fun testGet(data: Any, expectedSize: PixelSize = PixelSize(100, 125)) {
-        val drawable = runBlocking {
+        val result = runBlocking {
             val request = GetRequest.Builder()
                 .data(data)
                 .size(100, 100)
@@ -411,6 +413,12 @@ class RealImageLoaderIntegrationTest {
             imageLoader.execute(request)
         }
 
+        if (result is ErrorResult) {
+            throw result.throwable
+        }
+
+        assertTrue(result is SuccessResult)
+        val drawable = result.drawable
         assertTrue(drawable is BitmapDrawable)
         assertEquals(expectedSize, drawable.bitmap.size)
     }

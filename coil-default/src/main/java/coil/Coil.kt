@@ -67,7 +67,13 @@ object Coil {
     /** @see setImageLoader */
     @Deprecated(
         message = "Migrate to setDefaultImageLoader(ImageLoaderFactory).",
-        replaceWith = ReplaceWith("this.setImageLoader(object : ImageLoaderFactory { override fun getImageLoader() = initializer() })")
+        replaceWith = ReplaceWith(
+            expression = "" +
+                "this.setImageLoader(object : ImageLoaderFactory {" +
+                "    override fun getImageLoader() = initializer()" +
+                "})",
+            imports = ["coil.ImageLoaderFactory"]
+        )
     )
     @JvmStatic
     fun setDefaultImageLoader(initializer: () -> ImageLoader) {

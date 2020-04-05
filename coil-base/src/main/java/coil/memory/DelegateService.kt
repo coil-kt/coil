@@ -1,7 +1,6 @@
 package coil.memory
 
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import coil.EventListener
@@ -50,7 +49,7 @@ internal class DelegateService(
         targetDelegate: TargetDelegate,
         lifecycle: Lifecycle,
         mainDispatcher: CoroutineDispatcher,
-        deferred: Deferred<Drawable>
+        deferred: Deferred<*>
     ): RequestDelegate {
         val requestDelegate: RequestDelegate
 

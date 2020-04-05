@@ -47,6 +47,8 @@ import coil.request.NullRequestDataException
 import coil.request.Parameters
 import coil.request.Request
 import coil.request.RequestDisposable
+import coil.request.RequestResult
+import coil.request.SuccessResult
 import coil.request.ViewTargetRequestDisposable
 import coil.size.Scale
 import coil.size.Size
@@ -58,8 +60,6 @@ import coil.util.Emoji
 import coil.util.Logger
 import coil.util.closeQuietly
 import coil.util.emoji
-import coil.util.errorOrDefault
-import coil.util.fallbackOrDefault
 import coil.util.firstNotNullIndices
 import coil.util.foldIndices
 import coil.util.forEachIndices
@@ -140,7 +140,7 @@ internal class RealImageLoader(
 
     override fun execute(request: LoadRequest): RequestDisposable {
         // Start loading the data.
-        val job = loaderScope.launch(exceptionHandler) { executeRequest(request) }
+        val job = loaderScope.launch(exceptionHandler) { executeInternal(request) }
 
         return if (request.target is ViewTarget<*>) {
             val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
@@ -150,9 +150,17 @@ internal class RealImageLoader(
         }
     }
 
-    override suspend fun execute(request: GetRequest): Drawable = executeRequest(request)
+    override suspend fun execute(request: GetRequest): RequestResult {
+        return try {
+            executeInternal(request)
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (throwable: Throwable) {
+            requestService.errorResult(request, throwable)
+        }
+    }
 
-    private suspend fun executeRequest(request: Request): Drawable = withContext(Dispatchers.Main.immediate) outerJob@{
+    private suspend fun executeInternal(request: Request) = withContext(Dispatchers.Main.immediate) outerJob@{
         // Ensure this image loader isn't shutdown.
         check(!isShutdown) { "The image loader is shutdown." }
 
@@ -165,7 +173,7 @@ internal class RealImageLoader(
         // Wrap the target to support bitmap pooling.
         val targetDelegate = delegateService.createTargetDelegate(request, eventListener)
 
-        val deferred = async<Drawable>(mainDispatcher, CoroutineStart.LAZY) innerJob@{
+        val deferred = async(mainDispatcher, CoroutineStart.LAZY) innerJob@{
             // Fail before starting if data is null.
             val data = request.data ?: throw NullRequestDataException()
 
@@ -216,12 +224,14 @@ internal class RealImageLoader(
             val scale = requestService.scale(request, sizeResolver)
 
             // Short circuit if the cached drawable is valid for the target.
-            if (cachedDrawable != null && memoryCacheService.isCachedValueValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
+            if (cachedDrawable != null && memoryCacheService
+                    .isCachedValueValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                targetDelegate.success(cachedDrawable, true, request.transition ?: defaults.transition)
-                eventListener.onSuccess(request, DataSource.MEMORY)
-                request.listener?.onSuccess(request, DataSource.MEMORY)
-                return@innerJob cachedDrawable
+                val result = SuccessResult(cachedDrawable, DataSource.MEMORY_CACHE)
+                targetDelegate.success(result, request.transition ?: defaults.transition)
+                eventListener.onSuccess(request, result.source)
+                request.listener?.onSuccess(request, result.source)
+                return@innerJob result
             }
 
             // Fetch and decode the image.
@@ -232,13 +242,14 @@ internal class RealImageLoader(
                 memoryCache.putValue(cacheKey, drawable, isSampled)
             }
 
-            // Set the final result on the target.
+            // Set the result on the target.
             logger?.log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            targetDelegate.success(drawable, false, request.transition ?: defaults.transition)
+            val result = SuccessResult(drawable, source)
+            targetDelegate.success(result, request.transition ?: defaults.transition)
             eventListener.onSuccess(request, source)
             request.listener?.onSuccess(request, source)
 
-            return@innerJob drawable
+            return@innerJob result
         }
 
         // Wrap the request to manage its lifecycle.
@@ -256,12 +267,8 @@ internal class RealImageLoader(
                     request.listener?.onCancel(request)
                 } else {
                     logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - $throwable" }
-                    val drawable = if (throwable is NullRequestDataException) {
-                        request.fallbackOrDefault(defaults)
-                    } else {
-                        request.errorOrDefault(defaults)
-                    }
-                    targetDelegate.error(drawable, request.transition ?: defaults.transition)
+                    val result = requestService.errorResult(request, throwable)
+                    targetDelegate.error(result, request.transition ?: defaults.transition)
                     eventListener.onError(request, throwable)
                     request.listener?.onError(request, throwable)
                 }
@@ -335,8 +342,8 @@ internal class RealImageLoader(
                     val isDiskOnlyPreload = request is LoadRequest && request.target == null &&
                         !(request.memoryCachePolicy ?: defaults.memoryCachePolicy).writeEnabled
                     val decoder = if (isDiskOnlyPreload) {
-                        // Skip decoding the result if we are preloading the data and writing to the memory cache is disabled.
-                        // Instead, we exhaust the source and return an empty result.
+                        // Skip decoding the result if we are preloading the data and writing to the memory cache is
+                        // disabled. Instead, we exhaust the source and return an empty result.
                         EmptyDecoder
                     } else {
                         request.decoder ?: registry.requireDecoder(request.data!!, fetchResult.source, fetchResult.mimeType)

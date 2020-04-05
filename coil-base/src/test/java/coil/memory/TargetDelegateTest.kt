@@ -7,10 +7,13 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.FakeBitmapPool
+import coil.decode.DataSource
+import coil.request.ErrorResult
+import coil.request.RequestResult
+import coil.request.SuccessResult
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
 import coil.transition.Transition
-import coil.transition.TransitionResult
 import coil.transition.TransitionTarget
 import coil.util.createBitmap
 import coil.util.createGetRequest
@@ -73,7 +76,8 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
+            val result = SuccessResult(bitmap.toDrawable(context), DataSource.DISK)
+            delegate.success(result, Transition.NONE)
             assertFalse(counter.isInvalid(bitmap))
         }
     }
@@ -85,7 +89,8 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
+            val result = SuccessResult(bitmap.toDrawable(context), DataSource.DISK)
+            delegate.success(result, Transition.NONE)
             assertTrue(counter.isInvalid(bitmap))
         }
     }
@@ -108,14 +113,16 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
+            val result = SuccessResult(bitmap.toDrawable(context), DataSource.DISK)
+            delegate.success(result, Transition.NONE)
             assertTrue(target.success)
             assertTrue(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.error(bitmap.toDrawable(context), Transition.NONE)
+            val result = ErrorResult(bitmap.toDrawable(context), Throwable())
+            delegate.error(result, Transition.NONE)
             assertTrue(target.error)
             assertFalse(counter.isInvalid(bitmap))
         }
@@ -136,7 +143,8 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            delegate.success(bitmap.toDrawable(context), false, Transition.NONE)
+            val result = SuccessResult(bitmap.toDrawable(context), DataSource.DISK)
+            delegate.success(result, Transition.NONE)
             assertFalse(counter.isInvalid(bitmap))
             assertTrue(pool.bitmaps.contains(initialBitmap))
         }
@@ -158,15 +166,16 @@ class TargetDelegateTest {
         runBlocking {
             val bitmap = createBitmap()
             var isRunning = true
+            val result = SuccessResult(bitmap.toDrawable(context), DataSource.DISK)
             val transition = object : Transition {
-                override suspend fun transition(target: TransitionTarget<*>, result: TransitionResult) {
+                override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
                     assertFalse(pool.bitmaps.contains(initialBitmap))
                     delay(100) // Simulate an animation.
                     assertFalse(pool.bitmaps.contains(initialBitmap))
                     isRunning = false
                 }
             }
-            delegate.success(bitmap.toDrawable(context), false, transition)
+            delegate.success(result, transition)
 
             // Ensure that the animation completed and the initial bitmap was not pooled until this method completes.
             assertFalse(isRunning)

@@ -6,7 +6,10 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
+import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
+import coil.request.ErrorResult
+import coil.request.SuccessResult
 import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,7 +62,7 @@ class CrossfadeTransitionTest {
                         assertEquals(drawable, result)
                     }
                 ),
-                result = TransitionResult.Success(drawable, true)
+                result = SuccessResult(drawable, DataSource.MEMORY_CACHE)
             )
         }
 
@@ -85,7 +88,7 @@ class CrossfadeTransitionTest {
                         result.stop()
                     }
                 ),
-                result = TransitionResult.Success(drawable, false)
+                result = SuccessResult(drawable, DataSource.DISK)
             )
         }
 
@@ -111,7 +114,7 @@ class CrossfadeTransitionTest {
                         error.stop()
                     }
                 ),
-                result = TransitionResult.Error(drawable)
+                result = ErrorResult(drawable, Throwable())
             )
         }
 
