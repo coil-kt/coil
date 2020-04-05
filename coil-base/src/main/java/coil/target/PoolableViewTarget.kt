@@ -30,7 +30,7 @@ import androidx.annotation.MainThread
 interface PoolableViewTarget<T : View> : ViewTarget<T> {
 
     /**
-     * Called when the current Drawable is no longer usable. Targets **must** stop using the current Drawable.
+     * Called when the current drawable is no longer usable. Targets **must** stop using the current Drawable.
      *
      * In practice, this will only be called when the view is detached or about to be destroyed.
      */

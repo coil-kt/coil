@@ -107,6 +107,7 @@ class EventListenerTest {
     @Test
     fun error() {
         val eventListener = TestEventListener(
+            onStart = MethodChecker(false),
             resolveSizeStart = MethodChecker(false),
             resolveSizeEnd = MethodChecker(false),
             fetchStart = MethodChecker(false),
@@ -173,9 +174,10 @@ class EventListenerTest {
     }
 
     private class TestEventListener(
-        val onStart: MethodChecker = MethodChecker(true),
+        val onDispatch: MethodChecker = MethodChecker(true),
         val mapStart: MethodChecker = MethodChecker(true),
         val mapEnd: MethodChecker = MethodChecker(true),
+        val onStart: MethodChecker = MethodChecker(true),
         val resolveSizeStart: MethodChecker = MethodChecker(true),
         val resolveSizeEnd: MethodChecker = MethodChecker(true),
         val fetchStart: MethodChecker = MethodChecker(true),
@@ -191,9 +193,10 @@ class EventListenerTest {
         val onError: MethodChecker = MethodChecker(true)
     ) : EventListener {
 
-        override fun onStart(request: Request) = onStart.call()
-        override fun mapStart(request: Request) = mapStart.call()
+        override fun onDispatch(request: Request) = onDispatch.call()
+        override fun mapStart(request: Request, data: Any) = mapStart.call()
         override fun mapEnd(request: Request, mappedData: Any) = mapEnd.call()
+        override fun onStart(request: Request) = onStart.call()
         override fun resolveSizeStart(request: Request) = resolveSizeStart.call()
         override fun resolveSizeEnd(request: Request, size: Size) = resolveSizeEnd.call()
         override fun fetchStart(request: Request, fetcher: Fetcher<*>, options: Options) = fetchStart.call()
@@ -209,9 +212,10 @@ class EventListenerTest {
         override fun onError(request: Request, throwable: Throwable) = onError.call()
 
         fun complete() {
-            onStart.complete("onStart")
+            onDispatch.complete("onDispatch")
             mapStart.complete("mapStart")
             mapEnd.complete("mapEnd")
+            onStart.complete("onStart")
             resolveSizeStart.complete("resolveSizeStart")
             resolveSizeEnd.complete("resolveSizeEnd")
             fetchStart.complete("fetchStart")
