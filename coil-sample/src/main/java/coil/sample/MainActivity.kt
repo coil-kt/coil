@@ -14,11 +14,8 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-import coil.Coil
 import coil.api.load
-import coil.request.GetRequest
 import coil.sample.databinding.ActivityMainBinding
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
