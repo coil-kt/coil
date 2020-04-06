@@ -60,7 +60,7 @@ interface ImageLoader {
 
     /**
      * Suspends and executes the [GetRequest]. Returns either [SuccessResult] or [ErrorResult] depending
-     * on how the request completed.
+     * on how the request completes.
      *
      * @param request The request to execute.
      * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
