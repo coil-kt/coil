@@ -4,4 +4,4 @@
 rm -rf docs/api
 
 # Build the new Dokka docs.
-./gradlew clean androidSourcesJar androidJavadocsJar installArchives --no-daemon --no-parallel
+./gradlew clean installArchives --no-daemon --no-parallel
