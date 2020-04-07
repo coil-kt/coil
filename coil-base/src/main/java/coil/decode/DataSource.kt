@@ -1,9 +1,11 @@
 package coil.decode
 
 import android.graphics.Bitmap
+import androidx.annotation.DrawableRes
 import coil.ImageLoader
 import coil.fetch.DrawableResult
 import coil.fetch.SourceResult
+import okhttp3.HttpUrl
 import java.io.File
 import java.nio.ByteBuffer
 
@@ -16,7 +18,7 @@ import java.nio.ByteBuffer
 enum class DataSource {
 
     /**
-     * Represents an [ImageLoader]'s memory cache.
+     * Represents an [ImageLoader]'s internal memory cache.
      *
      * This is a special data source as it means the request was
      * short circuited and skipped the full image pipeline.
@@ -29,12 +31,12 @@ enum class DataSource {
     MEMORY,
 
     /**
-     * Represents a disk-based data source (e.g. [File], Android asset).
+     * Represents a disk-based data source (e.g. [DrawableRes], [File]).
      */
     DISK,
 
     /**
-     * Represents a network-based data source (e.g. website).
+     * Represents a network-based data source (e.g. [HttpUrl]).
      */
     NETWORK
 }
