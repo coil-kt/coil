@@ -70,7 +70,9 @@ object Coil {
         replaceWith = ReplaceWith(
             expression = "" +
                 "this.setImageLoader(object : ImageLoaderFactory {" +
-                "    override fun getImageLoader() = initializer()" +
+                "    override fun getImageLoader() {" +
+                "        return initializer()" +
+                "    }" +
                 "})",
             imports = ["coil.ImageLoaderFactory"]
         )
