@@ -3,23 +3,16 @@ package coil.memory
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
-import androidx.annotation.MainThread
 import coil.DefaultRequestOptions
-import coil.RealImageLoader.LazySizeResolver
 import coil.decode.DecodeUtils
-import coil.extension.isNotEmpty
-import coil.fetch.Fetcher
-import coil.request.Parameters
 import coil.request.Request
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
-import coil.transform.Transformation
 import coil.util.Logger
 import coil.util.bitmapConfigOrDefault
-import coil.util.forEachIndices
 import coil.util.log
 import coil.util.safeConfig
 import coil.util.toSoftware
@@ -32,38 +25,7 @@ internal class MemoryCacheService(
 ) {
 
     companion object {
-        private const val TAG = "CacheService"
-    }
-
-    /** Compute the cache key for the [data] + [parameters] + [transformations] + [lazySizeResolver]. */
-    @MainThread
-    suspend inline fun <T : Any> computeCacheKey(
-        fetcher: Fetcher<T>,
-        data: T,
-        parameters: Parameters,
-        transformations: List<Transformation>,
-        lazySizeResolver: LazySizeResolver
-    ): String? {
-        val baseCacheKey = fetcher.key(data) ?: return null
-
-        return buildString(baseCacheKey.count()) {
-            append(baseCacheKey)
-
-            // Check isNotEmpty first to avoid allocating an Iterator.
-            if (parameters.isNotEmpty()) {
-                for ((key, entry) in parameters) {
-                    val cacheKey = entry.cacheKey ?: continue
-                    append('#').append(key).append('=').append(cacheKey)
-                }
-            }
-
-            if (transformations.isNotEmpty()) {
-                transformations.forEachIndices { append('#').append(it.key()) }
-
-                // Append the size if there are any transformations.
-                append('#').append(lazySizeResolver.size())
-            }
-        }
+        private const val TAG = "MemoryCacheService"
     }
 
     /** Return true if the [Bitmap] returned from [MemoryCache] satisfies the [Request]. */

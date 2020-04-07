@@ -1,3 +1,5 @@
+@file:Suppress("SameParameterValue")
+
 package coil
 
 import android.content.ContentResolver.SCHEME_FILE
@@ -9,24 +11,40 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
+import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
+import coil.fetch.Fetcher
 import coil.memory.BitmapReferenceCounter
+import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.request.LoadRequest
+import coil.request.Parameters
+import coil.size.OriginalSize
+import coil.size.PixelSize
 import coil.size.Precision
+import coil.size.Size
+import coil.size.SizeResolver
+import coil.transform.Transformation
+import coil.util.createLoadRequest
 import coil.util.decodeBitmapAsset
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
+import kotlin.test.fail
 
 /**
  * Basic tests for [RealImageLoader] that don't touch Android's graphics pipeline ([BitmapFactory], [ImageDecoder], etc.).
@@ -37,7 +55,7 @@ class RealImageLoaderBasicTest {
 
     private lateinit var context: Context
     private lateinit var memoryCache: MemoryCache
-    private lateinit var imageLoader: ImageLoader
+    private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
@@ -72,32 +90,32 @@ class RealImageLoaderBasicTest {
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
 
         runBlocking {
-            var error: Throwable? = null
-            val request = LoadRequest.Builder(context)
-                .key(key)
-                .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
-                .size(100, 100)
-                .precision(Precision.INEXACT)
-                .allowHardware(false)
-                .dispatcher(Dispatchers.Main.immediate)
-                .target(
-                    onStart = {
-                        // The hardware bitmap should not be returned as a placeholder.
-                        assertNull(it)
-                    },
-                    onSuccess = {
-                        // The hardware bitmap should not be returned as the result.
-                        assertNotEquals(bitmap, (it as BitmapDrawable).bitmap)
-                    }
-                )
-                .listener(
-                    onError = { _, throwable -> error = throwable }
-                )
-                .build()
-            imageLoader.execute(request).await()
-
-            // Rethrow any errors that occurred while loading.
-            error?.let { throw it }
+            suspendCancellableCoroutine<Unit> { continuation ->
+                val request = LoadRequest.Builder(context)
+                    .key(key)
+                    .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
+                    .size(100, 100)
+                    .precision(Precision.INEXACT)
+                    .allowHardware(false)
+                    .dispatcher(Dispatchers.Main.immediate)
+                    .target(
+                        onStart = {
+                            // The hardware bitmap should not be returned as a placeholder.
+                            assertNull(it)
+                        },
+                        onSuccess = {
+                            // The hardware bitmap should not be returned as the result.
+                            assertNotEquals(bitmap, (it as BitmapDrawable).bitmap)
+                        }
+                    )
+                    .listener(
+                        onSuccess = { _, _ -> continuation.resume(Unit) },
+                        onError = { _, throwable -> continuation.resumeWithException(throwable) },
+                        onCancel = { continuation.cancel() }
+                    )
+                    .build()
+                imageLoader.execute(request)
+            }
         }
     }
 
@@ -108,34 +126,158 @@ class RealImageLoaderBasicTest {
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
 
         runBlocking {
-            var error: Throwable? = null
-            val request = LoadRequest.Builder(context)
-                .key(key)
-                .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
-                .size(100, 100)
-                .precision(Precision.INEXACT)
-                .allowHardware(true)
-                .dispatcher(Dispatchers.Main.immediate)
-                .target(
-                    onStart = {
-                        assertEquals(bitmap, (it as BitmapDrawable).bitmap)
-                    },
-                    onSuccess = {
-                        assertEquals(bitmap, (it as BitmapDrawable).bitmap)
-                    }
-                )
-                .listener(
-                    onError = { _, throwable -> error = throwable }
-                )
-                .build()
-            imageLoader.execute(request).await()
-
-            // Rethrow any errors that occurred while loading.
-            error?.let { throw it }
+            suspendCancellableCoroutine<Unit> { continuation ->
+                val request = LoadRequest.Builder(context)
+                    .key(key)
+                    .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
+                    .size(100, 100)
+                    .precision(Precision.INEXACT)
+                    .allowHardware(true)
+                    .dispatcher(Dispatchers.Main.immediate)
+                    .target(
+                        onStart = {
+                            assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                        },
+                        onSuccess = {
+                            assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                        }
+                    )
+                    .listener(
+                        onSuccess = { _, _ -> continuation.resume(Unit) },
+                        onError = { _, throwable -> continuation.resumeWithException(throwable) },
+                        onCancel = { continuation.cancel() }
+                    )
+                    .build()
+                imageLoader.execute(request)
+            }
         }
     }
 
-    @Suppress("SameParameterValue")
+    @Test
+    fun `computeCacheKey - null key`() {
+        val fetcher = createFakeFetcher(key = null)
+        val size = createFakeLazySizeResolver()
+        val key = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), size)
+        }
+
+        assertNull(key)
+    }
+
+    @Test
+    fun `computeCacheKey - basic key`() {
+        val fetcher = createFakeFetcher()
+        val size = createFakeLazySizeResolver()
+        val result = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), size)
+        }
+
+        assertEquals("base_key", result)
+    }
+
+    @Test
+    fun `computeCacheKey - params only`() {
+        val fetcher = createFakeFetcher()
+        val parameters = createFakeParameters()
+        val size = createFakeLazySizeResolver()
+        val result = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList(), size)
+        }
+
+        assertEquals("base_key#key2=cached2#key3=cached3", result)
+    }
+
+    @Test
+    fun `computeCacheKey - transformations only`() {
+        val fetcher = createFakeFetcher()
+        val transformations = createFakeTransformations()
+        val size = createFakeLazySizeResolver { PixelSize(123, 332) }
+        val result = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, size)
+        }
+
+        assertEquals("base_key#key1#key2#PixelSize(width=123, height=332)", result)
+    }
+
+    @Test
+    fun `computeCacheKey - complex key`() {
+        val fetcher = createFakeFetcher()
+        val parameters = createFakeParameters()
+        val transformations = createFakeTransformations()
+        val size = createFakeLazySizeResolver { OriginalSize }
+        val result = runBlocking {
+            imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations, size)
+        }
+
+        assertEquals("base_key#key2=cached2#key3=cached3#key1#key2#coil.size.OriginalSize", result)
+    }
+
+    @Test
+    fun `lazySizeResolver - resolves at most once`() {
+        var isFirstResolve = true
+        val lazySizeResolver = createFakeLazySizeResolver {
+            if (isFirstResolve) {
+                isFirstResolve = false
+                PixelSize(100, 100)
+            } else {
+                throw IllegalStateException()
+            }
+        }
+
+        runBlocking {
+            assertEquals(lazySizeResolver.size(), lazySizeResolver.size())
+        }
+    }
+
+    private fun createFakeTransformations(): List<Transformation> {
+        return listOf(
+            object : Transformation {
+                override fun key() = "key1"
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = fail()
+            },
+            object : Transformation {
+                override fun key() = "key2"
+                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = fail()
+            }
+        )
+    }
+
+    private fun createFakeParameters(): Parameters {
+        return Parameters.Builder()
+            .set("key1", "no_cache", cacheKey = null)
+            .set("key2", "cached2")
+            .set("key3", "cached3")
+            .build()
+    }
+
+    private fun createFakeFetcher(key: String? = "base_key"): Fetcher<Any> {
+        return object : Fetcher<Any> {
+            override fun key(data: Any) = key
+
+            override suspend fun fetch(
+                pool: BitmapPool,
+                data: Any,
+                size: Size,
+                options: Options
+            ) = fail()
+        }
+    }
+
+    private fun createFakeLazySizeResolver(
+        block: suspend () -> Size = { fail() }
+    ): RealImageLoader.LazySizeResolver {
+        return RealImageLoader.LazySizeResolver(
+            scope = CoroutineScope(Job()), // Pass a fake scope.
+            sizeResolver = object : SizeResolver {
+                override suspend fun size() = block()
+            },
+            targetDelegate = EmptyTargetDelegate,
+            request = createLoadRequest(context),
+            defaults = DefaultRequestOptions(),
+            eventListener = EventListener.NONE
+        )
+    }
+
     private fun decodeAssetAndAddToMemoryCache(key: String, fileName: String): Bitmap {
         val options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.HARDWARE }
         val bitmap = context.decodeBitmapAsset(fileName, options)
