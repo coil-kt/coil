@@ -129,12 +129,13 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                             // downsampling algorithm across different API levels.
                             val sampledOutWidth = outWidth / inSampleSize.toDouble()
                             val sampledOutHeight = outHeight / inSampleSize.toDouble()
-                            pool.getDirtyOrNull(
+                            pool.getDirty(
                                 width = ceil(scale * sampledOutWidth + 0.5).toInt(),
                                 height = ceil(scale * sampledOutHeight + 0.5).toInt(),
                                 config = inPreferredConfig
                             )
                         }
+                        // Else, let BitmapFactory allocate the bitmap internally.
                         else -> null
                     }
                 }
