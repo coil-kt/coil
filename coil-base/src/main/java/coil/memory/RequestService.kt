@@ -57,10 +57,9 @@ internal class RequestService(
                 // Attempt to find the lifecycle for this request.
                 val lifecycle = request.getLifecycle()
                 return if (lifecycle != null) {
-                    LifecycleInfo(
-                        lifecycle = lifecycle,
-                        mainDispatcher = LifecycleCoroutineDispatcher.create(Dispatchers.Main.immediate, lifecycle)
-                    )
+                    val mainDispatcher = LifecycleCoroutineDispatcher
+                        .createUnlessStarted(Dispatchers.Main.immediate, lifecycle)
+                    LifecycleInfo(lifecycle, mainDispatcher)
                 } else {
                     LifecycleInfo.GLOBAL
                 }
