@@ -101,11 +101,11 @@ internal interface MemoryCache {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            return other is Key
-                && baseKey == other.baseKey
-                && transformationKeys == other.transformationKeys
-                && size == other.size
-                && parameterKeys == other.parameterKeys
+            return other is Key &&
+                baseKey == other.baseKey &&
+                transformationKeys == other.transformationKeys &&
+                size == other.size &&
+                parameterKeys == other.parameterKeys
         }
 
         override fun hashCode(): Int {
