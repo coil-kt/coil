@@ -577,8 +577,9 @@ public final class coil/request/Parameters : java/lang/Iterable, kotlin/jvm/inte
 	public static final field Companion Lcoil/request/Parameters$Companion;
 	public static final field EMPTY Lcoil/request/Parameters;
 	public fun <init> ()V
-	public synthetic fun <init> (Ljava/util/SortedMap;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun cacheKey (Ljava/lang/String;)Ljava/lang/String;
+	public final fun cacheKeys ()Ljava/util/Map;
 	public final fun count ()I
 	public final fun entry (Ljava/lang/String;)Lcoil/request/Parameters$Entry;
 	public fun equals (Ljava/lang/Object;)Z
@@ -588,6 +589,7 @@ public final class coil/request/Parameters : java/lang/Iterable, kotlin/jvm/inte
 	public final fun newBuilder ()Lcoil/request/Parameters$Builder;
 	public fun toString ()Ljava/lang/String;
 	public final fun value (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun values ()Ljava/util/Map;
 }
 
 public final class coil/request/Parameters$Builder {

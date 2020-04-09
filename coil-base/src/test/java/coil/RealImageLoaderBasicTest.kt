@@ -17,6 +17,7 @@ import coil.fetch.Fetcher
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
+import coil.memory.MemoryCache.Key
 import coil.memory.RealWeakMemoryCache
 import coil.request.LoadRequest
 import coil.request.Parameters
@@ -85,14 +86,14 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `cachedHardwareBitmap - disallowHardware`() {
-        val key = "fake_key"
+        val key = Key("fake_key")
         val fileName = "normal.jpg"
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = LoadRequest.Builder(context)
-                    .key(key)
+                    .key(key.baseKey)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)
@@ -121,14 +122,14 @@ class RealImageLoaderBasicTest {
 
     @Test
     fun `cachedHardwareBitmap - allowHardware`() {
-        val key = "fake_key"
+        val key = Key("fake_key")
         val fileName = "normal.jpg"
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = LoadRequest.Builder(context)
-                    .key(key)
+                    .key(key.baseKey)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)
@@ -167,36 +168,37 @@ class RealImageLoaderBasicTest {
     @Test
     fun `computeCacheKey - basic key`() {
         val fetcher = createFakeFetcher()
-        val size = createFakeLazySizeResolver()
+        val sizeResolver = createFakeLazySizeResolver()
         val result = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), size)
+            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), sizeResolver)
         }
 
-        assertEquals("base_key", result)
+        assertEquals(Key("base_key"), result)
     }
 
     @Test
     fun `computeCacheKey - params only`() {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
-        val size = createFakeLazySizeResolver()
+        val sizeResolver = createFakeLazySizeResolver()
         val result = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList(), size)
+            imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList(), sizeResolver)
         }
 
-        assertEquals("base_key#key2=cached2#key3=cached3", result)
+        assertEquals(Key("base_key", parameters), result)
     }
 
     @Test
     fun `computeCacheKey - transformations only`() {
         val fetcher = createFakeFetcher()
         val transformations = createFakeTransformations()
-        val size = createFakeLazySizeResolver { PixelSize(123, 332) }
+        val size = PixelSize(123, 332)
+        val sizeResolver = createFakeLazySizeResolver { size }
         val result = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, size)
+            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, sizeResolver)
         }
 
-        assertEquals("base_key#key1#key2#PixelSize(width=123, height=332)", result)
+        assertEquals(Key("base_key", transformations, size), result)
     }
 
     @Test
@@ -204,24 +206,22 @@ class RealImageLoaderBasicTest {
         val fetcher = createFakeFetcher()
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
-        val size = createFakeLazySizeResolver { OriginalSize }
+        val size = OriginalSize
+        val sizeResolver = createFakeLazySizeResolver { size }
         val result = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations, size)
+            imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations, sizeResolver)
         }
 
-        assertEquals("base_key#key2=cached2#key3=cached3#key1#key2#coil.size.OriginalSize", result)
+        assertEquals(Key("base_key", transformations, size, parameters), result)
     }
 
     @Test
     fun `lazySizeResolver - resolves at most once`() {
         var isFirstResolve = true
         val lazySizeResolver = createFakeLazySizeResolver {
-            if (isFirstResolve) {
-                isFirstResolve = false
-                PixelSize(100, 100)
-            } else {
-                throw IllegalStateException()
-            }
+            check(isFirstResolve)
+            isFirstResolve = false
+            PixelSize(100, 100)
         }
 
         runBlocking {
@@ -278,7 +278,7 @@ class RealImageLoaderBasicTest {
         )
     }
 
-    private fun decodeAssetAndAddToMemoryCache(key: String, fileName: String): Bitmap {
+    private fun decodeAssetAndAddToMemoryCache(key: Key, fileName: String): Bitmap {
         val options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.HARDWARE }
         val bitmap = context.decodeBitmapAsset(fileName, options)
         assertEquals(Bitmap.Config.HARDWARE, bitmap.config)
