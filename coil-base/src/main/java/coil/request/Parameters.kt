@@ -72,7 +72,9 @@ class Parameters private constructor(
         return true
     }
 
-    override fun hashCode(): Int = map.hashCode()
+    override fun hashCode() = map.hashCode()
+
+    override fun toString() = "Parameters(map=$map)"
 
     fun newBuilder() = Builder(this)
 
