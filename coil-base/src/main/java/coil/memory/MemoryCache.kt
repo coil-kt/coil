@@ -7,10 +7,16 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
+import coil.fetch.Fetcher
+import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
+import coil.request.Parameters
+import coil.size.Size
+import coil.transform.Transformation
 import coil.util.Logger
 import coil.util.getAllocationByteCountCompat
 import coil.util.log
+import coil.util.mapIndices
 
 /** An in-memory cache for [Bitmap]s. */
 internal interface MemoryCache {
@@ -31,10 +37,10 @@ internal interface MemoryCache {
     }
 
     /** Get the value associated with [key]. */
-    fun get(key: String): Value?
+    fun get(key: Key): Value?
 
     /** Set the value associated with [key]. */
-    fun set(key: String, bitmap: Bitmap, isSampled: Boolean)
+    fun set(key: Key, bitmap: Bitmap, isSampled: Boolean)
 
     /** Return the **current size** of the memory cache in bytes. */
     fun size(): Int
@@ -43,7 +49,7 @@ internal interface MemoryCache {
     fun maxSize(): Int
 
     /** Remove the value referenced by [key] from this cache if it is present. */
-    fun invalidate(key: String)
+    fun invalidate(key: Key)
 
     /** Remove all values from this cache. */
     fun clearMemory()
@@ -51,6 +57,72 @@ internal interface MemoryCache {
     /** @see ComponentCallbacks2.onTrimMemory */
     fun trimMemory(level: Int)
 
+    /** Cache key for [MemoryCache] and [WeakMemoryCache]. */
+    class Key {
+
+        /** The base component of the cache key. This is typically [Fetcher.key]. */
+        val baseKey: String
+
+        /** An ordered list of [Transformation.key]s. */
+        val transformationKeys: List<String>
+
+        /** The resolved size for the request. This is null if [transformationKeys] is empty. */
+        val size: Size?
+
+        /** @see Parameters.cacheKeys */
+        val parameterKeys: Map<String, String>
+
+        constructor(
+            baseKey: String,
+            parameters: Parameters = Parameters.EMPTY
+        ) {
+            this.baseKey = baseKey
+            this.transformationKeys = emptyList()
+            this.size = null
+            this.parameterKeys = parameters.cacheKeys()
+        }
+
+        constructor(
+            baseKey: String,
+            transformations: List<Transformation>,
+            size: Size,
+            parameters: Parameters = Parameters.EMPTY
+        ) {
+            this.baseKey = baseKey
+            if (transformations.isEmpty()) {
+                this.transformationKeys = emptyList()
+                this.size = null
+            } else {
+                this.transformationKeys = transformations.mapIndices { it.key() }
+                this.size = size
+            }
+            this.parameterKeys = parameters.cacheKeys()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Key) return false
+            if (baseKey != other.baseKey) return false
+            if (parameterKeys != other.parameterKeys) return false
+            if (transformationKeys != other.transformationKeys) return false
+            if (size != other.size) return false
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = baseKey.hashCode()
+            result = 31 * result + parameterKeys.hashCode()
+            result = 31 * result + transformationKeys.hashCode()
+            result = 31 * result + (size?.hashCode() ?: 0)
+            return result
+        }
+
+        override fun toString(): String {
+            return "MemoryCache.Key(baseKey='$baseKey', transformationKeys=$transformationKeys, size=$size, parameterKeys=$parameterKeys)"
+        }
+    }
+
+    /** Cache value for [MemoryCache] and [WeakMemoryCache]. */
     interface Value {
         val bitmap: Bitmap
         val isSampled: Boolean
@@ -60,15 +132,15 @@ internal interface MemoryCache {
 /** A [MemoryCache] implementation that caches nothing. */
 private object EmptyMemoryCache : MemoryCache {
 
-    override fun get(key: String): Value? = null
+    override fun get(key: Key): Value? = null
 
-    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean) {}
+    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {}
 
     override fun size(): Int = 0
 
     override fun maxSize(): Int = 0
 
-    override fun invalidate(key: String) {}
+    override fun invalidate(key: Key) {}
 
     override fun clearMemory() {}
 
@@ -80,9 +152,9 @@ private class ForwardingMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
 ) : MemoryCache {
 
-    override fun get(key: String) = weakMemoryCache.get(key)
+    override fun get(key: Key) = weakMemoryCache.get(key)
 
-    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean) {
+    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
         weakMemoryCache.set(key, bitmap, isSampled, bitmap.getAllocationByteCountCompat())
     }
 
@@ -90,7 +162,7 @@ private class ForwardingMemoryCache(
 
     override fun maxSize() = 0
 
-    override fun invalidate(key: String) {}
+    override fun invalidate(key: Key) {}
 
     override fun clearMemory() {}
 
@@ -109,10 +181,10 @@ private class RealMemoryCache(
         private const val TAG = "RealMemoryCache"
     }
 
-    private val cache = object : LruCache<String, InternalValue>(maxSize) {
+    private val cache = object : LruCache<Key, InternalValue>(maxSize) {
         override fun entryRemoved(
             evicted: Boolean,
-            key: String,
+            key: Key,
             oldValue: InternalValue,
             newValue: InternalValue?
         ) {
@@ -123,12 +195,12 @@ private class RealMemoryCache(
             }
         }
 
-        override fun sizeOf(key: String, value: InternalValue) = value.size
+        override fun sizeOf(key: Key, value: InternalValue) = value.size
     }
 
-    override fun get(key: String) = cache.get(key) ?: weakMemoryCache.get(key)
+    override fun get(key: Key) = cache.get(key) ?: weakMemoryCache.get(key)
 
-    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean) {
+    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
         // the cache to be cleared. Instead just evict an existing element with the same key if it exists.
         val size = bitmap.getAllocationByteCountCompat()
@@ -149,7 +221,7 @@ private class RealMemoryCache(
 
     override fun maxSize() = cache.maxSize()
 
-    override fun invalidate(key: String) {
+    override fun invalidate(key: Key) {
         logger?.log(TAG, Log.VERBOSE) { "invalidate, key=$key" }
         cache.remove(key)
     }

@@ -42,8 +42,6 @@ import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Response
 import java.io.Closeable
-import java.util.SortedMap
-import java.util.TreeMap
 
 internal suspend inline fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
@@ -69,6 +67,15 @@ internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
     for (i in indices) {
         action(get(i))
     }
+}
+
+/** Functionally the same as [Iterable.map] except it generates an index-based loop that doesn't use an [Iterator]. */
+internal inline fun <R, T> List<R>.mapIndices(transform: (R) -> T): List<T> {
+    val destination = ArrayList<T>(size)
+    for (i in indices) {
+        destination += transform(get(i))
+    }
+    return destination
 }
 
 /** Return the first non-null value returned by [transform]. Generate an index-based loop that doesn't use an [Iterator]. */
@@ -116,7 +123,16 @@ internal inline fun <T> MutableList<T>.removeIfIndices(predicate: (T) -> Boolean
 
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
-internal inline fun <K, V> sortedMapOf(): SortedMap<K, V> = TreeMap()
+internal inline fun <K, V, R : Any> Map<K, V>.mapNotNullValues(transform: (Map.Entry<K, V>) -> R?): Map<K, R> {
+    val destination = mutableMapOf<K, R>()
+    for (entry in this) {
+        val value = transform(entry)
+        if (value != null) {
+            destination[entry.key] = value
+        }
+    }
+    return destination
+}
 
 internal inline fun ActivityManager.isLowRamDeviceCompat(): Boolean {
     return SDK_INT < 19 || isLowRamDevice
@@ -149,9 +165,9 @@ internal inline fun StatFs.getBlockSizeCompat(): Long {
     return if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 }
 
-internal fun MemoryCache.getValue(key: String?): MemoryCache.Value? = key?.let(::get)
+internal fun MemoryCache.getValue(key: MemoryCache.Key?): MemoryCache.Value? = key?.let(::get)
 
-internal fun MemoryCache.putValue(key: String?, value: Drawable, isSampled: Boolean) {
+internal fun MemoryCache.putValue(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean) {
     if (key != null) {
         val bitmap = (value as? BitmapDrawable)?.bitmap
         if (bitmap != null) {

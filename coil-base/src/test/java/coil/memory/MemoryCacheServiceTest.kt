@@ -302,5 +302,12 @@ class MemoryCacheServiceTest {
         request: Request,
         size: Size,
         scale: Scale
-    ): Boolean = isCachedDrawableValid(cached, isSampled, request, SizeResolver(size), size, scale)
+    ): Boolean {
+        val key = MemoryCache.Key("key")
+        val value = object : MemoryCache.Value {
+            override val bitmap = cached.bitmap
+            override val isSampled = isSampled
+        }
+        return isCachedDrawableValid(key, value, request, SizeResolver(size), size, scale)
+    }
 }

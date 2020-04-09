@@ -8,6 +8,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.VisibleForTesting
+import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
 import coil.util.firstNotNullIndices
 import coil.util.identityHashCode
@@ -25,13 +26,13 @@ import java.lang.ref.WeakReference
 internal interface WeakMemoryCache {
 
     /** Get the value associated with [key]. */
-    fun get(key: String): Value?
+    fun get(key: Key): Value?
 
     /** Set the value associated with [key]. */
-    fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int)
+    fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int)
 
     /** Remove the value referenced by [key] from this cache if it is present. */
-    fun invalidate(key: String)
+    fun invalidate(key: Key)
 
     /** Remove [bitmap] from this cache if it is present. */
     fun invalidate(bitmap: Bitmap)
@@ -46,11 +47,11 @@ internal interface WeakMemoryCache {
 /** A [WeakMemoryCache] implementation that holds no references. */
 internal object EmptyWeakMemoryCache : WeakMemoryCache {
 
-    override fun get(key: String): Value? = null
+    override fun get(key: Key): Value? = null
 
-    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int) {}
+    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {}
 
-    override fun invalidate(key: String) {}
+    override fun invalidate(key: Key) {}
 
     override fun invalidate(bitmap: Bitmap) {}
 
@@ -66,11 +67,11 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         private const val CLEAN_UP_INTERVAL = 10
     }
 
-    @VisibleForTesting internal val cache = HashMap<String, ArrayList<WeakValue>>()
+    @VisibleForTesting internal val cache = HashMap<Key, ArrayList<WeakValue>>()
 
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
-    override fun get(key: String): Value? {
+    override fun get(key: Key): Value? {
         val values = cache[key] ?: return null
 
         // Find the first bitmap that hasn't been collected.
@@ -83,7 +84,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         return strongValue
     }
 
-    override fun set(key: String, bitmap: Bitmap, isSampled: Boolean, size: Int) {
+    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {
         val rawValues = cache[key]
         val values = rawValues ?: arrayListOf()
 
@@ -107,7 +108,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         cleanUpIfNecessary()
     }
 
-    override fun invalidate(key: String) {
+    override fun invalidate(key: Key) {
         val value = get(key)
         if (value != null) {
             invalidate(value.bitmap)

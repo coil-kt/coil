@@ -4,15 +4,15 @@ package coil.request
 
 import coil.decode.Decoder
 import coil.fetch.Fetcher
-import coil.util.sortedMapOf
-import java.util.SortedMap
+import coil.request.Parameters.Entry
+import coil.util.mapNotNullValues
 
 /** A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s. */
 class Parameters private constructor(
-    private val map: SortedMap<String, Entry>
-) : Iterable<Pair<String, Parameters.Entry>> {
+    private val map: Map<String, Entry>
+) : Iterable<Pair<String, Entry>> {
 
-    constructor() : this(sortedMapOf())
+    constructor() : this(emptyMap())
 
     companion object {
         @JvmField val EMPTY = Parameters()
@@ -42,16 +42,37 @@ class Parameters private constructor(
     /** Returns true if this object has no parameters. */
     fun isEmpty(): Boolean = map.isEmpty()
 
-    /** Returns an [Iterator] over the entries in the [Parameters]. Iteration order is deterministic. */
+    /** Returns a map of keys to values. */
+    fun values(): Map<String, Any?> {
+        return if (isEmpty()) {
+            emptyMap()
+        } else {
+            map.mapValues { it.value.value }
+        }
+    }
+
+    /** Returns a map of keys to non null cache keys. Parameters with a null cache key are filtered out. */
+    fun cacheKeys(): Map<String, String> {
+        return if (isEmpty()) {
+            emptyMap()
+        } else {
+            map.mapNotNullValues { it.value.cacheKey }
+        }
+    }
+
+    /** Returns an [Iterator] over the entries in the [Parameters]. */
     override operator fun iterator(): Iterator<Pair<String, Entry>> {
         return map.map { (key, value) -> key to value }.iterator()
     }
 
-    override fun equals(other: Any?) = map == other
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Parameters) return false
+        if (map != other.map) return false
+        return true
+    }
 
-    override fun hashCode() = map.hashCode()
-
-    override fun toString() = map.toString()
+    override fun hashCode(): Int = map.hashCode()
 
     fun newBuilder() = Builder(this)
 
@@ -62,14 +83,14 @@ class Parameters private constructor(
 
     class Builder {
 
-        private val map: SortedMap<String, Entry>
+        private val map: MutableMap<String, Entry>
 
         constructor() {
-            map = sortedMapOf()
+            map = mutableMapOf()
         }
 
         constructor(parameters: Parameters) {
-            map = parameters.map.toSortedMap()
+            map = parameters.map.toMutableMap()
         }
 
         /**
@@ -94,6 +115,6 @@ class Parameters private constructor(
         }
 
         /** Create a new [Parameters] instance. */
-        fun build() = Parameters(map.toSortedMap())
+        fun build() = Parameters(map.toMap())
     }
 }
