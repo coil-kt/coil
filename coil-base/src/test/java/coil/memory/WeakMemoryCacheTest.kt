@@ -3,6 +3,7 @@ package coil.memory
 import android.content.Context
 import androidx.collection.arraySetOf
 import androidx.test.core.app.ApplicationProvider
+import coil.memory.MemoryCache.Key
 import coil.util.clear
 import coil.util.count
 import coil.util.createBitmap
@@ -33,7 +34,7 @@ class WeakMemoryCacheTest {
 
     @Test
     fun `can retrieve cached value`() {
-        val key = "key"
+        val key = Key("key")
         val bitmap = reference(createBitmap())
         val isSampled = false
         val size = bitmap.getAllocationByteCountCompat()
@@ -49,28 +50,28 @@ class WeakMemoryCacheTest {
     @Test
     fun `can hold multiple values`() {
         val bitmap1 = reference(createBitmap())
-        weakMemoryCache.set("key1", bitmap1, false, 100)
+        weakMemoryCache.set(Key("key1"), bitmap1, false, 100)
 
         val bitmap2 = reference(createBitmap())
-        weakMemoryCache.set("key2", bitmap2, false, 100)
+        weakMemoryCache.set(Key("key2"), bitmap2, false, 100)
 
         val bitmap3 = reference(createBitmap())
-        weakMemoryCache.set("key3", bitmap3, false, 100)
+        weakMemoryCache.set(Key("key3"), bitmap3, false, 100)
 
-        assertEquals(bitmap1, weakMemoryCache.get("key1")?.bitmap)
-        assertEquals(bitmap2, weakMemoryCache.get("key2")?.bitmap)
-        assertEquals(bitmap3, weakMemoryCache.get("key3")?.bitmap)
+        assertEquals(bitmap1, weakMemoryCache.get(Key("key1"))?.bitmap)
+        assertEquals(bitmap2, weakMemoryCache.get(Key("key2"))?.bitmap)
+        assertEquals(bitmap3, weakMemoryCache.get(Key("key3"))?.bitmap)
 
         weakMemoryCache.clear(bitmap2)
 
-        assertEquals(bitmap1, weakMemoryCache.get("key1")?.bitmap)
-        assertNull(weakMemoryCache.get("key2"))
-        assertEquals(bitmap3, weakMemoryCache.get("key3")?.bitmap)
+        assertEquals(bitmap1, weakMemoryCache.get(Key("key1"))?.bitmap)
+        assertNull(weakMemoryCache.get(Key("key2")))
+        assertEquals(bitmap3, weakMemoryCache.get(Key("key3"))?.bitmap)
     }
 
     @Test
     fun `invalidate removes from cache`() {
-        val key = "key"
+        val key = Key("key")
         val bitmap = reference(createBitmap())
 
         weakMemoryCache.set(key, bitmap, false, 100)
@@ -90,59 +91,59 @@ class WeakMemoryCacheTest {
         val bitmap7 = reference(createBitmap())
         val bitmap8 = reference(createBitmap())
 
-        weakMemoryCache.set("key", bitmap1, false, 1)
-        weakMemoryCache.set("key", bitmap3, false, 3)
-        weakMemoryCache.set("key", bitmap5, false, 5)
-        weakMemoryCache.set("key", bitmap7, false, 7)
-        weakMemoryCache.set("key", bitmap8, false, 8)
-        weakMemoryCache.set("key", bitmap4, false, 4)
-        weakMemoryCache.set("key", bitmap6, false, 6)
-        weakMemoryCache.set("key", bitmap2, false, 2)
+        weakMemoryCache.set(Key("key"), bitmap1, false, 1)
+        weakMemoryCache.set(Key("key"), bitmap3, false, 3)
+        weakMemoryCache.set(Key("key"), bitmap5, false, 5)
+        weakMemoryCache.set(Key("key"), bitmap7, false, 7)
+        weakMemoryCache.set(Key("key"), bitmap8, false, 8)
+        weakMemoryCache.set(Key("key"), bitmap4, false, 4)
+        weakMemoryCache.set(Key("key"), bitmap6, false, 6)
+        weakMemoryCache.set(Key("key"), bitmap2, false, 2)
 
-        assertEquals(bitmap8, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap8, weakMemoryCache.get(Key("key"))?.bitmap)
         weakMemoryCache.invalidate(bitmap8)
 
-        assertEquals(bitmap7, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap7, weakMemoryCache.get(Key("key"))?.bitmap)
         weakMemoryCache.invalidate(bitmap7)
 
-        assertEquals(bitmap6, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap6, weakMemoryCache.get(Key("key"))?.bitmap)
         weakMemoryCache.invalidate(bitmap6)
 
-        assertEquals(bitmap5, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap5, weakMemoryCache.get(Key("key"))?.bitmap)
         weakMemoryCache.invalidate(bitmap5)
 
-        assertEquals(bitmap4, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap4, weakMemoryCache.get(Key("key"))?.bitmap)
         weakMemoryCache.invalidate(bitmap4)
 
-        assertEquals(bitmap3, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap3, weakMemoryCache.get(Key("key"))?.bitmap)
         weakMemoryCache.invalidate(bitmap3)
 
-        assertEquals(bitmap2, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap2, weakMemoryCache.get(Key("key"))?.bitmap)
         weakMemoryCache.invalidate(bitmap2)
 
-        assertEquals(bitmap1, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap1, weakMemoryCache.get(Key("key"))?.bitmap)
         weakMemoryCache.invalidate(bitmap1)
 
         // All the values are invalidated.
-        assertNull(weakMemoryCache.get("key"))
+        assertNull(weakMemoryCache.get(Key("key")))
     }
 
     @Test
     fun `cleanUp clears all collected values`() {
         val bitmap1 = reference(createBitmap())
-        weakMemoryCache.set("key1", bitmap1, false, 100)
+        weakMemoryCache.set(Key("key1"), bitmap1, false, 100)
 
         val bitmap2 = reference(createBitmap())
-        weakMemoryCache.set("key2", bitmap2, false, 100)
+        weakMemoryCache.set(Key("key2"), bitmap2, false, 100)
 
         val bitmap3 = reference(createBitmap())
-        weakMemoryCache.set("key3", bitmap3, false, 100)
+        weakMemoryCache.set(Key("key3"), bitmap3, false, 100)
 
         weakMemoryCache.clear(bitmap1)
-        assertNull(weakMemoryCache.get("key1"))
+        assertNull(weakMemoryCache.get(Key("key1")))
 
         weakMemoryCache.clear(bitmap3)
-        assertNull(weakMemoryCache.get("key3"))
+        assertNull(weakMemoryCache.get(Key("key3")))
 
         assertEquals(3, weakMemoryCache.count())
 
@@ -150,18 +151,19 @@ class WeakMemoryCacheTest {
 
         assertEquals(1, weakMemoryCache.count())
 
-        assertNull(weakMemoryCache.get("key1"))
-        assertEquals(bitmap2, weakMemoryCache.get("key2")?.bitmap)
-        assertNull(weakMemoryCache.get("key3"))
+        assertNull(weakMemoryCache.get(Key("key1")))
+        assertEquals(bitmap2, weakMemoryCache.get(Key("key2"))?.bitmap)
+        assertNull(weakMemoryCache.get(Key("key3")))
     }
 
     @Test
     fun `value is removed after invalidate is called`() {
+        val key = Key("1")
         val bitmap = createBitmap()
-        weakMemoryCache.set("1", bitmap, false, bitmap.getAllocationByteCountCompat())
-        weakMemoryCache.invalidate("1")
+        weakMemoryCache.set(key, bitmap, false, bitmap.getAllocationByteCountCompat())
+        weakMemoryCache.invalidate(key)
 
-        assertNull(weakMemoryCache.get("1"))
+        assertNull(weakMemoryCache.get(key))
     }
 
     /** Hold a strong reference to the value for the duration of the test to prevent it from being garbage collected. */

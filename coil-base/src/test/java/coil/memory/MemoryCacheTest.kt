@@ -1,6 +1,7 @@
 package coil.memory
 
 import coil.bitmappool.BitmapPool
+import coil.memory.MemoryCache.Key
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
 import org.junit.Test
@@ -21,9 +22,9 @@ class MemoryCacheTest {
         val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt(), null)
 
         val bitmap = createBitmap()
-        cache.set("1", bitmap, false)
+        cache.set(Key("1"), bitmap, false)
 
-        assertEquals(bitmap, cache.get("1")?.bitmap)
+        assertEquals(bitmap, cache.get(Key("1"))?.bitmap)
     }
 
     @Test
@@ -34,15 +35,15 @@ class MemoryCacheTest {
         val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt(), null)
 
         val first = createBitmap()
-        cache.set("1", first, false)
+        cache.set(Key("1"), first, false)
 
         val second = createBitmap()
-        cache.set("2", second, false)
+        cache.set(Key("2"), second, false)
 
         val third = createBitmap()
-        cache.set("3", third, false)
+        cache.set(Key("3"), third, false)
 
-        assertNull(cache.get("1"))
+        assertNull(cache.get(Key("1")))
     }
 
     @Test
@@ -53,9 +54,9 @@ class MemoryCacheTest {
         val cache = MemoryCache(weakMemoryCache, counter, 0, null)
 
         val bitmap = createBitmap()
-        cache.set("1", bitmap, false)
+        cache.set(Key("1"), bitmap, false)
 
-        assertNull(cache.get("1"))
+        assertNull(cache.get(Key("1")))
     }
 
     @Test
@@ -66,10 +67,10 @@ class MemoryCacheTest {
         val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt(), null)
 
         val bitmap = createBitmap()
-        cache.set("1", bitmap, false)
-        cache.invalidate("1")
+        cache.set(Key("1"), bitmap, false)
+        cache.invalidate(Key("1"))
 
-        assertNull(cache.get("1"))
+        assertNull(cache.get(Key("1")))
     }
 
     @Test
@@ -80,15 +81,15 @@ class MemoryCacheTest {
         val cache = MemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE.toInt(), null)
 
         val first = createBitmap()
-        cache.set("1", first, false)
+        cache.set(Key("1"), first, false)
 
-        assertNotNull(cache.get("1"))
+        assertNotNull(cache.get(Key("1")))
 
         val second = createBitmap()
-        cache.set("2", second, false)
+        cache.set(Key("2"), second, false)
 
-        assertNull(cache.get("1"))
-        assertNull(weakMemoryCache.get("1"))
+        assertNull(cache.get(Key("1")))
+        assertNull(weakMemoryCache.get(Key("1")))
         assertEquals(first, pool.getDirtyOrNull(first.width, first.height, first.config))
     }
 
@@ -100,19 +101,19 @@ class MemoryCacheTest {
         val cache = MemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE.toInt(), null)
 
         val first = createBitmap()
-        cache.set("key", first, false)
+        cache.set(Key("key"), first, false)
 
-        assertNotNull(cache.get("key"))
+        assertNotNull(cache.get(Key("key")))
 
         // Invalidate the first bitmap.
         counter.invalidate(first)
 
         // Overwrite the value in the memory cache.
         val second = createBitmap()
-        cache.set("key", second, false)
+        cache.set(Key("key"), second, false)
 
-        assertEquals(second, cache.get("key")?.bitmap)
-        assertEquals(first, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(second, cache.get(Key("key"))?.bitmap)
+        assertEquals(first, weakMemoryCache.get(Key("key"))?.bitmap)
         assertNull(pool.getDirtyOrNull(first.width, first.height, first.config))
     }
 }

@@ -2,6 +2,7 @@ package coil.memory
 
 import coil.bitmappool.BitmapPool
 import coil.bitmappool.RealBitmapPool
+import coil.memory.MemoryCache.Key
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.count
 import coil.util.createBitmap
@@ -51,9 +52,10 @@ class BitmapReferenceCounterTest {
 
     @Test
     fun `valid bitmap is added to pool if count reaches zero`() {
+        val key = Key("key")
         val bitmap = createBitmap()
 
-        weakMemoryCache.set("key", bitmap, false, 0)
+        weakMemoryCache.set(key, bitmap, false, 0)
         counter.increment(bitmap)
 
         assertEquals(1, counter.count(bitmap))
@@ -64,14 +66,15 @@ class BitmapReferenceCounterTest {
         assertEquals(bitmap, pool.getDirtyOrNull(bitmap.width, bitmap.height, bitmap.config))
 
         // The bitmap should be removed from the weak memory cache.
-        assertNull(weakMemoryCache.get("key"))
+        assertNull(weakMemoryCache.get(key))
     }
 
     @Test
     fun `invalid bitmap is added to weak memory cache if count reaches zero`() {
+        val key = Key("key")
         val bitmap = createBitmap()
 
-        weakMemoryCache.set("key", bitmap, false, 0)
+        weakMemoryCache.set(key, bitmap, false, 0)
         counter.increment(bitmap)
         counter.invalidate(bitmap)
 
@@ -83,6 +86,6 @@ class BitmapReferenceCounterTest {
         assertNull(pool.getDirtyOrNull(bitmap.width, bitmap.height, bitmap.config))
 
         // The bitmap should still be present in the weak memory cache.
-        assertEquals(bitmap, weakMemoryCache.get("key")?.bitmap)
+        assertEquals(bitmap, weakMemoryCache.get(key)?.bitmap)
     }
 }

@@ -15,7 +15,6 @@ import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.EmptyDecoder
 import coil.decode.Options
-import coil.extension.isNotEmpty
 import coil.fetch.AssetUriFetcher
 import coil.fetch.BitmapFetcher
 import coil.fetch.ContentUriFetcher
@@ -196,12 +195,13 @@ internal class RealImageLoader(
 
             // Compute the cache key.
             val fetcher = request.validateFetcher(mappedData) ?: registry.requireFetcher(mappedData)
-            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, lazySizeResolver)
+            val cacheKey = request.key?.let { MemoryCache.Key(it) }
+                ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, lazySizeResolver)
 
             // Check the memory cache.
             val memoryCachePolicy = request.memoryCachePolicy ?: defaults.memoryCachePolicy
             val cachedValue = takeIf(memoryCachePolicy.readEnabled) {
-                memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNullIndices { memoryCache.getValue(it) }
+                memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNullIndices { memoryCache.getValue(MemoryCache.Key(it)) }
             }
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
@@ -216,7 +216,7 @@ internal class RealImageLoader(
             val scale = requestService.scale(request, sizeResolver)
 
             // Short circuit if the cached drawable is valid for the target.
-            if (cachedDrawable != null && memoryCacheService.isCachedDrawableValid(cachedDrawable, cachedValue.isSampled, request, sizeResolver, size, scale)) {
+            if (cachedDrawable != null && memoryCacheService.isCachedValueValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
                 targetDelegate.success(cachedDrawable, true, request.transition ?: defaults.transition)
                 eventListener.onSuccess(request, DataSource.MEMORY)
@@ -298,26 +298,14 @@ internal class RealImageLoader(
         parameters: Parameters,
         transformations: List<Transformation>,
         lazySizeResolver: LazySizeResolver
-    ): String? {
-        val baseCacheKey = fetcher.key(data) ?: return null
+    ): MemoryCache.Key? {
+        val baseKey = fetcher.key(data) ?: return null
 
-        return buildString(baseCacheKey.count()) {
-            append(baseCacheKey)
-
-            // Check isNotEmpty first to avoid allocating an Iterator.
-            if (parameters.isNotEmpty()) {
-                for ((key, entry) in parameters) {
-                    val cacheKey = entry.cacheKey ?: continue
-                    append('#').append(key).append('=').append(cacheKey)
-                }
-            }
-
-            if (transformations.isNotEmpty()) {
-                transformations.forEachIndices { append('#').append(it.key()) }
-
-                // Append the size if there are any transformations.
-                append('#').append(lazySizeResolver.size())
-            }
+        return if (transformations.isEmpty()) {
+            MemoryCache.Key(baseKey, parameters)
+        } else {
+            // Resolve the size if there are any transformations.
+            MemoryCache.Key(baseKey, transformations, lazySizeResolver.size(), parameters)
         }
     }
 
@@ -422,8 +410,9 @@ internal class RealImageLoader(
     }
 
     override fun invalidate(key: String) {
-        memoryCache.invalidate(key)
-        weakMemoryCache.invalidate(key)
+        val cacheKey = MemoryCache.Key(key)
+        memoryCache.invalidate(cacheKey)
+        weakMemoryCache.invalidate(cacheKey)
     }
 
     override fun onTrimMemory(level: Int) {
