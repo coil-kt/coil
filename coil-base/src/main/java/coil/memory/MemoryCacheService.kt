@@ -70,14 +70,14 @@ internal class MemoryCacheService(
                 if (multiple != 1.0 && !requestService.allowInexactSize(request, sizeResolver)) {
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) " +
-                            "does not exactly match the requested size signature (${size.width}, ${size.height}, $scale)."
+                            "does not exactly match the requested size (${size.width}, ${size.height}, $scale)."
                     }
                     return false
                 }
                 if (multiple > 1.0 && cacheValue.isSampled) {
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) " +
-                            "is smaller than the requested size signature (${size.width}, ${size.height}, $scale)."
+                            "is smaller than the requested size (${size.width}, ${size.height}, $scale)."
                     }
                     return false
                 }
