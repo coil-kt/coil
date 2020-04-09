@@ -587,6 +587,7 @@ public final class coil/request/Parameters : java/lang/Iterable, kotlin/jvm/inte
 	public final fun isEmpty ()Z
 	public fun iterator ()Ljava/util/Iterator;
 	public final fun newBuilder ()Lcoil/request/Parameters$Builder;
+	public fun toString ()Ljava/lang/String;
 	public final fun value (Ljava/lang/String;)Ljava/lang/Object;
 	public final fun values ()Ljava/util/Map;
 }
