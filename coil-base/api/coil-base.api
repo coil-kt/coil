@@ -937,6 +937,8 @@ public final class coil/util/CoilUtils {
 
 public final class coil/util/DebugLogger : coil/util/Logger {
 	public fun <init> ()V
+	public fun <init> (I)V
+	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun getLevel ()I
 	public fun log (Ljava/lang/String;ILjava/lang/String;Ljava/lang/Throwable;)V
 	public fun setLevel (I)V
