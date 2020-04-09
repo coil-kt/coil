@@ -216,7 +216,7 @@ internal class RealImageLoader(
             val scale = requestService.scale(request, sizeResolver)
 
             // Short circuit if the cached drawable is valid for the target.
-            if (cachedDrawable != null && memoryCacheService.isCachedDrawableValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
+            if (cachedDrawable != null && memoryCacheService.isCachedValueValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
                 targetDelegate.success(cachedDrawable, true, request.transition ?: defaults.transition)
                 eventListener.onSuccess(request, DataSource.MEMORY)

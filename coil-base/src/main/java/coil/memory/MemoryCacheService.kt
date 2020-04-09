@@ -28,7 +28,7 @@ internal class MemoryCacheService(
     }
 
     /** Return true if the [Bitmap] returned from [MemoryCache] satisfies the [Request]. */
-    fun isCachedDrawableValid(
+    fun isCachedValueValid(
         cacheKey: MemoryCache.Key?,
         cacheValue: MemoryCache.Value,
         request: Request,
@@ -36,7 +36,7 @@ internal class MemoryCacheService(
         size: Size,
         scale: Scale
     ): Boolean {
-        // Ensure the size is valid for the target.
+        // Ensure the size of the cached bitmap is valid for the request.
         when (size) {
             is OriginalSize -> {
                 if (cacheValue.isSampled) {

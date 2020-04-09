@@ -40,48 +40,48 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - fill`() {
+    fun `isCachedValueValid - fill`() {
         val request = createGetRequest {
             size(100, 100)
             precision(Precision.INEXACT)
         }
         val cached = createBitmap()
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(200, 200),
             scale = Scale.FILL
         ))
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(150, 50),
             scale = Scale.FILL
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(100, 100),
             scale = Scale.FILL
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(50, 100),
             scale = Scale.FILL
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(50, 50),
             scale = Scale.FILL
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
             request = request,
@@ -91,48 +91,48 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - fit`() {
+    fun `isCachedValueValid - fit`() {
         val request = createGetRequest {
             size(100, 100)
             precision(Precision.INEXACT)
         }
         val cached = createBitmap()
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(200, 200),
             scale = Scale.FIT
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(150, 50),
             scale = Scale.FIT
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(100, 100),
             scale = Scale.FIT
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(50, 100),
             scale = Scale.FIT
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
             size = PixelSize(50, 50),
             scale = Scale.FIT
         ))
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = true,
             request = request,
@@ -142,12 +142,12 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - small not sampled cached drawable is valid`() {
+    fun `isCachedValueValid - small not sampled cached drawable is valid`() {
         val request = createGetRequest {
             precision(Precision.INEXACT)
         }
         val cached = createBitmap()
-        val isValid = service.isCachedDrawableValid(
+        val isValid = service.isCachedValueValid(
             cached = cached,
             isSampled = false,
             request = request,
@@ -158,12 +158,12 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - bitmap config must be equal`() {
+    fun `isCachedValueValid - bitmap config must be equal`() {
         val request = createGetRequest()
 
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config)
-            return service.isCachedDrawableValid(
+            return service.isCachedValueValid(
                 cached = cached,
                 isSampled = true,
                 request = request,
@@ -180,7 +180,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - allowRgb565=true allows matching any config if cached bitmap is RGB_565`() {
+    fun `isCachedValueValid - allowRgb565=true allows matching any config if cached bitmap is RGB_565`() {
         fun isBitmapConfigValid(
             cachedConfig: Bitmap.Config,
             requestedConfig: Bitmap.Config
@@ -189,7 +189,7 @@ class MemoryCacheServiceTest {
                 allowRgb565(true)
                 bitmapConfig(requestedConfig)
             }
-            return service.isCachedDrawableValid(
+            return service.isCachedValueValid(
                 cached = createBitmap(config = cachedConfig),
                 isSampled = true,
                 request = request,
@@ -212,14 +212,14 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - allowHardware=false prevents using cached hardware bitmap`() {
+    fun `isCachedValueValid - allowHardware=false prevents using cached hardware bitmap`() {
         val request = createGetRequest {
             allowHardware(false)
         }
 
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config)
-            return service.isCachedDrawableValid(
+            return service.isCachedValueValid(
                 cached = cached,
                 isSampled = true,
                 request = request,
@@ -234,60 +234,60 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - exact precision`() {
+    fun `isCachedValueValid - exact precision`() {
         val request = createLoadRequest(context) {
             precision(Precision.EXACT)
         }
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = request,
             size = PixelSize(50, 50),
             scale = Scale.FILL
         ))
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = request,
             size = PixelSize(50, 50),
             scale = Scale.FIT
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = request,
             size = PixelSize(100, 50),
             scale = Scale.FILL
         ))
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = request,
             size = PixelSize(100, 50),
             scale = Scale.FIT
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = request,
             size = PixelSize(100, 100),
             scale = Scale.FILL
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
             request = request,
             size = PixelSize(100, 100),
             scale = Scale.FIT
         ))
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
             request = request,
             size = PixelSize(400, 200),
             scale = Scale.FILL
         ))
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = true,
             request = request,
@@ -297,7 +297,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedDrawableValid - transformation that reduces size of output bitmap`() {
+    fun `isCachedValueValid - transformation that reduces size of output bitmap`() {
         val transformations = listOf(CircleCropTransformation())
         val cachedSize = PixelSize(1000, 500) // The size of the previous request.
         val key = Key("key", transformations, cachedSize)
@@ -307,7 +307,7 @@ class MemoryCacheServiceTest {
         }
         val request = createLoadRequest(context)
 
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             key,
             value,
             request.newBuilder().precision(Precision.INEXACT).build(),
@@ -315,7 +315,7 @@ class MemoryCacheServiceTest {
             Scale.FIT
         ))
 
-        assertTrue(service.isCachedDrawableValid(
+        assertTrue(service.isCachedValueValid(
             key,
             value,
             request.newBuilder().precision(Precision.EXACT).build(),
@@ -323,7 +323,7 @@ class MemoryCacheServiceTest {
             Scale.FIT
         ))
 
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             key,
             value,
             request.newBuilder().precision(Precision.INEXACT).build(),
@@ -331,7 +331,7 @@ class MemoryCacheServiceTest {
             Scale.FIT
         ))
 
-        assertFalse(service.isCachedDrawableValid(
+        assertFalse(service.isCachedValueValid(
             key,
             value,
             request.newBuilder().precision(Precision.EXACT).build(),
@@ -340,7 +340,7 @@ class MemoryCacheServiceTest {
         ))
     }
 
-    private fun MemoryCacheService.isCachedDrawableValid(
+    private fun MemoryCacheService.isCachedValueValid(
         cached: Bitmap,
         isSampled: Boolean,
         request: Request,
@@ -352,15 +352,15 @@ class MemoryCacheServiceTest {
             override val bitmap = cached
             override val isSampled = isSampled
         }
-        return isCachedDrawableValid(key, value, request, size, scale)
+        return isCachedValueValid(key, value, request, size, scale)
     }
 
     /** Convenience function to avoid having to specify the [SizeResolver] explicitly. */
-    private fun MemoryCacheService.isCachedDrawableValid(
+    private fun MemoryCacheService.isCachedValueValid(
         cacheKey: Key?,
         cacheValue: Value,
         request: Request,
         size: Size,
         scale: Scale
-    ): Boolean = isCachedDrawableValid(cacheKey, cacheValue, request, SizeResolver(size), size, scale)
+    ): Boolean = isCachedValueValid(cacheKey, cacheValue, request, SizeResolver(size), size, scale)
 }
