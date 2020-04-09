@@ -103,17 +103,17 @@ internal interface MemoryCache {
             if (this === other) return true
             if (other !is Key) return false
             if (baseKey != other.baseKey) return false
-            if (parameterKeys != other.parameterKeys) return false
             if (transformationKeys != other.transformationKeys) return false
             if (size != other.size) return false
+            if (parameterKeys != other.parameterKeys) return false
             return true
         }
 
         override fun hashCode(): Int {
             var result = baseKey.hashCode()
-            result = 31 * result + parameterKeys.hashCode()
             result = 31 * result + transformationKeys.hashCode()
             result = 31 * result + (size?.hashCode() ?: 0)
+            result = 31 * result + parameterKeys.hashCode()
             return result
         }
 
