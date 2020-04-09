@@ -200,28 +200,28 @@ internal class RealImageLoader(
 
             // Check the memory cache.
             val memoryCachePolicy = request.memoryCachePolicy ?: defaults.memoryCachePolicy
-            val cacheValue = takeIf(memoryCachePolicy.readEnabled) {
+            val cachedValue = takeIf(memoryCachePolicy.readEnabled) {
                 memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNullIndices { memoryCache.getValue(MemoryCache.Key(it)) }
             }
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
-            val cacheDrawable = cacheValue?.bitmap
+            val cachedDrawable = cachedValue?.bitmap
                 ?.takeIf { requestService.isConfigValidForHardware(request, it.safeConfig) }
                 ?.toDrawable(context)
 
             // If we didn't resolve the size earlier, resolve it now.
-            val size = lazySizeResolver.size(cacheDrawable)
+            val size = lazySizeResolver.size(cachedDrawable)
 
             // Resolve the scale.
             val scale = requestService.scale(request, sizeResolver)
 
             // Short circuit if the cached drawable is valid for the target.
-            if (cacheDrawable != null && memoryCacheService.isCachedDrawableValid(cacheKey, cacheValue, request, sizeResolver, size, scale)) {
+            if (cachedDrawable != null && memoryCacheService.isCachedDrawableValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                targetDelegate.success(cacheDrawable, true, request.transition ?: defaults.transition)
+                targetDelegate.success(cachedDrawable, true, request.transition ?: defaults.transition)
                 eventListener.onSuccess(request, DataSource.MEMORY)
                 request.listener?.onSuccess(request, DataSource.MEMORY)
-                return@innerJob cacheDrawable
+                return@innerJob cachedDrawable
             }
 
             // Fetch and decode the image.
