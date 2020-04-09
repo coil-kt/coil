@@ -20,6 +20,9 @@ internal class LifecycleCoroutineDispatcher private constructor(
 ) : CoroutineDispatcher(), DefaultLifecycleObserver {
 
     companion object {
+        /**
+         * Create a [LifecycleCoroutineDispatcher] that wraps the [delegate].
+         */
         @MainThread
         fun create(
             delegate: CoroutineDispatcher,
@@ -27,6 +30,23 @@ internal class LifecycleCoroutineDispatcher private constructor(
         ): LifecycleCoroutineDispatcher {
             val isStarted = lifecycle.currentState.isAtLeast(STARTED)
             return LifecycleCoroutineDispatcher(delegate, isStarted).apply(lifecycle::addObserver)
+        }
+
+        /**
+         * Returns [delegate] if [lifecycle] is at least [STARTED].
+         * Else, returns a [LifecycleCoroutineDispatcher] that wraps the [delegate].
+         */
+        @MainThread
+        fun createUnlessStarted(
+            delegate: CoroutineDispatcher,
+            lifecycle: Lifecycle
+        ): CoroutineDispatcher {
+            val isStarted = lifecycle.currentState.isAtLeast(STARTED)
+            return if (isStarted) {
+                delegate
+            } else {
+                LifecycleCoroutineDispatcher(delegate, isStarted).apply(lifecycle::addObserver)
+            }
         }
     }
 
