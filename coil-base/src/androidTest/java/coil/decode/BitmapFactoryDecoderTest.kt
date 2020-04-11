@@ -17,6 +17,7 @@ import coil.util.size
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.source
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -178,6 +179,9 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun png_16bit() {
+        // The emulator runs out of memory while decoding 16_bit.png on pre-21.
+        assumeTrue(SDK_INT >= 21)
+
         val (drawable, isSampled) = decode(
             assetName = "16_bit.png",
             size = PixelSize(250, 250),
@@ -216,9 +220,5 @@ class BitmapFactoryDecoderTest {
         assetName: String,
         size: Size,
         options: Options = createOptions()
-    ): Bitmap {
-        val (drawable) = decode(assetName, size, options)
-        return (drawable as BitmapDrawable).bitmap
-    }
-
+    ): Bitmap = (decode(assetName, size, options).drawable as BitmapDrawable).bitmap
 }
