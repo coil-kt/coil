@@ -42,11 +42,8 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
         // Fast path: return the underlying bitmap.
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
-            if (bitmap.config == config.toSoftware()) {
-                if (allowInexactSize || size is OriginalSize ||
-                    size == DecodeUtils.computeOutputSize(bitmap.width, bitmap.height, size, scale)) {
-                    return bitmap
-                }
+            if (isConfigValid(bitmap, config) && isSizeValid(allowInexactSize, size, bitmap, scale)) {
+                return bitmap
             }
         }
 
@@ -64,5 +61,14 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
         }
 
         return bitmap
+    }
+
+    private fun isConfigValid(bitmap: Bitmap, config: Bitmap.Config): Boolean {
+        return bitmap.config == config.toSoftware()
+    }
+
+    private fun isSizeValid(allowInexactSize: Boolean, size: Size, bitmap: Bitmap, scale: Scale): Boolean {
+        return allowInexactSize || size is OriginalSize ||
+            size == DecodeUtils.computeOutputSize(bitmap.width, bitmap.height, size, scale)
     }
 }

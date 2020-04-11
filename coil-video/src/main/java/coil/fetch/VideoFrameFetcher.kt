@@ -213,12 +213,12 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         return outBitmap
     }
 
-    private fun isConfigValid(inBitmap: Bitmap, options: Options): Boolean {
-        return SDK_INT < 26 || inBitmap.config != Bitmap.Config.HARDWARE || options.config == Bitmap.Config.HARDWARE
+    private fun isConfigValid(bitmap: Bitmap, options: Options): Boolean {
+        return SDK_INT < 26 || bitmap.config != Bitmap.Config.HARDWARE || options.config == Bitmap.Config.HARDWARE
     }
 
-    private fun isSizeValid(inBitmap: Bitmap, options: Options, size: Size): Boolean {
+    private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {
         return options.allowInexactSize || size is OriginalSize ||
-            size == DecodeUtils.computeOutputSize(inBitmap.width, inBitmap.height, size, options.scale)
+            size == DecodeUtils.computeOutputSize(bitmap.width, bitmap.height, size, options.scale)
     }
 }
