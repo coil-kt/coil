@@ -99,7 +99,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun allowInexactSize_True() {
+    fun allowInexactSize_true() {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(1500, 1500),
@@ -109,7 +109,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun allowInexactSize_False() {
+    fun allowInexactSize_false() {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(1500, 1500),
@@ -119,7 +119,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun allowRgb565_True() {
+    fun allowRgb565_true() {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(500, 500),
@@ -130,7 +130,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun allowRgb565_False() {
+    fun allowRgb565_false() {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(500, 500),
