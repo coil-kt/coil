@@ -36,7 +36,7 @@ class MemoryCacheServiceTest {
         context = ApplicationProvider.getApplicationContext()
         val defaults = DefaultRequestOptions()
         val requestService = RequestService(defaults, null)
-        service = MemoryCacheService(requestService, defaults, null)
+        service = MemoryCacheService(requestService, null)
     }
 
     @Test

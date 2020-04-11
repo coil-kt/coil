@@ -49,7 +49,7 @@ class GifDecoder : Decoder {
             movie = movie,
             pool = pool,
             config = when {
-                options.allowRgb565 -> Bitmap.Config.RGB_565
+                movie.isOpaque && options.allowRgb565 -> Bitmap.Config.RGB_565
                 SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
                 else -> options.config
             },

@@ -11,11 +11,11 @@ import androidx.core.graphics.component3
 import androidx.core.graphics.component4
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
-import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
+import coil.util.height
 import coil.util.toSoftware
-import kotlin.math.roundToInt
+import coil.util.width
 
 internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
 
@@ -23,53 +23,41 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
         private const val DEFAULT_SIZE = 512
     }
 
-    /** Convert the provided [Drawable] into a [Bitmap]. */
+    /**
+     * Convert the provided [Drawable] into a [Bitmap].
+     *
+     * @param drawable The drawable to convert.
+     * @param size The requested size for the bitmap.
+     * @param config The requested config for the bitmap.
+     * @param allowInexactSize Allow returning a bitmap that doesn't match the requested size exactly.
+     */
     @WorkerThread
     fun convert(
         drawable: Drawable,
+        config: Bitmap.Config,
         size: Size,
-        config: Bitmap.Config
+        scale: Scale,
+        allowInexactSize: Boolean
     ): Bitmap {
-        // Treat HARDWARE configs as ARGB_8888.
-        val safeConfig = config.toSoftware()
-
-        // Fast path to return the bitmap.
+        // Fast path: return the underlying bitmap.
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
-            if (bitmap.config.toSoftware() == safeConfig) {
-                return bitmap
+            if (bitmap.config == config.toSoftware()) {
+                if (allowInexactSize || size is OriginalSize ||
+                    size == DecodeUtils.computeOutputSize(bitmap.width, bitmap.height, size, scale)) {
+                    return bitmap
+                }
             }
         }
 
-        val width: Int
-        val height: Int
-        val unsafeIntrinsicWidth = drawable.intrinsicWidth
-        val unsafeIntrinsicHeight = drawable.intrinsicHeight
-        val intrinsicWidth = if (unsafeIntrinsicWidth > 0) unsafeIntrinsicWidth else DEFAULT_SIZE
-        val intrinsicHeight = if (unsafeIntrinsicHeight > 0) unsafeIntrinsicHeight else DEFAULT_SIZE
-        when (size) {
-            is OriginalSize -> {
-                width = intrinsicWidth
-                height = intrinsicHeight
-            }
-            is PixelSize -> {
-                val multiplier = DecodeUtils.computeSizeMultiplier(
-                    srcWidth = intrinsicWidth,
-                    srcHeight = intrinsicHeight,
-                    dstWidth = size.width,
-                    dstHeight = size.height,
-                    scale = Scale.FIT
-                )
-                width = (multiplier * intrinsicWidth).roundToInt()
-                height = (multiplier * intrinsicHeight).roundToInt()
-            }
-        }
+        // Slow path: draw the drawable on a new bitmap.
+        val srcWidth = drawable.width.let { if (it > 0) it else DEFAULT_SIZE }
+        val srcHeight = drawable.height.let { if (it > 0) it else DEFAULT_SIZE }
+        val (width, height) = DecodeUtils.computeOutputSize(srcWidth, srcHeight, size, scale)
 
-        val (oldLeft, oldTop, oldRight, oldBottom) = drawable.bounds
-
-        // Draw the drawable on the bitmap.
-        val bitmap = bitmapPool.get(width, height, safeConfig)
+        val bitmap = bitmapPool.get(width, height, config.toSoftware())
         drawable.apply {
+            val (oldLeft, oldTop, oldRight, oldBottom) = drawable.bounds
             setBounds(0, 0, width, height)
             draw(Canvas(bitmap))
             setBounds(oldLeft, oldTop, oldRight, oldBottom)

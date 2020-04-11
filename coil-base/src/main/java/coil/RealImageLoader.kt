@@ -108,7 +108,7 @@ internal class RealImageLoader(
 
     private val delegateService = DelegateService(this, referenceCounter, logger)
     private val requestService = RequestService(defaults, logger)
-    private val memoryCacheService = MemoryCacheService(requestService, defaults, logger)
+    private val memoryCacheService = MemoryCacheService(requestService, logger)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
     private val networkObserver = NetworkObserver(context, logger)
 
@@ -389,18 +389,25 @@ internal class RealImageLoader(
             return@run result
         }
 
-        // Convert the drawable into a bitmap.
+        // Convert the drawable into a bitmap with a valid config.
         eventListener.transformStart(request)
         val baseBitmap = if (result.drawable is BitmapDrawable) {
-            result.drawable.bitmap
+            val resultBitmap = result.drawable.bitmap
+            if (resultBitmap.safeConfig in RequestService.VALID_TRANSFORMATION_CONFIGS) {
+                resultBitmap
+            } else {
+                logger?.log(TAG, Log.INFO) {
+                    "Converting bitmap with config ${resultBitmap.safeConfig} to apply transformations: $transformations"
+                }
+                drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
+            }
         } else {
             logger?.log(TAG, Log.INFO) {
                 "Converting drawable of type ${result.drawable::class.java.canonicalName} " +
                     "to apply transformations: $transformations"
             }
-            drawableDecoder.convert(result.drawable, size, options.config)
+            drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
         }
-
         val transformedBitmap = transformations.foldIndices(baseBitmap) { bitmap, transformation ->
             transformation.transform(bitmapPool, bitmap, size).also { ensureActive() }
         }
@@ -451,7 +458,7 @@ internal class RealImageLoader(
         private var size: Size? = null
 
         /**
-         * Call [SizeResolver.size] and cache the result.
+         * Calls [TargetDelegate.start], [SizeResolver.size], and caches the resolved size.
          *
          * This method is inlined as long as it is called from inside [RealImageLoader].
          * [beforeResolveSize] and [afterResolveSize] are outlined to reduce the amount of inlined code.
