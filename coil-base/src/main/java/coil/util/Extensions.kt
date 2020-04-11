@@ -219,7 +219,7 @@ internal val Drawable.width: Int
     get() = (this as? BitmapDrawable)?.bitmap?.width ?: intrinsicWidth
 
 internal val Drawable.height: Int
-    get() = (this as? BitmapDrawable)?.bitmap?.width ?: intrinsicWidth
+    get() = (this as? BitmapDrawable)?.bitmap?.height ?: intrinsicHeight
 
 internal val Drawable.isVector: Boolean
     get() = (this is VectorDrawableCompat) || (SDK_INT > 21 && this is VectorDrawable)
