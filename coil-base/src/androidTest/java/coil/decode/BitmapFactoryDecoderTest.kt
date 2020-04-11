@@ -179,8 +179,8 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun png_16bit() {
-        // The emulator runs out of memory while decoding 16_bit.png on pre-21.
-        assumeTrue(SDK_INT >= 21)
+        // The emulator runs out of memory while decoding 16_bit.png on pre-23.
+        assumeTrue(SDK_INT >= 23)
 
         val (drawable, isSampled) = decode(
             assetName = "16_bit.png",
