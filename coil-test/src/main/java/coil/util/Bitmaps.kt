@@ -11,8 +11,6 @@ import androidx.core.graphics.red
  * Returns an [Array] of 4 [IntArray]s, the alpha, red, green, and blue pixel values.
  */
 fun Bitmap.getPixels(): Array<IntArray> {
-    require(config == Bitmap.Config.ARGB_8888) { "Config must be ARGB_8888." }
-
     val size = width * height
     val pixels = IntArray(size)
     getPixels(pixels, 0, width, 0, 0, width, height)

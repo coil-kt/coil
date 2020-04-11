@@ -60,9 +60,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         val srcWidth = if (isSwapped) outHeight else outWidth
         val srcHeight = if (isSwapped) outWidth else outHeight
 
-        // Disable hardware bitmaps if we need to perform EXIF transformations.
-        val safeConfig = if (isFlipped || isRotated) options.config.toSoftware() else options.config
-        inPreferredConfig = if (allowRgb565(options.allowRgb565, safeConfig, outMimeType)) Bitmap.Config.RGB_565 else safeConfig
+        inPreferredConfig = computeConfig(options, isFlipped, isRotated)
 
         if (SDK_INT >= 26 && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
@@ -84,7 +82,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 inScaled = false
 
                 if (inMutable) {
-                    inBitmap = pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
+                    inBitmap = pool.getDirty(outWidth, outHeight, inPreferredConfig)
                 }
             }
             else -> {
@@ -120,7 +118,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                     inBitmap = when {
                         // If we're not scaling the image, use the image's source dimensions.
                         inSampleSize == 1 && !inScaled -> {
-                            pool.getDirtyOrNull(outWidth, outHeight, inPreferredConfig)
+                            pool.getDirty(outWidth, outHeight, inPreferredConfig)
                         }
                         // We can only re-use bitmaps that don't match the image's source dimensions on API 19 and above.
                         SDK_INT >= 19 -> {
@@ -165,13 +163,31 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         )
     }
 
-    /** TODO: Peek the source to figure out its format (and if it has alpha) instead of relying on the MIME type. */
-    private fun allowRgb565(
-        allowRgb565: Boolean,
-        config: Bitmap.Config,
-        mimeType: String?
-    ): Boolean {
-        return allowRgb565 && (SDK_INT < 26 || config == Bitmap.Config.ARGB_8888) && mimeType == MIME_TYPE_JPEG
+    /** Compute and return [BitmapFactory.Options.inPreferredConfig]. */
+    private fun BitmapFactory.Options.computeConfig(
+        options: Options,
+        isFlipped: Boolean,
+        isRotated: Boolean
+    ): Bitmap.Config {
+        var config = options.config
+
+        // Disable hardware bitmaps if we need to perform EXIF transformations.
+        if (isFlipped || isRotated) {
+            config = config.toSoftware()
+        }
+
+        // Decode the image as RGB_565 as an optimization if allowed.
+        // TODO: Peek the source to figure out its format (and if it has alpha) instead of relying on the MIME type.
+        if (options.allowRgb565 && config == Bitmap.Config.ARGB_8888 && outMimeType == MIME_TYPE_JPEG) {
+            config = Bitmap.Config.RGB_565
+        }
+
+        // High color depth images must be decoded as either RGBA_F16 or HARDWARE.
+        if (SDK_INT >= 26 && outConfig == Bitmap.Config.RGBA_F16 && config != Bitmap.Config.HARDWARE) {
+            config = Bitmap.Config.RGBA_F16
+        }
+
+        return config
     }
 
     /** NOTE: This method assumes [config] is not [Bitmap.Config.HARDWARE] if the image has to be transformed. */

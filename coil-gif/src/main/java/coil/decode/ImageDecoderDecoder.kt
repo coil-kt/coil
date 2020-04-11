@@ -84,18 +84,20 @@ class ImageDecoderDecoder : Decoder {
                     }
                 }
 
-                if (options.config != Bitmap.Config.HARDWARE) {
-                    allocator = ImageDecoder.ALLOCATOR_SOFTWARE
-                }
-
-                if (options.colorSpace != null) {
-                    setTargetColorSpace(options.colorSpace)
+                allocator = if (options.config == Bitmap.Config.HARDWARE) {
+                    ImageDecoder.ALLOCATOR_HARDWARE
+                } else {
+                    ImageDecoder.ALLOCATOR_SOFTWARE
                 }
 
                 memorySizePolicy = if (options.allowRgb565) {
                     ImageDecoder.MEMORY_POLICY_LOW_RAM
                 } else {
                     ImageDecoder.MEMORY_POLICY_DEFAULT
+                }
+
+                if (options.colorSpace != null) {
+                    setTargetColorSpace(options.colorSpace)
                 }
             }
 

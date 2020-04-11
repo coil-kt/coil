@@ -141,7 +141,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 }
             }
 
-            // If you encounter this exception, ensure your video is encoded in a supported codec.
+            // If you encounter this exception make sure your video is encoded in a supported codec.
             // https://developer.android.com/guide/topics/media/media-formats#video-formats
             checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
@@ -164,7 +164,7 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         }
     }
 
-    /** Return [inBitmap] (or a copy of [inBitmap]) that is valid for the input [options] and [size]. */
+    /** Return [inBitmap] or a copy of [inBitmap] that is valid for the input [options] and [size]. */
     private fun normalizeBitmap(
         pool: BitmapPool,
         inBitmap: Bitmap,
@@ -198,23 +198,27 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 dstHeight = inBitmap.height
             }
         }
-        val safeConfig = if (SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE) Bitmap.Config.ARGB_8888 else options.config
+        val safeConfig = when {
+            SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+            else -> options.config
+        }
+
         val outBitmap = pool.get(dstWidth, dstHeight, safeConfig)
         outBitmap.applyCanvas {
             scale(scale, scale)
             drawBitmap(inBitmap, 0f, 0f, paint)
         }
         pool.put(inBitmap)
+
         return outBitmap
     }
 
-    private fun isConfigValid(inBitmap: Bitmap, options: Options): Boolean {
-        return inBitmap.config == options.config ||
-            (options.allowRgb565 && inBitmap.config == Bitmap.Config.RGB_565) ||
-            (SDK_INT >= 26 && inBitmap.config == Bitmap.Config.ARGB_8888 && options.config == Bitmap.Config.HARDWARE)
+    private fun isConfigValid(bitmap: Bitmap, options: Options): Boolean {
+        return SDK_INT < 26 || bitmap.config != Bitmap.Config.HARDWARE || options.config == Bitmap.Config.HARDWARE
     }
 
-    private fun isSizeValid(inBitmap: Bitmap, options: Options, size: Size): Boolean {
-        return options.allowInexactSize || size !is PixelSize || (size.width == inBitmap.width && size.height == inBitmap.height)
+    private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {
+        return options.allowInexactSize || size is OriginalSize ||
+            size == DecodeUtils.computeOutputSize(bitmap.width, bitmap.height, size, options.scale)
     }
 }

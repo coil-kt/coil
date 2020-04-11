@@ -2,7 +2,6 @@ package coil.memory
 
 import android.graphics.Bitmap
 import android.util.Log
-import coil.DefaultRequestOptions
 import coil.decode.DecodeUtils
 import coil.request.Request
 import coil.size.OriginalSize
@@ -11,15 +10,12 @@ import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.util.Logger
-import coil.util.bitmapConfigOrDefault
 import coil.util.log
 import coil.util.safeConfig
-import coil.util.toSoftware
 
 /** Handles operations related to the [MemoryCache]. */
 internal class MemoryCacheService(
     private val requestService: RequestService,
-    private val defaults: DefaultRequestOptions,
     private val logger: Logger?
 ) {
 
@@ -88,22 +84,6 @@ internal class MemoryCacheService(
         if (!requestService.isConfigValidForHardware(request, cacheValue.bitmap.safeConfig)) {
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached bitmap is hardware-backed, which is incompatible with the request."
-            }
-            return false
-        }
-
-        // Allow returning a cached RGB_565 bitmap if allowRgb565 is enabled.
-        if ((request.allowRgb565 ?: defaults.allowRgb565) && cacheValue.bitmap.config == Bitmap.Config.RGB_565) {
-            return true
-        }
-
-        // Ensure the requested config matches the cached config.
-        // Hardware and ARGB_8888 bitmaps are treated as equal for this comparison.
-        val cachedConfig = cacheValue.bitmap.config.toSoftware()
-        val requestedConfig = request.bitmapConfigOrDefault(defaults).toSoftware()
-        if (cachedConfig != requestedConfig) {
-            logger?.log(TAG, Log.DEBUG) {
-                "${request.data}: Cached bitmap's config ($cachedConfig) does not match the requested config ($requestedConfig)."
             }
             return false
         }

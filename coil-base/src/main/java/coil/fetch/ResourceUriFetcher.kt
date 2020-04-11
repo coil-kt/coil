@@ -58,7 +58,13 @@ internal class ResourceUriFetcher(
             val isVector = drawable.isVector
             DrawableResult(
                 drawable = if (isVector) {
-                    drawableDecoder.convert(drawable, size, options.config).toDrawable(context)
+                    drawableDecoder.convert(
+                        drawable = drawable,
+                        config = options.config,
+                        size = size,
+                        scale = options.scale,
+                        allowInexactSize = options.allowInexactSize
+                    ).toDrawable(context)
                 } else {
                     drawable
                 },

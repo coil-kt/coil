@@ -67,13 +67,6 @@ class SvgDecoder(private val context: Context) : Decoder {
             }
         }
 
-        val config = when {
-            options.allowRgb565 -> Bitmap.Config.RGB_565
-            SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
-            else -> options.config
-        }
-        val bitmap = pool.get(bitmapWidth, bitmapHeight, config)
-
         // Set the SVG's view box to enable scaling if it is not set.
         if (svg.documentViewBox == null && svgWidth > 0 && svgHeight > 0) {
             svg.setDocumentViewBox(0f, 0f, svgWidth, svgHeight)
@@ -81,6 +74,12 @@ class SvgDecoder(private val context: Context) : Decoder {
 
         svg.setDocumentWidth("100%")
         svg.setDocumentHeight("100%")
+
+        val config = when {
+            SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+            else -> options.config
+        }
+        val bitmap = pool.get(bitmapWidth, bitmapHeight, config)
         svg.renderToCanvas(Canvas(bitmap))
 
         return DecodeResult(
