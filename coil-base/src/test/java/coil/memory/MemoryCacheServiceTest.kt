@@ -158,60 +158,6 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedValueValid - bitmap config must be equal`() {
-        val request = createGetRequest()
-
-        fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
-            val cached = createBitmap(config = config)
-            return service.isCachedValueValid(
-                cached = cached,
-                isSampled = true,
-                request = request,
-                size = PixelSize(100, 100),
-                scale = Scale.FILL
-            )
-        }
-
-        assertFalse(isBitmapConfigValid(Bitmap.Config.RGBA_F16))
-        assertTrue(isBitmapConfigValid(Bitmap.Config.HARDWARE))
-        assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888))
-        assertFalse(isBitmapConfigValid(Bitmap.Config.RGB_565))
-        assertFalse(isBitmapConfigValid(Bitmap.Config.ALPHA_8))
-    }
-
-    @Test
-    fun `isCachedValueValid - allowRgb565=true allows matching any config if cached bitmap is RGB_565`() {
-        fun isBitmapConfigValid(
-            cachedConfig: Bitmap.Config,
-            requestedConfig: Bitmap.Config
-        ): Boolean {
-            val request = createGetRequest {
-                allowRgb565(true)
-                bitmapConfig(requestedConfig)
-            }
-            return service.isCachedValueValid(
-                cached = createBitmap(config = cachedConfig),
-                isSampled = true,
-                request = request,
-                size = PixelSize(100, 100),
-                scale = Scale.FILL
-            )
-        }
-
-        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.HARDWARE))
-        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.RGBA_F16))
-        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.ARGB_8888))
-        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.RGB_565))
-        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565, Bitmap.Config.ALPHA_8))
-
-        assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16))
-        assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.HARDWARE))
-        assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.ARGB_8888))
-        assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.RGB_565))
-        assertFalse(isBitmapConfigValid(Bitmap.Config.ARGB_8888, Bitmap.Config.ALPHA_8))
-    }
-
-    @Test
     fun `isCachedValueValid - allowHardware=false prevents using cached hardware bitmap`() {
         val request = createGetRequest {
             allowHardware(false)
@@ -229,8 +175,9 @@ class MemoryCacheServiceTest {
         }
 
         assertFalse(isBitmapConfigValid(Bitmap.Config.HARDWARE))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.RGBA_F16))
         assertTrue(isBitmapConfigValid(Bitmap.Config.ARGB_8888))
-        assertFalse(isBitmapConfigValid(Bitmap.Config.RGB_565))
+        assertTrue(isBitmapConfigValid(Bitmap.Config.RGB_565))
     }
 
     @Test
