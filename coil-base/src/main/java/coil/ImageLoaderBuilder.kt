@@ -214,10 +214,7 @@ class ImageLoaderBuilder(context: Context) {
      *
      * @see `crossfade(Boolean)`
      */
-    fun crossfade(durationMillis: Int) = apply {
-        val factory = if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE
-        this.defaults = this.defaults.copy(transition = factory)
-    }
+    fun crossfade(durationMillis: Int) = transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
 
     /**
      * Set the default [Transition] for each request.
