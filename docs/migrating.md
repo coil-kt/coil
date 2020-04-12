@@ -110,10 +110,10 @@ val drawable = Picasso.get()
     .resize(width, height)
     .get()
 
-// Coil (suspends the current context; thread safe)
-val request = GetRequest.Builder()
+// Coil (suspends the current coroutine; non-blocking and thread safe)
+val request = GetRequest.Builder(context)
     .data(url)
     .size(width, height)
     .build()
-Coil.execute(request)
+val drawable = Coil.execute(request).drawable
 ```

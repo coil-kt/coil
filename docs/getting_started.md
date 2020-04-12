@@ -92,7 +92,7 @@ val request = LoadRequest.Builder(context)
 val disposable = imageLoader.execute(request)
 
 // GetRequest
-val request = GetRequest.Builder()
+val request = GetRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request)

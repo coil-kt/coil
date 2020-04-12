@@ -227,7 +227,7 @@ class LoadRequest internal constructor(
  *
  * Example:
  * ```
- * val request = GetRequest.Builder()
+ * val request = GetRequest.Builder(context)
  *     .data("https://www.example.com/image.jpg")
  *     .size(256, 256)
  *     .build()
