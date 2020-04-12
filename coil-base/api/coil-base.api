@@ -510,6 +510,7 @@ public final class coil/request/GetRequest$Companion {
 
 public final class coil/request/GetRequestBuilder : coil/request/RequestBuilder {
 	public fun <init> (Landroid/content/Context;)V
+	public fun <init> (Lcoil/DefaultRequestOptions;)V
 	public fun <init> (Lcoil/request/GetRequest;)V
 	public fun <init> (Lcoil/request/GetRequest;Landroid/content/Context;)V
 	public synthetic fun <init> (Lcoil/request/GetRequest;Landroid/content/Context;ILkotlin/jvm/internal/DefaultConstructorMarker;)V

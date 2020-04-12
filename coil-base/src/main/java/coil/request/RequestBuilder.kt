@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("UNREACHABLE_CODE", "UNUSED_PARAMETER", "unused")
 @file:OptIn(ExperimentalCoilApi::class)
 
 package coil.request
@@ -493,7 +493,6 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             imports = ["coil.request.LoadRequest"]
         )
     )
-    @Suppress("UNUSED_PARAMETER")
     constructor(context: Context, defaults: DefaultRequestOptions) : this(context)
 
     @Deprecated(
@@ -637,6 +636,16 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
         request: GetRequest,
         context: Context = request.context
     ) : super(request, context)
+
+    @Deprecated(
+        message = "Migrate to GetRequest.Builder(context).",
+        replaceWith = ReplaceWith(
+            expression = "GetRequest.Builder(context)",
+            imports = ["coil.request.GetRequest"]
+        ),
+        level = DeprecationLevel.ERROR
+    )
+    constructor(defaults: DefaultRequestOptions) : super(error("Migrate to GetRequest.Builder(context).") as Context)
 
     /**
      * Create a new [GetRequest] instance.
