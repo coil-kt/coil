@@ -109,8 +109,9 @@ val Bitmap.size: PixelSize
     get() = PixelSize(width, height)
 
 inline fun createGetRequest(
+    context: Context,
     builder: GetRequestBuilder.() -> Unit = {}
-): GetRequest = GetRequest.Builder().data(Unit).apply(builder).build()
+): GetRequest = GetRequest.Builder(context).data(Unit).apply(builder).build()
 
 inline fun createLoadRequest(
     context: Context,

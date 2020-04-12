@@ -4,10 +4,12 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.annotation.ExperimentalCoilApi
+import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
+import coil.request.ErrorResult
+import coil.request.RequestResult
+import coil.request.SuccessResult
 import coil.size.Scale
-import coil.transition.TransitionResult.Error
-import coil.transition.TransitionResult.Success
 import coil.util.scale
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CompletionHandler
@@ -26,19 +28,20 @@ class CrossfadeTransition @JvmOverloads constructor(
 
     override suspend fun transition(
         target: TransitionTarget<*>,
-        result: TransitionResult
+        result: RequestResult
     ) {
         // Don't animate if the request was fulfilled by the memory cache.
-        if (result is Success && result.isMemoryCache) {
+        if (result is SuccessResult && result.source == DataSource.MEMORY_CACHE) {
             target.onSuccess(result.drawable)
             return
         }
 
         // Animate the drawable and suspend until the animation is completes.
         suspendCancellableCoroutine<Unit> { continuation ->
+            val crossfadeDrawable = createCrossfade(continuation, target, result.drawable)
             when (result) {
-                is Success -> target.onSuccess(createCrossfade(continuation, target, result.drawable))
-                is Error -> target.onError(createCrossfade(continuation, target, result.drawable))
+                is SuccessResult -> target.onSuccess(crossfadeDrawable)
+                is ErrorResult -> target.onError(crossfadeDrawable)
             }
         }
     }

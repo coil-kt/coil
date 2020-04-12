@@ -38,7 +38,7 @@ Picasso.get()
     .fit()
     .into(imageView)
 
-// Coil (autodetects the scale type)
+// Coil (automatically detects the scale type)
 imageView.load(url) {
     placeholder(placeholder)
 }
@@ -81,18 +81,18 @@ Picasso.get()
 val request = LoadRequest.Builder(context)
     .data(url)
     .target(
-        onStart = { drawable ->
+        onStart = { placeholder ->
             // Handle the placeholder drawable.
         },
-        onSuccess = {
+        onSuccess = { result ->
             // Handle the successful result.
         },
-        onError = {
+        onError = { error ->
             // Handle the error drawable.
         }
     )
     .build()
-Coil.imageLoader(context).execute(request)
+Coil.execute(request)
 ```
 
 ### Background Thread
@@ -110,10 +110,10 @@ val drawable = Picasso.get()
     .resize(width, height)
     .get()
 
-// Coil (suspends the current context; thread safe)
-val request = GetRequest.Builder()
+// Coil (suspends the current coroutine; non-blocking and thread safe)
+val request = GetRequest.Builder(context)
     .data(url)
     .size(width, height)
     .build()
-Coil.imageLoader(context).execute(request)
+val drawable = Coil.execute(request).drawable
 ```

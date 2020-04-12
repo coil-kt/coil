@@ -18,6 +18,7 @@ import coil.Coil
 class CoilContentProvider : ContentProvider() {
 
     companion object {
+        @PublishedApi
         @SuppressLint("StaticFieldLeak")
         internal lateinit var context: Context
             private set

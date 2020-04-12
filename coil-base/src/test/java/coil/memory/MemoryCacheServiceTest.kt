@@ -41,7 +41,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - fill`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
         }
@@ -92,7 +92,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - fit`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
         }
@@ -143,7 +143,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - small not sampled cached drawable is valid`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             precision(Precision.INEXACT)
         }
         val cached = createBitmap()
@@ -159,7 +159,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - allowHardware=false prevents using cached hardware bitmap`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             allowHardware(false)
         }
 

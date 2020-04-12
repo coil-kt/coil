@@ -19,11 +19,18 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import coil.request.LoadRequest
+import coil.request.Request
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
 internal fun Context.getDrawableCompat(@DrawableRes resId: Int): Drawable {
     return checkNotNull(AppCompatResources.getDrawable(this, resId)) { "Invalid resource ID: $resId" }
+}
+
+/** Used to resolve [LoadRequest.placeholder], [Request.error], and [Request.fallback]. */
+internal fun Context.getDrawableCompat(drawable: Drawable?, @DrawableRes resId: Int): Drawable? {
+    return drawable.takeIf { it !== EMPTY_DRAWABLE } ?: if (resId != 0) getDrawableCompat(resId) else null
 }
 
 /**
