@@ -210,6 +210,7 @@ internal typealias MultiList<R, T> = List<Pair<R, T>>
 
 internal val DataSource.emoji: String
     get() = when (this) {
+        DataSource.MEMORY_CACHE,
         DataSource.MEMORY -> Emoji.BRAIN
         DataSource.DISK -> Emoji.FLOPPY
         DataSource.NETWORK -> Emoji.CLOUD

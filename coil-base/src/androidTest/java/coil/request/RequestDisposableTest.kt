@@ -9,7 +9,6 @@ import coil.ImageLoader
 import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.transition.Transition
-import coil.transition.TransitionResult
 import coil.transition.TransitionTarget
 import coil.util.CoilUtils
 import coil.util.requestManager
@@ -199,7 +198,7 @@ class RequestDisposableTest {
 
         override suspend fun transition(
             target: TransitionTarget<*>,
-            result: TransitionResult
+            result: RequestResult
         ) {
             // Suspend until the gate is open.
             isOpen.asFlow().first { it }

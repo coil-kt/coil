@@ -1,9 +1,13 @@
-@file:Suppress("MemberVisibilityCanBePrivate", "unused")
+@file:Suppress("MemberVisibilityCanBePrivate", "NOTHING_TO_INLINE", "unused")
 
 package coil
 
 import android.app.Application
 import android.content.Context
+import coil.request.GetRequest
+import coil.request.LoadRequest
+import coil.request.RequestDisposable
+import coil.request.RequestResult
 import coil.util.CoilContentProvider
 
 /**
@@ -39,6 +43,26 @@ object Coil {
     }
 
     /**
+     * Convenience function to get the default [ImageLoader] and execute the [request].
+     *
+     * @see ImageLoader.execute
+     */
+    @JvmStatic
+    inline fun execute(request: LoadRequest): RequestDisposable {
+        return imageLoader(request.context).execute(request)
+    }
+
+    /**
+     * Convenience function to get the default [ImageLoader] and execute the [request].
+     *
+     * @see ImageLoader.execute
+     */
+    @JvmStatic
+    suspend inline fun execute(request: GetRequest): RequestResult {
+        return imageLoader(request.context).execute(request)
+    }
+
+    /**
      * Set the [ImageLoaderFactory] that will be used to create the default [ImageLoader].
      * Shutdown the current instance if there is one. The [factory] is guaranteed to be called at most once.
      *
@@ -67,7 +91,15 @@ object Coil {
     /** @see setImageLoader */
     @Deprecated(
         message = "Migrate to setDefaultImageLoader(ImageLoaderFactory).",
-        replaceWith = ReplaceWith("this.setImageLoader(object : ImageLoaderFactory { override fun getImageLoader() = initializer() })")
+        replaceWith = ReplaceWith(
+            expression = "" +
+                "this.setImageLoader(object : ImageLoaderFactory {" +
+                "    override fun getImageLoader() {" +
+                "        return initializer()" +
+                "    }" +
+                "})",
+            imports = ["coil.ImageLoaderFactory"]
+        )
     )
     @JvmStatic
     fun setDefaultImageLoader(initializer: () -> ImageLoader) {

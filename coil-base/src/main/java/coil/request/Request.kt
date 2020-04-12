@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName", "NOTHING_TO_INLINE", "unused")
+@file:Suppress("FunctionName", "NOTHING_TO_INLINE", "UNUSED_PARAMETER", "unused")
 @file:OptIn(ExperimentalCoilApi::class)
 
 package coil.request
@@ -23,7 +23,6 @@ import coil.target.PoolableViewTarget
 import coil.target.Target
 import coil.transform.Transformation
 import coil.transition.Transition
-import coil.util.EMPTY_DRAWABLE
 import coil.util.getDrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +35,7 @@ import okhttp3.Headers
  */
 sealed class Request {
 
+    abstract val context: Context
     abstract val data: Any?
     abstract val key: String?
     abstract val aliasKeys: List<String>
@@ -68,8 +68,17 @@ sealed class Request {
     abstract val lifecycle: Lifecycle?
 
     abstract val placeholder: Drawable?
-    abstract val error: Drawable?
-    abstract val fallback: Drawable?
+
+    internal abstract val errorResId: Int
+    internal abstract val fallbackResId: Int
+    internal abstract val errorDrawable: Drawable?
+    internal abstract val fallbackDrawable: Drawable?
+
+    val error: Drawable?
+        get() = context.getDrawableCompat(errorDrawable, errorResId)
+
+    val fallback: Drawable?
+        get() = context.getDrawableCompat(fallbackDrawable, fallbackResId)
 
     /**
      * A set of callbacks for a [Request].
@@ -108,11 +117,11 @@ sealed class Request {
  * [Request.data] must be set to a non-null value or the request
  * will fail with [NullRequestDataException] when executed.
  *
- * - They are scoped to a [Lifecycle]. Requests aren't started until the lifecycle is
- *   started and are automatically cancelled when the lifecycle is destroyed.
- * - They support [placeholder], [error], and [fallback] drawables.
- * - They support [Transition]s.
+ * - They are scoped to a [Lifecycle]. Requests aren't started until the lifecycle is at least
+ *   [Lifecycle.State.STARTED] and are automatically cancelled when the lifecycle is destroyed.
+ * - When executed they return a [RequestDisposable].
  * - They support bitmap pooling (if [target] implements [PoolableViewTarget]).
+ * - They support [Target]s, [Transition]s, and [placeholder] drawables.
  *
  * Example:
  * ```
@@ -127,7 +136,7 @@ sealed class Request {
  * @see ImageLoader.execute
  */
 class LoadRequest internal constructor(
-    val context: Context,
+    override val context: Context,
     override val data: Any?,
     override val key: String?,
     override val aliasKeys: List<String>,
@@ -152,11 +161,11 @@ class LoadRequest internal constructor(
     override val transition: Transition?,
     override val lifecycle: Lifecycle?,
     @DrawableRes internal val placeholderResId: Int,
-    @DrawableRes internal val errorResId: Int,
-    @DrawableRes internal val fallbackResId: Int,
     internal val placeholderDrawable: Drawable?,
-    internal val errorDrawable: Drawable?,
-    internal val fallbackDrawable: Drawable?
+    @DrawableRes override val errorResId: Int,
+    override val errorDrawable: Drawable?,
+    @DrawableRes override val fallbackResId: Int,
+    override val fallbackDrawable: Drawable?
 ) : Request() {
 
     companion object {
@@ -199,17 +208,7 @@ class LoadRequest internal constructor(
     }
 
     override val placeholder: Drawable?
-        get() = context.getDrawable(placeholderDrawable, placeholderResId)
-
-    override val error: Drawable?
-        get() = context.getDrawable(errorDrawable, errorResId)
-
-    override val fallback: Drawable?
-        get() = context.getDrawable(fallbackDrawable, fallbackResId)
-
-    private fun Context.getDrawable(drawable: Drawable?, @DrawableRes resId: Int): Drawable? {
-        return drawable.takeIf { it !== EMPTY_DRAWABLE } ?: if (resId != 0) getDrawableCompat(resId) else null
-    }
+        get() = context.getDrawableCompat(placeholderDrawable, placeholderResId)
 
     /** Create a new [LoadRequestBuilder] instance using this as a base. */
     @JvmOverloads
@@ -223,11 +222,12 @@ class LoadRequest internal constructor(
  * will fail with [NullRequestDataException] when executed.
  *
  * - They are scoped to the [CoroutineScope] that they are launched in. They are **not** scoped to a [Lifecycle].
- * - They do not support a [Target], [Transition], [placeholder], [error], or [fallback].
+ * - When executed they return a [RequestResult].
+ * - They do not support [Target]s, [Transition]s, or [placeholder] drawables.
  *
  * Example:
  * ```
- * val request = GetRequest.Builder()
+ * val request = GetRequest.Builder(context)
  *     .data("https://www.example.com/image.jpg")
  *     .size(256, 256)
  *     .build()
@@ -235,9 +235,10 @@ class LoadRequest internal constructor(
  * ```
  *
  * @see GetRequestBuilder
- * @see ImageLoader.get
+ * @see ImageLoader.execute
  */
 class GetRequest internal constructor(
+    override val context: Context,
     override val data: Any?,
     override val key: String?,
     override val aliasKeys: List<String>,
@@ -257,30 +258,38 @@ class GetRequest internal constructor(
     override val diskCachePolicy: CachePolicy?,
     override val networkCachePolicy: CachePolicy?,
     override val headers: Headers,
-    override val parameters: Parameters
+    override val parameters: Parameters,
+    @DrawableRes override val errorResId: Int,
+    override val errorDrawable: Drawable?,
+    @DrawableRes override val fallbackResId: Int,
+    override val fallbackDrawable: Drawable?
 ) : Request() {
 
     companion object {
         /** Alias for [GetRequestBuilder]. */
         @JvmStatic
         @JvmName("builder")
-        inline fun Builder() = GetRequestBuilder()
+        inline fun Builder(context: Context) = GetRequestBuilder(context)
 
         /** Alias for [GetRequestBuilder]. */
         @JvmStatic
+        @JvmOverloads
         @JvmName("builder")
-        inline fun Builder(request: GetRequest) = GetRequestBuilder(request)
+        inline fun Builder(
+            request: GetRequest,
+            context: Context = request.context
+        ) = GetRequestBuilder(request, context)
 
         /** Create a new [GetRequest]. */
         @Deprecated(
             message = "Use GetRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("GetRequest.Builder(defaults).apply(builder).build()")
+            replaceWith = ReplaceWith("GetRequest.Builder(context).apply(builder).build()"),
+            level = DeprecationLevel.ERROR
         )
-        @Suppress("UNUSED_PARAMETER")
         inline operator fun invoke(
             defaults: DefaultRequestOptions,
             builder: GetRequestBuilder.() -> Unit = {}
-        ): GetRequest = GetRequestBuilder().apply(builder).build()
+        ): GetRequest = error("Migrate to GetRequest.Builder(context).")
 
         /** Create a new [GetRequest]. */
         @Deprecated(
@@ -297,9 +306,8 @@ class GetRequest internal constructor(
     override val transition: Transition? = null
     override val lifecycle: Lifecycle? = null
     override val placeholder: Drawable? = null
-    override val error: Drawable? = null
-    override val fallback: Drawable? = null
 
     /** Create a new [GetRequestBuilder] instance using this as a base. */
-    fun newBuilder() = GetRequestBuilder(this)
+    @JvmOverloads
+    fun newBuilder(context: Context = this.context) = GetRequestBuilder(this, context)
 }

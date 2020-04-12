@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("UNREACHABLE_CODE", "UNUSED_PARAMETER", "unused")
 @file:OptIn(ExperimentalCoilApi::class)
 
 package coil.request
@@ -50,6 +50,7 @@ import java.io.File
 @BuilderMarker
 sealed class RequestBuilder<T : RequestBuilder<T>> {
 
+    @JvmField protected val context: Context
     @JvmField protected var data: Any?
     @JvmField protected var key: String?
     @JvmField protected var aliasKeys: List<String>
@@ -77,7 +78,13 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     @JvmField protected var headers: Headers.Builder?
     @JvmField protected var parameters: Parameters.Builder?
 
-    constructor() {
+    @JvmField @DrawableRes protected var errorResId: Int
+    @JvmField @DrawableRes protected var fallbackResId: Int
+    @JvmField protected var errorDrawable: Drawable?
+    @JvmField protected var fallbackDrawable: Drawable?
+
+    constructor(context: Context) {
+        this.context = context
         data = null
         key = null
         aliasKeys = emptyList()
@@ -98,9 +105,14 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         networkCachePolicy = null
         headers = null
         parameters = null
+        errorResId = 0
+        errorDrawable = null
+        fallbackResId = 0
+        fallbackDrawable = null
     }
 
-    constructor(request: Request) {
+    constructor(request: Request, context: Context) {
+        this.context = context
         data = request.data
         key = request.key
         aliasKeys = request.aliasKeys
@@ -121,6 +133,10 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         networkCachePolicy = request.networkCachePolicy
         headers = request.headers.newBuilder()
         parameters = request.parameters.newBuilder()
+        errorResId = request.errorResId
+        errorDrawable = request.errorDrawable
+        fallbackResId = request.fallbackResId
+        fallbackDrawable = request.fallbackDrawable
     }
 
     /**
@@ -406,52 +422,68 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     fun removeParameter(key: String): T = self {
         this.parameters?.remove(key)
     }
+
+    /**
+     * Set the error drawable to use if the request fails.
+     */
+    fun error(@DrawableRes drawableResId: Int): T = self {
+        this.errorResId = drawableResId
+        this.errorDrawable = EMPTY_DRAWABLE
+    }
+
+    /**
+     * Set the error drawable to use if the request fails.
+     */
+    fun error(drawable: Drawable?): T = self {
+        this.errorDrawable = drawable ?: EMPTY_DRAWABLE
+        this.errorResId = 0
+    }
+
+    /**
+     * Set the fallback drawable to use if [data] is null.
+     */
+    fun fallback(@DrawableRes drawableResId: Int): T = self {
+        this.fallbackResId = drawableResId
+        this.fallbackDrawable = EMPTY_DRAWABLE
+    }
+
+    /**
+     * Set the fallback drawable to use if [data] is null.
+     */
+    fun fallback(drawable: Drawable?): T = self {
+        this.fallbackDrawable = drawable ?: EMPTY_DRAWABLE
+        this.fallbackResId = 0
+    }
 }
 
 /** Builder for a [LoadRequest]. */
 class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
-
-    private val context: Context
 
     private var target: Target?
     private var lifecycle: Lifecycle?
     private var transition: Transition?
 
     @DrawableRes private var placeholderResId: Int
-    @DrawableRes private var errorResId: Int
-    @DrawableRes private var fallbackResId: Int
     private var placeholderDrawable: Drawable?
-    private var errorDrawable: Drawable?
-    private var fallbackDrawable: Drawable?
 
-    constructor(context: Context) : super() {
-        this.context = context
+    constructor(context: Context) : super(context) {
         target = null
         lifecycle = null
         transition = null
         placeholderResId = 0
-        errorResId = 0
-        fallbackResId = 0
         placeholderDrawable = null
-        errorDrawable = null
-        fallbackDrawable = null
     }
 
     @JvmOverloads
     constructor(
         request: LoadRequest,
         context: Context = request.context
-    ) : super(request) {
-        this.context = context
+    ) : super(request, context) {
         target = request.target
         lifecycle = request.lifecycle
         transition = request.transition
         placeholderResId = request.placeholderResId
-        errorResId = request.errorResId
-        fallbackResId = request.fallbackResId
         placeholderDrawable = request.placeholderDrawable
-        errorDrawable = request.errorDrawable
-        fallbackDrawable = request.fallbackDrawable
     }
 
     @Deprecated(
@@ -461,7 +493,6 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             imports = ["coil.request.LoadRequest"]
         )
     )
-    @Suppress("UNUSED_PARAMETER")
     constructor(context: Context, defaults: DefaultRequestOptions) : this(context)
 
     @Deprecated(
@@ -557,38 +588,6 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * Set the error drawable to use if the request fails.
-     */
-    fun error(@DrawableRes drawableResId: Int) = apply {
-        this.errorResId = drawableResId
-        this.errorDrawable = EMPTY_DRAWABLE
-    }
-
-    /**
-     * Set the error drawable to use if the request fails.
-     */
-    fun error(drawable: Drawable?) = apply {
-        this.errorDrawable = drawable ?: EMPTY_DRAWABLE
-        this.errorResId = 0
-    }
-
-    /**
-     * Set the fallback drawable to use if [data] is null.
-     */
-    fun fallback(@DrawableRes drawableResId: Int) = apply {
-        this.fallbackResId = drawableResId
-        this.fallbackDrawable = EMPTY_DRAWABLE
-    }
-
-    /**
-     * Set the fallback drawable to use if [data] is null.
-     */
-    fun fallback(drawable: Drawable?) = apply {
-        this.fallbackDrawable = drawable ?: EMPTY_DRAWABLE
-        this.fallbackResId = 0
-    }
-
-    /**
      * Create a new [LoadRequest] instance.
      */
     fun build(): LoadRequest {
@@ -618,10 +617,10 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
             transition,
             lifecycle,
             placeholderResId,
-            errorResId,
-            fallbackResId,
             placeholderDrawable,
+            errorResId,
             errorDrawable,
+            fallbackResId,
             fallbackDrawable
         )
     }
@@ -630,25 +629,30 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
 /** Builder for a [GetRequest]. */
 class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
 
-    constructor() : super()
+    constructor(context: Context) : super(context)
 
-    constructor(request: GetRequest) : super(request)
+    @JvmOverloads
+    constructor(
+        request: GetRequest,
+        context: Context = request.context
+    ) : super(request, context)
 
     @Deprecated(
-        message = "Migrate to GetRequest.Builder().",
+        message = "Migrate to GetRequest.Builder(context).",
         replaceWith = ReplaceWith(
-            expression = "GetRequest.Builder()",
+            expression = "GetRequest.Builder(context)",
             imports = ["coil.request.GetRequest"]
-        )
+        ),
+        level = DeprecationLevel.ERROR
     )
-    @Suppress("UNUSED_PARAMETER")
-    constructor(defaults: DefaultRequestOptions) : this()
+    constructor(defaults: DefaultRequestOptions) : super(error("Migrate to GetRequest.Builder(context).") as Context)
 
     /**
      * Create a new [GetRequest] instance.
      */
     fun build(): GetRequest {
         return GetRequest(
+            context,
             data,
             key,
             aliasKeys,
@@ -668,7 +672,11 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
             diskCachePolicy,
             networkCachePolicy,
             headers?.build().orEmpty(),
-            parameters?.build().orEmpty()
+            parameters?.build().orEmpty(),
+            errorResId,
+            errorDrawable,
+            fallbackResId,
+            fallbackDrawable
         )
     }
 }
