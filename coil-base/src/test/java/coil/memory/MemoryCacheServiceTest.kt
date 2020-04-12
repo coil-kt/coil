@@ -244,6 +244,46 @@ class MemoryCacheServiceTest {
     }
 
     @Test
+    fun `isCachedValueValid - one pixel off`() {
+        assertTrue(service.isCachedValueValid(
+            cached = createBitmap(width = 244, height = 600),
+            isSampled = true,
+            request = createLoadRequest(context) {
+                precision(Precision.EXACT)
+            },
+            size = PixelSize(245, 600),
+            scale = Scale.FIT
+        ))
+        assertTrue(service.isCachedValueValid(
+            cached = createBitmap(width = 244, height = 600),
+            isSampled = true,
+            request = createLoadRequest(context) {
+                precision(Precision.INEXACT)
+            },
+            size = PixelSize(245, 600),
+            scale = Scale.FIT
+        ))
+        assertFalse(service.isCachedValueValid(
+            cached = createBitmap(width = 243, height = 599),
+            isSampled = true,
+            request = createLoadRequest(context) {
+                precision(Precision.EXACT)
+            },
+            size = PixelSize(245, 600),
+            scale = Scale.FIT
+        ))
+        assertFalse(service.isCachedValueValid(
+            cached = createBitmap(width = 243, height = 599),
+            isSampled = true,
+            request = createLoadRequest(context) {
+                precision(Precision.INEXACT)
+            },
+            size = PixelSize(245, 600),
+            scale = Scale.FIT
+        ))
+    }
+
+    @Test
     fun `isCachedValueValid - transformation that reduces size of output bitmap`() {
         val transformations = listOf(CircleCropTransformation())
         val cachedSize = PixelSize(1000, 500) // The size of the previous request.
