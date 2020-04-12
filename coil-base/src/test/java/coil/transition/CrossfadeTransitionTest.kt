@@ -107,7 +107,7 @@ class CrossfadeTransitionTest {
         runBlocking {
             transition.transition(
                 target = createTransitionTarget(
-                    view = imageView,
+                    imageView = imageView,
                     onSuccess = { result ->
                         assertFalse(onSuccessCalled)
                         onSuccessCalled = true
@@ -147,15 +147,15 @@ class CrossfadeTransitionTest {
     }
 
     private inline fun createTransitionTarget(
-        view: ImageView = ImageView(context),
+        imageView: ImageView = ImageView(context),
         crossinline onStart: (placeholder: Drawable?) -> Unit = { fail() },
         crossinline onError: (error: Drawable?) -> Unit = { fail() },
         crossinline onSuccess: (result: Drawable) -> Unit = { fail() }
     ): TransitionTarget<*> {
         return object : TransitionTarget<ImageView> {
-            override val view = view
+            override val view = imageView
             override val drawable: Drawable?
-                get() = view.drawable
+                get() = imageView.drawable
             override fun onStart(placeholder: Drawable?) = onStart(placeholder)
             override fun onError(error: Drawable?) = onError(error)
             override fun onSuccess(result: Drawable) = onSuccess(result)
