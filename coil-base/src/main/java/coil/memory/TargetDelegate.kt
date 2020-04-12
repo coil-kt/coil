@@ -170,16 +170,16 @@ private suspend inline fun Target.onSuccess(
     }
 
     if (this !is TransitionTarget<*>) {
-        logger?.log("TargetDelegate", Log.WARN) {
+        logger?.log("TargetDelegate", Log.DEBUG) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
         onSuccess(result.drawable)
         return
     }
 
-    eventListener.transitionStart(request)
+    eventListener.transitionStart(request, transition)
     transition.transition(this, result)
-    eventListener.transitionEnd(request)
+    eventListener.transitionEnd(request, transition)
 }
 
 private suspend inline fun Target.onError(
@@ -196,14 +196,14 @@ private suspend inline fun Target.onError(
     }
 
     if (this !is TransitionTarget<*>) {
-        logger?.log("TargetDelegate", Log.WARN) {
+        logger?.log("TargetDelegate", Log.DEBUG) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
         onError(result.drawable)
         return
     }
 
-    eventListener.transitionStart(request)
+    eventListener.transitionStart(request, transition)
     transition.transition(this, result)
-    eventListener.transitionEnd(request)
+    eventListener.transitionEnd(request, transition)
 }

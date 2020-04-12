@@ -79,8 +79,8 @@ public abstract interface class coil/EventListener : coil/request/Request$Listen
 	public abstract fun resolveSizeStart (Lcoil/request/Request;)V
 	public abstract fun transformEnd (Lcoil/request/Request;)V
 	public abstract fun transformStart (Lcoil/request/Request;)V
-	public abstract fun transitionEnd (Lcoil/request/Request;)V
-	public abstract fun transitionStart (Lcoil/request/Request;)V
+	public abstract fun transitionEnd (Lcoil/request/Request;Lcoil/transition/Transition;)V
+	public abstract fun transitionStart (Lcoil/request/Request;Lcoil/transition/Transition;)V
 }
 
 public final class coil/EventListener$Companion {
@@ -102,8 +102,8 @@ public final class coil/EventListener$DefaultImpls {
 	public static fun resolveSizeStart (Lcoil/EventListener;Lcoil/request/Request;)V
 	public static fun transformEnd (Lcoil/EventListener;Lcoil/request/Request;)V
 	public static fun transformStart (Lcoil/EventListener;Lcoil/request/Request;)V
-	public static fun transitionEnd (Lcoil/EventListener;Lcoil/request/Request;)V
-	public static fun transitionStart (Lcoil/EventListener;Lcoil/request/Request;)V
+	public static fun transitionEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/transition/Transition;)V
+	public static fun transitionStart (Lcoil/EventListener;Lcoil/request/Request;Lcoil/transition/Transition;)V
 }
 
 public abstract interface class coil/EventListener$Factory {
