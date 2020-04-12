@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
@@ -48,7 +49,7 @@ class CrossfadeTransitionTest {
     }
 
     @Test
-    fun `success - isMemoryCache=true`() {
+    fun `success - memory cache`() {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
@@ -70,7 +71,7 @@ class CrossfadeTransitionTest {
     }
 
     @Test
-    fun `success - isMemoryCache=false`() {
+    fun `success - disk`() {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
@@ -95,8 +96,32 @@ class CrossfadeTransitionTest {
         assertTrue(onSuccessCalled)
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/304 */
     @Test
-    fun failure() {
+    fun `success - view not visible`() {
+        val drawable = ColorDrawable()
+        val imageView = ImageView(context)
+        imageView.isVisible = false
+        var onSuccessCalled = false
+
+        runBlocking {
+            transition.transition(
+                target = createTransitionTarget(
+                    imageView = imageView,
+                    onSuccess = { result ->
+                        assertFalse(onSuccessCalled)
+                        onSuccessCalled = true
+
+                        assertFalse(result is CrossfadeDrawable)
+                    }
+                ),
+                result = SuccessResult(drawable, DataSource.NETWORK)
+            )
+        }
+    }
+
+    @Test
+    fun `failure - disk`() {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
@@ -122,14 +147,15 @@ class CrossfadeTransitionTest {
     }
 
     private inline fun createTransitionTarget(
+        imageView: ImageView = ImageView(context),
         crossinline onStart: (placeholder: Drawable?) -> Unit = { fail() },
         crossinline onError: (error: Drawable?) -> Unit = { fail() },
         crossinline onSuccess: (result: Drawable) -> Unit = { fail() }
     ): TransitionTarget<*> {
         return object : TransitionTarget<ImageView> {
-            override val view = ImageView(context)
+            override val view = imageView
             override val drawable: Drawable?
-                get() = view.drawable
+                get() = imageView.drawable
             override fun onStart(placeholder: Drawable?) = onStart(placeholder)
             override fun onError(error: Drawable?) = onError(error)
             override fun onSuccess(result: Drawable) = onSuccess(result)

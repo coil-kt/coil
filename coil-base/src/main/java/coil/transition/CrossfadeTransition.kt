@@ -2,6 +2,7 @@ package coil.transition
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
@@ -33,6 +34,16 @@ class CrossfadeTransition @JvmOverloads constructor(
         // Don't animate if the request was fulfilled by the memory cache.
         if (result is SuccessResult && result.source == DataSource.MEMORY_CACHE) {
             target.onSuccess(result.drawable)
+            return
+        }
+
+        // Don't animate if the view is not visible as CrossfadeDrawable.onDraw
+        // won't be called until the view becomes visible.
+        if (!target.view.isVisible) {
+            when (result) {
+                is SuccessResult -> target.onSuccess(result.drawable)
+                is ErrorResult -> target.onError(result.drawable)
+            }
             return
         }
 
