@@ -1,5 +1,5 @@
 @file:JvmName("ImageLoaders")
-@file:Suppress("NOTHING_TO_INLINE", "unused")
+@file:Suppress("NOTHING_TO_INLINE", "RedundantSuspendModifier", "UNUSED_PARAMETER", "unused")
 
 package coil.api
 
@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import coil.ImageLoader
-import coil.request.GetRequest
 import coil.request.GetRequestBuilder
 import coil.request.LoadRequest
 import coil.request.LoadRequestBuilder
@@ -31,7 +30,7 @@ import java.io.File
 // region URL (String)
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to the LoadRequest.Builder API.",
     replaceWith = ReplaceWith(
         expression = "this.execute(LoadRequest.Builder(context).data(uri).apply(builder).build())",
         imports = ["coil.request.LoadRequest"]
@@ -44,22 +43,23 @@ inline fun ImageLoader.load(
 ): RequestDisposable = execute(LoadRequest.Builder(context).data(uri).apply(builder).build())
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.get(GetRequest.Builder().data(uri).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder(context).data(uri).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
 suspend inline fun ImageLoader.get(
     uri: String,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequest.Builder().data(uri).apply(builder).build())
+): Drawable = error("Migrate to the GetRequest.Builder API.")
 
 // endregion
 // region URL (HttpUrl)
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to the LoadRequest.Builder API.",
     replaceWith = ReplaceWith(
         expression = "this.execute(LoadRequest.Builder(context).data(url).apply(builder).build())",
         imports = ["coil.request.LoadRequest"]
@@ -72,22 +72,23 @@ inline fun ImageLoader.load(
 ): RequestDisposable = execute(LoadRequest.Builder(context).data(url).apply(builder).build())
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.get(GetRequest.Builder().data(url).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder(context).data(url).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
 suspend inline fun ImageLoader.get(
     url: HttpUrl,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequest.Builder().data(url).apply(builder).build())
+): Drawable = error("Migrate to the GetRequest.Builder API.")
 
 // endregion
 // region Uri
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to the LoadRequest.Builder API.",
     replaceWith = ReplaceWith(
         expression = "this.execute(LoadRequest.Builder(context).data(uri).apply(builder).build())",
         imports = ["coil.request.LoadRequest"]
@@ -100,22 +101,23 @@ inline fun ImageLoader.load(
 ): RequestDisposable = execute(LoadRequest.Builder(context).data(uri).apply(builder).build())
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.get(GetRequest.Builder().data(uri).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder(context).data(uri).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
 suspend inline fun ImageLoader.get(
     uri: Uri,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequest.Builder().data(uri).apply(builder).build())
+): Drawable = error("Migrate to the GetRequest.Builder API.")
 
 // endregion
 // region File
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to the LoadRequest.Builder API.",
     replaceWith = ReplaceWith(
         expression = "this.execute(LoadRequest.Builder(context).data(file).apply(builder).build())",
         imports = ["coil.request.LoadRequest"]
@@ -128,22 +130,23 @@ inline fun ImageLoader.load(
 ): RequestDisposable = execute(LoadRequest.Builder(context).data(file).apply(builder).build())
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.get(GetRequest.Builder().data(file).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder(context).data(file).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
 suspend inline fun ImageLoader.get(
     file: File,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequest.Builder().data(file).apply(builder).build())
+): Drawable = error("Migrate to the GetRequest.Builder API.")
 
 // endregion
 // region Resource
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to the LoadRequest.Builder API.",
     replaceWith = ReplaceWith(
         expression = "this.execute(LoadRequest.Builder(context).data(drawableRes).apply(builder).build())",
         imports = ["coil.request.LoadRequest"]
@@ -156,22 +159,23 @@ inline fun ImageLoader.load(
 ): RequestDisposable = execute(LoadRequest.Builder(context).data(drawableRes).apply(builder).build())
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.get(GetRequest.Builder().data(drawableRes).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder(context).data(drawableRes).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
 suspend inline fun ImageLoader.get(
     @DrawableRes drawableRes: Int,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequest.Builder().data(drawableRes).apply(builder).build())
+): Drawable = error("Migrate to the GetRequest.Builder API.")
 
 // endregion
 // region Drawable
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to the LoadRequest.Builder API.",
     replaceWith = ReplaceWith(
         expression = "this.execute(LoadRequest.Builder(context).data(drawable).apply(builder).build())",
         imports = ["coil.request.LoadRequest"]
@@ -184,22 +188,23 @@ inline fun ImageLoader.load(
 ): RequestDisposable = execute(LoadRequest.Builder(context).data(drawable).apply(builder).build())
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.get(GetRequest.Builder().data(drawable).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder(context).data(drawable).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
 suspend inline fun ImageLoader.get(
     drawable: Drawable,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequest.Builder().data(drawable).apply(builder).build())
+): Drawable = error("Migrate to the GetRequest.Builder API.")
 
 // endregion
 // region Bitmap
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to the LoadRequest.Builder API.",
     replaceWith = ReplaceWith(
         expression = "this.execute(LoadRequest.Builder(context).data(bitmap).apply(builder).build())",
         imports = ["coil.request.LoadRequest"]
@@ -212,22 +217,23 @@ inline fun ImageLoader.load(
 ): RequestDisposable = execute(LoadRequest.Builder(context).data(bitmap).apply(builder).build())
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.get(GetRequest.Builder().data(bitmap).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder(context).data(bitmap).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
 suspend inline fun ImageLoader.get(
     bitmap: Bitmap,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequest.Builder().data(bitmap).apply(builder).build())
+): Drawable = error("Migrate to the GetRequest.Builder API.")
 
 // endregion
 // region Any
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to the LoadRequest.Builder API.",
     replaceWith = ReplaceWith(
         expression = "this.execute(LoadRequest.Builder(context).data(data).apply(builder).build())",
         imports = ["coil.request.LoadRequest"]
@@ -240,22 +246,23 @@ inline fun ImageLoader.loadAny(
 ): RequestDisposable = execute(LoadRequest.Builder(context).data(data).apply(builder).build())
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to the GetRequest.Builder API.",
     replaceWith = ReplaceWith(
-        expression = "this.get(GetRequest.Builder().data(data).apply(builder).build())",
+        expression = "this.get(GetRequest.Builder(context).data(data).apply(builder).build())",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
 suspend inline fun ImageLoader.getAny(
     data: Any,
     builder: GetRequestBuilder.() -> Unit = {}
-): Drawable = get(GetRequest.Builder().data(data).apply(builder).build())
+): Drawable = error("Migrate to the GetRequest.Builder API.")
 
 // endregion
 // region Request Creation
 
 @Deprecated(
-    message = "Replace with the LoadRequest.Builder API.",
+    message = "Migrate to LoadRequest.Builder(context).",
     replaceWith = ReplaceWith(
         expression = "LoadRequest.Builder(context)",
         imports = ["coil.request.LoadRequest"]
@@ -264,12 +271,13 @@ suspend inline fun ImageLoader.getAny(
 inline fun ImageLoader.newLoadBuilder(context: Context) = LoadRequest.Builder(context)
 
 @Deprecated(
-    message = "Replace with the GetRequest.Builder API.",
+    message = "Migrate to GetRequest.Builder(context).",
     replaceWith = ReplaceWith(
-        expression = "GetRequest.Builder()",
+        expression = "GetRequest.Builder(context)",
         imports = ["coil.request.GetRequest"]
-    )
+    ),
+    level = DeprecationLevel.ERROR
 )
-inline fun ImageLoader.newGetBuilder() = GetRequest.Builder()
+inline fun ImageLoader.newGetBuilder(): GetRequestBuilder = error("Migrate to GetRequest.Builder(context).")
 
 // endregion

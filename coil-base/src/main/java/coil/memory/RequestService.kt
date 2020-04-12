@@ -43,6 +43,9 @@ internal class RequestService(
 ) {
 
     companion object {
+        /** @see errorResult */
+        private val FAKE_ERROR_RESULT = ErrorResult(null, Exception())
+
         /** A whitelist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
         @JvmField internal val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
             arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
@@ -53,7 +56,13 @@ internal class RequestService(
 
     private val hardwareBitmapService = HardwareBitmapService()
 
-    fun errorResult(request: Request, throwable: Throwable): ErrorResult {
+    fun errorResult(request: Request, throwable: Throwable, allowFake: Boolean): ErrorResult {
+        // Avoid resolving the error drawable if this result is being passed to a target delegate.
+        // It will be resolved later before being returned.
+        if (request is GetRequest && allowFake) {
+            return FAKE_ERROR_RESULT
+        }
+
         val drawable = if (throwable is NullRequestDataException) {
             request.fallbackOrDefault(defaults)
         } else {

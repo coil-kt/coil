@@ -1,5 +1,3 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package coil.memory
 
 import android.graphics.Bitmap

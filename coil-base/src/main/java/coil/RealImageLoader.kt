@@ -156,7 +156,7 @@ internal class RealImageLoader(
         } catch (exception: CancellationException) {
             throw exception
         } catch (throwable: Throwable) {
-            requestService.errorResult(request, throwable)
+            requestService.errorResult(request, throwable, false)
         }
     }
 
@@ -267,7 +267,7 @@ internal class RealImageLoader(
                     request.listener?.onCancel(request)
                 } else {
                     logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - $throwable" }
-                    val result = requestService.errorResult(request, throwable)
+                    val result = requestService.errorResult(request, throwable, true)
                     targetDelegate.error(result, request.transition ?: defaults.transition)
                     eventListener.onError(request, throwable)
                     request.listener?.onError(request, throwable)

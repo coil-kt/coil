@@ -1,9 +1,13 @@
-@file:Suppress("MemberVisibilityCanBePrivate", "unused")
+@file:Suppress("MemberVisibilityCanBePrivate", "NOTHING_TO_INLINE", "unused")
 
 package coil
 
 import android.app.Application
 import android.content.Context
+import coil.request.GetRequest
+import coil.request.LoadRequest
+import coil.request.RequestDisposable
+import coil.request.RequestResult
 import coil.util.CoilContentProvider
 
 /**
@@ -36,6 +40,26 @@ object Coil {
         setImageLoader(object : ImageLoaderFactory {
             override fun newImageLoader() = loader
         })
+    }
+
+    /**
+     * Convenience function to get the default [ImageLoader] and execute the [request].
+     *
+     * @see ImageLoader.execute
+     */
+    @JvmStatic
+    inline fun execute(request: LoadRequest): RequestDisposable {
+        return imageLoader(request.context).execute(request)
+    }
+
+    /**
+     * Convenience function to get the default [ImageLoader] and execute the [request].
+     *
+     * @see ImageLoader.execute
+     */
+    @JvmStatic
+    suspend inline fun execute(request: GetRequest): RequestResult {
+        return imageLoader(request.context).execute(request)
     }
 
     /**

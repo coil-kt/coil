@@ -41,7 +41,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - inexact precision`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             precision(Precision.INEXACT)
         }
         assertTrue(service.allowInexactSize(request))
@@ -118,7 +118,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - GetRequest`() {
-        val request = createGetRequest {
+        val request = createGetRequest(context) {
             size(100, 100)
         }
         assertFalse(service.allowInexactSize(request))

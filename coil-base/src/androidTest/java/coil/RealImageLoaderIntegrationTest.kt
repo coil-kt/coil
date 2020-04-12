@@ -279,7 +279,7 @@ class RealImageLoaderIntegrationTest {
         assertTrue(cacheFolder.listFiles().isNullOrEmpty())
 
         runBlocking {
-            val request = GetRequest.Builder()
+            val request = GetRequest.Builder(context)
                 .data(url)
                 .memoryCachePolicy(CachePolicy.DISABLED)
                 .build()
@@ -303,7 +303,7 @@ class RealImageLoaderIntegrationTest {
                     isSampled = false,
                     dataSource = DataSource.MEMORY
                 ),
-                request = createGetRequest { transformations(CircleCropTransformation()) },
+                request = createGetRequest(context) { transformations(CircleCropTransformation()) },
                 size = size,
                 options = createOptions(),
                 eventListener = EventListener.NONE
@@ -327,7 +327,7 @@ class RealImageLoaderIntegrationTest {
                     isSampled = false,
                     dataSource = DataSource.MEMORY
                 ),
-                request = createGetRequest { transformations(emptyList()) },
+                request = createGetRequest(context) { transformations(emptyList()) },
                 size = size,
                 options = createOptions(),
                 eventListener = EventListener.NONE
@@ -406,7 +406,7 @@ class RealImageLoaderIntegrationTest {
 
     private fun testGet(data: Any, expectedSize: PixelSize = PixelSize(100, 125)) {
         val result = runBlocking {
-            val request = GetRequest.Builder()
+            val request = GetRequest.Builder(context)
                 .data(data)
                 .size(100, 100)
                 .build()

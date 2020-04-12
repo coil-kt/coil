@@ -84,7 +84,7 @@ class TargetDelegateTest {
 
     @Test
     fun `get request invalidates the success bitmap`() {
-        val request = createGetRequest()
+        val request = createGetRequest(context)
         val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
 
         runBlocking {
