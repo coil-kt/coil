@@ -1,6 +1,5 @@
 package coil.memory
 
-import android.graphics.Bitmap
 import android.util.Log
 import coil.decode.DecodeUtils
 import coil.request.Request
@@ -12,6 +11,7 @@ import coil.size.SizeResolver
 import coil.util.Logger
 import coil.util.log
 import coil.util.safeConfig
+import kotlin.math.abs
 
 /** Handles operations related to the [MemoryCache]. */
 internal class MemoryCacheService(
@@ -23,7 +23,7 @@ internal class MemoryCacheService(
         private const val TAG = "MemoryCacheService"
     }
 
-    /** Return true if the [Bitmap] returned from [MemoryCache] satisfies the [Request]. */
+    /** Return true if [cacheValue] satisfies the [request]. */
     fun isCachedValueValid(
         cacheKey: MemoryCache.Key?,
         cacheValue: MemoryCache.Value,
@@ -33,6 +33,31 @@ internal class MemoryCacheService(
         scale: Scale
     ): Boolean {
         // Ensure the size of the cached bitmap is valid for the request.
+        if (!isSizeValid(cacheKey, cacheValue, request, sizeResolver, size, scale)) {
+            return false
+        }
+
+        // Ensure we don't return a hardware bitmap if the request doesn't allow it.
+        if (!requestService.isConfigValidForHardware(request, cacheValue.bitmap.safeConfig)) {
+            logger?.log(TAG, Log.DEBUG) {
+                "${request.data}: Cached bitmap is hardware-backed, which is incompatible with the request."
+            }
+            return false
+        }
+
+        // Else, the cached drawable is valid and we can short circuit the request.
+        return true
+    }
+
+    /** Return true if [cacheValue]'s size satisfies the [request]. */
+    private fun isSizeValid(
+        cacheKey: MemoryCache.Key?,
+        cacheValue: MemoryCache.Value,
+        request: Request,
+        sizeResolver: SizeResolver,
+        size: Size,
+        scale: Scale
+    ): Boolean {
         when (size) {
             is OriginalSize -> {
                 if (cacheValue.isSampled) {
@@ -56,6 +81,14 @@ internal class MemoryCacheService(
                         cachedHeight = bitmap.height
                     }
                 }
+
+                // Short circuit the size check if the size is at most 1 pixel off in either dimension.
+                // This accounts for the fact that downsampling can often produce images with one dimension
+                // at most one pixel off due to rounding.
+                if (abs(cachedWidth - size.width) <= 1 && abs(cachedHeight - size.height) <= 1) {
+                    return true
+                }
+
                 val multiple = DecodeUtils.computeSizeMultiplier(
                     srcWidth = cachedWidth,
                     srcHeight = cachedHeight,
@@ -80,15 +113,6 @@ internal class MemoryCacheService(
             }
         }
 
-        // Ensure we don't return a hardware bitmap if the request doesn't allow it.
-        if (!requestService.isConfigValidForHardware(request, cacheValue.bitmap.safeConfig)) {
-            logger?.log(TAG, Log.DEBUG) {
-                "${request.data}: Cached bitmap is hardware-backed, which is incompatible with the request."
-            }
-            return false
-        }
-
-        // Else, the cached drawable is valid and we can short circuit the request.
         return true
     }
 }
