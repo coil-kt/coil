@@ -136,7 +136,7 @@ interface EventListener : Request.Listener {
      * or [Request.target] does not implement [TransitionTarget].
      */
     @MainThread
-    fun transitionStart(request: Request) {}
+    fun transitionStart(request: Request, transition: Transition) {}
 
     /**
      * Called after [Transition.transition].
@@ -145,7 +145,7 @@ interface EventListener : Request.Listener {
      * or [Request.target] does not implement [TransitionTarget].
      */
     @MainThread
-    fun transitionEnd(request: Request) {}
+    fun transitionEnd(request: Request, transition: Transition) {}
 
     /**
      * @see Request.Listener.onSuccess

@@ -15,6 +15,7 @@ import coil.request.LoadRequestBuilder
 import coil.request.Request
 import coil.size.Size
 import coil.transform.CircleCropTransformation
+import coil.transition.Transition
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -205,8 +206,8 @@ class EventListenerTest {
         override fun decodeEnd(request: Request, decoder: Decoder, options: Options) = decodeEnd.call()
         override fun transformStart(request: Request) = transformStart.call()
         override fun transformEnd(request: Request) = transformEnd.call()
-        override fun transitionStart(request: Request) = transitionStart.call()
-        override fun transitionEnd(request: Request) = transitionEnd.call()
+        override fun transitionStart(request: Request, transition: Transition) = transitionStart.call()
+        override fun transitionEnd(request: Request, transition: Transition) = transitionEnd.call()
         override fun onSuccess(request: Request, source: DataSource) = onSuccess.call()
         override fun onCancel(request: Request) = onCancel.call()
         override fun onError(request: Request, throwable: Throwable) = onError.call()
