@@ -145,7 +145,7 @@ object DecodeUtils {
      * destination size while preserving aspect ratio.
      */
     @JvmStatic
-    fun computeOutputSize(srcWidth: Int, srcHeight: Int, dstSize: Size, scale: Scale): PixelSize {
+    fun computePixelSize(srcWidth: Int, srcHeight: Int, dstSize: Size, scale: Scale): PixelSize {
         return when (dstSize) {
             is OriginalSize -> PixelSize(srcWidth, srcHeight)
             is PixelSize -> {

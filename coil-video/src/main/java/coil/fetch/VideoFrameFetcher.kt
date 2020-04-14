@@ -219,6 +219,6 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
 
     private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {
         return options.allowInexactSize || size is OriginalSize ||
-            size == DecodeUtils.computeOutputSize(bitmap.width, bitmap.height, size, options.scale)
+            size == DecodeUtils.computePixelSize(bitmap.width, bitmap.height, size, options.scale)
     }
 }

@@ -50,7 +50,7 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
         // Slow path: draw the drawable on a new bitmap.
         val srcWidth = drawable.width.let { if (it > 0) it else DEFAULT_SIZE }
         val srcHeight = drawable.height.let { if (it > 0) it else DEFAULT_SIZE }
-        val (width, height) = DecodeUtils.computeOutputSize(srcWidth, srcHeight, size, scale)
+        val (width, height) = DecodeUtils.computePixelSize(srcWidth, srcHeight, size, scale)
 
         val bitmap = bitmapPool.get(width, height, config.toSoftware())
         drawable.apply {
@@ -69,6 +69,6 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
 
     private fun isSizeValid(allowInexactSize: Boolean, size: Size, bitmap: Bitmap, scale: Scale): Boolean {
         return allowInexactSize || size is OriginalSize ||
-            size == DecodeUtils.computeOutputSize(bitmap.width, bitmap.height, size, scale)
+            size == DecodeUtils.computePixelSize(bitmap.width, bitmap.height, size, scale)
     }
 }
