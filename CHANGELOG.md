@@ -1,5 +1,106 @@
 # Changelog
 
+## [0.10.0] - TBD
+
+Version 0.10.0 deprecates a lot of the DSL syntax in Coil in favour of builders:
+
+```kotlin
+// 0.9.5
+val imageLoader = ImageLoader(context) {
+    bitmapPoolPercentage(0.5)
+    crossfade(true)
+}
+
+val disposable = imageLoader.load(context, "https://www.example.com/image.jpg") {
+    target(imageView)
+}
+
+val drawable = imageLoader.get("https://www.example.com/image.jpg") {
+    size(512, 512)
+}
+
+// 0.10.0
+val imageLoader = ImageLoader.Builder(context)
+    .bitmapPoolPercentage(0.5)
+    .crossfade(true)
+    .build()
+
+val request = LoadRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .target(imageView)
+    .build()
+val dispoable = imageLoader.execute(request)
+
+val request = GetRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .size(512, 512)
+    .build()
+val drawable = imageLoader.execute(request).drawable
+
+// If using the singleton artifact, you can call:
+Coil.execute(request)
+```
+
+NOTE: `ImageView.load` is not deprecated.
+
+Curious about why this design change was made? [Read here]().
+
+---
+
+- **Important**: Deprecate DSL syntax in favour of Builder syntax. (#267)
+- **Important**: Deprecate Coil and ImageLoader extension functions. (#322)
+- **Breaking**: Return sealed RequestResult type from `ImageLoader.execute(GetRequest)`. (#349)
+- **Breaking**: Rename `ExperimentalCoil` to `ExperimentalCoilApi`. Migrate from @Experimental to @RequiresOptIn. (#306)
+- **Breaking**: Replace `CoilLogger` with `Logger` interface. (#316)
+- **Breaking**: Rename destWidth/destHeight to dstWidth/dstHeight. (#275)
+- **Breaking**: Re-arrange MovieDrawable's constructor params. (#272)
+- **Breaking**: `Request.Listener`'s methods now receive the full `Request` object instead of just its data.
+- **Breaking**: `GetRequestBuilder` now requires a `Context` in its constructor.
+- **Behaviour change**: Include parameter values in the cache key by default. (#319)
+- **Behaviour change**: Slightly adjust `Request.Listener.onStart()` timing to be called immediately after `Target.onStart()`. (#348)
+
+---
+
+- **New**: Add `WeakMemoryCache` implementation. (#295)
+- **New**: Add `coil-video` to support decoding video frames. (#122)
+- **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt). (#314)
+- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/master/coil-default/src/main/java/coil/ImageLoaderFactory.kt). (#311)
+- **New**: Improve Java compatibility. (#262)
+- **New**: Support setting a default CachePolicy. (#307)
+- **New**: Support setting a default Bitmap.Config. (#342)
+- **New**: Add `ImageLoader.invalidate(key)` to clear a single memory cache item (#55)
+- **New**: Add debug logs to explain why a cached image is not reused. (#346)
+- **New**: Support `error` and `fallback` drawables for get requests.
+
+---
+
+- Fix: Fix memory cache miss when Transformation reduces input bitmap's size. (357)
+- Fix: Ensure radius is below RenderScript max in BlurTransformation. (#291)
+- Fix: Fix decoding high colour depth images. (#358)
+- Fix: Disable ImageDecoderDecoder crash work-around on Android 11 and above. (#298)
+- Fix: Fix failing to read EXIF data on pre-API 23. (#331)
+- Fix: Fix incompatibility with Android R SDK. (#337)
+- Fix: Only enable inexact size if ImageView has a matching SizeResolver. (#344)
+- Fix: Allow cached images to be at most one pixel off requested size. (#360)
+- Fix: Skip crossfade transition if view is not visible. (#361)
+
+---
+
+- Deprecate CoilContentProvider. (#293)
+- Annotate several ImageLoader methods with `@MainThread`.
+- Avoid creating a LifecycleCoroutineDispatcher if the lifecycle is currently started. (#356)
+- Use full package name for OriginalSize.toString().
+- Preallocate when decoding software bitmap. (#354)
+
+---
+
+- Update Kotlin to 1.3.71.
+- Update Coroutines to 1.3.5.
+- Update OkHttp to 3.12.10.
+- Update Okio to 2.5.0.
+- Update AndroidX dependencies:
+  - `androidx.exifinterface:exifinterface` -> 1.2.0
+
 ## [0.9.5] - February 6, 2020
 
 - Fix: Ensure a view is attached before checking if it is hardware accelerated. This fixes a case where requesting a hardware bitmap could miss the memory cache.
