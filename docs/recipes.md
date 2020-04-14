@@ -90,7 +90,7 @@ val request = LoadRequest.Builder(context)
     .build()
 imageLoader.execute(request)
 
-// ImageView.load()
+// ImageView.load
 imageView.load("https://www.example.com/image.jpg") {
     allowHardware(false)
     transition(PaletteTransition(CrossfadeTransition())) { palette ->
@@ -101,6 +101,63 @@ imageView.load("https://www.example.com/image.jpg") {
 
 !!! Note
     You should not pass the drawable outside of `Transition.transition`. This can cause the drawable's underlying bitmap to be pooled while it is still in use, which can result in rendering issues and crashes.
+
+## Using a custom OkHttpClient
+
+Coil uses [`OkHttp`](https://github.com/square/okhttp/) for all its networking operations. You can specify a custom `OkHttpClient` when creating your `ImageLoader`:
+
+```kotlin
+val imageLoader = ImageLoader.Builder(context)
+    // Create the OkHttpClient inside a lambda so it will be initialized lazily on a background thread.
+    .okHttpClient {
+        OkHttpClient.Builder()
+            // You need to set the cache for disk caching to work.
+            .cache(CoilUtils.createDefaultCache(context))
+            .build()
+    }
+    .build()
+```
+
+!!! Note
+    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/new-builder/) to build a new client that shares resources with the original.
+
+#### Headers
+
+Headers can be added to your image requests in one of two ways. You can set headers for a single request:
+
+```kotlin
+val request = LoadRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .setHeader("Cache-Control", "max-age=31536000,public")
+    .target(imageView)
+    .build()
+imageLoader.execute(request)
+```
+
+Or you can create an [`Interceptor`](https://square.github.io/okhttp/interceptors/) that sets headers for every request executed by your `ImageLoader`:
+
+```kotlin
+class ResponseHeaderInterceptor(
+    private val name: String,
+    private val value: String
+) : Interceptor {
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val response = chain.proceed(chain.request())
+        return response.newBuilder().header(name, value).build()
+    }
+}
+
+val imageLoader = ImageLoader.Builder(context)
+    .okHttpClient {
+        OkHttpClient.Builder()
+            .cache(CoilUtils.createDefaultCache(context))
+            // This header will be added to every image request.
+            .addNetworkInterceptor(ResponseHeaderInterceptor("Cache-Control", "max-age=31536000,public"))
+            .build()
+    }
+    .build()
+```
 
 ## Shared Element Transitions
 
