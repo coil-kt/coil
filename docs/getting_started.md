@@ -55,9 +55,9 @@ tasks.withType<KotlinCompile> {
 }
 ```
 
-## ImageLoaders
+## Image Loaders
 
-The main class in Coil's API is the [ImageLoader](image_loaders.md). `ImageLoader`s are service classes that execute `Request`s that are passed to them. New instances can be created and configured using a builder:
+[`ImageLoader`](image_loaders.md)s are service classes that execute [`Request`](requests.md)s. They handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
@@ -68,18 +68,22 @@ val imageLoader = ImageLoader.Builder(context)
 
 Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
 
+Unlike `OkHttpClient`s, `ImageLoader`s must be shut down when finished with. This clears the observers held by the image loader and frees its memory:
+
+```kotlin
+imageLoader.shutdown()
+```
+
 ## Requests
 
 There are two types of `Request`s:
 
-- `LoadRequest`: A request that supports `Target`s, `Transition`s, and more that is scoped to a [`Lifecycle`](https://developer.android.com/jetpack/androidx/releases/lifecycle).
-- `GetRequst`: A request that [suspends](https://kotlinlang.org/docs/reference/coroutines/basics.html) and returns a `Drawable`.
+- [`LoadRequest`](../api/coil-base/coil.request/-load-request/): A request that is scoped to a [`Lifecycle`](https://developer.android.com/jetpack/androidx/releases/lifecycle) and supports [`Target`](../api/coil-base/coil.target/-target/)s, [`Transition`](../api/coil-base/coil.transition/-transition/)s, and more.
+- [`GetRequest`](../api/coil-base/coil.request/-get-request/): A request that [suspends](https://kotlinlang.org/docs/reference/coroutines/basics.html) and returns a [`RequestResult`](../api/coil-base/coil.request/-request-result/).
 
-New requests can be created using their respective builder.
+All requests should set `data` (i.e. url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to decide where to fetch the image data from.
 
-All requests should set `data` (i.e. url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to figure where to fetch the image data from.
-
-Additionally, you likely want to set a `target` when creating a `LoadRequest`. It's optional, but the `target` is what will receive the loaded placeholder/success/error drawables. If you don't set a `target`, the `ImageLoader` will execute the request as normal effectively preloading the image.
+Additionally, you likely want to set a `target` when creating a `LoadRequest`. It's optional, but the `target` is what will receive the loaded placeholder/success/error drawables.
 
 Here's an example:
 
@@ -95,12 +99,12 @@ val disposable = imageLoader.execute(request)
 val request = GetRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .build()
-val drawable = imageLoader.execute(request)
+val result = imageLoader.execute(request)
 ```
 
 ## Singleton
 
-If you are using the `io.coil-kt:coil` artifact, you can set a default [ImageLoader](image_loaders.md) instance by either:
+If you are using the `io.coil-kt:coil` artifact, you can set a default [`ImageLoader`](image_loaders.md) instance by either:
 
 - Implementing `ImageLoaderFactory` on your `Application` class (prefer this method):
 
@@ -134,6 +138,12 @@ val imageLoader = ImageLoader.Builder(context)
 Coil.setImageLoader(imageLoader)
 ```
 
+The default `ImageLoader` can be retrieved like so:
+
+```kotlin
+val imageLoader = Coil.imageLoader(context)
+```
+
 Setting a default `ImageLoader` is optional. If you don't set one, Coil will lazily create an `ImageLoader` with the default values.
 
 If you're using the `io.coil-kt:coil-base` artifact, you should create your own `ImageLoader` instance(s) and inject them throughout your app with dependency injection. [Read more about dependency injection here](../image_loaders/#singleton-vs-dependency-injection).
@@ -152,11 +162,12 @@ imageView.load("https://www.example.com/image.jpg")
 The above call is equivalent to:
 
 ```kotlin
+val imageLoader = Coil.imageLoader(context)
 val request = LoadRequest.Builder(imageView.context)
     .data("https://www.example.com/image.jpg")
     .target(imageView)
     .build()
-Coil.imageLoader(imageView.context).execute(request)
+imageLoader.execute(request)
 ```
 
 `ImageView.load` calls can be configured with an optional trailing lambda parameter:

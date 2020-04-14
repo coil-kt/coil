@@ -27,18 +27,18 @@ object ImageLoaderCompat {
     fun getBlocking(
         imageLoader: ImageLoader,
         request: GetRequest
-    ): Drawable = runBlocking { imageLoader.execute(request) }
+    ): RequestResult = runBlocking { imageLoader.execute(request) }
 }
 ```
 
 Then call the `ImageLoaderCompat` function from Java:
 
 ```java
-GetRequest request = GetRequest.builder()
+GetRequest request = GetRequest.builder(context)
     .data("https://www.example.com/image.jpg")
     .size(1080, 1920)
     .build();
-Drawable drawable = ImageLoaderCompat.getBlocking(imageLoader, request);
+Drawable drawable = ImageLoaderCompat.getBlocking(imageLoader, request).getDrawable();
 ```
 
 !!! Note
