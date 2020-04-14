@@ -1,30 +1,29 @@
 # Image Loaders
 
-Image Loaders are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute `Request`s. They handle caching, image decoding, request management, bitmap pooling, memory management, and more.
-
-New instances can be created like so:
-
-```kotlin
-val imageLoader = ImageLoader(context)
-```
-
-Similar to [Requests](requests.md), `ImageLoader`s can be configured by using a builder:
+[`ImageLoader`](image_loaders.md)s are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute [`Request`](requests.md)s. They handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
     .availableMemoryPercentage(0.25)
-    .bitmapPoolPercentage(0.5)
     .crossfade(true)
     .build()
 ```
 
 Internally, this constructs a `RealImageLoader` using [ImageLoaderBuilder](../api/coil-base/coil/-image-loader-builder).
 
+Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
+
+Unlike `OkHttpClient`s, `ImageLoader`s must be shut down when finished with. This clears the observers held by the image loader and frees its memory:
+
+```kotlin
+imageLoader.shutdown()
+```
+
 ## Caching
 
-Each `ImageLoader` keeps a memory cache of recently loaded `BitmapDrawable`s as well as a reusable pool of `Bitmap`s.
+Each `ImageLoader` keeps a memory cache of recently decoded `Bitmap`s as well as a reusable pool of `Bitmap`s to decode into.
 
-`ImageLoader`s rely on `OkHttpClient` to handle disk caching. **By default, every `ImageLoader` is already set up for disk caching** and will set a max cache size of between 10-250MB depending on the remaining space on the user's device.
+`ImageLoader`s rely on an `OkHttpClient` to handle disk caching. **By default, every `ImageLoader` is already set up for disk caching** and will set a max cache size of between 10-250MB depending on the remaining space on the user's device.
 
 However, if you set a custom `OkHttpClient`, you'll need to add the disk cache yourself. To get a `Cache` instance that's optimized for Coil, you can use [`CoilUtils.createDefaultCache`](../api/coil-base/coil.util/-coil-utils/create-default-cache/). Optionally, you can create your own `Cache` instance with a different size + location. Here's an example:
 
@@ -48,10 +47,6 @@ However, if you'd prefer a singleton the `io.coil-kt:coil` artifact provides a d
 
 !!! Note
     Use the `io.coil-kt:coil-base` artifact if you are using dependency injection.
-
-## Shutdown
-
-When you're done with an `ImageLoader` you should call `ImageLoader.shutdown()`. This releases all resources and observers used by the image loader and stops any new requests from being executed. Failure to call `ImageLoader.shutdown()` can leak the observers used internally.
 
 ## Testing
 
