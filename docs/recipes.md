@@ -1,6 +1,6 @@
 # Recipes
 
-This page provides guidance on how to handle some common use cases with Coil. You might have to modify this code to fix your exact requirements, but it should give you a push in the right direction!
+This page provides guidance on how to handle some common use cases with Coil. You might have to modify this code to fix your exact requirements, but it should hopefully give you a push in the right direction!
 
 See a common use case that isn't covered? Feel free to submit a PR with a new section.
 
@@ -79,6 +79,7 @@ class PaletteTransition(
     }
 }
 
+// LoadRequest
 val request = LoadRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .allowHardware(false) // Disable hardware bitmaps.
@@ -89,7 +90,7 @@ val request = LoadRequest.Builder(context)
     .build()
 imageLoader.execute(request)
 
-// Optionally, using ImageView.load():
+// ImageView.load()
 imageView.load("https://www.example.com/image.jpg") {
     allowHardware(false)
     transition(PaletteTransition(CrossfadeTransition())) { palette ->
