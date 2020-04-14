@@ -65,6 +65,7 @@ Curious about why this design change was made? [Read here]().
 - **New**: Add `coil-video` to support decoding video frames. (#122)
 - **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt). (#314)
 - **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/master/coil-default/src/main/java/coil/ImageLoaderFactory.kt). (#311)
+- **New**: Support animated HEIF image sequences on Android 11. (#297)
 - **New**: Improve Java compatibility. (#262)
 - **New**: Support setting a default CachePolicy. (#307)
 - **New**: Support setting a default Bitmap.Config. (#342)
@@ -94,7 +95,7 @@ Curious about why this design change was made? [Read here]().
 
 ---
 
-- Update Kotlin to 1.3.71.
+- Update Kotlin to 1.3.72.
 - Update Coroutines to 1.3.5.
 - Update OkHttp to 3.12.10.
 - Update Okio to 2.5.0.
