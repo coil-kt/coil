@@ -276,7 +276,7 @@ public final class coil/decode/DecodeResult {
 public final class coil/decode/DecodeUtils {
 	public static final field INSTANCE Lcoil/decode/DecodeUtils;
 	public static final fun calculateInSampleSize (IIIILcoil/size/Scale;)I
-	public static final fun computeOutputSize (IILcoil/size/Size;Lcoil/size/Scale;)Lcoil/size/PixelSize;
+	public static final fun computePixelSize (IILcoil/size/Size;Lcoil/size/Scale;)Lcoil/size/PixelSize;
 	public static final fun computeSizeMultiplier (DDDDLcoil/size/Scale;)D
 	public static final fun computeSizeMultiplier (FFFFLcoil/size/Scale;)F
 	public static final fun computeSizeMultiplier (IIIILcoil/size/Scale;)D
