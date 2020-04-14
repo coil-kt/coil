@@ -1,0 +1,110 @@
+# Recipes
+
+This page provides guidance on how to handle some common use cases with Coil. You might have to modify this code to fix your exact requirements, but it should give you a push in the right direction!
+
+See a common use case that isn't covered? Feel free to submit a PR with a new section.
+
+## Palette
+
+[Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to exact prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done a number of ways:
+
+#### LoadRequest
+
+You can get access to an image's bitmap by setting a `Target` on a `LoadRequest`:
+
+```kotlin
+val request = LoadRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .allowHardware(false) // Disable hardware bitmaps.
+    .target { drawable ->
+        val bitmap = (result.drawable as BitmapDrawable).bitmap
+
+        // Generate the Palette on a background thread.
+        val task = Palette.Builder(bitmap).generateAsync { palette ->
+            // Consume the palette.
+        }
+    }
+    .build()
+val disposable = imageLoader.execute(request)
+```
+
+#### GetRequest
+
+You can also use a `GetRequest`, which returns the drawable imperatively:
+
+```kotlin
+val request = GetRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .allowHardware(false) // Disable hardware bitmaps.
+    .build()
+val drawable = (imageLoader.execute(request) as SuccessResult).drawable
+
+val palette = coroutineScope {
+    launch(Dispatchers.IO) {
+        Palette.Builder((result.drawable as BitmapDrawable).bitmap).generate()
+    }
+}
+```
+
+#### Transition
+
+There may be cases where you want to load an image into a `PoolableViewTarget` (e.g. `ImageViewTarget`) while extracting the image's colors in parallel. For these cases you can use a custom [`Transition`](transitions.md) to get access to the underlying bitmap:
+
+```kotlin
+class PaletteTransition(
+    private val delegate: Transition?,
+    private val onGenerated: (Palette) -> Unit
+) : Transition {
+
+    override suspend fun transition(
+        target: TransitionTarget<*>,
+        result: RequestResult
+    ) = coroutineScope {
+        // Execute the delegate transition.
+        val delegateJob = delegate?.let {
+            launch(Dispatchers.Main.immediate) {
+                delegate.transition(target, result)
+            }
+        }
+
+        // Compute the palette on a background thread.
+        val bitmap = (result.drawable as BitmapDrawable).bitmap
+        val paletteJob = launch(Dispatchers.IO) {
+            onGenerated(Palette.Builder(bitmap).generate())
+        }
+
+        // Suspend until both jobs finish.
+        delegateJob?.join()
+        paletteJob.join()
+    }
+}
+
+val request = LoadRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .allowHardware(false) // Disable hardware bitmaps.
+    .transition(PaletteTransition(CrossfadeTransition()) { palette ->
+        // Consume the palette.
+    })
+    .target(imageView)
+    .build()
+imageLoader.execute(request)
+
+// Optionally, using ImageView.load():
+imageView.load("https://www.example.com/image.jpg") {
+    allowHardware(false)
+    transition(PaletteTransition(CrossfadeTransition())) { palette ->
+        // Consume the palette.
+    }
+}
+```
+
+!!! Note
+    You should not pass the drawable outside of `Transition.transition`. This can cause the drawable's underlying bitmap to be pooled while it is still in use, which can result in rendering issues and crashes.
+
+## Shared Element Transitions
+
+[Shared element transitions](https://developer.android.com/training/transitions/start-activity) allow you to animate between `Activites` and `Fragments`. Here are some recommendations on how use them with Coil:
+
+- **Shared element transitions are incompatible with hardware bitmaps.** You should set `allowHardware(false)` to disable hardware bitmaps for both the `ImageView` you are animating from and the view you are animating to. If you don't the transition will throw an `java.lang.IllegalArgumentException: Software rendering doesn't support hardware bitmaps` exception.
+- Prefer using `target(imageView)` or `ImageView.load` for any requests targeting an `ImageView` in the transition.
+- Use [`ChangeImageTransform`](https://developer.android.com/reference/android/transition/ChangeImageTransform) and [`ChangeBounds`](https://developer.android.com/reference/android/transition/ChangeBounds) together for optimal results.

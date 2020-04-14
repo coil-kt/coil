@@ -46,6 +46,7 @@ nav:
   - 'GIFs': gifs.md
   - 'SVGs': svgs.md
   - 'Video Frames': videos.md
+  - 'Recipes': recipes.md
   - 'FAQ': faq.md
   - 'API':
     - 'coil': api/coil-default/index.md
