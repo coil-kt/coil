@@ -67,7 +67,7 @@ val request = GetRequest.Builder(context)
 val drawable = Coil.execute(request).drawable
 ```
 
-The above examples use `io.coil-kt:coil`, which contains the `Coil` singleton. Optionally, you can depend on `io.coil-kt:coil-base` instead and construct your own [`ImageLoader`](https://coil-kt.github.io/coil/image_loaders/) instance(s).
+The above examples use `io.coil-kt:coil`, which contains the `Coil` singleton. Optionally, you can depend on `io.coil-kt:coil-base` instead and inject your own [`ImageLoader`](https://coil-kt.github.io/coil/image_loaders/) instance(s).
 
 Coil requires [Java 8 bytecode](https://coil-kt.github.io/coil/getting_started/#java-8). Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
 
