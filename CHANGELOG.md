@@ -40,7 +40,7 @@
   val drawable = imageLoader.execute(request).drawable
   ```
 
-If you're using the `io.coil-kt:coil` artifact, you can call `Coil.execute(request)` to execute the request with the singleton `ImageLoader`.
+  - If you're using the `io.coil-kt:coil` artifact, you can call `Coil.execute(request)` to execute the request with the singleton `ImageLoader`.
 
 - **`ImageLoader`s now have a weak memory cache** that tracks weak references to images once they're evicted from the strong reference cache.
   - This means an image will always be returned from an `ImageLoader`'s memory cache if there's still a strong reference to it.
