@@ -2,10 +2,12 @@
 
 ## [0.10.0] - TBD
 
-Version 0.10.0 deprecates a lot of the DSL syntax in Coil in favour of builders:
+#### Highlights
+
+- **This version deprecates most of the DSL APIs in favour of using the builders directly:**
 
 ```kotlin
-// 0.9.5
+// 0.9.5 (old)
 val imageLoader = ImageLoader(context) {
     bitmapPoolPercentage(0.5)
     crossfade(true)
@@ -19,7 +21,7 @@ val drawable = imageLoader.get("https://www.example.com/image.jpg") {
     size(512, 512)
 }
 
-// 0.10.0
+// 0.10.0 (new)
 val imageLoader = ImageLoader.Builder(context)
     .bitmapPoolPercentage(0.5)
     .crossfade(true)
@@ -29,69 +31,78 @@ val request = LoadRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .target(imageView)
     .build()
-val dispoable = imageLoader.execute(request)
+val disposable = imageLoader.execute(request)
 
 val request = GetRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .size(512, 512)
     .build()
 val drawable = imageLoader.execute(request).drawable
-
-// If using the singleton artifact, you can call:
-Coil.execute(request)
 ```
 
-NOTE: `ImageView.load` is not deprecated.
+If you're using the `io.coil-kt:coil` artifact, you can call `Coil.execute(request)` to execute the request with the singleton `ImageLoader`.
 
-Curious about why this design change was made? [Read here]().
+- **`ImageLoader`s now have a weak memory cache** that tracks weak references to images once they're evicted from the strong reference cache.
+  - This means an image will always be returned from an `ImageLoader`'s memory cache if there's still a strong reference to it.
+  - Generally, this should make shared element transitions much easier to implement.
+  - This behaviour can be enabled/disabled with `ImageLoaderBuilder.trackWeakReferences`.
+
+- Add a new artifact, **`io.coil-kt:coil-video`**, to decode specific frames from a video file. [Read more here](https://coil-kt.github.io/coil/videos/).
+
+- Add a new [EventListener](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt) API for tracking metrics.
+
+- Add [ImageLoaderFactory](https://github.com/coil-kt/coil/blob/master/coil-default/src/main/java/coil/ImageLoaderFactory.kt) which can be implemented by your `Application` to simplify singleton initialization.
 
 ---
 
-- **Important**: Deprecate DSL syntax in favour of Builder syntax. (#267)
-- **Important**: Deprecate Coil and ImageLoader extension functions. (#322)
-- **Breaking**: Return sealed RequestResult type from `ImageLoader.execute(GetRequest)`. (#349)
-- **Breaking**: Rename `ExperimentalCoil` to `ExperimentalCoilApi`. Migrate from @Experimental to @RequiresOptIn. (#306)
-- **Breaking**: Replace `CoilLogger` with `Logger` interface. (#316)
-- **Breaking**: Rename destWidth/destHeight to dstWidth/dstHeight. (#275)
-- **Breaking**: Re-arrange MovieDrawable's constructor params. (#272)
+#### Full Patch Notes
+
+- **Important**: Deprecate DSL syntax in favour of builder syntax. ([#267](https://github.com/coil-kt/coil/pull/267))
+- **Important**: Deprecate `Coil` and `ImageLoader` extension functions. ([#322](https://github.com/coil-kt/coil/pull/322))
+- **Breaking**: Return sealed `RequestResult` type from `ImageLoader.execute(GetRequest)`. ([#349](https://github.com/coil-kt/coil/pull/349))
+- **Breaking**: Rename `ExperimentalCoil` to `ExperimentalCoilApi`. Migrate from `@Experimental` to `@RequiresOptIn`. ([#306](https://github.com/coil-kt/coil/pull/306))
+- **Breaking**: Replace `CoilLogger` with `Logger` interface. ([#316](https://github.com/coil-kt/coil/pull/316))
+- **Breaking**: Rename destWidth/destHeight to dstWidth/dstHeight. ([#275](https://github.com/coil-kt/coil/pull/275))
+- **Breaking**: Re-arrange `MovieDrawable`'s constructor params. ([#272](https://github.com/coil-kt/coil/pull/272))
 - **Breaking**: `Request.Listener`'s methods now receive the full `Request` object instead of just its data.
 - **Breaking**: `GetRequestBuilder` now requires a `Context` in its constructor.
-- **Behaviour change**: Include parameter values in the cache key by default. (#319)
-- **Behaviour change**: Slightly adjust `Request.Listener.onStart()` timing to be called immediately after `Target.onStart()`. (#348)
+- **Breaking**: Several properties on `Request` are now nullable.
+- **Behaviour change**: Include parameter values in the cache key by default. ([#319](https://github.com/coil-kt/coil/pull/319))
+- **Behaviour change**: Slightly adjust `Request.Listener.onStart()` timing to be called immediately after `Target.onStart()`. ([#348](https://github.com/coil-kt/coil/pull/348))
 
 ---
 
-- **New**: Add `WeakMemoryCache` implementation. (#295)
-- **New**: Add `coil-video` to support decoding video frames. (#122)
-- **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt). (#314)
-- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/master/coil-default/src/main/java/coil/ImageLoaderFactory.kt). (#311)
-- **New**: Support animated HEIF image sequences on Android 11. (#297)
-- **New**: Improve Java compatibility. (#262)
-- **New**: Support setting a default CachePolicy. (#307)
-- **New**: Support setting a default Bitmap.Config. (#342)
-- **New**: Add `ImageLoader.invalidate(key)` to clear a single memory cache item (#55)
-- **New**: Add debug logs to explain why a cached image is not reused. (#346)
+- **New**: Add `WeakMemoryCache` implementation. ([#295](https://github.com/coil-kt/coil/pull/295))
+- **New**: Add `coil-video` to support decoding video frames. ([#122](https://github.com/coil-kt/coil/pull/122))
+- **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt). ([#314](https://github.com/coil-kt/coil/pull/314))
+- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/master/coil-default/src/main/java/coil/ImageLoaderFactory.kt). ([#311](https://github.com/coil-kt/coil/pull/311))
+- **New**: Support animated HEIF image sequences on Android 11. ([#297](https://github.com/coil-kt/coil/pull/297))
+- **New**: Improve Java compatibility. ([#262](https://github.com/coil-kt/coil/pull/262))
+- **New**: Support setting a default `CachePolicy`. ([#307](https://github.com/coil-kt/coil/pull/307))
+- **New**: Support setting a default `Bitmap.Config`. ([#342](https://github.com/coil-kt/coil/pull/342))
+- **New**: Add `ImageLoader.invalidate(key)` to clear a single memory cache item ([#55](https://github.com/coil-kt/coil/pull/55))
+- **New**: Add debug logs to explain why a cached image is not reused. ([#346](https://github.com/coil-kt/coil/pull/346))
 - **New**: Support `error` and `fallback` drawables for get requests.
 
 ---
 
-- Fix: Fix memory cache miss when Transformation reduces input bitmap's size. (357)
-- Fix: Ensure radius is below RenderScript max in BlurTransformation. (#291)
-- Fix: Fix decoding high colour depth images. (#358)
-- Fix: Disable ImageDecoderDecoder crash work-around on Android 11 and above. (#298)
-- Fix: Fix failing to read EXIF data on pre-API 23. (#331)
-- Fix: Fix incompatibility with Android R SDK. (#337)
-- Fix: Only enable inexact size if ImageView has a matching SizeResolver. (#344)
-- Fix: Allow cached images to be at most one pixel off requested size. (#360)
-- Fix: Skip crossfade transition if view is not visible. (#361)
+- Fix: Fix memory cache miss when Transformation reduces input bitmap's size. ([#357](https://github.com/coil-kt/coil/pull/357))
+- Fix: Ensure radius is below RenderScript max in BlurTransformation. ([#291](https://github.com/coil-kt/coil/pull/291))
+- Fix: Fix decoding high colour depth images. ([#358](https://github.com/coil-kt/coil/pull/358))
+- Fix: Disable `ImageDecoderDecoder` crash work-around on Android 11 and above. ([#298](https://github.com/coil-kt/coil/pull/298))
+- Fix: Fix failing to read EXIF data on pre-API 23. ([#331](https://github.com/coil-kt/coil/pull/331))
+- Fix: Fix incompatibility with Android R SDK. ([#337](https://github.com/coil-kt/coil/pull/337))
+- Fix: Only enable inexact size if `ImageView` has a matching `SizeResolver`. ([#344](https://github.com/coil-kt/coil/pull/344))
+- Fix: Allow cached images to be at most one pixel off requested size. ([#360](https://github.com/coil-kt/coil/pull/360))
+- Fix: Skip crossfade transition if view is not visible. ([#361](https://github.com/coil-kt/coil/pull/361))
 
 ---
 
-- Deprecate CoilContentProvider. (#293)
-- Annotate several ImageLoader methods with `@MainThread`.
-- Avoid creating a LifecycleCoroutineDispatcher if the lifecycle is currently started. (#356)
-- Use full package name for OriginalSize.toString().
-- Preallocate when decoding software bitmap. (#354)
+- Deprecate `CoilContentProvider`. ([#293](https://github.com/coil-kt/coil/pull/293))
+- Annotate several `ImageLoader` methods with `@MainThread`.
+- Avoid creating a `LifecycleCoroutineDispatcher` if the lifecycle is currently started. ([#356](https://github.com/coil-kt/coil/pull/356))
+- Use full package name for `OriginalSize.toString()`.
+- Preallocate when decoding software bitmap. ([#354](https://github.com/coil-kt/coil/pull/354))
 
 ---
 
