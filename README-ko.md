@@ -41,7 +41,7 @@ Requests는 trailing lambda 식을 이용하여 추가 설정을 할 수 있습�
 ```kotlin
 imageView.load("https://www.example.com/image.jpg") {
     crossfade(true)
-    placeholder(R.drawable.spinner)
+    placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
 }
 ```
