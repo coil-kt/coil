@@ -2,43 +2,43 @@
 
 ## [0.10.0] - TBD
 
-#### Highlights
+### Highlights
 
 - **This version deprecates most of the DSL APIs in favour of using the builders directly:**
 
-```kotlin
-// 0.9.5 (old)
-val imageLoader = ImageLoader(context) {
-    bitmapPoolPercentage(0.5)
-    crossfade(true)
-}
+  ```kotlin
+  // 0.9.5 (old)
+  val imageLoader = ImageLoader(context) {
+      bitmapPoolPercentage(0.5)
+      crossfade(true)
+  }
 
-val disposable = imageLoader.load(context, "https://www.example.com/image.jpg") {
-    target(imageView)
-}
+  val disposable = imageLoader.load(context, "https://www.example.com/image.jpg") {
+      target(imageView)
+  }
 
-val drawable = imageLoader.get("https://www.example.com/image.jpg") {
-    size(512, 512)
-}
+  val drawable = imageLoader.get("https://www.example.com/image.jpg") {
+      size(512, 512)
+  }
 
-// 0.10.0 (new)
-val imageLoader = ImageLoader.Builder(context)
-    .bitmapPoolPercentage(0.5)
-    .crossfade(true)
-    .build()
+  // 0.10.0 (new)
+  val imageLoader = ImageLoader.Builder(context)
+      .bitmapPoolPercentage(0.5)
+      .crossfade(true)
+      .build()
 
-val request = LoadRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .target(imageView)
-    .build()
-val disposable = imageLoader.execute(request)
+  val request = LoadRequest.Builder(context)
+      .data("https://www.example.com/image.jpg")
+      .target(imageView)
+      .build()
+  val disposable = imageLoader.execute(request)
 
-val request = GetRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .size(512, 512)
-    .build()
-val drawable = imageLoader.execute(request).drawable
-```
+  val request = GetRequest.Builder(context)
+      .data("https://www.example.com/image.jpg")
+      .size(512, 512)
+      .build()
+  val drawable = imageLoader.execute(request).drawable
+  ```
 
 If you're using the `io.coil-kt:coil` artifact, you can call `Coil.execute(request)` to execute the request with the singleton `ImageLoader`.
 
@@ -55,7 +55,7 @@ If you're using the `io.coil-kt:coil` artifact, you can call `Coil.execute(reque
 
 ---
 
-#### Full Patch Notes
+### Full Release Notes
 
 - **Important**: Deprecate DSL syntax in favour of builder syntax. ([#267](https://github.com/coil-kt/coil/pull/267))
 - **Important**: Deprecate `Coil` and `ImageLoader` extension functions. ([#322](https://github.com/coil-kt/coil/pull/322))
