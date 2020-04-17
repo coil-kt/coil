@@ -4,7 +4,7 @@
 
 ### Highlights
 
-- **This version deprecates most of the DSL APIs in favour of using the builders directly:**
+- **This version deprecates most of the DSL APIs in favour of using the builders directly.** Here's what the change looks like:
 
   ```kotlin
   // 0.9.5 (old)
