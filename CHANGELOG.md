@@ -4,7 +4,7 @@
 
 ### Highlights
 
-- **This version deprecates most of the DSL APIs in favour of using the builders directly.** Here's what the change looks like:
+- **This version deprecates most of the DSL API in favour of using the builders directly.** Here's what the change looks like:
 
   ```kotlin
   // 0.9.5 (old)
@@ -42,9 +42,9 @@
 
   - If you're using the `io.coil-kt:coil` artifact, you can call `Coil.execute(request)` to execute the request with the singleton `ImageLoader`.
 
-- **`ImageLoader`s now have a weak memory cache** that tracks weak references to images once they're evicted from the strong reference cache.
+- **`ImageLoader`s now have a weak reference memory cache** that tracks weak references to images once they're evicted from the strong reference memory cache.
   - This means an image will always be returned from an `ImageLoader`'s memory cache if there's still a strong reference to it.
-  - Generally, this should make shared element transitions much easier to implement.
+  - Generally, this should make the memory cache much more predictable and increase its hit rate.
   - This behaviour can be enabled/disabled with `ImageLoaderBuilder.trackWeakReferences`.
 
 - Add a new artifact, **`io.coil-kt:coil-video`**, to decode specific frames from a video file. [Read more here](https://coil-kt.github.io/coil/videos/).
