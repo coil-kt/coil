@@ -20,4 +20,4 @@ cp README-ko.md docs/README-ko.md
 mkdocs gh-deploy
 
 # Clean up.
-rm docs/index.md docs/contributing.md docs/changelog.md docs/logo.svg docs/gifs.md docs/svgs.md docs/README-ko.md
+rm docs/index.md docs/contributing.md docs/changelog.md docs/logo.svg docs/gifs.md docs/svgs.md docs/videos.md docs/README-ko.md
