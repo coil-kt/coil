@@ -16,7 +16,7 @@ Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
 Coil은 `mavenCentral()`로 이용 가능합니다.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.9.5")
+implementation("io.coil-kt:coil:0.10.0")
 ```
 
 ## 빠른 시작
@@ -44,12 +44,6 @@ imageView.load("https://www.example.com/image.jpg") {
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
 }
-```
-
-이미지를 직접적으로 가져오기 위해서, `get` [suspend](https://kotlinlang.org/docs/reference/coroutines/basics.html) function을 사용합니다:
-
-```kotlin
-val drawable = Coil.get("https://www.example.com/image.jpg")
 ```
 
 [여기서 Coil의 전체 문서](https://coil-kt.github.io/coil/)를 확인하세요.

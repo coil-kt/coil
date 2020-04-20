@@ -16,7 +16,7 @@ Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한�
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.9.5")
+implementation("io.coil-kt:coil:0.10.0")
 ```
 
 ## Quick Start
@@ -46,15 +46,30 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-To get an image imperatively, use the `get` [suspend](https://kotlinlang.org/docs/reference/coroutines/basics.html) function:
+To load an image into a custom target, execute a `LoadRequest`:
 
 ```kotlin
-val drawable = Coil.get("https://www.example.com/image.jpg")
+val request = LoadRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .target { drawable ->
+        // Handle the result.
+    }
+    .build()
+Coil.execute(request)
 ```
 
-Coil requires Java 8 bytecode. [Here's how to enable it](https://coil-kt.github.io/coil/getting_started/#java-8). 
+To get an image imperatively, execute a `GetRequest`:
 
-Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
+```kotlin
+val request = GetRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .build()
+val drawable = Coil.execute(request).drawable
+```
+
+The above examples use `io.coil-kt:coil`, which contains the `Coil` singleton. Optionally, you can depend on `io.coil-kt:coil-base` instead and inject your own [`ImageLoader`](https://coil-kt.github.io/coil/image_loaders/) instance(s).
+
+Coil requires [Java 8 bytecode](https://coil-kt.github.io/coil/getting_started/#java-8). Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
 
 ## Requirements
 
