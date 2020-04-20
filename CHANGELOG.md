@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.10.0] - TBD
+## [0.10.0] - April 20, 2020
 
 ### Highlights
 
