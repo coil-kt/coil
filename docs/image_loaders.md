@@ -58,13 +58,13 @@ For instance, you could inject a fake `ImageLoader` implementation which always 
 val fakeImageLoader = object : ImageLoader {
     
     private val drawable = ColorDrawable(Color.BLACK)
-    
+
     private val disposable = object : RequestDisposable {
         override val isDisposed = true
         override fun dispose() {}
         override suspend fun await() {}
     }
-    
+
     override val defaults = DefaultRequestOptions()
 
     override fun execute(request: LoadRequest): RequestDisposable {
@@ -74,7 +74,9 @@ val fakeImageLoader = object : ImageLoader {
         return disposable
     }
 
-    override suspend fun execute(request: GetRequest) = drawable
+    override suspend fun execute(request: GetRequest): RequestResult {
+        return SuccessResult(drawable, DataSource.MEMORY_CACHE)
+    }
 
     override fun invalidate(key: String) {}
 
