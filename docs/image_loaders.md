@@ -60,8 +60,9 @@ val fakeImageLoader = object : ImageLoader {
     private val drawable = ColorDrawable(Color.BLACK)
     
     private val disposable = object : RequestDisposable {
-        override fun isDisposed() = true
+        override val isDisposed = true
         override fun dispose() {}
+        override suspend fun await() {}
     }
     
     override val defaults = DefaultRequestOptions()
@@ -74,6 +75,8 @@ val fakeImageLoader = object : ImageLoader {
     }
 
     override suspend fun execute(request: GetRequest) = drawable
+
+    override fun invalidate(key: String) {}
 
     override fun clearMemory() {}
 
