@@ -18,6 +18,7 @@ interface BitmapPool {
          * @param maxSize The maximum size of the pool in bytes.
          */
         @JvmStatic
+        // @JvmOverloads https://youtrack.jetbrains.com/issue/KT-35716
         @JvmName("create")
         operator fun invoke(
             maxSize: Long,
