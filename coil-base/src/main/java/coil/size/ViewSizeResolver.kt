@@ -13,10 +13,11 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         /**
          * Create a [ViewSizeResolver] using the default [View] measurement implementation.
          *
-         * @param view The [View] to measure.
-         * @param subtractPadding If true, the [view]'s padding will be subtracted from its size.
+         * @param view The view to measure.
+         * @param subtractPadding If true, the view's padding will be subtracted from its size.
          */
         @JvmStatic
+        // @JvmOverloads https://youtrack.jetbrains.com/issue/KT-35716
         @JvmName("create")
         operator fun <T : View> invoke(
             view: T,
@@ -103,19 +104,19 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         isLayoutRequested: Boolean,
         isWidth: Boolean
     ): Int {
-        // Assume the dimension will match the value in the View's layout params.
+        // Assume the dimension will match the value in the view's layout params.
         val insetParamSize = paramSize - paddingSize
         if (insetParamSize > 0) {
             return insetParamSize
         }
 
-        // Fallback to the View's current size.
+        // Fallback to the view's current size.
         val insetViewSize = viewSize - paddingSize
         if (insetViewSize > 0) {
             return insetViewSize
         }
 
-        // If the dimension is set to WRAP_CONTENT and the View is fully laid out, fallback to the size of the display.
+        // If the dimension is set to WRAP_CONTENT and the view is fully laid out, fallback to the size of the display.
         if (!isLayoutRequested && paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
             return view.context.resources.displayMetrics.run { if (isWidth) widthPixels else heightPixels }
         }

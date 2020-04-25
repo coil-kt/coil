@@ -13,7 +13,7 @@ import coil.util.growAndInsert
  *
  * @see SparseIntArray
  */
-class SparseIntArraySet(initialCapacity: Int = 10) {
+class SparseIntArraySet @JvmOverloads constructor(initialCapacity: Int = 10) {
 
     private var elements = IntArray(initialCapacity)
     private var size = 0
