@@ -2,6 +2,8 @@
 
 package coil.util
 
+import androidx.annotation.CheckResult
+
 internal typealias MultiMutableList<R, T> = MutableList<Pair<R, T>>
 
 internal typealias MultiList<R, T> = List<Pair<R, T>>
@@ -85,6 +87,10 @@ internal inline fun <T> MutableList<T>.removeIfIndices(predicate: (T) -> Boolean
 
 internal inline fun <T> MutableList<T>.removeLast(): T? = if (isNotEmpty()) removeAt(lastIndex) else null
 
+/**
+ * Returns a list containing the **non null** results of applying the given
+ * [transform] function to each entry in the original map.
+ */
 internal inline fun <K, V, R : Any> Map<K, V>.mapNotNullValues(transform: (Map.Entry<K, V>) -> R?): Map<K, R> {
     val destination = mutableMapOf<K, R>()
     for (entry in this) {
@@ -94,4 +100,32 @@ internal inline fun <K, V, R : Any> Map<K, V>.mapNotNullValues(transform: (Map.E
         }
     }
     return destination
+}
+
+/**
+ * Inserts an element into the array at the specified index, growing the array if there is no more room.
+ *
+ * Adapted from Android's GrowingArrayUtils.
+ *
+ * @param index The index to insert at.
+ * @param element The element to insert.
+ * @param currentSize The number of elements in the array. Must be less than or equal to array.size.
+ * @return The array to which the element was appended. This may be different than the given array.
+ */
+@CheckResult
+internal fun IntArray.growAndInsert(index: Int, element: Int, currentSize: Int): IntArray {
+	// Fast path: insert into the given array.
+	if (currentSize + 1 <= size) {
+		copyInto(this, destinationOffset = index + 1, startIndex = index, endIndex = currentSize)
+		this[index] = element
+		return this
+	}
+
+	// Slow path: create a new, larger array and copy over the elements.
+	val newSize = if (currentSize <= 4) 8 else currentSize * 2
+	val newArray = IntArray(newSize)
+	copyInto(newArray, endIndex = index)
+	newArray[index] = element
+	copyInto(newArray, destinationOffset = index + 1, startIndex = index, endIndex = size)
+	return newArray
 }
