@@ -18,6 +18,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalStdlibApi::class)
 class RealBitmapPoolTest {
 
     companion object {
