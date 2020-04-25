@@ -3,6 +3,7 @@
 package coil.collection
 
 import android.util.SparseIntArray
+import coil.util.growAndInsert
 
 /**
  * A collection of unordered, unique [Int]s.
@@ -22,7 +23,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
         val i = elements.binarySearch(element, toIndex = size)
         val absent = i < 0
         if (absent) {
-            elements = ArrayUtils.insert(elements, size, i.inv(), element)
+            elements = elements.growAndInsert(i.inv(), element, size)
             size++
         }
         return absent
@@ -43,7 +44,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
 
     /** Removes the element at the given index. */
     fun removeAt(index: Int) {
-        System.arraycopy(elements, index + 1, elements, index, size - (index + 1))
+        elements.copyInto(elements, destinationOffset = index, startIndex = index + 1, endIndex = size)
         size--
     }
 
