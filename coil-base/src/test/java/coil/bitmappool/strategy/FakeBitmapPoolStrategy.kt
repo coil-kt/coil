@@ -1,8 +1,8 @@
 package coil.bitmappool.strategy
 
 import android.graphics.Bitmap
-import java.util.ArrayDeque
 
+@OptIn(ExperimentalStdlibApi::class)
 class FakeBitmapPoolStrategy : BitmapPoolStrategy {
 
     val bitmaps = ArrayDeque<Bitmap>()
