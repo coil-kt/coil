@@ -114,18 +114,18 @@ internal inline fun <K, V, R : Any> Map<K, V>.mapNotNullValues(transform: (Map.E
  */
 @CheckResult
 internal fun IntArray.growAndInsert(index: Int, element: Int, currentSize: Int): IntArray {
-	// Fast path: insert into the given array.
-	if (currentSize + 1 <= size) {
-		copyInto(this, destinationOffset = index + 1, startIndex = index, endIndex = currentSize)
-		this[index] = element
-		return this
-	}
+    // Fast path: insert into the given array.
+    if (currentSize + 1 <= size) {
+        copyInto(this, destinationOffset = index + 1, startIndex = index, endIndex = currentSize)
+        this[index] = element
+        return this
+    }
 
-	// Slow path: create a new, larger array and copy over the elements.
-	val newSize = if (currentSize <= 4) 8 else currentSize * 2
-	val newArray = IntArray(newSize)
-	copyInto(newArray, endIndex = index)
-	newArray[index] = element
-	copyInto(newArray, destinationOffset = index + 1, startIndex = index, endIndex = size)
-	return newArray
+    // Slow path: create a new, larger array and copy over the elements.
+    val newSize = if (currentSize <= 4) 8 else currentSize * 2
+    val newArray = IntArray(newSize)
+    copyInto(newArray, endIndex = index)
+    newArray[index] = element
+    copyInto(newArray, destinationOffset = index + 1, startIndex = index, endIndex = size)
+    return newArray
 }

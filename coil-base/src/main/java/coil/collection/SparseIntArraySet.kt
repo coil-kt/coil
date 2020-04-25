@@ -23,7 +23,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
         val i = elements.binarySearch(element, toIndex = size)
         val absent = i < 0
         if (absent) {
-			elements = elements.growAndInsert(i.inv(), element, size)
+            elements = elements.growAndInsert(i.inv(), element, size)
             size++
         }
         return absent
@@ -44,7 +44,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
 
     /** Removes the element at the given index. */
     fun removeAt(index: Int) {
-		elements.copyInto(elements, destinationOffset = index, startIndex = index + 1, endIndex = size)
+        elements.copyInto(elements, destinationOffset = index, startIndex = index + 1, endIndex = size)
         size--
     }
 
