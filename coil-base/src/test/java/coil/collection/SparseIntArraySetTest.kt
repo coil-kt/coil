@@ -97,4 +97,34 @@ class SparseIntArraySetTest {
         assertEquals(3, set.indexOfElement(5))
         assertEquals(5, set.elementAt(3))
     }
+
+    @Test
+    fun `internal array values are copied properly`() {
+        val numValues = 1000
+        val values = (0 until numValues)
+
+        // Insert the values in a random order.
+        for (value in values.shuffled()) {
+            set.add(value)
+        }
+
+        assertEquals(numValues, set.size())
+        for (value in values) {
+            assertTrue(set.contains(value), "Set does not contain $value.")
+        }
+
+        // Remove a random half of the values in a random order.
+        val shuffledValues = values.shuffled()
+        val removedValues = shuffledValues.subList(0, numValues / 2)
+        for (value in removedValues.shuffled()) {
+            set.remove(value)
+        }
+
+        assertEquals(numValues / 2, set.size())
+
+        val keptValues = shuffledValues.subList(numValues / 2, numValues)
+        for (value in keptValues.shuffled()) {
+            assertTrue(set.contains(value), "Set does not contain $value.")
+        }
+    }
 }
