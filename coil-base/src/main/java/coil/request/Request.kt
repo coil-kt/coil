@@ -75,10 +75,10 @@ sealed class Request {
     internal abstract val fallbackDrawable: Drawable?
 
     val error: Drawable?
-        get() = context.getDrawableCompat(errorDrawable, errorResId)
+        get() = getDrawableCompat(errorDrawable, errorResId)
 
     val fallback: Drawable?
-        get() = context.getDrawableCompat(fallbackDrawable, fallbackResId)
+        get() = getDrawableCompat(fallbackDrawable, fallbackResId)
 
     /**
      * A set of callbacks for a [Request].
@@ -208,7 +208,7 @@ class LoadRequest internal constructor(
     }
 
     override val placeholder: Drawable?
-        get() = context.getDrawableCompat(placeholderDrawable, placeholderResId)
+        get() = getDrawableCompat(placeholderDrawable, placeholderResId)
 
     /** Create a new [LoadRequestBuilder] instance using this as a base. */
     @JvmOverloads

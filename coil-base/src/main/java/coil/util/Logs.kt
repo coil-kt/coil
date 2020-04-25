@@ -1,3 +1,6 @@
+@file:JvmName("-Logs")
+@file:Suppress("NOTHING_TO_INLINE")
+
 package coil.util
 
 import android.util.Log
