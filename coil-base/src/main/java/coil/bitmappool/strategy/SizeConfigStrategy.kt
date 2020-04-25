@@ -7,7 +7,6 @@ import androidx.annotation.RequiresApi
 import coil.collection.GroupedLinkedMap
 import coil.util.Utils
 import coil.util.getAllocationByteCountCompat
-import java.util.HashMap
 import java.util.NavigableMap
 import java.util.TreeMap
 

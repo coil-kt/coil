@@ -1,7 +1,6 @@
 package coil.collection
 
 import coil.util.removeLast
-import java.util.HashMap
 
 /**
  * Similar to [LinkedHashMap] when access ordered except that it is access ordered
