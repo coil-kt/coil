@@ -43,7 +43,7 @@ class SparseIntArraySet(initialCapacity: Int = 10) {
 
     /** Removes the element at the given index. */
     fun removeAt(index: Int) {
-        System.arraycopy(elements, index + 1, elements, index, size - (index + 1))
+		elements.copyInto(elements, destinationOffset = index, startIndex = index + 1, endIndex = size)
         size--
     }
 
