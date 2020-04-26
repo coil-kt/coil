@@ -182,11 +182,7 @@ class BitmapFactoryDecoderTest {
         // The emulator runs out of memory while decoding 16_bit.png on pre-23.
         assumeTrue(SDK_INT >= 23)
 
-        val (drawable, isSampled) = decode(
-            assetName = "16_bit.png",
-            size = PixelSize(250, 250),
-            options = createOptions()
-        )
+        val (drawable, isSampled) = decode("16_bit.png", PixelSize(250, 250))
 
         assertTrue(isSampled)
         assertTrue(drawable is BitmapDrawable)
@@ -194,6 +190,26 @@ class BitmapFactoryDecoderTest {
 
         val expectedConfig = if (SDK_INT >= 26) Bitmap.Config.RGBA_F16 else Bitmap.Config.ARGB_8888
         assertEquals(expectedConfig, drawable.bitmap.config)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/368 */
+    @Test
+    fun largePng() {
+        // Ensure that this doesn't cause an OOM exception - particularly on API 23 and below.
+        decodeBitmap("large.png", PixelSize(1080, 1920))
+    }
+
+    @Test
+    fun largeWebP() {
+        decodeBitmap("large.webp", PixelSize(1080, 1920))
+    }
+
+    @Test
+    fun largeHeif() {
+        // HEIF files are not supported before API 30.
+        assumeTrue(SDK_INT >= 30)
+
+        decodeBitmap("large.heif", PixelSize(1080, 1920))
     }
 
     private fun decode(
