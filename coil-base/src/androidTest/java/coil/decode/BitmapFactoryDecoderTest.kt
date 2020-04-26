@@ -179,7 +179,7 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun png_16bit() {
-        // The emulator runs out of memory while decoding 16_bit.png on pre-23.
+        // The emulator runs out of memory on pre-23.
         assumeTrue(SDK_INT >= 23)
 
         val (drawable, isSampled) = decode("16_bit.png", PixelSize(250, 250))
@@ -195,12 +195,18 @@ class BitmapFactoryDecoderTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/368 */
     @Test
     fun largePng() {
+        // The emulator runs out of memory on pre-19.
+        assumeTrue(SDK_INT >= 19)
+
         // Ensure that this doesn't cause an OOM exception - particularly on API 23 and below.
         decodeBitmap("large.png", PixelSize(1080, 1920))
     }
 
     @Test
     fun largeWebP() {
+        // The emulator runs out of memory on pre-19.
+        assumeTrue(SDK_INT >= 19)
+
         decodeBitmap("large.webp", PixelSize(1080, 1920))
     }
 
