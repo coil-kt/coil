@@ -279,7 +279,8 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
         override fun skip(n: Long) = delegate.skip(n)
 
-        // Return an arbitrarily large value so ExifInterface won't stop reading the stream prematurely.
+        // Ensure that this value is always larger than the size of the image
+        // so ExifInterface won't stop reading the stream prematurely.
         override fun available() = 1024 * 1024 * 1024
 
         override fun close() = delegate.close()
