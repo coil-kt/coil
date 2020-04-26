@@ -192,6 +192,14 @@ class BitmapFactoryDecoderTest {
         assertEquals(expectedConfig, drawable.bitmap.config)
     }
 
+    @Test
+    fun largeJpeg() {
+        // The emulator runs out of memory on pre-19.
+        assumeTrue(SDK_INT >= 19)
+
+        decodeBitmap("large.jpg", PixelSize(1080, 1920))
+    }
+
     /** Regression test: https://github.com/coil-kt/coil/issues/368 */
     @Test
     fun largePng() {
