@@ -28,6 +28,14 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
     companion object {
         private const val MIME_TYPE_JPEG = "image/jpeg"
+        private const val MIME_TYPE_WEBP = "image/webp"
+        private const val MIME_TYPE_HEIC = "image/heic"
+        private const val MIME_TYPE_HEIF = "image/heif"
+
+        // NOTE: We don't support PNG EXIF data as it's very rarely used and requires buffering
+        // the entire file into memory. All of the supported formats short circuit when the EXIF
+        // chunk is found (often near the top of the file).
+        private val SUPPORTED_EXIF_MIME_TYPES = arrayOf(MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF)
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -50,17 +58,23 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         inJustDecodeBounds = false
 
         // Read the image's EXIF data.
-        val exifInterface = ExifInterface(AlwaysAvailableInputStream(safeBufferedSource.peek().inputStream()))
-        val isFlipped = exifInterface.isFlipped
-        val rotationDegrees = exifInterface.rotationDegrees
-        val isRotated = rotationDegrees > 0
-        val isSwapped = rotationDegrees == 90 || rotationDegrees == 270
+        val isFlipped: Boolean
+        val rotationDegrees: Int
+        if (shouldReadExifData(outMimeType)) {
+            val exifInterface = ExifInterface(ExifInterfaceInputStream(safeBufferedSource.peek().inputStream()))
+            isFlipped = exifInterface.isFlipped
+            rotationDegrees = exifInterface.rotationDegrees
+        } else {
+            isFlipped = false
+            rotationDegrees = 0
+        }
 
         // srcWidth and srcHeight are the dimensions of the image after EXIF transformations (but before sampling).
+        val isSwapped = rotationDegrees == 90 || rotationDegrees == 270
         val srcWidth = if (isSwapped) outHeight else outWidth
         val srcHeight = if (isSwapped) outWidth else outHeight
 
-        inPreferredConfig = computeConfig(options, isFlipped, isRotated)
+        inPreferredConfig = computeConfig(options, isFlipped, rotationDegrees)
 
         if (SDK_INT >= 26 && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
@@ -163,16 +177,21 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         )
     }
 
+    /** Return true if we should read the image's EXIF data. */
+    private fun shouldReadExifData(mimeType: String?): Boolean {
+        return mimeType != null && mimeType in SUPPORTED_EXIF_MIME_TYPES
+    }
+
     /** Compute and return [BitmapFactory.Options.inPreferredConfig]. */
     private fun BitmapFactory.Options.computeConfig(
         options: Options,
         isFlipped: Boolean,
-        isRotated: Boolean
+        rotationDegrees: Int
     ): Bitmap.Config {
         var config = options.config
 
         // Disable hardware bitmaps if we need to perform EXIF transformations.
-        if (isFlipped || isRotated) {
+        if (isFlipped || rotationDegrees > 0) {
             config = config.toSoftware()
         }
 
@@ -249,8 +268,8 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
     }
 
-    /** Wrap [delegate] so that it always returns 1GB for [available]. */
-    private class AlwaysAvailableInputStream(private val delegate: InputStream) : InputStream() {
+    /** Wrap [delegate] so that it works with [ExifInterface]. */
+    private class ExifInterfaceInputStream(private val delegate: InputStream) : InputStream() {
 
         override fun read() = delegate.read()
 
@@ -260,7 +279,9 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
         override fun skip(n: Long) = delegate.skip(n)
 
-        override fun available() = 1024 * 1024 * 1024 // 1GB
+        // Ensure that this value is always larger than the size of the image
+        // so ExifInterface won't stop reading the stream prematurely.
+        override fun available() = 1024 * 1024 * 1024
 
         override fun close() = delegate.close()
 
