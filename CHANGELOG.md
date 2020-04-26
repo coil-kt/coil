@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.1] - April 26, 2020
+
+- Fix OOM when decoding large PNGs on API 23 and below. ([#372](https://github.com/coil-kt/coil/pull/372)).
+  - This disables decoding EXIF orientation for PNG files. PNG EXIF orientation is very rarely used and reading PNG EXIF data (even if it's empty) requires buffering the entire file into memory, which is bad for performance.
+- Minor Java compatibility improvements to `SparseIntArraySet`.
+
+---
+
+- Update Okio to 2.6.0.
+
 ## [0.10.0] - April 20, 2020
 
 ### Highlights
