@@ -70,6 +70,8 @@ markdown_extensions:
   - footnotes
   - toc:
       permalink: true
+  - pymdownx.betterem
+  - pymdownx.superfences
 
 # Plugins
 plugins:
