@@ -3,7 +3,7 @@
 ## [0.10.1] - April 26, 2020
 
 - Fix OOM when decoding large PNGs on API 23 and below. ([#372](https://github.com/coil-kt/coil/pull/372)).
-  - This disables decoding EXIF orientation for PNG files. PNG EXIF orientation is very rarely used and reading PNG EXIF data (even if it's empty) requires buffering the entire file into memory, which is bad for performance.
+    - This disables decoding EXIF orientation for PNG files. PNG EXIF orientation is very rarely used and reading PNG EXIF data (even if it's empty) requires buffering the entire file into memory, which is bad for performance.
 - Minor Java compatibility improvements to `SparseIntArraySet`.
 
 ---
@@ -50,12 +50,12 @@
     val drawable = imageLoader.execute(request).drawable
     ```
 
-  - If you're using the `io.coil-kt:coil` artifact, you can call `Coil.execute(request)` to execute the request with the singleton `ImageLoader`.
+    - If you're using the `io.coil-kt:coil` artifact, you can call `Coil.execute(request)` to execute the request with the singleton `ImageLoader`.
 
 - **`ImageLoader`s now have a weak reference memory cache** that tracks weak references to images once they're evicted from the strong reference memory cache.
-  - This means an image will always be returned from an `ImageLoader`'s memory cache if there's still a strong reference to it.
-  - Generally, this should make the memory cache much more predictable and increase its hit rate.
-  - This behaviour can be enabled/disabled with `ImageLoaderBuilder.trackWeakReferences`.
+    - This means an image will always be returned from an `ImageLoader`'s memory cache if there's still a strong reference to it.
+    - Generally, this should make the memory cache much more predictable and increase its hit rate.
+    - This behaviour can be enabled/disabled with `ImageLoaderBuilder.trackWeakReferences`.
 
 - Add a new artifact, **`io.coil-kt:coil-video`**, to decode specific frames from a video file. [Read more here](https://coil-kt.github.io/coil/videos/).
 
@@ -121,7 +121,7 @@
 - Update OkHttp to 3.12.10.
 - Update Okio to 2.5.0.
 - Update AndroidX dependencies:
-  - `androidx.exifinterface:exifinterface` -> 1.2.0
+    - `androidx.exifinterface:exifinterface` -> 1.2.0
 
 ## [0.9.5] - February 6, 2020
 
@@ -130,7 +130,7 @@
 ---
 
 - Update AndroidX dependencies:
-  - `androidx.core:core-ktx` -> 1.2.0
+    - `androidx.core:core-ktx` -> 1.2.0
 
 ## [0.9.4] - February 3, 2020
 
@@ -155,7 +155,7 @@
 ---
 
 - Update AndroidX dependencies:
-  - `androidx.lifecycle:lifecycle-common-java8` -> 2.2.0
+    - `androidx.lifecycle:lifecycle-common-java8` -> 2.2.0
 
 ## [0.9.2] - January 19, 2020
 
@@ -219,7 +219,7 @@
 - Update Kotlin Coroutines to 1.3.3.
 - Update Okio to 2.4.3.
 - Update AndroidX dependencies:
-  - `androidx.exifinterface:exifinterface` -> 1.1.0
+    - `androidx.exifinterface:exifinterface` -> 1.1.0
 
 ## [0.8.0] - October 22, 2019
 
@@ -304,9 +304,9 @@ val imageLoader = ImageLoader(context) {
 - Update OkHttp to 3.12.4.
 - Update Okio to 2.4.0.
 - Update AndroidX dependencies to the latest stable versions:
-  - `androidx.appcompat:appcompat` -> 1.1.0
-  - `androidx.core:core-ktx` -> 1.1.0
-  - `androidx.lifecycle:lifecycle-common-java8` -> 2.1.0
+    - `androidx.appcompat:appcompat` -> 1.1.0
+    - `androidx.core:core-ktx` -> 1.1.0
+    - `androidx.lifecycle:lifecycle-common-java8` -> 2.1.0
 - Replace `appcompat` with `appcompat-resources` as an optional `compileOnly` dependency. `appcompat-resources` is a much smaller artifact.
 
 ## [0.6.1] - August 16, 2019
