@@ -29,7 +29,7 @@ internal fun Context.getDrawableCompat(@DrawableRes resId: Int): Drawable {
 }
 
 internal fun Resources.getDrawableCompat(@DrawableRes resId: Int, theme: Resources.Theme?): Drawable {
-    return checkNotNull(ResourcesCompat.getDrawable(this, resId, theme))
+    return checkNotNull(ResourcesCompat.getDrawable(this, resId, theme)) { "Invalid resource ID: $resId" }
 }
 
 /**

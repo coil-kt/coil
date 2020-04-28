@@ -31,6 +31,7 @@ import coil.util.bitmapConfigOrDefault
 import coil.util.errorOrDefault
 import coil.util.fallbackOrDefault
 import coil.util.getLifecycle
+import coil.util.isAttachedToWindowCompat
 import coil.util.isHardware
 import coil.util.scale
 import kotlinx.coroutines.CoroutineDispatcher
@@ -192,7 +193,7 @@ internal class RequestService(
 
         // Prevent hardware bitmaps for non-hardware accelerated targets.
         val target = request.target
-        if (target is ViewTarget<*> && target.view.run { isAttachedToWindow && !isHardwareAccelerated }) return false
+        if (target is ViewTarget<*> && target.view.run { isAttachedToWindowCompat && !isHardwareAccelerated }) return false
 
         return true
     }
