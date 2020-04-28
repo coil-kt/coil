@@ -48,7 +48,7 @@ val palette = coroutineScope {
 
 #### Transition
 
-There may be cases where you want to load an image into a `PoolableViewTarget` (e.g. `ImageViewTarget`) while extracting the image's colors in parallel. For these cases you can use a custom [`Transition`](transitions.md) to get access to the underlying bitmap:
+There may be cases where you want to load an image into a `PoolableViewTarget` (e.g. `ImageViewTarget`) while extracting the image's colors in parallel. For these cases, you can use a custom [`Transition`](transitions.md) to get access to the underlying bitmap:
 
 ```kotlin
 class PaletteTransition(
@@ -163,6 +163,6 @@ val imageLoader = ImageLoader.Builder(context)
 
 [Shared element transitions](https://developer.android.com/training/transitions/start-activity) allow you to animate between `Activites` and `Fragments`. Here are some recommendations on how use them with Coil:
 
-- **Shared element transitions are incompatible with hardware bitmaps.** You should set `allowHardware(false)` to disable hardware bitmaps for both the `ImageView` you are animating from and the view you are animating to. If you don't the transition will throw an `java.lang.IllegalArgumentException: Software rendering doesn't support hardware bitmaps` exception.
+- **Shared element transitions are incompatible with hardware bitmaps.** You should set `allowHardware(false)` to disable hardware bitmaps for both the `ImageView` you are animating from and the view you are animating to. If you don't, the transition will throw an `java.lang.IllegalArgumentException: Software rendering doesn't support hardware bitmaps` exception.
 - Prefer using `target(imageView)` or `ImageView.load` for any requests targeting an `ImageView` in the transition.
 - Use [`ChangeImageTransform`](https://developer.android.com/reference/android/transition/ChangeImageTransform) and [`ChangeBounds`](https://developer.android.com/reference/android/transition/ChangeBounds) together for optimal results.
