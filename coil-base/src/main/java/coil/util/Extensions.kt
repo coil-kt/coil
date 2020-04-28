@@ -21,6 +21,7 @@ import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
 import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
+import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.base.R
 import coil.decode.DataSource
@@ -42,19 +43,16 @@ internal suspend inline fun Call.await(): Response {
     }
 }
 
-internal inline fun ActivityManager.isLowRamDeviceCompat(): Boolean {
-    return SDK_INT < 19 || isLowRamDevice
-}
+internal inline val ActivityManager.isLowRamDeviceCompat: Boolean
+    get() = SDK_INT < 19 || isLowRamDevice
 
 @Suppress("DEPRECATION")
-internal inline fun StatFs.getBlockCountCompat(): Long {
-    return if (SDK_INT > 18) blockCountLong else blockCount.toLong()
-}
+internal inline val StatFs.blockCountCompat: Long
+    get() = if (SDK_INT > 18) blockCountLong else blockCount.toLong()
 
 @Suppress("DEPRECATION")
-internal inline fun StatFs.getBlockSizeCompat(): Long {
-    return if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
-}
+internal inline val StatFs.blockSizeCompat: Long
+    get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 
 internal fun MemoryCache.getValue(key: MemoryCache.Key?): MemoryCache.Value? = key?.let(::get)
 
@@ -82,6 +80,9 @@ internal val View.requestManager: ViewTargetRequestManager
         }
         return manager
     }
+
+internal inline val View.isAttachedToWindowCompat: Boolean
+    get() = ViewCompat.isAttachedToWindow(this)
 
 internal val DataSource.emoji: String
     get() = when (this) {
