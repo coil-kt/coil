@@ -26,7 +26,7 @@ class SparseIntArraySetTest {
     @Test
     fun `can add element`() {
         assertTrue(set.add(1))
-        assertEquals(1, set.size())
+        assertEquals(1, set.size)
     }
 
     @Test
@@ -57,10 +57,10 @@ class SparseIntArraySetTest {
         set.add(1)
         set.add(2)
         set.add(3)
-        assertEquals(3, set.size())
+        assertEquals(3, set.size)
 
         set.clear()
-        assertEquals(0, set.size())
+        assertEquals(0, set.size)
         assertFalse(set.contains(1))
         assertFalse(set.contains(2))
         assertFalse(set.contains(3))
@@ -69,11 +69,11 @@ class SparseIntArraySetTest {
     @Test
     fun `adding the same element does not increment size`() {
         assertTrue(set.add(100))
-        assertEquals(1, set.size())
+        assertEquals(1, set.size)
         assertFalse(set.add(100))
-        assertEquals(1, set.size())
+        assertEquals(1, set.size)
         assertTrue(set.add(200))
-        assertEquals(2, set.size())
+        assertEquals(2, set.size)
     }
 
     @Test
@@ -108,7 +108,7 @@ class SparseIntArraySetTest {
             set.add(value)
         }
 
-        assertEquals(numValues, set.size())
+        assertEquals(numValues, set.size)
         for (value in values) {
             assertTrue(set.contains(value), "Set does not contain $value.")
         }
@@ -120,7 +120,7 @@ class SparseIntArraySetTest {
             set.remove(value)
         }
 
-        assertEquals(numValues / 2, set.size())
+        assertEquals(numValues / 2, set.size)
 
         val keptValues = shuffledValues.subList(numValues / 2, numValues)
         for (value in keptValues.shuffled()) {
