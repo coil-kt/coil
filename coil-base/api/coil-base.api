@@ -238,6 +238,7 @@ public final class coil/bitmappool/BitmapPool$Companion {
 }
 
 public final class coil/collection/SparseIntArraySet {
+	public final fun -deprecated-size ()I
 	public fun <init> ()V
 	public fun <init> (I)V
 	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -364,9 +365,11 @@ public final class coil/extension/Parameters {
 
 public final class coil/extension/SparseIntArraySets {
 	public static final fun addAll (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)V
+	public static final fun count (Lcoil/collection/SparseIntArraySet;)I
 	public static final fun forEach (Lcoil/collection/SparseIntArraySet;Lkotlin/jvm/functions/Function1;)V
 	public static final fun isEmpty (Lcoil/collection/SparseIntArraySet;)Z
 	public static final fun isNotEmpty (Lcoil/collection/SparseIntArraySet;)Z
+	public static final fun iterator (Lcoil/collection/SparseIntArraySet;)Lkotlin/collections/IntIterator;
 	public static final fun minusAssign (Lcoil/collection/SparseIntArraySet;I)V
 	public static final fun plus (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)Lcoil/collection/SparseIntArraySet;
 	public static final fun plusAssign (Lcoil/collection/SparseIntArraySet;I)V

@@ -19,7 +19,7 @@ class SparseIntArraySet @JvmOverloads constructor(initialCapacity: Int = 10) {
     private var _size = 0
 
     /** Returns the number of elements that this set currently stores. */
-    val size: Int get() = _size
+    val size: Int @JvmName("size") get() = _size
 
     /** Adds the element to the set. */
     fun add(element: Int): Boolean {
@@ -56,6 +56,7 @@ class SparseIntArraySet @JvmOverloads constructor(initialCapacity: Int = 10) {
         message = "Replace with val.",
         replaceWith = ReplaceWith("size")
     )
+    @JvmName("-deprecated-size")
     fun size(): Int = _size
 
     /**
