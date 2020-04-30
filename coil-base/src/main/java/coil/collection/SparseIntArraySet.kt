@@ -16,22 +16,25 @@ import coil.util.growAndInsert
 class SparseIntArraySet @JvmOverloads constructor(initialCapacity: Int = 10) {
 
     private var elements = IntArray(initialCapacity)
-    private var size = 0
+    private var _size = 0
 
-    /** Adds an element to the set. */
+    /** Returns the number of elements that this set currently stores. */
+    val size: Int @JvmName("size") get() = _size
+
+    /** Adds the element to the set. */
     fun add(element: Int): Boolean {
-        val i = elements.binarySearch(element, toIndex = size)
+        val i = elements.binarySearch(element, toIndex = _size)
         val absent = i < 0
         if (absent) {
-            elements = elements.growAndInsert(i.inv(), element, size)
-            size++
+            elements = elements.growAndInsert(i.inv(), element, _size)
+            _size++
         }
         return absent
     }
 
     /** Removes the element from the set. Return true if it was present. */
     fun remove(element: Int): Boolean {
-        val i = elements.binarySearch(element, toIndex = size)
+        val i = elements.binarySearch(element, toIndex = _size)
         val present = i >= 0
         if (present) {
             removeAt(i)
@@ -39,22 +42,26 @@ class SparseIntArraySet @JvmOverloads constructor(initialCapacity: Int = 10) {
         return present
     }
 
-    /** Return true if the SparseIntArraySet contains this element. */
-    operator fun contains(element: Int): Boolean = elements.binarySearch(element, toIndex = size) >= 0
+    /** Return true if the set contains this element. */
+    operator fun contains(element: Int): Boolean = elements.binarySearch(element, toIndex = _size) >= 0
 
     /** Removes the element at the given index. */
     fun removeAt(index: Int) {
-        elements.copyInto(elements, destinationOffset = index, startIndex = index + 1, endIndex = size)
-        size--
+        elements.copyInto(elements, destinationOffset = index, startIndex = index + 1, endIndex = _size)
+        _size--
     }
 
-    /** Returns the number of elements that this SparseIntArraySet currently stores. */
-    fun size(): Int = size
+    /** @see size */
+    @Deprecated(
+        message = "Replace with val.",
+        replaceWith = ReplaceWith("size")
+    )
+    @JvmName("-deprecated-size")
+    fun size(): Int = _size
 
     /**
-     * Given an index in the range `[0, size)`, returns
-     * the element from the `index`th key-value mapping that this
-     * SparseIntArraySet stores.
+     * Given an index in the range `[0, size)`, returns the element from the
+     * `index`th key-value mapping that this set stores.
      *
      * The elements corresponding to indices in ascending order are guaranteed to
      * be in ascending order, e.g., `elementAt(0)` will return the
@@ -67,10 +74,10 @@ class SparseIntArraySet @JvmOverloads constructor(initialCapacity: Int = 10) {
      * specified element, or a negative number if the specified
      * element is not mapped.
      */
-    fun indexOfElement(key: Int): Int = elements.binarySearch(key, toIndex = size)
+    fun indexOfElement(element: Int): Int = elements.binarySearch(element, toIndex = _size)
 
-    /** Removes all elements from this SparseIntArraySet. */
+    /** Removes all elements from this set. */
     fun clear() {
-        size = 0
+        _size = 0
     }
 }
