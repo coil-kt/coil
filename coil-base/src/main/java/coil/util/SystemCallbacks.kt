@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.util.Log
 import coil.ImageLoader
 import coil.RealImageLoader
+import coil.network.NetworkObserver
 import java.lang.ref.WeakReference
 
 /**
