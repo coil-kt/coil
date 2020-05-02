@@ -12,99 +12,91 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
+import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import coil.network.NetworkObserverStrategy.Listener
+import coil.network.NetworkObserver.Listener
 import coil.util.Logger
 import coil.util.isPermissionGranted
 import coil.util.log
 
 /**
- * Checks if the device is online and calls a [Listener] for any network state change events.
+ * Observes the device's network state and calls [Listener] if any state changes occur.
  *
- * This class provides a raw stream of updates from the network APIs. The [Listener] can be called multiple times
- * for the same network state.
- *
- * @see NetworkObserver
+ * This class provides a raw stream of updates from the network APIs. The [Listener] can be
+ * called multiple times for the same network state.
  */
-internal interface NetworkObserverStrategy {
+internal interface NetworkObserver {
 
     companion object {
-        private const val TAG = "NetworkObserverStrategy"
+        private const val TAG = "NetworkObserver"
 
-        /** Create a new [NetworkObserverStrategy] instance. */
-        operator fun invoke(context: Context, listener: Listener, logger: Logger?): NetworkObserverStrategy {
+        /** Create a new [NetworkObserver] instance. */
+        operator fun invoke(context: Context, listener: Listener, logger: Logger?): NetworkObserver {
             val connectivityManager: ConnectivityManager? = context.getSystemService()
             if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
                 logger?.log(TAG, Log.WARN) { "Unable to register network observer." }
-                return EmptyNetworkObserverStrategy
+                return EmptyNetworkObserver
             }
 
             return try {
                 if (SDK_INT >= 21) {
-                    NetworkObserverStrategyApi21(connectivityManager, listener)
+                    NetworkObserverApi21(connectivityManager, listener)
                 } else {
-                    NetworkObserverStrategyApi14(context, connectivityManager, listener)
+                    NetworkObserverApi14(context, connectivityManager, listener)
                 }
             } catch (e: Exception) {
                 logger?.log(TAG, RuntimeException("Failed to register network observer.", e))
-                EmptyNetworkObserverStrategy
+                EmptyNetworkObserver
             }
         }
     }
 
-    /** Calls [onConnectivityChange] when a connectivity change event occurs. */
-    interface Listener {
-        fun onConnectivityChange(isOnline: Boolean)
-    }
-
-    /** Start observing network changes. */
-    fun start()
+    /** Synchronously checks if the device is online. */
+    val isOnline: Boolean
 
     /** Stop observing network changes. */
-    fun stop()
+    fun shutdown()
 
-    /** Synchronously checks if the device is online. */
-    fun isOnline(): Boolean
+    /** Calls [onConnectivityChange] when a connectivity change event occurs. */
+    interface Listener {
+
+        @MainThread
+        fun onConnectivityChange(isOnline: Boolean)
+    }
 }
 
-private object EmptyNetworkObserverStrategy : NetworkObserverStrategy {
+private object EmptyNetworkObserver : NetworkObserver {
 
-    override fun start() {}
+    override val isOnline = true
 
-    override fun stop() {}
-
-    override fun isOnline() = true
+    override fun shutdown() {}
 }
 
 @RequiresApi(21)
 @SuppressLint("MissingPermission")
-private class NetworkObserverStrategyApi21(
+private class NetworkObserverApi21(
     private val connectivityManager: ConnectivityManager,
     private val listener: Listener
-) : NetworkObserverStrategy {
-
-    companion object {
-        private val NETWORK_REQUEST = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build()
-    }
+) : NetworkObserver {
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) = onConnectivityChange(network, true)
         override fun onLost(network: Network) = onConnectivityChange(network, false)
     }
 
-    override fun start() {
-        connectivityManager.registerNetworkCallback(NETWORK_REQUEST, networkCallback)
+    override val isOnline: Boolean
+        get() = connectivityManager.allNetworks.any { it.isOnline() }
+
+    init {
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+        connectivityManager.registerNetworkCallback(request, networkCallback)
     }
 
-    override fun stop() {
+    override fun shutdown() {
         connectivityManager.unregisterNetworkCallback(networkCallback)
-    }
-
-    override fun isOnline(): Boolean {
-        return connectivityManager.allNetworks.any { it.isOnline() }
     }
 
     private fun onConnectivityChange(network: Network, isOnline: Boolean) {
@@ -121,39 +113,34 @@ private class NetworkObserverStrategyApi21(
 
     private fun Network.isOnline(): Boolean {
         val capabilities: NetworkCapabilities? = connectivityManager.getNetworkCapabilities(this)
-        return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 }
 
 @Suppress("DEPRECATION")
 @SuppressLint("MissingPermission")
-private class NetworkObserverStrategyApi14(
+private class NetworkObserverApi14(
     private val context: Context,
     private val connectivityManager: ConnectivityManager,
     listener: Listener
-) : NetworkObserverStrategy {
-
-    companion object {
-        private val INTENT_FILTER = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-    }
+) : NetworkObserver {
 
     private val connectionReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
             if (intent?.action == ConnectivityManager.CONNECTIVITY_ACTION) {
-                listener.onConnectivityChange(isOnline())
+                listener.onConnectivityChange(isOnline)
             }
         }
     }
 
-    override fun start() {
-        context.registerReceiver(connectionReceiver, INTENT_FILTER)
+    override val isOnline: Boolean
+        get() = connectivityManager.activeNetworkInfo?.isConnectedOrConnecting == true
+
+    init {
+        context.registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
-    override fun stop() {
+    override fun shutdown() {
         context.unregisterReceiver(connectionReceiver)
-    }
-
-    override fun isOnline(): Boolean {
-        return connectivityManager.activeNetworkInfo?.isConnectedOrConnecting == true
     }
 }
