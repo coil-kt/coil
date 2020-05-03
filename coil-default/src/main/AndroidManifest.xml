@@ -1,6 +1,6 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="coil.base">
+    package="coil.core">
 
     <application>
         <provider
