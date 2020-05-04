@@ -39,7 +39,6 @@ import coil.memory.MemoryCacheService
 import coil.memory.RequestService
 import coil.memory.TargetDelegate
 import coil.memory.WeakMemoryCache
-import coil.network.NetworkObserver
 import coil.request.BaseTargetRequestDisposable
 import coil.request.GetRequest
 import coil.request.LoadRequest
@@ -55,9 +54,9 @@ import coil.size.Size
 import coil.size.SizeResolver
 import coil.target.ViewTarget
 import coil.transform.Transformation
-import coil.util.ComponentCallbacks
 import coil.util.Emoji
 import coil.util.Logger
+import coil.util.SystemCallbacks
 import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.firstNotNullIndices
@@ -96,8 +95,8 @@ internal class RealImageLoader(
     callFactory: Call.Factory,
     private val eventListenerFactory: EventListener.Factory,
     registry: ComponentRegistry,
-    private val logger: Logger?
-) : ImageLoader, ComponentCallbacks {
+    internal val logger: Logger?
+) : ImageLoader {
 
     companion object {
         private const val TAG = "RealImageLoader"
@@ -110,7 +109,7 @@ internal class RealImageLoader(
     private val requestService = RequestService(defaults, logger)
     private val memoryCacheService = MemoryCacheService(requestService, logger)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
-    private val networkObserver = NetworkObserver(context, logger)
+    private val systemCallbacks = SystemCallbacks(this, context)
 
     private val registry = registry.newBuilder()
         // Mappers
@@ -133,10 +132,6 @@ internal class RealImageLoader(
 
     // isShutdown is only accessed from the main thread.
     private var isShutdown = false
-
-    init {
-        context.registerComponentCallbacks(this)
-    }
 
     override fun execute(request: LoadRequest): RequestDisposable {
         // Start loading the data.
@@ -326,7 +321,7 @@ internal class RealImageLoader(
         scale: Scale,
         eventListener: EventListener
     ): DrawableResult = withContext(request.dispatcher ?: defaults.dispatcher) {
-        val options = requestService.options(request, sizeResolver, size, scale, networkObserver.isOnline())
+        val options = requestService.options(request, sizeResolver, size, scale, systemCallbacks.isOnline)
 
         eventListener.fetchStart(request, fetcher, options)
         val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)
@@ -429,7 +424,8 @@ internal class RealImageLoader(
         weakMemoryCache.invalidate(cacheKey)
     }
 
-    override fun onTrimMemory(level: Int) {
+    /** Called by [SystemCallbacks.onTrimMemory]. */
+    fun onTrimMemory(level: Int) {
         memoryCache.trimMemory(level)
         weakMemoryCache.trimMemory(level)
         bitmapPool.trimMemory(level)
@@ -446,8 +442,7 @@ internal class RealImageLoader(
         isShutdown = true
 
         loaderScope.cancel()
-        context.unregisterComponentCallbacks(this)
-        networkObserver.shutdown()
+        systemCallbacks.shutdown()
         clearMemory()
     }
 
