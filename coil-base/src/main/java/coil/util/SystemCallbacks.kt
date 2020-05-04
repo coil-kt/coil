@@ -1,6 +1,7 @@
 package coil.util
 
 import android.content.ComponentCallbacks2
+import android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE
 import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
@@ -46,7 +47,7 @@ internal class SystemCallbacks(
         imageLoader.get()?.onTrimMemory(level) ?: shutdown()
     }
 
-    override fun onLowMemory() = onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+    override fun onLowMemory() = onTrimMemory(TRIM_MEMORY_COMPLETE)
 
     override fun onConnectivityChange(isOnline: Boolean) {
         val imageLoader = imageLoader.get()
