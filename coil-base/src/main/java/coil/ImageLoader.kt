@@ -21,8 +21,8 @@ import coil.target.Target
  * Image loaders are designed to be shareable and work best when you create a single instance and
  * share it throughout your app.
  *
- * Image loaders **must be** [shutdown] when finished with. This clears the observers held by the image
- * loader and frees its memory.
+ * It's recommended, though not required, to call [shutdown] when you've finished using an image loader.
+ * This preemptively frees its memory and cleans up any observers.
  */
 interface ImageLoader {
 
