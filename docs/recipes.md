@@ -59,23 +59,25 @@ class PaletteTransition(
     override suspend fun transition(
         target: TransitionTarget<*>,
         result: RequestResult
-    ) = coroutineScope {
+    ) {
         // Execute the delegate transition.
-        val delegateJob = delegate?.let {
-            launch(Dispatchers.Main.immediate) {
-                delegate.transition(target, result)
+        val delegateJob = delegate?.let { delegate ->
+            coroutineScope {
+                launch(Dispatchers.Main.immediate) {
+                    delegate.transition(target, result)
+                }
             }
         }
 
         // Compute the palette on a background thread.
-        val bitmap = (result.drawable as BitmapDrawable).bitmap
-        val paletteJob = launch(Dispatchers.IO) {
-            onGenerated(Palette.Builder(bitmap).generate())
+        if (result is SuccessResult) {
+            val bitmap = (result.drawable as BitmapDrawable).bitmap
+            withContext(Dispatchers.IO) {
+                onGenerated(Palette.Builder(bitmap).generate())
+            }
         }
 
-        // Suspend until both jobs finish.
         delegateJob?.join()
-        paletteJob.join()
     }
 }
 
