@@ -3,7 +3,7 @@
 An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
 - **Fast**: Coil performs a number of optimizations including memory and disk caching, downsampling the image in memory, re-using Bitmaps, automatically pausing/cancelling requests, and more.
-- **Lightweight**: Coil adds ~1500 methods to your APK (for apps that already use OkHttp and Coroutines), which is comparable to Picasso and significantly less than Glide and Fresco.
+- **Lightweight**: Coil adds ~2000 methods to your APK (for apps that already use OkHttp and Coroutines), which is comparable to Picasso and significantly less than Glide and Fresco.
 - **Easy to use**: Coil's API leverages Kotlin's language features for simplicity and minimal boilerplate.
 - **Modern**: Coil is Kotlin-first and uses modern libraries including Coroutines, OkHttp, Okio, and AndroidX Lifecycles.
 
@@ -46,6 +46,24 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
+#### Image Loaders
+
+`imageView.load` uses the singleton `ImageLoader` to execute a `LoadRequest`. The singleton `ImageLoader` can be accessed using:
+
+```kotlin
+val imageLoader = Coil.imageLoader(context)
+```
+
+Optionally, you can create your own `ImageLoader` instance(s) and inject them with dependency injection:
+
+```kotlin
+val imageLoader = ImageLoader(context)
+```
+
+If you do not want the singleton `ImageLoader`, depend on `io.coil-kt:coil-base`.
+
+#### Requests
+
 To load an image into a custom target, execute a `LoadRequest`:
 
 ```kotlin
@@ -55,7 +73,7 @@ val request = LoadRequest.Builder(context)
         // Handle the result.
     }
     .build()
-Coil.execute(request)
+imageLoader.execute(request)
 ```
 
 To get an image imperatively, execute a `GetRequest`:
@@ -64,19 +82,17 @@ To get an image imperatively, execute a `GetRequest`:
 val request = GetRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .build()
-val drawable = Coil.execute(request).drawable
+val drawable = imageLoader.execute(request).drawable
 ```
 
-The above examples use `io.coil-kt:coil`, which contains the `Coil` singleton. Optionally, you can depend on `io.coil-kt:coil-base` instead and inject your own [`ImageLoader`](https://coil-kt.github.io/coil/image_loaders/) instance(s).
-
-Coil requires [Java 8 bytecode](https://coil-kt.github.io/coil/getting_started/#java-8). Check out Coil's [full documentation here](https://coil-kt.github.io/coil/).
+Check out Coil's [full documentation here](https://coil-kt.github.io/coil/getting_started/).
 
 ## Requirements
 
 - AndroidX
 - Min SDK 14+
 - Compile SDK: 29+
-- Java 8+
+- [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
 
 ## R8 / Proguard
 
