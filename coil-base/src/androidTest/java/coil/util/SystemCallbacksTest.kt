@@ -1,16 +1,27 @@
 package coil.util
 
 import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
+import android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
+import coil.ComponentRegistry
+import coil.DefaultRequestOptions
+import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
+import coil.annotation.ExperimentalCoilApi
+import coil.bitmappool.BitmapPool
+import coil.memory.BitmapReferenceCounter
+import coil.memory.MemoryCache
+import coil.memory.RealWeakMemoryCache
+import okhttp3.OkHttpClient
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoilApi::class)
 class SystemCallbacksTest {
 
     private lateinit var context: Context
@@ -34,5 +45,44 @@ class SystemCallbacksTest {
         systemCallbacks.onTrimMemory(TRIM_MEMORY_BACKGROUND)
 
         assertTrue(systemCallbacks.isShutdown)
+    }
+
+    @Test
+    fun trimMemoryCallsArePassedThrough() {
+        val bitmapPool = BitmapPool(Long.MAX_VALUE)
+        val weakMemoryCache = RealWeakMemoryCache()
+        val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
+        val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        val imageLoader = RealImageLoader(
+            context,
+            DefaultRequestOptions(),
+            bitmapPool,
+            referenceCounter,
+            memoryCache,
+            weakMemoryCache,
+            OkHttpClient(),
+            EventListener.Factory.NONE,
+            ComponentRegistry(),
+            null
+        )
+        val systemCallbacks = SystemCallbacks(imageLoader, context)
+
+        memoryCache.set(
+            key = MemoryCache.Key("1"),
+            bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
+            isSampled = false
+        )
+
+        memoryCache.set(
+            key = MemoryCache.Key("2"),
+            bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
+            isSampled = false
+        )
+
+        assertTrue(memoryCache.size() == 8000000)
+
+        systemCallbacks.onTrimMemory(TRIM_MEMORY_COMPLETE)
+
+        assertTrue(memoryCache.size() == 0)
     }
 }
