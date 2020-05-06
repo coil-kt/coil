@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE
 import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.network.NetworkObserver
@@ -28,12 +29,14 @@ internal class SystemCallbacks(
         private const val OFFLINE = "OFFLINE"
     }
 
-    private val imageLoader = WeakReference(imageLoader)
+    @VisibleForTesting internal val imageLoader = WeakReference(imageLoader)
     private val networkObserver = NetworkObserver(context, this, imageLoader.logger)
 
     private var _isOnline = networkObserver.isOnline
+    private var _isShutdown = false
 
     val isOnline get() = _isOnline
+    val isShutdown get() = _isShutdown
 
     init {
         context.registerComponentCallbacks(this)
@@ -61,6 +64,9 @@ internal class SystemCallbacks(
     }
 
     fun shutdown() {
+        if (_isShutdown) return
+        _isShutdown = true
+
         context.unregisterComponentCallbacks(this)
         networkObserver.shutdown()
     }
