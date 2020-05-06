@@ -121,7 +121,7 @@ val imageLoader = ImageLoader.Builder(context)
 ```
 
 !!! Note
-    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/new-builder/) to build a new client that shares resources with the original.
+    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/new-builder/) to build a new client that shares resources with the original. Also, it's recommended to use a separate `Cache` instance for your Coil `OkHttpClient`. Image files can quickly evict more important cached network responses if they share the same cache.
 
 #### Headers
 
