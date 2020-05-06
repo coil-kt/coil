@@ -19,7 +19,7 @@ internal object Utils {
 
     private const val DISK_CACHE_PERCENTAGE = 0.02
 
-    private const val STANDARD_MULTIPLIER = 0.25
+    private const val STANDARD_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
 
     /** Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config]. */
