@@ -14,6 +14,7 @@ import coil.size.PixelSize
 import coil.size.Size
 import coil.util.toDrawable
 import coil.util.toSoftware
+import kotlinx.coroutines.runInterruptible
 import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
@@ -43,6 +44,13 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
     override fun handles(source: BufferedSource, mimeType: String?) = true
 
     override suspend fun decode(
+        pool: BitmapPool,
+        source: BufferedSource,
+        size: Size,
+        options: Options
+    ): DecodeResult = runInterruptible { decodeInterruptible(pool, source, size, options) }
+
+    private fun decodeInterruptible(
         pool: BitmapPool,
         source: BufferedSource,
         size: Size,
@@ -154,21 +162,29 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
             }
         }
 
+        // Keep a reference to the input bitmap so it can be returned to
+        // the pool if the decode doesn't complete successfully.
+        val inBitmap: Bitmap? = inBitmap
+
         // Decode the bitmap.
-        val rawBitmap: Bitmap? = safeBufferedSource.use {
-            BitmapFactory.decodeStream(it.inputStream(), null, this)
-        }
-        safeSource.exception?.let { exception ->
-            rawBitmap?.let(pool::put)
-            throw exception
+        var outBitmap: Bitmap? = null
+        try {
+            outBitmap = safeBufferedSource.use {
+                BitmapFactory.decodeStream(it.inputStream(), null, this)
+            }
+            safeSource.exception?.let { throw it }
+        } catch (throwable: Throwable) {
+            inBitmap?.let(pool::put)
+            outBitmap?.let(pool::put)
+            throw throwable
         }
 
         // Apply any EXIF transformations.
-        checkNotNull(rawBitmap) {
+        checkNotNull(outBitmap) {
             "BitmapFactory returned a null Bitmap. Often this means BitmapFactory could not decode the image data " +
                 "read from the input source (e.g. network or disk) as it's not encoded as a valid image format."
         }
-        val bitmap = applyExifTransformations(pool, rawBitmap, inPreferredConfig, isFlipped, rotationDegrees)
+        val bitmap = applyExifTransformations(pool, outBitmap, inPreferredConfig, isFlipped, rotationDegrees)
         bitmap.density = Bitmap.DENSITY_NONE
 
         DecodeResult(
