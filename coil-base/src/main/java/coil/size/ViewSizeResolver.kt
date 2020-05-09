@@ -3,6 +3,7 @@ package coil.size
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import coil.util.takeIf
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -34,19 +35,13 @@ interface ViewSizeResolver<T : View> : SizeResolver {
     val view: T
 
     /** If true, the [view]'s padding will be subtracted from its size. */
-    val subtractPadding: Boolean
-        get() = true
+    val subtractPadding: Boolean get() = true
 
     override suspend fun size(): Size {
-        // Fast path: we don't need to wait for the view to be measured.
-        val isLayoutRequested = view.isLayoutRequested
-        val width = getWidth(isLayoutRequested)
-        val height = getHeight(isLayoutRequested)
-        if (width > 0 && height > 0) {
-            return PixelSize(width, height)
-        }
+        // Fast path: the view is already measured.
+        getSize(view.isLayoutRequested)?.let { return it }
 
-        // Wait for the view to be measured.
+        // Slow path: wait for the view to be measured.
         return suspendCancellableCoroutine { continuation ->
             val viewTreeObserver = view.viewTreeObserver
 
@@ -54,14 +49,12 @@ interface ViewSizeResolver<T : View> : SizeResolver {
                 private var isResumed = false
 
                 override fun onPreDraw(): Boolean {
-                    if (!isResumed) {
-                        isResumed = true
+                    if (isResumed) return true
 
+                    val size = getSize(false)
+                    if (size != null) {
+                        isResumed = true
                         viewTreeObserver.removePreDrawListenerSafe(this)
-                        val size = PixelSize(
-                            width = getWidth(false).coerceAtLeast(1),
-                            height = getHeight(false).coerceAtLeast(1)
-                        )
                         continuation.resume(size)
                     }
                     return true
@@ -74,6 +67,12 @@ interface ViewSizeResolver<T : View> : SizeResolver {
                 viewTreeObserver.removePreDrawListenerSafe(preDrawListener)
             }
         }
+    }
+
+    private fun getSize(isLayoutRequested: Boolean): PixelSize? {
+        val width = getWidth(isLayoutRequested)
+        val height = getHeight(isLayoutRequested)
+        return takeIf(width > 0 && height > 0) { PixelSize(width, height) }
     }
 
     private fun getWidth(isLayoutRequested: Boolean): Int {
