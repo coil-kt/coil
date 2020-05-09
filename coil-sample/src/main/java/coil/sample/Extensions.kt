@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import coil.size.PixelSize
 import kotlin.random.Random
 
@@ -18,12 +17,13 @@ inline fun <reified V : View> ViewGroup.inflate(@LayoutRes layoutRes: Int, attac
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot) as V
 }
 
-inline fun <reified R : Any> Array<*>.findInstance(): R? = find { it is R } as R?
+inline fun <reified R : Any> Array<*>.findInstance(): R? {
+    for (element in this) if (element is R) return element
+    return null
+}
 
 inline val AndroidViewModel.context: Context
     get() = getApplication()
-
-inline fun <T> LiveData<T>.requireValue(): T = value!!
 
 fun Context.getDisplaySize(): PixelSize {
     return resources.displayMetrics.run { PixelSize(widthPixels, heightPixels) }

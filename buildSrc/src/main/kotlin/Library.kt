@@ -6,7 +6,7 @@ object Library {
 
     // CORE
 
-    private const val COROUTINES_VERSION = "1.3.5"
+    private const val COROUTINES_VERSION = "1.3.6"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.1.0"
@@ -23,7 +23,6 @@ object Library {
 
     private const val LIFECYCLE_VERSION = "2.2.0"
     const val ANDROIDX_LIFECYCLE_COMMON = "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
-    const val ANDROIDX_LIFECYCLE_LIVE_DATA = "androidx.lifecycle:lifecycle-livedata-ktx:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
 
     const val MATERIAL = "com.google.android.material:material:1.1.0"

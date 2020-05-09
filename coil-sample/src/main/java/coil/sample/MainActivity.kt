@@ -11,12 +11,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import androidx.lifecycle.observe
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil.api.load
 import coil.sample.databinding.ActivityMainBinding
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
@@ -42,16 +46,24 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        listAdapter = ImageListAdapter(this, viewModel::setScreen)
+        listAdapter = ImageListAdapter(this) { viewModel.screen.value = it }
         binding.list.apply {
             setHasFixedSize(true)
             layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, VERTICAL)
             adapter = listAdapter
         }
 
-        viewModel.screens().observe(this, ::setScreen)
-        viewModel.images().observe(this, ::setImages)
-        viewModel.assetTypes().observe(this, ::setAssetType)
+        lifecycleScope.apply {
+            launch {
+                viewModel.assetType.collect { setAssetType(it) }
+            }
+            launch {
+                viewModel.images.collect { setImages(it) }
+            }
+            launch {
+                viewModel.screen.collect { setScreen(it) }
+            }
+        }
     }
 
     private fun setScreen(screen: Screen) {
@@ -82,7 +94,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val title = viewModel.assetTypes().requireValue().name
+        val title = viewModel.assetType.value.name
         val item = menu.add(Menu.NONE, R.id.action_toggle_asset_type, Menu.NONE, title)
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         return true
@@ -92,9 +104,9 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_toggle_asset_type -> {
                 val values = AssetType.values()
-                val currentAssetType = viewModel.assetTypes().requireValue()
+                val currentAssetType = viewModel.assetType.value
                 val newAssetType = values[(values.indexOf(currentAssetType) + 1) % values.count()]
-                viewModel.setAssetType(newAssetType)
+                viewModel.assetType.value = newAssetType
             }
             else -> return super.onOptionsItemSelected(item)
         }
