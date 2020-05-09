@@ -3,7 +3,6 @@ package coil.size
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import coil.util.takeIf
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -70,9 +69,9 @@ interface ViewSizeResolver<T : View> : SizeResolver {
     }
 
     private fun getSize(isLayoutRequested: Boolean): PixelSize? {
-        val width = getWidth(isLayoutRequested)
-        val height = getHeight(isLayoutRequested)
-        return takeIf(width > 0 && height > 0) { PixelSize(width, height) }
+        val width = getWidth(isLayoutRequested).also { if (it <= 0) return null }
+        val height = getHeight(isLayoutRequested).also { if (it <= 0) return null }
+        return PixelSize(width, height)
     }
 
     private fun getWidth(isLayoutRequested: Boolean): Int {
