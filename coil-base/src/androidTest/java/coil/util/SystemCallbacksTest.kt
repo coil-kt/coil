@@ -35,9 +35,12 @@ class SystemCallbacksTest {
     fun imageLoaderIsFreedWithoutShutdown() {
         val systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context)
 
-        // Keep allocating bitmaps until either the image loader is freed or we run out of memory.
         val bitmaps = mutableListOf<Bitmap>()
         while (systemCallbacks.imageLoader.get() != null) {
+            // Request that garbage collection occur.
+            Runtime.getRuntime().gc()
+
+            // Keep allocating bitmaps until either the image loader is freed or we run out of memory.
             bitmaps += createBitmap(500, 500, Bitmap.Config.ARGB_8888)
         }
 
