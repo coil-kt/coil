@@ -57,7 +57,7 @@ class RequestDisposableTest {
 
         assertTrue(disposable is BaseTargetRequestDisposable)
 
-        assertFalse(disposable.isDisposed, "${disposable.job} - ${if (disposable.isDisposed) disposable.job.getCancellationException() else null}")
+        assertFalse(disposable.isDisposed, "${disposable.job} - ${if (disposable.isDisposed) disposable.job.getCancellationException().stackTrace.joinToString { it.toString() } else ""}")
         disposable.dispose()
         assertTrue(disposable.isDisposed)
     }
