@@ -7,7 +7,7 @@ import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Runnable
-import java.util.LinkedList
+import java.util.ArrayDeque
 import java.util.Queue
 import kotlin.coroutines.CoroutineContext
 
@@ -50,7 +50,7 @@ internal class LifecycleCoroutineDispatcher private constructor(
         }
     }
 
-    private val queue: Queue<Pair<CoroutineContext, Runnable>> = LinkedList()
+    private val queue: Queue<Pair<CoroutineContext, Runnable>> = ArrayDeque()
 
     override fun isDispatchNeeded(context: CoroutineContext) = delegate.isDispatchNeeded(context)
 
