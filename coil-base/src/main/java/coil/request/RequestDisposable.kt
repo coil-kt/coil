@@ -35,7 +35,7 @@ interface RequestDisposable {
 internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
 
     override val isDisposed
-        get() = !job.isActive
+        get() = job.isCancelled || job.isCompleted
 
     override fun dispose() {
         if (!isDisposed) {
