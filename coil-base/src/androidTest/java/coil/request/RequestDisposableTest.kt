@@ -2,14 +2,16 @@ package coil.request
 
 import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.transition.Transition
-import coil.transition.TransitionTarget
+import coil.bitmappool.BitmapPool
+import coil.size.Size
+import coil.transform.Transformation
 import coil.util.CoilUtils
 import coil.util.requestManager
 import coil.util.runBlockingTest
@@ -48,6 +50,7 @@ class RequestDisposableTest {
     fun baseTargetRequestDisposable_dispose() = runBlockingTest {
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .transformations(GateTransformation())
             .target { /** Do nothing. */ }
             .build()
         val disposable = imageLoader.execute(request)
@@ -60,28 +63,30 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_await() = runBlockingTest {
+        val transformation = GateTransformation()
         var result: Drawable? = null
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .transformations(transformation)
             .target { result = it }
             .build()
         val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
         assertNull(result)
+        transformation.open()
         disposable.await()
         assertNotNull(result)
     }
 
     @Test
     fun viewTargetRequestDisposable_dispose() = runBlockingTest {
-        val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
-            .transition(transition)
+            .transformations(GateTransformation())
             .target(imageView)
             .build()
         val disposable = imageLoader.execute(request)
@@ -94,33 +99,33 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_await() = runBlockingTest {
-        val transition = GateTransition()
+        val transformation = GateTransformation()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
-            .transition(transition)
+            .transformations(transformation)
             .target(imageView)
             .build()
         val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is ViewTargetRequestDisposable)
         assertNull(imageView.drawable)
-        transition.open()
+        transformation.open()
         disposable.await()
         assertNotNull(imageView.drawable)
     }
 
     @Test
     fun viewTargetRequestDisposable_restart() = runBlockingTest {
-        val transition = GateTransition()
+        val transformation = GateTransformation()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
-            .transition(transition)
+            .transformations(transformation)
             .target(imageView)
             .build()
         val disposable = imageLoader.execute(request)
@@ -128,7 +133,7 @@ class RequestDisposableTest {
         assertTrue(disposable is ViewTargetRequestDisposable)
         assertFalse(disposable.isDisposed)
 
-        transition.open()
+        transformation.open()
         disposable.await()
         assertFalse(disposable.isDisposed)
 
@@ -144,7 +149,6 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_replace() = runBlockingTest {
-        val transition = GateTransition()
         val imageView = ImageView(context)
 
         fun launchNewRequest(): RequestDisposable {
@@ -152,7 +156,7 @@ class RequestDisposableTest {
                 .data("$SCHEME_CONTENT://coil/normal.jpg")
                 // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
                 .size(100, 100)
-                .transition(transition)
+                .transformations(GateTransformation())
                 .target(imageView)
                 .build()
             return imageLoader.execute(request)
@@ -172,13 +176,12 @@ class RequestDisposableTest {
 
     @Test
     fun viewTargetRequestDisposable_clear() = runBlockingTest {
-        val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
-            .transition(transition)
+            .transformations(GateTransformation())
             .target(imageView)
             .build()
         val disposable = imageLoader.execute(request)
@@ -192,19 +195,17 @@ class RequestDisposableTest {
      * Prevent completing the [LoadRequest] until [open] is called.
      * This is to avoid our test assertions racing the image request.
      */
-    private class GateTransition : Transition {
+    private class GateTransformation : Transformation {
 
         private val isOpen = MutableStateFlow(false)
 
-        override suspend fun transition(
-            target: TransitionTarget<*>,
-            result: RequestResult
-        ) {
+        override fun key() = GateTransformation::class.java.name
+
+        override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
             // Suspend until the gate is open.
             isOpen.first { it }
 
-            // Delegate to the empty transition.
-            Transition.NONE.transition(target, result)
+            return input
         }
 
         fun open() {
