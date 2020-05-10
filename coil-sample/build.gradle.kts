@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":coil-default"))
+    implementation(project(":coil-singleton"))
     implementation(project(":coil-gif"))
     implementation(project(":coil-svg"))
     implementation(project(":coil-video"))
