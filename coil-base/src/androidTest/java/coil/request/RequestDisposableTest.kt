@@ -15,8 +15,7 @@ import coil.util.requestManager
 import coil.util.runBlockingTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -36,7 +35,9 @@ class RequestDisposableTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        imageLoader = ImageLoader(context) as RealImageLoader
+        imageLoader = ImageLoader.Builder(context)
+            .memoryCachePolicy(CachePolicy.DISABLED)
+            .build() as RealImageLoader
     }
 
     @After
@@ -45,7 +46,7 @@ class RequestDisposableTest {
     }
 
     @Test
-    fun baseTargetRequestDisposable_dispose() {
+    fun baseTargetRequestDisposable_dispose() = repeat(10000) {
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
             .target { /** Do nothing. */ }
@@ -59,7 +60,7 @@ class RequestDisposableTest {
     }
 
     @Test
-    fun baseTargetRequestDisposable_await() {
+    fun baseTargetRequestDisposable_await() = repeat(10000) {
         var result: Drawable? = null
         val request = LoadRequest.Builder(context)
             .data("$SCHEME_CONTENT://coil/normal.jpg")
@@ -74,7 +75,7 @@ class RequestDisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_dispose() {
+    fun viewTargetRequestDisposable_dispose() = repeat(10000) {
         val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
@@ -93,7 +94,7 @@ class RequestDisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_await() {
+    fun viewTargetRequestDisposable_await() = repeat(10000) {
         val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
@@ -113,7 +114,7 @@ class RequestDisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_restart() = runBlockingTest {
+    fun viewTargetRequestDisposable_restart() = repeat(10000) { runBlockingTest {
         val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
@@ -140,10 +141,10 @@ class RequestDisposableTest {
 
         disposable.dispose()
         assertTrue(disposable.isDisposed)
-    }
+    } }
 
     @Test
-    fun viewTargetRequestDisposable_replace() = runBlockingTest {
+    fun viewTargetRequestDisposable_replace() = repeat(10000) {
         val transition = GateTransition()
         val imageView = ImageView(context)
 
@@ -171,7 +172,7 @@ class RequestDisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_clear() = runBlockingTest {
+    fun viewTargetRequestDisposable_clear() = repeat(10000) {
         val transition = GateTransition()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
@@ -194,19 +195,21 @@ class RequestDisposableTest {
      */
     private class GateTransition : Transition {
 
-        private val isOpen = ConflatedBroadcastChannel(false)
+        private val isOpen = MutableStateFlow(false)
 
         override suspend fun transition(
             target: TransitionTarget<*>,
             result: RequestResult
         ) {
             // Suspend until the gate is open.
-            isOpen.asFlow().first { it }
+            isOpen.first { it }
 
             // Delegate to the empty transition.
             Transition.NONE.transition(target, result)
         }
 
-        fun open() = isOpen.offer(true)
+        fun open() {
+            isOpen.value = true
+        }
     }
 }
