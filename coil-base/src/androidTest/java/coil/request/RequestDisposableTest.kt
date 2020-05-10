@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
-import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.size.Size
@@ -31,14 +30,14 @@ import kotlin.test.assertTrue
 class RequestDisposableTest {
 
     private lateinit var context: Context
-    private lateinit var imageLoader: RealImageLoader
+    private lateinit var imageLoader: ImageLoader
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         imageLoader = ImageLoader.Builder(context)
             .memoryCachePolicy(CachePolicy.DISABLED)
-            .build() as RealImageLoader
+            .build()
     }
 
     @After
