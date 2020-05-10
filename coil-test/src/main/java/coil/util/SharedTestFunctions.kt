@@ -119,7 +119,10 @@ inline fun createLoadRequest(
 ): LoadRequest = LoadRequest.Builder(context).data(Unit).apply(builder).build()
 
 /** Runs the given [block] on the main thread by default and returns [Unit]. */
-fun runBlockingTest(
+inline fun runBlockingTest(
+    times: Int = 1000,
     context: CoroutineContext = Dispatchers.Main.immediate,
-    block: suspend CoroutineScope.() -> Unit
-) = runBlocking(context, block)
+    crossinline block: suspend CoroutineScope.() -> Unit
+) = runBlocking(context) {
+    repeat(times) { block() }
+}
