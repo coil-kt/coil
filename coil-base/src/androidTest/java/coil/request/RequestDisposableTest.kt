@@ -16,6 +16,7 @@ import coil.util.requestManager
 import coil.util.runBlockingTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import org.junit.After
@@ -45,6 +46,7 @@ class RequestDisposableTest {
         imageLoader.shutdown()
     }
 
+    @OptIn(InternalCoroutinesApi::class)
     @Test
     fun baseTargetRequestDisposable_dispose() = runBlockingTest {
         val request = LoadRequest.Builder(context)
@@ -55,7 +57,8 @@ class RequestDisposableTest {
         val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
-        assertFalse(disposable.isDisposed, disposable.job.toString())
+
+        assertFalse(disposable.isDisposed, "${disposable.job} - ${disposable.job.getCancellationException()}")
         disposable.dispose()
         assertTrue(disposable.isDisposed)
     }
