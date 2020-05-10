@@ -55,7 +55,7 @@ class RequestDisposableTest {
         val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
-        assertFalse(disposable.isDisposed)
+        assertFalse(disposable.isDisposed, disposable.job.toString())
         disposable.dispose()
         assertTrue(disposable.isDisposed)
     }

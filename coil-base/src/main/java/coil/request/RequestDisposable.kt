@@ -32,10 +32,10 @@ interface RequestDisposable {
 /**
  * Used for one-shot image requests.
  */
-internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
+internal class BaseTargetRequestDisposable(val job: Job) : RequestDisposable {
 
     override val isDisposed
-        get() = job.isCancelled || job.isCompleted
+        get() = !job.isActive
 
     override fun dispose() {
         if (!isDisposed) {
