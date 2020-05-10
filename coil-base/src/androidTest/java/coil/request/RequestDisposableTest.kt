@@ -27,7 +27,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class, FlowPreview::class)
+@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class, FlowPreview::class, InternalCoroutinesApi::class)
 class RequestDisposableTest {
 
     private lateinit var context: Context
@@ -46,7 +46,6 @@ class RequestDisposableTest {
         imageLoader.shutdown()
     }
 
-    @OptIn(InternalCoroutinesApi::class)
     @Test
     fun baseTargetRequestDisposable_dispose() = runBlockingTest {
         val request = LoadRequest.Builder(context)
