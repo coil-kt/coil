@@ -14,6 +14,7 @@ import coil.transform.Transformation
 import coil.util.CoilUtils
 import coil.util.requestManager
 import coil.util.runBlockingTest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -57,9 +58,15 @@ class RequestDisposableTest {
 
         assertTrue(disposable is BaseTargetRequestDisposable)
 
-        assertFalse(disposable.isDisposed, "${disposable.job} - ${if (disposable.isDisposed) disposable.job.getCancellationException().stackTrace.joinToString { it.toString() } else ""}")
+        assertFalse(disposable.isDisposed, "${disposable.job} - ${if (disposable.isDisposed) cancellationExceptionToString(disposable.job.getCancellationException()) else ""}")
         disposable.dispose()
         assertTrue(disposable.isDisposed)
+    }
+
+    private fun cancellationExceptionToString(exception: CancellationException) = buildString {
+        append(exception)
+        append('\n')
+        append(exception.stackTrace.joinToString { it.toString() })
     }
 
     @Test
