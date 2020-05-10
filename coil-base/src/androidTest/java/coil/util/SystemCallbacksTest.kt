@@ -38,7 +38,7 @@ class SystemCallbacksTest {
         // Keep allocating bitmaps until either the image loader is freed or we run out of memory.
         val bitmaps = mutableListOf<Bitmap>()
         while (systemCallbacks.imageLoader.get() != null) {
-            bitmaps += createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+            bitmaps += createBitmap(500, 500, Bitmap.Config.ARGB_8888)
         }
 
         // Ensure that the next system callback is called.
