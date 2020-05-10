@@ -51,14 +51,6 @@ class SparseIntArraySet @JvmOverloads constructor(initialCapacity: Int = 10) {
         _size--
     }
 
-    /** @see size */
-    @Deprecated(
-        message = "Replace with val.",
-        replaceWith = ReplaceWith("size")
-    )
-    @JvmName("-deprecated-size")
-    fun size(): Int = _size
-
     /**
      * Given an index in the range `[0, size)`, returns the element from the
      * `index`th key-value mapping that this set stores.

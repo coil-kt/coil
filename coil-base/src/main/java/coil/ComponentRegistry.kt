@@ -26,27 +26,6 @@ class ComponentRegistry private constructor(
 
     constructor() : this(emptyList(), emptyList(), emptyList(), emptyList())
 
-    companion object {
-        /** Create a new [ComponentRegistry] instance. */
-        @Deprecated(
-            message = "Use ComponentRegistry.Builder to create new instances.",
-            replaceWith = ReplaceWith("ComponentRegistry.Builder().apply(builder).build()")
-        )
-        inline operator fun invoke(
-            builder: Builder.() -> Unit = {}
-        ): ComponentRegistry = Builder().apply(builder).build()
-
-        /** Create a new [ComponentRegistry] instance. */
-        @Deprecated(
-            message = "Use ComponentRegistry.Builder to create new instances.",
-            replaceWith = ReplaceWith("ComponentRegistry.Builder(registry).apply(builder).build()")
-        )
-        inline operator fun invoke(
-            registry: ComponentRegistry,
-            builder: Builder.() -> Unit = {}
-        ): ComponentRegistry = Builder(registry).apply(builder).build()
-    }
-
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getMapper(data: T): Mapper<T, *>? {
         val result = mappers.findIndices { (type, mapper) ->
