@@ -93,6 +93,8 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         size: Size,
         options: Options
     ): FetchResult {
+        // NOTE: we don't use 'runInterruptible' as MediaMetadataRetriever will
+        // continue its work even if its thread is interrupted.
         val retriever = MediaMetadataRetriever()
 
         try {
