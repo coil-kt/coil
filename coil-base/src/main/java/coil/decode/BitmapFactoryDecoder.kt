@@ -175,7 +175,9 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
             safeSource.exception?.let { throw it }
         } catch (throwable: Throwable) {
             inBitmap?.let(pool::put)
-            outBitmap?.let(pool::put)
+            if (outBitmap !== inBitmap) {
+                outBitmap?.let(pool::put)
+            }
             throw throwable
         }
 
