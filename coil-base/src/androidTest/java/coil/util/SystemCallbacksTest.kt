@@ -43,6 +43,7 @@ class SystemCallbacksTest {
             // Keep allocating bitmaps until either the image loader is freed or we run out of memory.
             bitmaps += createBitmap(500, 500, Bitmap.Config.ARGB_8888)
         }
+        bitmaps.clear()
 
         // Ensure that the next system callback is called.
         systemCallbacks.onTrimMemory(TRIM_MEMORY_BACKGROUND)
