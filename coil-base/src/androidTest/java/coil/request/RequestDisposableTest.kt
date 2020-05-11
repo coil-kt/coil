@@ -66,7 +66,7 @@ class RequestDisposableTest {
     private fun cancellationExceptionToString(exception: CancellationException) = buildString {
         append(exception)
         append('\n')
-        append(exception.stackTrace.joinToString { it.toString() })
+        append(exception.cause?.stackTrace?.joinToString { it.toString() })
     }
 
     @Test
