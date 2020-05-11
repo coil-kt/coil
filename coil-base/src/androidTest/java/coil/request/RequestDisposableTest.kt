@@ -15,10 +15,8 @@ import coil.transform.Transformation
 import coil.util.CoilUtils
 import coil.util.requestManager
 import coil.util.runBlockingTest
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import org.junit.After
@@ -29,7 +27,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class, FlowPreview::class, InternalCoroutinesApi::class)
+@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class, FlowPreview::class)
 class RequestDisposableTest {
 
     private lateinit var context: Context
@@ -59,16 +57,9 @@ class RequestDisposableTest {
         val disposable = imageLoader.execute(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
-
-        assertFalse(disposable.isDisposed, "${disposable.job} - ${if (disposable.isDisposed) cancellationExceptionToString(disposable.job.getCancellationException()) else ""}")
+        assertFalse(disposable.isDisposed)
         disposable.dispose()
         assertTrue(disposable.isDisposed)
-    }
-
-    private fun cancellationExceptionToString(exception: CancellationException) = buildString {
-        append(exception)
-        append('\n')
-        append(exception.cause?.stackTrace?.joinToString { it.toString() })
     }
 
     @Test
