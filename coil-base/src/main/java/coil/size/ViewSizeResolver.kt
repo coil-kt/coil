@@ -34,34 +34,21 @@ interface ViewSizeResolver<T : View> : SizeResolver {
     val view: T
 
     /** If true, the [view]'s padding will be subtracted from its size. */
-    val subtractPadding: Boolean
-        get() = true
+    val subtractPadding: Boolean get() = true
 
     override suspend fun size(): Size {
-        // Fast path: we don't need to wait for the view to be measured.
-        val isLayoutRequested = view.isLayoutRequested
-        val width = getWidth(isLayoutRequested)
-        val height = getHeight(isLayoutRequested)
-        if (width > 0 && height > 0) {
-            return PixelSize(width, height)
-        }
+        // Fast path: the view is already measured.
+        getSize(view.isLayoutRequested)?.let { return it }
 
-        // Wait for the view to be measured.
+        // Slow path: wait for the view to be measured.
         return suspendCancellableCoroutine { continuation ->
             val viewTreeObserver = view.viewTreeObserver
 
             val preDrawListener = object : ViewTreeObserver.OnPreDrawListener {
-                private var isResumed = false
-
                 override fun onPreDraw(): Boolean {
-                    if (!isResumed) {
-                        isResumed = true
-
+                    val size = getSize(false)
+                    if (size != null) {
                         viewTreeObserver.removePreDrawListenerSafe(this)
-                        val size = PixelSize(
-                            width = getWidth(false).coerceAtLeast(1),
-                            height = getHeight(false).coerceAtLeast(1)
-                        )
                         continuation.resume(size)
                     }
                     return true
@@ -74,6 +61,12 @@ interface ViewSizeResolver<T : View> : SizeResolver {
                 viewTreeObserver.removePreDrawListenerSafe(preDrawListener)
             }
         }
+    }
+
+    private fun getSize(isLayoutRequested: Boolean): PixelSize? {
+        val width = getWidth(isLayoutRequested).also { if (it <= 0) return null }
+        val height = getHeight(isLayoutRequested).also { if (it <= 0) return null }
+        return PixelSize(width, height)
     }
 
     private fun getWidth(isLayoutRequested: Boolean): Int {
