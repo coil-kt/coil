@@ -31,6 +31,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     // A pending operation that is posting to the main thread to clear the current request.
     @Volatile private var pendingClear: Job? = null
 
+    // Only accessed from the main thread.
     private var isRestart = false
     private var skipAttach = true
 
@@ -73,11 +74,14 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     override fun onViewAttachedToWindow(v: View) {
         if (skipAttach) {
             skipAttach = false
-        } else {
-            currentRequest?.let { request ->
-                isRestart = true
-                request.restart()
-            }
+            return
+        }
+
+        currentRequest?.let { request ->
+            // As this is called from the main thread, isRestart will
+            // be cleared synchronously as part of request.restart().
+            isRestart = true
+            request.restart()
         }
     }
 
@@ -93,7 +97,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
         // Return the current request ID if this is a restarted request.
         // Restarted requests are always launched from the main thread.
         val requestId = currentRequestId
-        if (requestId != null && isMainThread() && isRestart) {
+        if (requestId != null && isRestart && isMainThread()) {
             return requestId
         }
 
