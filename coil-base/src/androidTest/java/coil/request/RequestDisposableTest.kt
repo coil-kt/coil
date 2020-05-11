@@ -1,6 +1,6 @@
 package coil.request
 
-import android.content.ContentResolver.SCHEME_CONTENT
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
+import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.size.Size
 import coil.transform.Transformation
 import coil.util.CoilUtils
@@ -50,7 +51,8 @@ class RequestDisposableTest {
     @Test
     fun baseTargetRequestDisposable_dispose() = runBlockingTest {
         val request = LoadRequest.Builder(context)
-            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
+            .size(100, 100)
             .transformations(GateTransformation())
             .target { /** Do nothing. */ }
             .build()
@@ -74,7 +76,8 @@ class RequestDisposableTest {
         val transformation = GateTransformation()
         var result: Drawable? = null
         val request = LoadRequest.Builder(context)
-            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
+            .size(100, 100)
             .transformations(transformation)
             .target { result = it }
             .build()
@@ -91,7 +94,7 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_dispose() = runBlockingTest {
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
             .transformations(GateTransformation())
@@ -110,7 +113,7 @@ class RequestDisposableTest {
         val transformation = GateTransformation()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
             .transformations(transformation)
@@ -130,7 +133,7 @@ class RequestDisposableTest {
         val transformation = GateTransformation()
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
             .transformations(transformation)
@@ -161,7 +164,7 @@ class RequestDisposableTest {
 
         fun launchNewRequest(): RequestDisposable {
             val request = LoadRequest.Builder(context)
-                .data("$SCHEME_CONTENT://coil/normal.jpg")
+                .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
                 // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
                 .size(100, 100)
                 .transformations(GateTransformation())
@@ -186,7 +189,7 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_clear() = runBlockingTest {
         val imageView = ImageView(context)
         val request = LoadRequest.Builder(context)
-            .data("$SCHEME_CONTENT://coil/normal.jpg")
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
             .transformations(GateTransformation())
