@@ -16,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ViewSizeResolverTest {
@@ -68,6 +69,12 @@ class ViewSizeResolverTest {
         val deferred = scope.async(Dispatchers.Main.immediate) {
             resolver.size()
         }
+
+        // Predraw passes should be ignored until the view is measured.
+        view.viewTreeObserver.dispatchOnPreDraw()
+        assertTrue(deferred.isActive)
+        view.viewTreeObserver.dispatchOnPreDraw()
+        assertTrue(deferred.isActive)
 
         view.setPadding(20)
         view.layoutParams = ViewGroup.LayoutParams(160, 160)
