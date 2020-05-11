@@ -53,7 +53,7 @@ class SystemCallbacksTest {
 
     @Test
     fun trimMemoryCallsArePassedThrough() {
-        val bitmapPool = BitmapPool(Long.MAX_VALUE)
+        val bitmapPool = BitmapPool(Int.MAX_VALUE)
         val weakMemoryCache = RealWeakMemoryCache()
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)

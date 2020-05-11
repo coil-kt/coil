@@ -2,7 +2,7 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.drawable.VectorDrawable
-import coil.bitmappool.RealBitmapPool
+import coil.bitmappool.BitmapPool
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.util.size
@@ -19,7 +19,7 @@ class DrawableDecoderServiceTest {
 
     @Before
     fun before() {
-        service = DrawableDecoderService(RealBitmapPool(0))
+        service = DrawableDecoderService(BitmapPool(0))
     }
 
     @Test

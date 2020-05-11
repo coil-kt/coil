@@ -61,7 +61,7 @@ class RealImageLoaderBasicTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        val bitmapPool = BitmapPool(Long.MAX_VALUE)
+        val bitmapPool = BitmapPool(Int.MAX_VALUE)
         val weakMemoryCache = RealWeakMemoryCache()
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)

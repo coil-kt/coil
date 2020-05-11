@@ -324,7 +324,7 @@ class ImageLoaderBuilder(context: Context) {
      */
     fun build(): ImageLoader {
         val availableMemorySize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
-        val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toLong()
+        val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toInt()
         val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
         val bitmapPool = BitmapPool(bitmapPoolSize, logger)
