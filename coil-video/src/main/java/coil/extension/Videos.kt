@@ -33,7 +33,7 @@ fun <T : RequestBuilder<T>> RequestBuilder<T>.videoFrameMillis(frameMillis: Long
  * @see VideoFrameFetcher
  */
 fun <T : RequestBuilder<T>> RequestBuilder<T>.videoFrameMicros(frameMicros: Long): T {
-    require(frameMicros >= 0) { "frameMicros must be >= 0" }
+    require(frameMicros >= 0) { "frameMicros must be >= 0." }
     return setParameter(VIDEO_FRAME_MICROS_KEY, frameMicros)
 }
 
