@@ -9,9 +9,11 @@ import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.Px
 import androidx.collection.arraySetOf
+import androidx.core.graphics.createBitmap
 import coil.bitmappool.strategy.BitmapPoolStrategy
 import coil.util.Logger
 import coil.util.getAllocationByteCountCompat
+import coil.util.isHardware
 import coil.util.log
 
 /**
@@ -23,7 +25,7 @@ import coil.util.log
  * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 internal class RealBitmapPool(
-    private val maxSize: Long,
+    private val maxSize: Int,
     private val allowedConfigs: Set<Bitmap.Config> = getDefaultAllowedConfigs(),
     private val strategy: BitmapPoolStrategy = BitmapPoolStrategy(),
     private val logger: Logger? = null
@@ -47,11 +49,11 @@ internal class RealBitmapPool(
         }
     }
 
-    private var currentSize: Long = 0
-    private var hits: Int = 0
-    private var misses: Int = 0
-    private var puts: Int = 0
-    private var evictions: Int = 0
+    private var currentSize = 0
+    private var hits = 0
+    private var misses = 0
+    private var puts = 0
+    private var evictions = 0
 
     init {
         require(maxSize >= 0) { "maxSize must be >= 0." }
@@ -86,24 +88,20 @@ internal class RealBitmapPool(
     }
 
     override fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap {
-        val result = getOrNull(width, height, config)
-        return result ?: Bitmap.createBitmap(width, height, config)
+        return getOrNull(width, height, config) ?: createBitmap(width, height, config)
     }
 
     override fun getOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
-        val result = getDirtyOrNull(width, height, config)
-        result?.eraseColor(Color.TRANSPARENT)
-        return result
+        return getDirtyOrNull(width, height, config)?.apply { eraseColor(Color.TRANSPARENT) }
     }
 
     override fun getDirty(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap {
-        val result = getDirtyOrNull(width, height, config)
-        return result ?: Bitmap.createBitmap(width, height, config)
+        return getDirtyOrNull(width, height, config) ?: createBitmap(width, height, config)
     }
 
     @Synchronized
     override fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
-        assertNotHardwareConfig(config)
+        require(!config.isHardware) { "Cannot create a mutable hardware bitmap." }
 
         val result = strategy.get(width, height, config)
         if (result == null) {
@@ -151,7 +149,7 @@ internal class RealBitmapPool(
     }
 
     @Synchronized
-    private fun trimToSize(size: Long) {
+    private fun trimToSize(size: Int) {
         while (currentSize > size) {
             val removed = strategy.removeLast()
             if (removed == null) {
@@ -167,10 +165,6 @@ internal class RealBitmapPool(
 
             removed.recycle()
         }
-    }
-
-    private fun assertNotHardwareConfig(config: Bitmap.Config) {
-        require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE) { "Cannot create a mutable hardware Bitmap." }
     }
 
     private fun dump() {

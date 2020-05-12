@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.setMain
 import org.robolectric.Shadows
 
-const val DEFAULT_BITMAP_SIZE = 40000L // 4 * 100 * 100
+const val DEFAULT_BITMAP_SIZE = 40000 // 4 * 100 * 100
 
 fun createBitmap(
     width: Int = 100,

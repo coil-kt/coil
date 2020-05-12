@@ -33,7 +33,7 @@ class BitmapFactoryDecoderTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        pool = BitmapPool(Long.MAX_VALUE)
+        pool = BitmapPool(Int.MAX_VALUE)
         service = BitmapFactoryDecoder(context)
     }
 

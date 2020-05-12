@@ -1,7 +1,6 @@
 package coil.memory
 
 import coil.bitmappool.BitmapPool
-import coil.bitmappool.RealBitmapPool
 import coil.memory.MemoryCache.Key
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.count
@@ -25,7 +24,7 @@ class BitmapReferenceCounterTest {
     @Before
     fun before() {
         weakMemoryCache = RealWeakMemoryCache()
-        pool = RealBitmapPool(DEFAULT_BITMAP_SIZE)
+        pool = BitmapPool(DEFAULT_BITMAP_SIZE)
         counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
     }
 
