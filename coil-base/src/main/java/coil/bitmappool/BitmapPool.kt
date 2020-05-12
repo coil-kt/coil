@@ -21,7 +21,7 @@ interface BitmapPool {
         // @JvmOverloads https://youtrack.jetbrains.com/issue/KT-35716
         @JvmName("create")
         operator fun invoke(
-            maxSize: Long,
+            maxSize: Int,
             logger: Logger? = null
         ): BitmapPool = RealBitmapPool(maxSize = maxSize, logger = logger)
     }
