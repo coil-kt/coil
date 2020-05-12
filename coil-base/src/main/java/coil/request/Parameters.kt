@@ -27,6 +27,9 @@ class Parameters private constructor(
         ): Parameters = Builder().apply(builder).build()
     }
 
+    /** Returns the number of parameters in this object. */
+    val size: Int @JvmName("size") get() = map.size
+
     /** Returns the value associated with [key] or null if [key] has no mapping. */
     fun value(key: String): Any? = map[key]?.value
 
@@ -35,9 +38,6 @@ class Parameters private constructor(
 
     /** Returns the entry associated with [key] or null if [key] has no mapping. */
     fun entry(key: String): Entry? = map[key]
-
-    /** Returns the number of parameters in this object. */
-    fun count(): Int = map.count()
 
     /** Returns true if this object has no parameters. */
     fun isEmpty(): Boolean = map.isEmpty()
