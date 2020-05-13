@@ -9,7 +9,6 @@ import coil.bitmappool.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.extension.repeatCount
 import coil.size.Size
-import kotlinx.coroutines.runInterruptible
 import okio.BufferedSource
 
 /**
@@ -32,7 +31,7 @@ class GifDecoder : Decoder {
         source: BufferedSource,
         size: Size,
         options: Options
-    ): DecodeResult = runInterruptible {
+    ): DecodeResult {
         // Movie requires an InputStream to resettable on API 18 and below.
         // Read the data as a ByteArray to work around this.
         val movie = if (SDK_INT <= 18) {
@@ -59,7 +58,7 @@ class GifDecoder : Decoder {
 
         drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
 
-        DecodeResult(
+        return DecodeResult(
             drawable = drawable,
             isSampled = false
         )
