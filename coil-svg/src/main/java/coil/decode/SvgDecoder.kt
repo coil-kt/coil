@@ -12,7 +12,6 @@ import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
 import com.caverock.androidsvg.SVG
-import kotlinx.coroutines.runInterruptible
 import okio.BufferedSource
 
 /**
@@ -32,7 +31,7 @@ class SvgDecoder(private val context: Context) : Decoder {
         source: BufferedSource,
         size: Size,
         options: Options
-    ): DecodeResult = runInterruptible {
+    ): DecodeResult {
         val svg = source.use { SVG.getFromInputStream(it.inputStream()) }
 
         val svgWidth = svg.documentWidth
@@ -83,7 +82,7 @@ class SvgDecoder(private val context: Context) : Decoder {
         val bitmap = pool.get(bitmapWidth, bitmapHeight, config)
         svg.renderToCanvas(Canvas(bitmap))
 
-        DecodeResult(
+        return DecodeResult(
             drawable = bitmap.toDrawable(context.resources),
             isSampled = true // SVGs can always be re-decoded at a higher resolution.
         )

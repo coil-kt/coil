@@ -14,7 +14,6 @@ import coil.size.PixelSize
 import coil.size.Size
 import coil.util.toDrawable
 import coil.util.toSoftware
-import kotlinx.coroutines.runInterruptible
 import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
@@ -44,13 +43,6 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
     override fun handles(source: BufferedSource, mimeType: String?) = true
 
     override suspend fun decode(
-        pool: BitmapPool,
-        source: BufferedSource,
-        size: Size,
-        options: Options
-    ): DecodeResult = runInterruptible { decodeInterruptible(pool, source, size, options) }
-
-    private fun decodeInterruptible(
         pool: BitmapPool,
         source: BufferedSource,
         size: Size,

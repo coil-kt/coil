@@ -15,7 +15,6 @@ import coil.drawable.ScaleDrawable
 import coil.extension.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
-import kotlinx.coroutines.runInterruptible
 import okio.BufferedSource
 import okio.sink
 import java.io.File
@@ -45,7 +44,7 @@ class ImageDecoderDecoder : Decoder {
         source: BufferedSource,
         size: Size,
         options: Options
-    ): DecodeResult = runInterruptible {
+    ): DecodeResult {
         var tempFile: File? = null
 
         try {
@@ -111,7 +110,7 @@ class ImageDecoderDecoder : Decoder {
                 baseDrawable
             }
 
-            DecodeResult(
+            return DecodeResult(
                 drawable = drawable,
                 isSampled = isSampled
             )
