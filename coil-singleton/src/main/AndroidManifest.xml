@@ -1,11 +1,1 @@
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="coil.singleton">
-
-    <application>
-        <provider
-            android:name="coil.util.CoilContentProvider"
-            android:authorities="${applicationId}.coil"
-            android:exported="false"/>
-    </application>
-</manifest>
+<manifest package="coil.singleton"/>

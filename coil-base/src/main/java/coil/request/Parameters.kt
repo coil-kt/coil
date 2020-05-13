@@ -16,15 +16,6 @@ class Parameters private constructor(
 
     companion object {
         @JvmField val EMPTY = Parameters()
-
-        /** Create a new [Parameters] instance. */
-        @Deprecated(
-            message = "Use Parameters.Builder to create new instances.",
-            replaceWith = ReplaceWith("Parameters.Builder().apply(builder).build()")
-        )
-        inline operator fun invoke(
-            builder: Builder.() -> Unit = {}
-        ): Parameters = Builder().apply(builder).build()
     }
 
     /** Returns the number of parameters in this object. */
