@@ -16,7 +16,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
-import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.ImageLoaderBuilder
 import coil.annotation.BuilderMarker
@@ -486,24 +485,6 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
         placeholderDrawable = request.placeholderDrawable
     }
 
-    @Deprecated(
-        message = "Migrate to LoadRequest.Builder(context).",
-        replaceWith = ReplaceWith(
-            expression = "LoadRequest.Builder(context)",
-            imports = ["coil.request.LoadRequest"]
-        )
-    )
-    constructor(context: Context, defaults: DefaultRequestOptions) : this(context)
-
-    @Deprecated(
-        message = "Migrate to LoadRequest.Builder(request, context).",
-        replaceWith = ReplaceWith(
-            expression = "LoadRequest.Builder(request, context)",
-            imports = ["coil.request.LoadRequest"]
-        )
-    )
-    constructor(context: Context, request: LoadRequest) : this(request, context)
-
     /**
      * Convenience function to set [imageView] as the [Target].
      */
@@ -636,16 +617,6 @@ class GetRequestBuilder : RequestBuilder<GetRequestBuilder> {
         request: GetRequest,
         context: Context = request.context
     ) : super(request, context)
-
-    @Deprecated(
-        message = "Migrate to GetRequest.Builder(context).",
-        replaceWith = ReplaceWith(
-            expression = "GetRequest.Builder(context)",
-            imports = ["coil.request.GetRequest"]
-        ),
-        level = DeprecationLevel.ERROR
-    )
-    constructor(defaults: DefaultRequestOptions) : super(error("Migrate to GetRequest.Builder(context).") as Context)
 
     /**
      * Create a new [GetRequest] instance.

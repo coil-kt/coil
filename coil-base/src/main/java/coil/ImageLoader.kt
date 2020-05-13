@@ -3,7 +3,6 @@
 package coil
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import androidx.annotation.MainThread
 import coil.request.ErrorResult
 import coil.request.GetRequest
@@ -36,16 +35,6 @@ interface ImageLoader {
         @JvmStatic
         @JvmName("create")
         inline operator fun invoke(context: Context) = ImageLoaderBuilder(context).build()
-
-        /** Create a new [ImageLoader]. */
-        @Deprecated(
-            message = "Use ImageLoader.Builder to create new instances.",
-            replaceWith = ReplaceWith("ImageLoader.Builder(context).apply(builder).build()")
-        )
-        inline operator fun invoke(
-            context: Context,
-            builder: ImageLoaderBuilder.() -> Unit = {}
-        ): ImageLoader = ImageLoaderBuilder(context).apply(builder).build()
     }
 
     /**
@@ -93,30 +82,4 @@ interface ImageLoader {
      */
     @MainThread
     fun shutdown()
-
-    /** @see execute */
-    @Deprecated(
-        message = "Migrate to execute(request).",
-        replaceWith = ReplaceWith("this.execute(request)")
-    )
-    fun load(request: LoadRequest): RequestDisposable = execute(request)
-
-    /** @see execute */
-    @Deprecated(
-        message = "Migrate to execute(request).",
-        replaceWith = ReplaceWith(
-            expression = "" +
-                "when (val result = this.execute(request)) {\n" +
-                "    is SuccessResult -> result.drawable\n" +
-                "    is ErrorResult -> throw result.throwable\n" +
-                "}",
-            imports = ["coil.request.SuccessResult", "coil.request.ErrorResult"]
-        )
-    )
-    suspend fun get(request: GetRequest): Drawable {
-        return when (val result = execute(request)) {
-            is SuccessResult -> result.drawable
-            is ErrorResult -> throw result.throwable
-        }
-    }
 }

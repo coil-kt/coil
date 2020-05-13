@@ -8,7 +8,6 @@ import coil.request.GetRequest
 import coil.request.LoadRequest
 import coil.request.RequestDisposable
 import coil.request.RequestResult
-import coil.util.CoilContentProvider
 
 /**
  * A singleton that holds the default [ImageLoader] instance.
@@ -17,14 +16,6 @@ object Coil {
 
     private var imageLoader: ImageLoader? = null
     private var imageLoaderFactory: ImageLoaderFactory? = null
-
-    /** @see imageLoader */
-    @Deprecated(
-        message = "Migrate to imageLoader(context).",
-        replaceWith = ReplaceWith("this.imageLoader(context)")
-    )
-    @JvmStatic
-    fun loader(): ImageLoader = imageLoader(CoilContentProvider.context)
 
     /**
      * Get the default [ImageLoader]. Creates a new instance if none has been set.
@@ -78,34 +69,6 @@ object Coil {
         val loader = imageLoader
         imageLoader = null
         loader?.shutdown()
-    }
-
-    /** @see setImageLoader */
-    @Deprecated(
-        message = "Migrate to setImageLoader(loader).",
-        replaceWith = ReplaceWith("this.setImageLoader(loader)")
-    )
-    @JvmStatic
-    fun setDefaultImageLoader(loader: ImageLoader) = setImageLoader(loader)
-
-    /** @see setImageLoader */
-    @Deprecated(
-        message = "Migrate to setDefaultImageLoader(ImageLoaderFactory).",
-        replaceWith = ReplaceWith(
-            expression = "" +
-                "this.setImageLoader(object : ImageLoaderFactory {" +
-                "    override fun getImageLoader() {" +
-                "        return initializer()" +
-                "    }" +
-                "})",
-            imports = ["coil.ImageLoaderFactory"]
-        )
-    )
-    @JvmStatic
-    fun setDefaultImageLoader(initializer: () -> ImageLoader) {
-        setImageLoader(object : ImageLoaderFactory {
-            override fun newImageLoader() = initializer()
-        })
     }
 
     /** Create and set the new default [ImageLoader]. */

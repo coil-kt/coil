@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
-import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
@@ -182,29 +181,6 @@ class LoadRequest internal constructor(
             request: LoadRequest,
             context: Context = request.context
         ) = LoadRequestBuilder(request, context)
-
-        /** Create a new [LoadRequest]. */
-        @Deprecated(
-            message = "Use LoadRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("LoadRequest.Builder(context).apply(builder).build()")
-        )
-        @Suppress("UNUSED_PARAMETER")
-        inline operator fun invoke(
-            context: Context,
-            defaults: DefaultRequestOptions,
-            builder: LoadRequestBuilder.() -> Unit = {}
-        ): LoadRequest = LoadRequestBuilder(context).apply(builder).build()
-
-        /** Create a new [LoadRequest]. */
-        @Deprecated(
-            message = "Use LoadRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("LoadRequest.Builder(request, context).apply(builder).build()")
-        )
-        inline operator fun invoke(
-            context: Context,
-            request: LoadRequest,
-            builder: LoadRequestBuilder.() -> Unit = {}
-        ): LoadRequest = LoadRequestBuilder(request, context).apply(builder).build()
     }
 
     override val placeholder: Drawable?
@@ -279,27 +255,6 @@ class GetRequest internal constructor(
             request: GetRequest,
             context: Context = request.context
         ) = GetRequestBuilder(request, context)
-
-        /** Create a new [GetRequest]. */
-        @Deprecated(
-            message = "Use GetRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("GetRequest.Builder(context).apply(builder).build()"),
-            level = DeprecationLevel.ERROR
-        )
-        inline operator fun invoke(
-            defaults: DefaultRequestOptions,
-            builder: GetRequestBuilder.() -> Unit = {}
-        ): GetRequest = error("Migrate to GetRequest.Builder(context).")
-
-        /** Create a new [GetRequest]. */
-        @Deprecated(
-            message = "Use GetRequest.Builder to create new instances.",
-            replaceWith = ReplaceWith("GetRequest.Builder(request).apply(builder).build()")
-        )
-        inline operator fun invoke(
-            request: GetRequest,
-            builder: GetRequestBuilder.() -> Unit = {}
-        ): GetRequest = GetRequestBuilder(request).apply(builder).build()
     }
 
     override val target: Target? = null
