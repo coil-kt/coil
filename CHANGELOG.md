@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.11.0] - May 14, 2020
+
+- **Breaking**: **This version removes all existing deprecated functions.**
+    - This enables removing Coil's `ContentProvider` so it doesn't run any code at app startup.
+- **Breaking**: Convert `SparseIntArraySet.size` to a val. ([#380](https://github.com/coil-kt/coil/pull/380))
+- **Breaking**: Move `Parameters.count()` to an extension function. ([#403](https://github.com/coil-kt/coil/pull/403))
+- **Breaking**: Make `BitmapPool.maxSize` an Int. ([#404](https://github.com/coil-kt/coil/pull/404))
+
+---
+
+- **Important**: Make `ImageLoader.shutdown()` optional (similar to `OkHttpClient`). (#385)
+
+---
+
+- Fix: Fix AGP 4.1 compatibility. ([#386](https://github.com/coil-kt/coil/pull/386))
+- Fix: Fix measuring GONE views. ([#397](https://github.com/coil-kt/coil/pull/397))
+
+---
+
+- Reduce the default memory cache size to 20%. ([#390](https://github.com/coil-kt/coil/pull/390))
+    - To restore the existing behaviour set `ImageLoaderBuidler.availableMemoryPercentage(0.25)` when creating your `ImageLoader`.
+- Update Coroutines to 1.3.6.
+- Update OkHttp to 3.12.11.
+
 ## [0.10.1] - April 26, 2020
 
 - Fix OOM when decoding large PNGs on API 23 and below. ([#372](https://github.com/coil-kt/coil/pull/372)).
