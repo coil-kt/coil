@@ -49,7 +49,7 @@ nav:
   - 'Recipes': recipes.md
   - 'FAQ': faq.md
   - 'API':
-    - 'coil': api/coil-default/index.md
+    - 'coil': api/coil-singleton/index.md
     - 'coil-base': api/coil-base/index.md
     - 'coil-gif': api/coil-gif/index.md
     - 'coil-svg': api/coil-svg/index.md
