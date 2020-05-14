@@ -85,7 +85,7 @@
 
 - Add a new [EventListener](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt) API for tracking metrics.
 
-- Add [ImageLoaderFactory](https://github.com/coil-kt/coil/blob/master/coil-default/src/main/java/coil/ImageLoaderFactory.kt) which can be implemented by your `Application` to simplify singleton initialization.
+- Add [ImageLoaderFactory](https://github.com/coil-kt/coil/blob/master/coil-singleton/src/main/java/coil/ImageLoaderFactory.kt) which can be implemented by your `Application` to simplify singleton initialization.
 
 ---
 
@@ -109,7 +109,7 @@
 - **New**: Add `WeakMemoryCache` implementation. ([#295](https://github.com/coil-kt/coil/pull/295))
 - **New**: Add `coil-video` to support decoding video frames. ([#122](https://github.com/coil-kt/coil/pull/122))
 - **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt). ([#314](https://github.com/coil-kt/coil/pull/314))
-- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/master/coil-default/src/main/java/coil/ImageLoaderFactory.kt). ([#311](https://github.com/coil-kt/coil/pull/311))
+- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/master/coil-singleton/src/main/java/coil/ImageLoaderFactory.kt). ([#311](https://github.com/coil-kt/coil/pull/311))
 - **New**: Support animated HEIF image sequences on Android 11. ([#297](https://github.com/coil-kt/coil/pull/297))
 - **New**: Improve Java compatibility. ([#262](https://github.com/coil-kt/coil/pull/262))
 - **New**: Support setting a default `CachePolicy`. ([#307](https://github.com/coil-kt/coil/pull/307))

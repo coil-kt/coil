@@ -176,7 +176,7 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-See the docs [here](../api/coil-default/coil.api/) and [here](../api/coil-base/coil.api/) for more information.
+See the docs [here](../api/coil-singleton/coil.api/) and [here](../api/coil-base/coil.api/) for more information.
 
 ## Supported Data Types
 
