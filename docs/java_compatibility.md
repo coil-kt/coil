@@ -21,25 +21,23 @@ imageLoader.execute(request)
 `suspend` functions cannot be easily called from Java. Thus, to get an image synchronously you'll have to create a wrapper function to execute `GetRequest`s:
 
 ```kotlin
-object ImageLoaderCompat {
-    @JvmStatic
-    @WorkerThread
-    fun getBlocking(
-        imageLoader: ImageLoader,
-        request: GetRequest
-    ): RequestResult = runBlocking { imageLoader.execute(request) }
+@file:JvmName("ImageLoaders")
+
+@WorkerThread
+fun ImageLoader.executeBlocking(request: GetRequest): RequestResult {
+    return runBlocking { execute(request) }
 }
 ```
 
-Then call the `ImageLoaderCompat` function from Java:
+Then call the `ImageLoaders` function from Java:
 
 ```java
 GetRequest request = GetRequest.builder(context)
     .data("https://www.example.com/image.jpg")
     .size(1080, 1920)
     .build();
-Drawable drawable = ImageLoaderCompat.getBlocking(imageLoader, request).getDrawable();
+Drawable drawable = ImageLoaders.executeBlocking(imageLoader, request).getDrawable();
 ```
 
 !!! Note
-    `ImageLoaderCompat.getBlocking` will block the current thread instead of suspending. Do not call this from the main thread.
+    `ImageLoaders.executeBlocking` will block the current thread instead of suspending. Do not call this from the main thread.
