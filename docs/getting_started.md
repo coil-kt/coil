@@ -68,7 +68,7 @@ val imageLoader = ImageLoader.Builder(context)
 
 Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
 
-It's recommended, though not required, to call [shutdown] when you've finished using an image loader. This preemptively frees its memory and cleans up any observers. If you only create and use one `ImageLoader`, you do not need to shut it down as it will be freed when your app is killed.
+It's recommended, though not required, to call [`shutdown`](../api/coil-base/coil/-image-loader/shutdown/) when you've finished using an image loader. This preemptively frees its memory and cleans up any observers. If you only create and use one `ImageLoader`, you do not need to shut it down as it will be freed when your app is killed.
 
 ## Requests
 
