@@ -20,7 +20,7 @@
 ---
 
 - Reduce the default memory cache size to 20%. ([#390](https://github.com/coil-kt/coil/pull/390))
-    - To restore the existing behaviour set `ImageLoaderBuidler.availableMemoryPercentage(0.25)` when creating your `ImageLoader`.
+    - To restore the existing behaviour set `ImageLoaderBuilder.availableMemoryPercentage(0.25)` when creating your `ImageLoader`.
 - Update Coroutines to 1.3.6.
 - Update OkHttp to 3.12.11.
 
