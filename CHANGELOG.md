@@ -10,7 +10,7 @@
 
 ---
 
-- **Important**: Make `ImageLoader.shutdown()` optional (similar to `OkHttpClient`). (#385)
+- **Important**: Make `ImageLoader.shutdown()` optional (similar to `OkHttpClient`). ([#385](https://github.com/coil-kt/coil/pull/385))
 
 ---
 
