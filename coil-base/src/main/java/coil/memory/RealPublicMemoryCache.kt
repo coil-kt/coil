@@ -9,7 +9,7 @@ import coil.util.mapIndices
 
 internal class RealPublicMemoryCache(
     private val componentRegistry: ComponentRegistry,
-    private val memoryCache: MemoryCache,
+    private val strongMemoryCache: StrongMemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
     private val bitmapReferenceCounter: BitmapReferenceCounter
 ) : PublicMemoryCache {
@@ -17,19 +17,19 @@ internal class RealPublicMemoryCache(
     override val size: Int
         get() {
             assertMainThread()
-            return memoryCache.size
+            return strongMemoryCache.size
         }
 
     override val maxSize: Int
         get() {
             assertMainThread()
-            return memoryCache.maxSize
+            return strongMemoryCache.maxSize
         }
 
     override fun find(key: String): Bitmap? {
         assertMainThread()
 
-        val bitmap = memoryCache.get(MemoryCache.Key(key))?.bitmap
+        val bitmap = strongMemoryCache.get(StrongMemoryCache.Key(key))?.bitmap
         if (bitmap != null) {
             bitmapReferenceCounter.invalidate(bitmap)
         }
@@ -40,7 +40,7 @@ internal class RealPublicMemoryCache(
         assertMainThread()
 
         val predicate = criteria.toPredicate()
-        memoryCache.find(predicate)?.let { return memoryCache.get(it)?.bitmap }
+        strongMemoryCache.find(predicate)?.let { return strongMemoryCache.get(it)?.bitmap }
         weakMemoryCache.find(predicate)?.let { return weakMemoryCache.get(it)?.bitmap }
         return null
     }
@@ -48,8 +48,8 @@ internal class RealPublicMemoryCache(
     override fun remove(key: String) {
         assertMainThread()
 
-        val cacheKey = MemoryCache.Key(key)
-        memoryCache.remove(cacheKey)
+        val cacheKey = StrongMemoryCache.Key(key)
+        strongMemoryCache.remove(cacheKey)
         weakMemoryCache.remove(cacheKey)
     }
 
@@ -57,18 +57,18 @@ internal class RealPublicMemoryCache(
         assertMainThread()
 
         val predicate = criteria.toPredicate()
-        memoryCache.find(predicate)?.let(memoryCache::remove)
+        strongMemoryCache.find(predicate)?.let(strongMemoryCache::remove)
         weakMemoryCache.find(predicate)?.let(weakMemoryCache::remove)
     }
 
     override fun clear() {
         assertMainThread()
 
-        memoryCache.clearMemory()
+        strongMemoryCache.clearMemory()
         weakMemoryCache.clearMemory()
     }
 
-    private fun Criteria.toPredicate(): (MemoryCache.Key) -> Boolean {
+    private fun Criteria.toPredicate(): (StrongMemoryCache.Key) -> Boolean {
         val mappedData = componentRegistry.mapData(data) { measuredMapper ->
             checkNotNull(size) { "'$measuredMapper' requires a non null size to map '$data'." }
         }

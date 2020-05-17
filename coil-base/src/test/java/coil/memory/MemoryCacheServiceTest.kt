@@ -5,8 +5,8 @@ import android.graphics.Bitmap
 import androidx.test.core.app.ApplicationProvider
 import coil.DefaultRequestOptions
 import coil.annotation.ExperimentalCoilApi
-import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCache.Value
+import coil.memory.StrongMemoryCache.Key
+import coil.memory.StrongMemoryCache.Value
 import coil.request.ImageRequest
 import coil.size.PixelSize
 import coil.size.Precision

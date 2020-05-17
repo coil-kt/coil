@@ -14,8 +14,8 @@ import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.memory.BitmapReferenceCounter
-import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
+import coil.memory.StrongMemoryCache
 import okhttp3.OkHttpClient
 import org.junit.Before
 import org.junit.Test
@@ -56,7 +56,7 @@ class SystemCallbacksTest {
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
         val weakMemoryCache = RealWeakMemoryCache()
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         val imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
@@ -73,13 +73,13 @@ class SystemCallbacksTest {
         val systemCallbacks = SystemCallbacks(imageLoader, context)
 
         memoryCache.set(
-            key = MemoryCache.Key("1"),
+            key = StrongMemoryCache.Key("1"),
             bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
             isSampled = false
         )
 
         memoryCache.set(
-            key = MemoryCache.Key("2"),
+            key = StrongMemoryCache.Key("2"),
             bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
             isSampled = false
         )

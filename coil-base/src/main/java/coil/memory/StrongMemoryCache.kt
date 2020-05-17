@@ -8,8 +8,8 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
 import coil.fetch.Fetcher
-import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCache.Value
+import coil.memory.StrongMemoryCache.Key
+import coil.memory.StrongMemoryCache.Value
 import coil.request.Parameters
 import coil.size.Size
 import coil.transform.Transformation
@@ -23,7 +23,7 @@ import coil.util.mapIndices
  *
  * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
  */
-internal interface MemoryCache {
+internal interface StrongMemoryCache {
 
     companion object {
         operator fun invoke(
@@ -31,11 +31,11 @@ internal interface MemoryCache {
             referenceCounter: BitmapReferenceCounter,
             maxSize: Int,
             logger: Logger?
-        ): MemoryCache {
+        ): StrongMemoryCache {
             return when {
-                maxSize > 0 -> RealMemoryCache(weakMemoryCache, referenceCounter, maxSize, logger)
-                weakMemoryCache is RealWeakMemoryCache -> ForwardingMemoryCache(weakMemoryCache)
-                else -> EmptyMemoryCache
+                maxSize > 0 -> RealStrongMemoryCache(weakMemoryCache, referenceCounter, maxSize, logger)
+                weakMemoryCache is RealWeakMemoryCache -> ForwardingStrongMemoryCache(weakMemoryCache)
+                else -> EmptyStrongMemoryCache
             }
         }
     }
@@ -64,7 +64,7 @@ internal interface MemoryCache {
     /** @see ComponentCallbacks2.onTrimMemory */
     fun trimMemory(level: Int)
 
-    /** Cache key for [MemoryCache] and [WeakMemoryCache]. */
+    /** Cache key for [StrongMemoryCache] and [WeakMemoryCache]. */
     class Key {
 
         /** The base component of the cache key. This is typically [Fetcher.key]. */
@@ -124,15 +124,15 @@ internal interface MemoryCache {
         }
     }
 
-    /** Cache value for [MemoryCache] and [WeakMemoryCache]. */
+    /** Cache value for [StrongMemoryCache] and [WeakMemoryCache]. */
     interface Value {
         val bitmap: Bitmap
         val isSampled: Boolean
     }
 }
 
-/** A [MemoryCache] implementation that caches nothing. */
-private object EmptyMemoryCache : MemoryCache {
+/** A [StrongMemoryCache] implementation that caches nothing. */
+private object EmptyStrongMemoryCache : StrongMemoryCache {
 
     override val size get() = 0
 
@@ -151,10 +151,10 @@ private object EmptyMemoryCache : MemoryCache {
     override fun trimMemory(level: Int) {}
 }
 
-/** A [MemoryCache] implementation that caches nothing and delegates to [weakMemoryCache]. */
-private class ForwardingMemoryCache(
+/** A [StrongMemoryCache] implementation that caches nothing and delegates to [weakMemoryCache]. */
+private class ForwardingStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
-) : MemoryCache {
+) : StrongMemoryCache {
 
     override val size get() = 0
 
@@ -175,13 +175,13 @@ private class ForwardingMemoryCache(
     override fun trimMemory(level: Int) {}
 }
 
-/** A [MemoryCache] implementation backed by an [LruCache]. */
-private class RealMemoryCache(
+/** A [StrongMemoryCache] implementation backed by an [LruCache]. */
+private class RealStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache,
     private val referenceCounter: BitmapReferenceCounter,
     maxSize: Int,
     private val logger: Logger?
-) : MemoryCache {
+) : StrongMemoryCache {
 
     private val cache = object : LruCache<Key, InternalValue>(maxSize) {
         override fun entryRemoved(
@@ -251,6 +251,6 @@ private class RealMemoryCache(
     ) : Value
 
     companion object {
-        private const val TAG = "RealMemoryCache"
+        private const val TAG = "RealStrongMemoryCache"
     }
 }

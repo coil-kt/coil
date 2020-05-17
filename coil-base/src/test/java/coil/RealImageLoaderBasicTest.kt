@@ -16,9 +16,9 @@ import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.Fetcher
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
-import coil.memory.MemoryCache
-import coil.memory.MemoryCache.Key
 import coil.memory.RealWeakMemoryCache
+import coil.memory.StrongMemoryCache
+import coil.memory.StrongMemoryCache.Key
 import coil.request.ImageRequest
 import coil.request.Parameters
 import coil.size.OriginalSize
@@ -55,7 +55,7 @@ import kotlin.test.fail
 class RealImageLoaderBasicTest {
 
     private lateinit var context: Context
-    private lateinit var memoryCache: MemoryCache
+    private lateinit var strongMemoryCache: StrongMemoryCache
     private lateinit var imageLoader: RealImageLoader
 
     @Before
@@ -64,13 +64,13 @@ class RealImageLoaderBasicTest {
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
         val weakMemoryCache = RealWeakMemoryCache()
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
             bitmapPool = bitmapPool,
             referenceCounter = referenceCounter,
-            memoryCache = memoryCache,
+            strongMemoryCache = strongMemoryCache,
             weakMemoryCache = weakMemoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
@@ -283,7 +283,7 @@ class RealImageLoaderBasicTest {
         val options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.HARDWARE }
         val bitmap = context.decodeBitmapAsset(fileName, options)
         assertEquals(Bitmap.Config.HARDWARE, bitmap.config)
-        memoryCache.set(key, bitmap, false)
+        strongMemoryCache.set(key, bitmap, false)
         return bitmap
     }
 }

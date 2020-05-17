@@ -6,8 +6,8 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.VisibleForTesting
-import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCache.Value
+import coil.memory.StrongMemoryCache.Key
+import coil.memory.StrongMemoryCache.Value
 import coil.util.firstNotNullIndices
 import coil.util.identityHashCode
 import coil.util.removeIfIndices
@@ -16,8 +16,8 @@ import java.lang.ref.WeakReference
 /**
  * An in-memory cache that holds weak references to [Bitmap]s.
  *
- * This is used as a secondary caching layer for [MemoryCache]. [MemoryCache] holds strong references to its bitmaps.
- * Bitmaps are added to this cache when they're removed from [MemoryCache].
+ * This is used as a secondary caching layer for [StrongMemoryCache]. [StrongMemoryCache] holds strong references
+ * to its bitmaps. Bitmaps are added to this cache when they're removed from [StrongMemoryCache].
  *
  * NOTE: This class is not thread safe and its methods should only be called from the main thread.
  */
