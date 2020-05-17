@@ -72,9 +72,10 @@ class PaletteTransition(
         // Compute the palette on a background thread.
         if (result is SuccessResult) {
             val bitmap = (result.drawable as BitmapDrawable).bitmap
-            withContext(Dispatchers.IO) {
-                onGenerated(Palette.Builder(bitmap).generate())
+            val palette = withContext(Dispatchers.IO) {
+                Palette.Builder(bitmap).generate()
             }
+            onGenerated(palette)
         }
 
         delegateJob?.join()

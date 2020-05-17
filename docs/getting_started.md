@@ -217,7 +217,7 @@ imageLoader.execute(request)
 
 `LoadRequest`s will be automatically cancelled if the associated `View` is detached, the associated `Lifecycle` is destroyed, or another request is started on the same `View`.
 
-Furthermore, each `LoadRequest` returns a [RequestDisposable](../api/coil-base/coil.request/-request-disposable), which can be used to check if a request is in flight or dispose the request (effectively cancelling it and freeing its associated resources):
+Furthermore, each `LoadRequest` returns a [RequestDisposable](../api/coil-base/coil.request/-request-disposable), which can be used to check if a request is in progress or dispose the request (effectively cancelling it and freeing its associated resources):
 
 ```kotlin
 val disposable = imageView.load("https://www.example.com/image.jpg")
