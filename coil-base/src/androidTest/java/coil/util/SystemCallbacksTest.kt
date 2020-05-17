@@ -84,10 +84,10 @@ class SystemCallbacksTest {
             isSampled = false
         )
 
-        assertTrue(memoryCache.size() == 8000000)
+        assertTrue(memoryCache.size == 8000000)
 
         systemCallbacks.onTrimMemory(TRIM_MEMORY_COMPLETE)
 
-        assertTrue(memoryCache.size() == 0)
+        assertTrue(memoryCache.size == 0)
     }
 }

@@ -6,7 +6,7 @@ import coil.request.Parameters
 import coil.size.Size
 import coil.transform.Transformation
 
-interface PublicMemoryCache {
+interface MemoryCache {
 
     /** The **current size** of the memory cache in bytes. */
     @get:MainThread val size: Int

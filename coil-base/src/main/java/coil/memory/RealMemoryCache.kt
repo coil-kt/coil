@@ -2,17 +2,18 @@ package coil.memory
 
 import android.graphics.Bitmap
 import coil.ComponentRegistry
-import coil.memory.PublicMemoryCache.Criteria
+import coil.memory.MemoryCache.Criteria
+import coil.memory.StrongMemoryCache.Key
 import coil.util.assertMainThread
 import coil.util.mapData
 import coil.util.mapIndices
 
-internal class RealPublicMemoryCache(
+internal class RealMemoryCache(
     private val componentRegistry: ComponentRegistry,
     private val strongMemoryCache: StrongMemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
     private val bitmapReferenceCounter: BitmapReferenceCounter
-) : PublicMemoryCache {
+) : MemoryCache {
 
     override val size: Int
         get() {
@@ -29,26 +30,26 @@ internal class RealPublicMemoryCache(
     override fun find(key: String): Bitmap? {
         assertMainThread()
 
-        val bitmap = strongMemoryCache.get(StrongMemoryCache.Key(key))?.bitmap
-        if (bitmap != null) {
-            bitmapReferenceCounter.invalidate(bitmap)
-        }
-        return bitmap
+        return invalidate(strongMemoryCache.get(Key(key))?.bitmap)
     }
 
     override fun find(criteria: Criteria): Bitmap? {
         assertMainThread()
 
         val predicate = criteria.toPredicate()
-        strongMemoryCache.find(predicate)?.let { return strongMemoryCache.get(it)?.bitmap }
-        weakMemoryCache.find(predicate)?.let { return weakMemoryCache.get(it)?.bitmap }
+        strongMemoryCache.find(predicate)?.let {
+            return invalidate(strongMemoryCache.get(it)?.bitmap)
+        }
+        weakMemoryCache.find(predicate)?.let {
+            return invalidate(weakMemoryCache.get(it)?.bitmap)
+        }
         return null
     }
 
     override fun remove(key: String) {
         assertMainThread()
 
-        val cacheKey = StrongMemoryCache.Key(key)
+        val cacheKey = Key(key)
         strongMemoryCache.remove(cacheKey)
         weakMemoryCache.remove(cacheKey)
     }
@@ -68,7 +69,14 @@ internal class RealPublicMemoryCache(
         weakMemoryCache.clearMemory()
     }
 
-    private fun Criteria.toPredicate(): (StrongMemoryCache.Key) -> Boolean {
+    private fun invalidate(bitmap: Bitmap?): Bitmap? {
+        if (bitmap != null) {
+            bitmapReferenceCounter.invalidate(bitmap)
+        }
+        return bitmap
+    }
+
+    private fun Criteria.toPredicate(): (Key) -> Boolean {
         val mappedData = componentRegistry.mapData(data) { measuredMapper ->
             checkNotNull(size) { "'$measuredMapper' requires a non null size to map '$data'." }
         }
