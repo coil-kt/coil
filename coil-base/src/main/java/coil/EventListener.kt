@@ -74,6 +74,16 @@ interface EventListener : Request.Listener {
     fun resolveSizeEnd(request: Request, size: Size) {}
 
     /**
+     * Called if [request] matches another in progress request.
+     * [request] will then await the result of [joinedRequest] and skip the
+     * [fetchStart], [fetchEnd], [decodeStart], [decodeEnd], [transformStart], and [transformEnd] callbacks.
+     *
+     * @param joinedRequest The in progress request that's performing the same work as [request].
+     */
+    @WorkerThread
+    fun onJoin(request: Request, joinedRequest: Request) {}
+
+    /**
      * Called before [Fetcher.fetch].
      *
      * @param fetcher The [Fetcher] that will be used to handle the request.

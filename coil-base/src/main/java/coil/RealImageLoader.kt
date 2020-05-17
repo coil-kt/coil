@@ -3,7 +3,6 @@ package coil
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
@@ -13,19 +12,15 @@ import coil.bitmappool.BitmapPool
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
-import coil.decode.EmptyDecoder
-import coil.decode.Options
 import coil.fetch.AssetUriFetcher
 import coil.fetch.BitmapFetcher
 import coil.fetch.ContentUriFetcher
 import coil.fetch.DrawableFetcher
-import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
 import coil.fetch.FileFetcher
 import coil.fetch.HttpUriFetcher
 import coil.fetch.HttpUrlFetcher
 import coil.fetch.ResourceUriFetcher
-import coil.fetch.SourceResult
 import coil.map.FileUriMapper
 import coil.map.Mapper
 import coil.map.MeasuredMapper
@@ -46,10 +41,10 @@ import coil.request.NullRequestDataException
 import coil.request.Parameters
 import coil.request.Request
 import coil.request.RequestDisposable
+import coil.request.RequestExecutor
 import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.request.ViewTargetRequestDisposable
-import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.target.ViewTarget
@@ -57,10 +52,8 @@ import coil.transform.Transformation
 import coil.util.Emoji
 import coil.util.Logger
 import coil.util.SystemCallbacks
-import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.firstNotNullIndices
-import coil.util.foldIndices
 import coil.util.forEachIndices
 import coil.util.getValue
 import coil.util.log
@@ -98,11 +91,7 @@ internal class RealImageLoader(
     internal val logger: Logger?
 ) : ImageLoader {
 
-    companion object {
-        private const val TAG = "RealImageLoader"
-    }
-
-    private val loaderScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
 
     private val delegateService = DelegateService(this, referenceCounter, logger)
@@ -130,12 +119,14 @@ internal class RealImageLoader(
         .add(BitmapFactoryDecoder(context))
         .build()
 
+    private val requestExecutor = RequestExecutor(context, defaults, bitmapPool, requestService, drawableDecoder, systemCallbacks, registry, logger)
+
     // isShutdown is only accessed from the main thread.
     private var isShutdown = false
 
     override fun execute(request: LoadRequest): RequestDisposable {
         // Start loading the data.
-        val job = loaderScope.launch(exceptionHandler) { executeInternal(request) }
+        val job = coroutineScope.launch(exceptionHandler) { executeInternal(request) }
 
         return if (request.target is ViewTarget<*>) {
             val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
@@ -230,7 +221,7 @@ internal class RealImageLoader(
             }
 
             // Fetch and decode the image.
-            val (drawable, isSampled, source) = loadData(mappedData, fetcher, request, sizeResolver, size, scale, eventListener)
+            val (drawable, isSampled, source) = requestExecutor.loadData(mappedData, fetcher, request, sizeResolver, size, scale, eventListener)
 
             // Cache the result.
             if (memoryCachePolicy.writeEnabled) {
@@ -252,7 +243,7 @@ internal class RealImageLoader(
 
         deferred.invokeOnCompletion { throwable ->
             // Ensure callbacks are executed on the main thread.
-            loaderScope.launch(Dispatchers.Main.immediate) {
+            coroutineScope.launch(Dispatchers.Main.immediate) {
                 requestDelegate.onComplete()
                 throwable ?: return@launch
 
@@ -311,113 +302,6 @@ internal class RealImageLoader(
         }
     }
 
-    /** Load the [mappedData] as a [Drawable]. Apply any [Transformation]s. */
-    private suspend inline fun loadData(
-        mappedData: Any,
-        fetcher: Fetcher<Any>,
-        request: Request,
-        sizeResolver: SizeResolver,
-        size: Size,
-        scale: Scale,
-        eventListener: EventListener
-    ): DrawableResult = withContext(request.dispatcher ?: defaults.dispatcher) {
-        val options = requestService.options(request, sizeResolver, size, scale, systemCallbacks.isOnline)
-
-        eventListener.fetchStart(request, fetcher, options)
-        val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)
-        eventListener.fetchEnd(request, fetcher, options)
-
-        val baseResult = when (fetchResult) {
-            is SourceResult -> {
-                val decodeResult = try {
-                    // Check if we're cancelled.
-                    ensureActive()
-
-                    // Find the relevant decoder.
-                    val isDiskOnlyPreload = request is LoadRequest && request.target == null &&
-                        !(request.memoryCachePolicy ?: defaults.memoryCachePolicy).writeEnabled
-                    val decoder = if (isDiskOnlyPreload) {
-                        // Skip decoding the result if we are preloading the data and writing to the memory cache is
-                        // disabled. Instead, we exhaust the source and return an empty result.
-                        EmptyDecoder
-                    } else {
-                        request.decoder ?: registry.requireDecoder(request.data!!, fetchResult.source, fetchResult.mimeType)
-                    }
-
-                    // Decode the stream.
-                    eventListener.decodeStart(request, decoder, options)
-                    val decodeResult = decoder.decode(bitmapPool, fetchResult.source, size, options)
-                    eventListener.decodeEnd(request, decoder, options)
-                    decodeResult
-                } catch (rethrown: Exception) {
-                    // NOTE: We only close the stream automatically if there is an uncaught exception.
-                    // This allows custom decoders to continue to read the source after returning a drawable.
-                    fetchResult.source.closeQuietly()
-                    throw rethrown
-                }
-
-                // Combine the fetch and decode operations' results.
-                DrawableResult(
-                    drawable = decodeResult.drawable,
-                    isSampled = decodeResult.isSampled,
-                    dataSource = fetchResult.dataSource
-                )
-            }
-            is DrawableResult -> fetchResult
-        }
-
-        // Check if we're cancelled.
-        ensureActive()
-
-        // Apply any transformations and prepare to draw.
-        val finalResult = applyTransformations(this, baseResult, request, size, options, eventListener)
-        (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
-
-        return@withContext finalResult
-    }
-
-    /** Apply any [Transformation]s and return an updated [DrawableResult]. */
-    @VisibleForTesting
-    internal suspend inline fun applyTransformations(
-        scope: CoroutineScope,
-        result: DrawableResult,
-        request: Request,
-        size: Size,
-        options: Options,
-        eventListener: EventListener
-    ): DrawableResult = scope.run {
-        val transformations = request.transformations
-        if (transformations.isEmpty()) {
-            return@run result
-        }
-
-        // Convert the drawable into a bitmap with a valid config.
-        eventListener.transformStart(request)
-        val baseBitmap = if (result.drawable is BitmapDrawable) {
-            val resultBitmap = result.drawable.bitmap
-            if (resultBitmap.safeConfig in RequestService.VALID_TRANSFORMATION_CONFIGS) {
-                resultBitmap
-            } else {
-                logger?.log(TAG, Log.INFO) {
-                    "Converting bitmap with config ${resultBitmap.safeConfig} to apply transformations: $transformations"
-                }
-                drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
-            }
-        } else {
-            logger?.log(TAG, Log.INFO) {
-                "Converting drawable of type ${result.drawable::class.java.canonicalName} " +
-                    "to apply transformations: $transformations"
-            }
-            drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
-        }
-        val transformedBitmap = transformations.foldIndices(baseBitmap) { bitmap, transformation ->
-            transformation.transform(bitmapPool, bitmap, size).also { ensureActive() }
-        }
-        val transformedResult = result.copy(drawable = transformedBitmap.toDrawable(context))
-        eventListener.transformEnd(request)
-        return@run transformedResult
-    }
-
     override fun invalidate(key: String) {
         val cacheKey = MemoryCache.Key(key)
         memoryCache.invalidate(cacheKey)
@@ -441,7 +325,7 @@ internal class RealImageLoader(
         if (isShutdown) return
         isShutdown = true
 
-        loaderScope.cancel()
+        coroutineScope.cancel()
         systemCallbacks.shutdown()
         clearMemory()
     }
@@ -489,5 +373,9 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
             scope.ensureActive()
         }
+    }
+
+    companion object {
+        private const val TAG = "RealImageLoader"
     }
 }
