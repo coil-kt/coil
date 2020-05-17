@@ -68,7 +68,7 @@ class MemoryCacheTest {
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
-        cache.invalidate(Key("1"))
+        cache.remove(Key("1"))
 
         assertNull(cache.get(Key("1")))
     }

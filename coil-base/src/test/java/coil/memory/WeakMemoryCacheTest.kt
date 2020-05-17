@@ -75,7 +75,7 @@ class WeakMemoryCacheTest {
         val bitmap = reference(createBitmap())
 
         weakMemoryCache.set(key, bitmap, false, 100)
-        weakMemoryCache.invalidate(bitmap)
+        weakMemoryCache.remove(bitmap)
 
         assertNull(weakMemoryCache.get(key))
     }
@@ -101,28 +101,28 @@ class WeakMemoryCacheTest {
         weakMemoryCache.set(Key("key"), bitmap2, false, 2)
 
         assertEquals(bitmap8, weakMemoryCache.get(Key("key"))?.bitmap)
-        weakMemoryCache.invalidate(bitmap8)
+        weakMemoryCache.remove(bitmap8)
 
         assertEquals(bitmap7, weakMemoryCache.get(Key("key"))?.bitmap)
-        weakMemoryCache.invalidate(bitmap7)
+        weakMemoryCache.remove(bitmap7)
 
         assertEquals(bitmap6, weakMemoryCache.get(Key("key"))?.bitmap)
-        weakMemoryCache.invalidate(bitmap6)
+        weakMemoryCache.remove(bitmap6)
 
         assertEquals(bitmap5, weakMemoryCache.get(Key("key"))?.bitmap)
-        weakMemoryCache.invalidate(bitmap5)
+        weakMemoryCache.remove(bitmap5)
 
         assertEquals(bitmap4, weakMemoryCache.get(Key("key"))?.bitmap)
-        weakMemoryCache.invalidate(bitmap4)
+        weakMemoryCache.remove(bitmap4)
 
         assertEquals(bitmap3, weakMemoryCache.get(Key("key"))?.bitmap)
-        weakMemoryCache.invalidate(bitmap3)
+        weakMemoryCache.remove(bitmap3)
 
         assertEquals(bitmap2, weakMemoryCache.get(Key("key"))?.bitmap)
-        weakMemoryCache.invalidate(bitmap2)
+        weakMemoryCache.remove(bitmap2)
 
         assertEquals(bitmap1, weakMemoryCache.get(Key("key"))?.bitmap)
-        weakMemoryCache.invalidate(bitmap1)
+        weakMemoryCache.remove(bitmap1)
 
         // All the values are invalidated.
         assertNull(weakMemoryCache.get(Key("key")))
@@ -161,7 +161,7 @@ class WeakMemoryCacheTest {
         val key = Key("1")
         val bitmap = createBitmap()
         weakMemoryCache.set(key, bitmap, false, bitmap.allocationByteCountCompat)
-        weakMemoryCache.invalidate(key)
+        weakMemoryCache.remove(key)
 
         assertNull(weakMemoryCache.get(key))
     }

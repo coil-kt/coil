@@ -40,20 +40,23 @@ internal interface MemoryCache {
         }
     }
 
+    /** The **current size** of the memory cache in bytes. */
+    val size: Int
+
+    /** The **maximum size** of the memory cache in bytes. */
+    val maxSize: Int
+
     /** Get the value associated with [key]. */
     fun get(key: Key): Value?
 
     /** Set the value associated with [key]. */
     fun set(key: Key, bitmap: Bitmap, isSampled: Boolean)
 
-    /** Return the **current size** of the memory cache in bytes. */
-    fun size(): Int
-
-    /** Return the **maximum size** of the memory cache in bytes. */
-    fun maxSize(): Int
+    /** Return the first [Key] matching the given [predicate], or `null` if no such key was found. */
+    fun find(predicate: (Key) -> Boolean): Key?
 
     /** Remove the value referenced by [key] from this cache if it is present. */
-    fun invalidate(key: Key)
+    fun remove(key: Key)
 
     /** Remove all values from this cache. */
     fun clearMemory()
@@ -119,10 +122,6 @@ internal interface MemoryCache {
             result = 31 * result + parameterKeys.hashCode()
             return result
         }
-
-        override fun toString(): String {
-            return "MemoryCache.Key(baseKey='$baseKey', transformationKeys=$transformationKeys, size=$size, parameterKeys=$parameterKeys)"
-        }
     }
 
     /** Cache value for [MemoryCache] and [WeakMemoryCache]. */
@@ -135,15 +134,17 @@ internal interface MemoryCache {
 /** A [MemoryCache] implementation that caches nothing. */
 private object EmptyMemoryCache : MemoryCache {
 
+    override val size get() = 0
+
+    override val maxSize get() = 0
+
     override fun get(key: Key): Value? = null
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {}
 
-    override fun size(): Int = 0
+    override fun find(predicate: (Key) -> Boolean): Key? = null
 
-    override fun maxSize(): Int = 0
-
-    override fun invalidate(key: Key) {}
+    override fun remove(key: Key) {}
 
     override fun clearMemory() {}
 
@@ -155,17 +156,19 @@ private class ForwardingMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
 ) : MemoryCache {
 
+    override val size get() = 0
+
+    override val maxSize get() = 0
+
     override fun get(key: Key) = weakMemoryCache.get(key)
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
         weakMemoryCache.set(key, bitmap, isSampled, bitmap.allocationByteCountCompat)
     }
 
-    override fun size() = 0
+    override fun find(predicate: (Key) -> Boolean): Key? = weakMemoryCache.find(predicate)
 
-    override fun maxSize() = 0
-
-    override fun invalidate(key: Key) {}
+    override fun remove(key: Key) {}
 
     override fun clearMemory() {}
 
@@ -197,13 +200,17 @@ private class RealMemoryCache(
         override fun sizeOf(key: Key, value: InternalValue) = value.size
     }
 
-    override fun get(key: Key) = cache.get(key) ?: weakMemoryCache.get(key)
+    override val size get() = cache.size()
+
+    override val maxSize get() = cache.maxSize()
+
+    override fun get(key: Key) = cache.get(key)
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
         // the cache to be cleared. Instead just evict an existing element with the same key if it exists.
         val size = bitmap.allocationByteCountCompat
-        if (size > maxSize()) {
+        if (size > maxSize) {
             val previous = cache.remove(key)
             if (previous == null) {
                 // If previous != null, the value was already added to the weak memory cache in LruCache.entryRemoved.
@@ -216,11 +223,9 @@ private class RealMemoryCache(
         cache.put(key, InternalValue(bitmap, isSampled, size))
     }
 
-    override fun size() = cache.size()
+    override fun find(predicate: (Key) -> Boolean): Key? = cache.snapshot().keys.find(predicate)
 
-    override fun maxSize() = cache.maxSize()
-
-    override fun invalidate(key: Key) {
+    override fun remove(key: Key) {
         logger?.log(TAG, Log.VERBOSE) { "invalidate, key=$key" }
         cache.remove(key)
     }
@@ -235,7 +240,7 @@ private class RealMemoryCache(
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
-            cache.trimToSize(size() / 2)
+            cache.trimToSize(size / 2)
         }
     }
 

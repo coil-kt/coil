@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import androidx.annotation.MainThread
+import coil.bitmappool.BitmapPool
+import coil.memory.PublicMemoryCache
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.RealBitmapPool
 import coil.drawable.CrossfadeDrawable
@@ -55,6 +57,16 @@ interface ImageLoader {
     val defaults: DefaultRequestOptions
 
     /**
+     * An in-memory cache of [Bitmap]s.
+     */
+    val memoryCache: PublicMemoryCache
+
+    /**
+     * An object pool of reusable [Bitmap]s.
+     */
+    val bitmapPool: BitmapPool
+
+    /**
      * Enqueue the [request] to be executed asynchronously.
      *
      * @param request The request to execute.
@@ -74,20 +86,6 @@ interface ImageLoader {
     suspend fun execute(request: ImageRequest): RequestResult
 
     /**
-     * Remove the value referenced by [key] from the memory cache.
-     *
-     * @param key The cache key to remove.
-     */
-    @MainThread
-    fun invalidate(key: String)
-
-    /**
-     * Clear this image loader's memory cache and bitmap pool.
-     */
-    @MainThread
-    fun clearMemory()
-
-    /**
      * Shutdown this image loader.
      *
      * All associated resources will be freed and any new requests will fail before starting.
@@ -97,6 +95,37 @@ interface ImageLoader {
      */
     @MainThread
     fun shutdown()
+
+    /**
+     * Remove the value referenced by [key] from the memory cache.
+     *
+     * @param key The cache key to remove.
+     */
+    @Deprecated(
+        message = "Call the memory cache directly.",
+        replaceWith = ReplaceWith("memoryCache.remove(key)")
+    )
+    @MainThread
+    fun invalidate(key: String) {
+        memoryCache.remove(key)
+    }
+
+    /**
+     * Clear this image loader's memory cache and bitmap pool.
+     */
+    @Deprecated(
+        message = "Call the memory cache and bitmap pool directly.",
+        replaceWith = ReplaceWith("" +
+            "apply {\n" +
+            "    memoryCache.clear()\n" +
+            "    bitmapPool.clear()\n" +
+            "}")
+    )
+    @MainThread
+    fun clearMemory() {
+        memoryCache.clear()
+        bitmapPool.clear()
+    }
 
     class Builder(context: Context) {
 

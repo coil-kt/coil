@@ -65,9 +65,9 @@ import coil.util.getLifecycle
 import coil.util.job
 import coil.util.log
 import coil.util.mapData
-import coil.util.put
 import coil.util.requestManager
 import coil.util.safeConfig
+import coil.util.set
 import coil.util.takeIf
 import coil.util.toDrawable
 import coil.util.validateFetcher
@@ -88,7 +88,7 @@ import kotlin.coroutines.coroutineContext
 internal class RealImageLoader(
     private val context: Context,
     override val defaults: DefaultRequestOptions,
-    private val bitmapPool: BitmapPool,
+    override val bitmapPool: BitmapPool,
     private val referenceCounter: BitmapReferenceCounter,
     private val memoryCache: MemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
@@ -210,7 +210,10 @@ internal class RealImageLoader(
 
             // Check the memory cache.
             val memoryCachePolicy = request.memoryCachePolicy ?: defaults.memoryCachePolicy
-            val cachedValue = takeIf(memoryCachePolicy.readEnabled) { memoryCache.get(cacheKey) }
+            val cachedValue = takeIf(memoryCachePolicy.readEnabled) {
+                cacheKey ?: return@takeIf null
+                memoryCache.get(cacheKey) ?: weakMemoryCache.get(cacheKey)
+            }
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
             val cachedDrawable = cachedValue?.bitmap
@@ -238,7 +241,7 @@ internal class RealImageLoader(
 
             // Cache the result.
             if (memoryCachePolicy.writeEnabled) {
-                memoryCache.put(cacheKey, drawable, isSampled)
+                memoryCache.set(cacheKey, drawable, isSampled)
             }
 
             // Set the result on the target.
@@ -391,12 +394,6 @@ internal class RealImageLoader(
         return result.copy(drawable = output.toDrawable(context))
     }
 
-    override fun invalidate(key: String) {
-        val cacheKey = MemoryCache.Key(key)
-        memoryCache.invalidate(cacheKey)
-        weakMemoryCache.invalidate(cacheKey)
-    }
-
     /** Called by [SystemCallbacks.onTrimMemory]. */
     fun onTrimMemory(level: Int) {
         memoryCache.trimMemory(level)
@@ -404,19 +401,16 @@ internal class RealImageLoader(
         bitmapPool.trimMemory(level)
     }
 
-    override fun clearMemory() {
-        memoryCache.clearMemory()
-        weakMemoryCache.clearMemory()
-        bitmapPool.clear()
-    }
-
     override fun shutdown() {
+        assertMainThread()
         if (isShutdown) return
         isShutdown = true
 
         scope.cancel()
         systemCallbacks.shutdown()
-        clearMemory()
+        memoryCache.clearMemory()
+        weakMemoryCache.clearMemory()
+        bitmapPool.clear()
     }
 
     /** Lazily resolves and caches a request's size. */

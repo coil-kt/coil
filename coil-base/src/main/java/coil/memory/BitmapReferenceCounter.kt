@@ -19,7 +19,7 @@ import java.lang.ref.WeakReference
  * This class uses [System.identityHashCode] to determine bitmap identity as it provides a "unique-enough" key
  * for a [Bitmap] and it allows us to avoid using [WeakReference]s.
  *
- * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
+ * NOTE: This class is not thread safe and its methods should only be called from the main thread.
  */
 internal class BitmapReferenceCounter(
     private val weakMemoryCache: WeakMemoryCache,
@@ -60,7 +60,7 @@ internal class BitmapReferenceCounter(
             val isValid = !invalidKeys.remove(key)
             if (isValid) {
                 // Remove the bitmap from the WeakMemoryCache and add it to the BitmapPool.
-                weakMemoryCache.invalidate(bitmap)
+                weakMemoryCache.remove(bitmap)
                 bitmapPool.put(bitmap)
                 return true
             }

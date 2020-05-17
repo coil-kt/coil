@@ -19,7 +19,7 @@ import java.lang.ref.WeakReference
  * This is used as a secondary caching layer for [MemoryCache]. [MemoryCache] holds strong references to its bitmaps.
  * Bitmaps are added to this cache when they're removed from [MemoryCache].
  *
- * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
+ * NOTE: This class is not thread safe and its methods should only be called from the main thread.
  */
 internal interface WeakMemoryCache {
 
@@ -29,11 +29,14 @@ internal interface WeakMemoryCache {
     /** Set the value associated with [key]. */
     fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int)
 
+    /** Return the first [Key] matching the given [predicate], or `null` if no such key was found. */
+    fun find(predicate: (Key) -> Boolean): Key?
+
     /** Remove the value referenced by [key] from this cache if it is present. */
-    fun invalidate(key: Key)
+    fun remove(key: Key)
 
     /** Remove [bitmap] from this cache if it is present. */
-    fun invalidate(bitmap: Bitmap)
+    fun remove(bitmap: Bitmap)
 
     /** Remove all values from this cache. */
     fun clearMemory()
@@ -49,9 +52,11 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {}
 
-    override fun invalidate(key: Key) {}
+    override fun find(predicate: (Key) -> Boolean): Key? = null
 
-    override fun invalidate(bitmap: Bitmap) {}
+    override fun remove(key: Key) {}
+
+    override fun remove(bitmap: Bitmap) {}
 
     override fun clearMemory() {}
 
@@ -101,14 +106,18 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         cleanUpIfNecessary()
     }
 
-    override fun invalidate(key: Key) {
+    override fun find(predicate: (Key) -> Boolean): Key? {
+        return cache.keys.find(predicate)
+    }
+
+    override fun remove(key: Key) {
         val value = get(key)
         if (value != null) {
-            invalidate(value.bitmap)
+            remove(value.bitmap)
         }
     }
 
-    override fun invalidate(bitmap: Bitmap) {
+    override fun remove(bitmap: Bitmap) {
         val identityHashCode = bitmap.identityHashCode
 
         // Find the bitmap in the cache and remove it.
