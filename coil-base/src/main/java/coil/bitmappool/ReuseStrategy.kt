@@ -43,10 +43,6 @@ internal interface ReuseStrategy {
 @RequiresApi(19)
 internal class SizeStrategy : ReuseStrategy {
 
-    companion object {
-        private const val MAX_SIZE_MULTIPLE = 8
-    }
-
     private val entries = LinkedMultimap<Int, Bitmap>()
     private val sizes = TreeMap<Int, Int>()
 
@@ -102,6 +98,10 @@ internal class SizeStrategy : ReuseStrategy {
     }
 
     override fun toString() = "SizeStrategy: entries=$entries, sizes=$sizes"
+
+    companion object {
+        private const val MAX_SIZE_MULTIPLE = 8
+    }
 }
 
 /** A strategy for reusing bitmaps that requires bitmaps' width, height, and config to match exactly. */

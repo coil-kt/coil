@@ -18,6 +18,9 @@ import coil.util.log
  * A [BitmapPool] implementation that uses a [ReuseStrategy] to bucket [Bitmap]s
  * and then uses an LRU eviction policy to evict [Bitmap]s from the least
  * recently used bucket in order to keep the pool below a given maximum size limit.
+ *
+ * Adapted from [Glide](https://github.com/bumptech/glide)'s LruBitmapPool.
+ * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 internal class RealBitmapPool(
     private val maxSize: Int,
@@ -25,20 +28,6 @@ internal class RealBitmapPool(
     private val strategy: ReuseStrategy = ReuseStrategy(),
     private val logger: Logger? = null
 ) : BitmapPool {
-
-    companion object {
-        private const val TAG = "RealBitmapPool"
-
-        @Suppress("DEPRECATION")
-        @OptIn(ExperimentalStdlibApi::class)
-        private val ALLOWED_CONFIGS = buildSet {
-            add(Bitmap.Config.ALPHA_8)
-            add(Bitmap.Config.RGB_565)
-            add(Bitmap.Config.ARGB_4444)
-            add(Bitmap.Config.ARGB_8888)
-            if (SDK_INT >= 26) add(Bitmap.Config.RGBA_F16)
-        }
-    }
 
     private val bitmaps = hashSetOf<Bitmap>()
 
@@ -171,5 +160,19 @@ internal class RealBitmapPool(
     private fun logStats(): String {
         return "Hits=$hits, misses=$misses, puts=$puts, evictions=$evictions, " +
             "currentSize=$currentSize, maxSize=$maxSize, strategy=$strategy"
+    }
+
+    companion object {
+        private const val TAG = "RealBitmapPool"
+
+        @Suppress("DEPRECATION")
+        @OptIn(ExperimentalStdlibApi::class)
+        private val ALLOWED_CONFIGS = buildSet {
+            add(Bitmap.Config.ALPHA_8)
+            add(Bitmap.Config.RGB_565)
+            add(Bitmap.Config.ARGB_4444)
+            add(Bitmap.Config.ARGB_8888)
+            if (SDK_INT >= 26) add(Bitmap.Config.RGBA_F16)
+        }
     }
 }

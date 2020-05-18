@@ -11,17 +11,17 @@ import coil.util.removeLast
 internal class LinkedMultimap<K, V> {
 
     private val head = LinkedEntry<K, V>(null)
-    private val map = HashMap<K, LinkedEntry<K, V>>()
+    private val entries = HashMap<K, LinkedEntry<K, V>>()
 
     operator fun set(key: K, value: V) {
-        val entry = map.getOrPut(key) {
+        val entry = entries.getOrPut(key) {
             LinkedEntry<K, V>(key).apply(::makeTail)
         }
         entry.add(value)
     }
 
     operator fun get(key: K): V? {
-        val entry = map.getOrPut(key) {
+        val entry = entries.getOrPut(key) {
             LinkedEntry(key)
         }
         makeHead(entry)
@@ -38,7 +38,7 @@ internal class LinkedMultimap<K, V> {
             } else {
                 // Remove the empty LinkedEntry.
                 removeEntry(last)
-                map.remove(last.key)
+                entries.remove(last.key)
             }
             last = last.prev
         }
