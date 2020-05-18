@@ -172,7 +172,9 @@ internal class RealBitmapPool(
             add(Bitmap.Config.RGB_565)
             add(Bitmap.Config.ARGB_4444)
             add(Bitmap.Config.ARGB_8888)
-            if (SDK_INT >= 26) add(Bitmap.Config.RGBA_F16)
+            if (SDK_INT >= 26) {
+                add(Bitmap.Config.RGBA_F16)
+            }
         }
     }
 }
