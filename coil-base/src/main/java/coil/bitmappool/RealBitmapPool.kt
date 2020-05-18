@@ -10,7 +10,7 @@ import android.util.Log
 import androidx.annotation.Px
 import androidx.core.graphics.createBitmap
 import coil.util.Logger
-import coil.util.getAllocationByteCountCompat
+import coil.util.allocationByteCountCompat
 import coil.util.isHardware
 import coil.util.log
 
@@ -40,6 +40,8 @@ internal class RealBitmapPool(
         }
     }
 
+    private val bitmaps = hashSetOf<Bitmap>()
+
     private var currentSize = 0
     private var hits = 0
     private var misses = 0
@@ -54,7 +56,14 @@ internal class RealBitmapPool(
     override fun put(bitmap: Bitmap) {
         require(!bitmap.isRecycled) { "Cannot pool a recycled bitmap." }
 
-        val size = bitmap.getAllocationByteCountCompat()
+        if (bitmap in bitmaps) {
+            logger?.log(TAG, Log.VERBOSE) {
+                "Rejecting duplicate bitmap from pool: bitmap: ${strategy.stringify(bitmap)}"
+            }
+            return
+        }
+
+        val size = bitmap.allocationByteCountCompat
 
         if (!bitmap.isMutable || size > maxSize || bitmap.config !in allowedConfigs) {
             logger?.log(TAG, Log.VERBOSE) {
@@ -67,13 +76,13 @@ internal class RealBitmapPool(
             return
         }
 
+        bitmaps += bitmap
         strategy.put(bitmap)
 
         puts++
         currentSize += size
 
-        logger?.log(TAG, Log.VERBOSE) { "Put bitmap=${strategy.stringify(bitmap)}" }
-        dump()
+        logger?.log(TAG, Log.VERBOSE) { "Put bitmap=${strategy.stringify(bitmap)}\n${logStats()}" }
 
         trimToSize(maxSize)
     }
@@ -100,12 +109,12 @@ internal class RealBitmapPool(
             misses++
         } else {
             hits++
-            currentSize -= result.getAllocationByteCountCompat()
+            currentSize -= result.allocationByteCountCompat
+            bitmaps -= result
             normalize(result)
         }
 
-        logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.stringify(width, height, config)}" }
-        dump()
+        logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.stringify(width, height, config)}\n${logStats()}" }
 
         return result
     }
@@ -144,25 +153,22 @@ internal class RealBitmapPool(
         while (currentSize > size) {
             val removed = strategy.removeLast()
             if (removed == null) {
-                logger?.log(TAG, Log.WARN) { "Size mismatch, resetting.\n${computeUnchecked()}" }
+                logger?.log(TAG, Log.WARN) { "Size mismatch, resetting.\n${logStats()}" }
                 currentSize = 0
                 return
             }
-            currentSize -= removed.getAllocationByteCountCompat()
+
+            currentSize -= removed.allocationByteCountCompat
+            bitmaps -= removed
             evictions++
 
-            logger?.log(TAG, Log.VERBOSE) { "Evicting bitmap=${strategy.stringify(removed)}" }
-            dump()
+            logger?.log(TAG, Log.VERBOSE) { "Evicting bitmap=${strategy.stringify(removed)}\n${logStats()}" }
 
             removed.recycle()
         }
     }
 
-    private fun dump() {
-        logger?.log(TAG, Log.VERBOSE) { computeUnchecked() }
-    }
-
-    private fun computeUnchecked(): String {
+    private fun logStats(): String {
         return "Hits=$hits, misses=$misses, puts=$puts, evictions=$evictions, " +
             "currentSize=$currentSize, maxSize=$maxSize, strategy=$strategy"
     }

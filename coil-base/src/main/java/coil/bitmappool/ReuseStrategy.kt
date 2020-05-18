@@ -7,7 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import coil.collection.LinkedMultimap
 import coil.util.Utils
-import coil.util.getAllocationByteCountCompat
+import coil.util.allocationByteCountCompat
 import java.util.TreeMap
 
 /** The [Bitmap] reuse algorithm used by [RealBitmapPool]. */
@@ -51,7 +51,7 @@ internal class SizeStrategy : ReuseStrategy {
     private val sizes = TreeMap<Int, Int>()
 
     override fun put(bitmap: Bitmap) {
-        val size = bitmap.getAllocationByteCountCompat()
+        val size = bitmap.allocationByteCountCompat
         entries[size] = bitmap
         sizes[size] = sizes.getOrElse(size) { 0 } + 1
     }
@@ -78,7 +78,7 @@ internal class SizeStrategy : ReuseStrategy {
     override fun removeLast(): Bitmap? {
         val removed = entries.removeLast()
         if (removed != null) {
-            decrementBitmapOfSize(removed.getAllocationByteCountCompat(), removed)
+            decrementBitmapOfSize(removed.allocationByteCountCompat, removed)
         }
         return removed
     }
@@ -95,7 +95,7 @@ internal class SizeStrategy : ReuseStrategy {
         }
     }
 
-    override fun stringify(bitmap: Bitmap) = "[${bitmap.getAllocationByteCountCompat()}]"
+    override fun stringify(bitmap: Bitmap) = "[${bitmap.allocationByteCountCompat}]"
 
     override fun stringify(@Px width: Int, @Px height: Int, config: Bitmap.Config): String {
         return "[${Utils.calculateAllocationByteCount(width, height, config)}]"

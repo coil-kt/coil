@@ -65,7 +65,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         private const val CLEAN_UP_INTERVAL = 10
     }
 
-    @VisibleForTesting internal val cache = HashMap<Key, ArrayList<WeakValue>>()
+    @VisibleForTesting internal val cache = hashMapOf<Key, ArrayList<WeakValue>>()
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
     override fun get(key: Key): Value? {

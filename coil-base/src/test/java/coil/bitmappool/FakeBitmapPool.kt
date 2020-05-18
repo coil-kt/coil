@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.Px
 import coil.util.Utils
-import coil.util.getAllocationByteCountCompat
+import coil.util.allocationByteCountCompat
 
 class FakeBitmapPool : BitmapPool {
 
@@ -33,7 +33,7 @@ class FakeBitmapPool : BitmapPool {
         gets += Get(width, height, config)
 
         val size = Utils.calculateAllocationByteCount(width, height, config)
-        val index = bitmaps.indexOfFirst { it.getAllocationByteCountCompat() >= size }
+        val index = bitmaps.indexOfFirst { it.allocationByteCountCompat >= size }
         return if (index != -1) {
             val bitmap = bitmaps[index]
             bitmaps.removeAt(index)

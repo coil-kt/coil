@@ -169,7 +169,7 @@ public abstract interface annotation class coil/annotation/ExperimentalCoilApi :
 public abstract interface class coil/bitmappool/BitmapPool {
 	public static final field Companion Lcoil/bitmappool/BitmapPool$Companion;
 	public abstract fun clear ()V
-	public static fun create (ILcoil/util/Logger;)Lcoil/bitmappool/BitmapPool;
+	public static fun create (I)Lcoil/bitmappool/BitmapPool;
 	public abstract fun get (IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;
 	public abstract fun getDirty (IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;
 	public abstract fun getDirtyOrNull (IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;
@@ -179,8 +179,7 @@ public abstract interface class coil/bitmappool/BitmapPool {
 }
 
 public final class coil/bitmappool/BitmapPool$Companion {
-	public final fun create (ILcoil/util/Logger;)Lcoil/bitmappool/BitmapPool;
-	public static synthetic fun create$default (Lcoil/bitmappool/BitmapPool$Companion;ILcoil/util/Logger;ILjava/lang/Object;)Lcoil/bitmappool/BitmapPool;
+	public final fun create (I)Lcoil/bitmappool/BitmapPool;
 }
 
 public final class coil/collection/SparseIntArraySet {

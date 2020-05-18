@@ -10,32 +10,33 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toDrawable
 
 @Suppress("DEPRECATION")
-internal fun Bitmap.Config?.getBytesPerPixel(): Int {
-    return when {
+internal val Bitmap.Config?.bytesPerPixel: Int
+    get() = when {
         this == Bitmap.Config.ALPHA_8 -> 1
         this == Bitmap.Config.RGB_565 -> 2
         this == Bitmap.Config.ARGB_4444 -> 2
         SDK_INT >= 26 && this == Bitmap.Config.RGBA_F16 -> 8
         else -> 4
     }
-}
 
-internal inline fun Bitmap.toDrawable(context: Context): BitmapDrawable = toDrawable(context.resources)
+/**
+ * Returns the in memory size of this [Bitmap] in bytes.
+ * This value will not change over the lifetime of a Bitmap.
+ */
+internal val Bitmap.allocationByteCountCompat: Int
+    get() {
+        check(!isRecycled) { "Cannot obtain size for recycled bitmap: $this [$width x $height] + $config" }
 
-/** Returns the in memory size of this [Bitmap] in bytes. */
-internal fun Bitmap.getAllocationByteCountCompat(): Int {
-    check(!isRecycled) { "Cannot obtain size for recycled Bitmap: $this [$width x $height] + $config" }
-
-    return try {
-        if (SDK_INT >= 19) {
-            allocationByteCount
-        } else {
-            rowBytes * height
+        return try {
+            if (SDK_INT >= 19) {
+                allocationByteCount
+            } else {
+                rowBytes * height
+            }
+        } catch (_: Exception) {
+            Utils.calculateAllocationByteCount(width, height, config)
         }
-    } catch (_: Exception) {
-        Utils.calculateAllocationByteCount(width, height, config)
     }
-}
 
 internal val Bitmap.Config.isHardware: Boolean
     get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
@@ -43,6 +44,8 @@ internal val Bitmap.Config.isHardware: Boolean
 /** Guard against null bitmap configs. */
 internal val Bitmap.safeConfig: Bitmap.Config
     get() = config ?: Bitmap.Config.ARGB_8888
+
+internal inline fun Bitmap.toDrawable(context: Context): BitmapDrawable = toDrawable(context.resources)
 
 /** Convert null and [Bitmap.Config.HARDWARE] configs to [Bitmap.Config.ARGB_8888]. */
 internal fun Bitmap.Config?.toSoftware(): Bitmap.Config {
