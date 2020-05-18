@@ -3,26 +3,25 @@ package coil.collection
 import coil.util.removeLast
 
 /**
- * Similar to [LinkedHashMap] when access ordered except that it is access ordered
- * on groups of objects rather than an individual object.
+ * An access-ordered map that stores multiple values for each key.
  *
  * Adapted from [Glide](https://github.com/bumptech/glide)'s GroupedLinkedMap.
  * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
-internal class GroupedLinkedMap<K, V> {
+internal class LinkedMultimap<K, V> {
 
-    private val head = LinkedEntry<K, V>()
-    private val keyToEntry = HashMap<K, LinkedEntry<K, V>>()
+    private val head = LinkedEntry<K, V>(null)
+    private val map = HashMap<K, LinkedEntry<K, V>>()
 
     operator fun set(key: K, value: V) {
-        val entry = keyToEntry.getOrPut(key) {
+        val entry = map.getOrPut(key) {
             LinkedEntry<K, V>(key).apply(::makeTail)
         }
         entry.add(value)
     }
 
     operator fun get(key: K): V? {
-        val entry = keyToEntry.getOrPut(key) {
+        val entry = map.getOrPut(key) {
             LinkedEntry(key)
         }
         makeHead(entry)
@@ -37,14 +36,10 @@ internal class GroupedLinkedMap<K, V> {
             if (removed != null) {
                 return removed
             } else {
-                // Clean up empty LRU entries since they are likely to have been one off or
-                // unusual sizes and are not likely to be requested again.
-                // Doing so will speed up our removeLast operation in the future and prevent our
-                // linked list from growing to arbitrarily large sizes.
+                // Remove the empty LinkedEntry.
                 removeEntry(last)
-                keyToEntry.remove(last.key)
+                map.remove(last.key)
             }
-
             last = last.prev
         }
 
@@ -52,26 +47,21 @@ internal class GroupedLinkedMap<K, V> {
     }
 
     override fun toString() = buildString {
-        append("GroupedLinkedMap( ")
+        append("LinkedMultimap( ")
 
         var current = head.next
-        var hasAtLeastOneItem = false
 
         while (current != head) {
-            hasAtLeastOneItem = true
-
             append('{')
             append(current.key)
             append(':')
-            append(current.size())
-            append("}, ")
+            append(current.size)
+            append('}')
 
             current = current.next
+            if (current != head) append(", ")
         }
 
-        if (hasAtLeastOneItem) {
-            delete(length - 2, length)
-        }
         append(" )")
     }
 
@@ -80,7 +70,7 @@ internal class GroupedLinkedMap<K, V> {
         removeEntry(entry)
         entry.prev = head
         entry.next = head.next
-        updateEntry(entry)
+        insertEntry(entry)
     }
 
     /** Make [entry] the least recently used item. */
@@ -88,31 +78,34 @@ internal class GroupedLinkedMap<K, V> {
         removeEntry(entry)
         entry.prev = head.prev
         entry.next = head
-        updateEntry(entry)
+        insertEntry(entry)
     }
 
-    private fun <K, V> updateEntry(entry: LinkedEntry<K, V>) {
+    /** Update [entry]'s neighbors to reference [entry]. */
+    private fun <K, V> insertEntry(entry: LinkedEntry<K, V>) {
         entry.next.prev = entry
         entry.prev.next = entry
     }
 
+    /** Update [entry]'s neighbors to reference each other. */
     private fun <K, V> removeEntry(entry: LinkedEntry<K, V>) {
         entry.prev.next = entry.next
         entry.next.prev = entry.prev
     }
 
-    private class LinkedEntry<K, V>(val key: K? = null) {
+    private class LinkedEntry<K, V>(@JvmField val key: K?) {
 
         private var values: MutableList<V>? = null
-        var prev: LinkedEntry<K, V> = this
-        var next: LinkedEntry<K, V> = prev
+
+        @JvmField var prev: LinkedEntry<K, V> = this
+        @JvmField var next: LinkedEntry<K, V> = this
+
+        val size: Int get() = values?.size ?: 0
 
         fun removeLast(): V? = values?.removeLast()
 
-        fun size(): Int = values?.count() ?: 0
-
         fun add(value: V) {
-            values = (values ?: mutableListOf()).apply { add(value) }
+            (values ?: mutableListOf<V>().also { values = it }) += value
         }
     }
 }

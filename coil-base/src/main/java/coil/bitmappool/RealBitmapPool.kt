@@ -8,26 +8,21 @@ import android.graphics.Color
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.Px
-import androidx.collection.arraySetOf
 import androidx.core.graphics.createBitmap
-import coil.bitmappool.strategy.BitmapPoolStrategy
 import coil.util.Logger
 import coil.util.getAllocationByteCountCompat
 import coil.util.isHardware
 import coil.util.log
 
 /**
- * A [BitmapPool] implementation that uses a [BitmapPoolStrategy] to bucket [Bitmap]s
+ * A [BitmapPool] implementation that uses a [ReuseStrategy] to bucket [Bitmap]s
  * and then uses an LRU eviction policy to evict [Bitmap]s from the least
  * recently used bucket in order to keep the pool below a given maximum size limit.
- *
- * Adapted from [Glide](https://github.com/bumptech/glide)'s LruBitmapPool.
- * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
 internal class RealBitmapPool(
     private val maxSize: Int,
-    private val allowedConfigs: Set<Bitmap.Config> = getDefaultAllowedConfigs(),
-    private val strategy: BitmapPoolStrategy = BitmapPoolStrategy(),
+    private val allowedConfigs: Set<Bitmap.Config> = ALLOWED_CONFIGS,
+    private val strategy: ReuseStrategy = ReuseStrategy(),
     private val logger: Logger? = null
 ) : BitmapPool {
 
@@ -35,17 +30,13 @@ internal class RealBitmapPool(
         private const val TAG = "RealBitmapPool"
 
         @Suppress("DEPRECATION")
-        private fun getDefaultAllowedConfigs(): Set<Bitmap.Config> {
-            val configs = arraySetOf(
-                Bitmap.Config.ALPHA_8,
-                Bitmap.Config.RGB_565,
-                Bitmap.Config.ARGB_4444,
-                Bitmap.Config.ARGB_8888
-            )
-            if (SDK_INT >= 26) {
-                configs += Bitmap.Config.RGBA_F16
-            }
-            return configs
+        @OptIn(ExperimentalStdlibApi::class)
+        private val ALLOWED_CONFIGS = buildSet {
+            add(Bitmap.Config.ALPHA_8)
+            add(Bitmap.Config.RGB_565)
+            add(Bitmap.Config.ARGB_4444)
+            add(Bitmap.Config.ARGB_8888)
+            if (SDK_INT >= 26) add(Bitmap.Config.RGBA_F16)
         }
     }
 
@@ -61,13 +52,13 @@ internal class RealBitmapPool(
 
     @Synchronized
     override fun put(bitmap: Bitmap) {
-        require(!bitmap.isRecycled) { "Cannot pool recycled bitmap!" }
+        require(!bitmap.isRecycled) { "Cannot pool a recycled bitmap." }
 
         val size = bitmap.getAllocationByteCountCompat()
 
         if (!bitmap.isMutable || size > maxSize || bitmap.config !in allowedConfigs) {
             logger?.log(TAG, Log.VERBOSE) {
-                "Rejected bitmap from pool: bitmap: ${strategy.logBitmap(bitmap)}, " +
+                "Rejecting bitmap from pool: bitmap: ${strategy.stringify(bitmap)}, " +
                     "is mutable: ${bitmap.isMutable}, " +
                     "is greater than max size: ${size > maxSize}" +
                     "is allowed config: ${bitmap.config in allowedConfigs}"
@@ -81,7 +72,7 @@ internal class RealBitmapPool(
         puts++
         currentSize += size
 
-        logger?.log(TAG, Log.VERBOSE) { "Put bitmap in pool=${strategy.logBitmap(bitmap)}" }
+        logger?.log(TAG, Log.VERBOSE) { "Put bitmap=${strategy.stringify(bitmap)}" }
         dump()
 
         trimToSize(maxSize)
@@ -105,7 +96,7 @@ internal class RealBitmapPool(
 
         val result = strategy.get(width, height, config)
         if (result == null) {
-            logger?.log(TAG, Log.VERBOSE) { "Missing bitmap=${strategy.logBitmap(width, height, config)}" }
+            logger?.log(TAG, Log.VERBOSE) { "Missing bitmap=${strategy.stringify(width, height, config)}" }
             misses++
         } else {
             hits++
@@ -113,7 +104,7 @@ internal class RealBitmapPool(
             normalize(result)
         }
 
-        logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.logBitmap(width, height, config)}" }
+        logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.stringify(width, height, config)}" }
         dump()
 
         return result
@@ -160,7 +151,7 @@ internal class RealBitmapPool(
             currentSize -= removed.getAllocationByteCountCompat()
             evictions++
 
-            logger?.log(TAG, Log.VERBOSE) { "Evicting bitmap=${strategy.logBitmap(removed)}" }
+            logger?.log(TAG, Log.VERBOSE) { "Evicting bitmap=${strategy.stringify(removed)}" }
             dump()
 
             removed.recycle()

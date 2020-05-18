@@ -8,19 +8,19 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
-class GroupedLinkedMapTest {
+class LinkedMultimapTest {
 
-    private lateinit var map: GroupedLinkedMap<Key, Any>
+    private lateinit var multimap: LinkedMultimap<Key, Any>
 
     @Before
     fun before() {
-        map = GroupedLinkedMap()
+        multimap = LinkedMultimap()
     }
 
     @Test
     fun `get when empty returns null`() {
         val key = Key("key", 1, 1)
-        assertNull(map[key])
+        assertNull(multimap[key])
     }
 
     @Test
@@ -28,9 +28,9 @@ class GroupedLinkedMapTest {
         val key = Key("key", 1, 1)
         val expected = Any()
 
-        map[key] = expected
+        multimap[key] = expected
 
-        assertEquals(expected, map[key])
+        assertEquals(expected, multimap[key])
     }
 
     @Test
@@ -40,11 +40,11 @@ class GroupedLinkedMapTest {
         val numToAdd = 10
 
         for (i in 0 until numToAdd) {
-            map[key] = value
+            multimap[key] = value
         }
 
         for (i in 0 until numToAdd) {
-            assertEquals(value, map[key])
+            assertEquals(value, multimap[key])
         }
     }
 
@@ -52,16 +52,16 @@ class GroupedLinkedMapTest {
     fun `least recently retrieved key is least recently used`() {
         val firstKey = Key("key", 1, 1)
         val firstValue = 10
-        map[firstKey] = firstValue
-        map[firstKey] = firstValue
+        multimap[firstKey] = firstValue
+        multimap[firstKey] = firstValue
 
         val secondKey = Key("key", 2, 2)
         val secondValue = 20
-        map[secondKey] = secondValue
+        multimap[secondKey] = secondValue
 
-        map[firstKey]
+        multimap[firstKey]
 
-        assertEquals(secondValue, map.removeLast())
+        assertEquals(secondValue, multimap.removeLast())
     }
 
     @Test
@@ -69,15 +69,15 @@ class GroupedLinkedMapTest {
         val firstKey = Key("key", 1, 1)
         val firstValue = 10
 
-        map[firstKey] = firstValue
-        map[firstKey] = firstValue
+        multimap[firstKey] = firstValue
+        multimap[firstKey] = firstValue
 
-        map[firstKey]
+        multimap[firstKey]
 
         val secondValue = 20
-        map[Key("key", 2, 2)] = secondValue
+        multimap[Key("key", 2, 2)] = secondValue
 
-        assertEquals(secondValue, map.removeLast())
+        assertEquals(secondValue, multimap.removeLast())
     }
 
     private data class Key(

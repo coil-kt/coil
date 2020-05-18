@@ -4,7 +4,6 @@ import android.content.ComponentCallbacks2
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.annotation.Px
-import coil.util.Logger
 
 /**
  * An object pool that enables callers to reuse [Bitmap] objects.
@@ -20,15 +19,12 @@ interface BitmapPool {
         @JvmStatic
         // @JvmOverloads https://youtrack.jetbrains.com/issue/KT-35716
         @JvmName("create")
-        operator fun invoke(
-            maxSize: Int,
-            logger: Logger? = null
-        ): BitmapPool = RealBitmapPool(maxSize = maxSize, logger = logger)
+        operator fun invoke(maxSize: Int): BitmapPool = RealBitmapPool(maxSize)
     }
 
     /**
      * Add the given [Bitmap] to the pool if it is eligible to be re-used and the pool can fit it.
-     * Otherwise, this method calls [Bitmap.recycle] on the Bitmap and discards it.
+     * Otherwise, this method calls [Bitmap.recycle] on the bitmap and discards it.
      *
      * Callers **must not** continue to use the bitmap after calling this method.
      */

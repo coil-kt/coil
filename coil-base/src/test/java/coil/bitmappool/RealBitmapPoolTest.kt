@@ -7,7 +7,6 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
-import coil.bitmappool.strategy.FakeBitmapPoolStrategy
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
 import org.junit.Before
@@ -27,12 +26,12 @@ class RealBitmapPoolTest {
         private val ALLOWED_CONFIGS = setOf(Bitmap.Config.ARGB_8888)
     }
 
-    private lateinit var strategy: FakeBitmapPoolStrategy
+    private lateinit var strategy: FakeReuseStrategy
     private lateinit var pool: RealBitmapPool
 
     @Before
     fun before() {
-        strategy = FakeBitmapPoolStrategy()
+        strategy = FakeReuseStrategy()
         pool = RealBitmapPool(MAX_SIZE, ALLOWED_CONFIGS, strategy)
     }
 
@@ -107,7 +106,7 @@ class RealBitmapPoolTest {
     }
 
     private fun testTrimMemory(trimLevel: Int, numRemoves: Int) {
-        val strategy = FakeBitmapPoolStrategy()
+        val strategy = FakeReuseStrategy()
         val pool = RealBitmapPool(MAX_SIZE, ALLOWED_CONFIGS, strategy)
         pool.fill(MAX_BITMAPS)
         pool.trimMemory(trimLevel)

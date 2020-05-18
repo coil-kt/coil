@@ -1,5 +1,3 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package coil.memory
 
 import android.content.ComponentCallbacks2
@@ -68,7 +66,6 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     }
 
     @VisibleForTesting internal val cache = HashMap<Key, ArrayList<WeakValue>>()
-
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
     override fun get(key: Key): Value? {
