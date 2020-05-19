@@ -15,7 +15,7 @@ import coil.util.isHardware
 import coil.util.log
 
 /**
- * A [BitmapPool] implementation that uses a [ReuseStrategy] to bucket [Bitmap]s
+ * A [BitmapPool] implementation that uses a [BitmapPoolStrategy] to bucket [Bitmap]s
  * and then uses an LRU eviction policy to evict [Bitmap]s from the least
  * recently used bucket in order to keep the pool below a given maximum size limit.
  *
@@ -25,7 +25,7 @@ import coil.util.log
 internal class RealBitmapPool(
     private val maxSize: Int,
     private val allowedConfigs: Set<Bitmap.Config> = ALLOWED_CONFIGS,
-    private val strategy: ReuseStrategy = ReuseStrategy(),
+    private val strategy: BitmapPoolStrategy = BitmapPoolStrategy(),
     private val logger: Logger? = null
 ) : BitmapPool {
 

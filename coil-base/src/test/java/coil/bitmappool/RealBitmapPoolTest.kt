@@ -26,12 +26,12 @@ class RealBitmapPoolTest {
         private val ALLOWED_CONFIGS = setOf(Bitmap.Config.ARGB_8888)
     }
 
-    private lateinit var strategy: FakeReuseStrategy
+    private lateinit var strategy: FakeBitmapPoolStrategy
     private lateinit var pool: RealBitmapPool
 
     @Before
     fun before() {
-        strategy = FakeReuseStrategy()
+        strategy = FakeBitmapPoolStrategy()
         pool = RealBitmapPool(MAX_SIZE, ALLOWED_CONFIGS, strategy)
     }
 
@@ -106,7 +106,7 @@ class RealBitmapPoolTest {
     }
 
     private fun testTrimMemory(trimLevel: Int, numRemoves: Int) {
-        val strategy = FakeReuseStrategy()
+        val strategy = FakeBitmapPoolStrategy()
         val pool = RealBitmapPool(MAX_SIZE, ALLOWED_CONFIGS, strategy)
         pool.fill(MAX_BITMAPS)
         pool.trimMemory(trimLevel)

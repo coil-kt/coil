@@ -11,13 +11,13 @@ import coil.util.allocationByteCountCompat
 import java.util.TreeMap
 
 /** The [Bitmap] reuse algorithm used by [RealBitmapPool]. */
-internal interface ReuseStrategy {
+internal interface BitmapPoolStrategy {
 
     companion object {
-        operator fun invoke(): ReuseStrategy {
+        operator fun invoke(): BitmapPoolStrategy {
             return when {
-                SDK_INT >= 19 -> SizeStrategy()
-                else -> AttributeStrategy()
+                SDK_INT >= 19 -> BitmapPoolStrategyApi19()
+                else -> BitmapPoolStrategyApi14()
             }
         }
     }
@@ -41,7 +41,7 @@ internal interface ReuseStrategy {
 /** A strategy for reusing bitmaps that relies on [Bitmap.reconfigure]. */
 @VisibleForTesting
 @RequiresApi(19)
-internal class SizeStrategy : ReuseStrategy {
+internal class BitmapPoolStrategyApi19 : BitmapPoolStrategy {
 
     private val entries = LinkedMultimap<Int, Bitmap>()
     private val sizes = TreeMap<Int, Int>()
@@ -97,7 +97,7 @@ internal class SizeStrategy : ReuseStrategy {
         return "[${Utils.calculateAllocationByteCount(width, height, config)}]"
     }
 
-    override fun toString() = "SizeStrategy: entries=$entries, sizes=$sizes"
+    override fun toString() = "BitmapPoolStrategyApi19: entries=$entries, sizes=$sizes"
 
     companion object {
         private const val MAX_SIZE_MULTIPLE = 8
@@ -106,7 +106,7 @@ internal class SizeStrategy : ReuseStrategy {
 
 /** A strategy for reusing bitmaps that requires bitmaps' width, height, and config to match exactly. */
 @VisibleForTesting
-internal class AttributeStrategy : ReuseStrategy {
+internal class BitmapPoolStrategyApi14 : BitmapPoolStrategy {
 
     private val entries = LinkedMultimap<Key, Bitmap>()
 
@@ -126,7 +126,7 @@ internal class AttributeStrategy : ReuseStrategy {
 
     override fun stringify(width: Int, height: Int, config: Bitmap.Config) = "[$width x $height], $config"
 
-    override fun toString() = "AttributeStrategy: entries=$entries"
+    override fun toString() = "BitmapPoolStrategyApi14: entries=$entries"
 
     private data class Key(
         @Px val width: Int,
