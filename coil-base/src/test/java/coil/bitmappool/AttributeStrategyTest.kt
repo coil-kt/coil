@@ -1,4 +1,4 @@
-package coil.bitmappool.strategy
+package coil.bitmappool
 
 import android.graphics.Bitmap
 import coil.util.createBitmap

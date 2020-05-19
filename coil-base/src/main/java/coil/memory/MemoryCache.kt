@@ -14,7 +14,7 @@ import coil.request.Parameters
 import coil.size.Size
 import coil.transform.Transformation
 import coil.util.Logger
-import coil.util.getAllocationByteCountCompat
+import coil.util.allocationByteCountCompat
 import coil.util.log
 import coil.util.mapIndices
 
@@ -154,7 +154,7 @@ private class ForwardingMemoryCache(
     override fun get(key: Key) = weakMemoryCache.get(key)
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
-        weakMemoryCache.set(key, bitmap, isSampled, bitmap.getAllocationByteCountCompat())
+        weakMemoryCache.set(key, bitmap, isSampled, bitmap.allocationByteCountCompat)
     }
 
     override fun size() = 0
@@ -202,7 +202,7 @@ private class RealMemoryCache(
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
         // the cache to be cleared. Instead just evict an existing element with the same key if it exists.
-        val size = bitmap.getAllocationByteCountCompat()
+        val size = bitmap.allocationByteCountCompat
         if (size > maxSize()) {
             val previous = cache.remove(key)
             if (previous == null) {

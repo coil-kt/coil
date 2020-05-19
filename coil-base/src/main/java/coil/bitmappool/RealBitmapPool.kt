@@ -8,11 +8,9 @@ import android.graphics.Color
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.Px
-import androidx.collection.arraySetOf
 import androidx.core.graphics.createBitmap
-import coil.bitmappool.strategy.BitmapPoolStrategy
 import coil.util.Logger
-import coil.util.getAllocationByteCountCompat
+import coil.util.allocationByteCountCompat
 import coil.util.isHardware
 import coil.util.log
 
@@ -26,28 +24,12 @@ import coil.util.log
  */
 internal class RealBitmapPool(
     private val maxSize: Int,
-    private val allowedConfigs: Set<Bitmap.Config> = getDefaultAllowedConfigs(),
+    private val allowedConfigs: Set<Bitmap.Config> = ALLOWED_CONFIGS,
     private val strategy: BitmapPoolStrategy = BitmapPoolStrategy(),
     private val logger: Logger? = null
 ) : BitmapPool {
 
-    companion object {
-        private const val TAG = "RealBitmapPool"
-
-        @Suppress("DEPRECATION")
-        private fun getDefaultAllowedConfigs(): Set<Bitmap.Config> {
-            val configs = arraySetOf(
-                Bitmap.Config.ALPHA_8,
-                Bitmap.Config.RGB_565,
-                Bitmap.Config.ARGB_4444,
-                Bitmap.Config.ARGB_8888
-            )
-            if (SDK_INT >= 26) {
-                configs += Bitmap.Config.RGBA_F16
-            }
-            return configs
-        }
-    }
+    private val bitmaps = hashSetOf<Bitmap>()
 
     private var currentSize = 0
     private var hits = 0
@@ -61,13 +43,20 @@ internal class RealBitmapPool(
 
     @Synchronized
     override fun put(bitmap: Bitmap) {
-        require(!bitmap.isRecycled) { "Cannot pool recycled bitmap!" }
+        require(!bitmap.isRecycled) { "Cannot pool a recycled bitmap." }
 
-        val size = bitmap.getAllocationByteCountCompat()
+        if (bitmap in bitmaps) {
+            logger?.log(TAG, Log.WARN) {
+                "Rejecting duplicate bitmap from pool: bitmap: ${strategy.stringify(bitmap)}"
+            }
+            return
+        }
+
+        val size = bitmap.allocationByteCountCompat
 
         if (!bitmap.isMutable || size > maxSize || bitmap.config !in allowedConfigs) {
             logger?.log(TAG, Log.VERBOSE) {
-                "Rejected bitmap from pool: bitmap: ${strategy.logBitmap(bitmap)}, " +
+                "Rejecting bitmap from pool: bitmap: ${strategy.stringify(bitmap)}, " +
                     "is mutable: ${bitmap.isMutable}, " +
                     "is greater than max size: ${size > maxSize}" +
                     "is allowed config: ${bitmap.config in allowedConfigs}"
@@ -76,13 +65,13 @@ internal class RealBitmapPool(
             return
         }
 
+        bitmaps += bitmap
         strategy.put(bitmap)
 
         puts++
         currentSize += size
 
-        logger?.log(TAG, Log.VERBOSE) { "Put bitmap in pool=${strategy.logBitmap(bitmap)}" }
-        dump()
+        logger?.log(TAG, Log.VERBOSE) { "Put bitmap=${strategy.stringify(bitmap)}\n${logStats()}" }
 
         trimToSize(maxSize)
     }
@@ -105,16 +94,16 @@ internal class RealBitmapPool(
 
         val result = strategy.get(width, height, config)
         if (result == null) {
-            logger?.log(TAG, Log.VERBOSE) { "Missing bitmap=${strategy.logBitmap(width, height, config)}" }
+            logger?.log(TAG, Log.VERBOSE) { "Missing bitmap=${strategy.stringify(width, height, config)}" }
             misses++
         } else {
             hits++
-            currentSize -= result.getAllocationByteCountCompat()
+            currentSize -= result.allocationByteCountCompat
+            bitmaps -= result
             normalize(result)
         }
 
-        logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.logBitmap(width, height, config)}" }
-        dump()
+        logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.stringify(width, height, config)}\n${logStats()}" }
 
         return result
     }
@@ -136,16 +125,11 @@ internal class RealBitmapPool(
         }
     }
 
-    /**
-     * Setting these two values provides bitmaps that are essentially
-     * equivalent to those returned from [Bitmap.createBitmap].
-     */
+    /** Configure [bitmap] so it's essentially equivalent to a bitmap returned by [Bitmap.createBitmap]. */
     private fun normalize(bitmap: Bitmap) {
         bitmap.density = Bitmap.DENSITY_NONE
         bitmap.setHasAlpha(true)
-        if (SDK_INT >= 19) {
-            bitmap.isPremultiplied = true
-        }
+        if (SDK_INT >= 19) bitmap.isPremultiplied = true
     }
 
     @Synchronized
@@ -153,26 +137,37 @@ internal class RealBitmapPool(
         while (currentSize > size) {
             val removed = strategy.removeLast()
             if (removed == null) {
-                logger?.log(TAG, Log.WARN) { "Size mismatch, resetting.\n${computeUnchecked()}" }
+                logger?.log(TAG, Log.WARN) { "Size mismatch, resetting.\n${logStats()}" }
                 currentSize = 0
                 return
             }
-            currentSize -= removed.getAllocationByteCountCompat()
+
+            currentSize -= removed.allocationByteCountCompat
+            bitmaps -= removed
             evictions++
 
-            logger?.log(TAG, Log.VERBOSE) { "Evicting bitmap=${strategy.logBitmap(removed)}" }
-            dump()
+            logger?.log(TAG, Log.VERBOSE) { "Evicting bitmap=${strategy.stringify(removed)}\n${logStats()}" }
 
             removed.recycle()
         }
     }
 
-    private fun dump() {
-        logger?.log(TAG, Log.VERBOSE) { computeUnchecked() }
-    }
-
-    private fun computeUnchecked(): String {
+    private fun logStats(): String {
         return "Hits=$hits, misses=$misses, puts=$puts, evictions=$evictions, " +
             "currentSize=$currentSize, maxSize=$maxSize, strategy=$strategy"
+    }
+
+    companion object {
+        private const val TAG = "RealBitmapPool"
+
+        @Suppress("DEPRECATION")
+        @OptIn(ExperimentalStdlibApi::class)
+        private val ALLOWED_CONFIGS = buildSet {
+            add(Bitmap.Config.ALPHA_8)
+            add(Bitmap.Config.RGB_565)
+            add(Bitmap.Config.ARGB_4444)
+            add(Bitmap.Config.ARGB_8888)
+            if (SDK_INT >= 26) add(Bitmap.Config.RGBA_F16)
+        }
     }
 }

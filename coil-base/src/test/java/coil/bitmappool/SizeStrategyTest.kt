@@ -1,4 +1,4 @@
-package coil.bitmappool.strategy
+package coil.bitmappool
 
 import android.graphics.Bitmap
 import coil.util.createBitmap
@@ -9,13 +9,13 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-class SizeConfigStrategyTest {
+class SizeStrategyTest {
 
-    private lateinit var strategy: SizeConfigStrategy
+    private lateinit var strategy: SizeStrategy
 
     @Before
     fun before() {
-        strategy = SizeConfigStrategy()
+        strategy = SizeStrategy()
     }
 
     @Test
@@ -35,10 +35,10 @@ class SizeConfigStrategyTest {
     }
 
     @Test
-    fun `large enough bitmap with different config is not reused`() {
+    fun `large enough bitmap with different config is reused`() {
         val bitmap = createBitmap(width = 250, height = 250, config = Bitmap.Config.RGB_565)
         strategy.put(bitmap)
 
-        assertEquals(null, strategy.get(100, 100, Bitmap.Config.ARGB_8888))
+        assertEquals(bitmap, strategy.get(100, 100, Bitmap.Config.ARGB_8888))
     }
 }

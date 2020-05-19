@@ -24,7 +24,7 @@ internal object Utils {
 
     /** Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config]. */
     fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
-        return width * height * config.getBytesPerPixel()
+        return width * height * config.bytesPerPixel
     }
 
     fun getDefaultCacheDirectory(context: Context): File {

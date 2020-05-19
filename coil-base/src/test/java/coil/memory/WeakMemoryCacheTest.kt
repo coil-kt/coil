@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.collection.arraySetOf
 import androidx.test.core.app.ApplicationProvider
 import coil.memory.MemoryCache.Key
+import coil.util.allocationByteCountCompat
 import coil.util.clear
 import coil.util.count
 import coil.util.createBitmap
-import coil.util.getAllocationByteCountCompat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,7 +37,7 @@ class WeakMemoryCacheTest {
         val key = Key("key")
         val bitmap = reference(createBitmap())
         val isSampled = false
-        val size = bitmap.getAllocationByteCountCompat()
+        val size = bitmap.allocationByteCountCompat
 
         weakMemoryCache.set(key, bitmap, isSampled, size)
         val value = weakMemoryCache.get(key)
@@ -160,7 +160,7 @@ class WeakMemoryCacheTest {
     fun `value is removed after invalidate is called`() {
         val key = Key("1")
         val bitmap = createBitmap()
-        weakMemoryCache.set(key, bitmap, false, bitmap.getAllocationByteCountCompat())
+        weakMemoryCache.set(key, bitmap, false, bitmap.allocationByteCountCompat)
         weakMemoryCache.invalidate(key)
 
         assertNull(weakMemoryCache.get(key))
