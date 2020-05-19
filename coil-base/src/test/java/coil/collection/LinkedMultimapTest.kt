@@ -20,7 +20,7 @@ class LinkedMultimapTest {
     @Test
     fun `get when empty returns null`() {
         val key = Key("key", 1, 1)
-        assertNull(multimap[key])
+        assertNull(multimap.removeLast(key))
     }
 
     @Test
@@ -28,9 +28,9 @@ class LinkedMultimapTest {
         val key = Key("key", 1, 1)
         val expected = Any()
 
-        multimap[key] = expected
+        multimap.add(key, expected)
 
-        assertEquals(expected, multimap[key])
+        assertEquals(expected, multimap.removeLast(key))
     }
 
     @Test
@@ -40,11 +40,11 @@ class LinkedMultimapTest {
         val numToAdd = 10
 
         for (i in 0 until numToAdd) {
-            multimap[key] = value
+            multimap.add(key, value)
         }
 
         for (i in 0 until numToAdd) {
-            assertEquals(value, multimap[key])
+            assertEquals(value, multimap.removeLast(key))
         }
     }
 
@@ -52,14 +52,14 @@ class LinkedMultimapTest {
     fun `least recently retrieved key is least recently used`() {
         val firstKey = Key("key", 1, 1)
         val firstValue = 10
-        multimap[firstKey] = firstValue
-        multimap[firstKey] = firstValue
+        multimap.add(firstKey, firstValue)
+        multimap.add(firstKey, firstValue)
 
         val secondKey = Key("key", 2, 2)
         val secondValue = 20
-        multimap[secondKey] = secondValue
+        multimap.add(secondKey, secondValue)
 
-        multimap[firstKey]
+        multimap.removeLast(firstKey)
 
         assertEquals(secondValue, multimap.removeLast())
     }
@@ -69,13 +69,13 @@ class LinkedMultimapTest {
         val firstKey = Key("key", 1, 1)
         val firstValue = 10
 
-        multimap[firstKey] = firstValue
-        multimap[firstKey] = firstValue
+        multimap.add(firstKey, firstValue)
+        multimap.add(firstKey, firstValue)
 
-        multimap[firstKey]
+        multimap.removeLast(firstKey)
 
         val secondValue = 20
-        multimap[Key("key", 2, 2)] = secondValue
+        multimap.add(Key("key", 2, 2), secondValue)
 
         assertEquals(secondValue, multimap.removeLast())
     }

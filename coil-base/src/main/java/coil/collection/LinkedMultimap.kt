@@ -25,7 +25,7 @@ internal class LinkedMultimap<K, V>(sorted: Boolean = false) {
         entry.add(value)
     }
 
-    /** Remove and return a value associated with [key]. */
+    /** Remove and return the last value associated with [key]. */
     fun removeLast(key: K): V? {
         val entry = entries.getOrPut(key) {
             LinkedEntry(key)
@@ -34,7 +34,7 @@ internal class LinkedMultimap<K, V>(sorted: Boolean = false) {
         return entry.removeLast()
     }
 
-    /** Remove and return a value associated with the least recently accessed key. */
+    /** Remove and return the last value associated with the least recently accessed key. */
     fun removeLast(): V? {
         var last = head.prev
 

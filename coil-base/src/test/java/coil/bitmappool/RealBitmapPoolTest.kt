@@ -148,6 +148,16 @@ class RealBitmapPoolTest {
         assertEquals(0, strategy.numPuts)
     }
 
+    @Test
+    fun `the same bitmap cannot be added more than once`() {
+        val bitmap = createBitmap()
+
+        pool.put(bitmap)
+        pool.put(bitmap)
+
+        assertEquals(1, strategy.numPuts)
+    }
+
     private fun RealBitmapPool.fill(fillCount: Int) {
         repeat(fillCount) { put(createBitmap()) }
     }
