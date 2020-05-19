@@ -46,7 +46,7 @@ internal class RealBitmapPool(
         require(!bitmap.isRecycled) { "Cannot pool a recycled bitmap." }
 
         if (bitmap in bitmaps) {
-            logger?.log(TAG, Log.VERBOSE) {
+            logger?.log(TAG, Log.WARN) {
                 "Rejecting duplicate bitmap from pool: bitmap: ${strategy.stringify(bitmap)}"
             }
             return
