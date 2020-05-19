@@ -17,7 +17,7 @@ val request = LoadRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .allowHardware(false) // Disable hardware bitmaps.
     .target { drawable ->
-        val bitmap = (result.drawable as BitmapDrawable).bitmap
+        val bitmap = (drawable as BitmapDrawable).bitmap
 
         // Generate the Palette on a background thread.
         val task = Palette.Builder(bitmap).generateAsync { palette ->
@@ -41,7 +41,7 @@ val drawable = (imageLoader.execute(request) as SuccessResult).drawable
 
 val palette = coroutineScope {
     launch(Dispatchers.IO) {
-        Palette.Builder((result.drawable as BitmapDrawable).bitmap).generate()
+        Palette.Builder((drawable as BitmapDrawable).bitmap).generate()
     }
 }
 ```
