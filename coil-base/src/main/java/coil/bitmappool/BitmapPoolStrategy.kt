@@ -15,8 +15,8 @@ internal interface BitmapPoolStrategy {
     companion object {
         operator fun invoke(): BitmapPoolStrategy {
             return when {
-                SDK_INT >= 19 -> BitmapPoolStrategyApi19()
-                else -> BitmapPoolStrategyApi14()
+                SDK_INT >= 19 -> SizeStrategy()
+                else -> AttributeStrategy()
             }
         }
     }
@@ -40,7 +40,7 @@ internal interface BitmapPoolStrategy {
 /** A strategy that requires a [Bitmap]'s size to be greater than or equal to the requested size. */
 @VisibleForTesting
 @RequiresApi(19)
-internal class BitmapPoolStrategyApi19 : BitmapPoolStrategy {
+internal class SizeStrategy : BitmapPoolStrategy {
 
     private val entries = LinkedMultimap<Int, Bitmap>(sorted = true)
 
@@ -66,7 +66,7 @@ internal class BitmapPoolStrategyApi19 : BitmapPoolStrategy {
         return "[${Utils.calculateAllocationByteCount(width, height, config)}]"
     }
 
-    override fun toString() = "BitmapPoolStrategyApi19: $entries"
+    override fun toString() = "SizeStrategy: $entries"
 
     companion object {
         private const val MAX_SIZE_MULTIPLE = 8
@@ -75,7 +75,7 @@ internal class BitmapPoolStrategyApi19 : BitmapPoolStrategy {
 
 /** A strategy that requires a [Bitmap]'s width, height, and config to match the requested attributes exactly. */
 @VisibleForTesting
-internal class BitmapPoolStrategyApi14 : BitmapPoolStrategy {
+internal class AttributeStrategy : BitmapPoolStrategy {
 
     private val entries = LinkedMultimap<Key, Bitmap>()
 
@@ -93,7 +93,7 @@ internal class BitmapPoolStrategyApi14 : BitmapPoolStrategy {
 
     override fun stringify(width: Int, height: Int, config: Bitmap.Config) = "[$width x $height], $config"
 
-    override fun toString() = "BitmapPoolStrategyApi14: $entries"
+    override fun toString() = "AttributeStrategy: $entries"
 
     private data class Key(
         @Px val width: Int,

@@ -9,13 +9,13 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-class BitmapPoolStrategyApi14Test {
+class AttributeStrategyTest {
 
-    private lateinit var strategy: BitmapPoolStrategyApi14
+    private lateinit var strategy: AttributeStrategy
 
     @Before
     fun before() {
-        strategy = BitmapPoolStrategyApi14()
+        strategy = AttributeStrategy()
     }
 
     @Test
