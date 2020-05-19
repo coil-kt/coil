@@ -21,7 +21,7 @@ internal val Bitmap.Config?.bytesPerPixel: Int
 
 /**
  * Returns the in memory size of this [Bitmap] in bytes.
- * This value will not change over the lifetime of a Bitmap.
+ * This value will not change over the lifetime of a bitmap.
  */
 internal val Bitmap.allocationByteCountCompat: Int
     get() {
