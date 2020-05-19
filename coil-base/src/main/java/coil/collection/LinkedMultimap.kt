@@ -1,26 +1,32 @@
 package coil.collection
 
 import coil.util.removeLast
+import java.util.TreeMap
 
 /**
  * An access-ordered map that stores multiple values for each key.
  *
+ * @param sorted If true, [LinkedMultimap] will use a [TreeMap] as its backing map.
+ *  [ceilingKey] is only useable if the map is created with `sorted = true`.
+ *
  * Adapted from [Glide](https://github.com/bumptech/glide)'s GroupedLinkedMap.
  * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
-internal class LinkedMultimap<K, V> {
+internal class LinkedMultimap<K, V>(sorted: Boolean = false) {
 
     private val head = LinkedEntry<K, V>(null)
-    private val entries = HashMap<K, LinkedEntry<K, V>>()
+    private val entries: MutableMap<K, LinkedEntry<K, V>> = if (sorted) TreeMap() else HashMap()
 
-    operator fun set(key: K, value: V) {
+    /** Add [value] to [key]'s associate value list. */
+    fun add(key: K, value: V) {
         val entry = entries.getOrPut(key) {
             LinkedEntry<K, V>(key).apply(::makeTail)
         }
         entry.add(value)
     }
 
-    operator fun get(key: K): V? {
+    /** Remove and return a value associated with [key]. */
+    fun removeLast(key: K): V? {
         val entry = entries.getOrPut(key) {
             LinkedEntry(key)
         }
@@ -28,6 +34,7 @@ internal class LinkedMultimap<K, V> {
         return entry.removeLast()
     }
 
+    /** Remove and return a value associated with the least recently accessed key. */
     fun removeLast(): V? {
         var last = head.prev
 
@@ -36,7 +43,6 @@ internal class LinkedMultimap<K, V> {
             if (removed != null) {
                 return removed
             } else {
-                // Remove the empty LinkedEntry.
                 removeEntry(last)
                 entries.remove(last.key)
             }
@@ -44,6 +50,12 @@ internal class LinkedMultimap<K, V> {
         }
 
         return null
+    }
+
+    /** Return the least key greater than [key]. If no such key exists, return null. */
+    fun ceilingKey(key: K): K? {
+        check(entries is TreeMap) { "LinkedMultimap is not sorted." }
+        return entries.ceilingKey(key)
     }
 
     override fun toString() = buildString {

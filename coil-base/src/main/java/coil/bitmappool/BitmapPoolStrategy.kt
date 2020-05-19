@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting
 import coil.collection.LinkedMultimap
 import coil.util.Utils
 import coil.util.allocationByteCountCompat
-import java.util.TreeMap
 
 /** The [Bitmap] reuse algorithm used by [RealBitmapPool]. */
 internal interface BitmapPoolStrategy {
@@ -34,62 +33,32 @@ internal interface BitmapPoolStrategy {
     /** Return a string representation of [bitmap]. */
     fun stringify(bitmap: Bitmap): String
 
-    /** Return a string representation of a [Bitmap] matching [width], [height], and [config]. */
+    /** Return a string representation of a bitmap matching [width], [height], and [config]. */
     fun stringify(@Px width: Int, @Px height: Int, config: Bitmap.Config): String
 }
 
-/** A strategy for reusing bitmaps that relies on [Bitmap.reconfigure]. */
+/** A strategy that requires a [Bitmap]'s size to be greater than or equal to the requested size. */
 @VisibleForTesting
 @RequiresApi(19)
 internal class BitmapPoolStrategyApi19 : BitmapPoolStrategy {
 
-    private val entries = LinkedMultimap<Int, Bitmap>()
-    private val sizes = TreeMap<Int, Int>()
+    private val entries = LinkedMultimap<Int, Bitmap>(sorted = true)
 
     override fun put(bitmap: Bitmap) {
-        val size = bitmap.allocationByteCountCompat
-        entries[size] = bitmap
-        sizes[size] = sizes.getOrElse(size) { 0 } + 1
+        entries.add(bitmap.allocationByteCountCompat, bitmap)
     }
 
     override fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
         val size = Utils.calculateAllocationByteCount(width, height, config)
-        val bestSize = findBestSize(size) ?: size
 
-        // Do a get even if we know we don't have a bitmap so that the key becomes the head of the linked list.
-        val result = entries[bestSize]
-        if (result != null) {
-            // Decrement must be called before reconfigure.
-            decrementBitmapOfSize(bestSize, result)
-            result.reconfigure(width, height, config)
-        }
-        return result
+        // Find the least key greater than size.
+        val bestSize = entries.ceilingKey(size)?.takeIf { it <= MAX_SIZE_MULTIPLE * size } ?: size
+
+        // Always call removeLast so bestSize becomes the head of the linked list.
+        return entries.removeLast(bestSize)?.apply { reconfigure(width, height, config) }
     }
 
-    /** Return the least key greater than [size]. If no such key exists, return null. */
-    private fun findBestSize(size: Int): Int? {
-        return sizes.ceilingKey(size)?.takeIf { it <= size * MAX_SIZE_MULTIPLE }
-    }
-
-    override fun removeLast(): Bitmap? {
-        val removed = entries.removeLast()
-        if (removed != null) {
-            decrementBitmapOfSize(removed.allocationByteCountCompat, removed)
-        }
-        return removed
-    }
-
-    private fun decrementBitmapOfSize(size: Int, removed: Bitmap) {
-        val current = checkNotNull(sizes[size]) {
-            "Tried to decrement empty size, size: $size, removed: ${stringify(removed)}, this: $this"
-        }
-
-        if (current > 1) {
-            sizes[size] = current - 1
-        } else {
-            sizes.remove(size)
-        }
-    }
+    override fun removeLast() = entries.removeLast()
 
     override fun stringify(bitmap: Bitmap) = "[${bitmap.allocationByteCountCompat}]"
 
@@ -97,36 +66,34 @@ internal class BitmapPoolStrategyApi19 : BitmapPoolStrategy {
         return "[${Utils.calculateAllocationByteCount(width, height, config)}]"
     }
 
-    override fun toString() = "BitmapPoolStrategyApi19: entries=$entries, sizes=$sizes"
+    override fun toString() = "BitmapPoolStrategyApi19: $entries"
 
     companion object {
         private const val MAX_SIZE_MULTIPLE = 8
     }
 }
 
-/** A strategy for reusing bitmaps that requires bitmaps' width, height, and config to match exactly. */
+/** A strategy that requires a [Bitmap]'s width, height, and config to match the requested attributes. */
 @VisibleForTesting
 internal class BitmapPoolStrategyApi14 : BitmapPoolStrategy {
 
     private val entries = LinkedMultimap<Key, Bitmap>()
 
     override fun put(bitmap: Bitmap) {
-        entries[Key(bitmap.width, bitmap.height, bitmap.config)] = bitmap
+        entries.add(Key(bitmap.width, bitmap.height, bitmap.config), bitmap)
     }
 
     override fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
-        return entries[Key(width, height, config)]
+        return entries.removeLast(Key(width, height, config))
     }
 
-    override fun removeLast(): Bitmap? {
-        return entries.removeLast()
-    }
+    override fun removeLast() = entries.removeLast()
 
     override fun stringify(bitmap: Bitmap) = stringify(bitmap.width, bitmap.height, bitmap.config)
 
     override fun stringify(width: Int, height: Int, config: Bitmap.Config) = "[$width x $height], $config"
 
-    override fun toString() = "BitmapPoolStrategyApi14: entries=$entries"
+    override fun toString() = "BitmapPoolStrategyApi14: $entries"
 
     private data class Key(
         @Px val width: Int,

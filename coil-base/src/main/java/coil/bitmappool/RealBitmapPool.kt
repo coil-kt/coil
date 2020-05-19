@@ -125,16 +125,11 @@ internal class RealBitmapPool(
         }
     }
 
-    /**
-     * Setting these two values provides bitmaps that are essentially
-     * equivalent to those returned from [Bitmap.createBitmap].
-     */
+    /** Configure [bitmap] so it's essentially equivalent to a bitmap returned by [Bitmap.createBitmap]. */
     private fun normalize(bitmap: Bitmap) {
         bitmap.density = Bitmap.DENSITY_NONE
         bitmap.setHasAlpha(true)
-        if (SDK_INT >= 19) {
-            bitmap.isPremultiplied = true
-        }
+        if (SDK_INT >= 19) bitmap.isPremultiplied = true
     }
 
     @Synchronized
@@ -172,9 +167,7 @@ internal class RealBitmapPool(
             add(Bitmap.Config.RGB_565)
             add(Bitmap.Config.ARGB_4444)
             add(Bitmap.Config.ARGB_8888)
-            if (SDK_INT >= 26) {
-                add(Bitmap.Config.RGBA_F16)
-            }
+            if (SDK_INT >= 26) add(Bitmap.Config.RGBA_F16)
         }
     }
 }

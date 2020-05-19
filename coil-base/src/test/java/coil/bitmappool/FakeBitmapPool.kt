@@ -3,6 +3,7 @@ package coil.bitmappool
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.Px
+import androidx.core.graphics.createBitmap
 import coil.util.Utils
 import coil.util.allocationByteCountCompat
 
@@ -24,7 +25,7 @@ class FakeBitmapPool : BitmapPool {
     }
 
     override fun getDirty(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap {
-        return getDirtyOrNull(width, height, config) ?: Bitmap.createBitmap(width, height, config)
+        return getDirtyOrNull(width, height, config) ?: createBitmap(width, height, config)
     }
 
     override fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {

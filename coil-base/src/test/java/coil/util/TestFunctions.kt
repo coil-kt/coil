@@ -3,6 +3,7 @@
 package coil.util
 
 import android.graphics.Bitmap
+import androidx.core.graphics.createBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.setMain
@@ -16,7 +17,7 @@ fun createBitmap(
     config: Bitmap.Config = Bitmap.Config.ARGB_8888,
     isMutable: Boolean = true
 ): Bitmap {
-    val bitmap = Bitmap.createBitmap(width, height, config)
+    val bitmap = createBitmap(width, height, config)
     Shadows.shadowOf(bitmap).setMutable(isMutable)
     return bitmap
 }
