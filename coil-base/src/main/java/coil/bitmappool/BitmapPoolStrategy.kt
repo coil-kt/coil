@@ -73,7 +73,7 @@ internal class BitmapPoolStrategyApi19 : BitmapPoolStrategy {
     }
 }
 
-/** A strategy that requires a [Bitmap]'s width, height, and config to match the requested attributes. */
+/** A strategy that requires a [Bitmap]'s width, height, and config to match the requested attributes exactly. */
 @VisibleForTesting
 internal class BitmapPoolStrategyApi14 : BitmapPoolStrategy {
 
