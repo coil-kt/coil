@@ -1,8 +1,8 @@
-package coil.bitmappool.strategy
+package coil.bitmappool
 
 import android.graphics.Bitmap
+import java.util.ArrayDeque
 
-@OptIn(ExperimentalStdlibApi::class)
 class FakeBitmapPoolStrategy : BitmapPoolStrategy {
 
     val bitmaps = ArrayDeque<Bitmap>()
@@ -23,7 +23,7 @@ class FakeBitmapPoolStrategy : BitmapPoolStrategy {
         return if (bitmaps.isEmpty()) null else bitmaps.removeLast().also { numRemoves++ }
     }
 
-    override fun logBitmap(bitmap: Bitmap) = ""
+    override fun stringify(bitmap: Bitmap) = ""
 
-    override fun logBitmap(width: Int, height: Int, config: Bitmap.Config) = ""
+    override fun stringify(width: Int, height: Int, config: Bitmap.Config) = ""
 }

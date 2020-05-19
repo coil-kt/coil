@@ -14,10 +14,7 @@ import okio.blackholeSink
  */
 internal object EmptyDecoder : Decoder {
 
-    private val result = DecodeResult(
-        drawable = EMPTY_DRAWABLE,
-        isSampled = false
-    )
+    private val result = DecodeResult(EMPTY_DRAWABLE, false)
     private val sink = blackholeSink()
 
     /** Hardcode this to false to prevent accidental use. */
