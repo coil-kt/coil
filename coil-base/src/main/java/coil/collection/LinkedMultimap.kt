@@ -7,7 +7,7 @@ import java.util.TreeMap
  * An access-ordered map that stores multiple values for each key.
  *
  * @param sorted If true, [LinkedMultimap] will use a [TreeMap] as its backing map.
- *  [ceilingKey] is only useable if the map is created with `sorted = true`.
+ *  Calling [ceilingKey] will throw an exception if it is not created with `sorted = true`.
  *
  * Adapted from [Glide](https://github.com/bumptech/glide)'s GroupedLinkedMap.
  * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
@@ -105,12 +105,12 @@ internal class LinkedMultimap<K, V>(sorted: Boolean = false) {
         entry.next.prev = entry.prev
     }
 
-    private class LinkedEntry<K, V>(@JvmField val key: K?) {
+    private class LinkedEntry<K, V>(val key: K?) {
 
         private var values: MutableList<V>? = null
 
-        @JvmField var prev: LinkedEntry<K, V> = this
-        @JvmField var next: LinkedEntry<K, V> = this
+        var prev: LinkedEntry<K, V> = this
+        var next: LinkedEntry<K, V> = this
 
         val size: Int get() = values?.size ?: 0
 
