@@ -1,24 +1,20 @@
 package coil.collection
 
 import coil.util.removeLast
-import java.util.TreeMap
 
 /**
  * An access-ordered map that stores multiple values for each key.
  *
- * @param sorted If true, [LinkedMultimap] will use a [TreeMap] as its backing map.
- *  Calling [ceilingKey] will throw an exception if the map is not created with `sorted = true`.
- *
  * Adapted from [Glide](https://github.com/bumptech/glide)'s GroupedLinkedMap.
  * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
  */
-internal class LinkedMultimap<K, V>(sorted: Boolean = false) {
+internal class LinkedMultimap<K, V> {
 
     private val head = LinkedEntry<K, V>(null)
-    private val entries: MutableMap<K, LinkedEntry<K, V>> = if (sorted) TreeMap() else HashMap()
+    private val entries = HashMap<K, LinkedEntry<K, V>>()
 
     /** Add [value] to [key]'s associate value list. */
-    fun add(key: K, value: V) {
+    fun put(key: K, value: V) {
         val entry = entries.getOrPut(key) {
             LinkedEntry<K, V>(key).apply(::makeTail)
         }
@@ -50,12 +46,6 @@ internal class LinkedMultimap<K, V>(sorted: Boolean = false) {
         }
 
         return null
-    }
-
-    /** Return the least key greater than [key]. If no such key exists, return null. */
-    fun ceilingKey(key: K): K? {
-        check(entries is TreeMap) { "LinkedMultimap is not sorted." }
-        return entries.ceilingKey(key)
     }
 
     override fun toString() = buildString {
