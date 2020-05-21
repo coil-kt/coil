@@ -92,7 +92,7 @@ internal class SizeStrategy : BitmapPoolStrategy {
         return "[${Utils.calculateAllocationByteCount(width, height, config)}]"
     }
 
-    override fun toString() = "SizeStrategy: $entries"
+    override fun toString() = "SizeStrategy: entries=$entries, sizes=$sizes"
 
     companion object {
         private const val MAX_SIZE_MULTIPLE = 8
@@ -119,7 +119,7 @@ internal class AttributeStrategy : BitmapPoolStrategy {
 
     override fun stringify(width: Int, height: Int, config: Bitmap.Config) = "[$width x $height], $config"
 
-    override fun toString() = "AttributeStrategy: $entries"
+    override fun toString() = "AttributeStrategy: entries=$entries"
 
     private data class Key(
         @Px val width: Int,
