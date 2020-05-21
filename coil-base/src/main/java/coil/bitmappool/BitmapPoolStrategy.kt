@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import coil.collection.LinkedMultimap
 import coil.util.Utils
 import coil.util.allocationByteCountCompat
+import java.util.TreeMap
 
 /** The [Bitmap] reuse algorithm used by [RealBitmapPool]. */
 internal interface BitmapPoolStrategy {
@@ -42,23 +43,48 @@ internal interface BitmapPoolStrategy {
 @RequiresApi(19)
 internal class SizeStrategy : BitmapPoolStrategy {
 
-    private val entries = LinkedMultimap<Int, Bitmap>(sorted = true)
+    private val entries = LinkedMultimap<Int, Bitmap>()
+    private val sizes = TreeMap<Int, Int>()
 
     override fun put(bitmap: Bitmap) {
-        entries.add(bitmap.allocationByteCountCompat, bitmap)
+        val size = bitmap.allocationByteCountCompat
+        entries.put(size, bitmap)
+
+        val count = sizes[size]
+        sizes[size] = if (count == null) 1 else count + 1
     }
 
     override fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
         val size = Utils.calculateAllocationByteCount(width, height, config)
 
-        // Find the least key greater than size.
-        val bestSize = entries.ceilingKey(size)?.takeIf { it <= MAX_SIZE_MULTIPLE * size } ?: size
+        // Find the least key greater than or equal to size.
+        val bestSize = sizes.ceilingKey(size)?.takeIf { it <= MAX_SIZE_MULTIPLE * size } ?: size
 
         // Always call removeLast so bestSize becomes the head of the linked list.
-        return entries.removeLast(bestSize)?.apply { reconfigure(width, height, config) }
+        val bitmap = entries.removeLast(bestSize)
+        if (bitmap != null) {
+            decrementSize(bestSize)
+            bitmap.reconfigure(width, height, config)
+        }
+        return bitmap
     }
 
-    override fun removeLast() = entries.removeLast()
+    override fun removeLast(): Bitmap? {
+        val bitmap = entries.removeLast()
+        if (bitmap != null) {
+            decrementSize(bitmap.allocationByteCount)
+        }
+        return bitmap
+    }
+
+    private fun decrementSize(size: Int) {
+        val count = sizes.getValue(size)
+        if (count == 1) {
+            sizes -= size
+        } else {
+            sizes[size] = count - 1
+        }
+    }
 
     override fun stringify(bitmap: Bitmap) = "[${bitmap.allocationByteCountCompat}]"
 
@@ -66,7 +92,7 @@ internal class SizeStrategy : BitmapPoolStrategy {
         return "[${Utils.calculateAllocationByteCount(width, height, config)}]"
     }
 
-    override fun toString() = "SizeStrategy: $entries"
+    override fun toString() = "SizeStrategy: entries=$entries, sizes=$sizes"
 
     companion object {
         private const val MAX_SIZE_MULTIPLE = 8
@@ -80,7 +106,7 @@ internal class AttributeStrategy : BitmapPoolStrategy {
     private val entries = LinkedMultimap<Key, Bitmap>()
 
     override fun put(bitmap: Bitmap) {
-        entries.add(Key(bitmap.width, bitmap.height, bitmap.config), bitmap)
+        entries.put(Key(bitmap.width, bitmap.height, bitmap.config), bitmap)
     }
 
     override fun get(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
@@ -93,7 +119,7 @@ internal class AttributeStrategy : BitmapPoolStrategy {
 
     override fun stringify(width: Int, height: Int, config: Bitmap.Config) = "[$width x $height], $config"
 
-    override fun toString() = "AttributeStrategy: $entries"
+    override fun toString() = "AttributeStrategy: entries=$entries"
 
     private data class Key(
         @Px val width: Int,

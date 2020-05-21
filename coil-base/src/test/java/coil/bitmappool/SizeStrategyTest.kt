@@ -41,4 +41,14 @@ class SizeStrategyTest {
 
         assertEquals(bitmap, strategy.get(100, 100, Bitmap.Config.ARGB_8888))
     }
+
+    @Test
+    fun `only puts are factored into ceilingKey`() {
+        strategy.put(createBitmap(100, 100, Bitmap.Config.ARGB_8888))
+        strategy.get(200, 100, Bitmap.Config.ARGB_8888)
+        val expected = createBitmap(300, 100, Bitmap.Config.ARGB_8888)
+        strategy.put(expected)
+
+        assertEquals(expected, strategy.get(200, 100, Bitmap.Config.ARGB_8888))
+    }
 }
