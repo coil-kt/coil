@@ -30,7 +30,6 @@ internal class RealBitmapPool(
 ) : BitmapPool {
 
     private val bitmaps = hashSetOf<Bitmap>()
-
     private var currentSize = 0
     private var hits = 0
     private var misses = 0
@@ -45,13 +44,6 @@ internal class RealBitmapPool(
     override fun put(bitmap: Bitmap) {
         require(!bitmap.isRecycled) { "Cannot pool a recycled bitmap." }
 
-        if (bitmap in bitmaps) {
-            logger?.log(TAG, Log.WARN) {
-                "Rejecting duplicate bitmap from pool: bitmap: ${strategy.stringify(bitmap)}"
-            }
-            return
-        }
-
         val size = bitmap.allocationByteCountCompat
 
         if (!bitmap.isMutable || size > maxSize || bitmap.config !in allowedConfigs) {
@@ -65,11 +57,18 @@ internal class RealBitmapPool(
             return
         }
 
-        bitmaps += bitmap
+        if (bitmap in bitmaps) {
+            logger?.log(TAG, Log.WARN) {
+                "Rejecting duplicate bitmap from pool: bitmap: ${strategy.stringify(bitmap)}"
+            }
+            return
+        }
+
         strategy.put(bitmap)
 
-        puts++
+        bitmaps += bitmap
         currentSize += size
+        puts++
 
         logger?.log(TAG, Log.VERBOSE) { "Put bitmap=${strategy.stringify(bitmap)}\n${logStats()}" }
 
@@ -97,9 +96,9 @@ internal class RealBitmapPool(
             logger?.log(TAG, Log.VERBOSE) { "Missing bitmap=${strategy.stringify(width, height, config)}" }
             misses++
         } else {
-            hits++
-            currentSize -= result.allocationByteCountCompat
             bitmaps -= result
+            currentSize -= result.allocationByteCountCompat
+            hits++
             normalize(result)
         }
 
@@ -142,8 +141,8 @@ internal class RealBitmapPool(
                 return
             }
 
-            currentSize -= removed.allocationByteCountCompat
             bitmaps -= removed
+            currentSize -= removed.allocationByteCountCompat
             evictions++
 
             logger?.log(TAG, Log.VERBOSE) { "Evicting bitmap=${strategy.stringify(removed)}\n${logStats()}" }
