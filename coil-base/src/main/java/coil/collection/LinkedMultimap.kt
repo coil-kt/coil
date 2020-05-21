@@ -7,7 +7,7 @@ import java.util.TreeMap
  * An access-ordered map that stores multiple values for each key.
  *
  * @param sorted If true, [LinkedMultimap] will use a [TreeMap] as its backing map.
- *  Calling [ceilingKey] will throw an exception if it is not created with `sorted = true`.
+ *  Calling [ceilingKey] will throw an exception if the map is not created with `sorted = true`.
  *
  * Adapted from [Glide](https://github.com/bumptech/glide)'s GroupedLinkedMap.
  * Glide's license information is available [here](https://github.com/bumptech/glide/blob/master/LICENSE).
