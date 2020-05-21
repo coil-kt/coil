@@ -86,10 +86,6 @@ internal inline fun <T> MutableList<T>.removeIfIndices(predicate: (T) -> Boolean
     }
 }
 
-internal inline fun <T> MutableList<T>.removeLast(): T? {
-    return if (isNotEmpty()) removeAt(lastIndex) else null
-}
-
 /**
  * Returns a list containing the **non null** results of applying the given
  * [transform] function to each entry in the original map.
