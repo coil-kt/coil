@@ -63,7 +63,6 @@ internal class SizeStrategy : BitmapPoolStrategy {
         // Always call removeLast so bestSize becomes the head of the linked list.
         val bitmap = entries.removeLast(bestSize)
         if (bitmap != null) {
-            // Decrement must be called before reconfigure.
             decrementSize(bestSize)
             bitmap.reconfigure(width, height, config)
         }

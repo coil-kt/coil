@@ -1,7 +1,5 @@
 package coil.collection
 
-import coil.util.removeLast
-
 /**
  * An access-ordered map that stores multiple values for each key.
  *
@@ -95,6 +93,7 @@ internal class LinkedMultimap<K, V> {
         entry.next.prev = entry.prev
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private class LinkedEntry<K, V>(val key: K?) {
 
         private var values: MutableList<V>? = null
@@ -104,7 +103,7 @@ internal class LinkedMultimap<K, V> {
 
         val size: Int get() = values?.size ?: 0
 
-        fun removeLast(): V? = values?.removeLast()
+        fun removeLast(): V? = values?.removeLastOrNull()
 
         fun add(value: V) {
             (values ?: mutableListOf<V>().also { values = it }) += value
