@@ -166,6 +166,9 @@ public abstract interface annotation class coil/annotation/BuilderMarker : java/
 public abstract interface annotation class coil/annotation/ExperimentalCoilApi : java/lang/annotation/Annotation {
 }
 
+public abstract interface annotation class coil/annotation/InternalCoilApi : java/lang/annotation/Annotation {
+}
+
 public abstract interface class coil/bitmappool/BitmapPool {
 	public static final field Companion Lcoil/bitmappool/BitmapPool$Companion;
 	public abstract fun clear ()V
@@ -235,6 +238,18 @@ public final class coil/decode/DecodeUtils {
 public abstract interface class coil/decode/Decoder {
 	public abstract fun decode (Lcoil/bitmappool/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
+}
+
+public final class coil/decode/InterruptibleSource : okio/ForwardingSource, kotlin/jvm/functions/Function1 {
+	public fun <init> (Lkotlinx/coroutines/CancellableContinuation;Lokio/Source;)V
+	public final fun clearInterrupt ()V
+	public synthetic fun invoke (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun invoke (Ljava/lang/Throwable;)V
+	public fun read (Lokio/Buffer;J)J
+}
+
+public final class coil/decode/InterruptibleSourceKt {
+	public static final fun withInterruptibleSource (Lokio/Source;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/decode/Options {
