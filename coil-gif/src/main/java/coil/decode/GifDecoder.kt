@@ -5,11 +5,13 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.Movie
 import android.os.Build.VERSION.SDK_INT
+import coil.annotation.InternalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.extension.repeatCount
 import coil.size.Size
 import okio.BufferedSource
+import okio.buffer
 
 /**
  * A [Decoder] that uses [Movie] to decode GIFs.
@@ -26,21 +28,23 @@ class GifDecoder : Decoder {
         return DecodeUtils.isGif(source)
     }
 
+    @OptIn(InternalCoilApi::class)
     override suspend fun decode(
         pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options
-    ): DecodeResult {
+    ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
         // Movie requires an InputStream to resettable on API 18 and below.
         // Read the data as a ByteArray to work around this.
+        val bufferedSource = interruptibleSource.buffer()
         val movie = if (SDK_INT <= 18) {
-            source.use {
+            bufferedSource.use {
                 val byteArray = it.readByteArray()
                 checkNotNull(Movie.decodeByteArray(byteArray, 0, byteArray.size))
             }
         } else {
-            source.use { checkNotNull(Movie.decodeStream(it.inputStream())) }
+            bufferedSource.use { checkNotNull(Movie.decodeStream(it.inputStream())) }
         }
 
         check(movie.width() > 0 && movie.height() > 0) { "Failed to decode GIF." }
@@ -58,7 +62,7 @@ class GifDecoder : Decoder {
 
         drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
 
-        return DecodeResult(
+        DecodeResult(
             drawable = drawable,
             isSampled = false
         )

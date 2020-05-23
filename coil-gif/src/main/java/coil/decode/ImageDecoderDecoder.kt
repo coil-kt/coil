@@ -10,12 +10,14 @@ import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
 import androidx.core.util.component2
+import coil.annotation.InternalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.drawable.ScaleDrawable
 import coil.extension.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource
+import okio.buffer
 import okio.sink
 import java.io.File
 import java.nio.ByteBuffer
@@ -39,24 +41,26 @@ class ImageDecoderDecoder : Decoder {
             (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
     }
 
+    @OptIn(InternalCoilApi::class)
     override suspend fun decode(
         pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options
-    ): DecodeResult {
+    ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
         var tempFile: File? = null
 
         try {
             var isSampled = false
 
+            val bufferedSource = interruptibleSource.buffer()
             val decoderSource = if (SDK_INT >= 30) {
                 // Buffer the source into memory.
-                ImageDecoder.createSource(ByteBuffer.wrap(source.use { it.readByteArray() }))
+                ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
             } else {
                 // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
                 tempFile = createTempFile()
-                source.use { tempFile.sink().use(source::readAll) }
+                bufferedSource.use { tempFile.sink().use(bufferedSource::readAll) }
                 ImageDecoder.createSource(tempFile)
             }
 
@@ -110,7 +114,7 @@ class ImageDecoderDecoder : Decoder {
                 baseDrawable
             }
 
-            return DecodeResult(
+            DecodeResult(
                 drawable = drawable,
                 isSampled = isSampled
             )
