@@ -60,7 +60,7 @@ class ImageDecoderDecoder : Decoder {
             } else {
                 // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
                 tempFile = createTempFile()
-                bufferedSource.use { tempFile.sink().use(bufferedSource::readAll) }
+                bufferedSource.use { tempFile.sink().use(it::readAll) }
                 ImageDecoder.createSource(tempFile)
             }
 

@@ -9,9 +9,9 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.Buffer
 import okio.ForwardingSource
 import okio.Source
+import java.io.InterruptedIOException
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * Wraps [source] to support thread interruption while inside [block].
@@ -30,9 +30,13 @@ suspend inline fun <T> withInterruptibleSource(
         } finally {
             interruptibleSource.clearInterrupt()
         }
-    } catch (exception: InterruptedException) {
-        val wrapped = CancellationException("Blocking call was interrupted due to parent cancellation.").initCause(exception)
-        continuation.resumeWithException(wrapped)
+    } catch (exception: Exception) {
+        // Convert InterruptedExceptions -> CancellationExceptions so the job is treated as cancelled.
+        if (exception is InterruptedException || exception is InterruptedIOException) {
+            throw CancellationException("Blocking call was interrupted due to parent cancellation.").initCause(exception)
+        } else {
+            throw exception
+        }
     }
 }
 
