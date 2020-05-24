@@ -16,4 +16,4 @@ val imageLoader = ImageLoader.Builder(context)
     .build()
 ```
 
-And that's it! The `ImageLoader` will automatically detect any SVGs and decode them correctly.
+The `ImageLoader` will automatically detect and decode any SVGs if the request's MIME type is `image/svg+xml`. The MIME type is inferred using the HTTP `content-type` header, a URI's suffix, or a file's extension. If you need to force a specific request to use the `SvgDecoder`, you can [set the `Fetcher` explicitly](../api/coil-base/coil.request/-request-builder/fetcher/) for the request.
