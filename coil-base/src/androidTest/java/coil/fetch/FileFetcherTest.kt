@@ -17,18 +17,17 @@ import kotlin.test.assertTrue
 class FileFetcherTest {
 
     private lateinit var context: Context
-    private lateinit var fetcher: FileFetcher
     private lateinit var pool: BitmapPool
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        fetcher = FileFetcher(true)
         pool = BitmapPool(0)
     }
 
     @Test
     fun basic() {
+        val fetcher = FileFetcher(true)
         val file = context.copyAssetToFile("normal.jpg")
 
         assertTrue(fetcher.handles(file))
@@ -45,6 +44,7 @@ class FileFetcherTest {
 
     @Test
     fun fileCacheKeyWithLastModified() {
+        val fetcher = FileFetcher(true)
         val file = context.copyAssetToFile("normal.jpg")
 
         file.setLastModified(1234L)
@@ -58,6 +58,7 @@ class FileFetcherTest {
 
     @Test
     fun fileCacheKeyWithoutLastModified() {
+        val fetcher = FileFetcher(false)
         val file = context.copyAssetToFile("normal.jpg")
 
         file.setLastModified(1234L)
