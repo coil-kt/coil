@@ -1,7 +1,8 @@
 package coil.decode
 
 import coil.annotation.InternalCoilApi
-import coil.util.loop
+import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.loop
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletionHandler
@@ -10,7 +11,6 @@ import okio.Buffer
 import okio.ForwardingSource
 import okio.Source
 import java.io.InterruptedIOException
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 
 /**
@@ -54,7 +54,7 @@ internal class InterruptibleSource(
     delegate: Source
 ) : ForwardingSource(delegate), CompletionHandler {
 
-    private val _state = AtomicInteger(WORKING)
+    private val _state = atomic(WORKING)
     private val targetThread = Thread.currentThread()
 
     init {
@@ -93,7 +93,7 @@ internal class InterruptibleSource(
                 // Pending: we attempted to interrupt earlier. Interrupt now.
                 PENDING -> if (_state.compareAndSet(state, INTERRUPTING)) {
                     targetThread.interrupt()
-                    _state.set(INTERRUPTED)
+                    _state.value = INTERRUPTED
                     return
                 }
                 INTERRUPTING -> {
@@ -136,7 +136,7 @@ internal class InterruptibleSource(
                 // Working: attempt to interrupt the thread.
                 WORKING -> if (_state.compareAndSet(state, INTERRUPTING)) {
                     targetThread.interrupt()
-                    _state.set(INTERRUPTED)
+                    _state.value = INTERRUPTED
                     return
                 }
                 // Uninterruptible: update the state to mark the interrupt as pending.
