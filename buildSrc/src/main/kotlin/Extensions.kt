@@ -54,6 +54,14 @@ private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
     return sum
 }
 
+private fun DependencyHandler.testCompileOnly(dependencyNotation: Any): Dependency? {
+    return add("testCompileOnly", dependencyNotation)
+}
+
+private fun DependencyHandler.androidTestCompileOnly(dependencyNotation: Any): Dependency? {
+    return add("androidTestCompileOnly", dependencyNotation)
+}
+
 private fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? {
     return add("testImplementation", dependencyNotation)
 }
@@ -71,6 +79,9 @@ fun DependencyHandler.addTestDependencies(kotlinVersion: String, includeTestProj
     testImplementation(kotlin("test-junit", kotlinVersion))
 
     testImplementation(Library.KOTLINX_COROUTINES_TEST)
+
+    // https://github.com/Kotlin/kotlinx.atomicfu/issues/137
+    testCompileOnly(Library.KOTLINX_ATOMICFU)
 
     testImplementation(Library.ANDROIDX_TEST_CORE)
     testImplementation(Library.ANDROIDX_TEST_JUNIT)
@@ -92,6 +103,9 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
 
     androidTestImplementation(Library.JUNIT)
     androidTestImplementation(kotlin("test-junit", kotlinVersion))
+
+    // https://github.com/Kotlin/kotlinx.atomicfu/issues/137
+    androidTestCompileOnly(Library.KOTLINX_ATOMICFU)
 
     androidTestImplementation(Library.ANDROIDX_TEST_CORE)
     androidTestImplementation(Library.ANDROIDX_TEST_JUNIT)
