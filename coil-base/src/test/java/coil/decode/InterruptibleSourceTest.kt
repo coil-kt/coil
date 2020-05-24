@@ -72,7 +72,7 @@ class InterruptibleSourceTest {
         } catch (e: Exception) {
             assertTrue(e is CancellationException)
             assertFalse(isReading.get()) // Ensure we weren't interrupted while reading from the source.
-            assertFalse(Thread.interrupted()) // Ensure interruption doesn't leak.
+            assertFalse(Thread.interrupted()) // Ensure the interrupted state doesn't leak.
         }
     }
 }
