@@ -59,7 +59,7 @@ class InterruptibleSourceTest {
         try {
             // Need to cancel from another thread.
             withContext(Dispatchers.IO) {
-                delay(150)
+                delay(50)
                 cancel()
             }
 
