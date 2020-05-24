@@ -75,6 +75,7 @@ class RealImageLoaderBasicTest {
             OkHttpClient(),
             EventListener.Factory.NONE,
             ComponentRegistry(),
+            true,
             null
         )
     }

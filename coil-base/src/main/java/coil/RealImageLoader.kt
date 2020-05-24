@@ -95,6 +95,7 @@ internal class RealImageLoader(
     callFactory: Call.Factory,
     private val eventListenerFactory: EventListener.Factory,
     registry: ComponentRegistry,
+    addLastModifiedToFileCacheKey: Boolean,
     internal val logger: Logger?
 ) : ImageLoader {
 
@@ -120,7 +121,7 @@ internal class RealImageLoader(
         // Fetchers
         .add(HttpUriFetcher(callFactory))
         .add(HttpUrlFetcher(callFactory))
-        .add(FileFetcher())
+        .add(FileFetcher(addLastModifiedToFileCacheKey))
         .add(AssetUriFetcher(context))
         .add(ContentUriFetcher(context))
         .add(ResourceUriFetcher(context, drawableDecoder))

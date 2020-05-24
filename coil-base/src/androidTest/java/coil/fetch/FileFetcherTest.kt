@@ -23,7 +23,7 @@ class FileFetcherTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        fetcher = FileFetcher()
+        fetcher = FileFetcher(true)
         pool = BitmapPool(0)
     }
 
@@ -54,5 +54,18 @@ class FileFetcherTest {
         val secondKey = fetcher.key(file)
 
         assertNotEquals(secondKey, firstKey)
+    }
+
+    @Test
+    fun fileCacheKeyWithoutLastModified() {
+        val file = context.copyAssetToFile("normal.jpg")
+
+        file.setLastModified(1234L)
+        val firstKey = fetcher.key(file)
+
+        file.setLastModified(4321L)
+        val secondKey = fetcher.key(file)
+
+        assertEquals(secondKey, firstKey)
     }
 }
