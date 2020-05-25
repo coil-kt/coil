@@ -16,12 +16,12 @@ import coil.request.Request
 import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.transition.Transition
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.junit.Before
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -156,14 +156,14 @@ class EventListenerTest {
 
     private class MethodChecker(private val callExpected: Boolean) {
 
-        private val callCount = atomic(0)
+        private val callCount = AtomicInteger(0)
 
         fun call() {
             callCount.incrementAndGet()
         }
 
         fun complete(eventName: String) {
-            val count = callCount.value
+            val count = callCount.get()
             require(count in 0..1) { "$eventName was called $count times." }
 
             if (callExpected) {

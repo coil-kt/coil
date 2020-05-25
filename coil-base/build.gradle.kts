@@ -11,7 +11,6 @@ plugins {
     id("com.android.library")
     id("com.vanniktech.maven.publish")
     id("kotlin-android")
-    id("kotlinx-atomicfu")
     id("org.jetbrains.dokka")
 }
 

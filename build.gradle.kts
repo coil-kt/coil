@@ -21,7 +21,6 @@ buildscript {
         classpath("com.android.tools.build:gradle:3.6.3")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.11.1")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
-        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.3")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.2.1")
         classpath(kotlin("gradle-plugin", version = "1.3.72"))
