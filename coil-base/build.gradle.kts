@@ -41,9 +41,6 @@ dependencies {
     api(kotlin("stdlib", KotlinCompilerVersion.VERSION))
     api(Library.KOTLINX_COROUTINES_ANDROID)
 
-    // https://github.com/Kotlin/kotlinx.atomicfu/issues/137
-    compileOnly(Library.KOTLINX_ATOMICFU)
-
     implementation(Library.ANDROIDX_ANNOTATION)
     implementation(Library.ANDROIDX_APPCOMPAT_RESOURCES)
     implementation(Library.ANDROIDX_COLLECTION)

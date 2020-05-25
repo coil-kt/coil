@@ -6,8 +6,6 @@ object Library {
 
     // CORE
 
-    const val KOTLINX_ATOMICFU = "org.jetbrains.kotlinx:atomicfu:0.14.3"
-
     private const val COROUTINES_VERSION = "1.3.7"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
