@@ -128,6 +128,7 @@ public final class coil/ImageLoader$Companion {
 
 public final class coil/ImageLoaderBuilder {
 	public fun <init> (Landroid/content/Context;)V
+	public final fun addLastModifiedToFileCacheKey (Z)Lcoil/ImageLoaderBuilder;
 	public final fun allowHardware (Z)Lcoil/ImageLoaderBuilder;
 	public final fun allowRgb565 (Z)Lcoil/ImageLoaderBuilder;
 	public final fun availableMemoryPercentage (D)Lcoil/ImageLoaderBuilder;

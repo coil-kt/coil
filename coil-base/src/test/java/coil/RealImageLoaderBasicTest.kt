@@ -66,16 +66,17 @@ class RealImageLoaderBasicTest {
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         imageLoader = RealImageLoader(
-            context,
-            DefaultRequestOptions(),
-            bitmapPool,
-            referenceCounter,
-            memoryCache,
-            weakMemoryCache,
-            OkHttpClient(),
-            EventListener.Factory.NONE,
-            ComponentRegistry(),
-            null
+            context = context,
+            defaults = DefaultRequestOptions(),
+            bitmapPool = bitmapPool,
+            referenceCounter = referenceCounter,
+            memoryCache = memoryCache,
+            weakMemoryCache = weakMemoryCache,
+            callFactory = OkHttpClient(),
+            eventListenerFactory = EventListener.Factory.NONE,
+            registry = ComponentRegistry(),
+            addLastModifiedToFileCacheKey = true,
+            logger = null
         )
     }
 

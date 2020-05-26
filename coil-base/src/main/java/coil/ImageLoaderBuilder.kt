@@ -30,6 +30,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Call
 import okhttp3.OkHttpClient
+import java.io.File
 
 /** Builder for an [ImageLoader]. */
 @BuilderMarker
@@ -46,6 +47,7 @@ class ImageLoaderBuilder(context: Context) {
     private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
     private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
     private var trackWeakReferences = true
+    private var addLastModifiedToFileCacheKey = true
 
     /**
      * Set the [OkHttpClient] used for network requests.
@@ -183,6 +185,18 @@ class ImageLoaderBuilder(context: Context) {
      */
     fun trackWeakReferences(enable: Boolean) = apply {
         this.trackWeakReferences = enable
+    }
+
+    /**
+     * Enables adding [File.lastModified] to the memory cache key when loading an image from a [File].
+     *
+     * This allows subsequent requests that load the same file to miss the memory cache if the file has been updated.
+     * To ensure a cached image is returned synchronously, [File.lastModified] is called on the main thread.
+     *
+     * Default: true
+     */
+    fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
+        this.addLastModifiedToFileCacheKey = enable
     }
 
     /**
@@ -342,6 +356,7 @@ class ImageLoaderBuilder(context: Context) {
             callFactory = callFactory ?: buildDefaultCallFactory(),
             eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
             registry = registry ?: ComponentRegistry(),
+            addLastModifiedToFileCacheKey = addLastModifiedToFileCacheKey,
             logger = logger
         )
     }
