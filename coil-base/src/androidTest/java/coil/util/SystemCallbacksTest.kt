@@ -58,17 +58,17 @@ class SystemCallbacksTest {
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         val imageLoader = RealImageLoader(
-            context,
-            DefaultRequestOptions(),
-            bitmapPool,
-            referenceCounter,
-            memoryCache,
-            weakMemoryCache,
-            OkHttpClient(),
-            EventListener.Factory.NONE,
-            ComponentRegistry(),
-            true,
-            null
+            context = context,
+            defaults = DefaultRequestOptions(),
+            bitmapPool = bitmapPool,
+            referenceCounter = referenceCounter,
+            memoryCache = memoryCache,
+            weakMemoryCache = weakMemoryCache,
+            callFactory = OkHttpClient(),
+            eventListenerFactory = EventListener.Factory.NONE,
+            registry = ComponentRegistry(),
+            addLastModifiedToFileCacheKey = true,
+            logger = null
         )
         val systemCallbacks = SystemCallbacks(imageLoader, context)
 
