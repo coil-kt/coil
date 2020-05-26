@@ -7,12 +7,14 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toDrawable
+import coil.annotation.InternalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
 import com.caverock.androidsvg.SVG
 import okio.BufferedSource
+import okio.buffer
 
 /**
  * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG files.
@@ -26,13 +28,14 @@ class SvgDecoder(private val context: Context) : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?) = mimeType == MIME_TYPE_SVG
 
+    @OptIn(InternalCoilApi::class)
     override suspend fun decode(
         pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options
-    ): DecodeResult {
-        val svg = source.use { SVG.getFromInputStream(it.inputStream()) }
+    ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
+        val svg = interruptibleSource.buffer().use { SVG.getFromInputStream(it.inputStream()) }
 
         val svgWidth = svg.documentWidth
         val svgHeight = svg.documentHeight
@@ -82,7 +85,7 @@ class SvgDecoder(private val context: Context) : Decoder {
         val bitmap = pool.get(bitmapWidth, bitmapHeight, config)
         svg.renderToCanvas(Canvas(bitmap))
 
-        return DecodeResult(
+        DecodeResult(
             drawable = bitmap.toDrawable(context.resources),
             isSampled = true // SVGs can always be re-decoded at a higher resolution.
         )

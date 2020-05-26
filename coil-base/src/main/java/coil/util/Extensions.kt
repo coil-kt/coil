@@ -34,6 +34,7 @@ import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Response
 import java.io.Closeable
+import java.util.concurrent.atomic.AtomicInteger
 
 internal suspend inline fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
@@ -165,3 +166,7 @@ internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 
 internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
+
+internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
+    while (true) action(get())
+}
