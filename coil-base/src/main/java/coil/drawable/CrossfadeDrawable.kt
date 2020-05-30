@@ -36,14 +36,6 @@ class CrossfadeDrawable @JvmOverloads constructor(
     val durationMillis: Int = DEFAULT_DURATION
 ) : Drawable(), Drawable.Callback, Animatable2Compat {
 
-    companion object {
-        private const val STATE_START = 0
-        private const val STATE_RUNNING = 1
-        private const val STATE_DONE = 2
-
-        const val DEFAULT_DURATION = 100
-    }
-
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
     private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth, end?.intrinsicWidth)
@@ -262,5 +254,13 @@ class CrossfadeDrawable @JvmOverloads constructor(
         state = STATE_DONE
         start = null
         callbacks.forEachIndices { it.onAnimationEnd(this) }
+    }
+
+    companion object {
+        private const val STATE_START = 0
+        private const val STATE_RUNNING = 1
+        private const val STATE_DONE = 2
+
+        const val DEFAULT_DURATION = 100
     }
 }

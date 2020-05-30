@@ -61,10 +61,6 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
 /** A [WeakMemoryCache] implementation backed by a [HashMap]. */
 internal class RealWeakMemoryCache : WeakMemoryCache {
 
-    companion object {
-        private const val CLEAN_UP_INTERVAL = 10
-    }
-
     @VisibleForTesting internal val cache = hashMapOf<Key, ArrayList<WeakValue>>()
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
@@ -190,4 +186,8 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         override val bitmap: Bitmap,
         override val isSampled: Boolean
     ) : Value
+
+    companion object {
+        private const val CLEAN_UP_INTERVAL = 10
+    }
 }

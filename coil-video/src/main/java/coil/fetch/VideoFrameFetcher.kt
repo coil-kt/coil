@@ -73,16 +73,6 @@ class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri
  */
 abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetcher<T> {
 
-    companion object {
-        // https://developer.android.com/guide/topics/media/media-formats#video-formats
-        @JvmField internal val SUPPORTED_FILE_EXTENSIONS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
-
-        internal const val ASSET_FILE_PATH_ROOT = "android_asset"
-
-        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
-        const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
-    }
-
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     protected abstract fun MediaMetadataRetriever.setDataSource(data: T)
@@ -220,5 +210,15 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
     private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {
         return options.allowInexactSize || size is OriginalSize ||
             size == DecodeUtils.computePixelSize(bitmap.width, bitmap.height, size, options.scale)
+    }
+
+    companion object {
+        // https://developer.android.com/guide/topics/media/media-formats#video-formats
+        @JvmField internal val SUPPORTED_FILE_EXTENSIONS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
+
+        internal const val ASSET_FILE_PATH_ROOT = "android_asset"
+
+        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
+        const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
     }
 }

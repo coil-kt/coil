@@ -32,7 +32,6 @@ import kotlin.test.fail
 class CrossfadeTransitionTest {
 
     private lateinit var context: Context
-
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var transition: CrossfadeTransition
 

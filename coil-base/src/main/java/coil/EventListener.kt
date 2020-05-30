@@ -26,10 +26,6 @@ import coil.transition.TransitionTarget
 @ExperimentalCoilApi
 interface EventListener : Request.Listener {
 
-    companion object {
-        @JvmField val NONE = object : EventListener {}
-    }
-
     /**
      * Called immediately after the request is dispatched.
      */
@@ -183,5 +179,9 @@ interface EventListener : Request.Listener {
 
         /** Return a new [EventListener]. */
         fun create(request: Request): EventListener
+    }
+
+    companion object {
+        @JvmField val NONE = object : EventListener {}
     }
 }

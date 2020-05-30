@@ -27,18 +27,6 @@ import kotlin.math.roundToInt
 /** The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource]. */
 internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
-    companion object {
-        private const val MIME_TYPE_JPEG = "image/jpeg"
-        private const val MIME_TYPE_WEBP = "image/webp"
-        private const val MIME_TYPE_HEIC = "image/heic"
-        private const val MIME_TYPE_HEIF = "image/heif"
-
-        // NOTE: We don't support PNG EXIF data as it's very rarely used and requires buffering
-        // the entire file into memory. All of the supported formats short circuit when the EXIF
-        // chunk is found (often near the top of the file).
-        private val SUPPORTED_EXIF_MIME_TYPES = arrayOf(MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF)
-    }
-
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     override fun handles(source: BufferedSource, mimeType: String?) = true
@@ -311,5 +299,17 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         override fun reset() = delegate.reset()
 
         override fun markSupported() = delegate.markSupported()
+    }
+
+    companion object {
+        private const val MIME_TYPE_JPEG = "image/jpeg"
+        private const val MIME_TYPE_WEBP = "image/webp"
+        private const val MIME_TYPE_HEIC = "image/heic"
+        private const val MIME_TYPE_HEIF = "image/heif"
+
+        // NOTE: We don't support PNG EXIF data as it's very rarely used and requires buffering
+        // the entire file into memory. All of the supported formats short circuit when the EXIF
+        // chunk is found (often near the top of the file).
+        private val SUPPORTED_EXIF_MIME_TYPES = arrayOf(MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF)
     }
 }

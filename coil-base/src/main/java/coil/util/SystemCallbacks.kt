@@ -23,12 +23,6 @@ internal class SystemCallbacks(
     private val context: Context
 ) : ComponentCallbacks2, NetworkObserver.Listener {
 
-    companion object {
-        private const val TAG = "NetworkObserver"
-        private const val ONLINE = "ONLINE"
-        private const val OFFLINE = "OFFLINE"
-    }
-
     @VisibleForTesting internal val imageLoader = WeakReference(imageLoader)
     private val networkObserver = NetworkObserver(context, this, imageLoader.logger)
 
@@ -69,5 +63,11 @@ internal class SystemCallbacks(
 
         context.unregisterComponentCallbacks(this)
         networkObserver.shutdown()
+    }
+
+    companion object {
+        private const val TAG = "NetworkObserver"
+        private const val ONLINE = "ONLINE"
+        private const val OFFLINE = "OFFLINE"
     }
 }

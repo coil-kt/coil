@@ -14,10 +14,6 @@ class Parameters private constructor(
 
     constructor() : this(emptyMap())
 
-    companion object {
-        @JvmField val EMPTY = Parameters()
-    }
-
     /** Returns the number of parameters in this object. */
     val size: Int @JvmName("size") get() = map.size
 
@@ -108,5 +104,9 @@ class Parameters private constructor(
 
         /** Create a new [Parameters] instance. */
         fun build() = Parameters(map.toMap())
+    }
+
+    companion object {
+        @JvmField val EMPTY = Parameters()
     }
 }

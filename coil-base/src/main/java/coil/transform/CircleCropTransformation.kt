@@ -17,10 +17,6 @@ import kotlin.math.min
  */
 class CircleCropTransformation : Transformation {
 
-    companion object {
-        private val XFERMODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-    }
-
     override fun key(): String = CircleCropTransformation::class.java.name
 
     override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
@@ -37,5 +33,9 @@ class CircleCropTransformation : Transformation {
         pool.put(input)
 
         return output
+    }
+
+    companion object {
+        private val XFERMODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
     }
 }
