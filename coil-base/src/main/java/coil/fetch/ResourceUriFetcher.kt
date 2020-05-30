@@ -24,10 +24,6 @@ internal class ResourceUriFetcher(
     private val drawableDecoder: DrawableDecoderService
 ) : Fetcher<Uri> {
 
-    companion object {
-        private const val MIME_TYPE_XML = "text/xml"
-    }
-
     override fun handles(data: Uri) = data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE
 
     override fun key(data: Uri) = "$data-${context.resources.configuration.nightMode}"
@@ -82,5 +78,9 @@ internal class ResourceUriFetcher(
 
     private fun throwInvalidUriException(data: Uri): Nothing {
         throw IllegalStateException("Invalid ${ContentResolver.SCHEME_ANDROID_RESOURCE} URI: $data")
+    }
+
+    companion object {
+        private const val MIME_TYPE_XML = "text/xml"
     }
 }

@@ -30,11 +30,6 @@ class BlurTransformation @JvmOverloads constructor(
     private val sampling: Float = DEFAULT_SAMPLING
 ) : Transformation {
 
-    companion object {
-        private const val DEFAULT_RADIUS = 10f
-        private const val DEFAULT_SAMPLING = 1f
-    }
-
     init {
         require(radius in 0.0..25.0) { "radius must be in [0, 25]." }
         require(sampling > 0) { "sampling must be > 0." }
@@ -75,5 +70,10 @@ class BlurTransformation @JvmOverloads constructor(
         pool.put(input)
 
         return output
+    }
+
+    companion object {
+        private const val DEFAULT_RADIUS = 10f
+        private const val DEFAULT_SAMPLING = 1f
     }
 }

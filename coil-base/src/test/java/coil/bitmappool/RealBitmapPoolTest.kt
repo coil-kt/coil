@@ -20,12 +20,6 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalStdlibApi::class)
 class RealBitmapPoolTest {
 
-    companion object {
-        private const val MAX_BITMAPS = 10
-        private const val MAX_SIZE = MAX_BITMAPS * DEFAULT_BITMAP_SIZE
-        private val ALLOWED_CONFIGS = setOf(Bitmap.Config.ARGB_8888)
-    }
-
     private lateinit var strategy: FakeBitmapPoolStrategy
     private lateinit var pool: RealBitmapPool
 
@@ -160,5 +154,11 @@ class RealBitmapPoolTest {
 
     private fun RealBitmapPool.fill(fillCount: Int) {
         repeat(fillCount) { put(createBitmap()) }
+    }
+
+    companion object {
+        private const val MAX_BITMAPS = 10
+        private const val MAX_SIZE = MAX_BITMAPS * DEFAULT_BITMAP_SIZE
+        private val ALLOWED_CONFIGS = setOf(Bitmap.Config.ARGB_8888)
     }
 }

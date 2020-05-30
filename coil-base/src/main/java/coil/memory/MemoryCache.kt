@@ -176,10 +176,6 @@ private class RealMemoryCache(
     private val logger: Logger?
 ) : MemoryCache {
 
-    companion object {
-        private const val TAG = "RealMemoryCache"
-    }
-
     private val cache = object : LruCache<Key, InternalValue>(maxSize) {
         override fun entryRemoved(
             evicted: Boolean,
@@ -244,4 +240,8 @@ private class RealMemoryCache(
         override val isSampled: Boolean,
         val size: Int
     ) : Value
+
+    companion object {
+        private const val TAG = "RealMemoryCache"
+    }
 }

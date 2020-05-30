@@ -27,10 +27,6 @@ internal class BitmapReferenceCounter(
     private val logger: Logger?
 ) {
 
-    companion object {
-        private const val TAG = "BitmapReferenceCounter"
-    }
-
     @VisibleForTesting internal val counts = SparseIntArray()
     @VisibleForTesting internal val invalidKeys = SparseIntArraySet()
 
@@ -79,5 +75,9 @@ internal class BitmapReferenceCounter(
      */
     fun invalidate(bitmap: Bitmap) {
         invalidKeys += bitmap.identityHashCode
+    }
+
+    companion object {
+        private const val TAG = "BitmapReferenceCounter"
     }
 }

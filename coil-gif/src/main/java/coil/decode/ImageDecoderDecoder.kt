@@ -31,10 +31,6 @@ import kotlin.math.roundToInt
 @RequiresApi(28)
 class ImageDecoderDecoder : Decoder {
 
-    companion object {
-        const val REPEAT_COUNT_KEY = GifDecoder.REPEAT_COUNT_KEY
-    }
-
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) ||
             DecodeUtils.isAnimatedWebP(source) ||
@@ -121,5 +117,9 @@ class ImageDecoderDecoder : Decoder {
         } finally {
             tempFile?.delete()
         }
+    }
+
+    companion object {
+        const val REPEAT_COUNT_KEY = GifDecoder.REPEAT_COUNT_KEY
     }
 }

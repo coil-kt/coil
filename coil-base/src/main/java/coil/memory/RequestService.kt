@@ -43,18 +43,6 @@ internal class RequestService(
     private val logger: Logger?
 ) {
 
-    companion object {
-        /** @see errorResult */
-        private val FAKE_ERROR_RESULT = ErrorResult(null, Exception())
-
-        /** A whitelist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
-        @JvmField internal val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
-            arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
-        } else {
-            arrayOf(Bitmap.Config.ARGB_8888)
-        }
-    }
-
     private val hardwareBitmapService = HardwareBitmapService()
 
     fun errorResult(request: Request, throwable: Throwable, allowFake: Boolean): ErrorResult {
@@ -228,10 +216,22 @@ internal class RequestService(
     ) {
 
         companion object {
-            val GLOBAL = LifecycleInfo(
+            @JvmField val GLOBAL = LifecycleInfo(
                 lifecycle = GlobalLifecycle,
                 mainDispatcher = Dispatchers.Main.immediate
             )
+        }
+    }
+
+    companion object {
+        /** @see errorResult */
+        private val FAKE_ERROR_RESULT = ErrorResult(null, Exception())
+
+        /** A whitelist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
+        @JvmField internal val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
+            arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
+        } else {
+            arrayOf(Bitmap.Config.ARGB_8888)
         }
     }
 }

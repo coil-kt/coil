@@ -99,10 +99,6 @@ internal class RealImageLoader(
     internal val logger: Logger?
 ) : ImageLoader {
 
-    companion object {
-        private const val TAG = "RealImageLoader"
-    }
-
     private val loaderScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
 
@@ -490,5 +486,9 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
             scope.ensureActive()
         }
+    }
+
+    companion object {
+        private const val TAG = "RealImageLoader"
     }
 }

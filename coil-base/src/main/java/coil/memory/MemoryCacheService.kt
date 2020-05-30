@@ -19,10 +19,6 @@ internal class MemoryCacheService(
     private val logger: Logger?
 ) {
 
-    companion object {
-        private const val TAG = "MemoryCacheService"
-    }
-
     /** Return true if [cacheValue] satisfies the [request]. */
     fun isCachedValueValid(
         cacheKey: MemoryCache.Key?,
@@ -114,5 +110,9 @@ internal class MemoryCacheService(
         }
 
         return true
+    }
+
+    companion object {
+        private const val TAG = "MemoryCacheService"
     }
 }
