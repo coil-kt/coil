@@ -19,10 +19,6 @@ import coil.util.width
 
 internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
 
-    companion object {
-        private const val DEFAULT_SIZE = 512
-    }
-
     /**
      * Convert the provided [Drawable] into a [Bitmap].
      *
@@ -70,5 +66,9 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
     private fun isSizeValid(allowInexactSize: Boolean, size: Size, bitmap: Bitmap, scale: Scale): Boolean {
         return allowInexactSize || size is OriginalSize ||
             size == DecodeUtils.computePixelSize(bitmap.width, bitmap.height, size, scale)
+    }
+
+    companion object {
+        private const val DEFAULT_SIZE = 512
     }
 }

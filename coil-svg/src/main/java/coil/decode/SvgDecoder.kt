@@ -21,11 +21,6 @@ import okio.buffer
  */
 class SvgDecoder(private val context: Context) : Decoder {
 
-    companion object {
-        private const val MIME_TYPE_SVG = "image/svg+xml"
-        private const val DEFAULT_SIZE = 512
-    }
-
     override fun handles(source: BufferedSource, mimeType: String?) = mimeType == MIME_TYPE_SVG
 
     @OptIn(InternalCoilApi::class)
@@ -89,5 +84,10 @@ class SvgDecoder(private val context: Context) : Decoder {
             drawable = bitmap.toDrawable(context.resources),
             isSampled = true // SVGs can always be re-decoded at a higher resolution.
         )
+    }
+
+    companion object {
+        private const val MIME_TYPE_SVG = "image/svg+xml"
+        private const val DEFAULT_SIZE = 512
     }
 }

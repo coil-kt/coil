@@ -36,13 +36,6 @@ internal abstract class HttpFetcher<T : Any>(
     private val callFactory: Call.Factory
 ) : Fetcher<T> {
 
-    companion object {
-        private const val MIME_TYPE_TEXT_PLAIN = "text/plain"
-
-        private val CACHE_CONTROL_FORCE_NETWORK_NO_CACHE = CacheControl.Builder().noCache().noStore().build()
-        private val CACHE_CONTROL_NO_NETWORK_NO_CACHE = CacheControl.Builder().noCache().onlyIfCached().build()
-    }
-
     /**
      * Perform this conversion in a [Fetcher] instead of a [Mapper] so
      * [HttpUriFetcher] can execute [HttpUrl.get] on a background thread.
@@ -99,5 +92,12 @@ internal abstract class HttpFetcher<T : Any>(
         } else {
             rawContentType
         }
+    }
+
+    companion object {
+        private const val MIME_TYPE_TEXT_PLAIN = "text/plain"
+
+        private val CACHE_CONTROL_FORCE_NETWORK_NO_CACHE = CacheControl.Builder().noCache().noStore().build()
+        private val CACHE_CONTROL_NO_NETWORK_NO_CACHE = CacheControl.Builder().noCache().onlyIfCached().build()
     }
 }

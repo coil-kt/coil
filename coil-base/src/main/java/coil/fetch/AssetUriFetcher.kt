@@ -15,10 +15,6 @@ import okio.source
 
 internal class AssetUriFetcher(private val context: Context) : Fetcher<Uri> {
 
-    companion object {
-        const val ASSET_FILE_PATH_ROOT = "android_asset"
-    }
-
     override fun handles(data: Uri): Boolean {
         return data.scheme == ContentResolver.SCHEME_FILE && data.firstPathSegment == ASSET_FILE_PATH_ROOT
     }
@@ -38,5 +34,9 @@ internal class AssetUriFetcher(private val context: Context) : Fetcher<Uri> {
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(path),
             dataSource = DataSource.DISK
         )
+    }
+
+    companion object {
+        const val ASSET_FILE_PATH_ROOT = "android_asset"
     }
 }

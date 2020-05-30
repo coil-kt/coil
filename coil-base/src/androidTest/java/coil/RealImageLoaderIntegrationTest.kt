@@ -63,11 +63,6 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoilApi::class)
 class RealImageLoaderIntegrationTest {
 
-    companion object {
-        private const val IMAGE_NAME = "normal.jpg"
-        private const val IMAGE_SIZE = 443291L
-    }
-
     private lateinit var context: Context
     private lateinit var server: MockWebServer
     private lateinit var imageLoader: RealImageLoader
@@ -429,5 +424,10 @@ class RealImageLoaderIntegrationTest {
         val sink = file.sink().buffer()
         source.use { sink.use { sink.writeAll(source) } }
         return file
+    }
+
+    companion object {
+        private const val IMAGE_NAME = "normal.jpg"
+        private const val IMAGE_SIZE = 443291L
     }
 }

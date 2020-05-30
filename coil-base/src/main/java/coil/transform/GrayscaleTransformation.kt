@@ -16,10 +16,6 @@ import coil.util.safeConfig
  */
 class GrayscaleTransformation : Transformation {
 
-    companion object {
-        private val COLOR_FILTER = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
-    }
-
     override fun key(): String = GrayscaleTransformation::class.java.name
 
     override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
@@ -33,5 +29,9 @@ class GrayscaleTransformation : Transformation {
         pool.put(input)
 
         return output
+    }
+
+    companion object {
+        private val COLOR_FILTER = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
     }
 }

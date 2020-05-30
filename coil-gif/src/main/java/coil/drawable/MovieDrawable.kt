@@ -34,11 +34,6 @@ class MovieDrawable @JvmOverloads constructor(
     val scale: Scale = Scale.FIT
 ) : Drawable(), Animatable2Compat {
 
-    companion object {
-        /** Pass this to [setRepeatCount] to repeat infinitely. */
-        const val REPEAT_INFINITE = -1
-    }
-
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
@@ -210,4 +205,9 @@ class MovieDrawable @JvmOverloads constructor(
     }
 
     override fun clearAnimationCallbacks() = callbacks.clear()
+
+    companion object {
+        /** Pass this to [setRepeatCount] to repeat infinitely. */
+        const val REPEAT_INFINITE = -1
+    }
 }
