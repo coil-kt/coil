@@ -168,7 +168,7 @@ internal class RealImageLoader(
         val targetDelegate = delegateService.createTargetDelegate(request, eventListener)
 
         // Wrap the request to manage its lifecycle.
-        val requestDelegate = delegateService.createRequestDelegate(coroutineContext, request, targetDelegate, lifecycle)
+        val requestDelegate = delegateService.createRequestDelegate(coroutineContext, targetDelegate, request, lifecycle)
 
         try {
             // Suspend until the lifecycle is started.

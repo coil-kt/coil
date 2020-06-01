@@ -46,8 +46,8 @@ internal class DelegateService(
     @MainThread
     fun createRequestDelegate(
         coroutineContext: CoroutineContext,
-        request: Request,
         targetDelegate: TargetDelegate,
+        request: Request,
         lifecycle: Lifecycle
     ): RequestDelegate {
         val requestDelegate: RequestDelegate
