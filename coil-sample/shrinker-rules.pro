@@ -4,4 +4,14 @@
 -allowaccessmodification
 -flattenpackagehierarchy
 -mergeinterfacesaggressively
--dontnote **
+-dontnote *
+
+# Remove intrinsic assertions.
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    public static void checkExpressionValueIsNotNull(...);
+    public static void checkNotNullExpressionValue(...);
+    public static void checkParameterIsNotNull(...);
+    public static void checkNotNullParameter(...);
+    public static void checkFieldIsNotNull(...);
+    public static void checkReturnedValueIsNotNull(...);
+}

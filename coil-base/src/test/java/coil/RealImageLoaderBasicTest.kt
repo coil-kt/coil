@@ -268,7 +268,7 @@ class RealImageLoaderBasicTest {
         block: suspend () -> Size = { fail() }
     ): RealImageLoader.LazySizeResolver {
         return RealImageLoader.LazySizeResolver(
-            scope = CoroutineScope(Job()), // Pass a fake scope.
+            coroutineContext = CoroutineScope(Job()).coroutineContext, // Pass a fake context.
             sizeResolver = object : SizeResolver {
                 override suspend fun size() = block()
             },
