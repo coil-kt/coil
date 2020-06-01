@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.ImageLoader
 import coil.request.LoadRequest
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 
 internal sealed class RequestDelegate : DefaultLifecycleObserver {
@@ -27,18 +26,12 @@ internal object EmptyRequestDelegate : RequestDelegate()
 /** A simple request delegate for a one-shot request. */
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
-    private val dispatcher: CoroutineDispatcher,
     private val job: Job
 ) : RequestDelegate() {
 
     override fun dispose() = job.cancel()
 
-    override fun onComplete() {
-        if (dispatcher is LifecycleObserver) {
-            lifecycle.removeObserver(dispatcher)
-        }
-        lifecycle.removeObserver(this)
-    }
+    override fun onComplete() = lifecycle.removeObserver(this)
 
     override fun onDestroy(owner: LifecycleOwner) = dispose()
 }
@@ -53,7 +46,6 @@ internal class ViewTargetRequestDelegate(
     private val request: LoadRequest,
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
-    private val dispatcher: CoroutineDispatcher,
     private val job: Job
 ) : RequestDelegate() {
 
@@ -71,12 +63,6 @@ internal class ViewTargetRequestDelegate(
             lifecycle.removeObserver(request.target)
         }
         lifecycle.removeObserver(this)
-    }
-
-    override fun onComplete() {
-        if (dispatcher is LifecycleObserver) {
-            lifecycle.removeObserver(dispatcher)
-        }
     }
 
     override fun onDestroy(owner: LifecycleOwner) = dispose()

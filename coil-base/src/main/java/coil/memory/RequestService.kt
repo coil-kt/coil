@@ -9,11 +9,10 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.Lifecycle
 import coil.DefaultRequestOptions
 import coil.decode.Options
-import coil.lifecycle.GlobalLifecycle
-import coil.lifecycle.LifecycleCoroutineDispatcher
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.GetRequest
+import coil.request.GlobalLifecycle
 import coil.request.LoadRequest
 import coil.request.NullRequestDataException
 import coil.request.Request
@@ -34,8 +33,6 @@ import coil.util.getLifecycle
 import coil.util.isAttachedToWindowCompat
 import coil.util.isHardware
 import coil.util.scale
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 /** Handles operations that act on [Request]s. */
 internal class RequestService(
@@ -61,20 +58,10 @@ internal class RequestService(
     }
 
     @MainThread
-    fun lifecycleInfo(request: Request): LifecycleInfo {
+    fun lifecycle(request: Request): Lifecycle {
         return when (request) {
-            is GetRequest -> LifecycleInfo.GLOBAL
-            is LoadRequest -> {
-                // Attempt to find the lifecycle for this request.
-                val lifecycle = request.getLifecycle()
-                return if (lifecycle != null) {
-                    val mainDispatcher = LifecycleCoroutineDispatcher
-                        .createUnlessStarted(Dispatchers.Main.immediate, lifecycle)
-                    LifecycleInfo(lifecycle, mainDispatcher)
-                } else {
-                    LifecycleInfo.GLOBAL
-                }
-            }
+            is GetRequest -> GlobalLifecycle
+            is LoadRequest -> request.getLifecycle() ?: GlobalLifecycle
         }
     }
 
@@ -207,19 +194,6 @@ internal class RequestService(
             lifecycle != null -> lifecycle
             target is ViewTarget<*> -> target.view.context.getLifecycle()
             else -> context.getLifecycle()
-        }
-    }
-
-    data class LifecycleInfo(
-        val lifecycle: Lifecycle,
-        val mainDispatcher: CoroutineDispatcher
-    ) {
-
-        companion object {
-            @JvmField val GLOBAL = LifecycleInfo(
-                lifecycle = GlobalLifecycle,
-                mainDispatcher = Dispatchers.Main.immediate
-            )
         }
     }
 

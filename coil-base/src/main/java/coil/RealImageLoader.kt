@@ -57,6 +57,7 @@ import coil.transform.Transformation
 import coil.util.Emoji
 import coil.util.Logger
 import coil.util.SystemCallbacks
+import coil.util.awaitStarted
 import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.firstNotNullIndices
@@ -74,15 +75,15 @@ import coil.util.validateFetcher
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalCoilApi::class)
 internal class RealImageLoader(
@@ -144,7 +145,7 @@ internal class RealImageLoader(
 
     override suspend fun execute(request: GetRequest): RequestResult {
         return try {
-            executeInternal(request)
+            withContext(Dispatchers.Main.immediate) { executeInternal(request) }
         } catch (exception: CancellationException) {
             throw exception
         } catch (throwable: Throwable) {
@@ -152,20 +153,27 @@ internal class RealImageLoader(
         }
     }
 
-    private suspend fun executeInternal(request: Request) = withContext(Dispatchers.Main.immediate) outerJob@{
+    @MainThread
+    private suspend fun executeInternal(request: Request): SuccessResult {
         // Ensure this image loader isn't shutdown.
         check(!isShutdown) { "The image loader is shutdown." }
 
         // Create a new event listener.
         val eventListener = eventListenerFactory.create(request)
 
-        // Compute lifecycle info on the main thread.
-        val (lifecycle, mainDispatcher) = requestService.lifecycleInfo(request)
+        // Find the containing lifecycle for this request.
+        val lifecycle = requestService.lifecycle(request)
 
         // Wrap the target to support bitmap pooling.
         val targetDelegate = delegateService.createTargetDelegate(request, eventListener)
 
-        val deferred = async(mainDispatcher, CoroutineStart.LAZY) innerJob@{
+        // Wrap the request to manage its lifecycle.
+        val requestDelegate = delegateService.createRequestDelegate(coroutineContext, request, targetDelegate, lifecycle)
+
+        try {
+            // Suspend until the lifecycle is started.
+            lifecycle.awaitStarted()
+
             // Fail before starting if data is null.
             val data = request.data ?: throw NullRequestDataException()
 
@@ -186,7 +194,7 @@ internal class RealImageLoader(
 
             // Prepare to resolve the size lazily.
             val sizeResolver = requestService.sizeResolver(request, context)
-            val lazySizeResolver = LazySizeResolver(this, sizeResolver, targetDelegate, request, defaults, eventListener)
+            val lazySizeResolver = LazySizeResolver(coroutineContext, sizeResolver, targetDelegate, request, defaults, eventListener)
 
             // Perform any data mapping.
             eventListener.mapStart(request, data)
@@ -223,7 +231,7 @@ internal class RealImageLoader(
                 targetDelegate.success(result, request.transition ?: defaults.transition)
                 eventListener.onSuccess(request, result.source)
                 request.listener?.onSuccess(request, result.source)
-                return@innerJob result
+                return result
             }
 
             // Fetch and decode the image.
@@ -241,34 +249,25 @@ internal class RealImageLoader(
             eventListener.onSuccess(request, source)
             request.listener?.onSuccess(request, source)
 
-            return@innerJob result
-        }
+            return result
+        } catch (throwable: Throwable) {
+            requestDelegate.onComplete()
 
-        // Wrap the request to manage its lifecycle.
-        val requestDelegate = delegateService.createRequestDelegate(request, targetDelegate, lifecycle, mainDispatcher, deferred)
-
-        deferred.invokeOnCompletion { throwable ->
-            // Ensure callbacks are executed on the main thread.
-            loaderScope.launch(Dispatchers.Main.immediate) {
-                requestDelegate.onComplete()
-                throwable ?: return@launch
-
-                if (throwable is CancellationException) {
-                    logger?.log(TAG, Log.INFO) { "${Emoji.CONSTRUCTION} Cancelled - ${request.data}" }
-                    eventListener.onCancel(request)
-                    request.listener?.onCancel(request)
-                } else {
-                    logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - $throwable" }
-                    val result = requestService.errorResult(request, throwable, true)
-                    targetDelegate.error(result, request.transition ?: defaults.transition)
-                    eventListener.onError(request, throwable)
-                    request.listener?.onError(request, throwable)
-                }
+            if (throwable is CancellationException) {
+                logger?.log(TAG, Log.INFO) { "${Emoji.CONSTRUCTION} Cancelled - ${request.data}" }
+                eventListener.onCancel(request)
+                request.listener?.onCancel(request)
+            } else {
+                logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - $throwable" }
+                val result = requestService.errorResult(request, throwable, true)
+                targetDelegate.error(result, request.transition ?: defaults.transition)
+                eventListener.onError(request, throwable)
+                request.listener?.onError(request, throwable)
             }
+            throw throwable
+        } finally {
+            requestDelegate.onComplete()
         }
-
-        // Suspend the outer job until the inner job completes.
-        return@outerJob deferred.await()
     }
 
     /** Map [data] using the components registered in [registry]. */
@@ -367,7 +366,7 @@ internal class RealImageLoader(
         ensureActive()
 
         // Apply any transformations and prepare to draw.
-        val finalResult = applyTransformations(this, baseResult, request, size, options, eventListener)
+        val finalResult = applyTransformations(baseResult, request, size, options, eventListener)
         (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
 
         return@withContext finalResult
@@ -376,17 +375,14 @@ internal class RealImageLoader(
     /** Apply any [Transformation]s and return an updated [DrawableResult]. */
     @VisibleForTesting
     internal suspend inline fun applyTransformations(
-        scope: CoroutineScope,
         result: DrawableResult,
         request: Request,
         size: Size,
         options: Options,
         eventListener: EventListener
-    ): DrawableResult = scope.run {
+    ): DrawableResult {
         val transformations = request.transformations
-        if (transformations.isEmpty()) {
-            return@run result
-        }
+        if (transformations.isEmpty()) return result
 
         // Convert the drawable into a bitmap with a valid config.
         eventListener.transformStart(request)
@@ -408,11 +404,11 @@ internal class RealImageLoader(
             drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
         }
         val transformedBitmap = transformations.foldIndices(baseBitmap) { bitmap, transformation ->
-            transformation.transform(bitmapPool, bitmap, size).also { ensureActive() }
+            transformation.transform(bitmapPool, bitmap, size).also { coroutineContext.ensureActive() }
         }
         val transformedResult = result.copy(drawable = transformedBitmap.toDrawable(context))
         eventListener.transformEnd(request)
-        return@run transformedResult
+        return transformedResult
     }
 
     override fun invalidate(key: String) {
@@ -446,7 +442,7 @@ internal class RealImageLoader(
     /** Lazily resolves and caches a request's size. */
     @VisibleForTesting
     internal class LazySizeResolver(
-        private val scope: CoroutineScope,
+        private val coroutineContext: CoroutineContext,
         private val sizeResolver: SizeResolver,
         private val targetDelegate: TargetDelegate,
         private val request: Request,
@@ -456,12 +452,7 @@ internal class RealImageLoader(
 
         private var size: Size? = null
 
-        /**
-         * Calls [TargetDelegate.start], [SizeResolver.size], and caches the resolved size.
-         *
-         * This method is inlined as long as it is called from inside [RealImageLoader].
-         * [beforeResolveSize] and [afterResolveSize] are outlined to reduce the amount of inlined code.
-         */
+        /** Calls [TargetDelegate.start], [SizeResolver.size], and caches the resolved size. */
         @MainThread
         suspend inline fun size(cached: BitmapDrawable? = null): Size {
             // Return the size if it has already been resolved.
@@ -484,7 +475,7 @@ internal class RealImageLoader(
         /** Called immediately after [SizeResolver.size]. */
         private fun afterResolveSize(size: Size) {
             eventListener.resolveSizeEnd(request, size)
-            scope.ensureActive()
+            coroutineContext.ensureActive()
         }
     }
 
