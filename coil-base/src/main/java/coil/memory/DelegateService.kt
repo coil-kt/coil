@@ -14,8 +14,8 @@ import coil.target.Target
 import coil.target.ViewTarget
 import coil.util.Logger
 import coil.util.requestManager
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
+import kotlin.coroutines.CoroutineContext
 
 /**
  * [DelegateService] wraps [Target]s to support [Bitmap] pooling and [Request]s to manage their lifecycle.
@@ -45,11 +45,10 @@ internal class DelegateService(
     /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [Request] based on its lifecycle. */
     @MainThread
     fun createRequestDelegate(
-        request: Request,
+        coroutineContext: CoroutineContext,
         targetDelegate: TargetDelegate,
-        lifecycle: Lifecycle,
-        mainDispatcher: CoroutineDispatcher,
-        deferred: Deferred<*>
+        request: Request,
+        lifecycle: Lifecycle
     ): RequestDelegate {
         val requestDelegate: RequestDelegate
 
@@ -65,8 +64,7 @@ internal class DelegateService(
                         request = request,
                         target = targetDelegate,
                         lifecycle = lifecycle,
-                        dispatcher = mainDispatcher,
-                        job = deferred
+                        job = coroutineContext[Job]!!
                     )
                     lifecycle.addObserver(requestDelegate)
 
@@ -74,7 +72,7 @@ internal class DelegateService(
                     target.view.requestManager.setCurrentRequest(requestDelegate)
                 }
                 else -> {
-                    requestDelegate = BaseRequestDelegate(lifecycle, mainDispatcher, deferred)
+                    requestDelegate = BaseRequestDelegate(lifecycle, coroutineContext[Job]!!)
                     lifecycle.addObserver(requestDelegate)
                 }
             }

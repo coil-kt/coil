@@ -1,4 +1,4 @@
-package coil.lifecycle
+package coil.request
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver

@@ -13,6 +13,7 @@ import coil.fetch.VideoFrameFileFetcher
 import coil.fetch.VideoFrameUriFetcher
 import coil.util.DebugLogger
 import okhttp3.Cache
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.io.File
 
@@ -20,7 +21,7 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
-            .availableMemoryPercentage(0.5) // Use 50% of the application's available memory.
+            .availableMemoryPercentage(0.25) // Use 25% of the application's available memory.
             .crossfade(true) // Show a short crossfade when loading images from network or disk.
             .componentRegistry {
                 // Fetchers
@@ -44,9 +45,13 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
                 // Rewrite the Cache-Control header to cache all responses for a year.
                 val cacheControlInterceptor = ResponseHeaderInterceptor("Cache-Control", "max-age=31536000,public")
 
+                // Don't limit concurrent network requests by host.
+                val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }
+
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
                     .cache(cache)
+                    .dispatcher(dispatcher)
                     .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before API 21.
                     .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
