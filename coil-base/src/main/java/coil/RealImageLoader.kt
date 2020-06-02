@@ -63,10 +63,11 @@ import coil.util.emoji
 import coil.util.firstNotNullIndices
 import coil.util.foldIndices
 import coil.util.forEachIndices
-import coil.util.getValue
+import coil.util.get
+import coil.util.job
 import coil.util.log
 import coil.util.placeholderOrDefault
-import coil.util.putValue
+import coil.util.put
 import coil.util.requestManager
 import coil.util.safeConfig
 import coil.util.takeIf
@@ -168,7 +169,7 @@ internal class RealImageLoader(
         val targetDelegate = delegateService.createTargetDelegate(request, eventListener)
 
         // Wrap the request to manage its lifecycle.
-        val requestDelegate = delegateService.createRequestDelegate(coroutineContext, targetDelegate, request, lifecycle)
+        val requestDelegate = delegateService.createRequestDelegate(coroutineContext.job, targetDelegate, request, lifecycle)
 
         try {
             // Suspend until the lifecycle is started.
@@ -209,7 +210,7 @@ internal class RealImageLoader(
             // Check the memory cache.
             val memoryCachePolicy = request.memoryCachePolicy ?: defaults.memoryCachePolicy
             val cachedValue = takeIf(memoryCachePolicy.readEnabled) {
-                memoryCache.getValue(cacheKey) ?: request.aliasKeys.firstNotNullIndices { memoryCache.getValue(MemoryCache.Key(it)) }
+                memoryCache.get(cacheKey) ?: request.aliasKeys.firstNotNullIndices { memoryCache.get(MemoryCache.Key(it)) }
             }
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
@@ -217,10 +218,8 @@ internal class RealImageLoader(
                 ?.takeIf { requestService.isConfigValidForHardware(request, it.safeConfig) }
                 ?.toDrawable(context)
 
-            // If we didn't resolve the size earlier, resolve it now.
+            // Resolve the size and scale.
             val size = lazySizeResolver.size(cachedDrawable)
-
-            // Resolve the scale.
             val scale = requestService.scale(request, sizeResolver)
 
             // Short circuit if the cached drawable is valid for the target.
@@ -234,12 +233,12 @@ internal class RealImageLoader(
                 return result
             }
 
-            // Fetch and decode the image.
+            // Fetch and decode the image on a background thread.
             val (drawable, isSampled, source) = loadData(mappedData, fetcher, request, sizeResolver, size, scale, eventListener)
 
             // Cache the result.
             if (memoryCachePolicy.writeEnabled) {
-                memoryCache.putValue(cacheKey, drawable, isSampled)
+                memoryCache.put(cacheKey, drawable, isSampled)
             }
 
             // Set the result on the target.
@@ -248,11 +247,8 @@ internal class RealImageLoader(
             targetDelegate.success(result, request.transition ?: defaults.transition)
             eventListener.onSuccess(request, source)
             request.listener?.onSuccess(request, source)
-
             return result
         } catch (throwable: Throwable) {
-            requestDelegate.onComplete()
-
             if (throwable is CancellationException) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.CONSTRUCTION} Cancelled - ${request.data}" }
                 eventListener.onCancel(request)

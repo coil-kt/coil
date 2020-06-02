@@ -15,11 +15,8 @@ import coil.target.ViewTarget
 import coil.util.Logger
 import coil.util.requestManager
 import kotlinx.coroutines.Job
-import kotlin.coroutines.CoroutineContext
 
-/**
- * [DelegateService] wraps [Target]s to support [Bitmap] pooling and [Request]s to manage their lifecycle.
- */
+/** [DelegateService] wraps [Target]s to support [Bitmap] pooling and [Request]s to manage their lifecycle. */
 @OptIn(ExperimentalCoilApi::class)
 internal class DelegateService(
     private val imageLoader: ImageLoader,
@@ -45,7 +42,7 @@ internal class DelegateService(
     /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [Request] based on its lifecycle. */
     @MainThread
     fun createRequestDelegate(
-        coroutineContext: CoroutineContext,
+        job: Job,
         targetDelegate: TargetDelegate,
         request: Request,
         lifecycle: Lifecycle
@@ -55,24 +52,17 @@ internal class DelegateService(
         when (request) {
             is GetRequest -> {
                 requestDelegate = EmptyRequestDelegate
-                lifecycle.addObserver(requestDelegate)
             }
             is LoadRequest -> when (val target = request.target) {
                 is ViewTarget<*> -> {
-                    requestDelegate = ViewTargetRequestDelegate(
-                        imageLoader = imageLoader,
-                        request = request,
-                        target = targetDelegate,
-                        lifecycle = lifecycle,
-                        job = coroutineContext[Job]!!
-                    )
+                    requestDelegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, lifecycle, job)
                     lifecycle.addObserver(requestDelegate)
 
                     // Attach this request to the target's view.
                     target.view.requestManager.setCurrentRequest(requestDelegate)
                 }
                 else -> {
-                    requestDelegate = BaseRequestDelegate(lifecycle, coroutineContext[Job]!!)
+                    requestDelegate = BaseRequestDelegate(lifecycle, job)
                     lifecycle.addObserver(requestDelegate)
                 }
             }
