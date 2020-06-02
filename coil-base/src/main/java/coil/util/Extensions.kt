@@ -29,12 +29,14 @@ import coil.memory.MemoryCache
 import coil.memory.ViewTargetRequestManager
 import coil.request.Parameters
 import coil.size.Scale
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Response
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.CoroutineContext
 
 internal suspend inline fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
@@ -55,9 +57,9 @@ internal inline val StatFs.blockCountCompat: Long
 internal inline val StatFs.blockSizeCompat: Long
     get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 
-internal fun MemoryCache.getValue(key: MemoryCache.Key?): MemoryCache.Value? = key?.let(::get)
+internal fun MemoryCache.get(key: MemoryCache.Key?): MemoryCache.Value? = key?.let(::get)
 
-internal fun MemoryCache.putValue(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean) {
+internal fun MemoryCache.put(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean) {
     if (key != null) {
         val bitmap = (value as? BitmapDrawable)?.bitmap
         if (bitmap != null) {
@@ -74,10 +76,9 @@ internal val View.requestManager: ViewTargetRequestManager
     get() {
         var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
         if (manager == null) {
-            manager = ViewTargetRequestManager().apply {
-                addOnAttachStateChangeListener(this)
-                setTag(R.id.coil_request_manager, this)
-            }
+            manager = ViewTargetRequestManager()
+            addOnAttachStateChangeListener(manager)
+            setTag(R.id.coil_request_manager, manager)
         }
         return manager
     }
@@ -170,3 +171,5 @@ internal inline val Any.identityHashCode: Int
 internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
     while (true) action(get())
 }
+
+internal inline val CoroutineContext.job: Job get() = get(Job)!!

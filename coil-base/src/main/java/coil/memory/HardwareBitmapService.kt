@@ -5,7 +5,7 @@ import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.WorkerThread
-import coil.memory.HardwareBitmapBlacklist.IS_BLACKLISTED
+import coil.memory.HardwareBitmapBlocklist.IS_BLOCKED
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.Logger
@@ -17,7 +17,7 @@ internal sealed class HardwareBitmapService {
 
     companion object {
         operator fun invoke() = when {
-            SDK_INT < 26 || IS_BLACKLISTED -> ImmutableHardwareBitmapService(false)
+            SDK_INT < 26 || IS_BLOCKED -> ImmutableHardwareBitmapService(false)
             SDK_INT == 26 || SDK_INT == 27 -> LimitedFileDescriptorHardwareBitmapService
             else -> ImmutableHardwareBitmapService(true)
         }
@@ -95,9 +95,9 @@ private object LimitedFileDescriptorHardwareBitmapService : HardwareBitmapServic
  *
  * Model names are retrieved from [Google's official device list](https://support.google.com/googleplay/answer/1727131?hl=en).
  */
-private object HardwareBitmapBlacklist {
+private object HardwareBitmapBlocklist {
 
-    @JvmField val IS_BLACKLISTED = when (SDK_INT) {
+    @JvmField val IS_BLOCKED = when (SDK_INT) {
         26 -> run {
             val model = Build.MODEL ?: return@run false
 

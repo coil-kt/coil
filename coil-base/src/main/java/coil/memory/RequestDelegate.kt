@@ -9,7 +9,7 @@ import coil.ImageLoader
 import coil.request.LoadRequest
 import kotlinx.coroutines.Job
 
-internal sealed class RequestDelegate : DefaultLifecycleObserver {
+internal sealed class RequestDelegate {
 
     /** Cancel any in progress work and free any resources associated with this delegate. */
     @MainThread
@@ -27,7 +27,7 @@ internal object EmptyRequestDelegate : RequestDelegate()
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
     private val job: Job
-) : RequestDelegate() {
+) : RequestDelegate(), DefaultLifecycleObserver {
 
     override fun dispose() = job.cancel()
 
@@ -47,7 +47,7 @@ internal class ViewTargetRequestDelegate(
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
     private val job: Job
-) : RequestDelegate() {
+) : RequestDelegate(), DefaultLifecycleObserver {
 
     /** Repeat this request with the same params. */
     @MainThread
