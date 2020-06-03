@@ -37,7 +37,6 @@ import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.EMPTY_DRAWABLE
-import coil.util.Utils
 import coil.util.orEmpty
 import coil.util.self
 import kotlinx.coroutines.CoroutineDispatcher
@@ -90,7 +89,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
         listener = null
         dispatcher = null
         transformations = emptyList()
-        bitmapConfig = Utils.getDefaultBitmapConfig()
+        bitmapConfig = null
         if (SDK_INT >= 26) colorSpace = null
         sizeResolver = null
         scale = null
