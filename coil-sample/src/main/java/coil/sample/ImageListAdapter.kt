@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
 class ImageListAdapter(
     context: Context,
     private val setScreen: (Screen) -> Unit
-) : ListAdapter<Image, ViewHolder>(Callback) {
+) : ListAdapter<Image, ViewHolder>(Callback.asConfig()) {
 
     private val maxColumnWidth = 320.dp(context)
     private val displayWidth = context.getDisplaySize().width
