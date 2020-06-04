@@ -10,7 +10,11 @@ import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.AndroidViewModel
+import androidx.recyclerview.widget.AsyncDifferConfig
+import androidx.recyclerview.widget.DiffUtil
 import coil.size.PixelSize
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import kotlin.random.Random
 
 inline fun <reified V : View> ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): V {
@@ -36,4 +40,10 @@ fun Int.dp(context: Context): Float {
 @ColorInt
 fun randomColor(): Int {
     return Color.argb(128, Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
+}
+
+fun <T> DiffUtil.ItemCallback<T>.asConfig(): AsyncDifferConfig<T> {
+    return AsyncDifferConfig.Builder(this)
+        .setBackgroundThreadExecutor(Dispatchers.Default.asExecutor())
+        .build()
 }
