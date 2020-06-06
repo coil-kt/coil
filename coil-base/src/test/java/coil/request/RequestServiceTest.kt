@@ -84,9 +84,8 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - DisplaySizeResolver explicit`() {
-        val request = /** Empty. */
-            createRequest(context) {
-            target { /** Empty. */ }
+        val request = createRequest(context) {
+            target { /* Empty. */ }
         }
         assertTrue(service.allowInexactSize(request))
     }
@@ -99,9 +98,8 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - CustomTarget`() {
-        val request = /** Empty. */
-            createRequest(context) {
-            target { /** Empty. */ }
+        val request = createRequest(context) {
+            target { /* Empty. */ }
             size(100, 100)
         }
         assertFalse(service.allowInexactSize(request))
