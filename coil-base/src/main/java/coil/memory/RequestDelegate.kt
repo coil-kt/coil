@@ -9,28 +9,22 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import kotlinx.coroutines.Job
 
-internal sealed class RequestDelegate : DefaultLifecycleObserver {
-
-    /** The underlying job for this request. */
-    abstract val job: Job
+internal sealed class RequestDelegate {
 
     /** Called when the image request completes for any reason. */
     @MainThread
-    abstract fun complete()
-
-    @MainThread
-    override fun onDestroy(owner: LifecycleOwner) = job.cancel()
+    abstract fun onComplete()
 }
 
 /** A simple request delegate for a one-shot request. */
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
-    override val job: Job
-): RequestDelegate() {
+    private val job: Job
+): RequestDelegate(), DefaultLifecycleObserver {
 
-    override fun complete() {
-        lifecycle.removeObserver(this)
-    }
+    override fun onComplete() = lifecycle.removeObserver(this)
+
+    override fun onDestroy(owner: LifecycleOwner) = job.cancel()
 }
 
 /**
@@ -43,13 +37,8 @@ internal class ViewTargetRequestDelegate(
     private val request: ImageRequest,
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
-    override val job: Job
-) : RequestDelegate() {
-
-    /** Cancel the request if it is in progress. */
-    fun cancel() {
-        job.cancel()
-    }
+    private val job: Job
+) : RequestDelegate(), DefaultLifecycleObserver {
 
     /** Repeat this request with the same params. */
     @MainThread
@@ -57,11 +46,19 @@ internal class ViewTargetRequestDelegate(
         imageLoader.enqueue(request)
     }
 
-    override fun complete() {
+    /** Cancel any in progress work and free all resources. */
+    @MainThread
+    fun dispose() {
+        job.cancel()
         target.clear()
+
         if (request.target is LifecycleObserver) {
             lifecycle.removeObserver(request.target)
         }
         lifecycle.removeObserver(this)
     }
+
+    override fun onComplete() {}
+
+    override fun onDestroy(owner: LifecycleOwner) = dispose()
 }

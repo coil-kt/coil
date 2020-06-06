@@ -255,7 +255,7 @@ internal class RealImageLoader(
                 return result
             }
         } finally {
-            requestDelegate.complete()
+            requestDelegate.onComplete()
         }
     }
 
