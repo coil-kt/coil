@@ -19,15 +19,15 @@ import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
 import coil.memory.MemoryCache.Key
 import coil.memory.RealWeakMemoryCache
-import coil.request.LoadRequest
 import coil.request.Parameters
+import coil.request.Request
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.Transformation
-import coil.util.createLoadRequest
+import coil.util.createRequest
 import coil.util.decodeBitmapAsset
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +93,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val request = LoadRequest.Builder(context)
+                val request = Request.Builder(context)
                     .key(key.baseKey)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
@@ -116,7 +116,7 @@ class RealImageLoaderBasicTest {
                         onCancel = { continuation.cancel() }
                     )
                     .build()
-                imageLoader.execute(request)
+                imageLoader.enqueue(request)
             }
         }
     }
@@ -129,7 +129,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val request = LoadRequest.Builder(context)
+                val request = Request.Builder(context)
                     .key(key.baseKey)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
@@ -150,7 +150,7 @@ class RealImageLoaderBasicTest {
                         onCancel = { continuation.cancel() }
                     )
                     .build()
-                imageLoader.execute(request)
+                imageLoader.enqueue(request)
             }
         }
     }
@@ -273,7 +273,7 @@ class RealImageLoaderBasicTest {
                 override suspend fun size() = block()
             },
             targetDelegate = EmptyTargetDelegate,
-            request = createLoadRequest(context),
+            request = createRequest(context),
             defaults = DefaultRequestOptions(),
             eventListener = EventListener.NONE
         )

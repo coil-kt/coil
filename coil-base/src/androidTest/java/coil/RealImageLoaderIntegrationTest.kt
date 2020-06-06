@@ -22,17 +22,16 @@ import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.DrawableResult
 import coil.request.CachePolicy
 import coil.request.ErrorResult
-import coil.request.GetRequest
-import coil.request.LoadRequest
 import coil.request.NullRequestDataException
+import coil.request.Request
 import coil.request.SuccessResult
 import coil.size.PixelSize
 import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.util.Utils
-import coil.util.createGetRequest
 import coil.util.createMockWebServer
 import coil.util.createOptions
+import coil.util.createRequest
 import coil.util.getDrawableCompat
 import coil.util.size
 import kotlinx.coroutines.CancellationException
@@ -86,91 +85,91 @@ class RealImageLoaderIntegrationTest {
     fun string() {
         val data = server.url(IMAGE_NAME).toString()
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
     fun httpUri() {
         val data = server.url(IMAGE_NAME).toString().toUri()
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
     fun httpUrl() {
         val data = server.url(IMAGE_NAME)
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
     fun resourceInt() {
         val data = R.drawable.normal
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
     fun resourceIntVector() {
         val data = R.drawable.ic_android
         testLoad(data, PixelSize(100, 100))
-        testGet(data, PixelSize(100, 100))
+        testExecute(data, PixelSize(100, 100))
     }
 
     @Test
     fun resourceUriInt() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
     fun resourceUriIntVector() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
         testLoad(data, PixelSize(100, 100))
-        testGet(data, PixelSize(100, 100))
+        testExecute(data, PixelSize(100, 100))
     }
 
     @Test
     fun resourceUriString() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/normal".toUri()
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
     fun resourceUriStringVector() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/ic_android".toUri()
         testLoad(data, PixelSize(100, 100))
-        testGet(data, PixelSize(100, 100))
+        testExecute(data, PixelSize(100, 100))
     }
 
     @Test
     fun file() {
         val data = copyNormalImageAssetToCacheDir()
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
     fun fileUri() {
         val data = copyNormalImageAssetToCacheDir().toUri()
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
     fun assetUri() {
         val data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
         testLoad(data, PixelSize(75, 100))
-        testGet(data, PixelSize(100, 133))
+        testExecute(data, PixelSize(100, 133))
     }
 
     @Test
     fun contentUri() {
         val data = "$SCHEME_CONTENT://coil/$IMAGE_NAME".toUri()
         testLoad(data)
-        testGet(data)
+        testExecute(data)
     }
 
     @Test
@@ -178,7 +177,7 @@ class RealImageLoaderIntegrationTest {
         val data = context.getDrawableCompat(R.drawable.normal)
         val expectedSize = PixelSize(1080, 1350)
         testLoad(data, expectedSize)
-        testGet(data, expectedSize)
+        testExecute(data, expectedSize)
     }
 
     @Test
@@ -186,7 +185,7 @@ class RealImageLoaderIntegrationTest {
         val data = (context.getDrawableCompat(R.drawable.normal) as BitmapDrawable).bitmap
         val expectedSize = PixelSize(1080, 1350)
         testLoad(data, expectedSize)
-        testGet(data, expectedSize)
+        testExecute(data, expectedSize)
     }
 
     // endregion
@@ -195,7 +194,7 @@ class RealImageLoaderIntegrationTest {
     fun unsupportedDataThrows() {
         val data = Any()
         assertFailsWith<IllegalStateException> { testLoad(data) }
-        assertFailsWith<IllegalStateException> { testGet(data) }
+        assertFailsWith<IllegalStateException> { testExecute(data) }
     }
 
     @Test
@@ -225,7 +224,7 @@ class RealImageLoaderIntegrationTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val request = LoadRequest.Builder(context)
+                val request = Request.Builder(context)
                     .data(url)
                     .memoryCachePolicy(CachePolicy.DISABLED)
                     .listener(
@@ -234,7 +233,7 @@ class RealImageLoaderIntegrationTest {
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
                     .build()
-                imageLoader.execute(request)
+                imageLoader.enqueue(request)
             }
         }
 
@@ -274,7 +273,7 @@ class RealImageLoaderIntegrationTest {
         assertTrue(cacheFolder.listFiles().isNullOrEmpty())
 
         runBlocking {
-            val request = GetRequest.Builder(context)
+            val request = Request.Builder(context)
                 .data(url)
                 .memoryCachePolicy(CachePolicy.DISABLED)
                 .build()
@@ -297,7 +296,7 @@ class RealImageLoaderIntegrationTest {
                     isSampled = false,
                     dataSource = DataSource.MEMORY
                 ),
-                request = createGetRequest(context) { transformations(CircleCropTransformation()) },
+                request = createRequest(context) { transformations(CircleCropTransformation()) },
                 size = size,
                 options = createOptions(),
                 eventListener = EventListener.NONE
@@ -320,7 +319,7 @@ class RealImageLoaderIntegrationTest {
                     isSampled = false,
                     dataSource = DataSource.MEMORY
                 ),
-                request = createGetRequest(context) { transformations(emptyList()) },
+                request = createRequest(context) { transformations(emptyList()) },
                 size = size,
                 options = createOptions(),
                 eventListener = EventListener.NONE
@@ -339,7 +338,7 @@ class RealImageLoaderIntegrationTest {
             suspendCancellableCoroutine<Unit> { continuation ->
                 var hasCalledTargetOnError = false
 
-                val request = LoadRequest.Builder(context)
+                val request = Request.Builder(context)
                     .data(null)
                     .size(100, 100)
                     .error(error)
@@ -365,7 +364,7 @@ class RealImageLoaderIntegrationTest {
                         }
                     )
                     .build()
-                imageLoader.execute(request)
+                imageLoader.enqueue(request)
             }
         }
     }
@@ -378,7 +377,7 @@ class RealImageLoaderIntegrationTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val request = LoadRequest.Builder(context)
+                val request = Request.Builder(context)
                     .data(data)
                     .target(imageView)
                     .size(100, 100)
@@ -388,7 +387,7 @@ class RealImageLoaderIntegrationTest {
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
                     .build()
-                imageLoader.execute(request)
+                imageLoader.enqueue(request)
             }
         }
 
@@ -397,9 +396,9 @@ class RealImageLoaderIntegrationTest {
         assertEquals(expectedSize, drawable.bitmap.size)
     }
 
-    private fun testGet(data: Any, expectedSize: PixelSize = PixelSize(100, 125)) {
+    private fun testExecute(data: Any, expectedSize: PixelSize = PixelSize(100, 125)) {
         val result = runBlocking {
-            val request = GetRequest.Builder(context)
+            val request = Request.Builder(context)
                 .data(data)
                 .size(100, 100)
                 .build()

@@ -23,12 +23,16 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import coil.ComponentRegistry
 import coil.base.R
 import coil.decode.DataSource
+import coil.map.Mapper
+import coil.map.MeasuredMapper
 import coil.memory.MemoryCache
 import coil.memory.ViewTargetRequestManager
 import coil.request.Parameters
 import coil.size.Scale
+import coil.size.Size
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
@@ -76,9 +80,15 @@ internal val View.requestManager: ViewTargetRequestManager
     get() {
         var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
         if (manager == null) {
-            manager = ViewTargetRequestManager()
-            addOnAttachStateChangeListener(manager)
-            setTag(R.id.coil_request_manager, manager)
+            manager = synchronized(this) {
+                // Check again.
+                (getTag(R.id.coil_request_manager) as? ViewTargetRequestManager)?.let { return@synchronized it }
+
+                ViewTargetRequestManager().apply {
+                    addOnAttachStateChangeListener(this)
+                    setTag(R.id.coil_request_manager, this)
+                }
+            }
         }
         return manager
     }
@@ -116,14 +126,6 @@ internal val ImageView.scale: Scale
         FIT_START, FIT_CENTER, FIT_END, CENTER_INSIDE -> Scale.FIT
         else -> Scale.FILL
     }
-
-/** Work around for Kotlin not supporting a self type. */
-@Suppress("UNCHECKED_CAST")
-internal inline fun <T> Any.self(block: T.() -> Unit): T {
-    this as T
-    block()
-    return this
-}
 
 /**
  * Wrap a [Call.Factory] factory as a [Call.Factory] instance.
@@ -173,3 +175,19 @@ internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
 }
 
 internal inline val CoroutineContext.job: Job get() = get(Job)!!
+
+@Suppress("UNCHECKED_CAST")
+internal inline fun ComponentRegistry.mapData(data: Any, lazySize: () -> Size): Any {
+    var mappedData = data
+    measuredMappers.forEachIndices { (type, mapper) ->
+        if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
+            mappedData = mapper.map(mappedData, lazySize())
+        }
+    }
+    mappers.forEachIndices { (type, mapper) ->
+        if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
+            mappedData = mapper.map(mappedData)
+        }
+    }
+    return mappedData
+}

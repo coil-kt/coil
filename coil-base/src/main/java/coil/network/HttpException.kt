@@ -1,4 +1,4 @@
-@file:Suppress("CanBeParameter", "MemberVisibilityCanBePrivate")
+@file:Suppress("MemberVisibilityCanBePrivate")
 
 package coil.network
 

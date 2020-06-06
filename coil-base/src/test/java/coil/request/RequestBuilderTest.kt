@@ -29,7 +29,7 @@ class RequestBuilderTest {
             .crossfade(false)
             .build()
 
-        val request = LoadRequest.Builder(context)
+        val request = Request.Builder(context)
             .crossfade(false)
             .build()
 

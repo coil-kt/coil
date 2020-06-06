@@ -13,8 +13,6 @@ import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
-import coil.request.LoadRequest
-import coil.request.LoadRequestBuilder
 import coil.request.Request
 import coil.size.Size
 import coil.size.SizeResolver
@@ -143,9 +141,9 @@ class EventListenerTest {
     }
 
     private suspend fun ImageLoader.testLoad(
-        builder: LoadRequestBuilder.() -> Unit
+        builder: Request.Builder.() -> Unit
     ) = suspendCancellableCoroutine<Unit> { continuation ->
-        val request = LoadRequest.Builder(context)
+        val request = Request.Builder(context)
             .size(100, 100)
             .target(ImageView(context))
             .listener(
@@ -155,7 +153,7 @@ class EventListenerTest {
             )
             .apply(builder)
             .build()
-        execute(request)
+        enqueue(request)
     }
 
     private class MethodChecker(private val callExpected: Boolean) {

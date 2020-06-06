@@ -18,7 +18,11 @@ import coil.util.allocationByteCountCompat
 import coil.util.log
 import coil.util.mapIndices
 
-/** An in-memory cache for [Bitmap]s. */
+/**
+ * An in-memory cache for [Bitmap]s.
+ *
+ * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
+ */
 internal interface MemoryCache {
 
     companion object {

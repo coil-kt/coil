@@ -18,8 +18,6 @@ import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.request.CachePolicy
 import coil.request.ErrorResult
-import coil.request.GetRequest
-import coil.request.LoadRequest
 import coil.request.Request
 import coil.request.RequestDisposable
 import coil.request.RequestResult
@@ -57,21 +55,20 @@ interface ImageLoader {
     val defaults: DefaultRequestOptions
 
     /**
-     * Launch an asynchronous operation that executes the [LoadRequest] and sets the result on its [Target].
+     * Executes the [request] asynchronously.
      *
      * @param request The request to execute.
      * @return A [RequestDisposable] which can be used to cancel or check the status of the request.
      */
-    fun execute(request: LoadRequest): RequestDisposable
+    fun enqueue(request: Request): RequestDisposable
 
     /**
-     * Suspends and executes the [GetRequest]. Returns either [SuccessResult] or [ErrorResult] depending
-     * on how the request completes.
+     * Executes the [request] in the current coroutine scope.
      *
      * @param request The request to execute.
      * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
      */
-    suspend fun execute(request: GetRequest): RequestResult
+    suspend fun execute(request: Request): RequestResult
 
     /**
      * Remove the value referenced by [key] from the memory cache.
@@ -92,7 +89,8 @@ interface ImageLoader {
      *
      * All associated resources will be freed and any new requests will fail before starting.
      *
-     * In progress [LoadRequest]s will be cancelled. In progress [GetRequest]s will continue until complete.
+     * In progress [enqueue] requests will be cancelled instantly.
+     * In progress [execute] requests will continue until complete.
      */
     @MainThread
     fun shutdown()

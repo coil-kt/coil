@@ -19,7 +19,7 @@ import java.util.UUID
  */
 internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
-    // The request delegate for the most recently dispatched request.
+    // Only accessed from the main thread. The request delegate for the most recently dispatched request.
     private var currentRequest: ViewTargetRequestDelegate? = null
 
     // Metadata about the current request (that may have not been dispatched yet).
@@ -46,7 +46,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
             pendingClear = null
         }
 
-        currentRequest?.dispose()
+        currentRequest?.cancel()
         currentRequest = request
         skipAttach = true
     }
@@ -88,7 +88,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     @MainThread
     override fun onViewDetachedFromWindow(v: View) {
         skipAttach = false
-        currentRequest?.dispose()
+        currentRequest?.cancel()
     }
 
     /** Return an ID to use for the next request attached to this manager. */

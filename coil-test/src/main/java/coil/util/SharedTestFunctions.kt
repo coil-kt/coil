@@ -9,11 +9,8 @@ import android.graphics.ColorSpace
 import androidx.annotation.RequiresApi
 import coil.decode.Options
 import coil.request.CachePolicy
-import coil.request.GetRequest
-import coil.request.GetRequestBuilder
-import coil.request.LoadRequest
-import coil.request.LoadRequestBuilder
 import coil.request.Parameters
+import coil.request.Request
 import coil.size.PixelSize
 import coil.size.Scale
 import kotlinx.coroutines.CoroutineScope
@@ -108,15 +105,10 @@ fun Context.copyAssetToFile(fileName: String): File {
 val Bitmap.size: PixelSize
     get() = PixelSize(width, height)
 
-inline fun createGetRequest(
+inline fun createRequest(
     context: Context,
-    builder: GetRequestBuilder.() -> Unit = {}
-): GetRequest = GetRequest.Builder(context).data(Unit).apply(builder).build()
-
-inline fun createLoadRequest(
-    context: Context,
-    builder: LoadRequestBuilder.() -> Unit = {}
-): LoadRequest = LoadRequest.Builder(context).data(Unit).apply(builder).build()
+    builder: Request.Builder.() -> Unit = {}
+): Request = Request.Builder(context).data(Unit).apply(builder).build()
 
 /** Runs the given [block] on the main thread by default and returns [Unit]. */
 fun runBlockingTest(

@@ -4,16 +4,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
-import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.Lifecycle
 import coil.DefaultRequestOptions
 import coil.decode.Options
 import coil.request.CachePolicy
 import coil.request.ErrorResult
-import coil.request.GetRequest
-import coil.request.GlobalLifecycle
-import coil.request.LoadRequest
 import coil.request.NullRequestDataException
 import coil.request.Request
 import coil.size.DisplaySizeResolver
@@ -26,10 +21,6 @@ import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.Logger
-import coil.util.bitmapConfigOrDefault
-import coil.util.errorOrDefault
-import coil.util.fallbackOrDefault
-import coil.util.getLifecycle
 import coil.util.isAttachedToWindowCompat
 import coil.util.isHardware
 import coil.util.scale
@@ -42,27 +33,13 @@ internal class RequestService(
 
     private val hardwareBitmapService = HardwareBitmapService()
 
-    fun errorResult(request: Request, throwable: Throwable, allowFake: Boolean): ErrorResult {
-        // Avoid resolving the error drawable if this result is being passed to a target delegate.
-        // It will be resolved later before being returned.
-        if (request is GetRequest && allowFake) {
-            return FAKE_ERROR_RESULT
-        }
-
+    fun errorResult(request: Request, throwable: Throwable): ErrorResult {
         val drawable = if (throwable is NullRequestDataException) {
-            request.fallbackOrDefault(defaults)
+            request.fallback ?: defaults.fallback
         } else {
-            request.errorOrDefault(defaults)
+            request.error ?: defaults.error
         }
         return ErrorResult(drawable, throwable)
-    }
-
-    @MainThread
-    fun lifecycle(request: Request): Lifecycle {
-        return when (request) {
-            is GetRequest -> GlobalLifecycle
-            is LoadRequest -> request.getLifecycle() ?: GlobalLifecycle
-        }
     }
 
     fun sizeResolver(request: Request, context: Context): SizeResolver {
@@ -135,7 +112,7 @@ internal class RequestService(
     ): Options {
         // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
         val isValidConfig = isConfigValidForTransformations(request) && isConfigValidForHardwareAllocation(request, size)
-        val bitmapConfig = if (isValidConfig) request.bitmapConfigOrDefault(defaults) else Bitmap.Config.ARGB_8888
+        val bitmapConfig = if (isValidConfig) request.bitmapConfig ?: defaults.bitmapConfig else Bitmap.Config.ARGB_8888
 
         // Disable fetching from the network if we know we're offline.
         val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
@@ -181,26 +158,16 @@ internal class RequestService(
      */
     @WorkerThread
     private fun isConfigValidForHardwareAllocation(request: Request, size: Size): Boolean {
-        return isConfigValidForHardware(request, request.bitmapConfigOrDefault(defaults)) && hardwareBitmapService.allowHardware(size, logger)
+        return isConfigValidForHardware(request, request.bitmapConfig ?: defaults.bitmapConfig) &&
+            hardwareBitmapService.allowHardware(size, logger)
     }
 
     /** Return true if [Request.bitmapConfig] is valid given its [Transformation]s. */
     private fun isConfigValidForTransformations(request: Request): Boolean {
-        return request.transformations.isEmpty() || request.bitmapConfigOrDefault(defaults) in VALID_TRANSFORMATION_CONFIGS
-    }
-
-    private fun LoadRequest.getLifecycle(): Lifecycle? {
-        return when {
-            lifecycle != null -> lifecycle
-            target is ViewTarget<*> -> target.view.context.getLifecycle()
-            else -> context.getLifecycle()
-        }
+        return request.transformations.isEmpty() || (request.bitmapConfig ?: defaults.bitmapConfig) in VALID_TRANSFORMATION_CONFIGS
     }
 
     companion object {
-        /** @see errorResult */
-        private val FAKE_ERROR_RESULT = ErrorResult(null, Exception())
-
         /** A whitelist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
         @JvmField internal val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
             arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)

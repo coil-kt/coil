@@ -9,8 +9,7 @@ import coil.memory.RequestService
 import coil.size.Precision
 import coil.size.ViewSizeResolver
 import coil.target.ViewTarget
-import coil.util.createGetRequest
-import coil.util.createLoadRequest
+import coil.util.createRequest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,7 +31,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - exact precision`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             target(ImageView(context))
             precision(Precision.EXACT)
         }
@@ -41,7 +40,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - inexact precision`() {
-        val request = createGetRequest(context) {
+        val request = createRequest(context) {
             precision(Precision.INEXACT)
         }
         assertTrue(service.allowInexactSize(request))
@@ -49,7 +48,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - ImageViewTarget`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             target(ImageView(context))
         }
         assertTrue(service.allowInexactSize(request))
@@ -57,7 +56,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - ImageViewTarget explicit size`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             target(ImageView(context))
             size(100, 100)
         }
@@ -66,7 +65,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - ImageViewTarget explicit view size resolver`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             val imageView = ImageView(context)
             target(imageView)
             size(ViewSizeResolver(imageView))
@@ -76,7 +75,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - ImageViewTarget explicit view size resolver, different views`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             target(ImageView(context))
             size(ViewSizeResolver(ImageView(context)))
         }
@@ -85,7 +84,8 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - DisplaySizeResolver explicit`() {
-        val request = createLoadRequest(context) {
+        val request = /** Empty. */
+            createRequest(context) {
             target { /** Empty. */ }
         }
         assertTrue(service.allowInexactSize(request))
@@ -93,13 +93,14 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - NullSizeResolver`() {
-        val request = createLoadRequest(context)
+        val request = createRequest(context)
         assertTrue(service.allowInexactSize(request))
     }
 
     @Test
     fun `allowInexactSize - CustomTarget`() {
-        val request = createLoadRequest(context) {
+        val request = /** Empty. */
+            createRequest(context) {
             target { /** Empty. */ }
             size(100, 100)
         }
@@ -108,7 +109,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - CustomViewTarget`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             target(object : ViewTarget<View> {
                 override val view = View(context)
             })
@@ -118,7 +119,7 @@ class RequestServiceTest {
 
     @Test
     fun `allowInexactSize - GetRequest`() {
-        val request = createGetRequest(context) {
+        val request = createRequest(context) {
             size(100, 100)
         }
         assertFalse(service.allowInexactSize(request))

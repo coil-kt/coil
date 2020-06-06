@@ -2,7 +2,6 @@
 
 package coil
 
-import coil.annotation.BuilderMarker
 import coil.decode.Decoder
 import coil.fetch.Fetcher
 import coil.map.Mapper
@@ -20,8 +19,8 @@ import okio.BufferedSource
 class ComponentRegistry private constructor(
     internal val mappers: MultiList<Class<out Any>, Mapper<out Any, *>>,
     internal val measuredMappers: MultiList<Class<out Any>, MeasuredMapper<out Any, *>>,
-    internal val fetchers: MultiList<Class<out Any>, Fetcher<out Any>>,
-    internal val decoders: List<Decoder>
+    private val fetchers: MultiList<Class<out Any>, Fetcher<out Any>>,
+    private val decoders: List<Decoder>
 ) {
 
     constructor() : this(emptyList(), emptyList(), emptyList(), emptyList())
@@ -60,9 +59,8 @@ class ComponentRegistry private constructor(
         return checkNotNull(decoder) { "Unable to decode data. No decoder supports: $data" }
     }
 
-    fun newBuilder(): Builder = Builder(this)
+    fun newBuilder() = Builder(this)
 
-    @BuilderMarker
     class Builder {
 
         private val mappers: MultiMutableList<Class<out Any>, Mapper<out Any, *>>

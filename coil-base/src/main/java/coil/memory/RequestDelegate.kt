@@ -6,34 +6,31 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.ImageLoader
-import coil.request.LoadRequest
+import coil.request.Request
 import kotlinx.coroutines.Job
 
-internal sealed class RequestDelegate {
+internal sealed class RequestDelegate : DefaultLifecycleObserver {
 
-    /** Cancel any in progress work and free any resources associated with this delegate. */
-    @MainThread
-    open fun dispose() {}
+    /** The underlying job for this request. */
+    abstract val job: Job
 
     /** Called when the image request completes for any reason. */
     @MainThread
-    open fun onComplete() {}
-}
+    abstract fun complete()
 
-/** An empty request delegate. */
-internal object EmptyRequestDelegate : RequestDelegate()
+    @MainThread
+    override fun onDestroy(owner: LifecycleOwner) = job.cancel()
+}
 
 /** A simple request delegate for a one-shot request. */
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
-    private val job: Job
-) : RequestDelegate(), DefaultLifecycleObserver {
+    override val job: Job
+): RequestDelegate() {
 
-    override fun dispose() = job.cancel()
-
-    override fun onComplete() = lifecycle.removeObserver(this)
-
-    override fun onDestroy(owner: LifecycleOwner) = dispose()
+    override fun complete() {
+        lifecycle.removeObserver(this)
+    }
 }
 
 /**
@@ -43,27 +40,28 @@ internal class BaseRequestDelegate(
  */
 internal class ViewTargetRequestDelegate(
     private val imageLoader: ImageLoader,
-    private val request: LoadRequest,
+    private val request: Request,
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
-    private val job: Job
-) : RequestDelegate(), DefaultLifecycleObserver {
+    override val job: Job
+) : RequestDelegate() {
+
+    /** Cancel the request if it is in progress. */
+    fun cancel() {
+        job.cancel()
+    }
 
     /** Repeat this request with the same params. */
     @MainThread
     fun restart() {
-        imageLoader.execute(request)
+        imageLoader.enqueue(request)
     }
 
-    override fun dispose() {
-        job.cancel()
+    override fun complete() {
         target.clear()
-
         if (request.target is LifecycleObserver) {
             lifecycle.removeObserver(request.target)
         }
         lifecycle.removeObserver(this)
     }
-
-    override fun onDestroy(owner: LifecycleOwner) = dispose()
 }

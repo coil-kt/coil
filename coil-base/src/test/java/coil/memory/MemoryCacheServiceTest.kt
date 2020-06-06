@@ -15,8 +15,7 @@ import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.CircleCropTransformation
 import coil.util.createBitmap
-import coil.util.createGetRequest
-import coil.util.createLoadRequest
+import coil.util.createRequest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,7 +40,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - fill`() {
-        val request = createGetRequest(context) {
+        val request = createRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
         }
@@ -92,7 +91,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - fit`() {
-        val request = createGetRequest(context) {
+        val request = createRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
         }
@@ -143,7 +142,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - small not sampled cached drawable is valid`() {
-        val request = createGetRequest(context) {
+        val request = createRequest(context) {
             precision(Precision.INEXACT)
         }
         val cached = createBitmap()
@@ -159,7 +158,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - allowHardware=false prevents using cached hardware bitmap`() {
-        val request = createGetRequest(context) {
+        val request = createRequest(context) {
             allowHardware(false)
         }
 
@@ -182,7 +181,7 @@ class MemoryCacheServiceTest {
 
     @Test
     fun `isCachedValueValid - exact precision`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             precision(Precision.EXACT)
         }
         assertFalse(service.isCachedValueValid(
@@ -248,7 +247,7 @@ class MemoryCacheServiceTest {
         assertTrue(service.isCachedValueValid(
             cached = createBitmap(width = 244, height = 600),
             isSampled = true,
-            request = createLoadRequest(context) {
+            request = createRequest(context) {
                 precision(Precision.EXACT)
             },
             size = PixelSize(245, 600),
@@ -257,7 +256,7 @@ class MemoryCacheServiceTest {
         assertTrue(service.isCachedValueValid(
             cached = createBitmap(width = 244, height = 600),
             isSampled = true,
-            request = createLoadRequest(context) {
+            request = createRequest(context) {
                 precision(Precision.INEXACT)
             },
             size = PixelSize(245, 600),
@@ -266,7 +265,7 @@ class MemoryCacheServiceTest {
         assertFalse(service.isCachedValueValid(
             cached = createBitmap(width = 243, height = 599),
             isSampled = true,
-            request = createLoadRequest(context) {
+            request = createRequest(context) {
                 precision(Precision.EXACT)
             },
             size = PixelSize(245, 600),
@@ -275,7 +274,7 @@ class MemoryCacheServiceTest {
         assertFalse(service.isCachedValueValid(
             cached = createBitmap(width = 243, height = 599),
             isSampled = true,
-            request = createLoadRequest(context) {
+            request = createRequest(context) {
                 precision(Precision.INEXACT)
             },
             size = PixelSize(245, 600),
@@ -292,7 +291,7 @@ class MemoryCacheServiceTest {
             override val bitmap = createBitmap(width = 200, height = 200) // The small cached bitmap.
             override val isSampled = true
         }
-        val request = createLoadRequest(context)
+        val request = createRequest(context)
 
         assertTrue(service.isCachedValueValid(
             key,
