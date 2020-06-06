@@ -318,11 +318,11 @@ internal class RealImageLoader(
                     val decodeResult = decoder.decode(bitmapPool, fetchResult.source, size, options)
                     eventListener.decodeEnd(request, decoder, options, decodeResult)
                     decodeResult
-                } catch (rethrown: Exception) {
+                } catch (throwable: Throwable) {
                     // NOTE: We only close the stream automatically if there is an uncaught exception.
                     // This allows custom decoders to continue to read the source after returning a drawable.
                     fetchResult.source.closeQuietly()
-                    throw rethrown
+                    throw throwable
                 }
 
                 // Combine the fetch and decode operations' results.

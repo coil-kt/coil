@@ -116,8 +116,8 @@ internal val Drawable.isVector: Boolean
 internal fun Closeable.closeQuietly() {
     try {
         close()
-    } catch (rethrown: RuntimeException) {
-        throw rethrown
+    } catch (exception: RuntimeException) {
+        throw exception
     } catch (_: Exception) {}
 }
 
