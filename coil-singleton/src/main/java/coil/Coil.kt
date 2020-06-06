@@ -4,7 +4,7 @@ package coil
 
 import android.app.Application
 import android.content.Context
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.request.RequestDisposable
 import coil.request.RequestResult
 
@@ -38,7 +38,7 @@ object Coil {
      * @see ImageLoader.enqueue
      */
     @JvmStatic
-    inline fun enqueue(request: Request): RequestDisposable {
+    inline fun enqueue(request: ImageRequest): RequestDisposable {
         return imageLoader(request.context).enqueue(request)
     }
 
@@ -48,7 +48,7 @@ object Coil {
      * @see ImageLoader.execute
      */
     @JvmStatic
-    suspend inline fun execute(request: Request): RequestResult {
+    suspend inline fun execute(request: ImageRequest): RequestResult {
         return imageLoader(request.context).execute(request)
     }
 

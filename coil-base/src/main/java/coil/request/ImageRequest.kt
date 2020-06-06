@@ -24,6 +24,7 @@ import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.memory.RequestService
+import coil.request.ImageRequest.Builder
 import coil.size.OriginalSize
 import coil.size.Precision
 import coil.size.Scale
@@ -42,73 +43,73 @@ import okhttp3.Headers
 import okhttp3.HttpUrl
 import java.io.File
 
-class Request private constructor(
+class ImageRequest private constructor(
     val context: Context,
 
-    /** @see Request.Builder.data */
+    /** @see Builder.data */
     val data: Any?,
 
-    /** @see Request.Builder.key */
+    /** @see Builder.key */
     val key: String?,
 
-    /** @see Request.Builder.target */
+    /** @see Builder.target */
     val target: Target?,
 
-    /** @see Request.Builder.listener */
+    /** @see Builder.listener */
     val listener: Listener?,
 
-    /** @see Request.Builder.lifecycle */
+    /** @see Builder.lifecycle */
     val lifecycle: Lifecycle?,
 
-    /** @see Request.Builder.dispatcher */
+    /** @see Builder.dispatcher */
     val dispatcher: CoroutineDispatcher?,
 
-    /** @see Request.Builder.transition */
+    /** @see Builder.transition */
     val transformations: List<Transformation>,
 
-    /** @see Request.Builder.transition */
+    /** @see Builder.transition */
     val transition: Transition?,
 
-    /** @see Request.Builder.bitmapConfig */
+    /** @see Builder.bitmapConfig */
     val bitmapConfig: Bitmap.Config?,
 
-    /** @see Request.Builder.colorSpace */
+    /** @see Builder.colorSpace */
     val colorSpace: ColorSpace?,
 
-    /** @see Request.Builder.size */
+    /** @see Builder.size */
     val sizeResolver: SizeResolver?,
 
-    /** @see Request.Builder.scale */
+    /** @see Builder.scale */
     val scale: Scale?,
 
-    /** @see Request.Builder.precision */
+    /** @see Builder.precision */
     val precision: Precision?,
 
-    /** @see Request.Builder.fetcher */
+    /** @see Builder.fetcher */
     val fetcher: Pair<Class<*>, Fetcher<*>>?,
 
-    /** @see Request.Builder.decoder */
+    /** @see Builder.decoder */
     val decoder: Decoder?,
 
-    /** @see Request.Builder.allowHardware */
+    /** @see Builder.allowHardware */
     val allowHardware: Boolean?,
 
-    /** @see Request.Builder.allowRgb565 */
+    /** @see Builder.allowRgb565 */
     val allowRgb565: Boolean?,
 
-    /** @see Request.Builder.memoryCachePolicy */
+    /** @see Builder.memoryCachePolicy */
     val memoryCachePolicy: CachePolicy?,
 
-    /** @see Request.Builder.diskCachePolicy */
+    /** @see Builder.diskCachePolicy */
     val diskCachePolicy: CachePolicy?,
 
-    /** @see Request.Builder.networkCachePolicy */
+    /** @see Builder.networkCachePolicy */
     val networkCachePolicy: CachePolicy?,
 
-    /** @see Request.Builder.headers */
+    /** @see Builder.headers */
     val headers: Headers,
 
-    /** @see Request.Builder.parameters */
+    /** @see Builder.parameters */
     val parameters: Parameters,
 
     private val placeholderResId: Int,
@@ -119,13 +120,13 @@ class Request private constructor(
     private val fallbackDrawable: Drawable?
 ) {
 
-    /** @see Request.Builder.placeholder */
+    /** @see Builder.placeholder */
     val placeholder: Drawable? get() = getDrawableCompat(placeholderDrawable, placeholderResId)
 
-    /** @see Request.Builder.error */
+    /** @see Builder.error */
     val error: Drawable? get() = getDrawableCompat(errorDrawable, errorResId)
 
-    /** @see Request.Builder.fallback */
+    /** @see Builder.fallback */
     val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId)
 
     @JvmOverloads
@@ -133,7 +134,7 @@ class Request private constructor(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        return other is Request &&
+        return other is ImageRequest &&
             context == other.context &&
             data == other.data &&
             key == other.key &&
@@ -211,7 +212,7 @@ class Request private constructor(
 
 
     /**
-     * A set of callbacks for a [Request].
+     * A set of callbacks for a [ImageRequest].
      */
     interface Listener {
 
@@ -219,25 +220,25 @@ class Request private constructor(
          * Called immediately after [Target.onStart].
          */
         @MainThread
-        fun onStart(request: Request) {}
+        fun onStart(request: ImageRequest) {}
 
         /**
          * Called if the request completes successfully.
          */
         @MainThread
-        fun onSuccess(request: Request, source: DataSource) {}
+        fun onSuccess(request: ImageRequest, source: DataSource) {}
 
         /**
          * Called if the request is cancelled.
          */
         @MainThread
-        fun onCancel(request: Request) {}
+        fun onCancel(request: ImageRequest) {}
 
         /**
          * Called if an error occurs while executing the request.
          */
         @MainThread
-        fun onError(request: Request, throwable: Throwable) {}
+        fun onError(request: ImageRequest, throwable: Throwable) {}
     }
 
     class Builder {
@@ -313,7 +314,7 @@ class Request private constructor(
             fallbackDrawable = null
         }
 
-        constructor(request: Request, context: Context) {
+        constructor(request: ImageRequest, context: Context) {
             this.context = context
             data = request.data
             key = request.key
@@ -371,22 +372,22 @@ class Request private constructor(
         }
 
         /**
-         * Convenience function to create and set the [Request.Listener].
+         * Convenience function to create and set the [Listener].
          */
         inline fun listener(
-            crossinline onStart: (request: Request) -> Unit = {},
-            crossinline onCancel: (request: Request) -> Unit = {},
-            crossinline onError: (request: Request, throwable: Throwable) -> Unit = { _, _ -> },
-            crossinline onSuccess: (request: Request, source: DataSource) -> Unit = { _, _ -> }
+            crossinline onStart: (request: ImageRequest) -> Unit = {},
+            crossinline onCancel: (request: ImageRequest) -> Unit = {},
+            crossinline onError: (request: ImageRequest, throwable: Throwable) -> Unit = { _, _ -> },
+            crossinline onSuccess: (request: ImageRequest, source: DataSource) -> Unit = { _, _ -> }
         ) = listener(object : Listener {
-            override fun onStart(request: Request) = onStart(request)
-            override fun onCancel(request: Request) = onCancel(request)
-            override fun onError(request: Request, throwable: Throwable) = onError(request, throwable)
-            override fun onSuccess(request: Request, source: DataSource) = onSuccess(request, source)
+            override fun onStart(request: ImageRequest) = onStart(request)
+            override fun onCancel(request: ImageRequest) = onCancel(request)
+            override fun onError(request: ImageRequest, throwable: Throwable) = onError(request, throwable)
+            override fun onSuccess(request: ImageRequest, source: DataSource) = onSuccess(request, source)
         })
 
         /**
-         * Set the [Request.Listener].
+         * Set the [Listener].
          */
         fun listener(listener: Listener?) = apply {
             this.listener = listener
@@ -726,10 +727,10 @@ class Request private constructor(
         }
 
         /**
-         * Create a new [Request].
+         * Create a new [ImageRequest].
          */
-        fun build(): Request {
-            return Request(
+        fun build(): ImageRequest {
+            return ImageRequest(
                 context,
                 data,
                 key,

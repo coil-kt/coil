@@ -5,7 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import coil.bitmappool.BitmapPool
 import coil.decode.DecodeResult
 import coil.fetch.DrawableResult
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.size.Size
 
 /**
@@ -14,7 +14,7 @@ import coil.size.Size
  * NOTE: If [DrawableResult.drawable] or [DecodeResult.drawable] is not a [BitmapDrawable], it will be converted to one.
  * This will cause animated drawables to only draw the first frame of their animation.
  *
- * @see Request.Builder.transformations
+ * @see ImageRequest.Builder.transformations
  */
 interface Transformation {
 

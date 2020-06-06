@@ -8,7 +8,7 @@ import kotlinx.coroutines.Job
 import java.util.UUID
 
 /**
- * Represents the work of a launched [Request].
+ * Represents the work of a launched [ImageRequest].
  */
 interface RequestDisposable {
 

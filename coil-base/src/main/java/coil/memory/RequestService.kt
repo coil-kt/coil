@@ -9,8 +9,8 @@ import coil.DefaultRequestOptions
 import coil.decode.Options
 import coil.request.CachePolicy
 import coil.request.ErrorResult
+import coil.request.ImageRequest
 import coil.request.NullRequestDataException
-import coil.request.Request
 import coil.size.DisplaySizeResolver
 import coil.size.Precision
 import coil.size.Scale
@@ -25,7 +25,7 @@ import coil.util.isAttachedToWindowCompat
 import coil.util.isHardware
 import coil.util.scale
 
-/** Handles operations that act on [Request]s. */
+/** Handles operations that act on [ImageRequest]s. */
 internal class RequestService(
     private val defaults: DefaultRequestOptions,
     private val logger: Logger?
@@ -33,7 +33,7 @@ internal class RequestService(
 
     private val hardwareBitmapService = HardwareBitmapService()
 
-    fun errorResult(request: Request, throwable: Throwable): ErrorResult {
+    fun errorResult(request: ImageRequest, throwable: Throwable): ErrorResult {
         val drawable = if (throwable is NullRequestDataException) {
             request.fallback ?: defaults.fallback
         } else {
@@ -42,7 +42,7 @@ internal class RequestService(
         return ErrorResult(drawable, throwable)
     }
 
-    fun sizeResolver(request: Request, context: Context): SizeResolver {
+    fun sizeResolver(request: ImageRequest, context: Context): SizeResolver {
         val sizeResolver = request.sizeResolver
         val target = request.target
         return when {
@@ -52,7 +52,7 @@ internal class RequestService(
         }
     }
 
-    fun scale(request: Request, sizeResolver: SizeResolver): Scale {
+    fun scale(request: ImageRequest, sizeResolver: SizeResolver): Scale {
         val scale = request.scale
         if (scale != null) {
             return scale
@@ -76,7 +76,7 @@ internal class RequestService(
         return Scale.FILL
     }
 
-    fun allowInexactSize(request: Request, sizeResolver: SizeResolver): Boolean {
+    fun allowInexactSize(request: ImageRequest, sizeResolver: SizeResolver): Boolean {
         return when (request.precision ?: defaults.precision) {
             Precision.EXACT -> false
             Precision.INEXACT -> true
@@ -104,7 +104,7 @@ internal class RequestService(
 
     @WorkerThread
     fun options(
-        request: Request,
+        request: ImageRequest,
         sizeResolver: SizeResolver,
         size: Size,
         scale: Scale,
@@ -136,7 +136,7 @@ internal class RequestService(
     }
 
     /** Return true if [requestedConfig] is a valid (i.e. can be returned to its [Target]) config for [request]. */
-    fun isConfigValidForHardware(request: Request, requestedConfig: Bitmap.Config): Boolean {
+    fun isConfigValidForHardware(request: ImageRequest, requestedConfig: Bitmap.Config): Boolean {
         // Short circuit if the requested bitmap config is software.
         if (!requestedConfig.isHardware) return true
 
@@ -157,13 +157,13 @@ internal class RequestService(
      * that we are able to allocate a new hardware bitmap.
      */
     @WorkerThread
-    private fun isConfigValidForHardwareAllocation(request: Request, size: Size): Boolean {
+    private fun isConfigValidForHardwareAllocation(request: ImageRequest, size: Size): Boolean {
         return isConfigValidForHardware(request, request.bitmapConfig ?: defaults.bitmapConfig) &&
             hardwareBitmapService.allowHardware(size, logger)
     }
 
-    /** Return true if [Request.bitmapConfig] is valid given its [Transformation]s. */
-    private fun isConfigValidForTransformations(request: Request): Boolean {
+    /** Return true if [ImageRequest.bitmapConfig] is valid given its [Transformation]s. */
+    private fun isConfigValidForTransformations(request: ImageRequest): Boolean {
         return request.transformations.isEmpty() || (request.bitmapConfig ?: defaults.bitmapConfig) in VALID_TRANSFORMATION_CONFIGS
     }
 

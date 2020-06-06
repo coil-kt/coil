@@ -6,7 +6,7 @@ import androidx.lifecycle.Lifecycle
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.target.PoolableTarget
 import coil.target.Target
 import coil.target.ViewTarget
@@ -16,7 +16,7 @@ import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.requestManager
 import kotlinx.coroutines.Job
 
-/** [DelegateService] wraps [Target]s to support [Bitmap] pooling and [Request]s to manage their lifecycle. */
+/** [DelegateService] wraps [Target]s to support [Bitmap] pooling and [ImageRequest]s to manage their lifecycle. */
 @OptIn(ExperimentalCoilApi::class)
 internal class DelegateService(
     private val imageLoader: ImageLoader,
@@ -26,7 +26,7 @@ internal class DelegateService(
 
     /** Wrap the [request]'s [Target] to support [Bitmap] pooling. */
     fun createTargetDelegate(
-        request: Request,
+        request: ImageRequest,
         type: Int,
         eventListener: EventListener
     ): TargetDelegate {
@@ -44,12 +44,12 @@ internal class DelegateService(
         }
     }
 
-    /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [Request] based on its lifecycle. */
+    /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [ImageRequest] based on its lifecycle. */
     @MainThread
     fun createRequestDelegate(
         job: Job,
         targetDelegate: TargetDelegate,
-        request: Request,
+        request: ImageRequest,
         lifecycle: Lifecycle
     ): RequestDelegate {
         val delegate: RequestDelegate

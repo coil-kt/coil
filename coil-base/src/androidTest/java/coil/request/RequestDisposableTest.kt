@@ -47,7 +47,7 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_dispose() = runBlockingTest {
-        val request = Request.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             .size(100, 100)
             .transformations(GateTransformation())
@@ -65,7 +65,7 @@ class RequestDisposableTest {
     fun baseTargetRequestDisposable_await() = runBlockingTest {
         val transformation = GateTransformation()
         var result: Drawable? = null
-        val request = Request.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             .size(100, 100)
             .transformations(transformation)
@@ -83,7 +83,7 @@ class RequestDisposableTest {
     @Test
     fun viewTargetRequestDisposable_dispose() = runBlockingTest {
         val imageView = ImageView(context)
-        val request = Request.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
@@ -102,7 +102,7 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_await() = runBlockingTest {
         val transformation = GateTransformation()
         val imageView = ImageView(context)
-        val request = Request.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
@@ -122,7 +122,7 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_restart() = runBlockingTest {
         val transformation = GateTransformation()
         val imageView = ImageView(context)
-        val request = Request.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
@@ -153,7 +153,7 @@ class RequestDisposableTest {
         val imageView = ImageView(context)
 
         fun launchNewRequest(): RequestDisposable {
-            val request = Request.Builder(context)
+            val request = ImageRequest.Builder(context)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
                 // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
                 .size(100, 100)
@@ -178,7 +178,7 @@ class RequestDisposableTest {
     @Test
     fun viewTargetRequestDisposable_clear() = runBlockingTest {
         val imageView = ImageView(context)
-        val request = Request.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
@@ -193,7 +193,7 @@ class RequestDisposableTest {
     }
 
     /**
-     * Prevent completing the [Request] until [open] is called.
+     * Prevent completing the [ImageRequest] until [open] is called.
      * This is to avoid our test assertions racing the image request.
      */
     private class GateTransformation : Transformation {

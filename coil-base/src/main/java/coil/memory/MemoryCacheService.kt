@@ -2,7 +2,7 @@ package coil.memory
 
 import android.util.Log
 import coil.decode.DecodeUtils
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
@@ -23,7 +23,7 @@ internal class MemoryCacheService(
     fun isCachedValueValid(
         cacheKey: MemoryCache.Key?,
         cacheValue: MemoryCache.Value,
-        request: Request,
+        request: ImageRequest,
         sizeResolver: SizeResolver,
         size: Size,
         scale: Scale
@@ -49,7 +49,7 @@ internal class MemoryCacheService(
     private fun isSizeValid(
         cacheKey: MemoryCache.Key?,
         cacheValue: MemoryCache.Value,
-        request: Request,
+        request: ImageRequest,
         sizeResolver: SizeResolver,
         size: Size,
         scale: Scale

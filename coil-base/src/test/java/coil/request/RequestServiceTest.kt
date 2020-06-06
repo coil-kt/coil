@@ -125,7 +125,7 @@ class RequestServiceTest {
         assertFalse(service.allowInexactSize(request))
     }
 
-    private fun RequestService.allowInexactSize(request: Request): Boolean {
+    private fun RequestService.allowInexactSize(request: ImageRequest): Boolean {
         return allowInexactSize(request, service.sizeResolver(request, context))
     }
 }

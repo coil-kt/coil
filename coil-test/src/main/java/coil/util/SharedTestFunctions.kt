@@ -9,8 +9,8 @@ import android.graphics.ColorSpace
 import androidx.annotation.RequiresApi
 import coil.decode.Options
 import coil.request.CachePolicy
+import coil.request.ImageRequest
 import coil.request.Parameters
-import coil.request.Request
 import coil.size.PixelSize
 import coil.size.Scale
 import kotlinx.coroutines.CoroutineScope
@@ -107,8 +107,8 @@ val Bitmap.size: PixelSize
 
 inline fun createRequest(
     context: Context,
-    builder: Request.Builder.() -> Unit = {}
-): Request = Request.Builder(context).data(Unit).apply(builder).build()
+    builder: ImageRequest.Builder.() -> Unit = {}
+): ImageRequest = ImageRequest.Builder(context).data(Unit).apply(builder).build()
 
 /** Runs the given [block] on the main thread by default and returns [Unit]. */
 fun runBlockingTest(

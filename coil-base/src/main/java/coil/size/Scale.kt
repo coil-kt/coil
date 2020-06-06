@@ -1,14 +1,14 @@
 package coil.size
 
 import android.widget.ImageView
-import coil.request.Request
+import coil.request.ImageRequest
 
 /**
  * Represents a scaling policy.
  *
  * Conceptually, you can think of this as [ImageView.ScaleType] without any knowledge of an image's gravity in the view.
  *
- * @see Request.Builder.scale
+ * @see ImageRequest.Builder.scale
  */
 enum class Scale {
 

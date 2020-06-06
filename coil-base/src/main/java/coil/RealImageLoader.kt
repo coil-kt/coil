@@ -39,9 +39,9 @@ import coil.memory.TargetDelegate
 import coil.memory.WeakMemoryCache
 import coil.request.BaseTargetRequestDisposable
 import coil.request.ErrorResult
+import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import coil.request.Parameters
-import coil.request.Request
 import coil.request.RequestDisposable
 import coil.request.RequestResult
 import coil.request.SuccessResult
@@ -129,7 +129,7 @@ internal class RealImageLoader(
     // Only accessed from the main thread.
     private var isShutdown = false
 
-    override fun enqueue(request: Request): RequestDisposable {
+    override fun enqueue(request: ImageRequest): RequestDisposable {
         val job = loaderScope.launch(exceptionHandler) {
             val result = execute(request, REQUEST_TYPE_ENQUEUE)
             if (result is ErrorResult) throw result.throwable
@@ -142,7 +142,7 @@ internal class RealImageLoader(
         }
     }
 
-    override suspend fun execute(request: Request): RequestResult {
+    override suspend fun execute(request: ImageRequest): RequestResult {
         if (request.target is ViewTarget<*>) {
             request.target.view.requestManager.setCurrentRequestJob(coroutineContext.job)
         }
@@ -150,7 +150,7 @@ internal class RealImageLoader(
     }
 
     @MainThread
-    private suspend fun execute(request: Request, type: Int): RequestResult {
+    private suspend fun execute(request: ImageRequest, type: Int): RequestResult {
         // Ensure this image loader isn't shutdown.
         check(!isShutdown) { "The image loader is shutdown." }
 
@@ -283,7 +283,7 @@ internal class RealImageLoader(
     internal suspend inline fun loadData(
         mappedData: Any,
         fetcher: Fetcher<Any>,
-        request: Request,
+        request: ImageRequest,
         type: Int,
         sizeResolver: SizeResolver,
         size: Size,
@@ -349,7 +349,7 @@ internal class RealImageLoader(
     @VisibleForTesting
     internal suspend inline fun applyTransformations(
         result: DrawableResult,
-        request: Request,
+        request: ImageRequest,
         size: Size,
         options: Options,
         eventListener: EventListener
@@ -417,7 +417,7 @@ internal class RealImageLoader(
         private val coroutineContext: CoroutineContext,
         private val sizeResolver: SizeResolver,
         private val targetDelegate: TargetDelegate,
-        private val request: Request,
+        private val request: ImageRequest,
         private val defaults: DefaultRequestOptions,
         private val eventListener: EventListener
     ) {

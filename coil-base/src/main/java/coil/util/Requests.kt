@@ -8,15 +8,15 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.Lifecycle
 import coil.fetch.Fetcher
 import coil.request.GlobalLifecycle
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.target.ViewTarget
 
-/** Used to resolve [Request.placeholder], [Request.error], and [Request.fallback]. */
-internal fun Request.getDrawableCompat(drawable: Drawable?, @DrawableRes resId: Int): Drawable? {
+/** Used to resolve [ImageRequest.placeholder], [ImageRequest.error], and [ImageRequest.fallback]. */
+internal fun ImageRequest.getDrawableCompat(drawable: Drawable?, @DrawableRes resId: Int): Drawable? {
     return drawable.takeIf { it !== EMPTY_DRAWABLE } ?: if (resId != 0) context.getDrawableCompat(resId) else null
 }
 
-internal fun Request.getLifecycle(): Lifecycle {
+internal fun ImageRequest.getLifecycle(): Lifecycle {
     return when {
         lifecycle != null -> lifecycle
         target is ViewTarget<*> -> target.view.context.getLifecycle()
@@ -24,9 +24,9 @@ internal fun Request.getLifecycle(): Lifecycle {
     } ?: GlobalLifecycle
 }
 
-/** Ensure [Request.fetcher] is valid for [data]. */
+/** Ensure [ImageRequest.fetcher] is valid for [data]. */
 @Suppress("UNCHECKED_CAST")
-internal fun <T : Any> Request.validateFetcher(data: T): Fetcher<T>? {
+internal fun <T : Any> ImageRequest.validateFetcher(data: T): Fetcher<T>? {
     val (type, fetcher) = fetcher ?: return null
     check(type.isAssignableFrom(data::class.java)) {
         "${fetcher.javaClass.name} cannot handle data with type ${data.javaClass.name}."

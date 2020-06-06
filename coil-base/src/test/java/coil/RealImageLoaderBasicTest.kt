@@ -19,8 +19,8 @@ import coil.memory.EmptyTargetDelegate
 import coil.memory.MemoryCache
 import coil.memory.MemoryCache.Key
 import coil.memory.RealWeakMemoryCache
+import coil.request.ImageRequest
 import coil.request.Parameters
-import coil.request.Request
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
@@ -93,7 +93,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val request = Request.Builder(context)
+                val request = ImageRequest.Builder(context)
                     .key(key.baseKey)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
@@ -129,7 +129,7 @@ class RealImageLoaderBasicTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val request = Request.Builder(context)
+                val request = ImageRequest.Builder(context)
                     .key(key.baseKey)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)

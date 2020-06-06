@@ -3,7 +3,7 @@ package coil.memory
 import android.view.View
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.util.isMainThread
 import coil.util.requestManager
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 /**
- * Ensures that at most one [Request] can be attached to a given [View] at one time.
+ * Ensures that at most one [ImageRequest] can be attached to a given [View] at one time.
  *
  * @see requestManager
  */

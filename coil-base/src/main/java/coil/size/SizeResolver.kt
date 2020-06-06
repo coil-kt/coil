@@ -1,12 +1,12 @@
 package coil.size
 
 import androidx.annotation.MainThread
-import coil.request.Request
+import coil.request.ImageRequest
 
 /**
  * An interface for measuring the target size for an image request.
  *
- * @see Request.Builder.size
+ * @see ImageRequest.Builder.size
  */
 interface SizeResolver {
 

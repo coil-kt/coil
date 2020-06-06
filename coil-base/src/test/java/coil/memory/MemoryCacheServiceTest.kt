@@ -7,7 +7,7 @@ import coil.DefaultRequestOptions
 import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
@@ -329,7 +329,7 @@ class MemoryCacheServiceTest {
     private fun MemoryCacheService.isCachedValueValid(
         cached: Bitmap,
         isSampled: Boolean,
-        request: Request,
+        request: ImageRequest,
         size: Size,
         scale: Scale
     ): Boolean {
@@ -345,7 +345,7 @@ class MemoryCacheServiceTest {
     private fun MemoryCacheService.isCachedValueValid(
         cacheKey: Key?,
         cacheValue: Value,
-        request: Request,
+        request: ImageRequest,
         size: Size,
         scale: Scale
     ): Boolean = isCachedValueValid(cacheKey, cacheValue, request, SizeResolver(size), size, scale)

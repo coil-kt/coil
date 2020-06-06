@@ -22,8 +22,8 @@ import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.DrawableResult
 import coil.request.CachePolicy
 import coil.request.ErrorResult
+import coil.request.ImageRequest
 import coil.request.NullRequestDataException
-import coil.request.Request
 import coil.request.SuccessResult
 import coil.size.PixelSize
 import coil.size.Size
@@ -224,7 +224,7 @@ class RealImageLoaderIntegrationTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val request = Request.Builder(context)
+                val request = ImageRequest.Builder(context)
                     .data(url)
                     .memoryCachePolicy(CachePolicy.DISABLED)
                     .listener(
@@ -273,7 +273,7 @@ class RealImageLoaderIntegrationTest {
         assertTrue(cacheFolder.listFiles().isNullOrEmpty())
 
         runBlocking {
-            val request = Request.Builder(context)
+            val request = ImageRequest.Builder(context)
                 .data(url)
                 .memoryCachePolicy(CachePolicy.DISABLED)
                 .build()
@@ -338,7 +338,7 @@ class RealImageLoaderIntegrationTest {
             suspendCancellableCoroutine<Unit> { continuation ->
                 var hasCalledTargetOnError = false
 
-                val request = Request.Builder(context)
+                val request = ImageRequest.Builder(context)
                     .data(null)
                     .size(100, 100)
                     .error(error)
@@ -377,7 +377,7 @@ class RealImageLoaderIntegrationTest {
 
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val request = Request.Builder(context)
+                val request = ImageRequest.Builder(context)
                     .data(data)
                     .target(imageView)
                     .size(100, 100)
@@ -398,7 +398,7 @@ class RealImageLoaderIntegrationTest {
 
     private fun testExecute(data: Any, expectedSize: PixelSize = PixelSize(100, 125)) {
         val result = runBlocking {
-            val request = Request.Builder(context)
+            val request = ImageRequest.Builder(context)
                 .data(data)
                 .size(100, 100)
                 .build()
