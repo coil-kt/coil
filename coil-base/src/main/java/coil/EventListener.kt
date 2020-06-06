@@ -125,7 +125,7 @@ interface EventListener : ImageRequest.Listener {
      * This is skipped if [ImageRequest.transformations] is empty.
      *
      * @param input The [Bitmap] that will be transformed. **Do not** keep a reference to [input] outside
-     * the scope of this method.
+     *  the scope of this method.
      */
     @WorkerThread
     fun transformStart(request: ImageRequest, input: Bitmap) {}
@@ -136,7 +136,7 @@ interface EventListener : ImageRequest.Listener {
      * This is skipped if [ImageRequest.transformations] is empty.
      *
      * @param output The [Bitmap] that was transformed. **Do not** keep a reference to [output] outside
-     * the scope of this method.
+     *  the scope of this method.
      */
     @WorkerThread
     fun transformEnd(request: ImageRequest, output: Bitmap) {}

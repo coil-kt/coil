@@ -17,6 +17,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.CircleCropTransformation
+import coil.transform.Transformation
 import coil.transition.Transition
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
