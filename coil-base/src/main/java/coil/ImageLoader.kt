@@ -96,6 +96,7 @@ interface ImageLoader {
      */
     @MainThread
     fun shutdown()
+
     class Builder(context: Context) {
 
         private val applicationContext = context.applicationContext
