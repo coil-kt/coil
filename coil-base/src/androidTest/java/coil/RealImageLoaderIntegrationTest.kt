@@ -84,91 +84,91 @@ class RealImageLoaderIntegrationTest {
     @Test
     fun string() {
         val data = server.url(IMAGE_NAME).toString()
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun httpUri() {
         val data = server.url(IMAGE_NAME).toString().toUri()
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun httpUrl() {
         val data = server.url(IMAGE_NAME)
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun resourceInt() {
         val data = R.drawable.normal
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun resourceIntVector() {
         val data = R.drawable.ic_android
-        testLoad(data, PixelSize(100, 100))
+        testEnqueue(data, PixelSize(100, 100))
         testExecute(data, PixelSize(100, 100))
     }
 
     @Test
     fun resourceUriInt() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun resourceUriIntVector() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
-        testLoad(data, PixelSize(100, 100))
+        testEnqueue(data, PixelSize(100, 100))
         testExecute(data, PixelSize(100, 100))
     }
 
     @Test
     fun resourceUriString() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/normal".toUri()
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun resourceUriStringVector() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/ic_android".toUri()
-        testLoad(data, PixelSize(100, 100))
+        testEnqueue(data, PixelSize(100, 100))
         testExecute(data, PixelSize(100, 100))
     }
 
     @Test
     fun file() {
         val data = copyNormalImageAssetToCacheDir()
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun fileUri() {
         val data = copyNormalImageAssetToCacheDir().toUri()
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun assetUri() {
         val data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
-        testLoad(data, PixelSize(75, 100))
+        testEnqueue(data, PixelSize(75, 100))
         testExecute(data, PixelSize(100, 133))
     }
 
     @Test
     fun contentUri() {
         val data = "$SCHEME_CONTENT://coil/$IMAGE_NAME".toUri()
-        testLoad(data)
+        testEnqueue(data)
         testExecute(data)
     }
 
@@ -176,7 +176,7 @@ class RealImageLoaderIntegrationTest {
     fun drawable() {
         val data = context.getDrawableCompat(R.drawable.normal)
         val expectedSize = PixelSize(1080, 1350)
-        testLoad(data, expectedSize)
+        testEnqueue(data, expectedSize)
         testExecute(data, expectedSize)
     }
 
@@ -184,7 +184,7 @@ class RealImageLoaderIntegrationTest {
     fun bitmap() {
         val data = (context.getDrawableCompat(R.drawable.normal) as BitmapDrawable).bitmap
         val expectedSize = PixelSize(1080, 1350)
-        testLoad(data, expectedSize)
+        testEnqueue(data, expectedSize)
         testExecute(data, expectedSize)
     }
 
@@ -193,7 +193,7 @@ class RealImageLoaderIntegrationTest {
     @Test
     fun unsupportedDataThrows() {
         val data = Any()
-        assertFailsWith<IllegalStateException> { testLoad(data) }
+        assertFailsWith<IllegalStateException> { testEnqueue(data) }
         assertFailsWith<IllegalStateException> { testExecute(data) }
     }
 
@@ -369,7 +369,7 @@ class RealImageLoaderIntegrationTest {
         }
     }
 
-    private fun testLoad(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
+    private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
         val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
