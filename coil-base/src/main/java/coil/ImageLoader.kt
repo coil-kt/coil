@@ -23,7 +23,6 @@ import coil.request.RequestDisposable
 import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.Precision
-import coil.target.Target
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.CoilUtils
@@ -64,6 +63,9 @@ interface ImageLoader {
 
     /**
      * Execute the [request] in the current coroutine scope.
+     *
+     * NOTE: If [ImageRequest.target] is a [ViewTarget], this request will automatically be cancelled
+     * if its view is detached.
      *
      * @param request The request to execute.
      * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
