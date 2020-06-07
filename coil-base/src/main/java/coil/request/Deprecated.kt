@@ -1,3 +1,4 @@
+@file:JvmName("-Deprecated")
 @file:Suppress("unused")
 
 package coil.request
