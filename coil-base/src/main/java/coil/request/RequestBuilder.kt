@@ -17,7 +17,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
 import coil.ImageLoader
-import coil.ImageLoaderBuilder
 import coil.annotation.BuilderMarker
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
@@ -224,7 +223,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * @see ImageLoaderBuilder.bitmapConfig
+     * @see ImageLoader.Builder.bitmapConfig
      */
     fun bitmapConfig(bitmapConfig: Bitmap.Config): T = self {
         this.bitmapConfig = bitmapConfig
@@ -334,7 +333,7 @@ sealed class RequestBuilder<T : RequestBuilder<T>> {
     }
 
     /**
-     * @see ImageLoaderBuilder.allowRgb565
+     * @see ImageLoader.Builder.allowRgb565
      */
     fun allowRgb565(enable: Boolean): T = self {
         this.allowRgb565 = enable
@@ -512,19 +511,19 @@ class LoadRequestBuilder : RequestBuilder<LoadRequestBuilder> {
     }
 
     /**
-     * @see ImageLoaderBuilder.crossfade
+     * @see ImageLoader.Builder.crossfade
      */
     fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
     /**
-     * @see ImageLoaderBuilder.crossfade
+     * @see ImageLoader.Builder.crossfade
      */
     fun crossfade(durationMillis: Int) = apply {
         this.transition = if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE
     }
 
     /**
-     * @see ImageLoaderBuilder.transition
+     * @see ImageLoader.Builder.transition
      */
     @ExperimentalCoilApi
     fun transition(transition: Transition) = apply {

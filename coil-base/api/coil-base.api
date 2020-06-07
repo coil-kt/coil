@@ -111,7 +111,6 @@ public final class coil/EventListener$Factory$Companion {
 
 public abstract interface class coil/ImageLoader {
 	public static final field Companion Lcoil/ImageLoader$Companion;
-	public static fun builder (Landroid/content/Context;)Lcoil/ImageLoaderBuilder;
 	public abstract fun clearMemory ()V
 	public static fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 	public abstract fun execute (Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -121,44 +120,43 @@ public abstract interface class coil/ImageLoader {
 	public abstract fun shutdown ()V
 }
 
-public final class coil/ImageLoader$Companion {
-	public final fun builder (Landroid/content/Context;)Lcoil/ImageLoaderBuilder;
-	public final fun create (Landroid/content/Context;)Lcoil/ImageLoader;
+public final class coil/ImageLoader$Builder {
+	public fun <init> (Landroid/content/Context;)V
+	public final fun addLastModifiedToFileCacheKey (Z)Lcoil/ImageLoader$Builder;
+	public final fun allowHardware (Z)Lcoil/ImageLoader$Builder;
+	public final fun allowRgb565 (Z)Lcoil/ImageLoader$Builder;
+	public final fun availableMemoryPercentage (D)Lcoil/ImageLoader$Builder;
+	public final fun bitmapConfig (Landroid/graphics/Bitmap$Config;)Lcoil/ImageLoader$Builder;
+	public final fun bitmapPoolPercentage (D)Lcoil/ImageLoader$Builder;
+	public final fun build ()Lcoil/ImageLoader;
+	public final fun callFactory (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoader$Builder;
+	public final fun callFactory (Lokhttp3/Call$Factory;)Lcoil/ImageLoader$Builder;
+	public final fun componentRegistry (Lcoil/ComponentRegistry;)Lcoil/ImageLoader$Builder;
+	public final synthetic fun componentRegistry (Lkotlin/jvm/functions/Function1;)Lcoil/ImageLoader$Builder;
+	public final fun crossfade (I)Lcoil/ImageLoader$Builder;
+	public final fun crossfade (Z)Lcoil/ImageLoader$Builder;
+	public final fun diskCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
+	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/ImageLoader$Builder;
+	public final fun error (I)Lcoil/ImageLoader$Builder;
+	public final fun error (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoader$Builder;
+	public final fun eventListener (Lcoil/EventListener$Factory;)Lcoil/ImageLoader$Builder;
+	public final fun eventListener (Lcoil/EventListener;)Lcoil/ImageLoader$Builder;
+	public final fun fallback (I)Lcoil/ImageLoader$Builder;
+	public final fun fallback (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoader$Builder;
+	public final fun logger (Lcoil/util/Logger;)Lcoil/ImageLoader$Builder;
+	public final fun memoryCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
+	public final fun networkCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
+	public final fun okHttpClient (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoader$Builder;
+	public final fun okHttpClient (Lokhttp3/OkHttpClient;)Lcoil/ImageLoader$Builder;
+	public final fun placeholder (I)Lcoil/ImageLoader$Builder;
+	public final fun placeholder (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoader$Builder;
+	public final fun precision (Lcoil/size/Precision;)Lcoil/ImageLoader$Builder;
+	public final fun trackWeakReferences (Z)Lcoil/ImageLoader$Builder;
+	public final fun transition (Lcoil/transition/Transition;)Lcoil/ImageLoader$Builder;
 }
 
-public final class coil/ImageLoaderBuilder {
-	public fun <init> (Landroid/content/Context;)V
-	public final fun addLastModifiedToFileCacheKey (Z)Lcoil/ImageLoaderBuilder;
-	public final fun allowHardware (Z)Lcoil/ImageLoaderBuilder;
-	public final fun allowRgb565 (Z)Lcoil/ImageLoaderBuilder;
-	public final fun availableMemoryPercentage (D)Lcoil/ImageLoaderBuilder;
-	public final fun bitmapConfig (Landroid/graphics/Bitmap$Config;)Lcoil/ImageLoaderBuilder;
-	public final fun bitmapPoolPercentage (D)Lcoil/ImageLoaderBuilder;
-	public final fun build ()Lcoil/ImageLoader;
-	public final fun callFactory (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoaderBuilder;
-	public final fun callFactory (Lokhttp3/Call$Factory;)Lcoil/ImageLoaderBuilder;
-	public final fun componentRegistry (Lcoil/ComponentRegistry;)Lcoil/ImageLoaderBuilder;
-	public final synthetic fun componentRegistry (Lkotlin/jvm/functions/Function1;)Lcoil/ImageLoaderBuilder;
-	public final fun crossfade (I)Lcoil/ImageLoaderBuilder;
-	public final fun crossfade (Z)Lcoil/ImageLoaderBuilder;
-	public final fun diskCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoaderBuilder;
-	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/ImageLoaderBuilder;
-	public final fun error (I)Lcoil/ImageLoaderBuilder;
-	public final fun error (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoaderBuilder;
-	public final fun eventListener (Lcoil/EventListener$Factory;)Lcoil/ImageLoaderBuilder;
-	public final fun eventListener (Lcoil/EventListener;)Lcoil/ImageLoaderBuilder;
-	public final fun fallback (I)Lcoil/ImageLoaderBuilder;
-	public final fun fallback (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoaderBuilder;
-	public final fun logger (Lcoil/util/Logger;)Lcoil/ImageLoaderBuilder;
-	public final fun memoryCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoaderBuilder;
-	public final fun networkCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoaderBuilder;
-	public final fun okHttpClient (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoaderBuilder;
-	public final fun okHttpClient (Lokhttp3/OkHttpClient;)Lcoil/ImageLoaderBuilder;
-	public final fun placeholder (I)Lcoil/ImageLoaderBuilder;
-	public final fun placeholder (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoaderBuilder;
-	public final fun precision (Lcoil/size/Precision;)Lcoil/ImageLoaderBuilder;
-	public final fun trackWeakReferences (Z)Lcoil/ImageLoaderBuilder;
-	public final fun transition (Lcoil/transition/Transition;)Lcoil/ImageLoaderBuilder;
+public final class coil/ImageLoader$Companion {
+	public final fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 }
 
 public abstract interface annotation class coil/annotation/BuilderMarker : java/lang/annotation/Annotation {
