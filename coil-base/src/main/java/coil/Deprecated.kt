@@ -1,4 +1,5 @@
 // ktlint-disable filename
+@file:JvmName("-Deprecated")
 @file:Suppress("unused")
 
 package coil
