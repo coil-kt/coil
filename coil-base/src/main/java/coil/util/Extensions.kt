@@ -81,8 +81,9 @@ internal val View.requestManager: ViewTargetRequestManager
         var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
         if (manager == null) {
             manager = synchronized(this) {
-                // Check again.
-                (getTag(R.id.coil_request_manager) as? ViewTargetRequestManager)?.let { return@synchronized it }
+                // Check again in case coil_request_manager was just set.
+                val local = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
+                if (local != null) return@synchronized local
 
                 ViewTargetRequestManager().apply {
                     addOnAttachStateChangeListener(this)
