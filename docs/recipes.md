@@ -96,9 +96,9 @@ imageLoader.execute(request)
 // ImageView.load
 imageView.load("https://www.example.com/image.jpg") {
     allowHardware(false)
-    transition(PaletteTransition(CrossfadeTransition())) { palette ->
+    transition(PaletteTransition(CrossfadeTransition()) { palette ->
         // Consume the palette.
-    }
+    })
 }
 ```
 
