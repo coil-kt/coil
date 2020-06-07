@@ -46,7 +46,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
             pendingClear = null
         }
 
-        currentRequest?.dispose()
+        currentRequest?.onDispose()
         currentRequest = request
         skipAttach = true
     }
@@ -88,7 +88,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     @MainThread
     override fun onViewDetachedFromWindow(v: View) {
         skipAttach = false
-        currentRequest?.dispose()
+        currentRequest?.onDispose()
     }
 
     /** Return an ID to use for the next request attached to this manager. */

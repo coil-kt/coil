@@ -8,7 +8,7 @@ import kotlinx.coroutines.Job
 import java.util.UUID
 
 /**
- * Represents the work of a launched [ImageRequest].
+ * Represents the work of an executed [ImageRequest].
  */
 interface RequestDisposable {
 
@@ -38,16 +38,14 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
         get() = !job.isActive
 
     override fun dispose() {
-        if (!isDisposed) {
-            job.cancel()
-        }
+        if (isDisposed) return
+        job.cancel()
     }
 
     @ExperimentalCoilApi
     override suspend fun await() {
-        if (!isDisposed) {
-            job.join()
-        }
+        if (isDisposed) return
+        job.join()
     }
 }
 
@@ -55,8 +53,8 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
  * Used for requests that are attached to a [View].
  *
  * [ViewTargetRequestDisposable] is not disposed until its request is detached from the view.
- * This is because requests are automatically cancelled in [View.onDetachedFromWindow]
- * and are restarted in [View.onAttachedToWindow].
+ * This is because requests are automatically cancelled in [View.onDetachedFromWindow] and are
+ * restarted in [View.onAttachedToWindow].
  */
 internal class ViewTargetRequestDisposable(
     private val requestId: UUID,
@@ -67,15 +65,13 @@ internal class ViewTargetRequestDisposable(
         get() = target.view.requestManager.currentRequestId != requestId
 
     override fun dispose() {
-        if (!isDisposed) {
-            target.view.requestManager.clearCurrentRequest()
-        }
+        if (isDisposed) return
+        target.view.requestManager.clearCurrentRequest()
     }
 
     @ExperimentalCoilApi
     override suspend fun await() {
-        if (!isDisposed) {
-            target.view.requestManager.currentRequestJob?.join()
-        }
+        if (isDisposed) return
+        target.view.requestManager.currentRequestJob?.join()
     }
 }

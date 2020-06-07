@@ -1,5 +1,6 @@
 package coil.memory
 
+import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -7,38 +8,71 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.ImageLoader
 import coil.request.ImageRequest
+import coil.request.RequestDisposable
+import coil.target.ViewTarget
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-internal sealed class RequestDelegate {
+internal sealed class RequestDelegate : DefaultLifecycleObserver {
 
     /** Called when the image request completes for any reason. */
     @MainThread
-    abstract fun onComplete()
+    open fun onComplete() {}
+
+    /** Cancel any in progress work and free all resources. */
+    @MainThread
+    open fun onDispose() {}
+
+    @MainThread
+    override fun onDestroy(owner: LifecycleOwner) = onDispose()
 }
 
-/** A simple request delegate for a one-shot request. */
+/** A request delegate for a one-shot requests with non-poolable targets. */
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
     private val job: Job
-) : RequestDelegate(), DefaultLifecycleObserver {
+) : RequestDelegate() {
 
     override fun onComplete() = lifecycle.removeObserver(this)
 
-    override fun onDestroy(owner: LifecycleOwner) = job.cancel()
+    override fun onDispose() = job.cancel()
 }
 
-/**
- * A request delegate that has an associated view and supports restarting.
- *
- * @see ViewTargetRequestManager
- */
+/** A request delegate for a one-shot requests with poolable targets that do not implement [ViewTarget]. */
+internal class PoolableTargetRequestDelegate(
+    private val scope: CoroutineScope,
+    private val target: TargetDelegate,
+    private val lifecycle: Lifecycle,
+    private val job: Job
+) : RequestDelegate() {
+
+    /** Called by [RequestDisposable.dispose] from any thread. */
+    @AnyThread
+    fun onDisposeUnsafe() {
+        job.cancel()
+        scope.launch(Dispatchers.Main.immediate) {
+            target.clear()
+            lifecycle.removeObserver(this@PoolableTargetRequestDelegate)
+        }
+    }
+
+    override fun onDispose() {
+        job.cancel()
+        target.clear()
+        lifecycle.removeObserver(this)
+    }
+}
+
+/** A request delegate for requests with a [ViewTarget]. */
 internal class ViewTargetRequestDelegate(
     private val imageLoader: ImageLoader,
     private val request: ImageRequest,
     private val target: TargetDelegate,
     private val lifecycle: Lifecycle,
     private val job: Job
-) : RequestDelegate(), DefaultLifecycleObserver {
+) : RequestDelegate() {
 
     /** Repeat this request with the same params. */
     @MainThread
@@ -46,9 +80,7 @@ internal class ViewTargetRequestDelegate(
         imageLoader.enqueue(request)
     }
 
-    /** Cancel any in progress work and free all resources. */
-    @MainThread
-    fun dispose() {
+    override fun onDispose() {
         job.cancel()
         target.clear()
 
@@ -57,8 +89,4 @@ internal class ViewTargetRequestDelegate(
         }
         lifecycle.removeObserver(this)
     }
-
-    override fun onComplete() {}
-
-    override fun onDestroy(owner: LifecycleOwner) = dispose()
 }

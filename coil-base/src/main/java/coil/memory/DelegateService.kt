@@ -14,6 +14,7 @@ import coil.util.Logger
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.requestManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 
 /** [DelegateService] wraps [Target]s to support [Bitmap] pooling and [ImageRequest]s to manage their lifecycle. */
@@ -47,19 +48,27 @@ internal class DelegateService(
     /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [ImageRequest] based on its lifecycle. */
     @MainThread
     fun createRequestDelegate(
+        scope: CoroutineScope,
         job: Job,
         targetDelegate: TargetDelegate,
         request: ImageRequest,
         lifecycle: Lifecycle
     ): RequestDelegate {
         val delegate: RequestDelegate
-        if (request.target is ViewTarget<*>) {
-            delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, lifecycle, job)
-            lifecycle.addObserver(delegate)
-            request.target.view.requestManager.setCurrentRequest(delegate)
-        } else {
-            delegate = BaseRequestDelegate(lifecycle, job)
-            lifecycle.addObserver(delegate)
+        when (request.target) {
+            is ViewTarget<*> -> {
+                delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, lifecycle, job)
+                lifecycle.addObserver(delegate)
+                request.target.view.requestManager.setCurrentRequest(delegate)
+            }
+            is PoolableTarget -> {
+                delegate = PoolableTargetRequestDelegate(scope, targetDelegate, lifecycle, job)
+                lifecycle.addObserver(delegate)
+            }
+            else -> {
+                delegate = BaseRequestDelegate(lifecycle, job)
+                lifecycle.addObserver(delegate)
+            }
         }
         return delegate
     }

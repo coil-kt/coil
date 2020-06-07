@@ -55,6 +55,7 @@ import coil.util.Emoji
 import coil.util.Logger
 import coil.util.SystemCallbacks
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
+import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.awaitStarted
 import coil.util.closeQuietly
 import coil.util.emoji
@@ -146,7 +147,7 @@ internal class RealImageLoader(
         if (request.target is ViewTarget<*>) {
             request.target.view.requestManager.setCurrentRequestJob(coroutineContext.job)
         }
-        return withContext(Dispatchers.Main.immediate) { execute(request, REQUEST_TYPE_ENQUEUE) }
+        return withContext(Dispatchers.Main.immediate) { execute(request, REQUEST_TYPE_EXECUTE) }
     }
 
     @MainThread
@@ -164,7 +165,8 @@ internal class RealImageLoader(
         val targetDelegate = delegateService.createTargetDelegate(request, type, eventListener)
 
         // Wrap the request to manage its lifecycle.
-        val requestDelegate = delegateService.createRequestDelegate(coroutineContext.job, targetDelegate, request, lifecycle)
+        val requestDelegate = delegateService.createRequestDelegate(
+            loaderScope, coroutineContext.job, targetDelegate, request, lifecycle)
 
         try {
             // Suspend until the lifecycle is started.
