@@ -3,25 +3,25 @@
 package coil.request
 
 @Deprecated(
-    message = "Replace with Request.",
-    replaceWith = ReplaceWith("Request", "coil.request.Request")
+    message = "Replace with ImageRequest.",
+    replaceWith = ReplaceWith("ImageRequest", "coil.request.ImageRequest")
 )
 typealias LoadRequest = ImageRequest
 
 @Deprecated(
-    message = "Replace with Request.Builder.",
-    replaceWith = ReplaceWith("Request.Builder", "coil.request.Request")
+    message = "Replace with ImageRequest.Builder.",
+    replaceWith = ReplaceWith("ImageRequest.Builder", "coil.request.ImageRequest")
 )
 typealias LoadRequestBuilder = ImageRequest.Builder
 
 @Deprecated(
-    message = "Replace with Request.",
-    replaceWith = ReplaceWith("Request", "coil.request.Request")
+    message = "Replace with ImageRequest.",
+    replaceWith = ReplaceWith("ImageRequest", "coil.request.ImageRequest")
 )
 typealias GetRequest = ImageRequest
 
 @Deprecated(
-    message = "Replace with Request.Builder.",
-    replaceWith = ReplaceWith("Request.Builder", "coil.request.Request")
+    message = "Replace with ImageRequest.Builder.",
+    replaceWith = ReplaceWith("ImageRequest.Builder", "coil.request.ImageRequest")
 )
 typealias GetRequestBuilder = ImageRequest.Builder
