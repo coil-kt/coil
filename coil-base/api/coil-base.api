@@ -56,9 +56,9 @@ public final class coil/DefaultRequestOptions {
 public abstract interface class coil/EventListener : coil/request/Request$Listener {
 	public static final field Companion Lcoil/EventListener$Companion;
 	public static final field NONE Lcoil/EventListener;
-	public abstract fun decodeEnd (Lcoil/request/Request;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
+	public abstract fun decodeEnd (Lcoil/request/Request;Lcoil/decode/Decoder;Lcoil/decode/Options;Lcoil/decode/DecodeResult;)V
 	public abstract fun decodeStart (Lcoil/request/Request;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
-	public abstract fun fetchEnd (Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
+	public abstract fun fetchEnd (Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;Lcoil/fetch/FetchResult;)V
 	public abstract fun fetchStart (Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
 	public abstract fun mapEnd (Lcoil/request/Request;Ljava/lang/Object;)V
 	public abstract fun mapStart (Lcoil/request/Request;Ljava/lang/Object;)V
@@ -67,10 +67,10 @@ public abstract interface class coil/EventListener : coil/request/Request$Listen
 	public abstract fun onError (Lcoil/request/Request;Ljava/lang/Throwable;)V
 	public abstract fun onStart (Lcoil/request/Request;)V
 	public abstract fun onSuccess (Lcoil/request/Request;Lcoil/decode/DataSource;)V
-	public abstract fun resolveSizeEnd (Lcoil/request/Request;Lcoil/size/Size;)V
-	public abstract fun resolveSizeStart (Lcoil/request/Request;)V
-	public abstract fun transformEnd (Lcoil/request/Request;)V
-	public abstract fun transformStart (Lcoil/request/Request;)V
+	public abstract fun resolveSizeEnd (Lcoil/request/Request;Lcoil/size/SizeResolver;Lcoil/size/Size;)V
+	public abstract fun resolveSizeStart (Lcoil/request/Request;Lcoil/size/SizeResolver;)V
+	public abstract fun transformEnd (Lcoil/request/Request;Landroid/graphics/Bitmap;)V
+	public abstract fun transformStart (Lcoil/request/Request;Landroid/graphics/Bitmap;)V
 	public abstract fun transitionEnd (Lcoil/request/Request;Lcoil/transition/Transition;)V
 	public abstract fun transitionStart (Lcoil/request/Request;Lcoil/transition/Transition;)V
 }
@@ -79,9 +79,9 @@ public final class coil/EventListener$Companion {
 }
 
 public final class coil/EventListener$DefaultImpls {
-	public static fun decodeEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
+	public static fun decodeEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/decode/Decoder;Lcoil/decode/Options;Lcoil/decode/DecodeResult;)V
 	public static fun decodeStart (Lcoil/EventListener;Lcoil/request/Request;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
-	public static fun fetchEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
+	public static fun fetchEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;Lcoil/fetch/FetchResult;)V
 	public static fun fetchStart (Lcoil/EventListener;Lcoil/request/Request;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
 	public static fun mapEnd (Lcoil/EventListener;Lcoil/request/Request;Ljava/lang/Object;)V
 	public static fun mapStart (Lcoil/EventListener;Lcoil/request/Request;Ljava/lang/Object;)V
@@ -90,10 +90,10 @@ public final class coil/EventListener$DefaultImpls {
 	public static fun onError (Lcoil/EventListener;Lcoil/request/Request;Ljava/lang/Throwable;)V
 	public static fun onStart (Lcoil/EventListener;Lcoil/request/Request;)V
 	public static fun onSuccess (Lcoil/EventListener;Lcoil/request/Request;Lcoil/decode/DataSource;)V
-	public static fun resolveSizeEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/size/Size;)V
-	public static fun resolveSizeStart (Lcoil/EventListener;Lcoil/request/Request;)V
-	public static fun transformEnd (Lcoil/EventListener;Lcoil/request/Request;)V
-	public static fun transformStart (Lcoil/EventListener;Lcoil/request/Request;)V
+	public static fun resolveSizeEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/size/SizeResolver;Lcoil/size/Size;)V
+	public static fun resolveSizeStart (Lcoil/EventListener;Lcoil/request/Request;Lcoil/size/SizeResolver;)V
+	public static fun transformEnd (Lcoil/EventListener;Lcoil/request/Request;Landroid/graphics/Bitmap;)V
+	public static fun transformStart (Lcoil/EventListener;Lcoil/request/Request;Landroid/graphics/Bitmap;)V
 	public static fun transitionEnd (Lcoil/EventListener;Lcoil/request/Request;Lcoil/transition/Transition;)V
 	public static fun transitionStart (Lcoil/EventListener;Lcoil/request/Request;Lcoil/transition/Transition;)V
 }
