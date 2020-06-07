@@ -1,11 +1,14 @@
 package coil
 
+import android.graphics.Bitmap
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
+import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
+import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
 import coil.map.Mapper
@@ -18,8 +21,8 @@ import coil.transition.Transition
 import coil.transition.TransitionTarget
 
 /**
- * An [ImageLoader]-scoped listener for tracking the progress of an image request.
- * This class is useful for measuring analytics, performance, or other metrics tracking.
+ * A listener for tracking the progress of an image request. This class is useful for
+ * measuring analytics, performance, or other metrics tracking.
  *
  * @see ImageLoader.Builder.eventListener
  */
@@ -35,19 +38,19 @@ interface EventListener : Request.Listener {
     /**
      * Called before any [Mapper]s and/or [MeasuredMapper]s are called to convert the request's data.
      *
-     * @param data The data that will be converted.
+     * @param input The data that will be converted.
      */
     @MainThread
-    fun mapStart(request: Request, data: Any) {}
+    fun mapStart(request: Request, input: Any) {}
 
     /**
      * Called after the request's data has been converted by all applicable [Mapper]s and/or [MeasuredMapper]s.
      *
-     * @param mappedData The data after it has been converted.
-     *  If there were no applicable mappers, [mappedData] will be the same as [Request.data].
+     * @param output The data after it has been converted. If there were no applicable mappers,
+     *  [output] will be the same as [Request.data].
      */
     @MainThread
-    fun mapEnd(request: Request, mappedData: Any) {}
+    fun mapEnd(request: Request, output: Any) {}
 
     /**
      * @see Request.Listener.onStart
@@ -57,17 +60,20 @@ interface EventListener : Request.Listener {
 
     /**
      * Called before [SizeResolver.size].
+     *
+     * @param sizeResolver The [SizeResolver] that will be used to determine the [Size] for the request.
      */
     @MainThread
-    fun resolveSizeStart(request: Request) {}
+    fun resolveSizeStart(request: Request, sizeResolver: SizeResolver) {}
 
     /**
      * Called after [SizeResolver.size].
      *
+     * @param sizeResolver The [SizeResolver] that was used to determine the [Size] for the request.
      * @param size The resolved [Size] for this request.
      */
     @MainThread
-    fun resolveSizeEnd(request: Request, size: Size) {}
+    fun resolveSizeEnd(request: Request, sizeResolver: SizeResolver, size: Size) {}
 
     /**
      * Called before [Fetcher.fetch].
@@ -83,9 +89,11 @@ interface EventListener : Request.Listener {
      *
      * @param fetcher The [Fetcher] that was used to handle the request.
      * @param options The [Options] that were passed to [Fetcher.fetch].
+     * @param result The result of [Fetcher.fetch]. **Do not** keep a reference to [result] or its data
+     *  outside the scope of this method.
      */
     @WorkerThread
-    fun fetchEnd(request: Request, fetcher: Fetcher<*>, options: Options) {}
+    fun fetchEnd(request: Request, fetcher: Fetcher<*>, options: Options, result: FetchResult) {}
 
     /**
      * Called before [Decoder.decode].
@@ -105,25 +113,33 @@ interface EventListener : Request.Listener {
      *
      * @param decoder The [Decoder] that was used to handle the request.
      * @param options The [Options] that were passed to [Decoder.decode].
+     * @param result The result of [Decoder.decode]. **Do not** keep a reference to [result] or its data
+     *  outside the scope of this method.
      */
     @WorkerThread
-    fun decodeEnd(request: Request, decoder: Decoder, options: Options) {}
+    fun decodeEnd(request: Request, decoder: Decoder, options: Options, result: DecodeResult) {}
 
     /**
      * Called before any [Transformation]s are applied.
      *
      * This is skipped if [Request.transformations] is empty.
+     *
+     * @param input The [Bitmap] that will be transformed. **Do not** keep a reference to [input] outside
+     * the scope of this method.
      */
     @WorkerThread
-    fun transformStart(request: Request) {}
+    fun transformStart(request: Request, input: Bitmap) {}
 
     /**
      * Called after any [Transformation]s are applied.
      *
      * This is skipped if [Request.transformations] is empty.
+     *
+     * @param output The [Bitmap] that was transformed. **Do not** keep a reference to [output] outside
+     * the scope of this method.
      */
     @WorkerThread
-    fun transformEnd(request: Request) {}
+    fun transformEnd(request: Request, output: Bitmap) {}
 
     /**
      * Called before [Transition.transition].

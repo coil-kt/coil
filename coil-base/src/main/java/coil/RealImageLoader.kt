@@ -317,7 +317,7 @@ internal class RealImageLoader(
 
         eventListener.fetchStart(request, fetcher, options)
         val fetchResult = fetcher.fetch(bitmapPool, mappedData, size, options)
-        eventListener.fetchEnd(request, fetcher, options)
+        eventListener.fetchEnd(request, fetcher, options, fetchResult)
 
         val baseResult = when (fetchResult) {
             is SourceResult -> {
@@ -339,7 +339,7 @@ internal class RealImageLoader(
                     // Decode the stream.
                     eventListener.decodeStart(request, decoder, options)
                     val decodeResult = decoder.decode(bitmapPool, fetchResult.source, size, options)
-                    eventListener.decodeEnd(request, decoder, options)
+                    eventListener.decodeEnd(request, decoder, options, decodeResult)
                     decodeResult
                 } catch (rethrown: Exception) {
                     // NOTE: We only close the stream automatically if there is an uncaught exception.
@@ -381,8 +381,7 @@ internal class RealImageLoader(
         if (transformations.isEmpty()) return result
 
         // Convert the drawable into a bitmap with a valid config.
-        eventListener.transformStart(request)
-        val baseBitmap = if (result.drawable is BitmapDrawable) {
+        val input = if (result.drawable is BitmapDrawable) {
             val resultBitmap = result.drawable.bitmap
             if (resultBitmap.safeConfig in RequestService.VALID_TRANSFORMATION_CONFIGS) {
                 resultBitmap
@@ -399,12 +398,12 @@ internal class RealImageLoader(
             }
             drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
         }
-        val transformedBitmap = transformations.foldIndices(baseBitmap) { bitmap, transformation ->
+        eventListener.transformStart(request, input)
+        val output = transformations.foldIndices(input) { bitmap, transformation ->
             transformation.transform(bitmapPool, bitmap, size).also { coroutineContext.ensureActive() }
         }
-        val transformedResult = result.copy(drawable = transformedBitmap.toDrawable(context))
-        eventListener.transformEnd(request)
-        return transformedResult
+        eventListener.transformEnd(request, output)
+        return result.copy(drawable = output.toDrawable(context))
     }
 
     override fun invalidate(key: String) {
@@ -465,12 +464,12 @@ internal class RealImageLoader(
             targetDelegate.start(cached, cached ?: request.placeholderOrDefault(defaults))
             eventListener.onStart(request)
             request.listener?.onStart(request)
-            eventListener.resolveSizeStart(request)
+            eventListener.resolveSizeStart(request, sizeResolver)
         }
 
         /** Called immediately after [SizeResolver.size]. */
         private fun afterResolveSize(size: Size) {
-            eventListener.resolveSizeEnd(request, size)
+            eventListener.resolveSizeEnd(request, sizeResolver, size)
             coroutineContext.ensureActive()
         }
     }
