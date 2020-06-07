@@ -21,7 +21,7 @@ import coil.transition.TransitionTarget
  * An [ImageLoader]-scoped listener for tracking the progress of an image request.
  * This class is useful for measuring analytics, performance, or other metrics tracking.
  *
- * @see ImageLoaderBuilder.eventListener
+ * @see ImageLoader.Builder.eventListener
  */
 @ExperimentalCoilApi
 interface EventListener : Request.Listener {
