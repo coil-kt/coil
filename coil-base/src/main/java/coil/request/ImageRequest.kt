@@ -314,7 +314,8 @@ class ImageRequest private constructor(
             fallbackDrawable = null
         }
 
-        constructor(request: ImageRequest, context: Context) {
+        @JvmOverloads
+        constructor(request: ImageRequest, context: Context = request.context) {
             this.context = context
             data = request.data
             key = request.key

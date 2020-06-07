@@ -459,7 +459,9 @@ public final class coil/request/ImageRequest {
 
 public final class coil/request/ImageRequest$Builder {
 	public fun <init> (Landroid/content/Context;)V
+	public fun <init> (Lcoil/request/ImageRequest;)V
 	public fun <init> (Lcoil/request/ImageRequest;Landroid/content/Context;)V
+	public synthetic fun <init> (Lcoil/request/ImageRequest;Landroid/content/Context;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun addHeader (Ljava/lang/String;Ljava/lang/String;)Lcoil/request/ImageRequest$Builder;
 	public final fun allowHardware (Z)Lcoil/request/ImageRequest$Builder;
 	public final fun allowRgb565 (Z)Lcoil/request/ImageRequest$Builder;
