@@ -25,6 +25,7 @@ internal sealed class RequestDelegate : DefaultLifecycleObserver {
     @MainThread
     open fun onDispose() {}
 
+    /** Automatically dispose this delegate when the containing lifecycle is destroyed. */
     @MainThread
     override fun onDestroy(owner: LifecycleOwner) = onDispose()
 }

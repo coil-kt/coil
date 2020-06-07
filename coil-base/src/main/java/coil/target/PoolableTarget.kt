@@ -28,7 +28,8 @@ interface PoolableTarget : Target {
     /**
      * The current bitmap attached to this target.
      *
-     * Implementations should store and return the same value irrespective of the drawable passed to [onStart], [onSuccess], or [onError].
+     * Implementations should store and return the same value irrespective of the
+     * drawable passed to [onStart], [onSuccess], or [onError].
      */
     var bitmap: Bitmap?
 

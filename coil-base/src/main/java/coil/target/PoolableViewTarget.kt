@@ -7,8 +7,9 @@ import coil.base.R
 /**
  * A [ViewTarget] that supports [Bitmap] pooling.
  *
- * [PoolableViewTarget] has a simple implementation of [bitmap] so consumers only need to implement [onClear].
- * See [PoolableTarget] for the behaviour requirements for bitmap pooling.
+ * [PoolableViewTarget] offers a simple implementation of [bitmap] so consumers only need to implement [onClear].
+ *
+ * See [PoolableTarget] for the behaviour restrictions required for bitmap pooling.
  *
  * @see PoolableTarget
  * @see ViewTarget
