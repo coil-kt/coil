@@ -1,3 +1,4 @@
+// ktlint-disable filename
 @file:Suppress("unused")
 
 package coil
