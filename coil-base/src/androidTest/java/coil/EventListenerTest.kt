@@ -2,18 +2,22 @@ package coil
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
+import android.graphics.Bitmap
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.decode.DataSource
+import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
+import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.request.LoadRequest
 import coil.request.LoadRequestBuilder
 import coil.request.Request
 import coil.size.Size
+import coil.size.SizeResolver
 import coil.transform.CircleCropTransformation
 import coil.transition.Transition
 import kotlinx.coroutines.CancellationException
@@ -195,17 +199,17 @@ class EventListenerTest {
     ) : EventListener {
 
         override fun onDispatch(request: Request) = onDispatch.call()
-        override fun mapStart(request: Request, data: Any) = mapStart.call()
-        override fun mapEnd(request: Request, mappedData: Any) = mapEnd.call()
+        override fun mapStart(request: Request, input: Any) = mapStart.call()
+        override fun mapEnd(request: Request, output: Any) = mapEnd.call()
         override fun onStart(request: Request) = onStart.call()
-        override fun resolveSizeStart(request: Request) = resolveSizeStart.call()
-        override fun resolveSizeEnd(request: Request, size: Size) = resolveSizeEnd.call()
+        override fun resolveSizeStart(request: Request, sizeResolver: SizeResolver) = resolveSizeStart.call()
+        override fun resolveSizeEnd(request: Request, sizeResolver: SizeResolver, size: Size) = resolveSizeEnd.call()
         override fun fetchStart(request: Request, fetcher: Fetcher<*>, options: Options) = fetchStart.call()
-        override fun fetchEnd(request: Request, fetcher: Fetcher<*>, options: Options) = fetchEnd.call()
+        override fun fetchEnd(request: Request, fetcher: Fetcher<*>, options: Options, result: FetchResult) = fetchEnd.call()
         override fun decodeStart(request: Request, decoder: Decoder, options: Options) = decodeStart.call()
-        override fun decodeEnd(request: Request, decoder: Decoder, options: Options) = decodeEnd.call()
-        override fun transformStart(request: Request) = transformStart.call()
-        override fun transformEnd(request: Request) = transformEnd.call()
+        override fun decodeEnd(request: Request, decoder: Decoder, options: Options, result: DecodeResult) = decodeEnd.call()
+        override fun transformStart(request: Request, input: Bitmap) = transformStart.call()
+        override fun transformEnd(request: Request, output: Bitmap) = transformEnd.call()
         override fun transitionStart(request: Request, transition: Transition) = transitionStart.call()
         override fun transitionEnd(request: Request, transition: Transition) = transitionEnd.call()
         override fun onSuccess(request: Request, source: DataSource) = onSuccess.call()
