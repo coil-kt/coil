@@ -23,6 +23,7 @@ import coil.request.RequestDisposable
 import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.Precision
+import coil.target.ViewTarget
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.CoilUtils
