@@ -26,6 +26,7 @@ import coil.fetch.Fetcher
 import coil.memory.RequestService
 import coil.request.ImageRequest.Builder
 import coil.size.OriginalSize
+import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
@@ -439,7 +440,7 @@ class ImageRequest private constructor(
          * Set the requested width/height.
          */
         fun size(@Px width: Int, @Px height: Int) = apply {
-            size(coil.size.PixelSize(width, height))
+            size(PixelSize(width, height))
         }
 
         /**
@@ -673,7 +674,9 @@ class ImageRequest private constructor(
         /**
          * @see ImageLoader.Builder.crossfade
          */
-        fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+        fun crossfade(enable: Boolean) = apply {
+            crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+        }
 
         /**
          * @see ImageLoader.Builder.crossfade
