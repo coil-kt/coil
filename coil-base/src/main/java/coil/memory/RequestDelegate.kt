@@ -20,7 +20,7 @@ internal sealed class RequestDelegate {
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
     private val job: Job
-): RequestDelegate(), DefaultLifecycleObserver {
+) : RequestDelegate(), DefaultLifecycleObserver {
 
     override fun onComplete() = lifecycle.removeObserver(this)
 

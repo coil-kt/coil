@@ -210,7 +210,6 @@ class ImageRequest private constructor(
             "errorDrawable=$errorDrawable, fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable)"
     }
 
-
     /**
      * A set of callbacks for a [ImageRequest].
      */
