@@ -1,5 +1,5 @@
 @file:JvmName("-Deprecated")
-@file:Suppress("unused")
+@file:Suppress("unused", "UNUSED_TYPEALIAS_PARAMETER")
 
 package coil.request
 
@@ -26,3 +26,9 @@ typealias GetRequest = ImageRequest
     replaceWith = ReplaceWith("ImageRequest.Builder", "coil.request.ImageRequest")
 )
 typealias GetRequestBuilder = ImageRequest.Builder
+
+@Deprecated(
+    message = "Replace with ImageRequest.",
+    replaceWith = ReplaceWith("ImageRequest", "coil.request.ImageRequest")
+)
+typealias Request<T> = ImageRequest
