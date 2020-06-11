@@ -55,7 +55,7 @@ interface ImageLoader {
     val defaults: DefaultRequestOptions
 
     /**
-     * Execute the [request] asynchronously.
+     * Enqueue the [request] to be executed asynchronously.
      *
      * @param request The request to execute.
      * @return A [RequestDisposable] which can be used to cancel or check the status of the request.
