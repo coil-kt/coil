@@ -669,7 +669,6 @@ public final class coil/size/ViewSizeResolver$DefaultImpls {
 
 public class coil/target/ImageViewTarget : androidx/lifecycle/DefaultLifecycleObserver, coil/target/PoolableViewTarget, coil/transition/TransitionTarget {
 	public fun <init> (Landroid/widget/ImageView;)V
-	public fun getBitmap ()Landroid/graphics/Bitmap;
 	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public synthetic fun getView ()Landroid/view/View;
 	public fun getView ()Landroid/widget/ImageView;
@@ -679,34 +678,18 @@ public class coil/target/ImageViewTarget : androidx/lifecycle/DefaultLifecycleOb
 	public fun onStart (Landroidx/lifecycle/LifecycleOwner;)V
 	public fun onStop (Landroidx/lifecycle/LifecycleOwner;)V
 	public fun onSuccess (Landroid/graphics/drawable/Drawable;)V
-	public fun setBitmap (Landroid/graphics/Bitmap;)V
 	protected fun setDrawable (Landroid/graphics/drawable/Drawable;)V
 	protected fun updateAnimation ()V
 }
 
-public abstract interface class coil/target/PoolableTarget : coil/target/Target {
-	public abstract fun getBitmap ()Landroid/graphics/Bitmap;
+public abstract interface class coil/target/PoolableViewTarget : coil/target/ViewTarget {
 	public abstract fun onClear ()V
-	public abstract fun setBitmap (Landroid/graphics/Bitmap;)V
-}
-
-public final class coil/target/PoolableTarget$DefaultImpls {
-	public static fun onError (Lcoil/target/PoolableTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun onStart (Lcoil/target/PoolableTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun onSuccess (Lcoil/target/PoolableTarget;Landroid/graphics/drawable/Drawable;)V
-}
-
-public abstract interface class coil/target/PoolableViewTarget : coil/target/PoolableTarget, coil/target/ViewTarget {
-	public abstract fun getBitmap ()Landroid/graphics/Bitmap;
-	public abstract fun setBitmap (Landroid/graphics/Bitmap;)V
 }
 
 public final class coil/target/PoolableViewTarget$DefaultImpls {
-	public static fun getBitmap (Lcoil/target/PoolableViewTarget;)Landroid/graphics/Bitmap;
 	public static fun onError (Lcoil/target/PoolableViewTarget;Landroid/graphics/drawable/Drawable;)V
 	public static fun onStart (Lcoil/target/PoolableViewTarget;Landroid/graphics/drawable/Drawable;)V
 	public static fun onSuccess (Lcoil/target/PoolableViewTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun setBitmap (Lcoil/target/PoolableViewTarget;Landroid/graphics/Bitmap;)V
 }
 
 public abstract interface class coil/target/Target {
