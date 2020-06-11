@@ -174,7 +174,7 @@ internal class RealImageLoader(
 
         try {
             // Suspend until the lifecycle is started.
-            lifecycle.awaitStarted()
+            if (type == REQUEST_TYPE_ENQUEUE) lifecycle.awaitStarted()
 
             // Fail before starting if data is null.
             val data = request.data ?: throw NullRequestDataException()
