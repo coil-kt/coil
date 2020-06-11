@@ -137,7 +137,7 @@ internal class RealImageLoader(
 
         return if (request.target is ViewTarget<*>) {
             val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
-            return ViewTargetRequestDisposable(requestId, request.target)
+            ViewTargetRequestDisposable(requestId, request.target)
         } else {
             BaseTargetRequestDisposable(job)
         }
