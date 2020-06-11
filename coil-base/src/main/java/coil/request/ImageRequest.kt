@@ -44,6 +44,12 @@ import okhttp3.Headers
 import okhttp3.HttpUrl
 import java.io.File
 
+/**
+ * An immutable data object that represents a request for an image.
+ *
+ * @see ImageLoader.enqueue
+ * @see ImageLoader.execute
+ */
 class ImageRequest private constructor(
     val context: Context,
 
