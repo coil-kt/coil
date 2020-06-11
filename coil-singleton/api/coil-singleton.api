@@ -1,7 +1,7 @@
 public final class coil/Coil {
 	public static final field INSTANCE Lcoil/Coil;
-	public static final fun execute (Lcoil/request/GetRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun execute (Lcoil/request/LoadRequest;)Lcoil/request/RequestDisposable;
+	public static final fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/RequestDisposable;
+	public static final fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun imageLoader (Landroid/content/Context;)Lcoil/ImageLoader;
 	public static final fun setImageLoader (Lcoil/ImageLoader;)V
 	public static final fun setImageLoader (Lcoil/ImageLoaderFactory;)V

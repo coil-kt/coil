@@ -19,7 +19,7 @@ class MemoryCacheTest {
         val weakMemoryCache = EmptyWeakMemoryCache
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt(), null)
+        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
@@ -32,7 +32,7 @@ class MemoryCacheTest {
         val weakMemoryCache = EmptyWeakMemoryCache
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt(), null)
+        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
 
         val first = createBitmap()
         cache.set(Key("1"), first, false)
@@ -64,7 +64,7 @@ class MemoryCacheTest {
         val weakMemoryCache = RealWeakMemoryCache()
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE).toInt(), null)
+        val cache = MemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
@@ -78,7 +78,7 @@ class MemoryCacheTest {
         val weakMemoryCache = RealWeakMemoryCache()
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = MemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE.toInt(), null)
+        val cache = MemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE, null)
 
         val first = createBitmap()
         cache.set(Key("1"), first, false)
@@ -98,7 +98,7 @@ class MemoryCacheTest {
         val weakMemoryCache = RealWeakMemoryCache()
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = MemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE.toInt(), null)
+        val cache = MemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE, null)
 
         val first = createBitmap()
         cache.set(Key("key"), first, false)

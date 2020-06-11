@@ -48,13 +48,13 @@ class RequestDisposableTest {
 
     @Test
     fun baseTargetRequestDisposable_dispose() = runBlockingTest {
-        val request = LoadRequest.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             .size(100, 100)
             .transformations(GateTransformation())
-            .target { /** Do nothing. */ }
+            .target { /* Do nothing. */ }
             .build()
-        val disposable = imageLoader.execute(request)
+        val disposable = imageLoader.enqueue(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
         assertFalse(disposable.isDisposed)
@@ -66,13 +66,13 @@ class RequestDisposableTest {
     fun baseTargetRequestDisposable_await() = runBlockingTest {
         val transformation = GateTransformation()
         var result: Drawable? = null
-        val request = LoadRequest.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             .size(100, 100)
             .transformations(transformation)
             .target { result = it }
             .build()
-        val disposable = imageLoader.execute(request)
+        val disposable = imageLoader.enqueue(request)
 
         assertTrue(disposable is BaseTargetRequestDisposable)
         assertNull(result)
@@ -84,14 +84,14 @@ class RequestDisposableTest {
     @Test
     fun viewTargetRequestDisposable_dispose() = runBlockingTest {
         val imageView = ImageView(context)
-        val request = LoadRequest.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
             .transformations(GateTransformation())
             .target(imageView)
             .build()
-        val disposable = imageLoader.execute(request)
+        val disposable = imageLoader.enqueue(request)
 
         assertTrue(disposable is ViewTargetRequestDisposable)
         assertFalse(disposable.isDisposed)
@@ -103,14 +103,14 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_await() = runBlockingTest {
         val transformation = GateTransformation()
         val imageView = ImageView(context)
-        val request = LoadRequest.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
             .transformations(transformation)
             .target(imageView)
             .build()
-        val disposable = imageLoader.execute(request)
+        val disposable = imageLoader.enqueue(request)
 
         assertTrue(disposable is ViewTargetRequestDisposable)
         assertNull(imageView.drawable)
@@ -123,14 +123,14 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_restart() = runBlockingTest {
         val transformation = GateTransformation()
         val imageView = ImageView(context)
-        val request = LoadRequest.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
             .transformations(transformation)
             .target(imageView)
             .build()
-        val disposable = imageLoader.execute(request)
+        val disposable = imageLoader.enqueue(request)
 
         assertTrue(disposable is ViewTargetRequestDisposable)
         assertFalse(disposable.isDisposed)
@@ -154,14 +154,14 @@ class RequestDisposableTest {
         val imageView = ImageView(context)
 
         fun launchNewRequest(): RequestDisposable {
-            val request = LoadRequest.Builder(context)
+            val request = ImageRequest.Builder(context)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
                 // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
                 .size(100, 100)
                 .transformations(GateTransformation())
                 .target(imageView)
                 .build()
-            return imageLoader.execute(request)
+            return imageLoader.enqueue(request)
         }
 
         val disposable1 = launchNewRequest()
@@ -179,14 +179,14 @@ class RequestDisposableTest {
     @Test
     fun viewTargetRequestDisposable_clear() = runBlockingTest {
         val imageView = ImageView(context)
-        val request = LoadRequest.Builder(context)
+        val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
             .size(100, 100)
             .transformations(GateTransformation())
             .target(imageView)
             .build()
-        val disposable = imageLoader.execute(request)
+        val disposable = imageLoader.enqueue(request)
 
         assertFalse(disposable.isDisposed)
         CoilUtils.clear(imageView)
@@ -194,7 +194,7 @@ class RequestDisposableTest {
     }
 
     /**
-     * Prevent completing the [LoadRequest] until [open] is called.
+     * Prevent completing the [ImageRequest] until [open] is called.
      * This is to avoid our test assertions racing the image request.
      */
     private class GateTransformation : Transformation {

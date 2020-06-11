@@ -1,12 +1,12 @@
 package coil.size
 
 import androidx.annotation.Px
-import coil.request.RequestBuilder
+import coil.request.ImageRequest
 
 /**
  * Represents the target size of an image request.
  *
- * @see RequestBuilder.size
+ * @see ImageRequest.Builder.size
  * @see SizeResolver.size
  */
 sealed class Size

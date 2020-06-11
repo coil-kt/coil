@@ -7,8 +7,8 @@ import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import coil.decode.GifDecoder.Companion.REPEAT_COUNT_KEY
 import coil.drawable.MovieDrawable
+import coil.request.ImageRequest
 import coil.request.Parameters
-import coil.request.RequestBuilder
 
 /**
  * Set the number of times to repeat the animation if the result is an animated [Drawable].
@@ -18,7 +18,7 @@ import coil.request.RequestBuilder
  * @see MovieDrawable.setRepeatCount
  * @see AnimatedImageDrawable.setRepeatCount
  */
-fun <T : RequestBuilder<T>> RequestBuilder<T>.repeatCount(repeatCount: Int): T {
+fun ImageRequest.Builder.repeatCount(repeatCount: Int): ImageRequest.Builder {
     require(repeatCount >= MovieDrawable.REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
     return setParameter(REPEAT_COUNT_KEY, repeatCount)
 }

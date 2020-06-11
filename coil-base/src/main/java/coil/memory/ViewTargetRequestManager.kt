@@ -3,23 +3,23 @@ package coil.memory
 import android.view.View
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.util.isMainThread
 import coil.util.requestManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 /**
- * Ensures that at most one [Request] can be attached to a given [View] at one time.
+ * Ensures that at most one [ImageRequest] can be attached to a given [View] at one time.
  *
  * @see requestManager
  */
 internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
 
-    // The request delegate for the most recently dispatched request.
+    // Only accessed from the main thread. The request delegate for the most recently dispatched request.
     private var currentRequest: ViewTargetRequestDelegate? = null
 
     // Metadata about the current request (that may have not been dispatched yet).
@@ -67,7 +67,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
         currentRequestJob = null
 
         pendingClear?.cancel()
-        pendingClear = CoroutineScope(Dispatchers.Main.immediate).launch { setCurrentRequest(null) }
+        pendingClear = GlobalScope.launch(Dispatchers.Main.immediate) { setCurrentRequest(null) }
     }
 
     @MainThread

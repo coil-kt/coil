@@ -12,7 +12,7 @@ import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.base.R
 import coil.request.ErrorResult
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.target.PoolableViewTarget
@@ -50,9 +50,9 @@ internal object EmptyTargetDelegate : TargetDelegate()
 /**
  * Only invalidate the success bitmaps.
  *
- * Used if [Request.target] is null and the success [Drawable] is leaked.
+ * Used if [ImageRequest.target] is null and the success [Drawable] is leaked.
  *
- * @see ImageLoader.get
+ * @see ImageLoader.execute
  */
 internal class InvalidatableEmptyTargetDelegate(
     override val referenceCounter: BitmapReferenceCounter
@@ -67,7 +67,7 @@ internal class InvalidatableEmptyTargetDelegate(
  * Invalidate the cached bitmap and the success bitmap.
  */
 internal class InvalidatableTargetDelegate(
-    private val request: Request,
+    private val request: ImageRequest,
     private val target: Target,
     override val referenceCounter: BitmapReferenceCounter,
     private val eventListener: EventListener,
@@ -93,7 +93,7 @@ internal class InvalidatableTargetDelegate(
  * Handle the reference counts for the cached bitmap and the success bitmap.
  */
 internal class PoolableTargetDelegate(
-    private val request: Request,
+    private val request: ImageRequest,
     override val target: PoolableViewTarget<*>,
     override val referenceCounter: BitmapReferenceCounter,
     private val eventListener: EventListener,
@@ -157,7 +157,7 @@ private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarg
 }
 
 private suspend inline fun Target.onSuccess(
-    request: Request,
+    request: ImageRequest,
     result: SuccessResult,
     transition: Transition,
     eventListener: EventListener,
@@ -183,7 +183,7 @@ private suspend inline fun Target.onSuccess(
 }
 
 private suspend inline fun Target.onError(
-    request: Request,
+    request: ImageRequest,
     result: ErrorResult,
     transition: Transition,
     eventListener: EventListener,

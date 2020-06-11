@@ -2,12 +2,12 @@ package coil.request
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import coil.memory.RequestService
+import coil.util.getLifecycle
 
 /**
  * A [Lifecycle] implementation that is always resumed and never destroyed.
  *
- * This is used as a fallback if [RequestService.lifecycleInfo] cannot find a more tightly scoped [Lifecycle].
+ * This is used as a fallback if [getLifecycle] cannot find a more tightly scoped [Lifecycle].
  */
 internal object GlobalLifecycle : Lifecycle() {
 
