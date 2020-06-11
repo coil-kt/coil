@@ -6,8 +6,8 @@ import androidx.annotation.MainThread
 import coil.request.ImageRequest
 import coil.util.isMainThread
 import coil.util.requestManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -46,7 +46,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
             pendingClear = null
         }
 
-        currentRequest?.onDispose()
+        currentRequest?.dispose()
         currentRequest = request
         skipAttach = true
     }
@@ -67,7 +67,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
         currentRequestJob = null
 
         pendingClear?.cancel()
-        pendingClear = CoroutineScope(Dispatchers.Main.immediate).launch { setCurrentRequest(null) }
+        pendingClear = GlobalScope.launch(Dispatchers.Main.immediate) { setCurrentRequest(null) }
     }
 
     @MainThread
@@ -88,7 +88,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     @MainThread
     override fun onViewDetachedFromWindow(v: View) {
         skipAttach = false
-        currentRequest?.onDispose()
+        currentRequest?.dispose()
     }
 
     /** Return an ID to use for the next request attached to this manager. */

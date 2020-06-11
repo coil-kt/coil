@@ -7,14 +7,13 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
-import coil.target.PoolableTarget
+import coil.target.PoolableViewTarget
 import coil.target.Target
 import coil.target.ViewTarget
 import coil.util.Logger
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.requestManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 
 /** [DelegateService] wraps [Target]s to support [Bitmap] pooling and [ImageRequest]s to manage their lifecycle. */
@@ -38,7 +37,7 @@ internal class DelegateService(
             }
             REQUEST_TYPE_ENQUEUE -> when (val target = request.target) {
                 null -> EmptyTargetDelegate
-                is PoolableTarget -> PoolableTargetDelegate(request, target, referenceCounter, eventListener, logger)
+                is PoolableViewTarget<*> -> PoolableTargetDelegate(request, target, referenceCounter, eventListener, logger)
                 else -> InvalidatableTargetDelegate(request, target, referenceCounter, eventListener, logger)
             }
             else -> error("Invalid type.")
@@ -48,7 +47,6 @@ internal class DelegateService(
     /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [ImageRequest] based on its lifecycle. */
     @MainThread
     fun createRequestDelegate(
-        scope: CoroutineScope,
         job: Job,
         targetDelegate: TargetDelegate,
         request: ImageRequest,
@@ -60,10 +58,6 @@ internal class DelegateService(
                 delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, lifecycle, job)
                 lifecycle.addObserver(delegate)
                 request.target.view.requestManager.setCurrentRequest(delegate)
-            }
-            is PoolableTarget -> {
-                delegate = PoolableTargetRequestDelegate(scope, targetDelegate, lifecycle, job)
-                lifecycle.addObserver(delegate)
             }
             else -> {
                 delegate = BaseRequestDelegate(lifecycle, job)

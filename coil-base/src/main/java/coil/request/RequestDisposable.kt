@@ -30,7 +30,7 @@ interface RequestDisposable {
 }
 
 /**
- * Used for one-shot image requests.
+ * A disposable for one-shot image requests.
  */
 internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
 
@@ -50,7 +50,7 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
 }
 
 /**
- * Used for requests that are attached to a [View].
+ * A disposable for requests that are attached to a [View].
  *
  * [ViewTargetRequestDisposable] is not disposed until its request is detached from the view.
  * This is because requests are automatically cancelled in [View.onDetachedFromWindow] and are

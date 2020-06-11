@@ -99,9 +99,8 @@ internal class RealImageLoader(
     val logger: Logger?
 ) : ImageLoader {
 
-    private val loaderScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
-
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate +
+        CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) })
     private val delegateService = DelegateService(this, referenceCounter, logger)
     private val requestService = RequestService(defaults, logger)
     private val memoryCacheService = MemoryCacheService(requestService, logger)
@@ -131,10 +130,11 @@ internal class RealImageLoader(
     private var isShutdown = false
 
     override fun enqueue(request: ImageRequest): RequestDisposable {
-        val job = loaderScope.launch(exceptionHandler) {
+        val job = scope.launch {
             val result = execute(request, REQUEST_TYPE_ENQUEUE)
             if (result is ErrorResult) throw result.throwable
         }
+
         return if (request.target is ViewTarget<*>) {
             val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
             return ViewTargetRequestDisposable(requestId, request.target)
@@ -144,10 +144,14 @@ internal class RealImageLoader(
     }
 
     override suspend fun execute(request: ImageRequest): RequestResult {
+        // A view target's current request job must be updated instantly.
         if (request.target is ViewTarget<*>) {
             request.target.view.requestManager.setCurrentRequestJob(coroutineContext.job)
         }
-        return withContext(Dispatchers.Main.immediate) { execute(request, REQUEST_TYPE_EXECUTE) }
+
+        return withContext(Dispatchers.Main.immediate) {
+            execute(request, REQUEST_TYPE_EXECUTE)
+        }
     }
 
     @MainThread
@@ -166,7 +170,7 @@ internal class RealImageLoader(
 
         // Wrap the request to manage its lifecycle.
         val requestDelegate = delegateService.createRequestDelegate(
-            loaderScope, coroutineContext.job, targetDelegate, request, lifecycle)
+            coroutineContext.job, targetDelegate, request, lifecycle)
 
         try {
             // Suspend until the lifecycle is started.
@@ -191,7 +195,8 @@ internal class RealImageLoader(
 
             // Prepare to resolve the size lazily.
             val sizeResolver = requestService.sizeResolver(request, context)
-            val lazySizeResolver = LazySizeResolver(coroutineContext, sizeResolver, targetDelegate, request, defaults, eventListener)
+            val lazySizeResolver = LazySizeResolver(coroutineContext, sizeResolver,
+                targetDelegate, request, defaults, eventListener)
 
             // Perform any data mapping.
             eventListener.mapStart(request, data)
@@ -228,7 +233,8 @@ internal class RealImageLoader(
             }
 
             // Fetch and decode the image on a background thread.
-            val (drawable, isSampled, source) = loadData(mappedData, fetcher, request, type, sizeResolver, size, scale, eventListener)
+            val (drawable, isSampled, source) = loadData(mappedData, fetcher, request, type,
+                sizeResolver, size, scale, eventListener)
 
             // Cache the result.
             if (memoryCachePolicy.writeEnabled) {
@@ -257,7 +263,7 @@ internal class RealImageLoader(
                 return result
             }
         } finally {
-            requestDelegate.onComplete()
+            requestDelegate.complete()
         }
     }
 
@@ -408,7 +414,7 @@ internal class RealImageLoader(
         if (isShutdown) return
         isShutdown = true
 
-        loaderScope.cancel()
+        scope.cancel()
         systemCallbacks.shutdown()
         clearMemory()
     }

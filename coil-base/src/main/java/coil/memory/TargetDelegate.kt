@@ -10,11 +10,12 @@ import androidx.annotation.MainThread
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
+import coil.base.R
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.RequestResult
 import coil.request.SuccessResult
-import coil.target.PoolableTarget
+import coil.target.PoolableViewTarget
 import coil.target.Target
 import coil.transition.Transition
 import coil.transition.TransitionTarget
@@ -49,7 +50,7 @@ internal object EmptyTargetDelegate : TargetDelegate()
 /**
  * Only invalidate the success bitmaps.
  *
- * Used if [ImageRequest.target] is null and the success [Drawable] is exposed.
+ * Used if [ImageRequest.target] is null and the success [Drawable] is leaked.
  *
  * @see ImageLoader.execute
  */
@@ -93,7 +94,7 @@ internal class InvalidatableTargetDelegate(
  */
 internal class PoolableTargetDelegate(
     private val request: ImageRequest,
-    override val target: PoolableTarget,
+    override val target: PoolableViewTarget<*>,
     override val referenceCounter: BitmapReferenceCounter,
     private val eventListener: EventListener,
     private val logger: Logger?
@@ -127,7 +128,11 @@ private interface Invalidatable {
 
 private interface Poolable {
 
-    val target: PoolableTarget
+    private inline var PoolableViewTarget<*>.bitmap: Bitmap?
+        get() = view.getTag(R.id.coil_bitmap) as? Bitmap
+        set(value) = view.setTag(R.id.coil_bitmap, value)
+
+    val target: PoolableViewTarget<*>
     val referenceCounter: BitmapReferenceCounter
 
     /** Increment the reference counter for the current bitmap. */
@@ -145,7 +150,7 @@ private interface Poolable {
 private inline val RequestResult.bitmap: Bitmap?
     get() = (drawable as? BitmapDrawable)?.bitmap
 
-private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableTarget.() -> Unit) {
+private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarget<*>.() -> Unit) {
     increment(bitmap)
     target.update()
     decrement(bitmap)

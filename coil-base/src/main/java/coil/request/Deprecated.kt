@@ -31,4 +31,4 @@ typealias GetRequestBuilder = ImageRequest.Builder
     message = "Replace with ImageRequest.",
     replaceWith = ReplaceWith("ImageRequest", "coil.request.ImageRequest")
 )
-typealias Request<T> = ImageRequest
+typealias Request = ImageRequest

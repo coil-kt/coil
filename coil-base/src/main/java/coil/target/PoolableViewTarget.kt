@@ -1,23 +1,39 @@
 package coil.target
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.view.View
-import coil.base.R
+import androidx.annotation.MainThread
 
 /**
  * A [ViewTarget] that supports [Bitmap] pooling.
  *
- * [PoolableViewTarget] offers a simple implementation of [bitmap] so consumers only need to implement [onClear].
+ * Implementing [PoolableViewTarget] opts this target into bitmap pooling. This allows Coil to re-use [Bitmap]s
+ * given to this target, which improves performance.
  *
- * See [PoolableTarget] for the behaviour restrictions required for bitmap pooling.
+ * To opt out of bitmap pooling, implement [ViewTarget] instead.
  *
- * @see PoolableTarget
+ * Implementing [PoolableViewTarget] requires that you must stop using the previous [Drawable] as soon as
+ * the next [PoolableViewTarget] lifecycle method is called; one of:
+ *
+ * [Target.onStart], [Target.onSuccess], [Target.onError], [PoolableViewTarget.onClear].
+ *
+ * For example, a [PoolableViewTarget] must stop using the placeholder drawable from [Target.onStart]
+ * as soon as [Target.onSuccess] is called.
+ *
+ * Continuing to use the previous [Drawable] after the next lifecycle method is called can cause rendering issues
+ * and/or throw exceptions.
+ *
  * @see ViewTarget
  * @see ImageViewTarget
  */
-interface PoolableViewTarget<T : View> : PoolableTarget, ViewTarget<T> {
+interface PoolableViewTarget<T : View> : ViewTarget<T> {
 
-    override var bitmap: Bitmap?
-        get() = view.getTag(R.id.coil_bitmap) as? Bitmap
-        set(value) = view.setTag(R.id.coil_bitmap, value)
+    /**
+     * Called when the current drawable is no longer usable. Targets **must** stop using the current Drawable.
+     *
+     * In practice, this will only be called when the view is detached or about to be destroyed.
+     */
+    @MainThread
+    fun onClear()
 }

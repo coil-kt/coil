@@ -1,6 +1,5 @@
 package coil.memory
 
-import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -8,26 +7,22 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.ImageLoader
 import coil.request.ImageRequest
-import coil.request.RequestDisposable
 import coil.target.ViewTarget
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 internal sealed class RequestDelegate : DefaultLifecycleObserver {
 
     /** Called when the image request completes for any reason. */
     @MainThread
-    open fun onComplete() {}
+    open fun complete() {}
 
     /** Cancel any in progress work and free all resources. */
     @MainThread
-    open fun onDispose() {}
+    open fun dispose() {}
 
     /** Automatically dispose this delegate when the containing lifecycle is destroyed. */
     @MainThread
-    override fun onDestroy(owner: LifecycleOwner) = onDispose()
+    override fun onDestroy(owner: LifecycleOwner) = dispose()
 }
 
 /** A request delegate for a one-shot requests with non-poolable targets. */
@@ -36,33 +31,12 @@ internal class BaseRequestDelegate(
     private val job: Job
 ) : RequestDelegate() {
 
-    override fun onComplete() = lifecycle.removeObserver(this)
-
-    override fun onDispose() = job.cancel()
-}
-
-/** A request delegate for a one-shot requests with poolable targets that do not implement [ViewTarget]. */
-internal class PoolableTargetRequestDelegate(
-    private val scope: CoroutineScope,
-    private val target: TargetDelegate,
-    private val lifecycle: Lifecycle,
-    private val job: Job
-) : RequestDelegate() {
-
-    /** Called by [RequestDisposable.dispose] from any thread. */
-    @AnyThread
-    fun onDisposeUnsafe() {
-        job.cancel()
-        scope.launch(Dispatchers.Main.immediate) {
-            target.clear()
-            lifecycle.removeObserver(this@PoolableTargetRequestDelegate)
-        }
+    override fun complete() {
+        lifecycle.removeObserver(this)
     }
 
-    override fun onDispose() {
+    override fun dispose() {
         job.cancel()
-        target.clear()
-        lifecycle.removeObserver(this)
     }
 }
 
@@ -81,10 +55,9 @@ internal class ViewTargetRequestDelegate(
         imageLoader.enqueue(request)
     }
 
-    override fun onDispose() {
+    override fun dispose() {
         job.cancel()
         target.clear()
-
         if (request.target is LifecycleObserver) {
             lifecycle.removeObserver(request.target)
         }
