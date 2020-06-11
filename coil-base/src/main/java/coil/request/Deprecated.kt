@@ -1,5 +1,5 @@
 @file:JvmName("-Deprecated")
-@file:Suppress("unused", "UNUSED_TYPEALIAS_PARAMETER")
+@file:Suppress("unused")
 
 package coil.request
 
