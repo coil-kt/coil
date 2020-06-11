@@ -1,9 +1,9 @@
 public final class coil/extension/Videos {
+	public static final fun videoFrameMicros (Lcoil/request/ImageRequest$Builder;J)Lcoil/request/ImageRequest$Builder;
 	public static final fun videoFrameMicros (Lcoil/request/Parameters;)Ljava/lang/Long;
-	public static final fun videoFrameMicros (Lcoil/request/RequestBuilder;J)Lcoil/request/RequestBuilder;
-	public static final fun videoFrameMillis (Lcoil/request/RequestBuilder;J)Lcoil/request/RequestBuilder;
+	public static final fun videoFrameMillis (Lcoil/request/ImageRequest$Builder;J)Lcoil/request/ImageRequest$Builder;
+	public static final fun videoFrameOption (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
 	public static final fun videoFrameOption (Lcoil/request/Parameters;)Ljava/lang/Integer;
-	public static final fun videoFrameOption (Lcoil/request/RequestBuilder;I)Lcoil/request/RequestBuilder;
 }
 
 public abstract class coil/fetch/VideoFrameFetcher : coil/fetch/Fetcher {

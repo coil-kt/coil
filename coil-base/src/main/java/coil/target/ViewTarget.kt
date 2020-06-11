@@ -1,18 +1,13 @@
 package coil.target
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.lifecycle.LifecycleObserver
 
 /**
- * A [Target] with an associated [View].
+ * A [Target] with an associated [View]. Prefer this to [Target] if the given drawables will only be used by [view].
  *
- * If the loaded [Drawable] will only be used with one [View], prefer this to [Target].
- *
- * [ViewTarget]s can have their lifecycle methods called multiple times.
- *
- * Optionally, a [ViewTarget] can be declared as a [LifecycleObserver]. It is automatically registered when the request
- * starts and unregistered when the request is disposed.
+ * Optionally, [ViewTarget]s can implement [LifecycleObserver]. They are automatically registered when the request
+ * starts and unregistered when the request completes.
  */
 interface ViewTarget<T : View> : Target {
 

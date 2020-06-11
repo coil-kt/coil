@@ -22,6 +22,9 @@ internal object Utils {
     private const val STANDARD_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
 
+    const val REQUEST_TYPE_ENQUEUE = 0
+    const val REQUEST_TYPE_EXECUTE = 1
+
     /** Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config]. */
     fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
         return width * height * config.bytesPerPixel

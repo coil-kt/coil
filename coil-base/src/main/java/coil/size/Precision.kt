@@ -2,12 +2,12 @@ package coil.size
 
 import android.widget.ImageView
 import coil.memory.RequestService
-import coil.request.RequestBuilder
+import coil.request.ImageRequest
 
 /**
  * Represents the required precision for the size of an image in an image request.
  *
- * @see RequestBuilder.precision
+ * @see ImageRequest.Builder.precision
  */
 enum class Precision {
 

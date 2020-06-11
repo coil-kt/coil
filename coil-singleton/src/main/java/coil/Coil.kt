@@ -1,11 +1,10 @@
-@file:Suppress("MemberVisibilityCanBePrivate", "NOTHING_TO_INLINE", "unused")
+@file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil
 
 import android.app.Application
 import android.content.Context
-import coil.request.GetRequest
-import coil.request.LoadRequest
+import coil.request.ImageRequest
 import coil.request.RequestDisposable
 import coil.request.RequestResult
 
@@ -34,13 +33,13 @@ object Coil {
     }
 
     /**
-     * Convenience function to get the default [ImageLoader] and execute the [request].
+     * Convenience function to get the default [ImageLoader] and enqueue the [request].
      *
-     * @see ImageLoader.execute
+     * @see ImageLoader.enqueue
      */
     @JvmStatic
-    inline fun execute(request: LoadRequest): RequestDisposable {
-        return imageLoader(request.context).execute(request)
+    inline fun enqueue(request: ImageRequest): RequestDisposable {
+        return imageLoader(request.context).enqueue(request)
     }
 
     /**
@@ -49,7 +48,7 @@ object Coil {
      * @see ImageLoader.execute
      */
     @JvmStatic
-    suspend inline fun execute(request: GetRequest): RequestResult {
+    suspend inline fun execute(request: ImageRequest): RequestResult {
         return imageLoader(request.context).execute(request)
     }
 

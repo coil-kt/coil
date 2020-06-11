@@ -15,9 +15,10 @@ import coil.target.FakeTarget
 import coil.target.ImageViewTarget
 import coil.transition.Transition
 import coil.transition.TransitionTarget
+import coil.util.Utils.REQUEST_TYPE_ENQUEUE
+import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.createBitmap
-import coil.util.createGetRequest
-import coil.util.createLoadRequest
+import coil.util.createRequest
 import coil.util.createTestMainDispatcher
 import coil.util.isInvalid
 import coil.util.toDrawable
@@ -64,8 +65,8 @@ class TargetDelegateTest {
 
     @Test
     fun `empty target does not invalidate`() {
-        val request = createLoadRequest(context)
-        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
+        val request = createRequest(context)
+        val delegate = delegateService.createTargetDelegate(request, REQUEST_TYPE_ENQUEUE, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
@@ -84,8 +85,8 @@ class TargetDelegateTest {
 
     @Test
     fun `get request invalidates the success bitmap`() {
-        val request = createGetRequest(context)
-        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
+        val request = createRequest(context)
+        val delegate = delegateService.createTargetDelegate(request, REQUEST_TYPE_EXECUTE, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
@@ -98,10 +99,10 @@ class TargetDelegateTest {
     @Test
     fun `target methods are called and bitmaps are invalidated`() {
         val target = FakeTarget()
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             target(target)
         }
-        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
+        val delegate = delegateService.createTargetDelegate(request, REQUEST_TYPE_ENQUEUE, EventListener.NONE)
 
         runBlocking {
             val bitmap = createBitmap()
@@ -130,10 +131,10 @@ class TargetDelegateTest {
 
     @Test
     fun `request with poolable target returns previous bitmap to pool`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             target(ImageViewTarget(ImageView(context)))
         }
-        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
+        val delegate = delegateService.createTargetDelegate(request, REQUEST_TYPE_ENQUEUE, EventListener.NONE)
 
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)
@@ -152,10 +153,10 @@ class TargetDelegateTest {
 
     @Test
     fun `request suspends until transition is complete`() {
-        val request = createLoadRequest(context) {
+        val request = createRequest(context) {
             target(ImageViewTarget(ImageView(context)))
         }
-        val delegate = delegateService.createTargetDelegate(request, EventListener.NONE)
+        val delegate = delegateService.createTargetDelegate(request, REQUEST_TYPE_ENQUEUE, EventListener.NONE)
 
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)

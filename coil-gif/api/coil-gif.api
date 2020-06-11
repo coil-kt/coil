@@ -74,7 +74,7 @@ public final class coil/drawable/ScaleDrawable : android/graphics/drawable/Drawa
 }
 
 public final class coil/extension/Gifs {
+	public static final fun repeatCount (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
 	public static final fun repeatCount (Lcoil/request/Parameters;)Ljava/lang/Integer;
-	public static final fun repeatCount (Lcoil/request/RequestBuilder;I)Lcoil/request/RequestBuilder;
 }
 

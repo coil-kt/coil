@@ -17,8 +17,7 @@ open class ImageViewTarget(
 
     private var isStarted = false
 
-    override val drawable: Drawable?
-        get() = view.drawable
+    override val drawable: Drawable? get() = view.drawable
 
     override fun onStart(placeholder: Drawable?) = setDrawable(placeholder)
 

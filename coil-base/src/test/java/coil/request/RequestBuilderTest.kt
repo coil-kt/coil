@@ -29,7 +29,7 @@ class RequestBuilderTest {
             .crossfade(false)
             .build()
 
-        val request = LoadRequest.Builder(context)
+        val request = ImageRequest.Builder(context)
             .crossfade(false)
             .build()
 

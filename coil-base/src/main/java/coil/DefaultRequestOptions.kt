@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import coil.annotation.ExperimentalCoilApi
 import coil.request.CachePolicy
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.size.Precision
 import coil.transition.Transition
 import coil.util.Utils
@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 /**
- * A set of default options that are used to fill in unset [Request] values.
+ * A set of default options that are used to fill in unset [ImageRequest] values.
  *
  * @see ImageLoader.defaults
  */

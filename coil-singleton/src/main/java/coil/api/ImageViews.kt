@@ -1,6 +1,5 @@
 @file:JvmName("ImageViews")
 @file:Suppress("unused")
-@file:OptIn(ExperimentalCoilApi::class)
 
 package coil.api
 
@@ -11,9 +10,7 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import coil.Coil
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
-import coil.request.LoadRequest
-import coil.request.LoadRequestBuilder
+import coil.request.ImageRequest
 import coil.request.RequestDisposable
 import coil.util.CoilUtils
 import okhttp3.HttpUrl
@@ -24,7 +21,7 @@ import java.io.File
 inline fun ImageView.load(
     uri: String?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
-    builder: LoadRequestBuilder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {}
 ): RequestDisposable = loadAny(uri, imageLoader, builder)
 
 /** @see ImageView.loadAny */
@@ -32,7 +29,7 @@ inline fun ImageView.load(
 inline fun ImageView.load(
     url: HttpUrl?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
-    builder: LoadRequestBuilder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {}
 ): RequestDisposable = loadAny(url, imageLoader, builder)
 
 /** @see ImageView.loadAny */
@@ -40,7 +37,7 @@ inline fun ImageView.load(
 inline fun ImageView.load(
     uri: Uri?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
-    builder: LoadRequestBuilder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {}
 ): RequestDisposable = loadAny(uri, imageLoader, builder)
 
 /** @see ImageView.loadAny */
@@ -48,7 +45,7 @@ inline fun ImageView.load(
 inline fun ImageView.load(
     file: File?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
-    builder: LoadRequestBuilder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {}
 ): RequestDisposable = loadAny(file, imageLoader, builder)
 
 /** @see ImageView.loadAny */
@@ -56,7 +53,7 @@ inline fun ImageView.load(
 inline fun ImageView.load(
     @DrawableRes drawableResId: Int,
     imageLoader: ImageLoader = Coil.imageLoader(context),
-    builder: LoadRequestBuilder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {}
 ): RequestDisposable = loadAny(drawableResId, imageLoader, builder)
 
 /** @see ImageView.loadAny */
@@ -64,7 +61,7 @@ inline fun ImageView.load(
 inline fun ImageView.load(
     drawable: Drawable?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
-    builder: LoadRequestBuilder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {}
 ): RequestDisposable = loadAny(drawable, imageLoader, builder)
 
 /** @see ImageView.loadAny */
@@ -72,7 +69,7 @@ inline fun ImageView.load(
 inline fun ImageView.load(
     bitmap: Bitmap?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
-    builder: LoadRequestBuilder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {}
 ): RequestDisposable = loadAny(bitmap, imageLoader, builder)
 
 /**
@@ -89,21 +86,21 @@ inline fun ImageView.load(
  * ```
  *
  * @param data The data to load.
- * @param imageLoader The [ImageLoader] that will be used to create and launch the [LoadRequest].
+ * @param imageLoader The [ImageLoader] that will be used to create and launch the [ImageRequest].
  * @param builder An optional lambda to configure the request before it is launched.
  */
 @JvmSynthetic
 inline fun ImageView.loadAny(
     data: Any?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
-    builder: LoadRequestBuilder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {}
 ): RequestDisposable {
-    val request = LoadRequest.Builder(context)
+    val request = ImageRequest.Builder(context)
         .data(data)
         .target(this)
         .apply(builder)
         .build()
-    return imageLoader.execute(request)
+    return imageLoader.enqueue(request)
 }
 
 /**

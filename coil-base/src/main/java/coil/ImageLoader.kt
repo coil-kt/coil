@@ -18,14 +18,12 @@ import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.request.CachePolicy
 import coil.request.ErrorResult
-import coil.request.GetRequest
-import coil.request.LoadRequest
-import coil.request.Request
+import coil.request.ImageRequest
 import coil.request.RequestDisposable
 import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.Precision
-import coil.target.Target
+import coil.target.ViewTarget
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.CoilUtils
@@ -40,7 +38,7 @@ import okhttp3.OkHttpClient
 import java.io.File
 
 /**
- * A service class that loads images by executing [Request]s. Image loaders handle caching, data fetching,
+ * A service class that loads images by executing [ImageRequest]s. Image loaders handle caching, data fetching,
  * image decoding, request management, bitmap pooling, memory management, and more.
  *
  * Image loaders are designed to be shareable and work best when you create a single instance and
@@ -52,26 +50,28 @@ import java.io.File
 interface ImageLoader {
 
     /**
-     * The default options that are used to fill in unset [Request] values.
+     * The default options that are used to fill in unset [ImageRequest] values.
      */
     val defaults: DefaultRequestOptions
 
     /**
-     * Launch an asynchronous operation that executes the [LoadRequest] and sets the result on its [Target].
+     * Enqueue the [request] to be executed asynchronously.
      *
      * @param request The request to execute.
      * @return A [RequestDisposable] which can be used to cancel or check the status of the request.
      */
-    fun execute(request: LoadRequest): RequestDisposable
+    fun enqueue(request: ImageRequest): RequestDisposable
 
     /**
-     * Suspends and executes the [GetRequest]. Returns either [SuccessResult] or [ErrorResult] depending
-     * on how the request completes.
+     * Execute the [request] in the current coroutine scope.
+     *
+     * NOTE: If [ImageRequest.target] is a [ViewTarget], the job will automatically be cancelled
+     * if its view is detached.
      *
      * @param request The request to execute.
      * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
      */
-    suspend fun execute(request: GetRequest): RequestResult
+    suspend fun execute(request: ImageRequest): RequestResult
 
     /**
      * Remove the value referenced by [key] from the memory cache.
@@ -92,7 +92,8 @@ interface ImageLoader {
      *
      * All associated resources will be freed and any new requests will fail before starting.
      *
-     * In progress [LoadRequest]s will be cancelled. In progress [GetRequest]s will continue until complete.
+     * In progress [enqueue] requests will be cancelled instantly.
+     * In progress [execute] requests will continue until complete.
      */
     @MainThread
     fun shutdown()
@@ -351,14 +352,14 @@ interface ImageLoader {
         }
 
         /**
-         * Set the default fallback drawable to use if [Request.data] is null.
+         * Set the default fallback drawable to use if [ImageRequest.data] is null.
          */
         fun fallback(@DrawableRes drawableResId: Int) = apply {
             this.defaults = this.defaults.copy(error = applicationContext.getDrawableCompat(drawableResId))
         }
 
         /**
-         * Set the default fallback drawable to use if [Request.data] is null.
+         * Set the default fallback drawable to use if [ImageRequest.data] is null.
          */
         fun fallback(drawable: Drawable?) = apply {
             this.defaults = this.defaults.copy(error = drawable)
