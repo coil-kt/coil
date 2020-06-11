@@ -65,7 +65,7 @@ interface ImageLoader {
     /**
      * Execute the [request] in the current coroutine scope.
      *
-     * NOTE: If [ImageRequest.target] is a [ViewTarget], this request will automatically be cancelled
+     * NOTE: If [ImageRequest.target] is a [ViewTarget], the job will automatically be cancelled
      * if its view is detached.
      *
      * @param request The request to execute.
