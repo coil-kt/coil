@@ -101,10 +101,10 @@ interface ImageLoader {
      */
     @Deprecated(
         message = "Call the memory cache directly.",
-        replaceWith = ReplaceWith("memoryCache.remove(key)")
+        replaceWith = ReplaceWith("memoryCache.remove(MemoryCache.Key(key))", "coil.memory.MemoryCache")
     )
     fun invalidate(key: String) {
-        memoryCache.remove(key)
+        memoryCache.remove(MemoryCache.Key(key))
     }
 
     /**

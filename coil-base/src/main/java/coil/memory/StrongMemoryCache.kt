@@ -7,16 +7,11 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
-import coil.fetch.Fetcher
-import coil.memory.StrongMemoryCache.Key
-import coil.memory.StrongMemoryCache.Value
-import coil.request.Parameters
-import coil.size.Size
-import coil.transform.Transformation
+import coil.memory.MemoryCache.Key
+import coil.memory.MemoryCache.Value
 import coil.util.Logger
 import coil.util.allocationByteCountCompat
 import coil.util.log
-import coil.util.mapIndices
 
 /** An in-memory cache that holds strong references [Bitmap]s. */
 internal interface StrongMemoryCache {
@@ -56,72 +51,6 @@ internal interface StrongMemoryCache {
 
     /** @see ComponentCallbacks2.onTrimMemory */
     fun trimMemory(level: Int)
-
-    /** Cache key for [StrongMemoryCache] and [WeakMemoryCache]. */
-    class Key {
-
-        /** The base component of the cache key. This is typically [Fetcher.key]. */
-        val baseKey: String
-
-        /** An ordered list of [Transformation.key]s. */
-        val transformationKeys: List<String>
-
-        /** The resolved size for the request. This is null if [transformationKeys] is empty. */
-        val size: Size?
-
-        /** @see Parameters.cacheKeys */
-        val parameterKeys: Map<String, String>
-
-        constructor(
-            baseKey: String,
-            parameters: Parameters = Parameters.EMPTY
-        ) {
-            this.baseKey = baseKey
-            this.transformationKeys = emptyList()
-            this.size = null
-            this.parameterKeys = parameters.cacheKeys()
-        }
-
-        constructor(
-            baseKey: String,
-            transformations: List<Transformation>,
-            size: Size,
-            parameters: Parameters = Parameters.EMPTY
-        ) {
-            this.baseKey = baseKey
-            if (transformations.isEmpty()) {
-                this.transformationKeys = emptyList()
-                this.size = null
-            } else {
-                this.transformationKeys = transformations.mapIndices { it.key() }
-                this.size = size
-            }
-            this.parameterKeys = parameters.cacheKeys()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            return other is Key &&
-                baseKey == other.baseKey &&
-                transformationKeys == other.transformationKeys &&
-                size == other.size &&
-                parameterKeys == other.parameterKeys
-        }
-
-        override fun hashCode(): Int {
-            var result = baseKey.hashCode()
-            result = 31 * result + transformationKeys.hashCode()
-            result = 31 * result + (size?.hashCode() ?: 0)
-            result = 31 * result + parameterKeys.hashCode()
-            return result
-        }
-    }
-
-    /** Cache value for [StrongMemoryCache] and [WeakMemoryCache]. */
-    interface Value {
-        val bitmap: Bitmap
-        val isSampled: Boolean
-    }
 }
 
 /** A [StrongMemoryCache] implementation that caches nothing. */

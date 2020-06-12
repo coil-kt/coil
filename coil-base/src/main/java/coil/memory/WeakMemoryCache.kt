@@ -6,8 +6,8 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.VisibleForTesting
-import coil.memory.StrongMemoryCache.Key
-import coil.memory.StrongMemoryCache.Value
+import coil.memory.MemoryCache.Key
+import coil.memory.MemoryCache.Value
 import coil.util.firstNotNullIndices
 import coil.util.identityHashCode
 import coil.util.removeIfIndices
@@ -101,6 +101,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         cleanUpIfNecessary()
     }
 
+    @Synchronized
     override fun remove(key: Key) {
         val value = get(key)
         if (value != null) {

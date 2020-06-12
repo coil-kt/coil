@@ -23,6 +23,7 @@ import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
+import coil.memory.MemoryCache
 import coil.memory.RequestService
 import coil.request.ImageRequest.Builder
 import coil.size.OriginalSize
@@ -57,7 +58,7 @@ class ImageRequest private constructor(
     val data: Any?,
 
     /** @see Builder.key */
-    val key: String?,
+    val key: MemoryCache.Key?,
 
     /** @see Builder.target */
     val target: Target?,
@@ -251,7 +252,7 @@ class ImageRequest private constructor(
 
         private val context: Context
         private var data: Any?
-        private var key: String?
+        private var key: MemoryCache.Key?
 
         private var target: Target?
         private var listener: Listener?
@@ -375,7 +376,7 @@ class ImageRequest private constructor(
          * By default, the cache key is computed by the [Fetcher], any [Parameters], and any [Transformation]s.
          */
         fun key(key: String?) = apply {
-            this.key = key
+            this.key = key?.let { MemoryCache.Key(it) }
         }
 
         /**

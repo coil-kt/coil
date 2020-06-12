@@ -2,8 +2,8 @@ package coil.memory
 
 import android.util.Log
 import coil.decode.DecodeUtils
-import coil.memory.StrongMemoryCache.Key
-import coil.memory.StrongMemoryCache.Value
+import coil.memory.MemoryCache.Key
+import coil.memory.MemoryCache.Value
 import coil.request.ImageRequest
 import coil.size.OriginalSize
 import coil.size.PixelSize

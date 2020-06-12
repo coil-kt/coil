@@ -16,9 +16,9 @@ import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.Fetcher
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
+import coil.memory.MemoryCache.Key
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
-import coil.memory.StrongMemoryCache.Key
 import coil.request.ImageRequest
 import coil.request.Parameters
 import coil.size.OriginalSize

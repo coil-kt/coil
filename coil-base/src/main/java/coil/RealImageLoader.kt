@@ -32,6 +32,7 @@ import coil.map.ResourceUriMapper
 import coil.map.StringMapper
 import coil.memory.BitmapReferenceCounter
 import coil.memory.DelegateService
+import coil.memory.MemoryCache
 import coil.memory.MemoryCacheService
 import coil.memory.RealMemoryCache
 import coil.memory.RequestService
@@ -205,8 +206,8 @@ internal class RealImageLoader(
 
             // Compute the cache key.
             val fetcher = request.validateFetcher(mappedData) ?: registry.requireFetcher(mappedData)
-            val cacheKey = request.key?.let { StrongMemoryCache.Key(it) }
-                ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, lazySizeResolver)
+            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData,
+                request.parameters, request.transformations, lazySizeResolver)
 
             // Check the memory cache.
             val memoryCachePolicy = request.memoryCachePolicy ?: defaults.memoryCachePolicy
@@ -278,14 +279,14 @@ internal class RealImageLoader(
         parameters: Parameters,
         transformations: List<Transformation>,
         lazySizeResolver: LazySizeResolver
-    ): StrongMemoryCache.Key? {
+    ): MemoryCache.Key? {
         val baseKey = fetcher.key(data) ?: return null
 
         return if (transformations.isEmpty()) {
-            StrongMemoryCache.Key(baseKey, parameters)
+            MemoryCache.Key(baseKey, parameters)
         } else {
             // Resolve the size if there are any transformations.
-            StrongMemoryCache.Key(baseKey, transformations, lazySizeResolver.size(), parameters)
+            MemoryCache.Key(baseKey, transformations, lazySizeResolver.size(), parameters)
         }
     }
 
@@ -404,7 +405,7 @@ internal class RealImageLoader(
     override fun shutdown() {
         if (isShutdown.getAndSet(true)) return
 
-        // Order is important here.
+        // Order is important.
         scope.cancel()
         systemCallbacks.shutdown()
         strongMemoryCache.clearMemory()

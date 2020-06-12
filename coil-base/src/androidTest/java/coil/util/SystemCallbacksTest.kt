@@ -14,6 +14,7 @@ import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.memory.BitmapReferenceCounter
+import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
 import okhttp3.OkHttpClient
@@ -73,13 +74,13 @@ class SystemCallbacksTest {
         val systemCallbacks = SystemCallbacks(imageLoader, context)
 
         memoryCache.set(
-            key = StrongMemoryCache.Key("1"),
+            key = MemoryCache.Key("1"),
             bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
             isSampled = false
         )
 
         memoryCache.set(
-            key = StrongMemoryCache.Key("2"),
+            key = MemoryCache.Key("2"),
             bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
             isSampled = false
         )
