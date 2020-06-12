@@ -61,7 +61,6 @@ import coil.util.awaitStarted
 import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.foldIndices
-import coil.util.get
 import coil.util.getLifecycle
 import coil.util.job
 import coil.util.log
@@ -107,9 +106,7 @@ internal class RealImageLoader(
     private val memoryCacheService = MemoryCacheService(requestService, logger)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
     private val systemCallbacks = SystemCallbacks(this, context)
-
     override val memoryCache = RealMemoryCache(registry, strongMemoryCache, weakMemoryCache, referenceCounter)
-
     private val registry = registry.newBuilder()
         // Mappers
         .add(StringMapper())
@@ -405,7 +402,6 @@ internal class RealImageLoader(
     }
 
     override fun shutdown() {
-        assertMainThread()
         if (isShutdown) return
         isShutdown = true
 

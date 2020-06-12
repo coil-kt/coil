@@ -8,16 +8,15 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
-import androidx.annotation.MainThread
-import coil.bitmappool.BitmapPool
-import coil.memory.PublicMemoryCache
 import coil.annotation.ExperimentalCoilApi
+import coil.bitmappool.BitmapPool
 import coil.bitmappool.RealBitmapPool
 import coil.drawable.CrossfadeDrawable
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyWeakMemoryCache
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
+import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -59,7 +58,7 @@ interface ImageLoader {
     /**
      * An in-memory cache of [Bitmap]s.
      */
-    val memoryCache: PublicMemoryCache
+    val memoryCache: MemoryCache
 
     /**
      * An object pool of reusable [Bitmap]s.
@@ -93,7 +92,6 @@ interface ImageLoader {
      * In progress [enqueue] requests will be cancelled instantly.
      * In progress [execute] requests will continue until complete.
      */
-    @MainThread
     fun shutdown()
 
     /**
@@ -105,7 +103,6 @@ interface ImageLoader {
         message = "Call the memory cache directly.",
         replaceWith = ReplaceWith("memoryCache.remove(key)")
     )
-    @MainThread
     fun invalidate(key: String) {
         memoryCache.remove(key)
     }
@@ -115,13 +112,8 @@ interface ImageLoader {
      */
     @Deprecated(
         message = "Call the memory cache and bitmap pool directly.",
-        replaceWith = ReplaceWith("" +
-            "apply {\n" +
-            "    memoryCache.clear()\n" +
-            "    bitmapPool.clear()\n" +
-            "}")
+        replaceWith = ReplaceWith("apply { memoryCache.clear(); bitmapPool.clear() }")
     )
-    @MainThread
     fun clearMemory() {
         memoryCache.clear()
         bitmapPool.clear()
@@ -437,14 +429,14 @@ interface ImageLoader {
             val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
             val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache() else EmptyWeakMemoryCache
             val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
-            val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
+            val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
 
             return RealImageLoader(
                 context = applicationContext,
                 defaults = defaults,
                 bitmapPool = bitmapPool,
                 referenceCounter = referenceCounter,
-                memoryCache = memoryCache,
+                strongMemoryCache = memoryCache,
                 weakMemoryCache = weakMemoryCache,
                 callFactory = callFactory ?: buildDefaultCallFactory(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,

@@ -166,29 +166,8 @@ internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 
-internal fun assertMainThread() {
-    check(isMainThread()) { "This method can only be called from the main thread." }
-}
-
 internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
-
-/** Map [data] using the components registered in this [ComponentRegistry]. */
-@Suppress("UNCHECKED_CAST")
-internal inline fun ComponentRegistry.mapData(data: Any, size: (MeasuredMapper<*, *>) -> Size): Any {
-    var mappedData = data
-    measuredMappers.forEachIndices { (type, mapper) ->
-        if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
-            mappedData = mapper.map(mappedData, size(mapper))
-        }
-    }
-    mappers.forEachIndices { (type, mapper) ->
-        if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
-            mappedData = mapper.map(mappedData)
-        }
-    }
-    return mappedData
-}
 
 internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
     while (true) action(get())

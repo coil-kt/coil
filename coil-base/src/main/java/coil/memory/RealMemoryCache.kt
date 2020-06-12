@@ -4,9 +4,6 @@ import android.graphics.Bitmap
 import coil.ComponentRegistry
 import coil.memory.MemoryCache.Criteria
 import coil.memory.StrongMemoryCache.Key
-import coil.util.assertMainThread
-import coil.util.mapData
-import coil.util.mapIndices
 
 internal class RealMemoryCache(
     private val componentRegistry: ComponentRegistry,
@@ -15,27 +12,15 @@ internal class RealMemoryCache(
     private val bitmapReferenceCounter: BitmapReferenceCounter
 ) : MemoryCache {
 
-    override val size: Int
-        get() {
-            assertMainThread()
-            return strongMemoryCache.size
-        }
+    override val size get() = strongMemoryCache.size
 
-    override val maxSize: Int
-        get() {
-            assertMainThread()
-            return strongMemoryCache.maxSize
-        }
+    override val maxSize get() = strongMemoryCache.maxSize
 
     override fun find(key: String): Bitmap? {
-        assertMainThread()
-
         return invalidate(strongMemoryCache.get(Key(key))?.bitmap)
     }
 
     override fun find(criteria: Criteria): Bitmap? {
-        assertMainThread()
-
         val predicate = criteria.toPredicate()
         strongMemoryCache.find(predicate)?.let {
             return invalidate(strongMemoryCache.get(it)?.bitmap)
@@ -47,24 +32,18 @@ internal class RealMemoryCache(
     }
 
     override fun remove(key: String) {
-        assertMainThread()
-
         val cacheKey = Key(key)
         strongMemoryCache.remove(cacheKey)
         weakMemoryCache.remove(cacheKey)
     }
 
     override fun remove(criteria: Criteria) {
-        assertMainThread()
-
         val predicate = criteria.toPredicate()
         strongMemoryCache.find(predicate)?.let(strongMemoryCache::remove)
         weakMemoryCache.find(predicate)?.let(weakMemoryCache::remove)
     }
 
     override fun clear() {
-        assertMainThread()
-
         strongMemoryCache.clearMemory()
         weakMemoryCache.clearMemory()
     }
@@ -77,7 +56,8 @@ internal class RealMemoryCache(
     }
 
     private fun Criteria.toPredicate(): (Key) -> Boolean {
-        val mappedData = componentRegistry.mapData(data) { measuredMapper ->
+        TODO()
+        /*val mappedData = componentRegistry.mapData(data) { measuredMapper ->
             checkNotNull(size) { "'$measuredMapper' requires a non null size to map '$data'." }
         }
         val baseKey = componentRegistry.requireFetcher(mappedData).key(mappedData)
@@ -88,6 +68,6 @@ internal class RealMemoryCache(
                 transformationKeys == null || transformationKeys == key.transformationKeys &&
                 parameterKeys == null || parameterKeys == key.parameterKeys
                 size == null || size == key.size
-        }
+        }*/
     }
 }
