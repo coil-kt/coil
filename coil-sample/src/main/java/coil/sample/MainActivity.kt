@@ -14,7 +14,6 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-import coil.ImageLoader
 import coil.api.load
 import coil.sample.databinding.ActivityMainBinding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,9 +52,6 @@ class MainActivity : AppCompatActivity() {
             layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, VERTICAL)
             adapter = listAdapter
         }
-
-        val imageLoader = ImageLoader(this)
-        imageLoader.clearMemory()
 
         lifecycleScope.apply {
             launch {

@@ -213,7 +213,7 @@ private class RealStrongMemoryCache(
     }
 
     override fun remove(key: Key) {
-        logger?.log(TAG, Log.VERBOSE) { "invalidate, key=$key" }
+        logger?.log(TAG, Log.VERBOSE) { "remove, key=$key" }
         cache.remove(key)
     }
 
