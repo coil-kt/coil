@@ -56,7 +56,7 @@ interface ImageLoader {
     val defaults: DefaultRequestOptions
 
     /**
-     * An in-memory cache of [Bitmap]s.
+     * An in-memory cache of recently loaded images.
      */
     val memoryCache: MemoryCache
 
@@ -89,7 +89,7 @@ interface ImageLoader {
      *
      * All associated resources will be freed and any new requests will fail before starting.
      *
-     * In progress [enqueue] requests will be cancelled instantly.
+     * In progress [enqueue] requests will be cancelled immediately.
      * In progress [execute] requests will continue until complete.
      */
     fun shutdown()

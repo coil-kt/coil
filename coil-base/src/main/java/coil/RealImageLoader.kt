@@ -81,6 +81,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
@@ -126,8 +127,7 @@ internal class RealImageLoader(
         .add(BitmapFactoryDecoder(context))
         .build()
 
-    // Only accessed from the main thread.
-    private var isShutdown = false
+    private var isShutdown = AtomicBoolean(false)
 
     override fun enqueue(request: ImageRequest): RequestDisposable {
         val job = scope.launch {
@@ -157,7 +157,7 @@ internal class RealImageLoader(
     @MainThread
     private suspend fun execute(request: ImageRequest, type: Int): RequestResult {
         // Ensure this image loader isn't shutdown.
-        check(!isShutdown) { "The image loader is shutdown." }
+        check(!isShutdown.get()) { "The image loader is shutdown." }
 
         // Create a new event listener.
         val eventListener = eventListenerFactory.create(request)
@@ -402,9 +402,9 @@ internal class RealImageLoader(
     }
 
     override fun shutdown() {
-        if (isShutdown) return
-        isShutdown = true
+        if (isShutdown.getAndSet(true)) return
 
+        // Order is important here.
         scope.cancel()
         systemCallbacks.shutdown()
         strongMemoryCache.clearMemory()

@@ -18,8 +18,6 @@ import java.lang.ref.WeakReference
  *
  * This is used as a secondary caching layer for [StrongMemoryCache]. [StrongMemoryCache] holds strong references
  * to its bitmaps. Bitmaps are added to this cache when they're removed from [StrongMemoryCache].
- *
- * NOTE: This class is not thread safe and its methods should only be called from the main thread.
  */
 internal interface WeakMemoryCache {
 
@@ -28,9 +26,6 @@ internal interface WeakMemoryCache {
 
     /** Set the value associated with [key]. */
     fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int)
-
-    /** Return the first [Key] matching the given [predicate], or `null` if no such key was found. */
-    fun find(predicate: (Key) -> Boolean): Key?
 
     /** Remove the value referenced by [key] from this cache if it is present. */
     fun remove(key: Key)
@@ -52,8 +47,6 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {}
 
-    override fun find(predicate: (Key) -> Boolean): Key? = null
-
     override fun remove(key: Key) {}
 
     override fun remove(bitmap: Bitmap) {}
@@ -69,6 +62,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     @VisibleForTesting internal val cache = hashMapOf<Key, ArrayList<WeakValue>>()
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
+    @Synchronized
     override fun get(key: Key): Value? {
         val values = cache[key] ?: return null
 
@@ -82,6 +76,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         return strongValue
     }
 
+    @Synchronized
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {
         val rawValues = cache[key]
         val values = rawValues ?: arrayListOf()
@@ -106,10 +101,6 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         cleanUpIfNecessary()
     }
 
-    override fun find(predicate: (Key) -> Boolean): Key? {
-        return cache.keys.find(predicate)
-    }
-
     override fun remove(key: Key) {
         val value = get(key)
         if (value != null) {
@@ -117,6 +108,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         }
     }
 
+    @Synchronized
     override fun remove(bitmap: Bitmap) {
         val identityHashCode = bitmap.identityHashCode
 
@@ -136,6 +128,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     }
 
     /** Remove all values from this cache. */
+    @Synchronized
     override fun clearMemory() {
         cache.clear()
     }
@@ -155,6 +148,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
 
     /** Remove any dereferenced bitmaps from the cache. */
     @VisibleForTesting
+    @Synchronized
     internal fun cleanUp() {
         operationsSinceCleanUp = 0
 

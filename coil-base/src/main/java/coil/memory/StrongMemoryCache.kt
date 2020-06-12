@@ -18,11 +18,7 @@ import coil.util.allocationByteCountCompat
 import coil.util.log
 import coil.util.mapIndices
 
-/**
- * An in-memory cache for [Bitmap]s.
- *
- * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
- */
+/** An in-memory cache that holds strong references [Bitmap]s. */
 internal interface StrongMemoryCache {
 
     companion object {
@@ -51,9 +47,6 @@ internal interface StrongMemoryCache {
 
     /** Set the value associated with [key]. */
     fun set(key: Key, bitmap: Bitmap, isSampled: Boolean)
-
-    /** Return the first [Key] matching the given [predicate], or `null` if no such key was found. */
-    fun find(predicate: (Key) -> Boolean): Key?
 
     /** Remove the value referenced by [key] from this cache if it is present. */
     fun remove(key: Key)
@@ -142,8 +135,6 @@ private object EmptyStrongMemoryCache : StrongMemoryCache {
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {}
 
-    override fun find(predicate: (Key) -> Boolean): Key? = null
-
     override fun remove(key: Key) {}
 
     override fun clearMemory() {}
@@ -165,8 +156,6 @@ private class ForwardingStrongMemoryCache(
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
         weakMemoryCache.set(key, bitmap, isSampled, bitmap.allocationByteCountCompat)
     }
-
-    override fun find(predicate: (Key) -> Boolean): Key? = weakMemoryCache.find(predicate)
 
     override fun remove(key: Key) {}
 
@@ -206,7 +195,7 @@ private class RealStrongMemoryCache(
 
     override fun get(key: Key) = cache.get(key)
 
-    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
+    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) = synchronized(cache) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
         // the cache to be cleared. Instead just evict an existing element with the same key if it exists.
         val size = bitmap.allocationByteCountCompat
@@ -216,14 +205,12 @@ private class RealStrongMemoryCache(
                 // If previous != null, the value was already added to the weak memory cache in LruCache.entryRemoved.
                 weakMemoryCache.set(key, bitmap, isSampled, size)
             }
-            return
+            return@synchronized
         }
 
         referenceCounter.increment(bitmap)
         cache.put(key, InternalValue(bitmap, isSampled, size))
     }
-
-    override fun find(predicate: (Key) -> Boolean): Key? = cache.snapshot().keys.find(predicate)
 
     override fun remove(key: Key) {
         logger?.log(TAG, Log.VERBOSE) { "invalidate, key=$key" }
