@@ -42,6 +42,7 @@ import coil.memory.WeakMemoryCache
 import coil.request.BaseTargetRequestDisposable
 import coil.request.ErrorResult
 import coil.request.ImageRequest
+import coil.request.Metadata
 import coil.request.NullRequestDataException
 import coil.request.Parameters
 import coil.request.RequestDisposable
@@ -229,7 +230,7 @@ internal class RealImageLoader(
             if (cachedDrawable != null && memoryCacheService
                     .isCachedValueValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                val metadata = SuccessResult.Metadata(cacheKey, DataSource.MEMORY_CACHE)
+                val metadata = Metadata(cacheKey, DataSource.MEMORY_CACHE)
                 val result = SuccessResult(cachedDrawable, metadata)
                 targetDelegate.success(result, request.transition ?: defaults.transition)
                 eventListener.onSuccess(request, metadata)
@@ -248,7 +249,7 @@ internal class RealImageLoader(
 
             // Set the result on the target.
             logger?.log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            val metadata = SuccessResult.Metadata(cacheKey, source)
+            val metadata = Metadata(cacheKey, source)
             val result = SuccessResult(drawable, metadata)
             targetDelegate.success(result, request.transition ?: defaults.transition)
             eventListener.onSuccess(request, metadata)

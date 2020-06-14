@@ -66,7 +66,7 @@ public abstract interface class coil/EventListener : coil/request/ImageRequest$L
 	public abstract fun onDispatch (Lcoil/request/ImageRequest;)V
 	public abstract fun onError (Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public abstract fun onStart (Lcoil/request/ImageRequest;)V
-	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/SuccessResult$Metadata;)V
+	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
 	public abstract fun resolveSizeEnd (Lcoil/request/ImageRequest;Lcoil/size/SizeResolver;Lcoil/size/Size;)V
 	public abstract fun resolveSizeStart (Lcoil/request/ImageRequest;Lcoil/size/SizeResolver;)V
 	public abstract fun transformEnd (Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
@@ -89,7 +89,7 @@ public final class coil/EventListener$DefaultImpls {
 	public static fun onDispatch (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
 	public static fun onError (Lcoil/EventListener;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public static fun onStart (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
-	public static fun onSuccess (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/request/SuccessResult$Metadata;)V
+	public static fun onSuccess (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
 	public static fun resolveSizeEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/size/SizeResolver;Lcoil/size/Size;)V
 	public static fun resolveSizeStart (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/size/SizeResolver;)V
 	public static fun transformEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
@@ -541,14 +541,27 @@ public abstract interface class coil/request/ImageRequest$Listener {
 	public abstract fun onCancel (Lcoil/request/ImageRequest;)V
 	public abstract fun onError (Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public abstract fun onStart (Lcoil/request/ImageRequest;)V
-	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/SuccessResult$Metadata;)V
+	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
 }
 
 public final class coil/request/ImageRequest$Listener$DefaultImpls {
 	public static fun onCancel (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;)V
 	public static fun onError (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public static fun onStart (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;)V
-	public static fun onSuccess (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Lcoil/request/SuccessResult$Metadata;)V
+	public static fun onSuccess (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
+}
+
+public final class coil/request/Metadata {
+	public fun <init> (Lcoil/memory/MemoryCache$Key;Lcoil/decode/DataSource;)V
+	public final fun component1 ()Lcoil/memory/MemoryCache$Key;
+	public final fun component2 ()Lcoil/decode/DataSource;
+	public final fun copy (Lcoil/memory/MemoryCache$Key;Lcoil/decode/DataSource;)Lcoil/request/Metadata;
+	public static synthetic fun copy$default (Lcoil/request/Metadata;Lcoil/memory/MemoryCache$Key;Lcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/request/Metadata;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKey ()Lcoil/memory/MemoryCache$Key;
+	public final fun getSource ()Lcoil/decode/DataSource;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/request/NullRequestDataException : java/lang/RuntimeException {
@@ -611,27 +624,14 @@ public abstract class coil/request/RequestResult {
 }
 
 public final class coil/request/SuccessResult : coil/request/RequestResult {
-	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/SuccessResult$Metadata;)V
+	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/Metadata;)V
 	public final fun component1 ()Landroid/graphics/drawable/Drawable;
-	public final fun component2 ()Lcoil/request/SuccessResult$Metadata;
-	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/request/SuccessResult$Metadata;)Lcoil/request/SuccessResult;
-	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/request/SuccessResult$Metadata;ILjava/lang/Object;)Lcoil/request/SuccessResult;
+	public final fun component2 ()Lcoil/request/Metadata;
+	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/request/Metadata;)Lcoil/request/SuccessResult;
+	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/request/Metadata;ILjava/lang/Object;)Lcoil/request/SuccessResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
-	public final fun getMetadata ()Lcoil/request/SuccessResult$Metadata;
-	public final fun getSource ()Lcoil/decode/DataSource;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class coil/request/SuccessResult$Metadata {
-	public fun <init> (Lcoil/memory/MemoryCache$Key;Lcoil/decode/DataSource;)V
-	public final fun component1 ()Lcoil/memory/MemoryCache$Key;
-	public final fun component2 ()Lcoil/decode/DataSource;
-	public final fun copy (Lcoil/memory/MemoryCache$Key;Lcoil/decode/DataSource;)Lcoil/request/SuccessResult$Metadata;
-	public static synthetic fun copy$default (Lcoil/request/SuccessResult$Metadata;Lcoil/memory/MemoryCache$Key;Lcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/request/SuccessResult$Metadata;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getKey ()Lcoil/memory/MemoryCache$Key;
+	public final fun getMetadata ()Lcoil/request/Metadata;
 	public final fun getSource ()Lcoil/decode/DataSource;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;

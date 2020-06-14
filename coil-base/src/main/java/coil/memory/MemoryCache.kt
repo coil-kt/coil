@@ -46,9 +46,10 @@ interface MemoryCache {
         internal data class Simple(val value: String) : Key()
 
         /**
-         * A complex memory cache key. Instances cannot be created directly - instead they are
-         * created by an [ImageLoader]'s image pipeline and are returned as part of a successful image request
-         * in [SuccessResult.Metadata] and [ImageRequest.Listener].
+         * A complex memory cache key. Instances cannot be created directly - instead they are created by an
+         * [ImageLoader]'s image pipeline and are returned as part of a successful image request in [Metadata].
+         *
+         * A request's metadata is accessible through [ImageRequest.Listener.onSuccess] and [SuccessResult].
          *
          * This class is an implementation detail and its fields may change in future releases.
          */

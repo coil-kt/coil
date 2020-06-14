@@ -13,7 +13,7 @@ import coil.fetch.SourceResult
 import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.request.ImageRequest
-import coil.request.SuccessResult.Metadata
+import coil.request.Metadata
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.Transformation

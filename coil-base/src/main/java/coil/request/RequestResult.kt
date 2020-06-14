@@ -1,12 +1,8 @@
-@file:OptIn(ExperimentalCoilApi::class)
-
 package coil.request
 
 import android.graphics.drawable.Drawable
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
-import coil.memory.MemoryCache
 
 /**
  * Represents the result of an image request.
@@ -29,21 +25,10 @@ data class SuccessResult(
 ) : RequestResult() {
 
     @Deprecated(
-        message = "Moved to SuccessResult.Metadata.",
-        replaceWith = ReplaceWith("info.source")
+        message = "Moved to Metadata.",
+        replaceWith = ReplaceWith("metadata.source")
     )
     val source: DataSource get() = metadata.source
-
-    /**
-     * Supplemental information about the request.
-     *
-     * @param key The cache key for the image in the memory cache.
-     * @param source The data source that the image was loaded from.
-     */
-    data class Metadata(
-        val key: MemoryCache.Key?,
-        val source: DataSource
-    )
 }
 
 /**

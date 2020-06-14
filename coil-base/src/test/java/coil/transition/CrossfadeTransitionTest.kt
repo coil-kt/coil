@@ -10,8 +10,8 @@ import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
+import coil.request.Metadata
 import coil.request.SuccessResult
-import coil.request.SuccessResult.Metadata
 import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -13,7 +13,7 @@ import coil.decode.Options
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.request.ImageRequest
-import coil.request.SuccessResult
+import coil.request.Metadata
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.CircleCropTransformation
@@ -210,7 +210,7 @@ class EventListenerTest {
         override fun transformEnd(request: ImageRequest, output: Bitmap) = transformEnd.call()
         override fun transitionStart(request: ImageRequest, transition: Transition) = transitionStart.call()
         override fun transitionEnd(request: ImageRequest, transition: Transition) = transitionEnd.call()
-        override fun onSuccess(request: ImageRequest, metadata: SuccessResult.Metadata) = onSuccess.call()
+        override fun onSuccess(request: ImageRequest, metadata: Metadata) = onSuccess.call()
         override fun onCancel(request: ImageRequest) = onCancel.call()
         override fun onError(request: ImageRequest, throwable: Throwable) = onError.call()
 

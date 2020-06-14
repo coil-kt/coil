@@ -9,9 +9,9 @@ import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.FakeBitmapPool
 import coil.decode.DataSource
 import coil.request.ErrorResult
+import coil.request.Metadata
 import coil.request.RequestResult
 import coil.request.SuccessResult
-import coil.request.SuccessResult.Metadata
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
 import coil.transition.Transition

@@ -25,7 +25,6 @@ import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.memory.RequestService
 import coil.request.ImageRequest.Builder
-import coil.request.SuccessResult.Metadata
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
