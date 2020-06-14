@@ -63,9 +63,9 @@ class RealImageLoaderBasicTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
-        val weakMemoryCache = RealWeakMemoryCache()
+        val weakMemoryCache = RealWeakMemoryCache(null)
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE)
+        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),

@@ -21,7 +21,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = EmptyWeakMemoryCache
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE))
+        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
@@ -34,7 +34,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = EmptyWeakMemoryCache
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE))
+        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
 
         val first = createBitmap()
         cache.set(Key("1"), first, false)
@@ -53,7 +53,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = EmptyWeakMemoryCache
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, 0)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, 0, null)
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
@@ -63,10 +63,10 @@ class StrongMemoryCacheTest {
 
     @Test
     fun `value is removed after invalidate is called`() {
-        val weakMemoryCache = RealWeakMemoryCache()
+        val weakMemoryCache = RealWeakMemoryCache(null)
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE))
+        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
@@ -77,10 +77,10 @@ class StrongMemoryCacheTest {
 
     @Test
     fun `valid evicted item is added to bitmap pool`() {
-        val weakMemoryCache = RealWeakMemoryCache()
+        val weakMemoryCache = RealWeakMemoryCache(null)
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE, null)
 
         val first = createBitmap()
         cache.set(Key("1"), first, false)
@@ -97,10 +97,10 @@ class StrongMemoryCacheTest {
 
     @Test
     fun `invalid evicted item is added to weak memory cache`() {
-        val weakMemoryCache = RealWeakMemoryCache()
+        val weakMemoryCache = RealWeakMemoryCache(null)
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE, null)
 
         val first = createBitmap()
         cache.set(Key("key"), first, false)

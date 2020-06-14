@@ -427,9 +427,9 @@ interface ImageLoader {
             val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
             val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
-            val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache() else EmptyWeakMemoryCache
+            val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache(logger) else EmptyWeakMemoryCache
             val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
-            val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize)
+            val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
 
             return RealImageLoader(
                 context = applicationContext,

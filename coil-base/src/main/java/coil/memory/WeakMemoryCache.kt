@@ -7,12 +7,15 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache.Value
+import coil.util.Logger
 import coil.util.firstNotNullIndices
 import coil.util.identityHashCode
+import coil.util.log
 import coil.util.removeIfIndices
 import java.lang.ref.WeakReference
 
@@ -60,7 +63,7 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
 }
 
 /** A [WeakMemoryCache] implementation backed by a [MutableMap]. */
-internal class RealWeakMemoryCache : WeakMemoryCache {
+internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCache {
 
     @VisibleForTesting internal val cache = hashMapOf<Key, ArrayList<WeakValue>>()
     @VisibleForTesting internal var operationsSinceCleanUp = 0
@@ -136,11 +139,14 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     /** Remove all values from this cache. */
     @Synchronized
     override fun clearMemory() {
+        logger?.log(TAG, Log.VERBOSE) { "clearMemory" }
+        operationsSinceCleanUp = 0
         cache.clear()
     }
 
     /** @see ComponentCallbacks2.onTrimMemory */
     override fun trimMemory(level: Int) {
+        logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_RUNNING_LOW && level != TRIM_MEMORY_UI_HIDDEN) {
             cleanUp()
         }
@@ -197,6 +203,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     ) : Value
 
     companion object {
+        private const val TAG = "RealWeakMemoryCache"
         private const val CLEAN_UP_INTERVAL = 10
     }
 }

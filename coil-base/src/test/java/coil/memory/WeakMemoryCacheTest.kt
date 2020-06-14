@@ -30,7 +30,7 @@ class WeakMemoryCacheTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        weakMemoryCache = RealWeakMemoryCache()
+        weakMemoryCache = RealWeakMemoryCache(null)
         references = arraySetOf()
     }
 

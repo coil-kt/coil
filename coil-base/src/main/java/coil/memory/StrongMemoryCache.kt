@@ -5,11 +5,14 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.collection.LruCache
 import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache.Value
+import coil.util.Logger
 import coil.util.allocationByteCountCompat
+import coil.util.log
 
 /** An in-memory cache that holds strong references [Bitmap]s. */
 @OptIn(ExperimentalCoilApi::class)
@@ -19,10 +22,11 @@ internal interface StrongMemoryCache {
         operator fun invoke(
             weakMemoryCache: WeakMemoryCache,
             referenceCounter: BitmapReferenceCounter,
-            maxSize: Int
+            maxSize: Int,
+            logger: Logger?
         ): StrongMemoryCache {
             return when {
-                maxSize > 0 -> RealStrongMemoryCache(weakMemoryCache, referenceCounter, maxSize)
+                maxSize > 0 -> RealStrongMemoryCache(weakMemoryCache, referenceCounter, maxSize, logger)
                 weakMemoryCache is RealWeakMemoryCache -> ForwardingStrongMemoryCache(weakMemoryCache)
                 else -> EmptyStrongMemoryCache
             }
@@ -98,7 +102,8 @@ private class ForwardingStrongMemoryCache(
 private class RealStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache,
     private val referenceCounter: BitmapReferenceCounter,
-    maxSize: Int
+    maxSize: Int,
+    private val logger: Logger?
 ) : StrongMemoryCache {
 
     private val cache = object : LruCache<Key, InternalValue>(maxSize) {
@@ -146,10 +151,12 @@ private class RealStrongMemoryCache(
     }
 
     override fun clearMemory() {
+        logger?.log(TAG, Log.VERBOSE) { "clearMemory" }
         cache.trimToSize(-1)
     }
 
     override fun trimMemory(level: Int) {
+        logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
@@ -162,4 +169,8 @@ private class RealStrongMemoryCache(
         override val isSampled: Boolean,
         val size: Int
     ) : Value
+
+    companion object {
+        private const val TAG = "RealStrongMemoryCache"
+    }
 }
