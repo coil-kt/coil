@@ -3,6 +3,7 @@ package coil.memory
 import android.content.Context
 import androidx.collection.arraySetOf
 import androidx.test.core.app.ApplicationProvider
+import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 import coil.util.allocationByteCountCompat
 import coil.util.clear
@@ -18,6 +19,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalCoilApi::class)
 @Config(sdk = [21, 29])
 class WeakMemoryCacheTest {
 
