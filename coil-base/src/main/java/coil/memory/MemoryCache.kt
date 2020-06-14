@@ -34,38 +34,41 @@ interface MemoryCache {
 
     class Key {
 
-        internal val simple: Boolean
+        internal val complex: Boolean
         internal val base: String
         internal val transformations: List<String>
         internal val size: Size?
         internal val parameters: Map<String, String>
 
+        /** Public constructor to create a simple cache key. */
         constructor(base: String) {
-            this.simple = true
+            this.complex = false
             this.base = base
             this.transformations = emptyList()
             this.size = null
             this.parameters = emptyMap()
         }
 
+        /** Internal constructor to create a complex cache key. */
         internal constructor(
             base: String,
             parameters: Parameters
         ) {
-            this.simple = false
+            this.complex = true
             this.base = base
             this.transformations = emptyList()
             this.size = null
             this.parameters = parameters.cacheKeys()
         }
 
+        /** Internal constructor to create a complex cache key. */
         internal constructor(
             base: String,
             transformations: List<Transformation>,
             size: Size,
             parameters: Parameters
         ) {
-            this.simple = false
+            this.complex = true
             this.base = base
             if (transformations.isEmpty()) {
                 this.transformations = emptyList()
@@ -80,7 +83,7 @@ interface MemoryCache {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             return other is Key &&
-                simple == other.simple &&
+                complex == other.complex &&
                 base == other.base &&
                 transformations == other.transformations &&
                 size == other.size &&
@@ -88,7 +91,7 @@ interface MemoryCache {
         }
 
         override fun hashCode(): Int {
-            var result = simple.hashCode()
+            var result = complex.hashCode()
             result = 31 * result + base.hashCode()
             result = 31 * result + transformations.hashCode()
             result = 31 * result + (size?.hashCode() ?: 0)
@@ -97,7 +100,7 @@ interface MemoryCache {
         }
 
         override fun toString(): String {
-            return "Key(simple=$simple, base=$base, transformations=$transformations, size=$size, parameters=$parameters)"
+            return "Key(complex=$complex, base=$base, transformations=$transformations, size=$size, parameters=$parameters)"
         }
     }
 }
