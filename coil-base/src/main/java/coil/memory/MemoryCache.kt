@@ -1,11 +1,11 @@
 package coil.memory
 
 import android.graphics.Bitmap
+import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.request.Parameters
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import coil.size.Size
-import coil.transform.Transformation
-import coil.util.mapIndices
 
 /**
  * An in-memory cache of recently loaded images.
@@ -24,83 +24,38 @@ interface MemoryCache {
 
     /**
      * Remove the [Bitmap] referenced by [key].
-     *
-     * @return `true` if the bitmap was removed. Return `false` if there was no bitmap for [key] in the cache.
+     * Return true if [key] was present in the cache. Else, return false.
      */
     fun remove(key: Key): Boolean
 
-    /** Remove all values from this cache. */
+    /** Remove all values from the memory cache. */
     fun clear()
 
-    class Key {
+    /** The cache key for an image in the memory cache. */
+    sealed class Key {
 
-        internal val complex: Boolean
-        internal val base: String
-        internal val transformations: List<String>
-        internal val size: Size?
-        internal val parameters: Map<String, String>
-
-        /** Public constructor to create a simple cache key. */
-        constructor(base: String) {
-            this.complex = false
-            this.base = base
-            this.transformations = emptyList()
-            this.size = null
-            this.parameters = emptyMap()
+        companion object {
+            /** Create a simple memory cache key. */
+            @JvmStatic
+            @JvmName("create")
+            operator fun invoke(value: String): Key = Simple(value)
         }
 
-        /** Internal constructor to create a complex cache key. */
-        internal constructor(
-            base: String,
-            parameters: Parameters
-        ) {
-            this.complex = true
-            this.base = base
-            this.transformations = emptyList()
-            this.size = null
-            this.parameters = parameters.cacheKeys()
-        }
+        /** A simple memory cache key that wraps a [String]. Create new instances using [invoke]. */
+        internal data class Simple(val value: String) : Key()
 
-        /** Internal constructor to create a complex cache key. */
-        internal constructor(
-            base: String,
-            transformations: List<Transformation>,
-            size: Size,
-            parameters: Parameters
-        ) {
-            this.complex = true
-            this.base = base
-            if (transformations.isEmpty()) {
-                this.transformations = emptyList()
-                this.size = null
-            } else {
-                this.transformations = transformations.mapIndices { it.key() }
-                this.size = size
-            }
-            this.parameters = parameters.cacheKeys()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            return other is Key &&
-                complex == other.complex &&
-                base == other.base &&
-                transformations == other.transformations &&
-                size == other.size &&
-                parameters == other.parameters
-        }
-
-        override fun hashCode(): Int {
-            var result = complex.hashCode()
-            result = 31 * result + base.hashCode()
-            result = 31 * result + transformations.hashCode()
-            result = 31 * result + (size?.hashCode() ?: 0)
-            result = 31 * result + parameters.hashCode()
-            return result
-        }
-
-        override fun toString(): String {
-            return "Key(complex=$complex, base=$base, transformations=$transformations, size=$size, parameters=$parameters)"
-        }
+        /**
+         * A complex memory cache key. Instances cannot be created directly - instead they are
+         * created by an [ImageLoader]'s image pipeline and are returned as part of a successful image request
+         * in [SuccessResult.Metadata] and [ImageRequest.Listener].
+         *
+         * This class is an implementation detail and its fields may change in future releases.
+         */
+        internal data class Complex(
+            val base: String,
+            val transformations: List<String>,
+            val size: Size?,
+            val parameters: Map<String, String>
+        ) : Key()
     }
 }

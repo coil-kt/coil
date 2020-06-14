@@ -70,7 +70,7 @@ internal class MemoryCacheService(
             is PixelSize -> {
                 val cachedWidth: Int
                 val cachedHeight: Int
-                when (val cachedSize = cacheKey?.size) {
+                when (val cachedSize = (cacheKey as? Key.Complex)?.size) {
                     is PixelSize -> {
                         cachedWidth = cachedSize.width
                         cachedHeight = cachedSize.height

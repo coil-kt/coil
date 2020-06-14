@@ -63,6 +63,7 @@ import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.foldIndices
 import coil.util.getLifecycle
+import coil.util.invoke
 import coil.util.job
 import coil.util.log
 import coil.util.mapData
@@ -228,10 +229,11 @@ internal class RealImageLoader(
             if (cachedDrawable != null && memoryCacheService
                     .isCachedValueValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                val result = SuccessResult(cachedDrawable, DataSource.MEMORY_CACHE)
+                val metadata = SuccessResult.Metadata(cacheKey, DataSource.MEMORY_CACHE)
+                val result = SuccessResult(cachedDrawable, metadata)
                 targetDelegate.success(result, request.transition ?: defaults.transition)
-                eventListener.onSuccess(request, result.source)
-                request.listener?.onSuccess(request, result.source)
+                eventListener.onSuccess(request, metadata)
+                request.listener?.onSuccess(request, metadata)
                 return result
             }
 
@@ -246,10 +248,11 @@ internal class RealImageLoader(
 
             // Set the result on the target.
             logger?.log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            val result = SuccessResult(drawable, source)
+            val metadata = SuccessResult.Metadata(cacheKey, source)
+            val result = SuccessResult(drawable, metadata)
             targetDelegate.success(result, request.transition ?: defaults.transition)
-            eventListener.onSuccess(request, source)
-            request.listener?.onSuccess(request, source)
+            eventListener.onSuccess(request, metadata)
+            request.listener?.onSuccess(request, metadata)
             return result
         } catch (throwable: Throwable) {
             if (throwable is CancellationException) {

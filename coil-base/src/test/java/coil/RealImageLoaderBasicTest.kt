@@ -29,6 +29,7 @@ import coil.size.SizeResolver
 import coil.transform.Transformation
 import coil.util.createRequest
 import coil.util.decodeBitmapAsset
+import coil.util.invoke
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -94,7 +95,7 @@ class RealImageLoaderBasicTest {
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = ImageRequest.Builder(context)
-                    .key(key.base)
+                    .key("fake_key")
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)
@@ -130,7 +131,7 @@ class RealImageLoaderBasicTest {
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = ImageRequest.Builder(context)
-                    .key(key.base)
+                    .key("fake_key")
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)

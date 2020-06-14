@@ -35,6 +35,7 @@ import coil.memory.ViewTargetRequestManager
 import coil.request.Parameters
 import coil.size.Scale
 import coil.size.Size
+import coil.transform.Transformation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
@@ -192,4 +193,32 @@ internal inline fun ComponentRegistry.mapData(data: Any, lazySize: () -> Size): 
         }
     }
     return mappedData
+}
+
+@OptIn(ExperimentalCoilApi::class)
+internal inline operator fun MemoryCache.Key.Companion.invoke(
+    base: String,
+    transformations: List<Transformation>,
+    size: Size,
+    parameters: Parameters
+): MemoryCache.Key {
+    return MemoryCache.Key.Complex(
+        base = base,
+        transformations = transformations.mapIndices { it.key() },
+        size = size,
+        parameters = parameters.cacheKeys()
+    )
+}
+
+@OptIn(ExperimentalCoilApi::class)
+internal inline operator fun MemoryCache.Key.Companion.invoke(
+    base: String,
+    parameters: Parameters
+): MemoryCache.Key {
+    return MemoryCache.Key.Complex(
+        base = base,
+        transformations = emptyList(),
+        size = null,
+        parameters = parameters.cacheKeys()
+    )
 }

@@ -30,7 +30,7 @@ class CrossfadeTransition @JvmOverloads constructor(
         result: RequestResult
     ) {
         // Don't animate if the request was fulfilled by the memory cache.
-        if (result is SuccessResult && result.source == DataSource.MEMORY_CACHE) {
+        if (result is SuccessResult && result.metadata.source == DataSource.MEMORY_CACHE) {
             target.onSuccess(result.drawable)
             return
         }
