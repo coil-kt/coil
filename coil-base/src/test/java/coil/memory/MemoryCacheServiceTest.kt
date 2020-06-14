@@ -8,6 +8,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache.Value
 import coil.request.ImageRequest
+import coil.request.Parameters
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
@@ -16,6 +17,7 @@ import coil.size.SizeResolver
 import coil.transform.CircleCropTransformation
 import coil.util.createBitmap
 import coil.util.createRequest
+import coil.util.invoke
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -286,7 +288,7 @@ class MemoryCacheServiceTest {
     fun `isCachedValueValid - transformation that reduces size of output bitmap`() {
         val transformations = listOf(CircleCropTransformation())
         val cachedSize = PixelSize(1000, 500) // The size of the previous request.
-        val key = Key("key", transformations, cachedSize)
+        val key = Key("key", transformations, cachedSize, Parameters.EMPTY)
         val value = object : Value {
             override val bitmap = createBitmap(width = 200, height = 200) // The small cached bitmap.
             override val isSampled = true

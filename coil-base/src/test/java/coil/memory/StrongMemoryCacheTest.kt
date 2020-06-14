@@ -1,5 +1,6 @@
 package coil.memory
 
+import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.memory.MemoryCache.Key
 import coil.util.DEFAULT_BITMAP_SIZE
@@ -12,6 +13,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalCoilApi::class)
 class StrongMemoryCacheTest {
 
     @Test
@@ -19,7 +21,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = EmptyWeakMemoryCache
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE))
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
@@ -32,7 +34,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = EmptyWeakMemoryCache
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE))
 
         val first = createBitmap()
         cache.set(Key("1"), first, false)
@@ -51,7 +53,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = EmptyWeakMemoryCache
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, 0, null)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, 0)
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
@@ -64,7 +66,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = RealWeakMemoryCache()
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE), null)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, (2 * DEFAULT_BITMAP_SIZE))
 
         val bitmap = createBitmap()
         cache.set(Key("1"), bitmap, false)
@@ -78,7 +80,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = RealWeakMemoryCache()
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE, null)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE)
 
         val first = createBitmap()
         cache.set(Key("1"), first, false)
@@ -98,7 +100,7 @@ class StrongMemoryCacheTest {
         val weakMemoryCache = RealWeakMemoryCache()
         val pool = BitmapPool(Int.MAX_VALUE)
         val counter = BitmapReferenceCounter(weakMemoryCache, pool, null)
-        val cache = StrongMemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE, null)
+        val cache = StrongMemoryCache(weakMemoryCache, counter, DEFAULT_BITMAP_SIZE)
 
         val first = createBitmap()
         cache.set(Key("key"), first, false)
