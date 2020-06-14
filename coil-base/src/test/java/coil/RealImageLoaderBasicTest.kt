@@ -168,14 +168,14 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `computeCacheKey - basic key`() {
+    fun `computeCacheKey - simple key`() {
         val fetcher = createFakeFetcher()
         val sizeResolver = createFakeLazySizeResolver()
         val result = runBlocking {
             imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), sizeResolver)
         }
 
-        assertEquals(Key("base_key"), result)
+        assertEquals(Key("base_key", Parameters.EMPTY), result)
     }
 
     @Test
