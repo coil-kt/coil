@@ -24,6 +24,7 @@ import android.widget.ImageView.ScaleType.FIT_START
 import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.ComponentRegistry
+import coil.annotation.ExperimentalCoilApi
 import coil.base.R
 import coil.decode.DataSource
 import coil.map.Mapper
@@ -62,6 +63,7 @@ internal inline val StatFs.blockCountCompat: Long
 internal inline val StatFs.blockSizeCompat: Long
     get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 
+@OptIn(ExperimentalCoilApi::class)
 internal fun StrongMemoryCache.set(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean) {
     if (key != null) {
         val bitmap = (value as? BitmapDrawable)?.bitmap

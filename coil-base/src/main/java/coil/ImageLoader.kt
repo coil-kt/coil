@@ -412,7 +412,7 @@ interface ImageLoader {
         /**
          * Set the [Logger] to write logs to.
          *
-         * NOTE: Setting a non-null [Logger] can reduce performance and should be avoided in release builds.
+         * NOTE: Setting a [Logger] can reduce performance and should be avoided in release builds.
          */
         fun logger(logger: Logger?) = apply {
             this.logger = logger
@@ -429,7 +429,7 @@ interface ImageLoader {
             val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
             val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache() else EmptyWeakMemoryCache
             val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
-            val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
+            val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize)
 
             return RealImageLoader(
                 context = applicationContext,

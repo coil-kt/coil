@@ -1,9 +1,10 @@
 package coil.memory
 
 import android.util.Log
+import coil.annotation.ExperimentalCoilApi
 import coil.decode.DecodeUtils
 import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCache.Value
+import coil.memory.RealMemoryCache.Value
 import coil.request.ImageRequest
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -16,6 +17,7 @@ import coil.util.safeConfig
 import kotlin.math.abs
 
 /** Handles operations related to the memory cache. */
+@OptIn(ExperimentalCoilApi::class)
 internal class MemoryCacheService(
     private val requestService: RequestService,
     private val logger: Logger?

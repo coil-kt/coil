@@ -64,7 +64,7 @@ class RealImageLoaderBasicTest {
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
         val weakMemoryCache = RealWeakMemoryCache()
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE)
         imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
@@ -94,7 +94,7 @@ class RealImageLoaderBasicTest {
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = ImageRequest.Builder(context)
-                    .key(key.baseKey)
+                    .key(key.base)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)
@@ -130,7 +130,7 @@ class RealImageLoaderBasicTest {
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = ImageRequest.Builder(context)
-                    .key(key.baseKey)
+                    .key(key.base)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)
@@ -199,7 +199,7 @@ class RealImageLoaderBasicTest {
             imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, sizeResolver)
         }
 
-        assertEquals(Key("base_key", transformations, size), result)
+        assertEquals(Key("base_key", transformations, size, Parameters.EMPTY), result)
     }
 
     @Test

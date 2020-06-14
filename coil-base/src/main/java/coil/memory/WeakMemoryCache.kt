@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoilApi::class)
+
 package coil.memory
 
 import android.content.ComponentCallbacks2
@@ -6,8 +8,9 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.VisibleForTesting
+import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCache.Value
+import coil.memory.RealMemoryCache.Value
 import coil.util.firstNotNullIndices
 import coil.util.identityHashCode
 import coil.util.removeIfIndices
@@ -27,11 +30,11 @@ internal interface WeakMemoryCache {
     /** Set the value associated with [key]. */
     fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int)
 
-    /** Remove the value referenced by [key] from this cache if it is present. */
-    fun remove(key: Key)
+    /** Remove the value referenced by [key] from this cache. */
+    fun remove(key: Key): Boolean
 
-    /** Remove [bitmap] from this cache if it is present. */
-    fun remove(bitmap: Bitmap)
+    /** Remove [bitmap] from this cache. */
+    fun remove(bitmap: Bitmap): Boolean
 
     /** Remove all values from this cache. */
     fun clearMemory()
@@ -47,9 +50,9 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {}
 
-    override fun remove(key: Key) {}
+    override fun remove(key: Key) = false
 
-    override fun remove(bitmap: Bitmap) {}
+    override fun remove(bitmap: Bitmap) = false
 
     override fun clearMemory() {}
 
@@ -72,7 +75,6 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         }
 
         cleanUpIfNecessary()
-
         return strongValue
     }
 
@@ -102,30 +104,33 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     }
 
     @Synchronized
-    override fun remove(key: Key) {
+    override fun remove(key: Key): Boolean {
         val value = get(key)
         if (value != null) {
-            remove(value.bitmap)
+            return remove(value.bitmap)
         }
+        return false
     }
 
     @Synchronized
-    override fun remove(bitmap: Bitmap) {
+    override fun remove(bitmap: Bitmap): Boolean {
         val identityHashCode = bitmap.identityHashCode
 
         // Find the bitmap in the cache and remove it.
-        run {
+        val removed = run {
             cache.values.forEach { values ->
                 for (index in values.indices) {
                     if (values[index].identityHashCode == identityHashCode) {
                         values.removeAt(index)
-                        return@run
+                        return@run true
                     }
                 }
             }
+            return@run false
         }
 
         cleanUpIfNecessary()
+        return removed
     }
 
     /** Remove all values from this cache. */

@@ -106,9 +106,9 @@ internal class RealImageLoader(
     private val delegateService = DelegateService(this, referenceCounter, logger)
     private val requestService = RequestService(defaults, logger)
     private val memoryCacheService = MemoryCacheService(requestService, logger)
+    override val memoryCache = RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
     private val systemCallbacks = SystemCallbacks(this, context)
-    override val memoryCache = RealMemoryCache(registry, strongMemoryCache, weakMemoryCache, referenceCounter)
     private val registry = registry.newBuilder()
         // Mappers
         .add(StringMapper())
@@ -127,8 +127,7 @@ internal class RealImageLoader(
         // Decoders
         .add(BitmapFactoryDecoder(context))
         .build()
-
-    private var isShutdown = AtomicBoolean(false)
+    private val isShutdown = AtomicBoolean(false)
 
     override fun enqueue(request: ImageRequest): RequestDisposable {
         val job = scope.launch {

@@ -45,7 +45,7 @@ internal class BitmapReferenceCounter(
      *
      * If the reference count is now zero, add the [Bitmap] to [bitmapPool].
      *
-     * @return True if [bitmap] was added to [bitmapPool] as a result of this decrement operation.
+     * @return `true` if [bitmap] was added to [bitmapPool] as a result of this decrement operation.
      */
     @Synchronized
     fun decrement(bitmap: Bitmap): Boolean {

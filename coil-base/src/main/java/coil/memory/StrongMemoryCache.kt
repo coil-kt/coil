@@ -5,36 +5,34 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.collection.LruCache
+import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCache.Value
-import coil.util.Logger
+import coil.memory.RealMemoryCache.Value
 import coil.util.allocationByteCountCompat
-import coil.util.log
 
 /** An in-memory cache that holds strong references [Bitmap]s. */
+@OptIn(ExperimentalCoilApi::class)
 internal interface StrongMemoryCache {
 
     companion object {
         operator fun invoke(
             weakMemoryCache: WeakMemoryCache,
             referenceCounter: BitmapReferenceCounter,
-            maxSize: Int,
-            logger: Logger?
+            maxSize: Int
         ): StrongMemoryCache {
             return when {
-                maxSize > 0 -> RealStrongMemoryCache(weakMemoryCache, referenceCounter, maxSize, logger)
+                maxSize > 0 -> RealStrongMemoryCache(weakMemoryCache, referenceCounter, maxSize)
                 weakMemoryCache is RealWeakMemoryCache -> ForwardingStrongMemoryCache(weakMemoryCache)
                 else -> EmptyStrongMemoryCache
             }
         }
     }
 
-    /** The **current size** of the memory cache in bytes. */
+    /** The current size of the memory cache in bytes. */
     val size: Int
 
-    /** The **maximum size** of the memory cache in bytes. */
+    /** The maximum size of the memory cache in bytes. */
     val maxSize: Int
 
     /** Get the value associated with [key]. */
@@ -43,8 +41,8 @@ internal interface StrongMemoryCache {
     /** Set the value associated with [key]. */
     fun set(key: Key, bitmap: Bitmap, isSampled: Boolean)
 
-    /** Remove the value referenced by [key] from this cache if it is present. */
-    fun remove(key: Key)
+    /** Remove the value referenced by [key] from this cache. */
+    fun remove(key: Key): Boolean
 
     /** Remove all values from this cache. */
     fun clearMemory()
@@ -54,6 +52,7 @@ internal interface StrongMemoryCache {
 }
 
 /** A [StrongMemoryCache] implementation that caches nothing. */
+@OptIn(ExperimentalCoilApi::class)
 private object EmptyStrongMemoryCache : StrongMemoryCache {
 
     override val size get() = 0
@@ -64,14 +63,15 @@ private object EmptyStrongMemoryCache : StrongMemoryCache {
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {}
 
-    override fun remove(key: Key) {}
+    override fun remove(key: Key) = false
 
     override fun clearMemory() {}
 
     override fun trimMemory(level: Int) {}
 }
 
-/** A [StrongMemoryCache] implementation that caches nothing and delegates to [weakMemoryCache]. */
+/** A [StrongMemoryCache] implementation that caches nothing and delegates all [set] operations to a [weakMemoryCache]. */
+@OptIn(ExperimentalCoilApi::class)
 private class ForwardingStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
 ) : StrongMemoryCache {
@@ -80,13 +80,13 @@ private class ForwardingStrongMemoryCache(
 
     override val maxSize get() = 0
 
-    override fun get(key: Key) = weakMemoryCache.get(key)
+    override fun get(key: Key): Value? = null
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
         weakMemoryCache.set(key, bitmap, isSampled, bitmap.allocationByteCountCompat)
     }
 
-    override fun remove(key: Key) {}
+    override fun remove(key: Key) = false
 
     override fun clearMemory() {}
 
@@ -94,11 +94,11 @@ private class ForwardingStrongMemoryCache(
 }
 
 /** A [StrongMemoryCache] implementation backed by an [LruCache]. */
+@OptIn(ExperimentalCoilApi::class)
 private class RealStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache,
     private val referenceCounter: BitmapReferenceCounter,
-    maxSize: Int,
-    private val logger: Logger?
+    maxSize: Int
 ) : StrongMemoryCache {
 
     private val cache = object : LruCache<Key, InternalValue>(maxSize) {
@@ -141,18 +141,15 @@ private class RealStrongMemoryCache(
         cache.put(key, InternalValue(bitmap, isSampled, size))
     }
 
-    override fun remove(key: Key) {
-        logger?.log(TAG, Log.VERBOSE) { "remove, key=$key" }
-        cache.remove(key)
+    override fun remove(key: Key): Boolean {
+        return cache.remove(key) != null
     }
 
     override fun clearMemory() {
-        logger?.log(TAG, Log.VERBOSE) { "clearMemory" }
         cache.trimToSize(-1)
     }
 
     override fun trimMemory(level: Int) {
-        logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
@@ -165,8 +162,4 @@ private class RealStrongMemoryCache(
         override val isSampled: Boolean,
         val size: Int
     ) : Value
-
-    companion object {
-        private const val TAG = "RealStrongMemoryCache"
-    }
 }
