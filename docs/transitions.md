@@ -6,7 +6,7 @@ Both `ImageLoader` and `LoadRequest` builders accept a `Transition`. Transitions
 
 By default, Coil comes packaged with 2 transitions:
 
-- [`CrossfadeTransition`](../api/coil-base/coil.transition/-crossfade-transition/) which crossfades from the current drawable to the sucess/error drawable.
+- [`CrossfadeTransition`](../api/coil-base/coil.transition/-crossfade-transition/) which crossfades from the current drawable to the success/error drawable.
 - [`Transition.NONE`](../api/coil-base/coil.transition/-transition/-n-o-n-e/) which sets the drawable on the `Target` immediately without animating.
 
 Take a look at the [`CrossfadeTransition` source code](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/transition/CrossfadeTransition.kt) for an example of how to write a custom `Transition`.
