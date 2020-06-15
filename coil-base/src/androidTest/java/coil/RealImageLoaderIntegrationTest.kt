@@ -369,6 +369,22 @@ class RealImageLoaderIntegrationTest {
         }
     }
 
+    @Test
+    fun loadedImageIsPresentInMemoryCache() {
+        val result = runBlocking {
+            val request = ImageRequest.Builder(context)
+                .data(server.url(IMAGE_NAME))
+                .size(100, 100)
+                .build()
+            imageLoader.execute(request)
+        }
+
+        assertTrue(result is SuccessResult)
+        val bitmap = (result.drawable as BitmapDrawable).bitmap
+        assertNotNull(bitmap)
+        assertEquals(bitmap, imageLoader.memoryCache.get(result.metadata.key!!))
+    }
+
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
         val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
