@@ -2,6 +2,7 @@ package coil.memory
 
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.FakeBitmapPool
+import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.allocationByteCountCompat
 import coil.util.createBitmap
 import coil.util.isInvalid
@@ -9,7 +10,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -17,7 +17,6 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoilApi::class)
-@Config(sdk = [28])
 class RealMemoryCacheTest {
 
     private lateinit var weakCache: WeakMemoryCache
@@ -74,5 +73,25 @@ class RealMemoryCacheTest {
         assertTrue(cache.remove(key))
         assertNull(strongCache.get(key))
         assertNull(weakCache.get(key))
+    }
+
+    @Test
+    fun `clear clears all values`() {
+        assertEquals(0, cache.size)
+
+        strongCache.set(MemoryCache.Key("a"), createBitmap(), false)
+        strongCache.set(MemoryCache.Key("b"), createBitmap(), false)
+        weakCache.set(MemoryCache.Key("c"), createBitmap(), false, 100)
+        weakCache.set(MemoryCache.Key("d"), createBitmap(), false, 100)
+
+        assertEquals(2 * DEFAULT_BITMAP_SIZE, cache.size)
+
+        cache.clear()
+
+        assertEquals(0, cache.size)
+        assertNull(cache.get(MemoryCache.Key("a")))
+        assertNull(cache.get(MemoryCache.Key("b")))
+        assertNull(cache.get(MemoryCache.Key("c")))
+        assertNull(cache.get(MemoryCache.Key("d")))
     }
 }
