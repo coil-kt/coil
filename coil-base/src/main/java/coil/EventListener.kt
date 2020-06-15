@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import coil.annotation.ExperimentalCoilApi
-import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
@@ -14,6 +13,7 @@ import coil.fetch.SourceResult
 import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.request.ImageRequest
+import coil.request.Metadata
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.Transformation
@@ -163,7 +163,7 @@ interface EventListener : ImageRequest.Listener {
      * @see ImageRequest.Listener.onSuccess
      */
     @MainThread
-    override fun onSuccess(request: ImageRequest, source: DataSource) {}
+    override fun onSuccess(request: ImageRequest, metadata: Metadata) {}
 
     /**
      * @see ImageRequest.Listener.onCancel

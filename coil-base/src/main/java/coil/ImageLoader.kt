@@ -8,14 +8,15 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
-import androidx.annotation.MainThread
 import coil.annotation.ExperimentalCoilApi
+import coil.bitmappool.BitmapPool
 import coil.bitmappool.RealBitmapPool
 import coil.drawable.CrossfadeDrawable
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyWeakMemoryCache
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
+import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -55,6 +56,16 @@ interface ImageLoader {
     val defaults: DefaultRequestOptions
 
     /**
+     * An in-memory cache of recently loaded images.
+     */
+    val memoryCache: MemoryCache
+
+    /**
+     * An object pool of reusable [Bitmap]s.
+     */
+    val bitmapPool: BitmapPool
+
+    /**
      * Enqueue the [request] to be executed asynchronously.
      *
      * @param request The request to execute.
@@ -74,29 +85,39 @@ interface ImageLoader {
     suspend fun execute(request: ImageRequest): RequestResult
 
     /**
-     * Remove the value referenced by [key] from the memory cache.
-     *
-     * @param key The cache key to remove.
-     */
-    @MainThread
-    fun invalidate(key: String)
-
-    /**
-     * Clear this image loader's memory cache and bitmap pool.
-     */
-    @MainThread
-    fun clearMemory()
-
-    /**
      * Shutdown this image loader.
      *
      * All associated resources will be freed and any new requests will fail before starting.
      *
-     * In progress [enqueue] requests will be cancelled instantly.
+     * In progress [enqueue] requests will be cancelled immediately.
      * In progress [execute] requests will continue until complete.
      */
-    @MainThread
     fun shutdown()
+
+    /**
+     * Remove the value referenced by [key] from the memory cache.
+     *
+     * @param key The cache key to remove.
+     */
+    @Deprecated(
+        message = "Call the memory cache directly.",
+        replaceWith = ReplaceWith("memoryCache.remove(MemoryCache.Key(key))", "coil.memory.MemoryCache")
+    )
+    fun invalidate(key: String) {
+        memoryCache.remove(MemoryCache.Key(key))
+    }
+
+    /**
+     * Clear this image loader's memory cache and bitmap pool.
+     */
+    @Deprecated(
+        message = "Call the memory cache and bitmap pool directly.",
+        replaceWith = ReplaceWith("apply { memoryCache.clear(); bitmapPool.clear() }")
+    )
+    fun clearMemory() {
+        memoryCache.clear()
+        bitmapPool.clear()
+    }
 
     class Builder(context: Context) {
 
@@ -391,7 +412,7 @@ interface ImageLoader {
         /**
          * Set the [Logger] to write logs to.
          *
-         * NOTE: Setting a non-null [Logger] can reduce performance and should be avoided in release builds.
+         * NOTE: Setting a [Logger] can reduce performance and should be avoided in release builds.
          */
         fun logger(logger: Logger?) = apply {
             this.logger = logger
@@ -406,16 +427,16 @@ interface ImageLoader {
             val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
             val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
-            val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache() else EmptyWeakMemoryCache
+            val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache(logger) else EmptyWeakMemoryCache
             val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
-            val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
+            val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
 
             return RealImageLoader(
                 context = applicationContext,
                 defaults = defaults,
                 bitmapPool = bitmapPool,
                 referenceCounter = referenceCounter,
-                memoryCache = memoryCache,
+                strongMemoryCache = memoryCache,
                 weakMemoryCache = weakMemoryCache,
                 callFactory = callFactory ?: buildDefaultCallFactory(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,

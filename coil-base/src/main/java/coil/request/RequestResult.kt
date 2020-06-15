@@ -17,12 +17,19 @@ sealed class RequestResult {
  * Indicates that the request completed successfully.
  *
  * @param drawable The result drawable.
- * @param source The data source that the image was loaded from.
+ * @param metadata Metadata about the request that created this response.
  */
 data class SuccessResult(
     override val drawable: Drawable,
-    val source: DataSource
-) : RequestResult()
+    val metadata: Metadata
+) : RequestResult() {
+
+    @Deprecated(
+        message = "Moved to Metadata.",
+        replaceWith = ReplaceWith("metadata.dataSource")
+    )
+    val source: DataSource get() = metadata.dataSource
+}
 
 /**
  * Indicates that an error occurred while executing the request.

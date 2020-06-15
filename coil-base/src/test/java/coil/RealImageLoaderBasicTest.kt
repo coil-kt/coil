@@ -16,9 +16,9 @@ import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.Fetcher
 import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyTargetDelegate
-import coil.memory.MemoryCache
 import coil.memory.MemoryCache.Key
 import coil.memory.RealWeakMemoryCache
+import coil.memory.StrongMemoryCache
 import coil.request.ImageRequest
 import coil.request.Parameters
 import coil.size.OriginalSize
@@ -29,6 +29,7 @@ import coil.size.SizeResolver
 import coil.transform.Transformation
 import coil.util.createRequest
 import coil.util.decodeBitmapAsset
+import coil.util.invoke
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -55,22 +56,22 @@ import kotlin.test.fail
 class RealImageLoaderBasicTest {
 
     private lateinit var context: Context
-    private lateinit var memoryCache: MemoryCache
+    private lateinit var strongMemoryCache: StrongMemoryCache
     private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
-        val weakMemoryCache = RealWeakMemoryCache()
+        val weakMemoryCache = RealWeakMemoryCache(null)
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
             bitmapPool = bitmapPool,
             referenceCounter = referenceCounter,
-            memoryCache = memoryCache,
+            strongMemoryCache = strongMemoryCache,
             weakMemoryCache = weakMemoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
@@ -94,7 +95,7 @@ class RealImageLoaderBasicTest {
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = ImageRequest.Builder(context)
-                    .key(key.baseKey)
+                    .key("fake_key")
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)
@@ -130,7 +131,7 @@ class RealImageLoaderBasicTest {
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = ImageRequest.Builder(context)
-                    .key(key.baseKey)
+                    .key("fake_key")
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)
@@ -167,14 +168,14 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `computeCacheKey - basic key`() {
+    fun `computeCacheKey - simple key`() {
         val fetcher = createFakeFetcher()
         val sizeResolver = createFakeLazySizeResolver()
         val result = runBlocking {
             imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), sizeResolver)
         }
 
-        assertEquals(Key("base_key"), result)
+        assertEquals(Key("base_key", Parameters.EMPTY), result)
     }
 
     @Test
@@ -199,7 +200,7 @@ class RealImageLoaderBasicTest {
             imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, sizeResolver)
         }
 
-        assertEquals(Key("base_key", transformations, size), result)
+        assertEquals(Key("base_key", transformations, size, Parameters.EMPTY), result)
     }
 
     @Test
@@ -283,7 +284,7 @@ class RealImageLoaderBasicTest {
         val options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.HARDWARE }
         val bitmap = context.decodeBitmapAsset(fileName, options)
         assertEquals(Bitmap.Config.HARDWARE, bitmap.config)
-        memoryCache.set(key, bitmap, false)
+        strongMemoryCache.set(key, bitmap, false)
         return bitmap
     }
 }

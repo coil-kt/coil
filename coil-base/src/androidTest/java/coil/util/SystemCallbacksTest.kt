@@ -16,6 +16,7 @@ import coil.bitmappool.BitmapPool
 import coil.memory.BitmapReferenceCounter
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
+import coil.memory.StrongMemoryCache
 import okhttp3.OkHttpClient
 import org.junit.Before
 import org.junit.Test
@@ -54,15 +55,15 @@ class SystemCallbacksTest {
     @Test
     fun trimMemoryCallsArePassedThrough() {
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
-        val weakMemoryCache = RealWeakMemoryCache()
+        val weakMemoryCache = RealWeakMemoryCache(null)
         val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        val memoryCache = MemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         val imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
             bitmapPool = bitmapPool,
             referenceCounter = referenceCounter,
-            memoryCache = memoryCache,
+            strongMemoryCache = memoryCache,
             weakMemoryCache = weakMemoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
@@ -84,10 +85,10 @@ class SystemCallbacksTest {
             isSampled = false
         )
 
-        assertTrue(memoryCache.size() == 8000000)
+        assertTrue(memoryCache.size == 8000000)
 
         systemCallbacks.onTrimMemory(TRIM_MEMORY_COMPLETE)
 
-        assertTrue(memoryCache.size() == 0)
+        assertTrue(memoryCache.size == 0)
     }
 }

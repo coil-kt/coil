@@ -10,6 +10,7 @@ import coil.ImageLoader
 import coil.RealImageLoader
 import coil.network.NetworkObserver
 import java.lang.ref.WeakReference
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Proxies [ComponentCallbacks2] and [NetworkObserver.Listener] calls to a weakly referenced [imageLoader].
@@ -26,11 +27,11 @@ internal class SystemCallbacks(
     @VisibleForTesting internal val imageLoader = WeakReference(imageLoader)
     private val networkObserver = NetworkObserver(context, this, imageLoader.logger)
 
-    private var _isOnline = networkObserver.isOnline
-    private var _isShutdown = false
+    @Volatile private var _isOnline = networkObserver.isOnline
+    private var _isShutdown = AtomicBoolean(false)
 
     val isOnline get() = _isOnline
-    val isShutdown get() = _isShutdown
+    val isShutdown get() = _isShutdown.get()
 
     init {
         context.registerComponentCallbacks(this)
@@ -58,9 +59,7 @@ internal class SystemCallbacks(
     }
 
     fun shutdown() {
-        if (_isShutdown) return
-        _isShutdown = true
-
+        if (_isShutdown.getAndSet(true)) return
         context.unregisterComponentCallbacks(this)
         networkObserver.shutdown()
     }

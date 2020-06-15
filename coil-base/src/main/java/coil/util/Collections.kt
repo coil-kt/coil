@@ -92,7 +92,7 @@ internal inline fun <T> MutableList<T>.removeIfIndices(predicate: (T) -> Boolean
  */
 internal inline fun <K, V, R : Any> Map<K, V>.mapNotNullValues(transform: (Map.Entry<K, V>) -> R?): Map<K, R> {
     val destination = mutableMapOf<K, R>()
-    for (entry in this) {
+    for (entry in entries) {
         val value = transform(entry)
         if (value != null) {
             destination[entry.key] = value

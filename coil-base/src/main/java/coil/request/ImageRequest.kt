@@ -19,10 +19,10 @@ import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
+import coil.memory.MemoryCache
 import coil.memory.RequestService
 import coil.request.ImageRequest.Builder
 import coil.size.OriginalSize
@@ -57,7 +57,7 @@ class ImageRequest private constructor(
     val data: Any?,
 
     /** @see Builder.key */
-    val key: String?,
+    val key: MemoryCache.Key?,
 
     /** @see Builder.target */
     val target: Target?,
@@ -232,7 +232,7 @@ class ImageRequest private constructor(
          * Called if the request completes successfully.
          */
         @MainThread
-        fun onSuccess(request: ImageRequest, source: DataSource) {}
+        fun onSuccess(request: ImageRequest, metadata: Metadata) {}
 
         /**
          * Called if the request is cancelled.
@@ -251,7 +251,7 @@ class ImageRequest private constructor(
 
         private val context: Context
         private var data: Any?
-        private var key: String?
+        private var key: MemoryCache.Key?
 
         private var target: Target?
         private var listener: Listener?
@@ -358,10 +358,10 @@ class ImageRequest private constructor(
          *
          * The default supported data types are:
          * - [String] (mapped to a [Uri])
-         * - [HttpUrl]
          * - [Uri] ("android.resource", "content", "file", "http", and "https" schemes only)
+         * - [HttpUrl]
          * - [File]
-         * - @DrawableRes [Int]
+         * - [DrawableRes]
          * - [Drawable]
          * - [Bitmap]
          */
@@ -371,10 +371,14 @@ class ImageRequest private constructor(
 
         /**
          * Set the cache key for this request.
-         *
-         * By default, the cache key is computed by the [Fetcher], any [Parameters], and any [Transformation]s.
          */
-        fun key(key: String?) = apply {
+        fun key(key: String?) = key(key?.let { MemoryCache.Key(it) })
+
+        /**
+         * Set the cache key for this request.
+         */
+        @ExperimentalCoilApi
+        fun key(key: MemoryCache.Key?) = apply {
             this.key = key
         }
 
@@ -385,12 +389,12 @@ class ImageRequest private constructor(
             crossinline onStart: (request: ImageRequest) -> Unit = {},
             crossinline onCancel: (request: ImageRequest) -> Unit = {},
             crossinline onError: (request: ImageRequest, throwable: Throwable) -> Unit = { _, _ -> },
-            crossinline onSuccess: (request: ImageRequest, source: DataSource) -> Unit = { _, _ -> }
+            crossinline onSuccess: (request: ImageRequest, metadata: Metadata) -> Unit = { _, _ -> }
         ) = listener(object : Listener {
             override fun onStart(request: ImageRequest) = onStart(request)
             override fun onCancel(request: ImageRequest) = onCancel(request)
             override fun onError(request: ImageRequest, throwable: Throwable) = onError(request, throwable)
-            override fun onSuccess(request: ImageRequest, source: DataSource) = onSuccess(request, source)
+            override fun onSuccess(request: ImageRequest, metadata: Metadata) = onSuccess(request, metadata)
         })
 
         /**

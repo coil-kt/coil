@@ -10,6 +10,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
+import coil.request.Metadata
 import coil.request.SuccessResult
 import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +63,7 @@ class CrossfadeTransitionTest {
                         assertEquals(drawable, result)
                     }
                 ),
-                result = SuccessResult(drawable, DataSource.MEMORY_CACHE)
+                result = SuccessResult(drawable, Metadata(null, DataSource.MEMORY_CACHE))
             )
         }
 
@@ -88,7 +89,7 @@ class CrossfadeTransitionTest {
                         result.stop()
                     }
                 ),
-                result = SuccessResult(drawable, DataSource.DISK)
+                result = SuccessResult(drawable, Metadata(null, DataSource.DISK))
             )
         }
 
@@ -114,7 +115,7 @@ class CrossfadeTransitionTest {
                         assertFalse(result is CrossfadeDrawable)
                     }
                 ),
-                result = SuccessResult(drawable, DataSource.NETWORK)
+                result = SuccessResult(drawable, Metadata(null, DataSource.NETWORK))
             )
         }
     }
