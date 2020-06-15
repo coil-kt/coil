@@ -207,7 +207,7 @@ class ImageRequest private constructor(
     }
 
     override fun toString(): String {
-        return "Request(context=$context, data=$data, key=$key, target=$target, listener=$listener, " +
+        return "ImageRequest(context=$context, data=$data, key=$key, target=$target, listener=$listener, " +
             "lifecycle=$lifecycle, dispatcher=$dispatcher, transformations=$transformations, transition=$transition, " +
             "bitmapConfig=$bitmapConfig, colorSpace=$colorSpace, sizeResolver=$sizeResolver, scale=$scale, " +
             "precision=$precision, fetcher=$fetcher, decoder=$decoder, allowHardware=$allowHardware, " +
