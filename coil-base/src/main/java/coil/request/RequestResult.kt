@@ -26,9 +26,9 @@ data class SuccessResult(
 
     @Deprecated(
         message = "Moved to Metadata.",
-        replaceWith = ReplaceWith("metadata.source")
+        replaceWith = ReplaceWith("metadata.dataSource")
     )
-    val source: DataSource get() = metadata.source
+    val source: DataSource get() = metadata.dataSource
 }
 
 /**

@@ -558,8 +558,8 @@ public final class coil/request/Metadata {
 	public final fun copy (Lcoil/memory/MemoryCache$Key;Lcoil/decode/DataSource;)Lcoil/request/Metadata;
 	public static synthetic fun copy$default (Lcoil/request/Metadata;Lcoil/memory/MemoryCache$Key;Lcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/request/Metadata;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDataSource ()Lcoil/decode/DataSource;
 	public final fun getKey ()Lcoil/memory/MemoryCache$Key;
-	public final fun getSource ()Lcoil/decode/DataSource;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

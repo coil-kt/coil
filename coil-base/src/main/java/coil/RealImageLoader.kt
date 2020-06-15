@@ -243,13 +243,11 @@ internal class RealImageLoader(
                 sizeResolver, size, scale, eventListener)
 
             // Cache the result.
-            if (memoryCachePolicy.writeEnabled) {
-                strongMemoryCache.set(cacheKey, drawable, isSampled)
-            }
+            val isCached = memoryCachePolicy.writeEnabled && strongMemoryCache.set(cacheKey, drawable, isSampled)
 
             // Set the result on the target.
             logger?.log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            val metadata = Metadata(cacheKey, source)
+            val metadata = Metadata(cacheKey.takeIf { isCached }, source)
             val result = SuccessResult(drawable, metadata)
             targetDelegate.success(result, request.transition ?: defaults.transition)
             eventListener.onSuccess(request, metadata)

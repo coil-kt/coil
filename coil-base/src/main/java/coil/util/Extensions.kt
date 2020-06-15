@@ -65,13 +65,15 @@ internal inline val StatFs.blockSizeCompat: Long
     get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 
 @OptIn(ExperimentalCoilApi::class)
-internal fun StrongMemoryCache.set(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean) {
+internal fun StrongMemoryCache.set(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean): Boolean {
     if (key != null) {
         val bitmap = (value as? BitmapDrawable)?.bitmap
         if (bitmap != null) {
             set(key, bitmap, isSampled)
+            return true
         }
     }
+    return false
 }
 
 internal inline fun <T> takeIf(take: Boolean, factory: () -> T): T? {
