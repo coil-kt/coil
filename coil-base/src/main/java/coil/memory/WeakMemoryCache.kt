@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoilApi::class)
+
 package coil.memory
 
 import android.content.ComponentCallbacks2
@@ -5,21 +7,23 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.annotation.VisibleForTesting
+import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCache.Value
+import coil.memory.RealMemoryCache.Value
+import coil.util.Logger
 import coil.util.firstNotNullIndices
 import coil.util.identityHashCode
+import coil.util.log
 import coil.util.removeIfIndices
 import java.lang.ref.WeakReference
 
 /**
  * An in-memory cache that holds weak references to [Bitmap]s.
  *
- * This is used as a secondary caching layer for [MemoryCache]. [MemoryCache] holds strong references to its bitmaps.
- * Bitmaps are added to this cache when they're removed from [MemoryCache].
- *
- * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
+ * This is used as a secondary caching layer for [StrongMemoryCache]. [StrongMemoryCache] holds strong references
+ * to its bitmaps. Bitmaps are added to this cache when they're removed from [StrongMemoryCache].
  */
 internal interface WeakMemoryCache {
 
@@ -29,11 +33,11 @@ internal interface WeakMemoryCache {
     /** Set the value associated with [key]. */
     fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int)
 
-    /** Remove the value referenced by [key] from this cache if it is present. */
-    fun invalidate(key: Key)
+    /** Remove the value referenced by [key] from this cache. */
+    fun remove(key: Key): Boolean
 
-    /** Remove [bitmap] from this cache if it is present. */
-    fun invalidate(bitmap: Bitmap)
+    /** Remove [bitmap] from this cache. */
+    fun remove(bitmap: Bitmap): Boolean
 
     /** Remove all values from this cache. */
     fun clearMemory()
@@ -49,21 +53,22 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
 
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {}
 
-    override fun invalidate(key: Key) {}
+    override fun remove(key: Key) = false
 
-    override fun invalidate(bitmap: Bitmap) {}
+    override fun remove(bitmap: Bitmap) = false
 
     override fun clearMemory() {}
 
     override fun trimMemory(level: Int) {}
 }
 
-/** A [WeakMemoryCache] implementation backed by a [HashMap]. */
-internal class RealWeakMemoryCache : WeakMemoryCache {
+/** A [WeakMemoryCache] implementation backed by a [MutableMap]. */
+internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCache {
 
     @VisibleForTesting internal val cache = hashMapOf<Key, ArrayList<WeakValue>>()
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
+    @Synchronized
     override fun get(key: Key): Value? {
         val values = cache[key] ?: return null
 
@@ -73,10 +78,10 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         }
 
         cleanUpIfNecessary()
-
         return strongValue
     }
 
+    @Synchronized
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {
         val rawValues = cache[key]
         val values = rawValues ?: arrayListOf()
@@ -101,38 +106,47 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
         cleanUpIfNecessary()
     }
 
-    override fun invalidate(key: Key) {
+    @Synchronized
+    override fun remove(key: Key): Boolean {
         val value = get(key)
         if (value != null) {
-            invalidate(value.bitmap)
+            return remove(value.bitmap)
         }
+        return false
     }
 
-    override fun invalidate(bitmap: Bitmap) {
+    @Synchronized
+    override fun remove(bitmap: Bitmap): Boolean {
         val identityHashCode = bitmap.identityHashCode
 
         // Find the bitmap in the cache and remove it.
-        run {
+        val removed = run {
             cache.values.forEach { values ->
                 for (index in values.indices) {
                     if (values[index].identityHashCode == identityHashCode) {
                         values.removeAt(index)
-                        return@run
+                        return@run true
                     }
                 }
             }
+            return@run false
         }
 
         cleanUpIfNecessary()
+        return removed
     }
 
     /** Remove all values from this cache. */
+    @Synchronized
     override fun clearMemory() {
+        logger?.log(TAG, Log.VERBOSE) { "clearMemory" }
+        operationsSinceCleanUp = 0
         cache.clear()
     }
 
     /** @see ComponentCallbacks2.onTrimMemory */
     override fun trimMemory(level: Int) {
+        logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_RUNNING_LOW && level != TRIM_MEMORY_UI_HIDDEN) {
             cleanUp()
         }
@@ -146,6 +160,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
 
     /** Remove any dereferenced bitmaps from the cache. */
     @VisibleForTesting
+    @Synchronized
     internal fun cleanUp() {
         operationsSinceCleanUp = 0
 
@@ -188,6 +203,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     ) : Value
 
     companion object {
+        private const val TAG = "RealWeakMemoryCache"
         private const val CLEAN_UP_INTERVAL = 10
     }
 }

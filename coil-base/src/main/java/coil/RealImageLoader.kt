@@ -34,12 +34,15 @@ import coil.memory.BitmapReferenceCounter
 import coil.memory.DelegateService
 import coil.memory.MemoryCache
 import coil.memory.MemoryCacheService
+import coil.memory.RealMemoryCache
 import coil.memory.RequestService
+import coil.memory.StrongMemoryCache
 import coil.memory.TargetDelegate
 import coil.memory.WeakMemoryCache
 import coil.request.BaseTargetRequestDisposable
 import coil.request.ErrorResult
 import coil.request.ImageRequest
+import coil.request.Metadata
 import coil.request.NullRequestDataException
 import coil.request.Parameters
 import coil.request.RequestDisposable
@@ -60,14 +63,14 @@ import coil.util.awaitStarted
 import coil.util.closeQuietly
 import coil.util.emoji
 import coil.util.foldIndices
-import coil.util.get
 import coil.util.getLifecycle
+import coil.util.invoke
 import coil.util.job
 import coil.util.log
 import coil.util.mapData
-import coil.util.put
 import coil.util.requestManager
 import coil.util.safeConfig
+import coil.util.set
 import coil.util.takeIf
 import coil.util.toDrawable
 import coil.util.validateFetcher
@@ -81,6 +84,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
@@ -88,9 +92,9 @@ import kotlin.coroutines.coroutineContext
 internal class RealImageLoader(
     private val context: Context,
     override val defaults: DefaultRequestOptions,
-    private val bitmapPool: BitmapPool,
+    override val bitmapPool: BitmapPool,
     private val referenceCounter: BitmapReferenceCounter,
-    private val memoryCache: MemoryCache,
+    private val strongMemoryCache: StrongMemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
     callFactory: Call.Factory,
     private val eventListenerFactory: EventListener.Factory,
@@ -104,9 +108,9 @@ internal class RealImageLoader(
     private val delegateService = DelegateService(this, referenceCounter, logger)
     private val requestService = RequestService(defaults, logger)
     private val memoryCacheService = MemoryCacheService(requestService, logger)
+    override val memoryCache = RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
     private val systemCallbacks = SystemCallbacks(this, context)
-
     private val registry = registry.newBuilder()
         // Mappers
         .add(StringMapper())
@@ -125,9 +129,7 @@ internal class RealImageLoader(
         // Decoders
         .add(BitmapFactoryDecoder(context))
         .build()
-
-    // Only accessed from the main thread.
-    private var isShutdown = false
+    private val isShutdown = AtomicBoolean(false)
 
     override fun enqueue(request: ImageRequest): RequestDisposable {
         val job = scope.launch {
@@ -157,7 +159,7 @@ internal class RealImageLoader(
     @MainThread
     private suspend fun execute(request: ImageRequest, type: Int): RequestResult {
         // Ensure this image loader isn't shutdown.
-        check(!isShutdown) { "The image loader is shutdown." }
+        check(!isShutdown.get()) { "The image loader is shutdown." }
 
         // Create a new event listener.
         val eventListener = eventListenerFactory.create(request)
@@ -205,12 +207,15 @@ internal class RealImageLoader(
 
             // Compute the cache key.
             val fetcher = request.validateFetcher(mappedData) ?: registry.requireFetcher(mappedData)
-            val cacheKey = request.key?.let { MemoryCache.Key(it) }
-                ?: computeCacheKey(fetcher, mappedData, request.parameters, request.transformations, lazySizeResolver)
+            val cacheKey = request.key ?: computeCacheKey(fetcher, mappedData,
+                request.parameters, request.transformations, lazySizeResolver)
 
             // Check the memory cache.
             val memoryCachePolicy = request.memoryCachePolicy ?: defaults.memoryCachePolicy
-            val cachedValue = takeIf(memoryCachePolicy.readEnabled) { memoryCache.get(cacheKey) }
+            val cachedValue = takeIf(memoryCachePolicy.readEnabled) {
+                cacheKey ?: return@takeIf null
+                strongMemoryCache.get(cacheKey) ?: weakMemoryCache.get(cacheKey)
+            }
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
             val cachedDrawable = cachedValue?.bitmap
@@ -225,10 +230,11 @@ internal class RealImageLoader(
             if (cachedDrawable != null && memoryCacheService
                     .isCachedValueValid(cacheKey, cachedValue, request, sizeResolver, size, scale)) {
                 logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
-                val result = SuccessResult(cachedDrawable, DataSource.MEMORY_CACHE)
+                val metadata = Metadata(cacheKey, DataSource.MEMORY_CACHE)
+                val result = SuccessResult(cachedDrawable, metadata)
                 targetDelegate.success(result, request.transition ?: defaults.transition)
-                eventListener.onSuccess(request, result.source)
-                request.listener?.onSuccess(request, result.source)
+                eventListener.onSuccess(request, metadata)
+                request.listener?.onSuccess(request, metadata)
                 return result
             }
 
@@ -237,16 +243,15 @@ internal class RealImageLoader(
                 sizeResolver, size, scale, eventListener)
 
             // Cache the result.
-            if (memoryCachePolicy.writeEnabled) {
-                memoryCache.put(cacheKey, drawable, isSampled)
-            }
+            val isCached = memoryCachePolicy.writeEnabled && strongMemoryCache.set(cacheKey, drawable, isSampled)
 
             // Set the result on the target.
             logger?.log(TAG, Log.INFO) { "${source.emoji} Successful (${source.name}) - $data" }
-            val result = SuccessResult(drawable, source)
+            val metadata = Metadata(cacheKey.takeIf { isCached }, source)
+            val result = SuccessResult(drawable, metadata)
             targetDelegate.success(result, request.transition ?: defaults.transition)
-            eventListener.onSuccess(request, source)
-            request.listener?.onSuccess(request, source)
+            eventListener.onSuccess(request, metadata)
+            request.listener?.onSuccess(request, metadata)
             return result
         } catch (throwable: Throwable) {
             if (throwable is CancellationException) {
@@ -391,32 +396,22 @@ internal class RealImageLoader(
         return result.copy(drawable = output.toDrawable(context))
     }
 
-    override fun invalidate(key: String) {
-        val cacheKey = MemoryCache.Key(key)
-        memoryCache.invalidate(cacheKey)
-        weakMemoryCache.invalidate(cacheKey)
-    }
-
     /** Called by [SystemCallbacks.onTrimMemory]. */
     fun onTrimMemory(level: Int) {
-        memoryCache.trimMemory(level)
+        strongMemoryCache.trimMemory(level)
         weakMemoryCache.trimMemory(level)
         bitmapPool.trimMemory(level)
     }
 
-    override fun clearMemory() {
-        memoryCache.clearMemory()
-        weakMemoryCache.clearMemory()
-        bitmapPool.clear()
-    }
-
     override fun shutdown() {
-        if (isShutdown) return
-        isShutdown = true
+        if (isShutdown.getAndSet(true)) return
 
+        // Order is important.
         scope.cancel()
         systemCallbacks.shutdown()
-        clearMemory()
+        strongMemoryCache.clearMemory()
+        weakMemoryCache.clearMemory()
+        bitmapPool.clear()
     }
 
     /** Lazily resolves and caches a request's size. */

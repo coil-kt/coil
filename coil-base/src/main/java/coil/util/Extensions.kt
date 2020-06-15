@@ -24,15 +24,18 @@ import android.widget.ImageView.ScaleType.FIT_START
 import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.ComponentRegistry
+import coil.annotation.ExperimentalCoilApi
 import coil.base.R
 import coil.decode.DataSource
 import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.memory.MemoryCache
+import coil.memory.StrongMemoryCache
 import coil.memory.ViewTargetRequestManager
 import coil.request.Parameters
 import coil.size.Scale
 import coil.size.Size
+import coil.transform.Transformation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
@@ -61,15 +64,16 @@ internal inline val StatFs.blockCountCompat: Long
 internal inline val StatFs.blockSizeCompat: Long
     get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 
-internal fun MemoryCache.get(key: MemoryCache.Key?): MemoryCache.Value? = key?.let(::get)
-
-internal fun MemoryCache.put(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean) {
+@OptIn(ExperimentalCoilApi::class)
+internal fun StrongMemoryCache.set(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean): Boolean {
     if (key != null) {
         val bitmap = (value as? BitmapDrawable)?.bitmap
         if (bitmap != null) {
             set(key, bitmap, isSampled)
+            return true
         }
     }
+    return false
 }
 
 internal inline fun <T> takeIf(take: Boolean, factory: () -> T): T? {
@@ -191,4 +195,32 @@ internal inline fun ComponentRegistry.mapData(data: Any, lazySize: () -> Size): 
         }
     }
     return mappedData
+}
+
+@OptIn(ExperimentalCoilApi::class)
+internal inline operator fun MemoryCache.Key.Companion.invoke(
+    base: String,
+    transformations: List<Transformation>,
+    size: Size,
+    parameters: Parameters
+): MemoryCache.Key {
+    return MemoryCache.Key.Complex(
+        base = base,
+        transformations = transformations.mapIndices { it.key() },
+        size = size,
+        parameters = parameters.cacheKeys()
+    )
+}
+
+@OptIn(ExperimentalCoilApi::class)
+internal inline operator fun MemoryCache.Key.Companion.invoke(
+    base: String,
+    parameters: Parameters
+): MemoryCache.Key {
+    return MemoryCache.Key.Complex(
+        base = base,
+        transformations = emptyList(),
+        size = null,
+        parameters = parameters.cacheKeys()
+    )
 }

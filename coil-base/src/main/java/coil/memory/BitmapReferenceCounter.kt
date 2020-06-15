@@ -18,8 +18,6 @@ import java.lang.ref.WeakReference
  *
  * This class uses [System.identityHashCode] to determine bitmap identity as it provides a "unique-enough" key
  * for a [Bitmap] and it allows us to avoid using [WeakReference]s.
- *
- * NOTE: This class is not thread safe. In practice, it will only be called from the main thread.
  */
 internal class BitmapReferenceCounter(
     private val weakMemoryCache: WeakMemoryCache,
@@ -33,6 +31,7 @@ internal class BitmapReferenceCounter(
     /**
      * Increase the reference count for this [Bitmap] by one.
      */
+    @Synchronized
     fun increment(bitmap: Bitmap) {
         val key = bitmap.identityHashCode
         val count = counts[key]
@@ -46,8 +45,9 @@ internal class BitmapReferenceCounter(
      *
      * If the reference count is now zero, add the [Bitmap] to [bitmapPool].
      *
-     * @return True if [bitmap] was added to [bitmapPool] as a result of this decrement operation.
+     * @return `true` if [bitmap] was added to [bitmapPool] as a result of this decrement operation.
      */
+    @Synchronized
     fun decrement(bitmap: Bitmap): Boolean {
         val key = bitmap.identityHashCode
         val count = counts[key]
@@ -60,7 +60,7 @@ internal class BitmapReferenceCounter(
             val isValid = !invalidKeys.remove(key)
             if (isValid) {
                 // Remove the bitmap from the WeakMemoryCache and add it to the BitmapPool.
-                weakMemoryCache.invalidate(bitmap)
+                weakMemoryCache.remove(bitmap)
                 bitmapPool.put(bitmap)
                 return true
             }
@@ -73,6 +73,7 @@ internal class BitmapReferenceCounter(
      * Mark this bitmap as invalid so it is not returned to the bitmap pool
      * when it is no longer referenced.
      */
+    @Synchronized
     fun invalidate(bitmap: Bitmap) {
         invalidKeys += bitmap.identityHashCode
     }
