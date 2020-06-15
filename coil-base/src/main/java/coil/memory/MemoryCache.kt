@@ -20,7 +20,7 @@ interface MemoryCache {
     val maxSize: Int
 
     /** Get the [Bitmap] associated with [key]. */
-    fun get(key: Key): Bitmap?
+    operator fun get(key: Key): Bitmap?
 
     /**
      * Remove the [Bitmap] referenced by [key].
