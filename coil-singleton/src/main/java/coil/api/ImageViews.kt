@@ -86,8 +86,8 @@ inline fun ImageView.load(
  * ```
  *
  * @param data The data to load.
- * @param imageLoader The [ImageLoader] that will be used to create and launch the [ImageRequest].
- * @param builder An optional lambda to configure the request before it is launched.
+ * @param imageLoader The [ImageLoader] that will be used to enqueue the [ImageRequest].
+ * @param builder An optional lambda to configure the request before it is enqueued.
  */
 @JvmSynthetic
 inline fun ImageView.loadAny(
