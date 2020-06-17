@@ -22,10 +22,13 @@ interface MemoryCache {
     /** Get the [Bitmap] associated with [key]. */
     operator fun get(key: Key): Bitmap?
 
+    /** Set the [Bitmap] associated with [key]. */
+    operator fun set(key: Key, bitmap: Bitmap)
+
     /**
      * Remove the [Bitmap] referenced by [key].
      *
-     * @return `true` if [key] was present in the cache. Else, return `false`.
+     * @return True if [key] was present in the cache. Else, return false.
      */
     fun remove(key: Key): Boolean
 

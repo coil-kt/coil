@@ -8,7 +8,7 @@ import coil.memory.MemoryCache.Key
 internal class RealMemoryCache(
     private val strongMemoryCache: StrongMemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
-    private val bitmapReferenceCounter: BitmapReferenceCounter
+    private val referenceCounter: BitmapReferenceCounter
 ) : MemoryCache {
 
     override val size get() = strongMemoryCache.size
@@ -17,7 +17,13 @@ internal class RealMemoryCache(
 
     override fun get(key: Key): Bitmap? {
         val value = strongMemoryCache.get(key) ?: weakMemoryCache.get(key)
-        return value?.bitmap?.also { bitmapReferenceCounter.invalidate(it) }
+        return value?.bitmap?.also(referenceCounter::invalidate)
+    }
+
+    override fun set(key: Key, bitmap: Bitmap) {
+        referenceCounter.invalidate(bitmap)
+        strongMemoryCache.set(key, bitmap, false) // Assume the input is not sampled.
+        weakMemoryCache.remove(key) // Clear any existing weak values.
     }
 
     override fun remove(key: Key): Boolean {
