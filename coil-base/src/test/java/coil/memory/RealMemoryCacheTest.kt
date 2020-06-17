@@ -37,12 +37,12 @@ class RealMemoryCacheTest {
         val key = MemoryCache.Key("strong")
         val bitmap = createBitmap()
 
-        assertNull(cache.get(key))
+        assertNull(cache[key])
 
         strongCache.set(key, bitmap, false)
 
         assertFalse(counter.isInvalid(bitmap))
-        assertEquals(bitmap, cache.get(key))
+        assertEquals(bitmap, cache[key])
         assertTrue(counter.isInvalid(bitmap))
     }
 
@@ -51,12 +51,12 @@ class RealMemoryCacheTest {
         val key = MemoryCache.Key("weak")
         val bitmap = createBitmap()
 
-        assertNull(cache.get(key))
+        assertNull(cache[key])
 
         weakCache.set(key, bitmap, false, bitmap.allocationByteCountCompat)
 
         assertFalse(counter.isInvalid(bitmap))
-        assertEquals(bitmap, cache.get(key))
+        assertEquals(bitmap, cache[key])
         assertTrue(counter.isInvalid(bitmap))
     }
 
@@ -65,7 +65,7 @@ class RealMemoryCacheTest {
         val key = MemoryCache.Key("key")
         val bitmap = createBitmap()
 
-        assertNull(cache.get(key))
+        assertNull(cache[key])
 
         strongCache.set(key, bitmap, false)
         weakCache.set(key, bitmap, false, bitmap.allocationByteCountCompat)
@@ -89,9 +89,32 @@ class RealMemoryCacheTest {
         cache.clear()
 
         assertEquals(0, cache.size)
-        assertNull(cache.get(MemoryCache.Key("a")))
-        assertNull(cache.get(MemoryCache.Key("b")))
-        assertNull(cache.get(MemoryCache.Key("c")))
-        assertNull(cache.get(MemoryCache.Key("d")))
+        assertNull(cache[MemoryCache.Key("a")])
+        assertNull(cache[MemoryCache.Key("b")])
+        assertNull(cache[MemoryCache.Key("c")])
+        assertNull(cache[MemoryCache.Key("d")])
+    }
+
+    @Test
+    fun `set can be retrieved with get`() {
+        val key = MemoryCache.Key("a")
+        val bitmap = createBitmap()
+        cache[key] = bitmap
+
+        assertEquals(bitmap, cache[key])
+    }
+
+    @Test
+    fun `set replaces strong and weak values`() {
+        val key = MemoryCache.Key("a")
+        val expected = createBitmap()
+
+        strongCache.set(key, createBitmap(), false)
+        weakCache.set(key, createBitmap(), false, 100)
+        cache[key] = expected
+
+        assertTrue(counter.isInvalid(expected))
+        assertEquals(expected, strongCache.get(key)?.bitmap)
+        assertNull(weakCache.get(key))
     }
 }
