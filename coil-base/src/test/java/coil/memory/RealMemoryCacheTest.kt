@@ -113,6 +113,7 @@ class RealMemoryCacheTest {
         weakCache.set(key, createBitmap(), false, 100)
         cache[key] = expected
 
+        assertTrue(counter.isInvalid(expected))
         assertEquals(expected, strongCache.get(key)?.bitmap)
         assertNull(weakCache.get(key))
     }
