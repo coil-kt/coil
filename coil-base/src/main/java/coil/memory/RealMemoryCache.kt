@@ -22,7 +22,7 @@ internal class RealMemoryCache(
 
     override fun set(key: Key, bitmap: Bitmap) {
         referenceCounter.invalidate(bitmap)
-        strongMemoryCache.set(key, bitmap, false) // Assume the input is not sampled.
+        strongMemoryCache.set(key, bitmap, false)
         weakMemoryCache.remove(key) // Clear any existing weak values.
     }
 
