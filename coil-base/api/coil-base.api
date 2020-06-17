@@ -405,6 +405,7 @@ public abstract interface class coil/memory/MemoryCache {
 	public abstract fun getMaxSize ()I
 	public abstract fun getSize ()I
 	public abstract fun remove (Lcoil/memory/MemoryCache$Key;)Z
+	public abstract fun set (Lcoil/memory/MemoryCache$Key;Landroid/graphics/Bitmap;)V
 }
 
 public abstract class coil/memory/MemoryCache$Key {
