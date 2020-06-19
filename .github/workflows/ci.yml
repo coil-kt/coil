@@ -61,12 +61,6 @@ jobs:
               with:
                   java-version: 11
 
-            # Ensure .gradle/caches is empty before writing to it.
-            # This helps us stay within Github's cache size limits.
-            # Rename the folder instead of deleting it as it's faster.
-            - name: Clean cache
-              run: mv ~/.gradle/caches ~/.gradle/.invalid_caches
-
             # Restore the cache.
             # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
             - uses: actions/cache@v1
