@@ -1,11 +1,7 @@
 public final class coil/ComponentRegistry {
 	public fun <init> ()V
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getMapper (Ljava/lang/Object;)Lcoil/map/Mapper;
-	public final fun getMeasuredMapper (Ljava/lang/Object;)Lcoil/map/MeasuredMapper;
 	public final fun newBuilder ()Lcoil/ComponentRegistry$Builder;
-	public final fun requireDecoder (Ljava/lang/Object;Lokio/BufferedSource;Ljava/lang/String;)Lcoil/decode/Decoder;
-	public final fun requireFetcher (Ljava/lang/Object;)Lcoil/fetch/Fetcher;
 }
 
 public final class coil/ComponentRegistry$Builder {
@@ -832,6 +828,14 @@ public final class coil/util/CoilUtils {
 	public static final field INSTANCE Lcoil/util/CoilUtils;
 	public static final fun clear (Landroid/view/View;)V
 	public static final fun createDefaultCache (Landroid/content/Context;)Lokhttp3/Cache;
+}
+
+public final class coil/util/ContinuationCallback : kotlin/jvm/functions/Function1, okhttp3/Callback {
+	public fun <init> (Lokhttp3/Call;Lkotlinx/coroutines/CancellableContinuation;)V
+	public synthetic fun invoke (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun invoke (Ljava/lang/Throwable;)V
+	public fun onFailure (Lokhttp3/Call;Ljava/io/IOException;)V
+	public fun onResponse (Lokhttp3/Call;Lokhttp3/Response;)V
 }
 
 public final class coil/util/DebugLogger : coil/util/Logger {
