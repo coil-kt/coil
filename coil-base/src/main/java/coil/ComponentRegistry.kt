@@ -8,8 +8,6 @@ import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.util.MultiList
 import coil.util.MultiMutableList
-import coil.util.findIndices
-import okio.BufferedSource
 
 /**
  * Registry for all the components that an [ImageLoader] uses to fulfil image requests.
@@ -19,45 +17,11 @@ import okio.BufferedSource
 class ComponentRegistry private constructor(
     internal val mappers: MultiList<Class<out Any>, Mapper<out Any, *>>,
     internal val measuredMappers: MultiList<Class<out Any>, MeasuredMapper<out Any, *>>,
-    private val fetchers: MultiList<Class<out Any>, Fetcher<out Any>>,
-    private val decoders: List<Decoder>
+    internal val fetchers: MultiList<Class<out Any>, Fetcher<out Any>>,
+    internal val decoders: List<Decoder>
 ) {
 
     constructor() : this(emptyList(), emptyList(), emptyList(), emptyList())
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Any> getMapper(data: T): Mapper<T, *>? {
-        val result = mappers.findIndices { (type, mapper) ->
-            type.isAssignableFrom(data::class.java) && (mapper as Mapper<Any, *>).handles(data)
-        }
-        return result?.second as Mapper<T, *>?
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Any> getMeasuredMapper(data: T): MeasuredMapper<T, *>? {
-        val result = measuredMappers.findIndices { (type, mapper) ->
-            type.isAssignableFrom(data::class.java) && (mapper as MeasuredMapper<Any, *>).handles(data)
-        }
-        return result?.second as MeasuredMapper<T, *>?
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Any> requireFetcher(data: T): Fetcher<T> {
-        val result = fetchers.findIndices { (type, fetcher) ->
-            type.isAssignableFrom(data::class.java) && (fetcher as Fetcher<Any>).handles(data)
-        }
-        checkNotNull(result) { "Unable to fetch data. No fetcher supports: $data" }
-        return result.second as Fetcher<T>
-    }
-
-    fun <T : Any> requireDecoder(
-        data: T,
-        source: BufferedSource,
-        mimeType: String?
-    ): Decoder {
-        val decoder = decoders.findIndices { it.handles(source, mimeType) }
-        return checkNotNull(decoder) { "Unable to decode data. No decoder supports: $data" }
-    }
 
     fun newBuilder() = Builder(this)
 

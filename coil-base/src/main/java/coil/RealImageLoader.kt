@@ -69,6 +69,8 @@ import coil.util.job
 import coil.util.log
 import coil.util.mapData
 import coil.util.requestManager
+import coil.util.requireDecoder
+import coil.util.requireFetcher
 import coil.util.safeConfig
 import coil.util.set
 import coil.util.takeIf
