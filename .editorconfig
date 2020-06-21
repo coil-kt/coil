@@ -6,4 +6,5 @@ insert_final_newline=true
 max_line_length=120
 
 # ktlint
-disabled_rules=import-ordering,max-line-length,experimental:annotation,experimental:indent
+# noinspection EditorConfigKeyCorrectness
+disabled_rules=import-ordering,indent,max-line-length,experimental:annotation
