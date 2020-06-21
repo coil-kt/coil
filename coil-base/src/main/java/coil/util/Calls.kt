@@ -20,7 +20,6 @@ internal suspend inline fun Call.await(): Response {
     }
 }
 
-@PublishedApi
 internal class ContinuationCallback(
     private val call: Call,
     private val continuation: CancellableContinuation<Response>
