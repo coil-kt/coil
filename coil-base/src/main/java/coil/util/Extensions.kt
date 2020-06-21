@@ -23,12 +23,9 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import coil.ComponentRegistry
 import coil.annotation.ExperimentalCoilApi
 import coil.base.R
 import coil.decode.DataSource
-import coil.map.Mapper
-import coil.map.MeasuredMapper
 import coil.memory.MemoryCache
 import coil.memory.StrongMemoryCache
 import coil.memory.ViewTargetRequestManager
@@ -170,22 +167,6 @@ internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
 }
 
 internal inline val CoroutineContext.job: Job get() = get(Job)!!
-
-@Suppress("UNCHECKED_CAST")
-internal inline fun ComponentRegistry.mapData(data: Any, lazySize: () -> Size): Any {
-    var mappedData = data
-    measuredMappers.forEachIndices { (type, mapper) ->
-        if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
-            mappedData = mapper.map(mappedData, lazySize())
-        }
-    }
-    mappers.forEachIndices { (type, mapper) ->
-        if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
-            mappedData = mapper.map(mappedData)
-        }
-    }
-    return mappedData
-}
 
 @OptIn(ExperimentalCoilApi::class)
 internal inline operator fun MemoryCache.Key.Companion.invoke(
