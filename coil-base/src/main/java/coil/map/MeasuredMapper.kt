@@ -6,7 +6,7 @@ import coil.size.Size
 import coil.target.Target
 
 /**
- * An interface to convert data with type [T] into [V].
+ * An interface to convert data of type [T] into [V].
  * Unlike [Mapper]s, [MeasuredMapper] must wait for the [Target] to be measured.
  * This can cause cached Drawables to not be set synchronously.
  *

@@ -5,7 +5,7 @@ package coil.map
 import coil.fetch.Fetcher
 
 /**
- * An interface to convert data with type [T] into [V].
+ * An interface to convert data of type [T] into [V].
  *
  * Use this to map custom data types to a type that can be handled by a [Fetcher].
  */
