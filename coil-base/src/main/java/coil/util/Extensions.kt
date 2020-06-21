@@ -37,21 +37,11 @@ import coil.size.Scale
 import coil.size.Size
 import coil.transform.Transformation
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Headers
-import okhttp3.Response
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
-
-internal suspend inline fun Call.await(): Response {
-    return suspendCancellableCoroutine { continuation ->
-        val callback = ContinuationCallback(this, continuation)
-        enqueue(callback)
-        continuation.invokeOnCancellation(callback)
-    }
-}
 
 internal inline val ActivityManager.isLowRamDeviceCompat: Boolean
     get() = SDK_INT < 19 || isLowRamDevice
