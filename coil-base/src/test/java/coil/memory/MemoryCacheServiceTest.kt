@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.test.core.app.ApplicationProvider
 import coil.DefaultRequestOptions
-import coil.ImageService
 import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache.Value
@@ -31,14 +30,14 @@ import kotlin.test.assertTrue
 class MemoryCacheServiceTest {
 
     private lateinit var context: Context
-    private lateinit var service: ImageService
+    private lateinit var service: MemoryCacheService
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         val defaults = DefaultRequestOptions()
         val requestService = RequestService(defaults, null)
-        service = ImageService(requestService, null)
+        service = MemoryCacheService(requestService, null)
     }
 
     @Test
@@ -329,7 +328,7 @@ class MemoryCacheServiceTest {
         ))
     }
 
-    private fun ImageService.isCachedValueValid(
+    private fun MemoryCacheService.isCachedValueValid(
         cached: Bitmap,
         isSampled: Boolean,
         request: ImageRequest,
@@ -345,7 +344,7 @@ class MemoryCacheServiceTest {
     }
 
     /** Convenience function to avoid having to specify the [SizeResolver] explicitly. */
-    private fun ImageService.isCachedValueValid(
+    private fun MemoryCacheService.isCachedValueValid(
         cacheKey: Key?,
         cacheValue: Value,
         request: ImageRequest,
