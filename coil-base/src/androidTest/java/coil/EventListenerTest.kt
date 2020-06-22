@@ -12,12 +12,16 @@ import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
+import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.Metadata
+import coil.request.RequestResult
+import coil.request.SuccessResult
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.CircleCropTransformation
 import coil.transition.Transition
+import coil.transition.TransitionTarget
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -100,7 +104,14 @@ class EventListenerTest {
         runBlocking {
             imageLoader.testEnqueue {
                 data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
-                crossfade(true)
+                transition(object : Transition {
+                    override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
+                        when (result) {
+                            is SuccessResult -> target.onSuccess(result.drawable)
+                            is ErrorResult -> target.onError(result.drawable)
+                        }
+                    }
+                })
             }
         }
 
