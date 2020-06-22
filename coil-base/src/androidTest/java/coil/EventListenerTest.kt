@@ -7,17 +7,22 @@ import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
+import coil.bitmappool.BitmapPool
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
+import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.Metadata
+import coil.request.RequestResult
+import coil.request.SuccessResult
 import coil.size.Size
 import coil.size.SizeResolver
-import coil.transform.CircleCropTransformation
+import coil.transform.Transformation
 import coil.transition.Transition
+import coil.transition.TransitionTarget
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -26,6 +31,7 @@ import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoilApi::class)
 class EventListenerTest {
@@ -74,13 +80,23 @@ class EventListenerTest {
             .eventListener(eventListener)
             .build()
 
+        var transformationIsCalled = false
+
         runBlocking {
             imageLoader.testEnqueue {
                 data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
-                transformations(CircleCropTransformation())
+                transformations(object : Transformation {
+                    override fun key() = "test_transformation"
+
+                    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
+                        transformationIsCalled = true
+                        return input
+                    }
+                })
             }
         }
 
+        assertTrue(transformationIsCalled)
         eventListener.complete()
     }
 
@@ -97,13 +113,24 @@ class EventListenerTest {
             .eventListener(eventListener)
             .build()
 
+        var transitionIsCalled = false
+
         runBlocking {
             imageLoader.testEnqueue {
                 data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
-                crossfade(true)
+                transition(object : Transition {
+                    override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
+                        transitionIsCalled = true
+                        when (result) {
+                            is SuccessResult -> target.onSuccess(result.drawable)
+                            is ErrorResult -> target.onError(result.drawable)
+                        }
+                    }
+                })
             }
         }
 
+        assertTrue(transitionIsCalled)
         eventListener.complete()
     }
 
