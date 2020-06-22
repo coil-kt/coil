@@ -216,10 +216,13 @@ internal class RealImageLoader(
 
             // Short circuit if the cached bitmap is valid.
             if (cachedDrawable != null && memoryCacheService.isCachedValueValid(key, value, request, sizeResolver, size, scale)) {
-                return SuccessResult(
-                    drawable = value.bitmap.toDrawable(context),
-                    metadata = Metadata(key, value.isSampled, DataSource.MEMORY_CACHE)
-                )
+                val drawable = value.bitmap.toDrawable(context)
+                val metadata = Metadata(key, value.isSampled, DataSource.MEMORY_CACHE)
+                val result = SuccessResult(drawable, metadata)
+                targetDelegate.success(result, request.transition ?: defaults.transition)
+                eventListener.onSuccess(request, result.metadata)
+                request.listener?.onSuccess(request, result.metadata)
+                return result
             }
 
             // Fetch and decode the image.
