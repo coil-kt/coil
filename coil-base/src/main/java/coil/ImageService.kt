@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import coil.annotation.ExperimentalCoilApi
@@ -70,8 +69,8 @@ internal class ImageService(
     private val logger: Logger?
 ) {
 
-    @AnyThread
-    suspend fun execute(
+    @MainThread
+    suspend inline fun execute(
         request: ImageRequest,
         type: Int,
         data: Any,

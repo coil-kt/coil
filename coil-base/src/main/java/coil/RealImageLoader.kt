@@ -58,7 +58,7 @@ import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalCoilApi::class)
 internal class RealImageLoader(
-    private val context: Context,
+    context: Context,
     override val defaults: DefaultRequestOptions,
     override val bitmapPool: BitmapPool,
     referenceCounter: BitmapReferenceCounter,
