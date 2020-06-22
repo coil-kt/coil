@@ -184,7 +184,6 @@ internal class RealImageLoader(
 
             // Prepare to resolve the size.
             val sizeResolver = requestService.sizeResolver(request, context)
-            val scale = requestService.scale(request, sizeResolver)
             val lazySizeResolver = LazySizeResolver(sizeResolver, targetDelegate, request, defaults, eventListener)
 
             // Invalidate the bitmap if it was provided as input.
@@ -211,8 +210,9 @@ internal class RealImageLoader(
                 ?.takeIf { requestService.isConfigValidForHardware(request, it.safeConfig) }
                 ?.toDrawable(context)
 
-            // Resolve the size if it has not been resolved already.
+            // Resolve the size and scale.
             val size = lazySizeResolver.size(cachedDrawable)
+            val scale = requestService.scale(request, sizeResolver)
 
             // Short circuit if the cached bitmap is valid.
             if (cachedDrawable != null && memoryCacheService.isCachedValueValid(key, value, request, sizeResolver, size, scale)) {
