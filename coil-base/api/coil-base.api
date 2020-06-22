@@ -830,14 +830,6 @@ public final class coil/util/CoilUtils {
 	public static final fun createDefaultCache (Landroid/content/Context;)Lokhttp3/Cache;
 }
 
-public final class coil/util/ContinuationCallback : kotlin/jvm/functions/Function1, okhttp3/Callback {
-	public fun <init> (Lokhttp3/Call;Lkotlinx/coroutines/CancellableContinuation;)V
-	public synthetic fun invoke (Ljava/lang/Object;)Ljava/lang/Object;
-	public fun invoke (Ljava/lang/Throwable;)V
-	public fun onFailure (Lokhttp3/Call;Ljava/io/IOException;)V
-	public fun onResponse (Lokhttp3/Call;Lokhttp3/Response;)V
-}
-
 public final class coil/util/DebugLogger : coil/util/Logger {
 	public fun <init> ()V
 	public fun <init> (I)V
