@@ -1,7 +1,9 @@
 package coil.request
 
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import coil.util.getLifecycle
 
 /**
@@ -11,7 +13,18 @@ import coil.util.getLifecycle
  */
 internal object GlobalLifecycle : Lifecycle() {
 
-    override fun addObserver(observer: LifecycleObserver) {}
+    private val owner = LifecycleOwner { this }
+
+    override fun addObserver(observer: LifecycleObserver) {
+        require(observer is DefaultLifecycleObserver) {
+            "$observer must implement androidx.lifecycle.DefaultLifecycleObserver."
+        }
+
+        // Call the lifecycle methods in order and do not hold a reference to the observer.
+        observer.onCreate(owner)
+        observer.onStart(owner)
+        observer.onResume(owner)
+    }
 
     override fun removeObserver(observer: LifecycleObserver) {}
 
