@@ -8,7 +8,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
-import coil.request.RequestResult
+import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Scale
 import coil.util.scale
@@ -25,10 +25,7 @@ class CrossfadeTransition @JvmOverloads constructor(
         require(durationMillis > 0) { "durationMillis must be > 0." }
     }
 
-    override suspend fun transition(
-        target: TransitionTarget<*>,
-        result: RequestResult
-    ) {
+    override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
         // Don't animate if the request was fulfilled by the memory cache.
         if (result is SuccessResult && result.metadata.dataSource == DataSource.MEMORY_CACHE) {
             target.onSuccess(result.drawable)
@@ -49,22 +46,22 @@ class CrossfadeTransition @JvmOverloads constructor(
         var outerCrossfade: CrossfadeDrawable? = null
         try {
             suspendCancellableCoroutine<Unit> { continuation ->
-                val innerCrossfade = CrossfadeDrawable(
+                val crossfade = CrossfadeDrawable(
                     start = target.drawable,
                     end = result.drawable,
                     scale = (target.view as? ImageView)?.scale ?: Scale.FILL,
                     durationMillis = durationMillis
                 )
-                outerCrossfade = innerCrossfade
-                innerCrossfade.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                outerCrossfade = crossfade
+                crossfade.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
-                        innerCrossfade.unregisterAnimationCallback(this)
+                        crossfade.unregisterAnimationCallback(this)
                         continuation.resume(Unit)
                     }
                 })
                 when (result) {
-                    is SuccessResult -> target.onSuccess(innerCrossfade)
-                    is ErrorResult -> target.onError(innerCrossfade)
+                    is SuccessResult -> target.onSuccess(crossfade)
+                    is ErrorResult -> target.onError(crossfade)
                 }
             }
         } catch (throwable: Throwable) {

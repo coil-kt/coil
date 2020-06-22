@@ -22,7 +22,7 @@ data class DefaultRequestOptions(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     val transition: Transition = Transition.NONE,
     val precision: Precision = Precision.AUTOMATIC,
-    val bitmapConfig: Bitmap.Config = Utils.getDefaultBitmapConfig(),
+    val bitmapConfig: Bitmap.Config = Utils.DEFAULT_BITMAP_CONFIG,
     val allowHardware: Boolean = true,
     val allowRgb565: Boolean = false,
     val placeholder: Drawable? = null,

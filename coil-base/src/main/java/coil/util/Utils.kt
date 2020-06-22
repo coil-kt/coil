@@ -25,6 +25,9 @@ internal object Utils {
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
 
+    /** Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without transformations. */
+    val DEFAULT_BITMAP_CONFIG get() = if (SDK_INT >= 26) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
+
     /** Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config]. */
     fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
         return width * height * config.bytesPerPixel
@@ -64,11 +67,5 @@ internal object Utils {
         // Allocate less memory for bitmap pooling on API 26 and above since we default to
         // hardware bitmaps, which cannot be reused.
         return if (SDK_INT in 19..25) 0.5 else 0.25
-    }
-
-    fun getDefaultBitmapConfig(): Bitmap.Config {
-        // Prefer hardware bitmaps on API 26 and above since they are optimized for drawing
-        // without transformations.
-        return if (SDK_INT >= 26) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
     }
 }

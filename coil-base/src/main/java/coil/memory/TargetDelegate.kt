@@ -13,7 +13,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.base.R
 import coil.request.ErrorResult
 import coil.request.ImageRequest
-import coil.request.RequestResult
+import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.target.PoolableViewTarget
 import coil.target.Target
@@ -147,7 +147,7 @@ private interface Poolable {
     }
 }
 
-private inline val RequestResult.bitmap: Bitmap?
+private inline val ImageResult.bitmap: Bitmap?
     get() = (drawable as? BitmapDrawable)?.bitmap
 
 private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarget<*>.() -> Unit) {

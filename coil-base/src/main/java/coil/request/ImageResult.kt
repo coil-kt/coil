@@ -9,7 +9,7 @@ import coil.decode.DataSource
  *
  * @see ImageLoader.execute
  */
-sealed class RequestResult {
+sealed class ImageResult {
     abstract val drawable: Drawable?
 }
 
@@ -22,7 +22,7 @@ sealed class RequestResult {
 data class SuccessResult(
     override val drawable: Drawable,
     val metadata: Metadata
-) : RequestResult() {
+) : ImageResult() {
 
     @Deprecated(
         message = "Moved to Metadata.",
@@ -40,4 +40,4 @@ data class SuccessResult(
 data class ErrorResult(
     override val drawable: Drawable?,
     val throwable: Throwable
-) : RequestResult()
+) : ImageResult()

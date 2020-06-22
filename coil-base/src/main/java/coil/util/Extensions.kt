@@ -171,6 +171,19 @@ internal inline val CoroutineContext.job: Job get() = get(Job)!!
 @OptIn(ExperimentalCoilApi::class)
 internal inline operator fun MemoryCache.Key.Companion.invoke(
     base: String,
+    parameters: Parameters
+): MemoryCache.Key {
+    return MemoryCache.Key.Complex(
+        base = base,
+        transformations = emptyList(),
+        size = null,
+        parameters = parameters.cacheKeys()
+    )
+}
+
+@OptIn(ExperimentalCoilApi::class)
+internal inline operator fun MemoryCache.Key.Companion.invoke(
+    base: String,
     transformations: List<Transformation>,
     size: Size,
     parameters: Parameters
@@ -179,19 +192,6 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
         base = base,
         transformations = transformations.mapIndices { it.key() },
         size = size,
-        parameters = parameters.cacheKeys()
-    )
-}
-
-@OptIn(ExperimentalCoilApi::class)
-internal inline operator fun MemoryCache.Key.Companion.invoke(
-    base: String,
-    parameters: Parameters
-): MemoryCache.Key {
-    return MemoryCache.Key.Complex(
-        base = base,
-        transformations = emptyList(),
-        size = null,
         parameters = parameters.cacheKeys()
     )
 }

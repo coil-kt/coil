@@ -20,8 +20,8 @@ import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
+import coil.request.ImageResult
 import coil.request.RequestDisposable
-import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.Precision
 import coil.target.ViewTarget
@@ -36,7 +36,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Call
 import okhttp3.OkHttpClient
-import java.io.File
 
 /**
  * A service class that loads images by executing [ImageRequest]s. Image loaders handle caching, data fetching,
@@ -82,7 +81,7 @@ interface ImageLoader {
      * @param request The request to execute.
      * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
      */
-    suspend fun execute(request: ImageRequest): RequestResult
+    suspend fun execute(request: ImageRequest): ImageResult
 
     /**
      * Shutdown this image loader.
@@ -132,7 +131,6 @@ interface ImageLoader {
         private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
         private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
         private var trackWeakReferences = true
-        private var addLastModifiedToFileCacheKey = true
 
         /**
          * Set the [OkHttpClient] used for network requests.
@@ -273,18 +271,6 @@ interface ImageLoader {
         }
 
         /**
-         * Enables adding [File.lastModified] to the memory cache key when loading an image from a [File].
-         *
-         * This allows subsequent requests that load the same file to miss the memory cache if the file has been updated.
-         * To ensure a cached image is returned synchronously, [File.lastModified] is called on the main thread.
-         *
-         * Default: true
-         */
-        fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
-            this.addLastModifiedToFileCacheKey = enable
-        }
-
-        /**
          * Set a single [EventListener] that will receive all callbacks for requests launched by this image loader.
          */
         @ExperimentalCoilApi
@@ -338,7 +324,7 @@ interface ImageLoader {
          *
          * This is not guaranteed and a different config may be used in some situations.
          *
-         * Default: [Utils.getDefaultBitmapConfig]
+         * Default: [Utils.DEFAULT_BITMAP_CONFIG]
          */
         fun bitmapConfig(bitmapConfig: Bitmap.Config) = apply {
             this.defaults = this.defaults.copy(bitmapConfig = bitmapConfig)
@@ -441,7 +427,6 @@ interface ImageLoader {
                 callFactory = callFactory ?: buildDefaultCallFactory(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 registry = registry ?: ComponentRegistry(),
-                addLastModifiedToFileCacheKey = addLastModifiedToFileCacheKey,
                 logger = logger
             )
         }

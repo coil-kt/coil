@@ -372,13 +372,13 @@ class ImageRequest private constructor(
         /**
          * Set the cache key for this request.
          */
-        fun key(key: String?) = key(key?.let { MemoryCache.Key(it) })
+        fun key(key: String) = key(MemoryCache.Key(key))
 
         /**
          * Set the cache key for this request.
          */
         @ExperimentalCoilApi
-        fun key(key: MemoryCache.Key?) = apply {
+        fun key(key: MemoryCache.Key) = apply {
             this.key = key
         }
 
