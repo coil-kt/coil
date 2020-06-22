@@ -1,5 +1,6 @@
 package coil.size
 
+import androidx.annotation.MainThread
 import coil.request.ImageRequest
 
 /**
@@ -21,5 +22,6 @@ interface SizeResolver {
     }
 
     /** Return the [Size] that the image should be loaded at. */
+    @MainThread
     suspend fun size(): Size
 }

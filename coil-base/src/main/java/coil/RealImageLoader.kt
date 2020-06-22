@@ -42,10 +42,10 @@ import coil.request.BaseTargetRequestDisposable
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
-import coil.request.ImageResult
 import coil.request.Metadata
 import coil.request.NullRequestDataException
 import coil.request.RequestDisposable
+import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.request.ViewTargetRequestDisposable
 import coil.size.Scale
@@ -99,6 +99,7 @@ internal class RealImageLoader(
     callFactory: Call.Factory,
     private val eventListenerFactory: EventListener.Factory,
     registry: ComponentRegistry,
+    addLastModifiedToFileCacheKey: Boolean,
     val logger: Logger?
 ) : ImageLoader {
 
@@ -119,7 +120,7 @@ internal class RealImageLoader(
         // Fetchers
         .add(HttpUriFetcher(callFactory))
         .add(HttpUrlFetcher(callFactory))
-        .add(FileFetcher())
+        .add(FileFetcher(addLastModifiedToFileCacheKey))
         .add(AssetUriFetcher(context))
         .add(ContentUriFetcher(context))
         .add(ResourceUriFetcher(context, drawableDecoder))
@@ -144,7 +145,7 @@ internal class RealImageLoader(
         }
     }
 
-    override suspend fun execute(request: ImageRequest): ImageResult {
+    override suspend fun execute(request: ImageRequest): RequestResult {
         if (request.target is ViewTarget<*>) {
             request.target.view.requestManager.setCurrentRequestJob(coroutineContext.job)
         }
@@ -155,7 +156,7 @@ internal class RealImageLoader(
     }
 
     @MainThread
-    private suspend fun execute(request: ImageRequest, type: Int): ImageResult {
+    private suspend fun execute(request: ImageRequest, type: Int): RequestResult {
         // Ensure this image loader isn't shutdown.
         check(!isShutdown.get()) { "The image loader is shutdown." }
 

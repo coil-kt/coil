@@ -3,7 +3,7 @@ package coil.transition
 import android.graphics.Bitmap
 import androidx.annotation.MainThread
 import coil.annotation.ExperimentalCoilApi
-import coil.request.ImageResult
+import coil.request.RequestResult
 import coil.target.Target
 
 /**
@@ -28,7 +28,7 @@ interface Transition {
      * @param result The result of the image request.
      */
     @MainThread
-    suspend fun transition(target: TransitionTarget<*>, result: ImageResult)
+    suspend fun transition(target: TransitionTarget<*>, result: RequestResult)
 
     companion object {
         @JvmField val NONE: Transition = EmptyTransition

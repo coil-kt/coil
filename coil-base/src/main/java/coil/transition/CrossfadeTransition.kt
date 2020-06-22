@@ -8,7 +8,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
-import coil.request.ImageResult
+import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.Scale
 import coil.util.scale
@@ -25,7 +25,7 @@ class CrossfadeTransition @JvmOverloads constructor(
         require(durationMillis > 0) { "durationMillis must be > 0." }
     }
 
-    override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
+    override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
         // Don't animate if the request was fulfilled by the memory cache.
         if (result is SuccessResult && result.metadata.dataSource == DataSource.MEMORY_CACHE) {
             target.onSuccess(result.drawable)

@@ -32,9 +32,3 @@ typealias GetRequestBuilder = ImageRequest.Builder
     replaceWith = ReplaceWith("ImageRequest", "coil.request.ImageRequest")
 )
 typealias Request = ImageRequest
-
-@Deprecated(
-    message = "Replace with ImageResult.",
-    replaceWith = ReplaceWith("ImageResult", "coil.request.ImageResult")
-)
-typealias RequestResult = ImageResult

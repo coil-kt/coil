@@ -5,8 +5,8 @@ package coil
 import android.app.Application
 import android.content.Context
 import coil.request.ImageRequest
-import coil.request.ImageResult
 import coil.request.RequestDisposable
+import coil.request.RequestResult
 
 /**
  * A singleton that holds the default [ImageLoader] instance.
@@ -48,7 +48,7 @@ object Coil {
      * @see ImageLoader.execute
      */
     @JvmStatic
-    suspend inline fun execute(request: ImageRequest): ImageResult {
+    suspend inline fun execute(request: ImageRequest): RequestResult {
         return imageLoader(request.context).execute(request)
     }
 

@@ -9,8 +9,8 @@ import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.FakeBitmapPool
 import coil.decode.DataSource
 import coil.request.ErrorResult
-import coil.request.ImageResult
 import coil.request.Metadata
+import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
@@ -170,7 +170,7 @@ class TargetDelegateTest {
             var isRunning = true
             val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, false, DataSource.DISK))
             val transition = object : Transition {
-                override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
+                override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
                     assertFalse(pool.bitmaps.contains(initialBitmap))
                     delay(100) // Simulate an animation.
                     assertFalse(pool.bitmaps.contains(initialBitmap))

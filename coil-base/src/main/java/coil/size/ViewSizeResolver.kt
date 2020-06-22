@@ -3,9 +3,7 @@ package coil.size
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
 /** A [SizeResolver] that measures the size of a [View]. */
@@ -35,12 +33,12 @@ interface ViewSizeResolver<T : View> : SizeResolver {
     /** If true, the [view]'s padding will be subtracted from its size. */
     val subtractPadding: Boolean get() = true
 
-    override suspend fun size(): Size = withContext(Dispatchers.Main.immediate) {
+    override suspend fun size(): Size {
         // Fast path: the view is already measured.
-        getSize(view.isLayoutRequested)?.let { return@withContext it }
+        getSize(view.isLayoutRequested)?.let { return it }
 
         // Slow path: wait for the view to be measured.
-        suspendCancellableCoroutine<Size> { continuation ->
+        return suspendCancellableCoroutine { continuation ->
             val viewTreeObserver = view.viewTreeObserver
 
             val preDrawListener = object : ViewTreeObserver.OnPreDrawListener {
