@@ -3,6 +3,7 @@ package coil.memory
 import android.graphics.Bitmap
 import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
@@ -25,6 +26,7 @@ internal class DelegateService(
 ) {
 
     /** Wrap the [request]'s [Target] to support [Bitmap] pooling. */
+    @MainThread
     fun createTargetDelegate(
         request: ImageRequest,
         type: Int,
@@ -57,6 +59,7 @@ internal class DelegateService(
             is ViewTarget<*> -> {
                 delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, lifecycle, job)
                 lifecycle.addObserver(delegate)
+                (request.target as? LifecycleObserver)?.let(lifecycle::addObserver)
                 request.target.view.requestManager.setCurrentRequest(delegate)
             }
             else -> {

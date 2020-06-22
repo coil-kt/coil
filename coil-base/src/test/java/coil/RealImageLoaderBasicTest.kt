@@ -30,9 +30,7 @@ import coil.transform.Transformation
 import coil.util.createRequest
 import coil.util.decodeBitmapAsset
 import coil.util.invoke
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
@@ -157,61 +155,73 @@ class RealImageLoaderBasicTest {
     }
 
     @Test
-    fun `computeCacheKey - null key`() {
+    fun `computeKey - null key`() {
+        val request = createRequest(context)
         val fetcher = createFakeFetcher(key = null)
-        val size = createFakeLazySizeResolver()
+        val sizeResolver = createFakeLazySizeResolver()
         val key = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), size)
+            imageLoader.computeKey(request, Unit, fetcher) { sizeResolver.size() }
         }
 
         assertNull(key)
     }
 
     @Test
-    fun `computeCacheKey - simple key`() {
+    fun `computeKey - simple key`() {
+        val request = createRequest(context)
         val fetcher = createFakeFetcher()
         val sizeResolver = createFakeLazySizeResolver()
         val result = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, emptyList(), sizeResolver)
+            imageLoader.computeKey(request, Unit, fetcher) { sizeResolver.size() }
         }
 
         assertEquals(Key("base_key", Parameters.EMPTY), result)
     }
 
     @Test
-    fun `computeCacheKey - params only`() {
-        val fetcher = createFakeFetcher()
+    fun `computeKey - params only`() {
         val parameters = createFakeParameters()
+        val request = createRequest(context) {
+            parameters(parameters)
+        }
+        val fetcher = createFakeFetcher()
         val sizeResolver = createFakeLazySizeResolver()
         val result = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, parameters, emptyList(), sizeResolver)
+            imageLoader.computeKey(request, Unit, fetcher) { sizeResolver.size() }
         }
 
         assertEquals(Key("base_key", parameters), result)
     }
 
     @Test
-    fun `computeCacheKey - transformations only`() {
-        val fetcher = createFakeFetcher()
+    fun `computeKey - transformations only`() {
         val transformations = createFakeTransformations()
+        val request = createRequest(context) {
+            transformations(transformations)
+        }
+        val fetcher = createFakeFetcher()
         val size = PixelSize(123, 332)
         val sizeResolver = createFakeLazySizeResolver { size }
         val result = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, Parameters.EMPTY, transformations, sizeResolver)
+            imageLoader.computeKey(request, Unit, fetcher) { sizeResolver.size() }
         }
 
         assertEquals(Key("base_key", transformations, size, Parameters.EMPTY), result)
     }
 
     @Test
-    fun `computeCacheKey - complex key`() {
-        val fetcher = createFakeFetcher()
+    fun `computeKey - complex key`() {
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
+        val request = createRequest(context) {
+            parameters(parameters)
+            transformations(transformations)
+        }
+        val fetcher = createFakeFetcher()
         val size = OriginalSize
         val sizeResolver = createFakeLazySizeResolver { size }
         val result = runBlocking {
-            imageLoader.computeCacheKey(fetcher, Unit, parameters, transformations, sizeResolver)
+            imageLoader.computeKey(request, Unit, fetcher) { sizeResolver.size() }
         }
 
         assertEquals(Key("base_key", transformations, size, parameters), result)
@@ -269,7 +279,6 @@ class RealImageLoaderBasicTest {
         block: suspend () -> Size = { fail() }
     ): RealImageLoader.LazySizeResolver {
         return RealImageLoader.LazySizeResolver(
-            coroutineContext = CoroutineScope(Job()).coroutineContext, // Pass a fake context.
             sizeResolver = object : SizeResolver {
                 override suspend fun size() = block()
             },

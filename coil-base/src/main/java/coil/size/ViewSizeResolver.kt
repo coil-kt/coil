@@ -19,10 +19,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         @JvmStatic
         // @JvmOverloads https://youtrack.jetbrains.com/issue/KT-35716
         @JvmName("create")
-        operator fun <T : View> invoke(
-            view: T,
-            subtractPadding: Boolean = true
-        ): ViewSizeResolver<T> {
+        operator fun <T : View> invoke(view: T, subtractPadding: Boolean = true): ViewSizeResolver<T> {
             return object : ViewSizeResolver<T> {
                 override val view = view
                 override val subtractPadding = subtractPadding

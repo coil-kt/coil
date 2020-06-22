@@ -26,7 +26,7 @@ internal fun ImageRequest.getLifecycle(): Lifecycle {
 
 /** Ensure [ImageRequest.fetcher] is valid for [data]. */
 @Suppress("UNCHECKED_CAST")
-internal fun <T : Any> ImageRequest.validateFetcher(data: T): Fetcher<T>? {
+internal fun <T : Any> ImageRequest.fetcher(data: T): Fetcher<T>? {
     val (type, fetcher) = fetcher ?: return null
     check(type.isAssignableFrom(data::class.java)) {
         "${fetcher.javaClass.name} cannot handle data with type ${data.javaClass.name}."

@@ -131,8 +131,8 @@ interface ImageLoader {
 
         private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
         private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
-        private var trackWeakReferences = true
         private var addLastModifiedToFileCacheKey = true
+        private var trackWeakReferences = true
 
         /**
          * Set the [OkHttpClient] used for network requests.
@@ -261,18 +261,6 @@ interface ImageLoader {
         }
 
         /**
-         * Enables weak reference tracking of loaded images.
-         *
-         * This allows the image loader to hold weak references to loaded images.
-         * This ensures that if an image is still in memory it will be returned from the memory cache.
-         *
-         * Default: true
-         */
-        fun trackWeakReferences(enable: Boolean) = apply {
-            this.trackWeakReferences = enable
-        }
-
-        /**
          * Enables adding [File.lastModified] to the memory cache key when loading an image from a [File].
          *
          * This allows subsequent requests that load the same file to miss the memory cache if the file has been updated.
@@ -282,6 +270,18 @@ interface ImageLoader {
          */
         fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
             this.addLastModifiedToFileCacheKey = enable
+        }
+
+        /**
+         * Enables weak reference tracking of loaded images.
+         *
+         * This allows the image loader to hold weak references to loaded images.
+         * This ensures that if an image is still in memory it will be returned from the memory cache.
+         *
+         * Default: true
+         */
+        fun trackWeakReferences(enable: Boolean) = apply {
+            this.trackWeakReferences = enable
         }
 
         /**
@@ -338,7 +338,7 @@ interface ImageLoader {
          *
          * This is not guaranteed and a different config may be used in some situations.
          *
-         * Default: [Utils.getDefaultBitmapConfig]
+         * Default: [Utils.DEFAULT_BITMAP_CONFIG]
          */
         fun bitmapConfig(bitmapConfig: Bitmap.Config) = apply {
             this.defaults = this.defaults.copy(bitmapConfig = bitmapConfig)

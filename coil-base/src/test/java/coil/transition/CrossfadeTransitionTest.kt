@@ -63,7 +63,7 @@ class CrossfadeTransitionTest {
                         assertEquals(drawable, result)
                     }
                 ),
-                result = SuccessResult(drawable, Metadata(null, DataSource.MEMORY_CACHE))
+                result = SuccessResult(drawable, Metadata(null, false, DataSource.MEMORY_CACHE))
             )
         }
 
@@ -89,7 +89,7 @@ class CrossfadeTransitionTest {
                         result.stop()
                     }
                 ),
-                result = SuccessResult(drawable, Metadata(null, DataSource.DISK))
+                result = SuccessResult(drawable, Metadata(null, false, DataSource.DISK))
             )
         }
 
@@ -115,7 +115,7 @@ class CrossfadeTransitionTest {
                         assertFalse(result is CrossfadeDrawable)
                     }
                 ),
-                result = SuccessResult(drawable, Metadata(null, DataSource.NETWORK))
+                result = SuccessResult(drawable, Metadata(null, false, DataSource.NETWORK))
             )
         }
     }
