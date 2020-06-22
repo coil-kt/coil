@@ -39,8 +39,8 @@ class ImageListAdapter(
             }
 
             load(item.uri) {
-                parameters(item.parameters)
                 placeholder(ColorDrawable(item.color))
+                parameters(item.parameters)
             }
 
             setOnClickListener {

@@ -78,7 +78,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, DataSource.DISK))
+            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, false, DataSource.DISK))
             delegate.success(result, Transition.NONE)
             assertFalse(counter.isInvalid(bitmap))
         }
@@ -91,7 +91,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, DataSource.DISK))
+            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, false, DataSource.DISK))
             delegate.success(result, Transition.NONE)
             assertTrue(counter.isInvalid(bitmap))
         }
@@ -115,7 +115,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, DataSource.DISK))
+            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, false, DataSource.DISK))
             delegate.success(result, Transition.NONE)
             assertTrue(target.success)
             assertTrue(counter.isInvalid(bitmap))
@@ -145,7 +145,7 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, DataSource.DISK))
+            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, false, DataSource.DISK))
             delegate.success(result, Transition.NONE)
             assertFalse(counter.isInvalid(bitmap))
             assertTrue(pool.bitmaps.contains(initialBitmap))
@@ -168,7 +168,7 @@ class TargetDelegateTest {
         runBlocking {
             val bitmap = createBitmap()
             var isRunning = true
-            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, DataSource.DISK))
+            val result = SuccessResult(bitmap.toDrawable(context), Metadata(null, false, DataSource.DISK))
             val transition = object : Transition {
                 override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
                     assertFalse(pool.bitmaps.contains(initialBitmap))
