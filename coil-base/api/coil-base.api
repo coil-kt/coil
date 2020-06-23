@@ -18,20 +18,6 @@ public final class coil/DefaultRequestOptions {
 	public fun <init> ()V
 	public fun <init> (Lkotlinx/coroutines/CoroutineDispatcher;Lcoil/transition/Transition;Lcoil/size/Precision;Landroid/graphics/Bitmap$Config;ZZLandroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)V
 	public synthetic fun <init> (Lkotlinx/coroutines/CoroutineDispatcher;Lcoil/transition/Transition;Lcoil/size/Precision;Landroid/graphics/Bitmap$Config;ZZLandroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Lkotlinx/coroutines/CoroutineDispatcher;
-	public final fun component10 ()Lcoil/request/CachePolicy;
-	public final fun component11 ()Lcoil/request/CachePolicy;
-	public final fun component12 ()Lcoil/request/CachePolicy;
-	public final fun component2 ()Lcoil/transition/Transition;
-	public final fun component3 ()Lcoil/size/Precision;
-	public final fun component4 ()Landroid/graphics/Bitmap$Config;
-	public final fun component5 ()Z
-	public final fun component6 ()Z
-	public final fun component7 ()Landroid/graphics/drawable/Drawable;
-	public final fun component8 ()Landroid/graphics/drawable/Drawable;
-	public final fun component9 ()Landroid/graphics/drawable/Drawable;
-	public final fun copy (Lkotlinx/coroutines/CoroutineDispatcher;Lcoil/transition/Transition;Lcoil/size/Precision;Landroid/graphics/Bitmap$Config;ZZLandroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)Lcoil/DefaultRequestOptions;
-	public static synthetic fun copy$default (Lcoil/DefaultRequestOptions;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil/transition/Transition;Lcoil/size/Precision;Landroid/graphics/Bitmap$Config;ZZLandroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;ILjava/lang/Object;)Lcoil/DefaultRequestOptions;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAllowHardware ()Z
 	public final fun getAllowRgb565 ()Z
@@ -253,18 +239,6 @@ public final class coil/decode/InterruptibleSourceKt {
 
 public final class coil/decode/Options {
 	public fun <init> (Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)V
-	public final fun component1 ()Landroid/graphics/Bitmap$Config;
-	public final fun component10 ()Lcoil/request/CachePolicy;
-	public final fun component2 ()Landroid/graphics/ColorSpace;
-	public final fun component3 ()Lcoil/size/Scale;
-	public final fun component4 ()Z
-	public final fun component5 ()Z
-	public final fun component6 ()Lokhttp3/Headers;
-	public final fun component7 ()Lcoil/request/Parameters;
-	public final fun component8 ()Lcoil/request/CachePolicy;
-	public final fun component9 ()Lcoil/request/CachePolicy;
-	public final fun copy (Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)Lcoil/decode/Options;
-	public static synthetic fun copy$default (Lcoil/decode/Options;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;ILjava/lang/Object;)Lcoil/decode/Options;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAllowInexactSize ()Z
 	public final fun getAllowRgb565 ()Z
@@ -550,11 +524,6 @@ public final class coil/request/ImageRequest$Listener$DefaultImpls {
 
 public final class coil/request/Metadata {
 	public fun <init> (Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;)V
-	public final fun component1 ()Lcoil/memory/MemoryCache$Key;
-	public final fun component2 ()Z
-	public final fun component3 ()Lcoil/decode/DataSource;
-	public final fun copy (Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;)Lcoil/request/Metadata;
-	public static synthetic fun copy$default (Lcoil/request/Metadata;Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/request/Metadata;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDataSource ()Lcoil/decode/DataSource;
 	public final fun getKey ()Lcoil/memory/MemoryCache$Key;

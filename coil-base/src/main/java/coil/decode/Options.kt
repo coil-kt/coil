@@ -27,7 +27,7 @@ import okhttp3.Headers
  * @param diskCachePolicy Determines if this request is allowed to read/write from/to disk.
  * @param networkCachePolicy Determines if this request is allowed to read from the network.
  */
-data class Options(
+class Options(
     val config: Bitmap.Config,
     val colorSpace: ColorSpace?,
     val scale: Scale,
@@ -38,4 +38,40 @@ data class Options(
     val memoryCachePolicy: CachePolicy,
     val diskCachePolicy: CachePolicy,
     val networkCachePolicy: CachePolicy
-)
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is Options &&
+            config == other.config &&
+            colorSpace == other.colorSpace &&
+            scale == other.scale &&
+            allowInexactSize == other.allowInexactSize &&
+            allowRgb565 == other.allowRgb565 &&
+            headers == other.headers &&
+            parameters == other.parameters &&
+            memoryCachePolicy == other.memoryCachePolicy &&
+            diskCachePolicy == other.diskCachePolicy &&
+            networkCachePolicy == other.networkCachePolicy
+    }
+
+    override fun hashCode(): Int {
+        var result = config.hashCode()
+        result = 31 * result + (colorSpace?.hashCode() ?: 0)
+        result = 31 * result + scale.hashCode()
+        result = 31 * result + allowInexactSize.hashCode()
+        result = 31 * result + allowRgb565.hashCode()
+        result = 31 * result + headers.hashCode()
+        result = 31 * result + parameters.hashCode()
+        result = 31 * result + memoryCachePolicy.hashCode()
+        result = 31 * result + diskCachePolicy.hashCode()
+        result = 31 * result + networkCachePolicy.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Options(config=$config, colorSpace=$colorSpace, scale=$scale, allowInexactSize=$allowInexactSize, " +
+            "allowRgb565=$allowRgb565, headers=$headers, parameters=$parameters, memoryCachePolicy=$memoryCachePolicy, " +
+            "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
+    }
+}
