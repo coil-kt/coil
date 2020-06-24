@@ -40,7 +40,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     // Temporary storage for bitmap pooling.
     private val bitmaps = arrayMapOf<Any, Bitmap>()
 
-    /** Associate [bitmap] with [tag] and cache it on this view. */
+    /** Associate [bitmap] with [tag] and cache it on this view. Return the previous bitmap associated with [tag]. */
     @MainThread
     fun put(tag: Any, bitmap: Bitmap?): Bitmap? {
         return if (bitmap != null) {
