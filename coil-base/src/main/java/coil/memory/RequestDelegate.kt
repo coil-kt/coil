@@ -25,7 +25,7 @@ internal sealed class RequestDelegate : DefaultLifecycleObserver {
     override fun onDestroy(owner: LifecycleOwner) = dispose()
 }
 
-/** A request delegate for a one-shot requests with non-poolable targets. */
+/** A request delegate for a one-shot requests with a non-poolable target. */
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
     private val job: Job

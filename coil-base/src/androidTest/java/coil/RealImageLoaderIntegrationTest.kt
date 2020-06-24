@@ -382,7 +382,7 @@ class RealImageLoaderIntegrationTest {
         assertTrue(result is SuccessResult)
         val bitmap = (result.drawable as BitmapDrawable).bitmap
         assertNotNull(bitmap)
-        assertEquals(bitmap, imageLoader.memoryCache.get(result.metadata.key!!))
+        assertEquals(bitmap, imageLoader.memoryCache[result.metadata.key!!])
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
