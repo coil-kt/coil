@@ -216,6 +216,7 @@ internal class RealImageLoader(
 
             // Short circuit if the cached bitmap is valid.
             if (cachedDrawable != null && memoryCacheService.isCachedValueValid(key, value, request, sizeResolver, size, scale)) {
+                logger?.log(TAG, Log.INFO) { "${Emoji.BRAIN} Cached - $data" }
                 val drawable = value.bitmap.toDrawable(context)
                 val metadata = Metadata(key, value.isSampled, DataSource.MEMORY_CACHE)
                 val result = SuccessResult(drawable, metadata)
