@@ -1,8 +1,10 @@
 package coil.memory
 
+import android.graphics.Bitmap
 import android.view.View
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
+import androidx.collection.arrayMapOf
 import coil.request.ImageRequest
 import coil.util.isMainThread
 import coil.util.requestManager
@@ -34,6 +36,19 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     // Only accessed from the main thread.
     private var isRestart = false
     private var skipAttach = true
+
+    // Temporary storage for bitmap pooling.
+    private val bitmaps = arrayMapOf<Any, Bitmap>()
+
+    /** Associate [bitmap] with [tag] and cache it on this view. */
+    @MainThread
+    fun put(tag: Any, bitmap: Bitmap?): Bitmap? {
+        return if (bitmap != null) {
+            bitmaps.put(tag, bitmap)
+        } else {
+            bitmaps.remove(tag)
+        }
+    }
 
     /** Attach [request] to this view and dispose the old request. */
     @MainThread
