@@ -10,7 +10,6 @@ import androidx.annotation.MainThread
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.base.R
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.RequestResult
@@ -21,6 +20,7 @@ import coil.transition.Transition
 import coil.transition.TransitionTarget
 import coil.util.Logger
 import coil.util.log
+import coil.util.requestManager
 
 /**
  * Wrap a [Target] to support [Bitmap] pooling.
@@ -128,10 +128,6 @@ private interface Invalidatable {
 
 private interface Poolable {
 
-    private inline var PoolableViewTarget<*>.bitmap: Bitmap?
-        get() = view.getTag(R.id.coil_bitmap) as? Bitmap
-        set(value) = view.setTag(R.id.coil_bitmap, value)
-
     val target: PoolableViewTarget<*>
     val referenceCounter: BitmapReferenceCounter
 
@@ -142,8 +138,8 @@ private interface Poolable {
 
     /** Replace the reference to the currently cached bitmap. */
     fun decrement(bitmap: Bitmap?) {
-        target.bitmap?.let(referenceCounter::decrement)
-        target.bitmap = bitmap
+        val previous = target.view.requestManager.put(this, bitmap)
+        previous?.let(referenceCounter::decrement)
     }
 }
 
