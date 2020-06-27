@@ -1,7 +1,6 @@
 package coil
 
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.annotation.MainThread
 import coil.annotation.ExperimentalCoilApi
@@ -24,7 +23,6 @@ import coil.map.ResourceUriMapper
 import coil.map.StringMapper
 import coil.memory.BitmapReferenceCounter
 import coil.memory.DelegateService
-import coil.memory.MemoryCache
 import coil.memory.RealMemoryCache
 import coil.memory.RequestService
 import coil.memory.StrongMemoryCache
@@ -156,7 +154,9 @@ internal class RealImageLoader(
             if (type == REQUEST_TYPE_ENQUEUE) lifecycle.awaitStarted()
 
             // Set the placeholder on the target.
-            val cached = checkMemoryCache(request.context, request.placeholderKey)
+            val cached = request.placeholderKey
+                ?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
+                ?.bitmap?.toDrawable(request.context)
             targetDelegate.start(cached, cached ?: request.placeholder ?: defaults.placeholder)
             eventListener.onStart(request)
             request.listener?.onStart(request)
@@ -254,10 +254,6 @@ internal class RealImageLoader(
     private fun newEngineInterceptor(): EngineInterceptor {
         return EngineInterceptor(registry, bitmapPool, strongMemoryCache, weakMemoryCache, requestService,
             systemCallbacks, drawableDecoder, logger)
-    }
-
-    private fun checkMemoryCache(context: Context, key: MemoryCache.Key?): BitmapDrawable? {
-        return key?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }?.bitmap?.toDrawable(context)
     }
 
     companion object {
