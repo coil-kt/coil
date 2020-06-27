@@ -204,7 +204,6 @@ class EventListenerTest {
     }
 
     private class TestEventListener(
-        val onDispatch: MethodChecker = MethodChecker(true),
         val mapStart: MethodChecker = MethodChecker(true),
         val mapEnd: MethodChecker = MethodChecker(true),
         val onStart: MethodChecker = MethodChecker(true),
@@ -223,7 +222,6 @@ class EventListenerTest {
         val onError: MethodChecker = MethodChecker(true)
     ) : EventListener {
 
-        override fun onDispatch(request: ImageRequest) = onDispatch.call()
         override fun mapStart(request: ImageRequest, input: Any) = mapStart.call()
         override fun mapEnd(request: ImageRequest, output: Any) = mapEnd.call()
         override fun onStart(request: ImageRequest) = onStart.call()
@@ -242,7 +240,6 @@ class EventListenerTest {
         override fun onError(request: ImageRequest, throwable: Throwable) = onError.call()
 
         fun complete() {
-            onDispatch.complete("onDispatch")
             mapStart.complete("mapStart")
             mapEnd.complete("mapEnd")
             onStart.complete("onStart")

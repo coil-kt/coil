@@ -1,5 +1,4 @@
 @file:Suppress("unused")
-@file:OptIn(ExperimentalCoilApi::class)
 
 package coil.request
 
@@ -50,6 +49,7 @@ import java.io.File
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
+@OptIn(ExperimentalCoilApi::class)
 class ImageRequest private constructor(
     val context: Context,
 
@@ -119,6 +119,9 @@ class ImageRequest private constructor(
     /** @see Builder.parameters */
     val parameters: Parameters,
 
+    /** @see Builder.placeholderKey */
+    val placeholderKey: MemoryCache.Key?,
+
     private val placeholderResId: Int,
     private val placeholderDrawable: Drawable?,
     private val errorResId: Int,
@@ -165,6 +168,7 @@ class ImageRequest private constructor(
             networkCachePolicy == other.networkCachePolicy &&
             headers == other.headers &&
             parameters == other.parameters &&
+            placeholderKey == other.placeholderKey &&
             placeholderResId == other.placeholderResId &&
             placeholderDrawable == other.placeholderDrawable &&
             errorResId == other.errorResId &&
@@ -197,6 +201,7 @@ class ImageRequest private constructor(
         result = 31 * result + (networkCachePolicy?.hashCode() ?: 0)
         result = 31 * result + headers.hashCode()
         result = 31 * result + parameters.hashCode()
+        result = 31 * result + (placeholderKey?.hashCode() ?: 0)
         result = 31 * result + placeholderResId
         result = 31 * result + (placeholderDrawable?.hashCode() ?: 0)
         result = 31 * result + errorResId
@@ -213,8 +218,9 @@ class ImageRequest private constructor(
             "precision=$precision, fetcher=$fetcher, decoder=$decoder, allowHardware=$allowHardware, " +
             "allowRgb565=$allowRgb565, memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
             "networkCachePolicy=$networkCachePolicy, headers=$headers, parameters=$parameters, " +
-            "placeholderResId=$placeholderResId, placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, " +
-            "errorDrawable=$errorDrawable, fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable)"
+            "placeholderKey=$placeholderKey, placeholderResId=$placeholderResId, " +
+            "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
+            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable)"
     }
 
     /**
@@ -281,6 +287,7 @@ class ImageRequest private constructor(
         private var headers: Headers.Builder?
         private var parameters: Parameters.Builder?
 
+        private var placeholderKey: MemoryCache.Key?
         @DrawableRes private var placeholderResId: Int
         private var placeholderDrawable: Drawable?
         @DrawableRes private var errorResId: Int
@@ -312,6 +319,7 @@ class ImageRequest private constructor(
             networkCachePolicy = null
             headers = null
             parameters = null
+            placeholderKey = null
             placeholderResId = 0
             placeholderDrawable = null
             errorResId = 0
@@ -345,6 +353,7 @@ class ImageRequest private constructor(
             networkCachePolicy = request.networkCachePolicy
             headers = request.headers.newBuilder()
             parameters = request.parameters.newBuilder()
+            placeholderKey = request.placeholderKey
             placeholderResId = request.placeholderResId
             placeholderDrawable = request.placeholderDrawable
             errorResId = request.errorResId
@@ -370,15 +379,15 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the cache key for this request.
+         * Set the memory cache key for this request.
          */
-        fun key(key: String) = key(MemoryCache.Key(key))
+        fun key(key: String?) = key(key?.let { MemoryCache.Key(it) })
 
         /**
-         * Set the cache key for this request.
+         * Set the memory cache key for this request.
          */
         @ExperimentalCoilApi
-        fun key(key: MemoryCache.Key) = apply {
+        fun key(key: MemoryCache.Key?) = apply {
             this.key = key
         }
 
@@ -624,6 +633,31 @@ class ImageRequest private constructor(
         }
 
         /**
+         * Set the memory cache [key] whose value will be used as the placeholder drawable.
+         * If there is no value in the memory cache for [key], fall back to [placeholder].
+         */
+        @ExperimentalCoilApi
+        fun placeholderKey(key: MemoryCache.Key?) = apply {
+            this.placeholderKey = key
+        }
+
+        /**
+         * Set the placeholder drawable to use when the request starts.
+         */
+        fun placeholder(@DrawableRes drawableResId: Int) = apply {
+            this.placeholderResId = drawableResId
+            this.placeholderDrawable = EMPTY_DRAWABLE
+        }
+
+        /**
+         * Set the placeholder drawable to use when the request starts.
+         */
+        fun placeholder(drawable: Drawable?) = apply {
+            this.placeholderDrawable = drawable ?: EMPTY_DRAWABLE
+            this.placeholderResId = 0
+        }
+
+        /**
          * Set the error drawable to use if the request fails.
          */
         fun error(@DrawableRes drawableResId: Int) = apply {
@@ -724,22 +758,6 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the placeholder drawable to use when the request starts.
-         */
-        fun placeholder(@DrawableRes drawableResId: Int) = apply {
-            this.placeholderResId = drawableResId
-            this.placeholderDrawable = EMPTY_DRAWABLE
-        }
-
-        /**
-         * Set the placeholder drawable to use when the request starts.
-         */
-        fun placeholder(drawable: Drawable?) = apply {
-            this.placeholderDrawable = drawable ?: EMPTY_DRAWABLE
-            this.placeholderResId = 0
-        }
-
-        /**
          * Create a new [ImageRequest].
          */
         fun build(): ImageRequest {
@@ -767,6 +785,7 @@ class ImageRequest private constructor(
                 networkCachePolicy,
                 headers?.build().orEmpty(),
                 parameters?.build().orEmpty(),
+                placeholderKey,
                 placeholderResId,
                 placeholderDrawable,
                 errorResId,

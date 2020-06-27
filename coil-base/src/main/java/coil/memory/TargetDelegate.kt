@@ -67,7 +67,6 @@ internal class InvalidatableEmptyTargetDelegate(
  * Invalidate the cached bitmap and the success bitmap.
  */
 internal class InvalidatableTargetDelegate(
-    private val request: ImageRequest,
     private val target: Target,
     override val referenceCounter: BitmapReferenceCounter,
     private val eventListener: EventListener,
@@ -81,11 +80,11 @@ internal class InvalidatableTargetDelegate(
 
     override suspend fun success(result: SuccessResult, transition: Transition) {
         invalidate(result.bitmap)
-        target.onSuccess(request, result, transition, eventListener, logger)
+        target.onSuccess(result, transition, eventListener, logger)
     }
 
     override suspend fun error(result: ErrorResult, transition: Transition) {
-        target.onError(request, result, transition, eventListener, logger)
+        target.onError(result, transition, eventListener, logger)
     }
 }
 
@@ -93,7 +92,6 @@ internal class InvalidatableTargetDelegate(
  * Handle the reference counts for the cached bitmap and the success bitmap.
  */
 internal class PoolableTargetDelegate(
-    private val request: ImageRequest,
     override val target: PoolableViewTarget<*>,
     override val referenceCounter: BitmapReferenceCounter,
     private val eventListener: EventListener,
@@ -105,11 +103,11 @@ internal class PoolableTargetDelegate(
     }
 
     override suspend fun success(result: SuccessResult, transition: Transition) {
-        instrument(result.bitmap) { onSuccess(request, result, transition, eventListener, logger) }
+        instrument(result.bitmap) { onSuccess(result, transition, eventListener, logger) }
     }
 
     override suspend fun error(result: ErrorResult, transition: Transition) {
-        instrument(null) { onError(request, result, transition, eventListener, logger) }
+        instrument(null) { onError(result, transition, eventListener, logger) }
     }
 
     override fun clear() {
@@ -153,7 +151,6 @@ private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarg
 }
 
 private suspend inline fun Target.onSuccess(
-    request: ImageRequest,
     result: SuccessResult,
     transition: Transition,
     eventListener: EventListener,
@@ -173,13 +170,12 @@ private suspend inline fun Target.onSuccess(
         return
     }
 
-    eventListener.transitionStart(request, transition)
+    eventListener.transitionStart(result.request, transition)
     transition.transition(this, result)
-    eventListener.transitionEnd(request, transition)
+    eventListener.transitionEnd(result.request, transition)
 }
 
 private suspend inline fun Target.onError(
-    request: ImageRequest,
     result: ErrorResult,
     transition: Transition,
     eventListener: EventListener,
@@ -199,7 +195,7 @@ private suspend inline fun Target.onError(
         return
     }
 
-    eventListener.transitionStart(request, transition)
+    eventListener.transitionStart(result.request, transition)
     transition.transition(this, result)
-    eventListener.transitionEnd(request, transition)
+    eventListener.transitionEnd(result.request, transition)
 }

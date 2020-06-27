@@ -1,9 +1,11 @@
-@file:Suppress("unused")
+@file:Suppress("DEPRECATION", "unused")
 
 package coil
 
+import coil.annotation.ExperimentalCoilApi
 import coil.decode.Decoder
 import coil.fetch.Fetcher
+import coil.interceptor.Interceptor
 import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.util.MultiList
@@ -14,25 +16,29 @@ import coil.util.MultiMutableList
  *
  * Use this class to register support for custom [Mapper]s, [MeasuredMapper]s, [Fetcher]s, and [Decoder]s.
  */
+@OptIn(ExperimentalCoilApi::class)
 class ComponentRegistry private constructor(
+    internal val interceptors: List<Interceptor>,
     internal val mappers: MultiList<Class<out Any>, Mapper<out Any, *>>,
     internal val measuredMappers: MultiList<Class<out Any>, MeasuredMapper<out Any, *>>,
     internal val fetchers: MultiList<Class<out Any>, Fetcher<out Any>>,
     internal val decoders: List<Decoder>
 ) {
 
-    constructor() : this(emptyList(), emptyList(), emptyList(), emptyList())
+    constructor() : this(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 
     fun newBuilder() = Builder(this)
 
     class Builder {
 
+        private val interceptors: MutableList<Interceptor>
         private val mappers: MultiMutableList<Class<out Any>, Mapper<out Any, *>>
         private val measuredMappers: MultiMutableList<Class<out Any>, MeasuredMapper<out Any, *>>
         private val fetchers: MultiMutableList<Class<out Any>, Fetcher<out Any>>
         private val decoders: MutableList<Decoder>
 
         constructor() {
+            interceptors = mutableListOf()
             mappers = mutableListOf()
             measuredMappers = mutableListOf()
             fetchers = mutableListOf()
@@ -40,10 +46,16 @@ class ComponentRegistry private constructor(
         }
 
         constructor(registry: ComponentRegistry) {
+            interceptors = registry.interceptors.toMutableList()
             mappers = registry.mappers.toMutableList()
             measuredMappers = registry.measuredMappers.toMutableList()
             fetchers = registry.fetchers.toMutableList()
             decoders = registry.decoders.toMutableList()
+        }
+
+        /** Register an [Interceptor]. */
+        fun add(interceptor: Interceptor) = apply {
+            interceptors += interceptor
         }
 
         /** Register a [Mapper]. */
@@ -77,6 +89,7 @@ class ComponentRegistry private constructor(
 
         fun build(): ComponentRegistry {
             return ComponentRegistry(
+                interceptors.toList(),
                 mappers.toList(),
                 measuredMappers.toList(),
                 fetchers.toList(),

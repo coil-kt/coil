@@ -1,4 +1,5 @@
 @file:JvmName("-ComponentRegistries")
+@file:Suppress("DEPRECATION")
 
 package coil.util
 
@@ -11,11 +12,11 @@ import coil.size.Size
 import okio.BufferedSource
 
 @Suppress("UNCHECKED_CAST")
-internal inline fun ComponentRegistry.mapData(data: Any, lazySize: () -> Size): Any {
+internal fun ComponentRegistry.mapData(data: Any, size: Size): Any {
     var mappedData = data
     measuredMappers.forEachIndices { (type, mapper) ->
         if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
-            mappedData = mapper.map(mappedData, lazySize())
+            mappedData = mapper.map(mappedData, size)
         }
     }
     mappers.forEachIndices { (type, mapper) ->

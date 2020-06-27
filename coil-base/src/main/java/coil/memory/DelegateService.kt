@@ -25,22 +25,22 @@ internal class DelegateService(
     private val logger: Logger?
 ) {
 
-    /** Wrap the [request]'s [Target] to support [Bitmap] pooling. */
+    /** Wrap the [Target] to support [Bitmap] pooling. */
     @MainThread
     fun createTargetDelegate(
-        request: ImageRequest,
+        target: Target?,
         type: Int,
         eventListener: EventListener
     ): TargetDelegate {
         return when (type) {
-            REQUEST_TYPE_EXECUTE -> when (val target = request.target) {
+            REQUEST_TYPE_EXECUTE -> when (target) {
                 null -> InvalidatableEmptyTargetDelegate(referenceCounter)
-                else -> InvalidatableTargetDelegate(request, target, referenceCounter, eventListener, logger)
+                else -> InvalidatableTargetDelegate(target, referenceCounter, eventListener, logger)
             }
-            REQUEST_TYPE_ENQUEUE -> when (val target = request.target) {
+            REQUEST_TYPE_ENQUEUE -> when (target) {
                 null -> EmptyTargetDelegate
-                is PoolableViewTarget<*> -> PoolableTargetDelegate(request, target, referenceCounter, eventListener, logger)
-                else -> InvalidatableTargetDelegate(request, target, referenceCounter, eventListener, logger)
+                is PoolableViewTarget<*> -> PoolableTargetDelegate(target, referenceCounter, eventListener, logger)
+                else -> InvalidatableTargetDelegate(target, referenceCounter, eventListener, logger)
             }
             else -> error("Invalid type.")
         }
@@ -49,10 +49,10 @@ internal class DelegateService(
     /** Wrap [request] to automatically dispose (and for [ViewTarget]s restart) the [ImageRequest] based on its lifecycle. */
     @MainThread
     fun createRequestDelegate(
-        job: Job,
-        targetDelegate: TargetDelegate,
         request: ImageRequest,
-        lifecycle: Lifecycle
+        targetDelegate: TargetDelegate,
+        lifecycle: Lifecycle,
+        job: Job
     ): RequestDelegate {
         val delegate: RequestDelegate
         when (request.target) {
