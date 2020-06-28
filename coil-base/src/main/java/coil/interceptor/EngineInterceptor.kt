@@ -1,6 +1,5 @@
 package coil.interceptor
 
-import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -107,7 +106,7 @@ internal class EngineInterceptor(
             }
 
             // Fetch and decode the image.
-            val (drawable, isSampled, dataSource) = execute(context, mappedData, fetcher, request, chain.requestType,
+            val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType,
                 memoryCachePolicy, sizeResolver, size, scale, eventListener)
 
             // Cache the result in the memory cache.
@@ -241,7 +240,6 @@ internal class EngineInterceptor(
     /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
     @VisibleForTesting
     internal suspend inline fun execute(
-        context: Context,
         data: Any,
         fetcher: Fetcher<Any>,
         request: ImageRequest,
@@ -300,7 +298,7 @@ internal class EngineInterceptor(
         coroutineContext.ensureActive()
 
         // Apply any transformations and prepare to draw.
-        val finalResult = applyTransformations(context, baseResult, request, size, options, eventListener)
+        val finalResult = applyTransformations(baseResult, request, size, options, eventListener)
         (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
         return finalResult
     }
@@ -308,7 +306,6 @@ internal class EngineInterceptor(
     /** Apply any [Transformation]s and return an updated [DrawableResult]. */
     @VisibleForTesting
     internal suspend inline fun applyTransformations(
-        context: Context,
         result: DrawableResult,
         request: ImageRequest,
         size: Size,
@@ -340,7 +337,7 @@ internal class EngineInterceptor(
             transformation.transform(bitmapPool, bitmap, size).also { coroutineContext.ensureActive() }
         }
         eventListener.transformEnd(request, output)
-        return result.copy(drawable = output.toDrawable(context))
+        return result.copy(drawable = output.toDrawable(request.context))
     }
 
     companion object {

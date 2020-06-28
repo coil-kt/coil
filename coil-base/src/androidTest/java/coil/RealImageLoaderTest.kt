@@ -1,12 +1,17 @@
+@file:Suppress("SameParameterValue")
+
 package coil
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
@@ -14,36 +19,40 @@ import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.bitmappool.BitmapPool
 import coil.decode.BitmapFactoryDecoder
-import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
-import coil.fetch.DrawableResult
+import coil.memory.BitmapReferenceCounter
+import coil.memory.MemoryCache
+import coil.memory.RealWeakMemoryCache
+import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import coil.request.SuccessResult
 import coil.size.PixelSize
+import coil.size.Precision
 import coil.size.Size
-import coil.transform.CircleCropTransformation
 import coil.util.Utils
 import coil.util.createMockWebServer
-import coil.util.createOptions
-import coil.util.createRequest
+import coil.util.decodeBitmapAsset
 import coil.util.getDrawableCompat
 import coil.util.size
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Cache
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
 import okio.source
 import org.junit.After
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -51,26 +60,42 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 /**
  * Integration tests for [RealImageLoader].
  */
 @OptIn(ExperimentalCoilApi::class)
-class RealImageLoaderIntegrationTest {
+class RealImageLoaderTest {
 
     private lateinit var context: Context
     private lateinit var server: MockWebServer
+    private lateinit var strongMemoryCache: StrongMemoryCache
     private lateinit var imageLoader: RealImageLoader
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
-        imageLoader = ImageLoader(context) as RealImageLoader
+        val bitmapPool = BitmapPool(Int.MAX_VALUE)
+        val weakMemoryCache = RealWeakMemoryCache(null)
+        val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
+        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        imageLoader = RealImageLoader(
+            context = context,
+            defaults = DefaultRequestOptions(),
+            bitmapPool = bitmapPool,
+            referenceCounter = referenceCounter,
+            strongMemoryCache = strongMemoryCache,
+            weakMemoryCache = weakMemoryCache,
+            callFactory = OkHttpClient(),
+            eventListenerFactory = EventListener.Factory.NONE,
+            registry = ComponentRegistry(),
+            logger = null
+        )
     }
 
     @After
@@ -286,50 +311,6 @@ class RealImageLoaderIntegrationTest {
     }
 
     @Test
-    fun applyTransformations_transformationsConvertDrawableToBitmap() {
-        val drawable = ColorDrawable(Color.BLACK)
-        val size = PixelSize(100, 100)
-        val result = runBlocking {
-            imageLoader.transform(
-                result = DrawableResult(
-                    drawable = drawable,
-                    isSampled = false,
-                    dataSource = DataSource.MEMORY
-                ),
-                request = createRequest(context) { transformations(CircleCropTransformation()) },
-                size = size,
-                options = createOptions(),
-                eventListener = EventListener.NONE
-            )
-        }
-
-        val resultDrawable = result.drawable
-        assertTrue(resultDrawable is BitmapDrawable)
-        assertEquals(resultDrawable.bitmap.size, size)
-    }
-
-    @Test
-    fun applyTransformations_emptyTransformationsDoesNotConvertDrawable() {
-        val drawable = ColorDrawable(Color.BLACK)
-        val size = PixelSize(100, 100)
-        val result = runBlocking {
-            imageLoader.transform(
-                result = DrawableResult(
-                    drawable = drawable,
-                    isSampled = false,
-                    dataSource = DataSource.MEMORY
-                ),
-                request = createRequest(context) { transformations(emptyList()) },
-                size = size,
-                options = createOptions(),
-                eventListener = EventListener.NONE
-            )
-        }
-
-        assertSame(drawable, result.drawable)
-    }
-
-    @Test
     fun nullRequestDataShowsFallbackDrawable() {
         val error = ColorDrawable(Color.BLUE)
         val fallback = ColorDrawable(Color.BLACK)
@@ -385,6 +366,82 @@ class RealImageLoaderIntegrationTest {
         assertEquals(bitmap, imageLoader.memoryCache[result.metadata.key!!])
     }
 
+    @Test
+    fun cachedHardwareBitmap_disallowHardware() {
+        // Hardware bitmaps are only available on API 26 and above.
+        assumeTrue(SDK_INT >= 26)
+
+        val key = MemoryCache.Key("fake_key")
+        val fileName = "normal.jpg"
+        val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
+
+        runBlocking {
+            suspendCancellableCoroutine<Unit> { continuation ->
+                val request = ImageRequest.Builder(context)
+                    .key(key)
+                    .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
+                    .size(100, 100)
+                    .precision(Precision.INEXACT)
+                    .allowHardware(false)
+                    .dispatcher(Dispatchers.Main.immediate)
+                    .target(
+                        onStart = {
+                            // The hardware bitmap should not be returned as a placeholder.
+                            assertNull(it)
+                        },
+                        onSuccess = {
+                            // The hardware bitmap should not be returned as the result.
+                            assertNotEquals(bitmap, (it as BitmapDrawable).bitmap)
+                        }
+                    )
+                    .listener(
+                        onSuccess = { _, _ -> continuation.resume(Unit) },
+                        onError = { _, throwable -> continuation.resumeWithException(throwable) },
+                        onCancel = { continuation.cancel() }
+                    )
+                    .build()
+                imageLoader.enqueue(request)
+            }
+        }
+    }
+
+    @Test
+    fun cachedHardwareBitmap_allowHardware() {
+        // Hardware bitmaps are only available on API 26 and above.
+        assumeTrue(SDK_INT >= 26)
+
+        val key = MemoryCache.Key("fake_key")
+        val fileName = "normal.jpg"
+        val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
+
+        runBlocking {
+            suspendCancellableCoroutine<Unit> { continuation ->
+                val request = ImageRequest.Builder(context)
+                    .key(key)
+                    .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
+                    .size(100, 100)
+                    .precision(Precision.INEXACT)
+                    .allowHardware(true)
+                    .dispatcher(Dispatchers.Main.immediate)
+                    .target(
+                        onStart = {
+                            assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                        },
+                        onSuccess = {
+                            assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                        }
+                    )
+                    .listener(
+                        onSuccess = { _, _ -> continuation.resume(Unit) },
+                        onError = { _, throwable -> continuation.resumeWithException(throwable) },
+                        onCancel = { continuation.cancel() }
+                    )
+                    .build()
+                imageLoader.enqueue(request)
+            }
+        }
+    }
+
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
         val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -437,6 +494,14 @@ class RealImageLoaderIntegrationTest {
         val sink = file.sink().buffer()
         source.use { sink.use { sink.writeAll(source) } }
         return file
+    }
+
+    private fun decodeAssetAndAddToMemoryCache(key: MemoryCache.Key, fileName: String): Bitmap {
+        val options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.HARDWARE }
+        val bitmap = context.decodeBitmapAsset(fileName, options)
+        assertEquals(Bitmap.Config.HARDWARE, bitmap.config)
+        strongMemoryCache.set(key, bitmap, false)
+        return bitmap
     }
 
     companion object {
