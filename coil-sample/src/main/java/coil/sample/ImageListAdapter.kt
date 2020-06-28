@@ -22,7 +22,7 @@ class ImageListAdapter(
 
     private val maxColumnWidth = 320.dp(context)
     private val displayWidth = context.getDisplaySize().width
-    val numColumns = ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(2)
+    val numColumns = ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(3)
     private val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

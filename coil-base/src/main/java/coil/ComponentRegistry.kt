@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalCoilApi::class)
 @file:Suppress("DEPRECATION", "unused")
 
 package coil
@@ -16,7 +17,6 @@ import coil.util.MultiMutableList
  *
  * Use this class to register support for custom [Mapper]s, [MeasuredMapper]s, [Fetcher]s, and [Decoder]s.
  */
-@OptIn(ExperimentalCoilApi::class)
 class ComponentRegistry private constructor(
     internal val interceptors: List<Interceptor>,
     internal val mappers: MultiList<Class<out Any>, Mapper<out Any, *>>,

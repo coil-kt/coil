@@ -7,7 +7,6 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
-import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache.Value
 import coil.util.Logger
@@ -15,7 +14,6 @@ import coil.util.allocationByteCountCompat
 import coil.util.log
 
 /** An in-memory cache that holds strong references [Bitmap]s. */
-@OptIn(ExperimentalCoilApi::class)
 internal interface StrongMemoryCache {
 
     companion object {
@@ -56,7 +54,6 @@ internal interface StrongMemoryCache {
 }
 
 /** A [StrongMemoryCache] implementation that caches nothing. */
-@OptIn(ExperimentalCoilApi::class)
 private object EmptyStrongMemoryCache : StrongMemoryCache {
 
     override val size get() = 0
@@ -75,7 +72,6 @@ private object EmptyStrongMemoryCache : StrongMemoryCache {
 }
 
 /** A [StrongMemoryCache] implementation that caches nothing and delegates all [set] operations to a [weakMemoryCache]. */
-@OptIn(ExperimentalCoilApi::class)
 private class ForwardingStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
 ) : StrongMemoryCache {
@@ -98,7 +94,6 @@ private class ForwardingStrongMemoryCache(
 }
 
 /** A [StrongMemoryCache] implementation backed by an [LruCache]. */
-@OptIn(ExperimentalCoilApi::class)
 private class RealStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache,
     private val referenceCounter: BitmapReferenceCounter,

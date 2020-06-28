@@ -300,7 +300,8 @@ interface ImageLoader {
          *
          * @see `crossfade(Boolean)`
          */
-        fun crossfade(durationMillis: Int) = transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
+        fun crossfade(durationMillis: Int) =
+            transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
 
         /**
          * Set the default [Transition] for each request.

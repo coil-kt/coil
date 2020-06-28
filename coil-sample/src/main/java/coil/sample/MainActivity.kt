@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package coil.sample
 
 import android.os.Build.VERSION.SDK_INT
@@ -14,14 +12,14 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-import coil.annotation.ExperimentalCoilApi
 import coil.load
 import coil.sample.databinding.ActivityMainBinding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class)
+@Suppress("UNUSED_PARAMETER")
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()

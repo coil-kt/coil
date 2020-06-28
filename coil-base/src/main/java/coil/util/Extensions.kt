@@ -1,4 +1,5 @@
 @file:JvmName("-Extensions")
+@file:OptIn(ExperimentalCoilApi::class)
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil.util
@@ -60,7 +61,6 @@ internal inline val StatFs.blockCountCompat: Long
 internal inline val StatFs.blockSizeCompat: Long
     get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 
-@OptIn(ExperimentalCoilApi::class)
 internal fun StrongMemoryCache.set(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean): Boolean {
     if (key != null) {
         val bitmap = (value as? BitmapDrawable)?.bitmap
@@ -177,7 +177,12 @@ internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
 
 internal inline val CoroutineContext.job: Job get() = get(Job)!!
 
-@OptIn(ExperimentalCoilApi::class)
+internal var TargetDelegate.metadata: Metadata?
+    get() = (target as? ViewTarget<*>)?.view?.requestManager?.metadata
+    set(value) {
+        (target as? ViewTarget<*>)?.view?.requestManager?.metadata = value
+    }
+
 internal inline operator fun MemoryCache.Key.Companion.invoke(
     base: String,
     parameters: Parameters
@@ -190,13 +195,6 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
     )
 }
 
-internal var TargetDelegate.metadata: Metadata?
-    get() = (target as? ViewTarget<*>)?.view?.requestManager?.metadata
-    set(value) {
-        (target as? ViewTarget<*>)?.view?.requestManager?.metadata = value
-    }
-
-@OptIn(ExperimentalCoilApi::class)
 internal inline operator fun MemoryCache.Key.Companion.invoke(
     base: String,
     transformations: List<Transformation>,
@@ -211,7 +209,6 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
     )
 }
 
-@OptIn(ExperimentalCoilApi::class)
 internal fun DefaultRequestOptions.copy(
     dispatcher: CoroutineDispatcher = this.dispatcher,
     transition: Transition = this.transition,

@@ -3,7 +3,6 @@ package coil.memory
 import android.graphics.Bitmap
 import android.os.Parcelable
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Size
@@ -12,7 +11,6 @@ import kotlinx.android.parcel.Parcelize
 /**
  * An in-memory cache of recently loaded images.
  */
-@ExperimentalCoilApi
 interface MemoryCache {
 
     /** The current size of the cache in bytes. */

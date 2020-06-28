@@ -1,6 +1,5 @@
 package coil.memory
 
-import coil.annotation.ExperimentalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.memory.MemoryCache.Key
 import coil.util.DEFAULT_BITMAP_SIZE
@@ -16,7 +15,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@OptIn(ExperimentalCoilApi::class)
 class BitmapReferenceCounterTest {
 
     private lateinit var weakMemoryCache: WeakMemoryCache

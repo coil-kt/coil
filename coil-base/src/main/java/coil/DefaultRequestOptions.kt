@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoilApi::class)
+
 package coil
 
 import android.graphics.Bitmap
@@ -16,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
  *
  * @see ImageLoader.defaults
  */
-@OptIn(ExperimentalCoilApi::class)
 class DefaultRequestOptions(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     val transition: Transition = Transition.NONE,

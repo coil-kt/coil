@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalCoilApi::class)
 @file:Suppress("unused")
 
 package coil.request
@@ -49,7 +50,6 @@ import java.io.File
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
-@OptIn(ExperimentalCoilApi::class)
 class ImageRequest private constructor(
     val context: Context,
 
@@ -386,7 +386,6 @@ class ImageRequest private constructor(
         /**
          * Set the memory cache key for this request.
          */
-        @ExperimentalCoilApi
         fun key(key: MemoryCache.Key?) = apply {
             this.key = key
         }
@@ -636,7 +635,6 @@ class ImageRequest private constructor(
          * Set the memory cache [key] whose value will be used as the placeholder drawable.
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
-        @ExperimentalCoilApi
         fun placeholderKey(key: MemoryCache.Key?) = apply {
             this.placeholderKey = key
         }

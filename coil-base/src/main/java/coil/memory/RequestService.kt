@@ -5,7 +5,6 @@ import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
 import androidx.annotation.WorkerThread
 import coil.DefaultRequestOptions
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.Options
 import coil.request.CachePolicy
 import coil.request.ErrorResult
@@ -26,7 +25,6 @@ import coil.util.isHardware
 import coil.util.scale
 
 /** Handles operations that act on [ImageRequest]s. */
-@OptIn(ExperimentalCoilApi::class)
 internal class RequestService(
     private val defaults: DefaultRequestOptions,
     private val logger: Logger?
