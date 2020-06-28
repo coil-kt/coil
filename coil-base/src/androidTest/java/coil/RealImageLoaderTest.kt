@@ -418,6 +418,7 @@ class RealImageLoaderTest {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = ImageRequest.Builder(context)
                     .key(key)
+                    .placeholderKey(key)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)
