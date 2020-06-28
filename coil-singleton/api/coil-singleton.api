@@ -49,5 +49,6 @@ public final class coil/api/ImageViews {
 	public static synthetic fun load$default (Landroid/widget/ImageView;Lokhttp3/HttpUrl;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
 	public static final synthetic fun loadAny (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
 	public static synthetic fun loadAny$default (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/RequestDisposable;
+	public static final fun metadata (Landroid/widget/ImageView;)Lcoil/request/Metadata;
 }
 

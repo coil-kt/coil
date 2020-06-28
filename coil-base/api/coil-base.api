@@ -839,6 +839,7 @@ public final class coil/util/CoilUtils {
 	public static final field INSTANCE Lcoil/util/CoilUtils;
 	public static final fun clear (Landroid/view/View;)V
 	public static final fun createDefaultCache (Landroid/content/Context;)Lokhttp3/Cache;
+	public static final fun metadata (Landroid/view/View;)Lcoil/request/Metadata;
 }
 
 public final class coil/util/DebugLogger : coil/util/Logger {
