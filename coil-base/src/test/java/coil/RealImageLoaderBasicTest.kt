@@ -74,7 +74,6 @@ class RealImageLoaderBasicTest {
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             registry = ComponentRegistry(),
-            addLastModifiedToFileCacheKey = true,
             logger = null
         )
     }

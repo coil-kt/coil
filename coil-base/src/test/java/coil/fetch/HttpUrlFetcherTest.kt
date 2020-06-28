@@ -1,7 +1,6 @@
 package coil.fetch
 
 import android.content.Context
-import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmappool.BitmapPool
 import coil.size.PixelSize
@@ -27,7 +26,7 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class HttpFetcherTest {
+class HttpUrlFetcherTest {
 
     private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher
@@ -67,8 +66,8 @@ class HttpFetcherTest {
 
     @Test
     fun `basic network URI fetch`() {
-        val fetcher = HttpUriFetcher(callFactory)
-        val uri = server.url("/normal.jpg").toString().toUri()
+        val fetcher = HttpUrlFetcher(callFactory)
+        val uri = server.url("/normal.jpg")
         assertTrue(fetcher.handles(uri))
         assertEquals(uri.toString(), fetcher.key(uri))
 
