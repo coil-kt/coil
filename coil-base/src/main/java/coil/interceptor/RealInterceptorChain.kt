@@ -34,10 +34,10 @@ internal class RealInterceptorChain(
 
     private inline fun checkRequest(request: ImageRequest, interceptor: () -> Interceptor) {
         check(request.data != null) {
-            "Interceptor `${interceptor()}` cannot set the request's data to null."
+            "Interceptor '${interceptor()}' cannot set the request's data to null."
         }
         check(request.target === initialRequest.target) {
-            "Interceptor `${interceptor()}` cannot modify the request's target."
+            "Interceptor '${interceptor()}' cannot modify the request's target."
         }
     }
 

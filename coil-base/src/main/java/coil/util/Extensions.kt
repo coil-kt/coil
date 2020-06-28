@@ -30,12 +30,15 @@ import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
 import coil.memory.StrongMemoryCache
+import coil.memory.TargetDelegate
 import coil.memory.ViewTargetRequestManager
 import coil.request.CachePolicy
+import coil.request.Metadata
 import coil.request.Parameters
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
+import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.Transition
 import kotlinx.coroutines.CoroutineDispatcher
@@ -186,6 +189,12 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
         parameters = parameters.cacheKeys()
     )
 }
+
+internal var TargetDelegate.metadata: Metadata?
+    get() = (target as? ViewTarget<*>)?.view?.requestManager?.metadata
+    set(value) {
+        (target as? ViewTarget<*>)?.view?.requestManager?.metadata = value
+    }
 
 @OptIn(ExperimentalCoilApi::class)
 internal inline operator fun MemoryCache.Key.Companion.invoke(

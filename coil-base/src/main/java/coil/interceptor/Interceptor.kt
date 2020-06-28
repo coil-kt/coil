@@ -24,7 +24,7 @@ interface Interceptor {
         val size: Size
 
         /**
-         * Modify the [size] passed to subsequent interceptors in the chain.
+         * Change the [Size] passed to subsequent interceptors in the chain.
          *
          * @see size The resolved size for the request.
          */

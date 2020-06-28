@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.metadata
 import coil.sample.ImageListAdapter.ViewHolder
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -44,7 +45,7 @@ class ImageListAdapter(
             }
 
             setOnClickListener {
-                setScreen(Screen.Detail(item))
+                setScreen(Screen.Detail(item, metadata?.key))
             }
         }
     }

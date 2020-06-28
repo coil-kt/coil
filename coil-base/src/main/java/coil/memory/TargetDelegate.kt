@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalCoilApi::class)
+@file:Suppress("NOTHING_TO_INLINE")
 
 package coil.memory
 
@@ -28,6 +29,8 @@ import coil.util.requestManager
  * @see DelegateService
  */
 internal sealed class TargetDelegate {
+
+    open val target: Target? get() = null
 
     @MainThread
     open fun start(cached: BitmapDrawable?, placeholder: Drawable?) {}
@@ -67,7 +70,7 @@ internal class InvalidatableEmptyTargetDelegate(
  * Invalidate the cached bitmap and the success bitmap.
  */
 internal class InvalidatableTargetDelegate(
-    private val target: Target,
+    override val target: Target,
     override val referenceCounter: BitmapReferenceCounter,
     private val eventListener: EventListener,
     private val logger: Logger?
@@ -163,7 +166,7 @@ private suspend inline fun Target.onSuccess(
     }
 
     if (this !is TransitionTarget<*>) {
-        logger?.log("TargetDelegate", Log.DEBUG) {
+        logger?.log(TAG, Log.DEBUG) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
         onSuccess(result.drawable)
@@ -188,7 +191,7 @@ private suspend inline fun Target.onError(
     }
 
     if (this !is TransitionTarget<*>) {
-        logger?.log("TargetDelegate", Log.DEBUG) {
+        logger?.log(TAG, Log.DEBUG) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
         onError(result.drawable)
@@ -199,3 +202,5 @@ private suspend inline fun Target.onError(
     transition.transition(this, result)
     eventListener.transitionEnd(result.request, transition)
 }
+
+private const val TAG = "TargetDelegate"

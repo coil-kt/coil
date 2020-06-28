@@ -59,7 +59,7 @@ internal class DelegateService(
             is ViewTarget<*> -> {
                 delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, lifecycle, job)
                 lifecycle.addObserver(delegate)
-                (request.target as? LifecycleObserver)?.let(lifecycle::addObserver)
+                if (request.target is LifecycleObserver) lifecycle.addObserver(request.target)
                 request.target.view.requestManager.setCurrentRequest(delegate)
             }
             else -> {

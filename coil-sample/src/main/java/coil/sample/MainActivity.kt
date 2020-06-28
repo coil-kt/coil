@@ -14,13 +14,14 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
+import coil.annotation.ExperimentalCoilApi
 import coil.load
 import coil.sample.databinding.ActivityMainBinding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class)
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity() {
                 binding.list.isVisible = false
                 binding.detail.isVisible = true
                 binding.detail.load(screen.image.uri) {
+                    placeholderKey(screen.placeholderKey)
                     parameters(screen.image.parameters)
                 }
             }

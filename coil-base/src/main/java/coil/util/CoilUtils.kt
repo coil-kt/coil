@@ -2,6 +2,7 @@ package coil.util
 
 import android.content.Context
 import android.view.View
+import coil.request.Metadata
 import coil.request.RequestDisposable
 import okhttp3.Cache
 
@@ -25,5 +26,10 @@ object CoilUtils {
     @JvmStatic
     fun clear(view: View) {
         view.requestManager.clearCurrentRequest()
+    }
+
+    @JvmStatic
+    fun metadata(view: View): Metadata? {
+        return view.requestManager.metadata
     }
 }

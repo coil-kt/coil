@@ -49,6 +49,7 @@ import coil.util.emoji
 import coil.util.getLifecycle
 import coil.util.job
 import coil.util.log
+import coil.util.metadata
 import coil.util.requestManager
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
@@ -157,6 +158,7 @@ internal class RealImageLoader(
             val cached = request.placeholderKey
                 ?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
                 ?.bitmap?.toDrawable(request.context)
+            targetDelegate.metadata = null
             targetDelegate.start(cached, cached ?: request.placeholder ?: defaults.placeholder)
             eventListener.onStart(request)
             request.listener?.onStart(request)
@@ -228,6 +230,7 @@ internal class RealImageLoader(
         val metadata = result.metadata
         val dataSource = metadata.dataSource
         logger?.log(TAG, Log.INFO) { "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}" }
+        targetDelegate.metadata = metadata
         targetDelegate.success(result, request.transition ?: defaults.transition)
         eventListener.onSuccess(request, metadata)
         request.listener?.onSuccess(request, metadata)
@@ -240,6 +243,7 @@ internal class RealImageLoader(
     ) {
         val request = result.request
         logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - ${result.throwable}" }
+        targetDelegate.metadata = null
         targetDelegate.error(result, request.transition ?: defaults.transition)
         eventListener.onError(request, result.throwable)
         request.listener?.onError(request, result.throwable)
