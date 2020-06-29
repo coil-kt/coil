@@ -1,11 +1,13 @@
 package coil.memory
 
 import android.graphics.Bitmap
+import android.os.Parcelable
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Size
+import kotlinx.android.parcel.Parcelize
 
 /**
  * An in-memory cache of recently loaded images.
@@ -36,7 +38,7 @@ interface MemoryCache {
     fun clear()
 
     /** The cache key for an image in the memory cache. */
-    sealed class Key {
+    sealed class Key : Parcelable {
 
         companion object {
             /** Create a simple memory cache key. */
@@ -46,6 +48,7 @@ interface MemoryCache {
         }
 
         /** A simple memory cache key that wraps a [String]. Create new instances using [invoke]. */
+        @Parcelize
         internal data class Simple(val value: String) : Key()
 
         /**
@@ -56,6 +59,7 @@ interface MemoryCache {
          *
          * This class is an implementation detail and its fields may change in future releases.
          */
+        @Parcelize
         internal data class Complex(
             val base: String,
             val transformations: List<String>,
