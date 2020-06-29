@@ -107,11 +107,13 @@ internal class RealImageLoader(
     private val isShutdown = AtomicBoolean(false)
 
     override fun enqueue(request: ImageRequest): RequestDisposable {
+        // Start executing the request on the main thread.
         val job = scope.launch {
             val result = executeMain(request, REQUEST_TYPE_ENQUEUE)
             if (result is ErrorResult) throw result.throwable
         }
 
+        // Update the current request attached to the view and return a new disposable.
         return if (request.target is ViewTarget<*>) {
             val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
             ViewTargetRequestDisposable(requestId, request.target)
@@ -121,10 +123,12 @@ internal class RealImageLoader(
     }
 
     override suspend fun execute(request: ImageRequest): RequestResult {
+        // Update the current request attached to the view synchronously.
         if (request.target is ViewTarget<*>) {
             request.target.view.requestManager.setCurrentRequestJob(coroutineContext.job)
         }
 
+        // Start executing the request on the main thread.
         return withContext(Dispatchers.Main.immediate) {
             executeMain(request, REQUEST_TYPE_EXECUTE)
         }
