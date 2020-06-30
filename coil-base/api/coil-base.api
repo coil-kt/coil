@@ -378,7 +378,7 @@ public abstract interface class coil/memory/MemoryCache {
 	public abstract fun set (Lcoil/memory/MemoryCache$Key;Landroid/graphics/Bitmap;)V
 }
 
-public abstract class coil/memory/MemoryCache$Key {
+public abstract class coil/memory/MemoryCache$Key : android/os/Parcelable {
 	public static final field Companion Lcoil/memory/MemoryCache$Key$Companion;
 	public static final fun create (Ljava/lang/String;)Lcoil/memory/MemoryCache$Key;
 }
@@ -611,21 +611,39 @@ public final class coil/size/DisplaySizeResolver : coil/size/SizeResolver {
 }
 
 public final class coil/size/OriginalSize : coil/size/Size {
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
 	public static final field INSTANCE Lcoil/size/OriginalSize;
+	public fun describeContents ()I
 	public fun toString ()Ljava/lang/String;
+	public fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public class coil/size/OriginalSize$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Ljava/lang/Object;
 }
 
 public final class coil/size/PixelSize : coil/size/Size {
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
 	public fun <init> (II)V
 	public final fun component1 ()I
 	public final fun component2 ()I
 	public final fun copy (II)Lcoil/size/PixelSize;
 	public static synthetic fun copy$default (Lcoil/size/PixelSize;IIILjava/lang/Object;)Lcoil/size/PixelSize;
+	public fun describeContents ()I
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getHeight ()I
 	public final fun getWidth ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+	public fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public class coil/size/PixelSize$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Ljava/lang/Object;
 }
 
 public final class coil/size/Precision : java/lang/Enum {
@@ -643,7 +661,7 @@ public final class coil/size/Scale : java/lang/Enum {
 	public static fun values ()[Lcoil/size/Scale;
 }
 
-public abstract class coil/size/Size {
+public abstract class coil/size/Size : android/os/Parcelable {
 }
 
 public abstract interface class coil/size/SizeResolver {

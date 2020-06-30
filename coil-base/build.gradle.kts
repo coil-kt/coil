@@ -11,6 +11,7 @@ plugins {
     id("com.android.library")
     id("com.vanniktech.maven.publish")
     id("kotlin-android")
+    id("kotlin-android-extensions")
     id("org.jetbrains.dokka")
 }
 
@@ -27,6 +28,11 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
+}
+
+androidExtensions {
+    isExperimental = true
+    features = setOf("parcelize")
 }
 
 afterEvaluate {
