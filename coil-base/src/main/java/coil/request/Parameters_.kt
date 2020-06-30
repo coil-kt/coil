@@ -1,9 +1,7 @@
-@file:JvmName("Parameters")
+@file:JvmName("ParametersKt")
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
-package coil.extension
-
-import coil.request.Parameters
+package coil.request
 
 /** Returns the number of parameters in this object. */
 inline fun Parameters.count(): Int = size

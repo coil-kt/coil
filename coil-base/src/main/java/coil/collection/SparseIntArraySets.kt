@@ -1,9 +1,6 @@
-@file:JvmName("SparseIntArraySets")
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
-package coil.extension
-
-import coil.collection.SparseIntArraySet
+package coil.collection
 
 /** Returns the number of elements that this set currently stores. */
 inline fun SparseIntArraySet.count(): Int = size

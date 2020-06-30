@@ -19,8 +19,8 @@ import coil.decode.DataSource
 import coil.decode.DecodeUtils
 import coil.decode.Decoder
 import coil.decode.Options
-import coil.extension.videoFrameMicros
-import coil.extension.videoFrameOption
+import coil.request.videoFrameMicros
+import coil.request.videoFrameOption
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size

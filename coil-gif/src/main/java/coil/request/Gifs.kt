@@ -1,14 +1,12 @@
 @file:Suppress("unused")
 @file:JvmName("Gifs")
 
-package coil.extension
+package coil.request
 
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import coil.decode.GifDecoder.Companion.REPEAT_COUNT_KEY
 import coil.drawable.MovieDrawable
-import coil.request.ImageRequest
-import coil.request.Parameters
 
 /**
  * Set the number of times to repeat the animation if the result is an animated [Drawable].

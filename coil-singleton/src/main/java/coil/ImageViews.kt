@@ -1,15 +1,13 @@
 @file:JvmName("ImageViews")
 @file:Suppress("unused")
 
-package coil.api
+package coil
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
-import coil.Coil
-import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.RequestDisposable
 import coil.util.CoilUtils

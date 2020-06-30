@@ -73,7 +73,7 @@ public final class coil/drawable/ScaleDrawable : android/graphics/drawable/Drawa
 	public fun unscheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;)V
 }
 
-public final class coil/extension/Gifs {
+public final class coil/request/Gifs {
 	public static final fun repeatCount (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
 	public static final fun repeatCount (Lcoil/request/Parameters;)Ljava/lang/Integer;
 }

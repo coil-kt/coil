@@ -11,7 +11,7 @@ public abstract interface class coil/ImageLoaderFactory {
 	public abstract fun newImageLoader ()Lcoil/ImageLoader;
 }
 
-public final class coil/api/ImageViews {
+public final class coil/ImageViews {
 	public static final fun clear (Landroid/widget/ImageView;)V
 	public static final synthetic fun load (Landroid/widget/ImageView;ILcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
 	public static final synthetic fun load (Landroid/widget/ImageView;Landroid/graphics/Bitmap;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/RequestDisposable;
