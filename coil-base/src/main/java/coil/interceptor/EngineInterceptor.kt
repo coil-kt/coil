@@ -21,7 +21,6 @@ import coil.memory.RealMemoryCache
 import coil.memory.RequestService
 import coil.memory.StrongMemoryCache
 import coil.memory.WeakMemoryCache
-import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.Metadata
 import coil.request.RequestResult
@@ -75,7 +74,7 @@ internal class EngineInterceptor(
             val data = request.data!!
             val size = chain.size
             val sizeResolver = chain.sizeResolver
-            val scale = requestService.scale(request, sizeResolver)
+            val scale = chain.scale
             val eventListener = chain.eventListener
 
             // Perform any data mapping.
@@ -86,8 +85,7 @@ internal class EngineInterceptor(
             // Check the memory cache.
             val fetcher = request.fetcher(mappedData) ?: registry.requireFetcher(mappedData)
             val key = request.key ?: computeKey(request, mappedData, fetcher, size)
-            val memoryCachePolicy = request.memoryCachePolicy ?: chain.defaults.memoryCachePolicy
-            val value = takeIf(memoryCachePolicy.readEnabled) {
+            val value = takeIf(request.memoryCachePolicy.readEnabled) {
                 key?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
             }
 
@@ -107,10 +105,10 @@ internal class EngineInterceptor(
 
             // Fetch and decode the image.
             val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType,
-                memoryCachePolicy, sizeResolver, size, scale, eventListener)
+                sizeResolver, size, scale, eventListener)
 
             // Cache the result in the memory cache.
-            val isCached = memoryCachePolicy.writeEnabled && strongMemoryCache.set(key, drawable, isSampled)
+            val isCached = request.memoryCachePolicy.writeEnabled && strongMemoryCache.set(key, drawable, isSampled)
 
             return SuccessResult(
                 drawable = drawable,
@@ -244,7 +242,6 @@ internal class EngineInterceptor(
         fetcher: Fetcher<Any>,
         request: ImageRequest,
         type: Int,
-        memoryCachePolicy: CachePolicy,
         sizeResolver: SizeResolver,
         size: Size,
         scale: Scale,
@@ -263,7 +260,7 @@ internal class EngineInterceptor(
                     coroutineContext.ensureActive()
 
                     // Find the relevant decoder.
-                    val isDiskOnlyPreload = type == REQUEST_TYPE_ENQUEUE && request.target == null && !memoryCachePolicy.writeEnabled
+                    val isDiskOnlyPreload = type == REQUEST_TYPE_ENQUEUE && request.target == null && !request.memoryCachePolicy.writeEnabled
                     val decoder = if (isDiskOnlyPreload) {
                         // Skip decoding the result if we are preloading the data and writing to the memory cache is
                         // disabled. Instead, we exhaust the source and return an empty result.

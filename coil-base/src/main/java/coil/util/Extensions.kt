@@ -7,9 +7,7 @@ package coil.util
 import android.app.ActivityManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
 import android.net.Uri
@@ -47,6 +45,7 @@ import kotlinx.coroutines.Job
 import okhttp3.Call
 import okhttp3.Headers
 import java.io.Closeable
+import java.util.BitSet
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 
@@ -158,9 +157,25 @@ internal val Uri.firstPathSegment: String?
 internal val Configuration.nightMode: Int
     get() = uiMode and Configuration.UI_MODE_NIGHT_MASK
 
-internal val EMPTY_DRAWABLE = ColorDrawable(Color.TRANSPARENT)
+internal val DEFAULTS = DefaultRequestOptions()
 
-private val EMPTY_HEADERS = Headers.Builder().build()
+internal const val BIT_DISPATCHER = 0
+internal const val BIT_TRANSITION = 1
+internal const val BIT_PRECISION = 2
+internal const val BIT_BITMAP_CONFIG = 3
+internal const val BIT_ALLOW_HARDWARE = 4
+internal const val BIT_ALLOW_RGB565 = 5
+internal const val BIT_PLACEHOLDER = 6
+internal const val BIT_ERROR = 7
+internal const val BIT_FALLBACK = 8
+internal const val BIT_MEMORY_CACHE_POLICY = 9
+internal const val BIT_DISK_CACHE_POLICY = 10
+internal const val BIT_NETWORK_CACHE_POLICY = 11
+internal const val NUM_INDEXES = 12
+
+internal inline fun BitSet.copy() = clone() as BitSet
+
+internal val EMPTY_HEADERS = Headers.Builder().build()
 
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
 

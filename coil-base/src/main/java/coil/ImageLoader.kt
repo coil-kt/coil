@@ -428,7 +428,7 @@ interface ImageLoader {
                 weakMemoryCache = weakMemoryCache,
                 callFactory = callFactory ?: buildDefaultCallFactory(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
-                registry = registry ?: ComponentRegistry(),
+                componentRegistry = registry ?: ComponentRegistry(),
                 logger = logger
             )
         }

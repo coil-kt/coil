@@ -1,10 +1,10 @@
 package coil.interceptor
 
-import coil.DefaultRequestOptions
 import coil.EventListener
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.RequestResult
+import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
 
@@ -15,13 +15,15 @@ internal class RealInterceptorChain(
     val interceptors: List<Interceptor>,
     val index: Int,
     override val request: ImageRequest,
-    override val defaults: DefaultRequestOptions,
     override val size: Size,
+    override val scale: Scale,
     val sizeResolver: SizeResolver,
     val eventListener: EventListener
 ) : Interceptor.Chain {
 
     override fun withSize(size: Size) = copy(size = size)
+
+    override fun withScale(scale: Scale) = copy(scale = scale)
 
     override suspend fun proceed(request: ImageRequest): RequestResult {
         checkRequest(request) { interceptors[index - 1] }
@@ -44,6 +46,7 @@ internal class RealInterceptorChain(
     private fun copy(
         index: Int = this.index,
         request: ImageRequest = this.request,
-        size: Size = this.size
-    ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, defaults, size, sizeResolver, eventListener)
+        size: Size = this.size,
+        scale: Scale = this.scale
+    ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, size, scale, sizeResolver, eventListener)
 }

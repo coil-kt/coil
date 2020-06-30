@@ -93,7 +93,7 @@ class RealImageLoaderTest {
             weakMemoryCache = weakMemoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
-            registry = ComponentRegistry(),
+            componentRegistry = ComponentRegistry(),
             logger = null
         )
     }

@@ -13,7 +13,7 @@ import coil.target.ViewTarget
 
 /** Used to resolve [ImageRequest.placeholder], [ImageRequest.error], and [ImageRequest.fallback]. */
 internal fun ImageRequest.getDrawableCompat(drawable: Drawable?, @DrawableRes resId: Int): Drawable? {
-    return drawable.takeIf { it !== EMPTY_DRAWABLE } ?: if (resId != 0) context.getDrawableCompat(resId) else null
+    return drawable ?: if (resId != 0) context.getDrawableCompat(resId) else null
 }
 
 internal fun ImageRequest.getLifecycle(): Lifecycle {

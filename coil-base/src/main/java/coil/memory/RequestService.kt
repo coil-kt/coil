@@ -76,7 +76,7 @@ internal class RequestService(
     }
 
     fun allowInexactSize(request: ImageRequest, sizeResolver: SizeResolver): Boolean {
-        return when (request.precision ?: defaults.precision) {
+        return when (request.precision) {
             Precision.EXACT -> false
             Precision.INEXACT -> true
             Precision.AUTOMATIC -> {
@@ -111,14 +111,14 @@ internal class RequestService(
     ): Options {
         // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
         val isValidConfig = isConfigValidForTransformations(request) && isConfigValidForHardwareAllocation(request, size)
-        val bitmapConfig = if (isValidConfig) request.bitmapConfig ?: defaults.bitmapConfig else Bitmap.Config.ARGB_8888
+        val bitmapConfig = if (isValidConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
 
         // Disable fetching from the network if we know we're offline.
         val networkCachePolicy = if (isOnline) request.networkCachePolicy else CachePolicy.DISABLED
 
         // Disable allowRgb565 if there are transformations or the requested config is ALPHA_8.
         // ALPHA_8 is a mask config where each pixel is 1 byte so it wouldn't make sense to use RGB_565 as an optimization in that case.
-        val allowRgb565 = (request.allowRgb565 ?: defaults.allowRgb565) && request.transformations.isEmpty() && bitmapConfig != Bitmap.Config.ALPHA_8
+        val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() && bitmapConfig != Bitmap.Config.ALPHA_8
 
         return Options(
             config = bitmapConfig,
@@ -128,9 +128,9 @@ internal class RequestService(
             allowRgb565 = allowRgb565,
             headers = request.headers,
             parameters = request.parameters,
-            memoryCachePolicy = request.memoryCachePolicy ?: defaults.memoryCachePolicy,
-            diskCachePolicy = request.diskCachePolicy ?: defaults.diskCachePolicy,
-            networkCachePolicy = networkCachePolicy ?: defaults.networkCachePolicy
+            memoryCachePolicy = request.memoryCachePolicy,
+            diskCachePolicy = request.diskCachePolicy,
+            networkCachePolicy = networkCachePolicy
         )
     }
 
@@ -140,7 +140,7 @@ internal class RequestService(
         if (!requestedConfig.isHardware) return true
 
         // Ensure the request allows hardware bitmaps.
-        if (!(request.allowHardware ?: defaults.allowHardware)) return false
+        if (!request.allowHardware) return false
 
         // Prevent hardware bitmaps for non-hardware accelerated targets.
         val target = request.target
@@ -157,13 +157,13 @@ internal class RequestService(
      */
     @WorkerThread
     private fun isConfigValidForHardwareAllocation(request: ImageRequest, size: Size): Boolean {
-        return isConfigValidForHardware(request, request.bitmapConfig ?: defaults.bitmapConfig) &&
+        return isConfigValidForHardware(request, request.bitmapConfig) &&
             hardwareBitmapService.allowHardware(size, logger)
     }
 
     /** Return true if [ImageRequest.bitmapConfig] is valid given its [Transformation]s. */
     private fun isConfigValidForTransformations(request: ImageRequest): Boolean {
-        return request.transformations.isEmpty() || (request.bitmapConfig ?: defaults.bitmapConfig) in VALID_TRANSFORMATION_CONFIGS
+        return request.transformations.isEmpty() || request.bitmapConfig in VALID_TRANSFORMATION_CONFIGS
     }
 
     companion object {

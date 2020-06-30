@@ -1,10 +1,10 @@
 package coil.interceptor
 
-import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.RequestResult
+import coil.size.Scale
 import coil.size.Size
 
 /**
@@ -19,16 +19,13 @@ interface Interceptor {
 
         val request: ImageRequest
 
-        val defaults: DefaultRequestOptions
-
         val size: Size
 
-        /**
-         * Change the [Size] passed to subsequent interceptors in the chain.
-         *
-         * @see size The resolved size for the request.
-         */
+        val scale: Scale
+
         fun withSize(size: Size): Chain
+
+        fun withScale(scale: Scale): Chain
 
         /**
          * Continue executing the chain.

@@ -67,7 +67,7 @@ class SystemCallbacksTest {
             weakMemoryCache = weakMemoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
-            registry = ComponentRegistry(),
+            componentRegistry = ComponentRegistry(),
             logger = null
         )
         val systemCallbacks = SystemCallbacks(imageLoader, context)
