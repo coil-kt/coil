@@ -19,6 +19,8 @@ import coil.size.ViewSizeResolver
 import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
+import coil.util.BIT_ERROR
+import coil.util.BIT_FALLBACK
 import coil.util.Logger
 import coil.util.isAttachedToWindowCompat
 import coil.util.isHardware
@@ -34,9 +36,9 @@ internal class RequestService(
 
     fun errorResult(request: ImageRequest, throwable: Throwable): ErrorResult {
         val drawable = if (throwable is NullRequestDataException) {
-            request.fallback ?: defaults.fallback
+            request.fallback.takeIf { request.writes[BIT_FALLBACK] } ?: defaults.fallback
         } else {
-            request.error ?: defaults.error
+            request.error.takeIf { request.writes[BIT_ERROR] } ?: defaults.error
         }
         return ErrorResult(drawable, request, throwable)
     }
