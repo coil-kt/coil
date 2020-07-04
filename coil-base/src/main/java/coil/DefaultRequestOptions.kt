@@ -8,6 +8,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.size.Precision
+import coil.size.Scale
 import coil.transition.Transition
 import coil.util.Utils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -21,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 class DefaultRequestOptions(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     val transition: Transition = Transition.NONE,
+    val scale: Scale = Scale.FIT,
     val precision: Precision = Precision.AUTOMATIC,
     val bitmapConfig: Bitmap.Config = Utils.DEFAULT_BITMAP_CONFIG,
     val allowHardware: Boolean = true,
@@ -38,6 +40,7 @@ class DefaultRequestOptions(
         return other is DefaultRequestOptions &&
             dispatcher == other.dispatcher &&
             transition == other.transition &&
+            scale == other.scale &&
             precision == other.precision &&
             bitmapConfig == other.bitmapConfig &&
             allowHardware == other.allowHardware &&
@@ -53,6 +56,7 @@ class DefaultRequestOptions(
     override fun hashCode(): Int {
         var result = dispatcher.hashCode()
         result = 31 * result + transition.hashCode()
+        result = 31 * result + scale.hashCode()
         result = 31 * result + precision.hashCode()
         result = 31 * result + bitmapConfig.hashCode()
         result = 31 * result + allowHardware.hashCode()
@@ -67,9 +71,10 @@ class DefaultRequestOptions(
     }
 
     override fun toString(): String {
-        return "DefaultRequestOptions(dispatcher=$dispatcher, transition=$transition, precision=$precision, " +
-            "bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
-            "placeholder=$placeholder, error=$error, fallback=$fallback, memoryCachePolicy=$memoryCachePolicy, " +
-            "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
+        return "DefaultRequestOptions(dispatcher=$dispatcher, transition=$transition, scale=$scale, " +
+            "precision=$precision, bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, " +
+            "allowRgb565=$allowRgb565, placeholder=$placeholder, error=$error, fallback=$fallback, " +
+            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
+            "networkCachePolicy=$networkCachePolicy)"
     }
 }

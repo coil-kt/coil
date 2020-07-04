@@ -4,7 +4,6 @@ import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.RequestResult
-import coil.size.Scale
 import coil.size.Size
 
 /**
@@ -21,11 +20,7 @@ interface Interceptor {
 
         val size: Size
 
-        val scale: Scale
-
         fun withSize(size: Size): Chain
-
-        fun withScale(scale: Scale): Chain
 
         /**
          * Continue executing the chain.

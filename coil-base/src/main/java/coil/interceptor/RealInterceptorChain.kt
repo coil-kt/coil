@@ -16,37 +16,34 @@ internal class RealInterceptorChain(
     val index: Int,
     override val request: ImageRequest,
     override val size: Size,
-    override val scale: Scale,
+    val scale: Scale,
     val sizeResolver: SizeResolver,
     val eventListener: EventListener
 ) : Interceptor.Chain {
 
     override fun withSize(size: Size) = copy(size = size)
 
-    override fun withScale(scale: Scale) = copy(scale = scale)
-
     override suspend fun proceed(request: ImageRequest): RequestResult {
-        checkRequest(request) { interceptors[index - 1] }
+        if (index > 0) checkRequest(request, interceptors[index - 1])
         val interceptor = interceptors[index]
         val next = copy(index = index + 1, request = request)
         val result = interceptor.intercept(next)
-        checkRequest(result.request) { interceptor }
+        checkRequest(result.request, interceptor)
         return result
     }
 
-    private inline fun checkRequest(request: ImageRequest, interceptor: () -> Interceptor) {
+    private fun checkRequest(request: ImageRequest, interceptor: Interceptor) {
         check(request.data != null) {
-            "Interceptor '${interceptor()}' cannot set the request's data to null."
+            "Interceptor '$interceptor' cannot set the request's data to null."
         }
         check(request.target === initialRequest.target) {
-            "Interceptor '${interceptor()}' cannot modify the request's target."
+            "Interceptor '$interceptor' cannot modify the request's target."
         }
     }
 
     private fun copy(
         index: Int = this.index,
         request: ImageRequest = this.request,
-        size: Size = this.size,
-        scale: Scale = this.scale
+        size: Size = this.size
     ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, size, scale, sizeResolver, eventListener)
 }

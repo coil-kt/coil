@@ -1,6 +1,7 @@
 package coil.memory
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
 import androidx.annotation.WorkerThread
@@ -21,6 +22,7 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.BIT_ERROR
 import coil.util.BIT_FALLBACK
+import coil.util.BIT_PLACEHOLDER
 import coil.util.Logger
 import coil.util.isAttachedToWindowCompat
 import coil.util.isHardware
@@ -35,12 +37,23 @@ internal class RequestService(
     private val hardwareBitmapService = HardwareBitmapService()
 
     fun errorResult(request: ImageRequest, throwable: Throwable): ErrorResult {
-        val drawable = if (throwable is NullRequestDataException) {
-            request.fallback.takeIf { request.writes[BIT_FALLBACK] } ?: defaults.fallback
-        } else {
-            request.error.takeIf { request.writes[BIT_ERROR] } ?: defaults.error
-        }
-        return ErrorResult(drawable, request, throwable)
+        return ErrorResult(
+            drawable = if (throwable is NullRequestDataException) fallback(request) else error(request),
+            request = request,
+            throwable = throwable
+        )
+    }
+
+    fun placeholder(request: ImageRequest): Drawable? {
+        return request.placeholder.takeIf { request.writes[BIT_PLACEHOLDER] } ?: defaults.placeholder
+    }
+
+    fun error(request: ImageRequest): Drawable? {
+        return request.error.takeIf { request.writes[BIT_ERROR] } ?: defaults.error
+    }
+
+    fun fallback(request: ImageRequest): Drawable? {
+        return request.fallback.takeIf { request.writes[BIT_FALLBACK] } ?: defaults.fallback
     }
 
     fun sizeResolver(request: ImageRequest): SizeResolver {

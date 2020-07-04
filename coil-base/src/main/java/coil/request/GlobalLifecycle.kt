@@ -29,4 +29,6 @@ internal object GlobalLifecycle : Lifecycle() {
     override fun removeObserver(observer: LifecycleObserver) {}
 
     override fun getCurrentState() = State.RESUMED
+
+    override fun toString() = "coil.request.GlobalLifecycle"
 }

@@ -42,7 +42,6 @@ import coil.size.Size
 import coil.size.SizeResolver
 import coil.target.ViewTarget
 import coil.util.BIT_DISPATCHER
-import coil.util.BIT_PLACEHOLDER
 import coil.util.Emoji
 import coil.util.Logger
 import coil.util.SystemCallbacks
@@ -172,8 +171,7 @@ internal class RealImageLoader(
                 ?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
                 ?.bitmap?.toDrawable(request.context)
             targetDelegate.metadata = null
-            val placeholder = cached ?: request.placeholder.takeIf { request.writes[BIT_PLACEHOLDER] } ?: defaults.placeholder
-            targetDelegate.start(cached, placeholder)
+            targetDelegate.start(cached, cached ?: requestService.placeholder(request))
             eventListener.onStart(request)
             request.listener?.onStart(request)
 
@@ -226,6 +224,24 @@ internal class RealImageLoader(
         bitmapPool.clear()
     }
 
+    private fun prepare(request: ImageRequest): ImageRequest {
+        val builder = request.newBuilder()
+        if (!request.isDispatcherSet) builder.dispatcher(defaults.dispatcher)
+        if (!request.isTransitionSet) builder.transition(defaults.transition)
+        if (!request.isScaleSet) builder.scale()
+        if (!request.isPrecisionSet) builder.precision(defaults.precision)
+        if (!request.isBitmapConfigSet) builder.bitmapConfig(defaults.bitmapConfig)
+        if (!request.isAllowHardwareSet) builder.allowHardware(defaults.allowHardware)
+        if (!request.isAllowRgb565Set) builder.allowRgb565(defaults.allowRgb565)
+        if (!request.isPlaceholderSet) builder.placeholder(defaults.placeholder)
+        if (!request.isErrorSet) builder.error(defaults.error)
+        if (!request.isFallbackSet) builder.fallback(defaults.fallback)
+        if (!request.isMemoryCachePolicySet) builder.memoryCachePolicy(defaults.memoryCachePolicy)
+        if (!request.isDiskCachePolicySet) builder.diskCachePolicy(defaults.diskCachePolicy)
+        if (!request.isNetworkCachePolicySet) builder.networkCachePolicy(defaults.networkCachePolicy)
+        return builder.build()
+    }
+
     private suspend inline fun executeChain(
         request: ImageRequest,
         type: Int,
@@ -233,7 +249,7 @@ internal class RealImageLoader(
         scale: Scale,
         sizeResolver: SizeResolver,
         eventListener: EventListener
-    ): RequestResult = withContext(if (request.writes[BIT_DISPATCHER]) request.dispatcher else defaults.dispatcher) {
+    ): RequestResult = withContext(request.dispatcher) {
         RealInterceptorChain(request, type, interceptors, 0, request, size, scale, sizeResolver, eventListener).proceed(request)
     }
 

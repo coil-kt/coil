@@ -16,7 +16,7 @@ import androidx.annotation.Px
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import coil.ComponentRegistry
+import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.Decoder
@@ -36,28 +36,13 @@ import coil.target.Target
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
-import coil.util.BIT_ALLOW_HARDWARE
-import coil.util.BIT_ALLOW_RGB565
-import coil.util.BIT_BITMAP_CONFIG
-import coil.util.BIT_DISK_CACHE_POLICY
-import coil.util.BIT_DISPATCHER
-import coil.util.BIT_ERROR
-import coil.util.BIT_FALLBACK
-import coil.util.BIT_MEMORY_CACHE_POLICY
-import coil.util.BIT_NETWORK_CACHE_POLICY
-import coil.util.BIT_PLACEHOLDER
-import coil.util.BIT_PRECISION
-import coil.util.BIT_TRANSITION
-import coil.util.DEFAULTS
-import coil.util.NUM_INDEXES
-import coil.util.copy
 import coil.util.getDrawableCompat
 import coil.util.orEmpty
+import coil.util.toBinaryString
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import java.io.File
-import java.util.BitSet
 
 /**
  * An immutable data object that represents a request for an image.
@@ -69,7 +54,7 @@ class ImageRequest private constructor(
     val context: Context,
 
     /** @see Builder.data */
-    val data: Any?,
+    val data: Any,
 
     /** @see Builder.key */
     val key: MemoryCache.Key?,
@@ -81,7 +66,7 @@ class ImageRequest private constructor(
     val listener: Listener?,
 
     /** @see Builder.lifecycle */
-    val lifecycle: Lifecycle?,
+    val lifecycle: Lifecycle,
 
     /** @see Builder.dispatcher */
     val dispatcher: CoroutineDispatcher,
@@ -99,10 +84,10 @@ class ImageRequest private constructor(
     val colorSpace: ColorSpace?,
 
     /** @see Builder.size */
-    val sizeResolver: SizeResolver?,
+    val sizeResolver: SizeResolver,
 
     /** @see Builder.scale */
-    val scale: Scale?,
+    val scale: Scale,
 
     /** @see Builder.precision */
     val precision: Precision,
@@ -144,8 +129,8 @@ class ImageRequest private constructor(
     private val fallbackResId: Int,
     private val fallbackDrawable: Drawable?,
 
-    /** Internal storage to track which fields to replace with defaults. */
-    internal val writes: BitSet
+    /** Tracks which fields have been set. */
+    private val writes: Int
 ) {
 
     /** @see Builder.placeholder */
@@ -156,6 +141,24 @@ class ImageRequest private constructor(
 
     /** @see Builder.fallback */
     val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId)
+
+    val isComplete: Boolean get() = writes == BIT_ALL
+
+    val isDispatcherSet: Boolean get() = read(BIT_DISPATCHER)
+    val isTransitionSet: Boolean get() = read(BIT_TRANSITION)
+    val isScaleSet: Boolean get() = read(BIT_SCALE)
+    val isPrecisionSet: Boolean get() = read(BIT_PRECISION)
+    val isBitmapConfigSet: Boolean get() = read(BIT_BITMAP_CONFIG)
+    val isAllowHardwareSet: Boolean get() = read(BIT_ALLOW_HARDWARE)
+    val isAllowRgb565Set: Boolean get() = read(BIT_ALLOW_RGB565)
+    val isPlaceholderSet: Boolean get() = read(BIT_PLACEHOLDER)
+    val isErrorSet: Boolean get() = read(BIT_ERROR)
+    val isFallbackSet: Boolean get() = read(BIT_FALLBACK)
+    val isMemoryCachePolicySet: Boolean get() = read(BIT_MEMORY_CACHE_POLICY)
+    val isDiskCachePolicySet: Boolean get() = read(BIT_DISK_CACHE_POLICY)
+    val isNetworkCachePolicySet: Boolean get() = read(BIT_NETWORK_CACHE_POLICY)
+
+    private fun read(mask: Int) = writes and mask != 0
 
     @JvmOverloads
     fun newBuilder(context: Context = this.context) = Builder(this, context)
@@ -192,7 +195,8 @@ class ImageRequest private constructor(
             errorResId == other.errorResId &&
             errorDrawable == other.errorDrawable &&
             fallbackResId == other.fallbackResId &&
-            fallbackDrawable == other.fallbackDrawable
+            fallbackDrawable == other.fallbackDrawable &&
+            writes == other.writes
     }
 
     override fun hashCode(): Int {
@@ -207,8 +211,8 @@ class ImageRequest private constructor(
         result = 31 * result + transition.hashCode()
         result = 31 * result + bitmapConfig.hashCode()
         result = 31 * result + (colorSpace?.hashCode() ?: 0)
-        result = 31 * result + (sizeResolver?.hashCode() ?: 0)
-        result = 31 * result + (scale?.hashCode() ?: 0)
+        result = 31 * result + sizeResolver.hashCode()
+        result = 31 * result + scale.hashCode()
         result = 31 * result + precision.hashCode()
         result = 31 * result + (fetcher?.hashCode() ?: 0)
         result = 31 * result + (decoder?.hashCode() ?: 0)
@@ -226,6 +230,7 @@ class ImageRequest private constructor(
         result = 31 * result + (errorDrawable?.hashCode() ?: 0)
         result = 31 * result + fallbackResId
         result = 31 * result + (fallbackDrawable?.hashCode() ?: 0)
+        result = 31 * result + writes
         return result
     }
 
@@ -238,7 +243,7 @@ class ImageRequest private constructor(
             "networkCachePolicy=$networkCachePolicy, headers=$headers, parameters=$parameters, " +
             "placeholderKey=$placeholderKey, placeholderResId=$placeholderResId, " +
             "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
-            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable)"
+            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable, writes=${writes.toBinaryString()})"
     }
 
     /**
@@ -289,7 +294,7 @@ class ImageRequest private constructor(
         private var colorSpace: ColorSpace? = null
 
         private var sizeResolver: SizeResolver?
-        private var scale: Scale?
+        private var scale: Scale
         private var precision: Precision
 
         private var fetcher: Pair<Class<*>, Fetcher<*>>?
@@ -313,7 +318,7 @@ class ImageRequest private constructor(
         @DrawableRes private var fallbackResId: Int
         private var fallbackDrawable: Drawable?
 
-        private var writes: BitSet
+        private var writes: Int
 
         constructor(context: Context) {
             this.context = context
@@ -328,7 +333,7 @@ class ImageRequest private constructor(
             bitmapConfig = DEFAULTS.bitmapConfig
             if (SDK_INT >= 26) colorSpace = null
             sizeResolver = null
-            scale = null
+            scale = DEFAULTS.scale
             precision = DEFAULTS.precision
             fetcher = null
             decoder = null
@@ -346,7 +351,7 @@ class ImageRequest private constructor(
             errorDrawable = null
             fallbackResId = 0
             fallbackDrawable = null
-            writes = BitSet(NUM_INDEXES)
+            writes = 0
         }
 
         @JvmOverloads
@@ -438,7 +443,7 @@ class ImageRequest private constructor(
          * Set the [CoroutineDispatcher] to run the fetching, decoding, and transforming work on.
          */
         fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
-            this.writes.set(BIT_DISPATCHER)
+            write(BIT_DISPATCHER)
             this.dispatcher = dispatcher
         }
 
@@ -460,7 +465,7 @@ class ImageRequest private constructor(
          * @see ImageLoader.Builder.bitmapConfig
          */
         fun bitmapConfig(config: Bitmap.Config) = apply {
-            this.writes.set(BIT_BITMAP_CONFIG)
+            write(BIT_BITMAP_CONFIG)
             this.bitmapConfig = config
         }
 
@@ -504,6 +509,7 @@ class ImageRequest private constructor(
          * NOTE: If [scale] is not set, it is automatically computed for [ImageView] targets.
          */
         fun scale(scale: Scale) = apply {
+            write(BIT_SCALE)
             this.scale = scale
         }
 
@@ -519,16 +525,12 @@ class ImageRequest private constructor(
          * @see Precision
          */
         fun precision(precision: Precision) = apply {
-            this.writes.set(BIT_PRECISION)
+            write(BIT_PRECISION)
             this.precision = precision
         }
 
         /**
-         * Set the [Fetcher] to handle fetching any image data.
-         *
-         * If this isn't set, the [ImageLoader] will find an applicable [Fetcher] that's registered in its [ComponentRegistry].
-         *
-         * NOTE: This skips calling [Fetcher.handles] for [fetcher].
+         * Force [fetcher] to handle fetching any image data for this request.
          */
         inline fun <reified R : Any> fetcher(fetcher: Fetcher<R>) = fetcher(R::class.java, fetcher)
 
@@ -541,11 +543,7 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the [Decoder] to handle decoding any image data.
-         *
-         * If this isn't set, the [ImageLoader] will find an applicable [Decoder] that's registered in its [ComponentRegistry].
-         *
-         * NOTE: This skips calling [Decoder.handles] for [decoder].
+         * Force [decoder] to handle decoding any image data for this request.
          */
         fun decoder(decoder: Decoder) = apply {
             this.decoder = decoder
@@ -559,7 +557,7 @@ class ImageRequest private constructor(
          * This is useful for shared element transitions, which do not support hardware bitmaps.
          */
         fun allowHardware(enable: Boolean) = apply {
-            this.writes.set(BIT_ALLOW_HARDWARE)
+            write(BIT_ALLOW_HARDWARE)
             this.allowHardware = enable
         }
 
@@ -567,7 +565,7 @@ class ImageRequest private constructor(
          * @see ImageLoader.Builder.allowRgb565
          */
         fun allowRgb565(enable: Boolean) = apply {
-            this.writes.set(BIT_ALLOW_RGB565)
+            write(BIT_ALLOW_RGB565)
             this.allowRgb565 = enable
         }
 
@@ -575,7 +573,7 @@ class ImageRequest private constructor(
          * Enable/disable reading/writing from/to the memory cache.
          */
         fun memoryCachePolicy(policy: CachePolicy) = apply {
-            this.writes.set(BIT_MEMORY_CACHE_POLICY)
+            write(BIT_MEMORY_CACHE_POLICY)
             this.memoryCachePolicy = policy
         }
 
@@ -583,7 +581,7 @@ class ImageRequest private constructor(
          * Enable/disable reading/writing from/to the disk cache.
          */
         fun diskCachePolicy(policy: CachePolicy) = apply {
-            this.writes.set(BIT_DISK_CACHE_POLICY)
+            write(BIT_DISK_CACHE_POLICY)
             this.diskCachePolicy = policy
         }
 
@@ -593,7 +591,7 @@ class ImageRequest private constructor(
          * NOTE: Disabling writes has no effect.
          */
         fun networkCachePolicy(policy: CachePolicy) = apply {
-            this.writes.set(BIT_NETWORK_CACHE_POLICY)
+            write(BIT_NETWORK_CACHE_POLICY)
             this.networkCachePolicy = policy
         }
 
@@ -667,7 +665,7 @@ class ImageRequest private constructor(
          * Set the placeholder drawable to use when the request starts.
          */
         fun placeholder(@DrawableRes drawableResId: Int) = apply {
-            this.writes.set(BIT_PLACEHOLDER)
+            write(BIT_PLACEHOLDER)
             this.placeholderResId = drawableResId
             this.placeholderDrawable = null
         }
@@ -676,7 +674,7 @@ class ImageRequest private constructor(
          * Set the placeholder drawable to use when the request starts.
          */
         fun placeholder(drawable: Drawable?) = apply {
-            this.writes.set(BIT_PLACEHOLDER)
+            write(BIT_PLACEHOLDER)
             this.placeholderDrawable = drawable
             this.placeholderResId = 0
         }
@@ -685,7 +683,7 @@ class ImageRequest private constructor(
          * Set the error drawable to use if the request fails.
          */
         fun error(@DrawableRes drawableResId: Int) = apply {
-            this.writes.set(BIT_ERROR)
+            write(BIT_ERROR)
             this.errorResId = drawableResId
             this.errorDrawable = null
         }
@@ -694,7 +692,7 @@ class ImageRequest private constructor(
          * Set the error drawable to use if the request fails.
          */
         fun error(drawable: Drawable?) = apply {
-            this.writes.set(BIT_ERROR)
+            write(BIT_ERROR)
             this.errorDrawable = drawable
             this.errorResId = 0
         }
@@ -703,7 +701,7 @@ class ImageRequest private constructor(
          * Set the fallback drawable to use if [data] is null.
          */
         fun fallback(@DrawableRes drawableResId: Int) = apply {
-            this.writes.set(BIT_FALLBACK)
+            write(BIT_FALLBACK)
             this.fallbackResId = drawableResId
             this.fallbackDrawable = null
         }
@@ -712,7 +710,7 @@ class ImageRequest private constructor(
          * Set the fallback drawable to use if [data] is null.
          */
         fun fallback(drawable: Drawable?) = apply {
-            this.writes.set(BIT_FALLBACK)
+            write(BIT_FALLBACK)
             this.fallbackDrawable = drawable
             this.fallbackResId = 0
         }
@@ -758,7 +756,7 @@ class ImageRequest private constructor(
          */
         @ExperimentalCoilApi
         fun transition(transition: Transition) = apply {
-            this.writes.set(BIT_TRANSITION)
+            write(BIT_TRANSITION)
             this.transition = transition
         }
 
@@ -777,6 +775,10 @@ class ImageRequest private constructor(
          */
         fun lifecycle(lifecycle: Lifecycle?) = apply {
             this.lifecycle = lifecycle
+        }
+
+        private fun write(mask: Int) {
+            writes = writes or mask
         }
 
         /**
@@ -814,8 +816,31 @@ class ImageRequest private constructor(
                 errorDrawable,
                 fallbackResId,
                 fallbackDrawable,
-                writes.copy()
+                writes
             )
         }
+    }
+
+    private companion object {
+        // Used for tracking which fields have been set explicitly
+        // and will not be replaced by an image loader's defaults.
+        const val BIT_DISPATCHER =              0b0000000000000001
+        const val BIT_TRANSITION =              0b0000000000000010
+        const val BIT_SCALE =                   0b0000000000000100
+        const val BIT_PRECISION =               0b0000000000001000
+        const val BIT_BITMAP_CONFIG =           0b0000000000010000
+        const val BIT_ALLOW_HARDWARE =          0b0000000000100000
+        const val BIT_ALLOW_RGB565 =            0b0000000001000000
+        const val BIT_PLACEHOLDER =             0b0000000010000000
+        const val BIT_ERROR =                   0b0000000100000000
+        const val BIT_FALLBACK =                0b0000001000000000
+        const val BIT_MEMORY_CACHE_POLICY =     0b0000010000000000
+        const val BIT_DISK_CACHE_POLICY =       0b0000100000000000
+        const val BIT_NETWORK_CACHE_POLICY =    0b0001000000000000
+        const val BIT_ALL =                     0b0001111111111111
+
+        // The default, default request options which are used as placeholders
+        // for unset values until the request is executed by an image loader.
+        val DEFAULTS = DefaultRequestOptions()
     }
 }
