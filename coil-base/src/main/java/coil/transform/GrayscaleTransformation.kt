@@ -31,7 +31,7 @@ class GrayscaleTransformation : Transformation {
         return output
     }
 
-    companion object {
-        private val COLOR_FILTER = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
+    private companion object {
+        val COLOR_FILTER = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
     }
 }
