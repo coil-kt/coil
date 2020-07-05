@@ -14,7 +14,6 @@ import coil.fetch.DrawableFetcher
 import coil.fetch.FileFetcher
 import coil.fetch.HttpUrlFetcher
 import coil.fetch.ResourceUriFetcher
-import coil.interceptor.DefaultsInterceptor
 import coil.interceptor.EngineInterceptor
 import coil.interceptor.RealInterceptorChain
 import coil.map.FileUriMapper
@@ -32,16 +31,14 @@ import coil.memory.WeakMemoryCache
 import coil.request.BaseTargetRequestDisposable
 import coil.request.ErrorResult
 import coil.request.ImageRequest
+import coil.request.NullRequestData
 import coil.request.NullRequestDataException
 import coil.request.RequestDisposable
 import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.request.ViewTargetRequestDisposable
-import coil.size.Scale
 import coil.size.Size
-import coil.size.SizeResolver
 import coil.target.ViewTarget
-import coil.util.BIT_DISPATCHER
 import coil.util.Emoji
 import coil.util.Logger
 import coil.util.SystemCallbacks
@@ -49,7 +46,6 @@ import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.awaitStarted
 import coil.util.emoji
-import coil.util.getLifecycle
 import coil.util.job
 import coil.util.log
 import coil.util.metadata
@@ -84,7 +80,7 @@ internal class RealImageLoader(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate +
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) })
     private val delegateService = DelegateService(this, referenceCounter, logger)
-    private val requestService = RequestService(defaults, logger)
+    private val requestService = RequestService(logger)
     override val memoryCache = RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
     private val systemCallbacks = SystemCallbacks(this, context)
@@ -106,12 +102,8 @@ internal class RealImageLoader(
         // Decoders
         .add(BitmapFactoryDecoder(context))
         .build()
-    private val interceptors = buildList {
-        add(DefaultsInterceptor(defaults))
-        addAll(registry.interceptors)
-        add(EngineInterceptor(registry, bitmapPool, strongMemoryCache, weakMemoryCache,
-            requestService, systemCallbacks, drawableDecoder, logger))
-    }
+    private val interceptors = registry.interceptors + EngineInterceptor(registry, bitmapPool,
+        strongMemoryCache, weakMemoryCache, requestService, systemCallbacks, drawableDecoder, logger)
     private val isShutdown = AtomicBoolean(false)
 
     override fun enqueue(request: ImageRequest): RequestDisposable {
@@ -143,47 +135,45 @@ internal class RealImageLoader(
     }
 
     @MainThread
-    private suspend fun executeMain(request: ImageRequest, type: Int): RequestResult {
+    private suspend fun executeMain(initialRequest: ImageRequest, type: Int): RequestResult {
         // Ensure this image loader isn't shutdown.
         check(!isShutdown.get()) { "The image loader is shutdown." }
 
+        // Apply this image loader's defaults to this request.
+        val request = initialRequest.newBuilder().defaults(defaults).build()
+
         // Create a new event listener.
         val eventListener = eventListenerFactory.create(request)
-
-        // Find the containing lifecycle for this request.
-        val lifecycle = request.getLifecycle()
 
         // Wrap the target to support bitmap pooling.
         val targetDelegate = delegateService.createTargetDelegate(request.target, type, eventListener)
 
         // Wrap the request to manage its lifecycle.
-        val requestDelegate = delegateService.createRequestDelegate(request, targetDelegate, lifecycle, coroutineContext.job)
+        val requestDelegate = delegateService.createRequestDelegate(request, targetDelegate, coroutineContext.job)
 
         try {
             // Fail before starting if data is null.
-            request.data ?: throw NullRequestDataException()
+            if (request.data == NullRequestData) throw NullRequestDataException()
 
             // Enqueued requests suspend until the lifecycle is started.
-            if (type == REQUEST_TYPE_ENQUEUE) lifecycle.awaitStarted()
+            if (type == REQUEST_TYPE_ENQUEUE) request.lifecycle.awaitStarted()
 
             // Set the placeholder on the target.
             val cached = request.placeholderKey
                 ?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
                 ?.bitmap?.toDrawable(request.context)
             targetDelegate.metadata = null
-            targetDelegate.start(cached, cached ?: requestService.placeholder(request))
+            targetDelegate.start(cached, cached ?: request.placeholder)
             eventListener.onStart(request)
             request.listener?.onStart(request)
 
             // Resolve the size and scale.
-            val sizeResolver = requestService.sizeResolver(request)
-            eventListener.resolveSizeStart(request, sizeResolver)
-            val size = sizeResolver.size()
-            eventListener.resolveSizeEnd(request, sizeResolver, size)
-            val scale = requestService.scale(request, sizeResolver)
+            eventListener.resolveSizeStart(request)
+            val size = request.sizeResolver.size()
+            eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
-            val result = executeChain(request, type, size, scale, sizeResolver, eventListener)
+            val result = executeChain(request, type, size, eventListener)
 
             // Set the result on the target.
             when (result) {
@@ -224,33 +214,13 @@ internal class RealImageLoader(
         bitmapPool.clear()
     }
 
-    private fun prepare(request: ImageRequest): ImageRequest {
-        val builder = request.newBuilder()
-        if (!request.isDispatcherSet) builder.dispatcher(defaults.dispatcher)
-        if (!request.isTransitionSet) builder.transition(defaults.transition)
-        if (!request.isScaleSet) builder.scale()
-        if (!request.isPrecisionSet) builder.precision(defaults.precision)
-        if (!request.isBitmapConfigSet) builder.bitmapConfig(defaults.bitmapConfig)
-        if (!request.isAllowHardwareSet) builder.allowHardware(defaults.allowHardware)
-        if (!request.isAllowRgb565Set) builder.allowRgb565(defaults.allowRgb565)
-        if (!request.isPlaceholderSet) builder.placeholder(defaults.placeholder)
-        if (!request.isErrorSet) builder.error(defaults.error)
-        if (!request.isFallbackSet) builder.fallback(defaults.fallback)
-        if (!request.isMemoryCachePolicySet) builder.memoryCachePolicy(defaults.memoryCachePolicy)
-        if (!request.isDiskCachePolicySet) builder.diskCachePolicy(defaults.diskCachePolicy)
-        if (!request.isNetworkCachePolicySet) builder.networkCachePolicy(defaults.networkCachePolicy)
-        return builder.build()
-    }
-
     private suspend inline fun executeChain(
         request: ImageRequest,
         type: Int,
         size: Size,
-        scale: Scale,
-        sizeResolver: SizeResolver,
         eventListener: EventListener
     ): RequestResult = withContext(request.dispatcher) {
-        RealInterceptorChain(request, type, interceptors, 0, request, size, scale, sizeResolver, eventListener).proceed(request)
+        RealInterceptorChain(request, type, interceptors, 0, request, size, eventListener).proceed(request)
     }
 
     private suspend inline fun onSuccess(
@@ -263,7 +233,7 @@ internal class RealImageLoader(
         val dataSource = metadata.dataSource
         logger?.log(TAG, Log.INFO) { "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}" }
         targetDelegate.metadata = metadata
-        targetDelegate.success(result, request.transition)
+        targetDelegate.success(result)
         eventListener.onSuccess(request, metadata)
         request.listener?.onSuccess(request, metadata)
     }
@@ -276,7 +246,7 @@ internal class RealImageLoader(
         val request = result.request
         logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - ${result.throwable}" }
         targetDelegate.metadata = null
-        targetDelegate.error(result, request.transition)
+        targetDelegate.error(result)
         eventListener.onError(request, result.throwable)
         request.listener?.onError(request, result.throwable)
     }

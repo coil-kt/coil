@@ -8,7 +8,6 @@ import coil.annotation.ExperimentalCoilApi
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.size.Precision
-import coil.size.Scale
 import coil.transition.Transition
 import coil.util.Utils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,11 +17,11 @@ import kotlinx.coroutines.Dispatchers
  * A set of default options that are used to fill in unset [ImageRequest] values.
  *
  * @see ImageLoader.defaults
+ * @see ImageRequest.defaults
  */
 class DefaultRequestOptions(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     val transition: Transition = Transition.NONE,
-    val scale: Scale = Scale.FIT,
     val precision: Precision = Precision.AUTOMATIC,
     val bitmapConfig: Bitmap.Config = Utils.DEFAULT_BITMAP_CONFIG,
     val allowHardware: Boolean = true,
@@ -35,12 +34,27 @@ class DefaultRequestOptions(
     val networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 ) {
 
+    fun copy(
+        dispatcher: CoroutineDispatcher = this.dispatcher,
+        transition: Transition = this.transition,
+        precision: Precision = this.precision,
+        bitmapConfig: Bitmap.Config = this.bitmapConfig,
+        allowHardware: Boolean = this.allowHardware,
+        allowRgb565: Boolean = this.allowRgb565,
+        placeholder: Drawable? = this.placeholder,
+        error: Drawable? = this.error,
+        fallback: Drawable? = this.fallback,
+        memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+        diskCachePolicy: CachePolicy = this.diskCachePolicy,
+        networkCachePolicy: CachePolicy = this.networkCachePolicy
+    ) = DefaultRequestOptions(dispatcher, transition, precision, bitmapConfig, allowHardware, allowRgb565, placeholder,
+        error, fallback, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         return other is DefaultRequestOptions &&
             dispatcher == other.dispatcher &&
             transition == other.transition &&
-            scale == other.scale &&
             precision == other.precision &&
             bitmapConfig == other.bitmapConfig &&
             allowHardware == other.allowHardware &&
@@ -56,7 +70,6 @@ class DefaultRequestOptions(
     override fun hashCode(): Int {
         var result = dispatcher.hashCode()
         result = 31 * result + transition.hashCode()
-        result = 31 * result + scale.hashCode()
         result = 31 * result + precision.hashCode()
         result = 31 * result + bitmapConfig.hashCode()
         result = 31 * result + allowHardware.hashCode()
@@ -71,10 +84,13 @@ class DefaultRequestOptions(
     }
 
     override fun toString(): String {
-        return "DefaultRequestOptions(dispatcher=$dispatcher, transition=$transition, scale=$scale, " +
-            "precision=$precision, bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, " +
-            "allowRgb565=$allowRgb565, placeholder=$placeholder, error=$error, fallback=$fallback, " +
-            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
-            "networkCachePolicy=$networkCachePolicy)"
+        return "DefaultRequestOptions(dispatcher=$dispatcher, transition=$transition, precision=$precision, " +
+            "bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
+            "placeholder=$placeholder, error=$error, fallback=$fallback, memoryCachePolicy=$memoryCachePolicy, " +
+            "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
+    }
+
+    companion object {
+        @JvmField val INSTANCE = DefaultRequestOptions()
     }
 }

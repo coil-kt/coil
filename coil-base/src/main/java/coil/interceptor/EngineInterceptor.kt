@@ -27,9 +27,7 @@ import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.OriginalSize
 import coil.size.PixelSize
-import coil.size.Scale
 import coil.size.Size
-import coil.size.SizeResolver
 import coil.transform.Transformation
 import coil.util.Logger
 import coil.util.SystemCallbacks
@@ -71,10 +69,8 @@ internal class EngineInterceptor(
 
             val request = chain.request
             val context = request.context
-            val data = request.data!!
+            val data = request.data
             val size = chain.size
-            val sizeResolver = chain.sizeResolver
-            val scale = chain.scale
             val eventListener = chain.eventListener
 
             // Perform any data mapping.
@@ -95,7 +91,7 @@ internal class EngineInterceptor(
                 ?.toDrawable(context)
 
             // Short circuit if the cached bitmap is valid.
-            if (cachedDrawable != null && isCachedValueValid(key, value, request, sizeResolver, size, scale)) {
+            if (cachedDrawable != null && isCachedValueValid(key, value, request, size)) {
                 return SuccessResult(
                     drawable = value.bitmap.toDrawable(context),
                     request = request,
@@ -104,8 +100,7 @@ internal class EngineInterceptor(
             }
 
             // Fetch and decode the image.
-            val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType,
-                sizeResolver, size, scale, eventListener)
+            val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
 
             // Cache the result in the memory cache.
             val isCached = request.memoryCachePolicy.writeEnabled && strongMemoryCache.set(key, drawable, isSampled)
@@ -146,12 +141,10 @@ internal class EngineInterceptor(
         cacheKey: MemoryCache.Key?,
         cacheValue: RealMemoryCache.Value,
         request: ImageRequest,
-        sizeResolver: SizeResolver,
-        size: Size,
-        scale: Scale
+        size: Size
     ): Boolean {
         // Ensure the size of the cached bitmap is valid for the request.
-        if (!isSizeValid(cacheKey, cacheValue, request, sizeResolver, size, scale)) {
+        if (!isSizeValid(cacheKey, cacheValue, request, size)) {
             return false
         }
 
@@ -173,9 +166,7 @@ internal class EngineInterceptor(
         cacheKey: MemoryCache.Key?,
         cacheValue: RealMemoryCache.Value,
         request: ImageRequest,
-        sizeResolver: SizeResolver,
-        size: Size,
-        scale: Scale
+        size: Size
     ): Boolean {
         when (size) {
             is OriginalSize -> {
@@ -213,19 +204,19 @@ internal class EngineInterceptor(
                     srcHeight = cachedHeight,
                     dstWidth = size.width,
                     dstHeight = size.height,
-                    scale = scale
+                    scale = request.scale
                 )
-                if (multiple != 1.0 && !requestService.allowInexactSize(request, sizeResolver)) {
+                if (multiple != 1.0 && !request.allowInexactSize) {
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) " +
-                            "does not exactly match the requested size (${size.width}, ${size.height}, $scale)."
+                            "does not exactly match the requested size (${size.width}, ${size.height}, ${request.scale})."
                     }
                     return false
                 }
                 if (multiple > 1.0 && cacheValue.isSampled) {
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) " +
-                            "is smaller than the requested size (${size.width}, ${size.height}, $scale)."
+                            "is smaller than the requested size (${size.width}, ${size.height}, ${request.scale})."
                     }
                     return false
                 }
@@ -242,12 +233,10 @@ internal class EngineInterceptor(
         fetcher: Fetcher<Any>,
         request: ImageRequest,
         type: Int,
-        sizeResolver: SizeResolver,
         size: Size,
-        scale: Scale,
         eventListener: EventListener
     ): DrawableResult {
-        val options = requestService.options(request, sizeResolver, size, scale, systemCallbacks.isOnline)
+        val options = requestService.options(request, size, systemCallbacks.isOnline)
 
         eventListener.fetchStart(request, fetcher, options)
         val fetchResult = fetcher.fetch(bitmapPool, data, size, options)
@@ -266,7 +255,7 @@ internal class EngineInterceptor(
                         // disabled. Instead, we exhaust the source and return an empty result.
                         EmptyDecoder
                     } else {
-                        request.decoder ?: registry.requireDecoder(request.data!!, fetchResult.source, fetchResult.mimeType)
+                        request.decoder ?: registry.requireDecoder(request.data, fetchResult.source, fetchResult.mimeType)
                     }
 
                     // Decode the stream.

@@ -2,7 +2,6 @@ package coil.memory
 
 import android.graphics.Bitmap
 import androidx.annotation.MainThread
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import coil.EventListener
 import coil.ImageLoader
@@ -51,13 +50,13 @@ internal class DelegateService(
     fun createRequestDelegate(
         request: ImageRequest,
         targetDelegate: TargetDelegate,
-        lifecycle: Lifecycle,
         job: Job
     ): RequestDelegate {
+        val lifecycle = request.lifecycle
         val delegate: RequestDelegate
         when (request.target) {
             is ViewTarget<*> -> {
-                delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, lifecycle, job)
+                delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, job)
                 lifecycle.addObserver(delegate)
                 if (request.target is LifecycleObserver) lifecycle.addObserver(request.target)
                 request.target.view.requestManager.setCurrentRequest(delegate)

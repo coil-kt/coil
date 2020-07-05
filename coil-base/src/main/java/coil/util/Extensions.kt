@@ -6,7 +6,6 @@ package coil.util
 
 import android.app.ActivityManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
@@ -23,7 +22,6 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import coil.DefaultRequestOptions
 import coil.annotation.ExperimentalCoilApi
 import coil.base.R
 import coil.decode.DataSource
@@ -31,16 +29,12 @@ import coil.memory.MemoryCache
 import coil.memory.StrongMemoryCache
 import coil.memory.TargetDelegate
 import coil.memory.ViewTargetRequestManager
-import coil.request.CachePolicy
 import coil.request.Metadata
 import coil.request.Parameters
-import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.target.ViewTarget
 import coil.transform.Transformation
-import coil.transition.Transition
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import okhttp3.Call
 import okhttp3.Headers
@@ -206,19 +200,3 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
         parameters = parameters.cacheKeys()
     )
 }
-
-internal fun DefaultRequestOptions.copy(
-    dispatcher: CoroutineDispatcher = this.dispatcher,
-    transition: Transition = this.transition,
-    precision: Precision = this.precision,
-    bitmapConfig: Bitmap.Config = this.bitmapConfig,
-    allowHardware: Boolean = this.allowHardware,
-    allowRgb565: Boolean = this.allowRgb565,
-    placeholder: Drawable? = this.placeholder,
-    error: Drawable? = this.error,
-    fallback: Drawable? = this.fallback,
-    memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
-    diskCachePolicy: CachePolicy = this.diskCachePolicy,
-    networkCachePolicy: CachePolicy = this.networkCachePolicy
-) = DefaultRequestOptions(dispatcher, transition, precision, bitmapConfig, allowHardware, allowRgb565, placeholder,
-    error, fallback, memoryCachePolicy, diskCachePolicy, networkCachePolicy)

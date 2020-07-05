@@ -3,10 +3,9 @@ package coil.interceptor
 import coil.EventListener
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
+import coil.request.NullRequestData
 import coil.request.RequestResult
-import coil.size.Scale
 import coil.size.Size
-import coil.size.SizeResolver
 
 @OptIn(ExperimentalCoilApi::class)
 internal class RealInterceptorChain(
@@ -16,8 +15,6 @@ internal class RealInterceptorChain(
     val index: Int,
     override val request: ImageRequest,
     override val size: Size,
-    val scale: Scale,
-    val sizeResolver: SizeResolver,
     val eventListener: EventListener
 ) : Interceptor.Chain {
 
@@ -33,11 +30,17 @@ internal class RealInterceptorChain(
     }
 
     private fun checkRequest(request: ImageRequest, interceptor: Interceptor) {
-        check(request.data != null) {
+        check(request.data !== NullRequestData) {
             "Interceptor '$interceptor' cannot set the request's data to null."
         }
         check(request.target === initialRequest.target) {
             "Interceptor '$interceptor' cannot modify the request's target."
+        }
+        check(request.lifecycle === initialRequest.lifecycle) {
+            "Interceptor '$interceptor' cannot modify the request's lifecycle."
+        }
+        check(request.sizeResolver === initialRequest.sizeResolver) {
+            "Interceptor '$interceptor' cannot modify the request's size resolver."
         }
     }
 
@@ -45,5 +48,5 @@ internal class RealInterceptorChain(
         index: Int = this.index,
         request: ImageRequest = this.request,
         size: Size = this.size
-    ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, size, scale, sizeResolver, eventListener)
+    ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, size, eventListener)
 }

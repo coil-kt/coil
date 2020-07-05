@@ -30,7 +30,6 @@ import coil.transition.Transition
 import coil.util.CoilUtils
 import coil.util.Logger
 import coil.util.Utils
-import coil.util.copy
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
 import kotlinx.coroutines.CoroutineDispatcher

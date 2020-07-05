@@ -46,7 +46,6 @@ internal class ViewTargetRequestDelegate(
     private val imageLoader: ImageLoader,
     private val request: ImageRequest,
     private val targetDelegate: TargetDelegate,
-    private val lifecycle: Lifecycle,
     private val job: Job
 ) : RequestDelegate() {
 
@@ -61,8 +60,8 @@ internal class ViewTargetRequestDelegate(
         targetDelegate.clear()
         targetDelegate.metadata = null
         if (request.target is LifecycleObserver) {
-            lifecycle.removeObserver(request.target)
+            request.lifecycle.removeObserver(request.target)
         }
-        lifecycle.removeObserver(this)
+        request.lifecycle.removeObserver(this)
     }
 }

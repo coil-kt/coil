@@ -36,10 +36,10 @@ internal sealed class TargetDelegate {
     open fun start(cached: BitmapDrawable?, placeholder: Drawable?) {}
 
     @MainThread
-    open suspend fun success(result: SuccessResult, transition: Transition) {}
+    open suspend fun success(result: SuccessResult) {}
 
     @MainThread
-    open suspend fun error(result: ErrorResult, transition: Transition) {}
+    open suspend fun error(result: ErrorResult) {}
 
     @MainThread
     open fun clear() {}
@@ -61,7 +61,7 @@ internal class InvalidatableEmptyTargetDelegate(
     override val referenceCounter: BitmapReferenceCounter
 ) : TargetDelegate(), Invalidatable {
 
-    override suspend fun success(result: SuccessResult, transition: Transition) {
+    override suspend fun success(result: SuccessResult) {
         invalidate(result.bitmap)
     }
 }
@@ -81,13 +81,13 @@ internal class InvalidatableTargetDelegate(
         target.onStart(placeholder)
     }
 
-    override suspend fun success(result: SuccessResult, transition: Transition) {
+    override suspend fun success(result: SuccessResult) {
         invalidate(result.bitmap)
-        target.onSuccess(result, transition, eventListener, logger)
+        target.onSuccess(result, eventListener, logger)
     }
 
-    override suspend fun error(result: ErrorResult, transition: Transition) {
-        target.onError(result, transition, eventListener, logger)
+    override suspend fun error(result: ErrorResult) {
+        target.onError(result, eventListener, logger)
     }
 }
 
@@ -105,12 +105,12 @@ internal class PoolableTargetDelegate(
         instrument(cached?.bitmap) { onStart(placeholder) }
     }
 
-    override suspend fun success(result: SuccessResult, transition: Transition) {
-        instrument(result.bitmap) { onSuccess(result, transition, eventListener, logger) }
+    override suspend fun success(result: SuccessResult) {
+        instrument(result.bitmap) { onSuccess(result, eventListener, logger) }
     }
 
-    override suspend fun error(result: ErrorResult, transition: Transition) {
-        instrument(null) { onError(result, transition, eventListener, logger) }
+    override suspend fun error(result: ErrorResult) {
+        instrument(null) { onError(result, eventListener, logger) }
     }
 
     override fun clear() {
@@ -155,11 +155,11 @@ private inline fun Poolable.instrument(bitmap: Bitmap?, update: PoolableViewTarg
 
 private suspend inline fun Target.onSuccess(
     result: SuccessResult,
-    transition: Transition,
     eventListener: EventListener,
     logger: Logger?
 ) {
     // Short circuit if this is the empty transition.
+    val transition = result.request.transition
     if (transition === Transition.NONE) {
         onSuccess(result.drawable)
         return
@@ -173,18 +173,18 @@ private suspend inline fun Target.onSuccess(
         return
     }
 
-    eventListener.transitionStart(result.request, transition)
+    eventListener.transitionStart(result.request)
     transition.transition(this, result)
-    eventListener.transitionEnd(result.request, transition)
+    eventListener.transitionEnd(result.request)
 }
 
 private suspend inline fun Target.onError(
     result: ErrorResult,
-    transition: Transition,
     eventListener: EventListener,
     logger: Logger?
 ) {
     // Short circuit if this is the empty transition.
+    val transition = result.request.transition
     if (transition === Transition.NONE) {
         onError(result.drawable)
         return
@@ -198,9 +198,9 @@ private suspend inline fun Target.onError(
         return
     }
 
-    eventListener.transitionStart(result.request, transition)
+    eventListener.transitionStart(result.request)
     transition.transition(this, result)
-    eventListener.transitionEnd(result.request, transition)
+    eventListener.transitionEnd(result.request)
 }
 
 private const val TAG = "TargetDelegate"
