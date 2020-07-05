@@ -7,7 +7,7 @@ import coil.request.RequestResult
 import coil.size.Size
 
 /**
- * Observe, modify, short circuit, retry, or proxy requests to an [ImageLoader]'s image engine.
+ * Observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine.
  */
 @ExperimentalCoilApi
 interface Interceptor {

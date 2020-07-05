@@ -461,8 +461,7 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the scaling algorithm that will be used to fit/fill the image into the dimensions
-         * provided by [sizeResolver].
+         * Set the scaling algorithm that will be used to fit/fill the image into the size provided by [sizeResolver].
          *
          * NOTE: If [scale] is not set, it is automatically computed for [ImageView] targets.
          */
@@ -476,8 +475,8 @@ class ImageRequest private constructor(
          * The default value is [Precision.AUTOMATIC], which uses the logic in [allowInexactSize]
          * to determine if output image's dimensions must match the input [size] and [scale] exactly.
          *
-         * NOTE: If [size] is [OriginalSize], image's dimensions will always be equal to or greater than
-         * the image's original dimensions.
+         * NOTE: If [size] is [OriginalSize], the returned image's size will always be equal to or greater than
+         * the image's original size.
          *
          * @see Precision
          */
