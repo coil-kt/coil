@@ -740,8 +740,6 @@ public final class coil/target/ViewTarget$DefaultImpls {
 }
 
 public final class coil/transform/BlurTransformation : coil/transform/Transformation {
-	public static final field DEFAULT_RADIUS F
-	public static final field DEFAULT_SAMPLING F
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;F)V
 	public fun <init> (Landroid/content/Context;FF)V
