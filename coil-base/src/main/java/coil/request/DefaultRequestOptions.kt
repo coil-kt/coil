@@ -1,12 +1,11 @@
 @file:OptIn(ExperimentalCoilApi::class)
 
-package coil
+package coil.request
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.request.CachePolicy
-import coil.request.ImageRequest
 import coil.size.Precision
 import coil.transition.Transition
 import coil.util.Utils

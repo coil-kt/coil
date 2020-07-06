@@ -12,7 +12,7 @@ import androidx.lifecycle.LifecycleObserver
 interface ViewTarget<T : View> : Target {
 
     /**
-     * The [View] used by this [Target].
+     * The [View] used by this [Target]. This field should be immutable.
      */
     val view: T
 }

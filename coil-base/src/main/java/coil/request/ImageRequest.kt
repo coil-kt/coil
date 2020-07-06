@@ -17,7 +17,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
-import coil.DefaultRequestOptions
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.Decoder
@@ -39,6 +38,7 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
+import coil.util.allowInexactSize
 import coil.util.getDrawableCompat
 import coil.util.getLifecycle
 import coil.util.orEmpty
@@ -90,126 +90,152 @@ class ImageRequest private constructor(
     /** @see Builder.parameters */
     val parameters: Parameters,
 
-    // Resolved lazily if not set while building.
-    private val _lifecycle: Lifecycle?,
-    private val _sizeResolver: SizeResolver?,
-    private val _scale: Scale?,
-
-    // Merged with defaults.
-    private val _dispatcher: CoroutineDispatcher?,
-    private val _transition: Transition?,
-    private val _precision: Precision?,
-    private val _bitmapConfig: Bitmap.Config?,
-    private val _allowHardware: Boolean?,
-    private val _allowRgb565: Boolean?,
-    private val _placeholderResId: Int?,
-    private val _placeholderDrawable: Drawable?,
-    private val _errorResId: Int?,
-    private val _errorDrawable: Drawable?,
-    private val _fallbackResId: Int?,
-    private val _fallbackDrawable: Drawable?,
-    private val _memoryCachePolicy: CachePolicy?,
-    private val _diskCachePolicy: CachePolicy?,
-    private val _networkCachePolicy: CachePolicy?,
-
-    /** @see Builder.defaults */
-    val defaults: DefaultRequestOptions
-) {
-
-    private var lazyLifecycle: Lifecycle? = _lifecycle
-    private var lazySizeResolver: SizeResolver? = _sizeResolver
-    private var lazyScale: Scale? = _scale
-    private var lazyAllowInexactSize: Boolean? = null
-
     /** @see Builder.lifecycle */
-    val lifecycle: Lifecycle get() = lazyLifecycle ?: resolveLifecycle().also { lazyLifecycle = it }
+    val lifecycle: Lifecycle,
 
     /** @see Builder.sizeResolver */
-    val sizeResolver: SizeResolver get() = lazySizeResolver ?: resolveSizeResolver().also { lazySizeResolver = it }
+    val sizeResolver: SizeResolver,
 
     /** @see Builder.scale */
-    val scale: Scale get() = lazyScale ?: resolveScale().also { lazyScale = it }
-
-    val allowInexactSize: Boolean get() = lazyAllowInexactSize ?: resolveAllowInexactSize().also { lazyAllowInexactSize = it }
+    val scale: Scale,
 
     /** @see Builder.dispatcher */
-    val dispatcher: CoroutineDispatcher = _dispatcher ?: defaults.dispatcher
+    val dispatcher: CoroutineDispatcher,
 
     /** @see Builder.transition */
-    val transition: Transition = _transition ?: defaults.transition
+    val transition: Transition,
 
     /** @see Builder.precision */
-    val precision: Precision = _precision ?: defaults.precision
+    val precision: Precision,
 
     /** @see Builder.bitmapConfig */
-    val bitmapConfig: Bitmap.Config = _bitmapConfig ?: defaults.bitmapConfig
+    val bitmapConfig: Bitmap.Config,
 
     /** @see Builder.allowHardware */
-    val allowHardware: Boolean = _allowHardware ?: defaults.allowHardware
+    val allowHardware: Boolean,
 
     /** @see Builder.allowHardware */
-    val allowRgb565: Boolean = _allowRgb565 ?: defaults.allowRgb565
-
-    /** @see Builder.placeholder */
-    val placeholder: Drawable? = getDrawableCompat(_placeholderDrawable, _placeholderResId, defaults.placeholder)
-
-    /** @see Builder.error */
-    val error: Drawable? = getDrawableCompat(_errorDrawable, _errorResId, defaults.error)
-
-    /** @see Builder.fallback */
-    val fallback: Drawable? = getDrawableCompat(_fallbackDrawable, _fallbackResId, defaults.fallback)
+    val allowRgb565: Boolean,
 
     /** @see Builder.memoryCachePolicy */
-    val memoryCachePolicy: CachePolicy = _memoryCachePolicy ?: defaults.memoryCachePolicy
+    val memoryCachePolicy: CachePolicy,
 
     /** @see Builder.diskCachePolicy */
-    val diskCachePolicy: CachePolicy = _diskCachePolicy ?: defaults.diskCachePolicy
+    val diskCachePolicy: CachePolicy,
 
     /** @see Builder.networkCachePolicy */
-    val networkCachePolicy: CachePolicy = _networkCachePolicy ?: defaults.networkCachePolicy
+    val networkCachePolicy: CachePolicy,
+
+    /** Tracks which values have been set. */
+    val defined: DefinedRequestOptions,
+
+    /** The values that were used to fill unset values. */
+    val defaults: DefaultRequestOptions,
+
+    private val placeholderResId: Int?,
+    private val placeholderDrawable: Drawable?,
+    private val errorResId: Int?,
+    private val errorDrawable: Drawable?,
+    private val fallbackResId: Int?,
+    private val fallbackDrawable: Drawable?
+) {
+
+    /** @see Builder.placeholder */
+    val placeholder: Drawable? get() = getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
+
+    /** @see Builder.error */
+    val error: Drawable? get() = getDrawableCompat(errorDrawable, errorResId, defaults.error)
+
+    /** @see Builder.fallback */
+    val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
 
     @JvmOverloads
     fun newBuilder(context: Context = this.context) = Builder(this, context)
 
-    private fun resolveLifecycle(): Lifecycle {
-        val context = if (target is ViewTarget<*>) target.view.context else context
-        return context.getLifecycle() ?: GlobalLifecycle
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is ImageRequest &&
+            context == other.context &&
+            data == other.data &&
+            target == other.target &&
+            listener == other.listener &&
+            key == other.key &&
+            placeholderKey == other.placeholderKey &&
+            colorSpace == other.colorSpace &&
+            fetcher == other.fetcher &&
+            decoder == other.decoder &&
+            transformations == other.transformations &&
+            headers == other.headers &&
+            parameters == other.parameters &&
+            lifecycle == other.lifecycle &&
+            sizeResolver == other.sizeResolver &&
+            scale == other.scale &&
+            dispatcher == other.dispatcher &&
+            transition == other.transition &&
+            precision == other.precision &&
+            bitmapConfig == other.bitmapConfig &&
+            allowHardware == other.allowHardware &&
+            allowRgb565 == other.allowRgb565 &&
+            memoryCachePolicy == other.memoryCachePolicy &&
+            diskCachePolicy == other.diskCachePolicy &&
+            networkCachePolicy == other.networkCachePolicy &&
+            defined == other.defined &&
+            defaults == other.defaults &&
+            placeholderResId == other.placeholderResId &&
+            placeholderDrawable == other.placeholderDrawable &&
+            errorResId == other.errorResId &&
+            errorDrawable == other.errorDrawable &&
+            fallbackResId == other.fallbackResId &&
+            fallbackDrawable == other.fallbackDrawable
     }
 
-    private fun resolveSizeResolver(): SizeResolver {
-        return if (target is ViewTarget<*>) ViewSizeResolver(target.view) else DisplaySizeResolver(context)
+    override fun hashCode(): Int {
+        var result = context.hashCode()
+        result = 31 * result + data.hashCode()
+        result = 31 * result + (target?.hashCode() ?: 0)
+        result = 31 * result + (listener?.hashCode() ?: 0)
+        result = 31 * result + (key?.hashCode() ?: 0)
+        result = 31 * result + (placeholderKey?.hashCode() ?: 0)
+        result = 31 * result + (colorSpace?.hashCode() ?: 0)
+        result = 31 * result + (fetcher?.hashCode() ?: 0)
+        result = 31 * result + (decoder?.hashCode() ?: 0)
+        result = 31 * result + transformations.hashCode()
+        result = 31 * result + headers.hashCode()
+        result = 31 * result + parameters.hashCode()
+        result = 31 * result + lifecycle.hashCode()
+        result = 31 * result + sizeResolver.hashCode()
+        result = 31 * result + scale.hashCode()
+        result = 31 * result + dispatcher.hashCode()
+        result = 31 * result + transition.hashCode()
+        result = 31 * result + precision.hashCode()
+        result = 31 * result + bitmapConfig.hashCode()
+        result = 31 * result + allowHardware.hashCode()
+        result = 31 * result + allowRgb565.hashCode()
+        result = 31 * result + memoryCachePolicy.hashCode()
+        result = 31 * result + diskCachePolicy.hashCode()
+        result = 31 * result + networkCachePolicy.hashCode()
+        result = 31 * result + defined.hashCode()
+        result = 31 * result + defaults.hashCode()
+        result = 31 * result + (placeholderResId ?: 0)
+        result = 31 * result + (placeholderDrawable?.hashCode() ?: 0)
+        result = 31 * result + (errorResId ?: 0)
+        result = 31 * result + (errorDrawable?.hashCode() ?: 0)
+        result = 31 * result + (fallbackResId ?: 0)
+        result = 31 * result + (fallbackDrawable?.hashCode() ?: 0)
+        return result
     }
 
-    private fun resolveScale(): Scale {
-        val sizeResolver = sizeResolver
-        if (sizeResolver is ViewSizeResolver<*>) {
-            val view = sizeResolver.view
-            if (view is ImageView) return view.scale
-        }
-
-        val target = target
-        if (target is ViewTarget<*>) {
-            val view = target.view
-            if (view is ImageView) return view.scale
-        }
-
-        return Scale.FIT
-    }
-
-    private fun resolveAllowInexactSize(): Boolean {
-        // If both our target and size resolver reference the same ImageView, allow the
-        // dimensions to be inexact as the ImageView will scale the output image automatically.
-        val target = target
-        if (target is ViewTarget<*> && target.view is ImageView) {
-            val sizeResolver = sizeResolver
-            if (sizeResolver is ViewSizeResolver<*> && sizeResolver.view === target.view) return true
-        }
-
-        // If we implicitly fall back to a DisplaySizeResolver, allow the dimensions to be inexact.
-        if (_sizeResolver == null && sizeResolver is DisplaySizeResolver) return true
-
-        // Else, require the dimensions to be exact.
-        return false
+    override fun toString(): String {
+        return "ImageRequest(context=$context, data=$data, target=$target, listener=$listener, key=$key, " +
+            "placeholderKey=$placeholderKey, colorSpace=$colorSpace, fetcher=$fetcher, decoder=$decoder, " +
+            "transformations=$transformations, headers=$headers, parameters=$parameters, lifecycle=$lifecycle, " +
+            "sizeResolver=$sizeResolver, scale=$scale, dispatcher=$dispatcher, transition=$transition, " +
+            "precision=$precision, bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
+            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
+            "networkCachePolicy=$networkCachePolicy, defined=$defined, defaults=$defaults, " +
+            "placeholderResId=$placeholderResId, placeholderDrawable=$placeholderDrawable, " +
+            "errorResId=$errorResId, errorDrawable=$errorDrawable, " +
+            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable)"
     }
 
     /**
@@ -330,24 +356,24 @@ class ImageRequest private constructor(
             transformations = request.transformations
             headers = request.headers.newBuilder()
             parameters = request.parameters.newBuilder()
-            lifecycle = request._lifecycle
-            sizeResolver = request._sizeResolver
-            scale = request._scale
-            dispatcher = request._dispatcher
-            transition = request._transition
-            precision = request._precision
-            bitmapConfig = request._bitmapConfig
-            allowHardware = request._allowHardware
-            allowRgb565 = request._allowRgb565
-            memoryCachePolicy = request._memoryCachePolicy
-            diskCachePolicy = request._diskCachePolicy
-            networkCachePolicy = request._networkCachePolicy
-            placeholderResId = request._placeholderResId
-            placeholderDrawable = request._placeholderDrawable
-            errorResId = request._errorResId
-            errorDrawable = request._errorDrawable
-            fallbackResId = request._fallbackResId
-            fallbackDrawable = request._fallbackDrawable
+            lifecycle = request.defined.lifecycle
+            sizeResolver = request.defined.sizeResolver
+            scale = request.defined.scale
+            dispatcher = request.defined.dispatcher
+            transition = request.defined.transition
+            precision = request.defined.precision
+            bitmapConfig = request.defined.bitmapConfig
+            allowHardware = request.defined.allowHardware
+            allowRgb565 = request.defined.allowRgb565
+            memoryCachePolicy = request.defined.memoryCachePolicy
+            diskCachePolicy = request.defined.diskCachePolicy
+            networkCachePolicy = request.defined.networkCachePolicy
+            placeholderResId = request.placeholderResId
+            placeholderDrawable = request.placeholderDrawable
+            errorResId = request.errorResId
+            errorDrawable = request.errorDrawable
+            fallbackResId = request.fallbackResId
+            fallbackDrawable = request.fallbackDrawable
         }
 
         /**
@@ -432,6 +458,8 @@ class ImageRequest private constructor(
 
         /**
          * Set the preferred [ColorSpace].
+         *
+         * This is not guaranteed and a different color space may be used in some situations.
          */
         @RequiresApi(26)
         fun colorSpace(colorSpace: ColorSpace) = apply {
@@ -500,6 +528,10 @@ class ImageRequest private constructor(
         internal fun <T : Any> fetcher(fetcher: Fetcher<T>, type: Class<T>) = apply {
             this.fetcher = fetcher to type
         }
+
+        @Deprecated("Parameter order is reversed.", replaceWith = ReplaceWith("add(fetcher, type)"))
+        @PublishedApi
+        internal fun <T : Any> fetcher(type: Class<T>, fetcher: Fetcher<T>) = fetcher(fetcher, type)
 
         /**
          * Use [decoder] to handle decoding any image data.
@@ -738,38 +770,67 @@ class ImageRequest private constructor(
          */
         fun build(): ImageRequest {
             return ImageRequest(
-                context,
-                data ?: NullRequestData,
-                target,
-                listener,
-                key,
-                placeholderKey,
-                colorSpace,
-                fetcher,
-                decoder,
-                transformations,
-                headers?.build().orEmpty(),
-                parameters?.build().orEmpty(),
-                lifecycle,
-                sizeResolver,
-                scale,
-                dispatcher,
-                transition,
-                precision,
-                bitmapConfig,
-                allowHardware,
-                allowRgb565,
-                placeholderResId,
-                placeholderDrawable,
-                errorResId,
-                errorDrawable,
-                fallbackResId,
-                fallbackDrawable,
-                memoryCachePolicy,
-                diskCachePolicy,
-                networkCachePolicy,
-                defaults
+                context = context,
+                data = data ?: NullRequestData,
+                target = target,
+                listener = listener,
+                key = key,
+                placeholderKey = placeholderKey,
+                colorSpace = colorSpace,
+                fetcher = fetcher,
+                decoder = decoder,
+                transformations = transformations,
+                headers = headers?.build().orEmpty(),
+                parameters = parameters?.build().orEmpty(),
+                lifecycle = lifecycle ?: resolveLifecycle(),
+                sizeResolver = sizeResolver ?: resolveSizeResolver(),
+                scale = scale ?: resolveScale(),
+                dispatcher = dispatcher ?: defaults.dispatcher,
+                transition = transition ?: defaults.transition,
+                precision = precision ?: defaults.precision,
+                bitmapConfig = bitmapConfig ?: defaults.bitmapConfig,
+                allowHardware = allowHardware ?: defaults.allowHardware,
+                allowRgb565 = allowRgb565 ?: defaults.allowRgb565,
+                memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,
+                diskCachePolicy = diskCachePolicy ?: defaults.diskCachePolicy,
+                networkCachePolicy = networkCachePolicy ?: defaults.networkCachePolicy,
+                defined = DefinedRequestOptions(lifecycle, sizeResolver, scale, dispatcher, transition, precision,
+                    bitmapConfig, allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy, networkCachePolicy),
+                defaults = defaults,
+                placeholderResId = placeholderResId,
+                placeholderDrawable = placeholderDrawable,
+                errorResId = errorResId,
+                errorDrawable = errorDrawable,
+                fallbackResId = fallbackResId,
+                fallbackDrawable = fallbackDrawable
             )
+        }
+
+        private fun resolveLifecycle(): Lifecycle {
+            val target = target
+            val context = if (target is ViewTarget<*>) target.view.context else context
+            return context.getLifecycle() ?: GlobalLifecycle
+        }
+
+        private fun resolveSizeResolver(): SizeResolver {
+            val target = target
+            return if (target is ViewTarget<*>) ViewSizeResolver(target.view) else DisplaySizeResolver(context)
+        }
+
+        private fun resolveScale(): Scale {
+            val sizeResolver = sizeResolver
+            if (sizeResolver is ViewSizeResolver<*>) {
+                val view = sizeResolver.view
+                if (view is ImageView) return view.scale
+            }
+
+            val target = target
+            if (target is ViewTarget<*>) {
+                val view = target.view
+                if (view is ImageView) return view.scale
+            }
+
+            return Scale.FIT
         }
     }
 }

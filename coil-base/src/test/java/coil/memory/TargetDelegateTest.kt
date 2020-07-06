@@ -78,8 +78,12 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = SuccessResult(bitmap.toDrawable(context), request, Metadata(null, false, DataSource.DISK))
-            delegate.success(result, Transition.NONE)
+            val result = SuccessResult(
+                drawable = bitmap.toDrawable(context),
+                request = request,
+                metadata = Metadata(null, false, DataSource.DISK)
+            )
+            delegate.success(result)
             assertFalse(counter.isInvalid(bitmap))
         }
     }
@@ -91,8 +95,12 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = SuccessResult(bitmap.toDrawable(context), request, Metadata(null, false, DataSource.DISK))
-            delegate.success(result, Transition.NONE)
+            val result = SuccessResult(
+                drawable = bitmap.toDrawable(context),
+                request = request,
+                metadata = Metadata(null, false, DataSource.DISK)
+            )
+            delegate.success(result)
             assertTrue(counter.isInvalid(bitmap))
         }
     }
@@ -115,16 +123,24 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = SuccessResult(bitmap.toDrawable(context), request, Metadata(null, false, DataSource.DISK))
-            delegate.success(result, Transition.NONE)
+            val result = SuccessResult(
+                drawable = bitmap.toDrawable(context),
+                request = request,
+                metadata = Metadata(null, false, DataSource.DISK)
+            )
+            delegate.success(result)
             assertTrue(target.success)
             assertTrue(counter.isInvalid(bitmap))
         }
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = ErrorResult(bitmap.toDrawable(context), request, Throwable())
-            delegate.error(result, Transition.NONE)
+            val result = ErrorResult(
+                drawable = bitmap.toDrawable(context),
+                request = request,
+                throwable = Throwable()
+            )
+            delegate.error(result)
             assertTrue(target.error)
             assertFalse(counter.isInvalid(bitmap))
         }
@@ -145,8 +161,12 @@ class TargetDelegateTest {
 
         runBlocking {
             val bitmap = createBitmap()
-            val result = SuccessResult(bitmap.toDrawable(context), request, Metadata(null, false, DataSource.DISK))
-            delegate.success(result, Transition.NONE)
+            val result = SuccessResult(
+                drawable = bitmap.toDrawable(context),
+                request = request,
+                metadata = Metadata(null, false, DataSource.DISK)
+            )
+            delegate.success(result)
             assertFalse(counter.isInvalid(bitmap))
             assertTrue(initialBitmap in pool.bitmaps)
         }
@@ -168,7 +188,6 @@ class TargetDelegateTest {
         runBlocking {
             val bitmap = createBitmap()
             var isRunning = true
-            val result = SuccessResult(bitmap.toDrawable(context), request, Metadata(null, false, DataSource.DISK))
             val transition = object : Transition {
                 override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
                     assertFalse(initialBitmap in pool.bitmaps)
@@ -177,7 +196,12 @@ class TargetDelegateTest {
                     isRunning = false
                 }
             }
-            delegate.success(result, transition)
+            val result = SuccessResult(
+                drawable = bitmap.toDrawable(context),
+                request = request.newBuilder().transition(transition).build(),
+                metadata = Metadata(null, false, DataSource.DISK)
+            )
+            delegate.success(result)
 
             // Ensure that the animation completed and the initial bitmap was not pooled until this method completes.
             assertFalse(isRunning)

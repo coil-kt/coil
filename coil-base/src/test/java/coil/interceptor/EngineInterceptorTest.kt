@@ -9,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.ComponentRegistry
-import coil.DefaultRequestOptions
 import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
@@ -33,7 +32,6 @@ import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
-import coil.size.SizeResolver
 import coil.transform.CircleCropTransformation
 import coil.transform.Transformation
 import coil.util.SystemCallbacks
@@ -77,7 +75,7 @@ class EngineInterceptorTest {
             bitmapPool = bitmapPool,
             strongMemoryCache = strongMemoryCache,
             weakMemoryCache = weakMemoryCache,
-            requestService = RequestService(DefaultRequestOptions(), null),
+            requestService = RequestService(null),
             systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context),
             drawableDecoder = DrawableDecoderService(bitmapPool),
             logger = null
@@ -160,49 +158,44 @@ class EngineInterceptorTest {
         val request = createRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
+            scale(Scale.FILL)
         }
         val cached = createBitmap()
         assertFalse(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(200, 200),
-            scale = Scale.FILL
+            size = PixelSize(200, 200)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(150, 50),
-            scale = Scale.FILL
+            size = PixelSize(150, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(100, 100),
-            scale = Scale.FILL
+            size = PixelSize(100, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(50, 100),
-            scale = Scale.FILL
+            size = PixelSize(50, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(50, 50),
-            scale = Scale.FILL
+            size = PixelSize(50, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
             request = request,
-            size = PixelSize(400, 200),
-            scale = Scale.FILL
+            size = PixelSize(400, 200)
         ))
     }
 
@@ -211,82 +204,74 @@ class EngineInterceptorTest {
         val request = createRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
+            scale(Scale.FIT)
         }
         val cached = createBitmap()
         assertFalse(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(200, 200),
-            scale = Scale.FIT
+            size = PixelSize(200, 200)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(150, 50),
-            scale = Scale.FIT
+            size = PixelSize(150, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(100, 100),
-            scale = Scale.FIT
+            size = PixelSize(100, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(50, 100),
-            scale = Scale.FIT
+            size = PixelSize(50, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(50, 50),
-            scale = Scale.FIT
+            size = PixelSize(50, 50)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = true,
             request = request,
-            size = PixelSize(400, 800),
-            scale = Scale.FIT
+            size = PixelSize(400, 800)
         ))
     }
 
     @Test
     fun `isCachedValueValid - small not sampled cached drawable is valid`() {
-        val request = createRequest(context) {
-            precision(Precision.INEXACT)
-        }
         val cached = createBitmap()
         val isValid = interceptor.isCachedValueValid(
             cached = cached,
             isSampled = false,
-            request = request,
-            size = PixelSize(200, 200),
-            scale = Scale.FILL
+            request = createRequest(context) {
+                precision(Precision.INEXACT)
+                scale(Scale.FILL)
+            },
+            size = PixelSize(200, 200)
         )
         assertTrue(isValid)
     }
 
     @Test
     fun `isCachedValueValid - allowHardware=false prevents using cached hardware bitmap`() {
-        val request = createRequest(context) {
-            allowHardware(false)
-        }
-
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config)
             return interceptor.isCachedValueValid(
                 cached = cached,
                 isSampled = true,
-                request = request,
-                size = PixelSize(100, 100),
-                scale = Scale.FILL
+                request = createRequest(context) {
+                    allowHardware(false)
+                    scale(Scale.FILL)
+                },
+                size = PixelSize(100, 100)
             )
         }
 
@@ -298,64 +283,77 @@ class EngineInterceptorTest {
 
     @Test
     fun `isCachedValueValid - exact precision`() {
-        val request = createRequest(context) {
-            precision(Precision.EXACT)
-        }
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
-            request = request,
-            size = PixelSize(50, 50),
-            scale = Scale.FILL
-        ))
-        assertFalse(interceptor.isCachedValueValid(
-            cached = createBitmap(width = 100, height = 100),
-            isSampled = true,
-            request = request,
-            size = PixelSize(50, 50),
-            scale = Scale.FIT
-        ))
-        assertTrue(interceptor.isCachedValueValid(
-            cached = createBitmap(width = 100, height = 100),
-            isSampled = true,
-            request = request,
-            size = PixelSize(100, 50),
-            scale = Scale.FILL
+            request = createRequest(context) {
+                precision(Precision.EXACT)
+                scale(Scale.FILL)
+            },
+            size = PixelSize(50, 50)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
-            request = request,
-            size = PixelSize(100, 50),
-            scale = Scale.FIT
+            request = createRequest(context) {
+                precision(Precision.EXACT)
+                scale(Scale.FIT)
+            },
+            size = PixelSize(50, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
-            request = request,
-            size = PixelSize(100, 100),
-            scale = Scale.FILL
+            request = createRequest(context) {
+                precision(Precision.EXACT)
+                scale(Scale.FILL)
+            },
+            size = PixelSize(100, 50)
+        ))
+        assertFalse(interceptor.isCachedValueValid(
+            cached = createBitmap(width = 100, height = 100),
+            isSampled = true,
+            request = createRequest(context) {
+                precision(Precision.EXACT)
+                scale(Scale.FIT)
+            },
+            size = PixelSize(100, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
-            request = request,
-            size = PixelSize(100, 100),
-            scale = Scale.FIT
+            request = createRequest(context) {
+                precision(Precision.EXACT)
+                scale(Scale.FILL)
+            },
+            size = PixelSize(100, 100)
+        ))
+        assertTrue(interceptor.isCachedValueValid(
+            cached = createBitmap(width = 100, height = 100),
+            isSampled = true,
+            request = createRequest(context) {
+                precision(Precision.EXACT)
+                scale(Scale.FIT)
+            },
+            size = PixelSize(100, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            request = request,
-            size = PixelSize(400, 200),
-            scale = Scale.FILL
+            request = createRequest(context) {
+                precision(Precision.EXACT)
+                scale(Scale.FILL)
+            },
+            size = PixelSize(400, 200)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = true,
-            request = request,
-            size = PixelSize(400, 800),
-            scale = Scale.FIT
+            request = createRequest(context) {
+                precision(Precision.EXACT)
+                scale(Scale.FIT)
+            },
+            size = PixelSize(400, 800)
         ))
     }
 
@@ -366,36 +364,36 @@ class EngineInterceptorTest {
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
+                scale(Scale.FIT)
             },
-            size = PixelSize(245, 600),
-            scale = Scale.FIT
+            size = PixelSize(245, 600)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 244, height = 600),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.INEXACT)
+                scale(Scale.FIT)
             },
-            size = PixelSize(245, 600),
-            scale = Scale.FIT
+            size = PixelSize(245, 600)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 243, height = 599),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
+                scale(Scale.FIT)
             },
-            size = PixelSize(245, 600),
-            scale = Scale.FIT
+            size = PixelSize(245, 600)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 243, height = 599),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.INEXACT)
+                scale(Scale.FIT)
             },
-            size = PixelSize(245, 600),
-            scale = Scale.FIT
+            size = PixelSize(245, 600)
         ))
     }
 
@@ -411,35 +409,31 @@ class EngineInterceptorTest {
         val request = createRequest(context)
 
         assertTrue(interceptor.isCachedValueValid(
-            key,
-            value,
-            request.newBuilder().precision(Precision.INEXACT).build(),
-            PixelSize(650, 400),
-            Scale.FIT
+            cacheKey = key,
+            cacheValue = value,
+            request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
+            size = PixelSize(650, 400)
         ))
 
         assertTrue(interceptor.isCachedValueValid(
-            key,
-            value,
-            request.newBuilder().precision(Precision.EXACT).build(),
-            PixelSize(1000, 500),
-            Scale.FIT
+            cacheKey = key,
+            cacheValue = value,
+            request = request.newBuilder().precision(Precision.EXACT).scale(Scale.FIT).build(),
+            size = PixelSize(1000, 500)
         ))
 
         assertFalse(interceptor.isCachedValueValid(
-            key,
-            value,
-            request.newBuilder().precision(Precision.INEXACT).build(),
-            PixelSize(1500, 1000),
-            Scale.FIT
+            cacheKey = key,
+            cacheValue = value,
+            request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
+            size = PixelSize(1500, 1000)
         ))
 
         assertFalse(interceptor.isCachedValueValid(
-            key,
-            value,
-            request.newBuilder().precision(Precision.EXACT).build(),
-            PixelSize(800, 500),
-            Scale.FIT
+            cacheKey = key,
+            cacheValue = value,
+            request = request.newBuilder().precision(Precision.EXACT).scale(Scale.FIT).build(),
+            size = PixelSize(800, 500)
         ))
     }
 
@@ -447,15 +441,14 @@ class EngineInterceptorTest {
         cached: Bitmap,
         isSampled: Boolean,
         request: ImageRequest,
-        size: Size,
-        scale: Scale
+        size: Size
     ): Boolean {
         val key = Key("key")
         val value = object : RealMemoryCache.Value {
             override val bitmap = cached
             override val isSampled = isSampled
         }
-        return isCachedValueValid(key, value, request, size, scale)
+        return isCachedValueValid(key, value, request, size)
     }
 
     @Test
@@ -501,15 +494,6 @@ class EngineInterceptorTest {
 
         assertSame(drawable, result.drawable)
     }
-
-    /** Convenience function to avoid having to specify the [SizeResolver] explicitly. */
-    private fun EngineInterceptor.isCachedValueValid(
-        cacheKey: Key?,
-        cacheValue: RealMemoryCache.Value,
-        request: ImageRequest,
-        size: Size,
-        scale: Scale
-    ): Boolean = isCachedValueValid(cacheKey, cacheValue, request, SizeResolver(size), size, scale)
 
     private fun createFakeTransformations(): List<Transformation> {
         return listOf(

@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
 import coil.ComponentRegistry
-import coil.DefaultRequestOptions
 import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
@@ -17,6 +16,7 @@ import coil.memory.BitmapReferenceCounter
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
+import coil.request.DefaultRequestOptions
 import okhttp3.OkHttpClient
 import org.junit.Before
 import org.junit.Test

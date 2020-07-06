@@ -1,7 +1,6 @@
 package coil.size
 
 import android.widget.ImageView
-import coil.memory.RequestService
 import coil.request.ImageRequest
 
 /**

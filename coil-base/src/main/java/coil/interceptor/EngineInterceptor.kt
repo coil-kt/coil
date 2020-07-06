@@ -32,6 +32,7 @@ import coil.transform.Transformation
 import coil.util.Logger
 import coil.util.SystemCallbacks
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
+import coil.util.allowInexactSize
 import coil.util.closeQuietly
 import coil.util.fetcher
 import coil.util.foldIndices

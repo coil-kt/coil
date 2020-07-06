@@ -13,6 +13,7 @@ import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.Logger
+import coil.util.allowInexactSize
 import coil.util.isAttachedToWindowCompat
 import coil.util.isHardware
 

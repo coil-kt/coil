@@ -27,7 +27,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         }
     }
 
-    /** The [View] to measure. */
+    /** The [View] to measure. This field should be immutable. */
     val view: T
 
     /** If true, the [view]'s padding will be subtracted from its size. */

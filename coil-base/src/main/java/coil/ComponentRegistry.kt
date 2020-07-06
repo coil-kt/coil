@@ -15,13 +15,13 @@ import coil.util.MultiMutableList
 /**
  * Registry for all the components that an [ImageLoader] uses to fulfil image requests.
  *
- * Use this class to register support for custom [Mapper]s, [MeasuredMapper]s, [Fetcher]s, and [Decoder]s.
+ * Use this class to register support for custom [Interceptor]s, [Mapper]s, [Fetcher]s, and [Decoder]s.
  */
 class ComponentRegistry private constructor(
     internal val interceptors: List<Interceptor>,
-    internal val mappers: MultiList<Class<out Any>, Mapper<out Any, *>>,
-    internal val measuredMappers: MultiList<Class<out Any>, MeasuredMapper<out Any, *>>,
-    internal val fetchers: MultiList<Class<out Any>, Fetcher<out Any>>,
+    internal val mappers: MultiList<Mapper<out Any, *>, Class<out Any>>,
+    internal val measuredMappers: MultiList<MeasuredMapper<out Any, *>, Class<out Any>>,
+    internal val fetchers: MultiList<Fetcher<out Any>, Class<out Any>>,
     internal val decoders: List<Decoder>
 ) {
 
@@ -32,9 +32,9 @@ class ComponentRegistry private constructor(
     class Builder {
 
         private val interceptors: MutableList<Interceptor>
-        private val mappers: MultiMutableList<Class<out Any>, Mapper<out Any, *>>
-        private val measuredMappers: MultiMutableList<Class<out Any>, MeasuredMapper<out Any, *>>
-        private val fetchers: MultiMutableList<Class<out Any>, Fetcher<out Any>>
+        private val mappers: MultiMutableList<Mapper<out Any, *>, Class<out Any>>
+        private val measuredMappers: MultiMutableList<MeasuredMapper<out Any, *>, Class<out Any>>
+        private val fetchers: MultiMutableList<Fetcher<out Any>, Class<out Any>>
         private val decoders: MutableList<Decoder>
 
         constructor() {
@@ -62,25 +62,39 @@ class ComponentRegistry private constructor(
         inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(T::class.java, mapper)
 
         @PublishedApi
-        internal fun <T : Any> add(type: Class<T>, mapper: Mapper<T, *>) = apply {
-            mappers += type to mapper
+        internal fun <T : Any> add(mapper: Mapper<T, *>, type: Class<T>) = apply {
+            mappers += mapper to type
         }
+
+        @Deprecated("Parameter order is reversed.", replaceWith = ReplaceWith("add(mapper, type)"))
+        @PublishedApi
+        internal fun <T : Any> add(type: Class<T>, mapper: Mapper<T, *>) = add(mapper, type)
 
         /** Register a [MeasuredMapper]. */
+        @Deprecated("MeasuredMappers are deprecated.")
         inline fun <reified T : Any> add(measuredMapper: MeasuredMapper<T, *>) = add(T::class.java, measuredMapper)
 
+        @Deprecated("MeasuredMappers are deprecated.")
         @PublishedApi
-        internal fun <T : Any> add(type: Class<T>, measuredMapper: MeasuredMapper<T, *>) = apply {
-            measuredMappers += type to measuredMapper
+        internal fun <T : Any> add(measuredMapper: MeasuredMapper<T, *>, type: Class<T>) = apply {
+            measuredMappers += measuredMapper to type
         }
+
+        @Deprecated("MeasuredMappers are deprecated.")
+        @PublishedApi
+        internal fun <T : Any> add(type: Class<T>, measuredMapper: MeasuredMapper<T, *>) = add(measuredMapper, type)
 
         /** Register a [Fetcher]. */
         inline fun <reified T : Any> add(fetcher: Fetcher<T>) = add(T::class.java, fetcher)
 
         @PublishedApi
-        internal fun <T : Any> add(type: Class<T>, fetcher: Fetcher<T>) = apply {
-            fetchers += type to fetcher
+        internal fun <T : Any> add(fetcher: Fetcher<T>, type: Class<T>) = apply {
+            fetchers += fetcher to type
         }
+
+        @Deprecated("Parameter order is reversed.", replaceWith = ReplaceWith("add(fetcher, type)"))
+        @PublishedApi
+        internal fun <T : Any> add(type: Class<T>, fetcher: Fetcher<T>) = add(fetcher, type)
 
         /** Register a [Decoder]. */
         fun add(decoder: Decoder) = apply {

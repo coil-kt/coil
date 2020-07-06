@@ -29,6 +29,7 @@ import coil.memory.StrongMemoryCache
 import coil.memory.TargetDelegate
 import coil.memory.WeakMemoryCache
 import coil.request.BaseTargetRequestDisposable
+import coil.request.DefaultRequestOptions
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.NullRequestData
@@ -167,7 +168,7 @@ internal class RealImageLoader(
             eventListener.onStart(request)
             request.listener?.onStart(request)
 
-            // Resolve the size and scale.
+            // Resolve the size.
             eventListener.resolveSizeStart(request)
             val size = request.sizeResolver.size()
             eventListener.resolveSizeEnd(request, size)

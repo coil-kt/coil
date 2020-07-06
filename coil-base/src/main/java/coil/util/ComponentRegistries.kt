@@ -14,12 +14,12 @@ import okio.BufferedSource
 @Suppress("UNCHECKED_CAST")
 internal fun ComponentRegistry.mapData(data: Any, size: Size): Any {
     var mappedData = data
-    measuredMappers.forEachIndices { (type, mapper) ->
+    measuredMappers.forEachIndices { (mapper, type) ->
         if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
             mappedData = mapper.map(mappedData, size)
         }
     }
-    mappers.forEachIndices { (type, mapper) ->
+    mappers.forEachIndices { (mapper, type) ->
         if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
             mappedData = mapper.map(mappedData)
         }
@@ -29,11 +29,11 @@ internal fun ComponentRegistry.mapData(data: Any, size: Size): Any {
 
 @Suppress("UNCHECKED_CAST")
 internal fun <T : Any> ComponentRegistry.requireFetcher(data: T): Fetcher<T> {
-    val result = fetchers.findIndices { (type, fetcher) ->
+    val result = fetchers.findIndices { (fetcher, type) ->
         type.isAssignableFrom(data::class.java) && (fetcher as Fetcher<Any>).handles(data)
     }
     checkNotNull(result) { "Unable to fetch data. No fetcher supports: $data" }
-    return result.second as Fetcher<T>
+    return result.first as Fetcher<T>
 }
 
 internal fun <T : Any> ComponentRegistry.requireDecoder(

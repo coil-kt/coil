@@ -18,6 +18,7 @@ import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
+import coil.request.DefaultRequestOptions
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.RequestDisposable

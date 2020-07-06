@@ -4,11 +4,11 @@ import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
-import coil.DefaultRequestOptions
 import coil.memory.RequestService
 import coil.size.Precision
 import coil.size.ViewSizeResolver
 import coil.target.ViewTarget
+import coil.util.allowInexactSize
 import coil.util.createRequest
 import org.junit.Before
 import org.junit.Test
@@ -26,7 +26,7 @@ class RequestServiceTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        service = RequestService(DefaultRequestOptions(), null)
+        service = RequestService(null)
     }
 
     @Test
@@ -35,7 +35,7 @@ class RequestServiceTest {
             target(ImageView(context))
             precision(Precision.EXACT)
         }
-        assertFalse(service.allowInexactSize(request))
+        assertFalse(request.allowInexactSize)
     }
 
     @Test
@@ -43,7 +43,7 @@ class RequestServiceTest {
         val request = createRequest(context) {
             precision(Precision.INEXACT)
         }
-        assertTrue(service.allowInexactSize(request))
+        assertTrue(request.allowInexactSize)
     }
 
     @Test
@@ -51,7 +51,7 @@ class RequestServiceTest {
         val request = createRequest(context) {
             target(ImageView(context))
         }
-        assertTrue(service.allowInexactSize(request))
+        assertTrue(request.allowInexactSize)
     }
 
     @Test
@@ -60,7 +60,7 @@ class RequestServiceTest {
             target(ImageView(context))
             size(100, 100)
         }
-        assertFalse(service.allowInexactSize(request))
+        assertFalse(request.allowInexactSize)
     }
 
     @Test
@@ -70,7 +70,7 @@ class RequestServiceTest {
             target(imageView)
             size(ViewSizeResolver(imageView))
         }
-        assertTrue(service.allowInexactSize(request))
+        assertTrue(request.allowInexactSize)
     }
 
     @Test
@@ -79,7 +79,7 @@ class RequestServiceTest {
             target(ImageView(context))
             size(ViewSizeResolver(ImageView(context)))
         }
-        assertFalse(service.allowInexactSize(request))
+        assertFalse(request.allowInexactSize)
     }
 
     @Test
@@ -87,13 +87,13 @@ class RequestServiceTest {
         val request = createRequest(context) {
             target { /* Empty. */ }
         }
-        assertTrue(service.allowInexactSize(request))
+        assertTrue(request.allowInexactSize)
     }
 
     @Test
     fun `allowInexactSize - NullSizeResolver`() {
         val request = createRequest(context)
-        assertTrue(service.allowInexactSize(request))
+        assertTrue(request.allowInexactSize)
     }
 
     @Test
@@ -102,7 +102,7 @@ class RequestServiceTest {
             target { /* Empty. */ }
             size(100, 100)
         }
-        assertFalse(service.allowInexactSize(request))
+        assertFalse(request.allowInexactSize)
     }
 
     @Test
@@ -112,7 +112,7 @@ class RequestServiceTest {
                 override val view = View(context)
             })
         }
-        assertFalse(service.allowInexactSize(request))
+        assertFalse(request.allowInexactSize)
     }
 
     @Test
@@ -120,10 +120,6 @@ class RequestServiceTest {
         val request = createRequest(context) {
             size(100, 100)
         }
-        assertFalse(service.allowInexactSize(request))
-    }
-
-    private fun RequestService.allowInexactSize(request: ImageRequest): Boolean {
-        return allowInexactSize(request, service.sizeResolver(request))
+        assertFalse(request.allowInexactSize)
     }
 }
