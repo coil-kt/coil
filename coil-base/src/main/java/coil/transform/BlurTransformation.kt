@@ -72,7 +72,7 @@ class BlurTransformation @JvmOverloads constructor(
         return output
     }
 
-    companion object {
+    private companion object {
         private const val DEFAULT_RADIUS = 10f
         private const val DEFAULT_SAMPLING = 1f
     }
