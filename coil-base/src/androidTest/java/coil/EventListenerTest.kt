@@ -19,7 +19,6 @@ import coil.request.Metadata
 import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.Size
-import coil.size.SizeResolver
 import coil.transform.Transformation
 import coil.transition.Transition
 import coil.transition.TransitionTarget
@@ -255,8 +254,8 @@ class EventListenerTest {
     ) : EventListener {
 
         override fun onStart(request: ImageRequest) = onStart.call()
-        override fun resolveSizeStart(request: ImageRequest, sizeResolver: SizeResolver) = resolveSizeStart.call()
-        override fun resolveSizeEnd(request: ImageRequest, sizeResolver: SizeResolver, size: Size) = resolveSizeEnd.call()
+        override fun resolveSizeStart(request: ImageRequest) = resolveSizeStart.call()
+        override fun resolveSizeEnd(request: ImageRequest, size: Size) = resolveSizeEnd.call()
         override fun mapStart(request: ImageRequest, input: Any) = mapStart.call()
         override fun mapEnd(request: ImageRequest, output: Any) = mapEnd.call()
         override fun fetchStart(request: ImageRequest, fetcher: Fetcher<*>, options: Options) = fetchStart.call()
@@ -265,8 +264,8 @@ class EventListenerTest {
         override fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult) = decodeEnd.call()
         override fun transformStart(request: ImageRequest, input: Bitmap) = transformStart.call()
         override fun transformEnd(request: ImageRequest, output: Bitmap) = transformEnd.call()
-        override fun transitionStart(request: ImageRequest, transition: Transition) = transitionStart.call()
-        override fun transitionEnd(request: ImageRequest, transition: Transition) = transitionEnd.call()
+        override fun transitionStart(request: ImageRequest) = transitionStart.call()
+        override fun transitionEnd(request: ImageRequest) = transitionEnd.call()
         override fun onSuccess(request: ImageRequest, metadata: Metadata) = onSuccess.call()
         override fun onCancel(request: ImageRequest) = onCancel.call()
         override fun onError(request: ImageRequest, throwable: Throwable) = onError.call()
