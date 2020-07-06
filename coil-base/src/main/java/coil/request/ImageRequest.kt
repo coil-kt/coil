@@ -126,18 +126,18 @@ class ImageRequest private constructor(
     /** @see Builder.networkCachePolicy */
     val networkCachePolicy: CachePolicy,
 
-    /** Tracks which values have been set. */
-    val defined: DefinedRequestOptions,
-
-    /** The values that were used to fill unset values. */
-    val defaults: DefaultRequestOptions,
-
     private val placeholderResId: Int?,
     private val placeholderDrawable: Drawable?,
     private val errorResId: Int?,
     private val errorDrawable: Drawable?,
     private val fallbackResId: Int?,
-    private val fallbackDrawable: Drawable?
+    private val fallbackDrawable: Drawable?,
+
+    /** Tracks which values have been set. */
+    val defined: DefinedRequestOptions,
+
+    /** The values that were used to fill unset values. */
+    val defaults: DefaultRequestOptions
 ) {
 
     /** @see Builder.placeholder */
@@ -179,14 +179,14 @@ class ImageRequest private constructor(
             memoryCachePolicy == other.memoryCachePolicy &&
             diskCachePolicy == other.diskCachePolicy &&
             networkCachePolicy == other.networkCachePolicy &&
-            defined == other.defined &&
-            defaults == other.defaults &&
             placeholderResId == other.placeholderResId &&
             placeholderDrawable == other.placeholderDrawable &&
             errorResId == other.errorResId &&
             errorDrawable == other.errorDrawable &&
             fallbackResId == other.fallbackResId &&
-            fallbackDrawable == other.fallbackDrawable
+            fallbackDrawable == other.fallbackDrawable &&
+            defined == other.defined &&
+            defaults == other.defaults
     }
 
     override fun hashCode(): Int {
@@ -214,14 +214,14 @@ class ImageRequest private constructor(
         result = 31 * result + memoryCachePolicy.hashCode()
         result = 31 * result + diskCachePolicy.hashCode()
         result = 31 * result + networkCachePolicy.hashCode()
-        result = 31 * result + defined.hashCode()
-        result = 31 * result + defaults.hashCode()
         result = 31 * result + (placeholderResId ?: 0)
         result = 31 * result + (placeholderDrawable?.hashCode() ?: 0)
         result = 31 * result + (errorResId ?: 0)
         result = 31 * result + (errorDrawable?.hashCode() ?: 0)
         result = 31 * result + (fallbackResId ?: 0)
         result = 31 * result + (fallbackDrawable?.hashCode() ?: 0)
+        result = 31 * result + defined.hashCode()
+        result = 31 * result + defaults.hashCode()
         return result
     }
 
@@ -232,10 +232,9 @@ class ImageRequest private constructor(
             "sizeResolver=$sizeResolver, scale=$scale, dispatcher=$dispatcher, transition=$transition, " +
             "precision=$precision, bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
             "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
-            "networkCachePolicy=$networkCachePolicy, defined=$defined, defaults=$defaults, " +
-            "placeholderResId=$placeholderResId, placeholderDrawable=$placeholderDrawable, " +
-            "errorResId=$errorResId, errorDrawable=$errorDrawable, " +
-            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable)"
+            "networkCachePolicy=$networkCachePolicy, placeholderResId=$placeholderResId, " +
+            "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
+            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable, defined=$defined, defaults=$defaults)"
     }
 
     /**
