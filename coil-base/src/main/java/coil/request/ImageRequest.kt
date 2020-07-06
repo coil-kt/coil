@@ -714,7 +714,7 @@ class ImageRequest private constructor(
         })
 
         /**
-         * Set the [Target]. If the target is null, this request will preload the image into memory.
+         * Set the [Target].
          */
         fun target(target: Target?) = apply {
             this.target = target
@@ -829,7 +829,7 @@ class ImageRequest private constructor(
                 if (view is ImageView) return view.scale
             }
 
-            return Scale.FIT
+            return Scale.FILL
         }
     }
 }

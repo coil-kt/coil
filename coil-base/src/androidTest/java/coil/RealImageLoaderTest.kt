@@ -66,9 +66,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/**
- * Integration tests for [RealImageLoader].
- */
 @OptIn(ExperimentalCoilApi::class)
 class RealImageLoaderTest {
 
