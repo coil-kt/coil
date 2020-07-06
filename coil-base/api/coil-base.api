@@ -876,10 +876,6 @@ public final class coil/transition/TransitionTarget$DefaultImpls {
 	public static fun onSuccess (Lcoil/transition/TransitionTarget;Landroid/graphics/drawable/Drawable;)V
 }
 
-public final class coil/util/-Requests {
-	public static final fun getAllowInexactSize (Lcoil/request/ImageRequest;)Z
-}
-
 public final class coil/util/CoilUtils {
 	public static final field INSTANCE Lcoil/util/CoilUtils;
 	public static final fun clear (Landroid/view/View;)V
