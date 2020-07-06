@@ -740,7 +740,6 @@ public final class coil/target/ViewTarget$DefaultImpls {
 }
 
 public final class coil/transform/BlurTransformation : coil/transform/Transformation {
-	public static final field Companion Lcoil/transform/BlurTransformation$Companion;
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;F)V
 	public fun <init> (Landroid/content/Context;FF)V
@@ -749,27 +748,16 @@ public final class coil/transform/BlurTransformation : coil/transform/Transforma
 	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil/transform/BlurTransformation$Companion {
-}
-
 public final class coil/transform/CircleCropTransformation : coil/transform/Transformation {
-	public static final field Companion Lcoil/transform/CircleCropTransformation$Companion;
 	public fun <init> ()V
 	public fun key ()Ljava/lang/String;
 	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil/transform/CircleCropTransformation$Companion {
 }
 
 public final class coil/transform/GrayscaleTransformation : coil/transform/Transformation {
-	public static final field Companion Lcoil/transform/GrayscaleTransformation$Companion;
 	public fun <init> ()V
 	public fun key ()Ljava/lang/String;
 	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil/transform/GrayscaleTransformation$Companion {
 }
 
 public final class coil/transform/RoundedCornersTransformation : coil/transform/Transformation {

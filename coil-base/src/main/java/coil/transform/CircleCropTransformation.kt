@@ -35,7 +35,7 @@ class CircleCropTransformation : Transformation {
         return output
     }
 
-    companion object {
-        private val XFERMODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+    private companion object {
+        val XFERMODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
     }
 }
