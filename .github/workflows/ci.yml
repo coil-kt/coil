@@ -74,6 +74,7 @@ jobs:
                   api-level: ${{ matrix.api-level }}
                   arch: x86
                   script: ./gradlew connectedDebugAndroidTest
+                  target: google_apis
 
     deploy-snapshot:
         name: Deploy snapshot
