@@ -115,7 +115,7 @@ class ContentUriFetcherTest {
         }
 
         // Wait for the display image to be parsed by the system.
-        Thread.sleep(1000)
+        Thread.sleep(2000)
 
         return id
     }
