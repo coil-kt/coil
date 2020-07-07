@@ -1,3 +1,4 @@
+@file:JvmName("SparseIntArraySetKt")
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil.collection
