@@ -184,7 +184,7 @@ public final class coil/collection/SparseIntArraySet {
 	public final fun size ()I
 }
 
-public final class coil/collection/SparseIntArraySetsKt {
+public final class coil/collection/SparseIntArraySetKt {
 	public static final fun addAll (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)V
 	public static final fun count (Lcoil/collection/SparseIntArraySet;)I
 	public static final fun forEach (Lcoil/collection/SparseIntArraySet;Lkotlin/jvm/functions/Function1;)V
