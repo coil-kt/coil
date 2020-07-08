@@ -302,6 +302,24 @@ public final class coil/drawable/CrossfadeDrawable : android/graphics/drawable/D
 public final class coil/drawable/CrossfadeDrawable$Companion {
 }
 
+public final class coil/extension/Parameters {
+	public static final fun count (Lcoil/request/Parameters;)I
+	public static final fun get (Lcoil/request/Parameters;Ljava/lang/String;)Ljava/lang/Object;
+	public static final fun isNotEmpty (Lcoil/request/Parameters;)Z
+}
+
+public final class coil/extension/SparseIntArraySets {
+	public static final fun addAll (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)V
+	public static final fun count (Lcoil/collection/SparseIntArraySet;)I
+	public static final fun forEach (Lcoil/collection/SparseIntArraySet;Lkotlin/jvm/functions/Function1;)V
+	public static final fun isEmpty (Lcoil/collection/SparseIntArraySet;)Z
+	public static final fun isNotEmpty (Lcoil/collection/SparseIntArraySet;)Z
+	public static final fun iterator (Lcoil/collection/SparseIntArraySet;)Lkotlin/collections/IntIterator;
+	public static final fun minusAssign (Lcoil/collection/SparseIntArraySet;I)V
+	public static final fun plus (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)Lcoil/collection/SparseIntArraySet;
+	public static final fun plusAssign (Lcoil/collection/SparseIntArraySet;I)V
+}
+
 public final class coil/fetch/DrawableResult : coil/fetch/FetchResult {
 	public fun <init> (Landroid/graphics/drawable/Drawable;ZLcoil/decode/DataSource;)V
 	public final fun component1 ()Landroid/graphics/drawable/Drawable;
