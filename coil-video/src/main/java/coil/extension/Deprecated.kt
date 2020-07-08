@@ -19,7 +19,7 @@ fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long) = _videoFrameMicros
 fun ImageRequest.Builder.videoFrameOption(option: Int) = _videoFrameOption(option)
 
 @Deprecated("Replace `coil.extension.videoFrameMicros` with `coil.request.videoFrameMicros`.")
-fun Parameters.videoFrameMicros(): Long? = _videoFrameMicros()
+fun Parameters.videoFrameMicros() = _videoFrameMicros()
 
 @Deprecated("Replace `coil.extension.videoFrameOption` with `coil.request.videoFrameOption`.")
-fun Parameters.videoFrameOption(): Int? = _videoFrameOption()
+fun Parameters.videoFrameOption() = _videoFrameOption()
