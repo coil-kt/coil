@@ -19,6 +19,7 @@ import okio.buffer
 import okio.source
 import org.junit.Assume.assumeTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -218,6 +219,7 @@ class BitmapFactoryDecoderTest {
         decodeBitmap("large.webp", PixelSize(1080, 1920))
     }
 
+    @Ignore("https://issuetracker.google.com/issues/160758901")
     @Test
     fun largeHeif() {
         // HEIF files are not supported before API 30.
