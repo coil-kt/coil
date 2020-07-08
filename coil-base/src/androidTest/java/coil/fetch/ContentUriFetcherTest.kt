@@ -115,8 +115,24 @@ class ContentUriFetcherTest {
         }
 
         // Wait for the display image to be parsed by the system.
-        Thread.sleep(2000)
+        var attempts = 0
+        while (attempts++ <= 100 && !isContactParsed(id)) {
+            Thread.sleep(100)
+        }
 
         return id
+    }
+
+    private fun isContactParsed(id: Long): Boolean {
+        return try {
+            fun directoryExists(directory: String): Boolean {
+                return context.contentResolver
+                    .openAssetFileDescriptor("$SCHEME_CONTENT://$AUTHORITY/contacts/$id/$directory".toUri(), "r")
+                    ?.createInputStream() != null
+            }
+            directoryExists(CONTENT_DIRECTORY) && directoryExists(DISPLAY_PHOTO)
+        } catch (_: Throwable) {
+            false
+        }
     }
 }
