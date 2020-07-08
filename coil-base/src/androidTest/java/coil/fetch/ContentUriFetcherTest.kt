@@ -125,10 +125,10 @@ class ContentUriFetcherTest {
 
     private fun isContactParsed(id: Long): Boolean {
         return try {
-            val base = "$SCHEME_CONTENT://$AUTHORITY/contacts/$id"
             fun directoryExists(directory: String): Boolean {
                 return context.contentResolver
-                    .openAssetFileDescriptor("$base/$directory".toUri(), "r")?.createInputStream() != null
+                    .openAssetFileDescriptor("$SCHEME_CONTENT://$AUTHORITY/contacts/$id/$directory".toUri(), "r")
+                    ?.createInputStream() != null
             }
             directoryExists(CONTENT_DIRECTORY) && directoryExists(DISPLAY_PHOTO)
         } catch (_: Throwable) {
