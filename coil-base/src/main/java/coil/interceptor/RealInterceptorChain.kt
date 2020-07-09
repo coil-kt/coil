@@ -40,7 +40,7 @@ internal class RealInterceptorChain(
             "Interceptor '$interceptor' cannot modify the request's lifecycle."
         }
         check(request.sizeResolver === initialRequest.sizeResolver) {
-            "Interceptor '$interceptor' cannot modify the request's size resolver."
+            "Interceptor '$interceptor' cannot modify the request's size resolver. Use `Interceptor.Chain.withSize` instead."
         }
     }
 
