@@ -28,8 +28,7 @@ enum class Precision {
     INEXACT,
 
     /**
-     * Allow Coil to automatically determine if the size needs to be exact for this request
-     * using the logic in [RequestService.allowInexactSize].
+     * Allow Coil to automatically determine if the size needs to be exact for this request.
      */
     AUTOMATIC
 }
