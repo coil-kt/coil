@@ -90,7 +90,7 @@ class Parameters private constructor(
          */
         @JvmOverloads
         fun set(key: String, value: Any?, cacheKey: String? = value?.toString()) = apply {
-            this.map[key] = Entry(value, cacheKey)
+            map[key] = Entry(value, cacheKey)
         }
 
         /**
@@ -99,7 +99,7 @@ class Parameters private constructor(
          * @param key The parameter's key.
          */
         fun remove(key: String) = apply {
-            this.map.remove(key)
+            map.remove(key)
         }
 
         /** Create a new [Parameters] instance. */

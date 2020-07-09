@@ -13,7 +13,7 @@ import androidx.core.util.component2
 import coil.annotation.InternalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.drawable.ScaleDrawable
-import coil.extension.repeatCount
+import coil.request.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
 import okio.BufferedSource

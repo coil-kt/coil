@@ -8,7 +8,7 @@ import android.os.Build.VERSION.SDK_INT
 import coil.annotation.InternalCoilApi
 import coil.bitmappool.BitmapPool
 import coil.drawable.MovieDrawable
-import coil.extension.repeatCount
+import coil.request.repeatCount
 import coil.size.Size
 import okio.BufferedSource
 import okio.buffer

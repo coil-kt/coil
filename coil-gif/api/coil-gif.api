@@ -78,3 +78,8 @@ public final class coil/extension/Gifs {
 	public static final fun repeatCount (Lcoil/request/Parameters;)Ljava/lang/Integer;
 }
 
+public final class coil/request/Gifs {
+	public static final fun repeatCount (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
+	public static final fun repeatCount (Lcoil/request/Parameters;)Ljava/lang/Integer;
+}
+

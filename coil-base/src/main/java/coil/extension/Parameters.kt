@@ -4,12 +4,15 @@
 package coil.extension
 
 import coil.request.Parameters
+import coil.request.count as _count
+import coil.request.get as _get
+import coil.request.isNotEmpty as _isNotEmpty
 
-/** Returns the number of parameters in this object. */
-inline fun Parameters.count(): Int = size
+@Deprecated("Replace `coil.extension.count` with `coil.request.count`.")
+inline fun Parameters.count() = _count()
 
-/** Return true when the set contains elements. */
-inline fun Parameters.isNotEmpty(): Boolean = !isEmpty()
+@Deprecated("Replace `coil.extension.isNotEmpty` with `coil.request.isNotEmpty`.")
+inline fun Parameters.isNotEmpty() = _isNotEmpty()
 
-/** Returns the value associated with [key] or null if [key] has no mapping. */
-inline operator fun Parameters.get(key: String): Any? = value(key)
+@Deprecated("Replace `coil.extension.get` with `coil.request.get`.")
+inline operator fun Parameters.get(key: String) = _get(key)

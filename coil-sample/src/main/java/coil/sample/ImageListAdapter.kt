@@ -9,7 +9,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
+import coil.load
 import coil.sample.ImageListAdapter.ViewHolder
 import kotlin.math.ceil
 import kotlin.math.roundToInt

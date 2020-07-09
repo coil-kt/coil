@@ -7,7 +7,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.util.set
 import coil.bitmappool.BitmapPool
 import coil.collection.SparseIntArraySet
-import coil.extension.plusAssign
+import coil.collection.plusAssign
 import coil.util.Logger
 import coil.util.identityHashCode
 import coil.util.log
