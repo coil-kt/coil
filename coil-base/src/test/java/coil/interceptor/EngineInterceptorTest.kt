@@ -2,9 +2,7 @@ package coil.interceptor
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
@@ -52,9 +50,6 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
-/**
- * Basic tests for [RealImageLoader] that don't touch Android's graphics pipeline ([BitmapFactory], [ImageDecoder], etc.).
- */
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoilApi::class)
 class EngineInterceptorTest {
@@ -452,7 +447,7 @@ class EngineInterceptorTest {
     }
 
     @Test
-    fun applyTransformations_transformationsConvertDrawableToBitmap() {
+    fun `applyTransformations - transformations convert drawable to bitmap`() {
         val drawable = ColorDrawable(Color.BLACK)
         val size = PixelSize(100, 100)
         val result = runBlocking {
@@ -475,7 +470,7 @@ class EngineInterceptorTest {
     }
 
     @Test
-    fun applyTransformations_emptyTransformationsDoesNotConvertDrawable() {
+    fun `applyTransformations - empty transformations does not convert drawable to bitmap`() {
         val drawable = ColorDrawable(Color.BLACK)
         val size = PixelSize(100, 100)
         val result = runBlocking {
