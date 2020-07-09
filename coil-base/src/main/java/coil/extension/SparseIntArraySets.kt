@@ -4,49 +4,39 @@
 package coil.extension
 
 import coil.collection.SparseIntArraySet
+import coil.collection.addAll as _addAll
+import coil.collection.count as _count
+import coil.collection.forEach as _forEach
+import coil.collection.isEmpty as _isEmpty
+import coil.collection.isNotEmpty as _isNotEmpty
+import coil.collection.iterator as _iterator
+import coil.collection.minusAssign as _minusAssign
+import coil.collection.plus as _plus
+import coil.collection.plusAssign as _plusAssign
 
-/** Returns the number of elements that this set currently stores. */
-inline fun SparseIntArraySet.count(): Int = size
+@Deprecated("Replace `coil.extension.count` with `coil.collection.count`.")
+inline fun SparseIntArraySet.count() = _count()
 
-/** Adds the element to the set. */
-inline operator fun SparseIntArraySet.plusAssign(element: Int) {
-    add(element)
-}
+@Deprecated("Replace `coil.extension.plusAssign` with `coil.collection.plusAssign`.")
+inline operator fun SparseIntArraySet.plusAssign(element: Int) = _plusAssign(element)
 
-/** Removes the element from the set. */
-inline operator fun SparseIntArraySet.minusAssign(element: Int) {
-    remove(element)
-}
+@Deprecated("Replace `coil.extension.minusAssign` with `coil.collection.minusAssign`.")
+inline operator fun SparseIntArraySet.minusAssign(element: Int) = _minusAssign(element)
 
-/** Return true when the set contains no elements. */
-inline fun SparseIntArraySet.isEmpty(): Boolean = size == 0
+@Deprecated("Replace `coil.extension.isEmpty` with `coil.collection.isEmpty`.")
+inline fun SparseIntArraySet.isEmpty() = _isEmpty()
 
-/** Return true when the set contains elements. */
-inline fun SparseIntArraySet.isNotEmpty(): Boolean = size != 0
+@Deprecated("Replace `coil.extension.isNotEmpty` with `coil.collection.isNotEmpty`.")
+inline fun SparseIntArraySet.isNotEmpty() = _isNotEmpty()
 
-/** Create and return a new set that contains the elements of [this] plus the elements of [other]. */
-operator fun SparseIntArraySet.plus(other: SparseIntArraySet): SparseIntArraySet {
-    val new = SparseIntArraySet(size + other.size)
-    new.addAll(this)
-    new.addAll(other)
-    return new
-}
+@Deprecated("Replace `coil.extension.plus` with `coil.collection.plus`.")
+operator fun SparseIntArraySet.plus(other: SparseIntArraySet) = _plus(other)
 
-/** Add all elements from [other] to [this]. */
-fun SparseIntArraySet.addAll(other: SparseIntArraySet) {
-    other.forEach { add(it) }
-}
+@Deprecated("Replace `coil.extension.addAll` with `coil.collection.addAll`.")
+fun SparseIntArraySet.addAll(other: SparseIntArraySet) = _addAll(other)
 
-/** Performs the given [action] for each element in the set. */
-inline fun SparseIntArraySet.forEach(action: (element: Int) -> Unit) {
-    for (index in 0 until size) {
-        action(elementAt(index))
-    }
-}
+@Deprecated("Replace `coil.extension.forEach` with `coil.collection.forEach`.")
+inline fun SparseIntArraySet.forEach(action: (element: Int) -> Unit) = _forEach(action)
 
-/** Return an iterator over the set's values. */
-operator fun SparseIntArraySet.iterator(): IntIterator = object : IntIterator() {
-    var index = 0
-    override fun hasNext() = index < size
-    override fun nextInt() = elementAt(index++)
-}
+@Deprecated("Replace `coil.extension.iterator` with `coil.collection.iterator`.")
+operator fun SparseIntArraySet.iterator() = _iterator()

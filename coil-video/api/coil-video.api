@@ -37,3 +37,11 @@ public final class coil/fetch/VideoFrameUriFetcher : coil/fetch/VideoFrameFetche
 	public synthetic fun setDataSource (Landroid/media/MediaMetadataRetriever;Ljava/lang/Object;)V
 }
 
+public final class coil/request/Videos {
+	public static final fun videoFrameMicros (Lcoil/request/ImageRequest$Builder;J)Lcoil/request/ImageRequest$Builder;
+	public static final fun videoFrameMicros (Lcoil/request/Parameters;)Ljava/lang/Long;
+	public static final fun videoFrameMillis (Lcoil/request/ImageRequest$Builder;J)Lcoil/request/ImageRequest$Builder;
+	public static final fun videoFrameOption (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
+	public static final fun videoFrameOption (Lcoil/request/Parameters;)Ljava/lang/Integer;
+}
+

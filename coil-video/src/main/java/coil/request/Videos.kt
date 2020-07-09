@@ -1,7 +1,7 @@
 @file:Suppress("unused")
 @file:JvmName("Videos")
 
-package coil.extension
+package coil.request
 
 import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST
@@ -11,8 +11,6 @@ import android.media.MediaMetadataRetriever.OPTION_PREVIOUS_SYNC
 import coil.fetch.VideoFrameFetcher
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_OPTION_KEY
-import coil.request.ImageRequest
-import coil.request.Parameters
 
 /**
  * Set the time **in milliseconds** of the frame to extract from a video.

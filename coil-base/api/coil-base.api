@@ -184,6 +184,18 @@ public final class coil/collection/SparseIntArraySet {
 	public final fun size ()I
 }
 
+public final class coil/collection/SparseIntArraySetKt {
+	public static final fun addAll (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)V
+	public static final fun count (Lcoil/collection/SparseIntArraySet;)I
+	public static final fun forEach (Lcoil/collection/SparseIntArraySet;Lkotlin/jvm/functions/Function1;)V
+	public static final fun isEmpty (Lcoil/collection/SparseIntArraySet;)Z
+	public static final fun isNotEmpty (Lcoil/collection/SparseIntArraySet;)Z
+	public static final fun iterator (Lcoil/collection/SparseIntArraySet;)Lkotlin/collections/IntIterator;
+	public static final fun minusAssign (Lcoil/collection/SparseIntArraySet;I)V
+	public static final fun plus (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)Lcoil/collection/SparseIntArraySet;
+	public static final fun plusAssign (Lcoil/collection/SparseIntArraySet;I)V
+}
+
 public final class coil/decode/DataSource : java/lang/Enum {
 	public static final field DISK Lcoil/decode/DataSource;
 	public static final field MEMORY Lcoil/decode/DataSource;
@@ -579,6 +591,12 @@ public final class coil/request/Parameters$Entry {
 	public final fun getValue ()Ljava/lang/Object;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/request/ParametersKt {
+	public static final fun count (Lcoil/request/Parameters;)I
+	public static final fun get (Lcoil/request/Parameters;Ljava/lang/String;)Ljava/lang/Object;
+	public static final fun isNotEmpty (Lcoil/request/Parameters;)Z
 }
 
 public abstract interface class coil/request/RequestDisposable {
