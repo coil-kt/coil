@@ -786,6 +786,7 @@ class ImageRequest private constructor(
          */
         fun defaults(defaults: DefaultRequestOptions) = apply {
             this.defaults = defaults
+            resetResolvedScale()
         }
 
         /**
@@ -829,9 +830,15 @@ class ImageRequest private constructor(
             )
         }
 
+        /** Ensure these values will be recomputed when [build] is called. */
         private fun resetResolvedValues() {
             resolvedLifecycle = null
             resolvedSizeResolver = null
+            resolvedScale = null
+        }
+
+        /** Ensure the scale will be recomputed when [build] is called. */
+        private fun resetResolvedScale() {
             resolvedScale = null
         }
 
