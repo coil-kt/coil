@@ -528,7 +528,11 @@ class ImageRequest private constructor(
             this.fetcher = fetcher to type
         }
 
-        @Deprecated("Parameter order is reversed.", replaceWith = ReplaceWith("add(fetcher, type)"))
+        @Deprecated(
+            message = "Parameter order is reversed.",
+            replaceWith = ReplaceWith("add(fetcher, type)"),
+            level = DeprecationLevel.ERROR
+        )
         @PublishedApi
         internal fun <T : Any> fetcher(type: Class<T>, fetcher: Fetcher<T>) = fetcher(fetcher, type)
 

@@ -59,40 +59,48 @@ class ComponentRegistry private constructor(
         }
 
         /** Register a [Mapper]. */
-        inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(T::class.java, mapper)
+        inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(mapper, T::class.java)
 
         @PublishedApi
         internal fun <T : Any> add(mapper: Mapper<T, *>, type: Class<T>) = apply {
             mappers += mapper to type
         }
 
-        @Deprecated("Parameter order is reversed.", replaceWith = ReplaceWith("add(mapper, type)"))
+        @Deprecated(
+            message = "Parameter order is reversed.",
+            replaceWith = ReplaceWith("add(mapper, type)"),
+            level = DeprecationLevel.ERROR
+        )
         @PublishedApi
         internal fun <T : Any> add(type: Class<T>, mapper: Mapper<T, *>) = add(mapper, type)
 
         /** Register a [MeasuredMapper]. */
-        @Deprecated("MeasuredMappers are deprecated.")
+        @Deprecated("MeasuredMappers are deprecated. Replace with an Interceptor.")
         inline fun <reified T : Any> add(measuredMapper: MeasuredMapper<T, *>) = add(T::class.java, measuredMapper)
 
-        @Deprecated("MeasuredMappers are deprecated.")
+        @Deprecated("MeasuredMappers are deprecated. Replace with an Interceptor.")
         @PublishedApi
         internal fun <T : Any> add(measuredMapper: MeasuredMapper<T, *>, type: Class<T>) = apply {
             measuredMappers += measuredMapper to type
         }
 
-        @Deprecated("MeasuredMappers are deprecated.")
+        @Deprecated("MeasuredMappers are deprecated. Replace with an Interceptor.")
         @PublishedApi
         internal fun <T : Any> add(type: Class<T>, measuredMapper: MeasuredMapper<T, *>) = add(measuredMapper, type)
 
         /** Register a [Fetcher]. */
-        inline fun <reified T : Any> add(fetcher: Fetcher<T>) = add(T::class.java, fetcher)
+        inline fun <reified T : Any> add(fetcher: Fetcher<T>) = add(fetcher, T::class.java)
 
         @PublishedApi
         internal fun <T : Any> add(fetcher: Fetcher<T>, type: Class<T>) = apply {
             fetchers += fetcher to type
         }
 
-        @Deprecated("Parameter order is reversed.", replaceWith = ReplaceWith("add(fetcher, type)"))
+        @Deprecated(
+            message = "Parameter order is reversed.",
+            replaceWith = ReplaceWith("add(fetcher, type)"),
+            level = DeprecationLevel.ERROR
+        )
         @PublishedApi
         internal fun <T : Any> add(type: Class<T>, fetcher: Fetcher<T>) = add(fetcher, type)
 
