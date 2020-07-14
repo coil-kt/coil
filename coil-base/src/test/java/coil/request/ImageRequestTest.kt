@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoilApi::class)
-class ImageRequestBuilderTest {
+class ImageRequestTest {
 
     private lateinit var context: Context
 
