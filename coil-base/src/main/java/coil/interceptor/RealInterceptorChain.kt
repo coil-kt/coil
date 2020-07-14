@@ -30,6 +30,9 @@ internal class RealInterceptorChain(
     }
 
     private fun checkRequest(request: ImageRequest, interceptor: Interceptor) {
+        check(request.context === initialRequest.context) {
+            "Interceptor '$interceptor' cannot modify the request's context."
+        }
         check(request.data !== NullRequestData) {
             "Interceptor '$interceptor' cannot set the request's data to null."
         }

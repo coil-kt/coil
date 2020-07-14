@@ -133,10 +133,10 @@ class ImageRequest private constructor(
     private val fallbackResId: Int?,
     private val fallbackDrawable: Drawable?,
 
-    /** Tracks which values have been set. */
+    /** The raw values set on [Builder]. */
     val defined: DefinedRequestOptions,
 
-    /** The values that were used to fill unset values. */
+    /** The defaults used to fill unset values. */
     val defaults: DefaultRequestOptions
 ) {
 
@@ -306,6 +306,10 @@ class ImageRequest private constructor(
         @DrawableRes private var fallbackResId: Int?
         private var fallbackDrawable: Drawable?
 
+        private var resolvedLifecycle: Lifecycle?
+        private var resolvedSizeResolver: SizeResolver?
+        private var resolvedScale: Scale?
+
         constructor(context: Context) {
             this.context = context
             defaults = DefaultRequestOptions.INSTANCE
@@ -338,6 +342,9 @@ class ImageRequest private constructor(
             errorDrawable = null
             fallbackResId = null
             fallbackDrawable = null
+            resolvedLifecycle = null
+            resolvedSizeResolver = null
+            resolvedScale = null
         }
 
         @JvmOverloads
@@ -373,6 +380,17 @@ class ImageRequest private constructor(
             errorDrawable = request.errorDrawable
             fallbackResId = request.fallbackResId
             fallbackDrawable = request.fallbackDrawable
+
+            // If the context changes, recompute the resolved values.
+            if (request.context === context) {
+                resolvedLifecycle = request.lifecycle
+                resolvedSizeResolver = request.sizeResolver
+                resolvedScale = request.scale
+            } else {
+                resolvedLifecycle = null
+                resolvedSizeResolver = null
+                resolvedScale = null
+            }
         }
 
         /**
@@ -485,6 +503,7 @@ class ImageRequest private constructor(
          */
         fun size(resolver: SizeResolver) = apply {
             this.sizeResolver = resolver
+            resetResolvedValues()
         }
 
         /**
@@ -722,6 +741,7 @@ class ImageRequest private constructor(
          */
         fun target(target: Target?) = apply {
             this.target = target
+            resetResolvedValues()
         }
 
         /**
@@ -785,9 +805,9 @@ class ImageRequest private constructor(
                 transformations = transformations,
                 headers = headers?.build().orEmpty(),
                 parameters = parameters?.build().orEmpty(),
-                lifecycle = lifecycle ?: resolveLifecycle(),
-                sizeResolver = sizeResolver ?: resolveSizeResolver(),
-                scale = scale ?: resolveScale(),
+                lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
+                sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
+                scale = scale ?: resolvedScale ?: resolveScale(),
                 dispatcher = dispatcher ?: defaults.dispatcher,
                 transition = transition ?: defaults.transition,
                 precision = precision ?: defaults.precision,
@@ -807,6 +827,12 @@ class ImageRequest private constructor(
                 fallbackResId = fallbackResId,
                 fallbackDrawable = fallbackDrawable
             )
+        }
+
+        private fun resetResolvedValues() {
+            resolvedLifecycle = null
+            resolvedSizeResolver = null
+            resolvedScale = null
         }
 
         private fun resolveLifecycle(): Lifecycle {
