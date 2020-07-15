@@ -7,7 +7,6 @@ import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
@@ -362,7 +361,7 @@ class RealImageLoaderTest {
     }
 
     @Test
-    fun placeholderKey() {
+    fun placeholderKeyReturnsCorrectMemoryCacheEntry() {
         val key = MemoryCache.Key("fake_key")
         val fileName = "normal.jpg"
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
@@ -453,9 +452,7 @@ class RealImageLoaderTest {
     }
 
     private fun decodeAssetAndAddToMemoryCache(key: MemoryCache.Key, fileName: String): Bitmap {
-        val options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.HARDWARE }
-        val bitmap = context.decodeBitmapAsset(fileName, options)
-        assertEquals(Bitmap.Config.HARDWARE, bitmap.config)
+        val bitmap = context.decodeBitmapAsset(fileName)
         strongMemoryCache.set(key, bitmap, false)
         return bitmap
     }
