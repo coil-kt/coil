@@ -28,6 +28,7 @@ object CoilUtils {
         view.requestManager.clearCurrentRequest()
     }
 
+    /** Get the metadata of the successful request attached to this view. */
     @JvmStatic
     fun metadata(view: View): Metadata? {
         return view.requestManager.metadata

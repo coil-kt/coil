@@ -110,7 +110,7 @@ fun ImageView.clear() {
 }
 
 /**
- * Retrieve the metadata of the successful request attached to this view.
+ * Get the metadata of the successful request attached to this view.
  */
 val ImageView.metadata: Metadata?
     @JvmName("metadata") get() = CoilUtils.metadata(this)
