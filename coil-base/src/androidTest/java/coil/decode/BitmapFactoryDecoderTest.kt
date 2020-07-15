@@ -22,6 +22,9 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class BitmapFactoryDecoderTest {
@@ -155,7 +158,16 @@ class BitmapFactoryDecoderTest {
             )
         )
         assertEquals(PixelSize(1080, 1350), result.size)
-        assertEquals(pooledBitmap, result)
+
+        // BitmapFactoryDecoder does not use pooled bitmaps on API 24+.
+        // Instead, we create immutable bitmaps.
+        if (SDK_INT >= 24) {
+            assertNotSame(pooledBitmap, result)
+            assertFalse(result.isMutable)
+        } else {
+            assertSame(pooledBitmap, result)
+            assertTrue(result.isMutable)
+        }
     }
 
     @Test
@@ -173,8 +185,23 @@ class BitmapFactoryDecoderTest {
             )
         )
         assertEquals(PixelSize(500, 625), result.size)
-        // The bitmap should not be re-used on pre-API 19.
-        assertEquals(pooledBitmap === result, SDK_INT >= 19)
+
+        // BitmapFactoryDecoder does not use pooled bitmaps on API 24+.
+        // Instead, we create immutable bitmaps.
+        when {
+            SDK_INT >= 24 -> {
+                assertNotSame(pooledBitmap, result)
+                assertFalse(result.isMutable)
+            }
+            SDK_INT >= 19 -> {
+                assertSame(pooledBitmap, result)
+                assertTrue(result.isMutable)
+            }
+            else -> {
+                assertNotSame(pooledBitmap, result)
+                assertTrue(result.isMutable)
+            }
+        }
     }
 
     @Test
