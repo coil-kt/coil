@@ -676,6 +676,7 @@ public final class coil/request/SuccessResult : coil/request/RequestResult {
 	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public final fun getMetadata ()Lcoil/request/Metadata;
 	public fun getRequest ()Lcoil/request/ImageRequest;
+	public final fun getSource ()Lcoil/decode/DataSource;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

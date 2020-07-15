@@ -2,6 +2,7 @@ package coil.request
 
 import android.graphics.drawable.Drawable
 import coil.ImageLoader
+import coil.decode.DataSource
 
 /**
  * Represents the result of an image request.
@@ -23,7 +24,14 @@ data class SuccessResult(
     override val drawable: Drawable,
     override val request: ImageRequest,
     val metadata: Metadata
-) : RequestResult()
+) : RequestResult() {
+
+    @Deprecated(
+        message = "Moved to Metadata.",
+        replaceWith = ReplaceWith("metadata.dataSource")
+    )
+    val source: DataSource get() = metadata.dataSource
+}
 
 /**
  * Indicates that an error occurred while executing the request.
