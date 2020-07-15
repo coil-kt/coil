@@ -159,8 +159,7 @@ class BitmapFactoryDecoderTest {
         )
         assertEquals(PixelSize(1080, 1350), result.size)
 
-        // BitmapFactoryDecoder does not use pooled bitmaps on API 24+.
-        // Instead, we create immutable bitmaps.
+        // BitmapFactoryDecoder creates immutable bitmaps instead of using pooled bitmaps on API 24+.
         if (SDK_INT >= 24) {
             assertNotSame(pooledBitmap, result)
             assertFalse(result.isMutable)
@@ -186,8 +185,7 @@ class BitmapFactoryDecoderTest {
         )
         assertEquals(PixelSize(500, 625), result.size)
 
-        // BitmapFactoryDecoder does not use pooled bitmaps on API 24+.
-        // Instead, we create immutable bitmaps.
+        // BitmapFactoryDecoder creates immutable bitmaps instead of using pooled bitmaps on API 24+.
         when {
             SDK_INT >= 24 -> {
                 assertNotSame(pooledBitmap, result)
