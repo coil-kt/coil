@@ -1,5 +1,4 @@
 @file:JvmName("-Extensions")
-@file:OptIn(ExperimentalCoilApi::class)
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil.util
@@ -22,7 +21,6 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import coil.annotation.ExperimentalCoilApi
 import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
@@ -166,8 +164,6 @@ internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
 }
 
 internal inline val CoroutineContext.job: Job get() = get(Job)!!
-
-internal inline fun Int.toBinaryString(): String = Integer.toBinaryString(this)
 
 internal var TargetDelegate.metadata: Metadata?
     get() = (target as? ViewTarget<*>)?.view?.requestManager?.metadata
