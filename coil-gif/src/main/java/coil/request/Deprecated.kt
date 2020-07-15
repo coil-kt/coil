@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("PackageDirectoryMismatch", "unused")
 @file:JvmName("Gifs")
 
 package coil.extension
