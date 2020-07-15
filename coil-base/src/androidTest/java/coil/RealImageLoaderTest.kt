@@ -379,9 +379,11 @@ class RealImageLoaderTest {
                     .dispatcher(Dispatchers.Main.immediate)
                     .target(
                         onStart = {
+                            // The drawable in the memory cache should be returned here.
                             assertEquals(bitmap, (it as BitmapDrawable).bitmap)
                         },
                         onSuccess = {
+                            // The same drawable should be returned since the drawable is valid for this request.
                             assertEquals(bitmap, (it as BitmapDrawable).bitmap)
                         }
                     )
