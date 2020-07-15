@@ -11,6 +11,7 @@ import androidx.annotation.Px
 import androidx.core.graphics.createBitmap
 import coil.util.Logger
 import coil.util.allocationByteCountCompat
+import coil.util.identityHashCode
 import coil.util.isHardware
 import coil.util.log
 
@@ -42,13 +43,18 @@ internal class RealBitmapPool(
 
     @Synchronized
     override fun put(bitmap: Bitmap) {
-        require(!bitmap.isRecycled) { "Cannot pool a recycled bitmap." }
+        if (bitmap.isRecycled) {
+            logger?.log(TAG, Log.ERROR) {
+                "Rejecting recycled bitmap from pool; bitmap: ${bitmap.identityHashCode}"
+            }
+            return
+        }
 
         val size = bitmap.allocationByteCountCompat
 
         if (!bitmap.isMutable || size > maxSize || bitmap.config !in allowedConfigs) {
             logger?.log(TAG, Log.VERBOSE) {
-                "Rejecting bitmap from pool: bitmap: ${strategy.stringify(bitmap)}, " +
+                "Rejecting bitmap from pool; bitmap: ${strategy.stringify(bitmap)}, " +
                     "is mutable: ${bitmap.isMutable}, " +
                     "is greater than max size: ${size > maxSize}" +
                     "is allowed config: ${bitmap.config in allowedConfigs}"
@@ -58,8 +64,8 @@ internal class RealBitmapPool(
         }
 
         if (bitmap in bitmaps) {
-            logger?.log(TAG, Log.WARN) {
-                "Rejecting duplicate bitmap from pool: bitmap: ${strategy.stringify(bitmap)}"
+            logger?.log(TAG, Log.ERROR) {
+                "Rejecting duplicate bitmap from pool; bitmap: ${strategy.stringify(bitmap)}"
             }
             return
         }
