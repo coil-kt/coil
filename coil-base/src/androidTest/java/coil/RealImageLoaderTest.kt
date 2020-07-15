@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
@@ -53,7 +52,6 @@ import okio.buffer
 import okio.sink
 import okio.source
 import org.junit.After
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -61,7 +59,6 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -365,49 +362,7 @@ class RealImageLoaderTest {
     }
 
     @Test
-    fun cachedHardwareBitmap_disallowHardware() {
-        // Hardware bitmaps are only available on API 26 and above.
-        assumeTrue(SDK_INT >= 26)
-
-        val key = MemoryCache.Key("fake_key")
-        val fileName = "normal.jpg"
-        val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
-
-        runBlocking {
-            suspendCancellableCoroutine<Unit> { continuation ->
-                val request = ImageRequest.Builder(context)
-                    .key(key)
-                    .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
-                    .size(100, 100)
-                    .precision(Precision.INEXACT)
-                    .allowHardware(false)
-                    .dispatcher(Dispatchers.Main.immediate)
-                    .target(
-                        onStart = {
-                            // The hardware bitmap should not be returned as a placeholder.
-                            assertNull(it)
-                        },
-                        onSuccess = {
-                            // The hardware bitmap should not be returned as the result.
-                            assertNotEquals(bitmap, (it as BitmapDrawable).bitmap)
-                        }
-                    )
-                    .listener(
-                        onSuccess = { _, _ -> continuation.resume(Unit) },
-                        onError = { _, throwable -> continuation.resumeWithException(throwable) },
-                        onCancel = { continuation.cancel() }
-                    )
-                    .build()
-                imageLoader.enqueue(request)
-            }
-        }
-    }
-
-    @Test
-    fun cachedHardwareBitmap_allowHardware() {
-        // Hardware bitmaps are only available on API 26 and above.
-        assumeTrue(SDK_INT >= 26)
-
+    fun placeholderKey() {
         val key = MemoryCache.Key("fake_key")
         val fileName = "normal.jpg"
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
