@@ -1,13 +1,13 @@
-package coil.memory
+package coil.bitmap
 
 import android.graphics.Bitmap
 import android.util.Log
 import android.util.SparseIntArray
 import androidx.annotation.VisibleForTesting
 import androidx.core.util.set
-import coil.bitmappool.BitmapPool
 import coil.collection.SparseIntArraySet
 import coil.collection.plusAssign
+import coil.memory.WeakMemoryCache
 import coil.util.Logger
 import coil.util.identityHashCode
 import coil.util.log

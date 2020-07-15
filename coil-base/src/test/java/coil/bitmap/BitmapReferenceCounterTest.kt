@@ -1,7 +1,8 @@
-package coil.memory
+package coil.bitmap
 
-import coil.bitmappool.BitmapPool
 import coil.memory.MemoryCache.Key
+import coil.memory.RealWeakMemoryCache
+import coil.memory.WeakMemoryCache
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.count
 import coil.util.createBitmap

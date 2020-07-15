@@ -9,10 +9,10 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmappool.BitmapPool
-import coil.bitmappool.RealBitmapPool
+import coil.bitmap.BitmapPool
+import coil.bitmap.BitmapReferenceCounter
+import coil.bitmap.RealBitmapPool
 import coil.drawable.CrossfadeDrawable
-import coil.memory.BitmapReferenceCounter
 import coil.memory.EmptyWeakMemoryCache
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
@@ -416,7 +416,8 @@ interface ImageLoader {
 
             val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
             val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache(logger) else EmptyWeakMemoryCache
-            val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
+            val referenceCounter =
+                BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
             val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
 
             return RealImageLoader(

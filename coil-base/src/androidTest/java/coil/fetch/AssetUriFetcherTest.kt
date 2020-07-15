@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.size.PixelSize
 import coil.util.createOptions

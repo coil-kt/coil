@@ -6,7 +6,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale

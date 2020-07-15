@@ -1,4 +1,4 @@
-package coil.bitmappool
+package coil.bitmap
 
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT

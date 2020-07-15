@@ -11,8 +11,8 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmappool.BitmapPool
-import coil.memory.BitmapReferenceCounter
+import coil.bitmap.BitmapPool
+import coil.bitmap.BitmapReferenceCounter
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache

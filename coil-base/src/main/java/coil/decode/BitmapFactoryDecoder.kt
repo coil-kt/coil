@@ -10,7 +10,7 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
 import androidx.exifinterface.media.ExifInterface
 import coil.annotation.InternalCoilApi
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.toDrawable

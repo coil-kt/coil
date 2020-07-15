@@ -13,7 +13,7 @@ import android.graphics.RectF
 import android.graphics.Shader
 import androidx.annotation.Px
 import androidx.core.graphics.applyCanvas
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DecodeUtils
 import coil.size.OriginalSize
 import coil.size.PixelSize

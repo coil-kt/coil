@@ -17,7 +17,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.SystemClock
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DecodeUtils
 import coil.decode.ImageDecoderDecoder
 import coil.size.Scale

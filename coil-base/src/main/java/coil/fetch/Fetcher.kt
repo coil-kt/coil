@@ -4,7 +4,7 @@ package coil.fetch
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.Options
 import coil.memory.StrongMemoryCache
 import coil.size.Size
