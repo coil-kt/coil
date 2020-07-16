@@ -1,5 +1,5 @@
-@file:Suppress("unused")
 @file:JvmName("Videos")
+@file:Suppress("PackageDirectoryMismatch", "unused")
 
 package coil.extension
 
