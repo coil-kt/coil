@@ -1,5 +1,5 @@
 @file:JvmName("ImageViews")
-@file:Suppress("DEPRECATION", "unused")
+@file:Suppress("DEPRECATION", "PackageDirectoryMismatch", "unused")
 
 package coil.api
 

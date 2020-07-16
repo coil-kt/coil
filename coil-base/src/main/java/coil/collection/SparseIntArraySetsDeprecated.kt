@@ -1,5 +1,5 @@
 @file:JvmName("SparseIntArraySets")
-@file:Suppress("NOTHING_TO_INLINE", "unused")
+@file:Suppress("NOTHING_TO_INLINE", "PackageDirectoryMismatch", "unused")
 
 package coil.extension
 
