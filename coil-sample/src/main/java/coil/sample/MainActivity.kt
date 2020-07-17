@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package coil.sample
 
 import android.os.Build.VERSION.SDK_INT
@@ -20,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@Suppress("UNUSED_PARAMETER")
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainActivity : AppCompatActivity() {
 
@@ -76,6 +75,7 @@ class MainActivity : AppCompatActivity() {
                 binding.list.isVisible = false
                 binding.detail.isVisible = true
                 binding.detail.load(screen.image.uri) {
+                    placeholderKey(screen.placeholderKey)
                     parameters(screen.image.parameters)
                 }
             }

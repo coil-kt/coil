@@ -1,5 +1,5 @@
-@file:Suppress("unused")
 @file:OptIn(ExperimentalCoilApi::class)
+@file:Suppress("unused")
 
 package coil.request
 
@@ -23,22 +23,26 @@ import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.memory.MemoryCache
-import coil.memory.RequestService
 import coil.request.ImageRequest.Builder
+import coil.size.DisplaySizeResolver
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
+import coil.size.ViewSizeResolver
 import coil.target.ImageViewTarget
 import coil.target.Target
+import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
-import coil.util.EMPTY_DRAWABLE
+import coil.util.allowInexactSize
 import coil.util.getDrawableCompat
+import coil.util.getLifecycle
 import coil.util.orEmpty
+import coil.util.scale
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okhttp3.HttpUrl
@@ -54,10 +58,7 @@ class ImageRequest private constructor(
     val context: Context,
 
     /** @see Builder.data */
-    val data: Any?,
-
-    /** @see Builder.key */
-    val key: MemoryCache.Key?,
+    val data: Any,
 
     /** @see Builder.target */
     val target: Target?,
@@ -65,53 +66,23 @@ class ImageRequest private constructor(
     /** @see Builder.listener */
     val listener: Listener?,
 
-    /** @see Builder.lifecycle */
-    val lifecycle: Lifecycle?,
+    /** @see Builder.key */
+    val key: MemoryCache.Key?,
 
-    /** @see Builder.dispatcher */
-    val dispatcher: CoroutineDispatcher?,
-
-    /** @see Builder.transition */
-    val transformations: List<Transformation>,
-
-    /** @see Builder.transition */
-    val transition: Transition?,
-
-    /** @see Builder.bitmapConfig */
-    val bitmapConfig: Bitmap.Config?,
+    /** @see Builder.placeholderKey */
+    val placeholderKey: MemoryCache.Key?,
 
     /** @see Builder.colorSpace */
     val colorSpace: ColorSpace?,
 
-    /** @see Builder.size */
-    val sizeResolver: SizeResolver?,
-
-    /** @see Builder.scale */
-    val scale: Scale?,
-
-    /** @see Builder.precision */
-    val precision: Precision?,
-
     /** @see Builder.fetcher */
-    val fetcher: Pair<Class<*>, Fetcher<*>>?,
+    val fetcher: Pair<Fetcher<*>, Class<*>>?,
 
     /** @see Builder.decoder */
     val decoder: Decoder?,
 
-    /** @see Builder.allowHardware */
-    val allowHardware: Boolean?,
-
-    /** @see Builder.allowRgb565 */
-    val allowRgb565: Boolean?,
-
-    /** @see Builder.memoryCachePolicy */
-    val memoryCachePolicy: CachePolicy?,
-
-    /** @see Builder.diskCachePolicy */
-    val diskCachePolicy: CachePolicy?,
-
-    /** @see Builder.networkCachePolicy */
-    val networkCachePolicy: CachePolicy?,
+    /** @see Builder.transformations */
+    val transformations: List<Transformation>,
 
     /** @see Builder.headers */
     val headers: Headers,
@@ -119,22 +90,64 @@ class ImageRequest private constructor(
     /** @see Builder.parameters */
     val parameters: Parameters,
 
-    private val placeholderResId: Int,
+    /** @see Builder.lifecycle */
+    val lifecycle: Lifecycle,
+
+    /** @see Builder.sizeResolver */
+    val sizeResolver: SizeResolver,
+
+    /** @see Builder.scale */
+    val scale: Scale,
+
+    /** @see Builder.dispatcher */
+    val dispatcher: CoroutineDispatcher,
+
+    /** @see Builder.transition */
+    val transition: Transition,
+
+    /** @see Builder.precision */
+    val precision: Precision,
+
+    /** @see Builder.bitmapConfig */
+    val bitmapConfig: Bitmap.Config,
+
+    /** @see Builder.allowHardware */
+    val allowHardware: Boolean,
+
+    /** @see Builder.allowHardware */
+    val allowRgb565: Boolean,
+
+    /** @see Builder.memoryCachePolicy */
+    val memoryCachePolicy: CachePolicy,
+
+    /** @see Builder.diskCachePolicy */
+    val diskCachePolicy: CachePolicy,
+
+    /** @see Builder.networkCachePolicy */
+    val networkCachePolicy: CachePolicy,
+
+    private val placeholderResId: Int?,
     private val placeholderDrawable: Drawable?,
-    private val errorResId: Int,
+    private val errorResId: Int?,
     private val errorDrawable: Drawable?,
-    private val fallbackResId: Int,
-    private val fallbackDrawable: Drawable?
+    private val fallbackResId: Int?,
+    private val fallbackDrawable: Drawable?,
+
+    /** The raw values set on [Builder]. */
+    val defined: DefinedRequestOptions,
+
+    /** The defaults used to fill unset values. */
+    val defaults: DefaultRequestOptions
 ) {
 
     /** @see Builder.placeholder */
-    val placeholder: Drawable? get() = getDrawableCompat(placeholderDrawable, placeholderResId)
+    val placeholder: Drawable? get() = getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
 
     /** @see Builder.error */
-    val error: Drawable? get() = getDrawableCompat(errorDrawable, errorResId)
+    val error: Drawable? get() = getDrawableCompat(errorDrawable, errorResId, defaults.error)
 
     /** @see Builder.fallback */
-    val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId)
+    val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
 
     @JvmOverloads
     fun newBuilder(context: Context = this.context) = Builder(this, context)
@@ -144,77 +157,84 @@ class ImageRequest private constructor(
         return other is ImageRequest &&
             context == other.context &&
             data == other.data &&
-            key == other.key &&
             target == other.target &&
             listener == other.listener &&
-            lifecycle == other.lifecycle &&
-            dispatcher == other.dispatcher &&
-            transformations == other.transformations &&
-            transition == other.transition &&
-            bitmapConfig == other.bitmapConfig &&
+            key == other.key &&
+            placeholderKey == other.placeholderKey &&
             colorSpace == other.colorSpace &&
-            sizeResolver == other.sizeResolver &&
-            scale == other.scale &&
-            precision == other.precision &&
             fetcher == other.fetcher &&
             decoder == other.decoder &&
+            transformations == other.transformations &&
+            headers == other.headers &&
+            parameters == other.parameters &&
+            lifecycle == other.lifecycle &&
+            sizeResolver == other.sizeResolver &&
+            scale == other.scale &&
+            dispatcher == other.dispatcher &&
+            transition == other.transition &&
+            precision == other.precision &&
+            bitmapConfig == other.bitmapConfig &&
             allowHardware == other.allowHardware &&
             allowRgb565 == other.allowRgb565 &&
             memoryCachePolicy == other.memoryCachePolicy &&
             diskCachePolicy == other.diskCachePolicy &&
             networkCachePolicy == other.networkCachePolicy &&
-            headers == other.headers &&
-            parameters == other.parameters &&
             placeholderResId == other.placeholderResId &&
             placeholderDrawable == other.placeholderDrawable &&
             errorResId == other.errorResId &&
             errorDrawable == other.errorDrawable &&
             fallbackResId == other.fallbackResId &&
-            fallbackDrawable == other.fallbackDrawable
+            fallbackDrawable == other.fallbackDrawable &&
+            defined == other.defined &&
+            defaults == other.defaults
     }
 
     override fun hashCode(): Int {
         var result = context.hashCode()
-        result = 31 * result + (data?.hashCode() ?: 0)
-        result = 31 * result + (key?.hashCode() ?: 0)
+        result = 31 * result + data.hashCode()
         result = 31 * result + (target?.hashCode() ?: 0)
         result = 31 * result + (listener?.hashCode() ?: 0)
-        result = 31 * result + (lifecycle?.hashCode() ?: 0)
-        result = 31 * result + (dispatcher?.hashCode() ?: 0)
-        result = 31 * result + transformations.hashCode()
-        result = 31 * result + (transition?.hashCode() ?: 0)
-        result = 31 * result + (bitmapConfig?.hashCode() ?: 0)
+        result = 31 * result + (key?.hashCode() ?: 0)
+        result = 31 * result + (placeholderKey?.hashCode() ?: 0)
         result = 31 * result + (colorSpace?.hashCode() ?: 0)
-        result = 31 * result + (sizeResolver?.hashCode() ?: 0)
-        result = 31 * result + (scale?.hashCode() ?: 0)
-        result = 31 * result + (precision?.hashCode() ?: 0)
         result = 31 * result + (fetcher?.hashCode() ?: 0)
         result = 31 * result + (decoder?.hashCode() ?: 0)
-        result = 31 * result + (allowHardware?.hashCode() ?: 0)
-        result = 31 * result + (allowRgb565?.hashCode() ?: 0)
-        result = 31 * result + (memoryCachePolicy?.hashCode() ?: 0)
-        result = 31 * result + (diskCachePolicy?.hashCode() ?: 0)
-        result = 31 * result + (networkCachePolicy?.hashCode() ?: 0)
+        result = 31 * result + transformations.hashCode()
         result = 31 * result + headers.hashCode()
         result = 31 * result + parameters.hashCode()
-        result = 31 * result + placeholderResId
+        result = 31 * result + lifecycle.hashCode()
+        result = 31 * result + sizeResolver.hashCode()
+        result = 31 * result + scale.hashCode()
+        result = 31 * result + dispatcher.hashCode()
+        result = 31 * result + transition.hashCode()
+        result = 31 * result + precision.hashCode()
+        result = 31 * result + bitmapConfig.hashCode()
+        result = 31 * result + allowHardware.hashCode()
+        result = 31 * result + allowRgb565.hashCode()
+        result = 31 * result + memoryCachePolicy.hashCode()
+        result = 31 * result + diskCachePolicy.hashCode()
+        result = 31 * result + networkCachePolicy.hashCode()
+        result = 31 * result + (placeholderResId ?: 0)
         result = 31 * result + (placeholderDrawable?.hashCode() ?: 0)
-        result = 31 * result + errorResId
+        result = 31 * result + (errorResId ?: 0)
         result = 31 * result + (errorDrawable?.hashCode() ?: 0)
-        result = 31 * result + fallbackResId
+        result = 31 * result + (fallbackResId ?: 0)
         result = 31 * result + (fallbackDrawable?.hashCode() ?: 0)
+        result = 31 * result + defined.hashCode()
+        result = 31 * result + defaults.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "ImageRequest(context=$context, data=$data, key=$key, target=$target, listener=$listener, " +
-            "lifecycle=$lifecycle, dispatcher=$dispatcher, transformations=$transformations, transition=$transition, " +
-            "bitmapConfig=$bitmapConfig, colorSpace=$colorSpace, sizeResolver=$sizeResolver, scale=$scale, " +
-            "precision=$precision, fetcher=$fetcher, decoder=$decoder, allowHardware=$allowHardware, " +
-            "allowRgb565=$allowRgb565, memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
-            "networkCachePolicy=$networkCachePolicy, headers=$headers, parameters=$parameters, " +
-            "placeholderResId=$placeholderResId, placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, " +
-            "errorDrawable=$errorDrawable, fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable)"
+        return "ImageRequest(context=$context, data=$data, target=$target, listener=$listener, key=$key, " +
+            "placeholderKey=$placeholderKey, colorSpace=$colorSpace, fetcher=$fetcher, decoder=$decoder, " +
+            "transformations=$transformations, headers=$headers, parameters=$parameters, lifecycle=$lifecycle, " +
+            "sizeResolver=$sizeResolver, scale=$scale, dispatcher=$dispatcher, transition=$transition, " +
+            "precision=$precision, bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
+            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
+            "networkCachePolicy=$networkCachePolicy, placeholderResId=$placeholderResId, " +
+            "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
+            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable, defined=$defined, defaults=$defaults)"
     }
 
     /**
@@ -250,107 +270,127 @@ class ImageRequest private constructor(
     class Builder {
 
         private val context: Context
+        private var defaults: DefaultRequestOptions
         private var data: Any?
-        private var key: MemoryCache.Key?
 
         private var target: Target?
         private var listener: Listener?
-
-        private var lifecycle: Lifecycle?
-        private var dispatcher: CoroutineDispatcher?
-        private var transformations: List<Transformation>
-        private var transition: Transition?
-
-        private var bitmapConfig: Bitmap.Config?
+        private var key: MemoryCache.Key?
+        private var placeholderKey: MemoryCache.Key?
         private var colorSpace: ColorSpace? = null
-
-        private var sizeResolver: SizeResolver?
-        private var scale: Scale?
-        private var precision: Precision?
-
-        private var fetcher: Pair<Class<*>, Fetcher<*>>?
+        private var fetcher: Pair<Fetcher<*>, Class<*>>?
         private var decoder: Decoder?
-
-        private var allowHardware: Boolean?
-        private var allowRgb565: Boolean?
-
-        private var memoryCachePolicy: CachePolicy?
-        private var diskCachePolicy: CachePolicy?
-        private var networkCachePolicy: CachePolicy?
+        private var transformations: List<Transformation>
 
         private var headers: Headers.Builder?
         private var parameters: Parameters.Builder?
 
-        @DrawableRes private var placeholderResId: Int
+        private var lifecycle: Lifecycle?
+        private var sizeResolver: SizeResolver?
+        private var scale: Scale?
+
+        private var dispatcher: CoroutineDispatcher?
+        private var transition: Transition?
+        private var precision: Precision?
+        private var bitmapConfig: Bitmap.Config?
+        private var allowHardware: Boolean?
+        private var allowRgb565: Boolean?
+        private var memoryCachePolicy: CachePolicy?
+        private var diskCachePolicy: CachePolicy?
+        private var networkCachePolicy: CachePolicy?
+
+        @DrawableRes private var placeholderResId: Int?
         private var placeholderDrawable: Drawable?
-        @DrawableRes private var errorResId: Int
+        @DrawableRes private var errorResId: Int?
         private var errorDrawable: Drawable?
-        @DrawableRes private var fallbackResId: Int
+        @DrawableRes private var fallbackResId: Int?
         private var fallbackDrawable: Drawable?
+
+        private var resolvedLifecycle: Lifecycle?
+        private var resolvedSizeResolver: SizeResolver?
+        private var resolvedScale: Scale?
 
         constructor(context: Context) {
             this.context = context
+            defaults = DefaultRequestOptions.INSTANCE
             data = null
-            key = null
             target = null
             listener = null
-            lifecycle = null
-            dispatcher = null
-            transformations = emptyList()
-            transition = null
-            bitmapConfig = null
+            key = null
+            placeholderKey = null
             if (SDK_INT >= 26) colorSpace = null
-            sizeResolver = null
-            scale = null
-            precision = null
             fetcher = null
             decoder = null
+            transformations = emptyList()
+            headers = null
+            parameters = null
+            lifecycle = null
+            sizeResolver = null
+            scale = null
+            dispatcher = null
+            transition = null
+            precision = null
+            bitmapConfig = null
             allowHardware = null
             allowRgb565 = null
             memoryCachePolicy = null
             diskCachePolicy = null
             networkCachePolicy = null
-            headers = null
-            parameters = null
-            placeholderResId = 0
+            placeholderResId = null
             placeholderDrawable = null
-            errorResId = 0
+            errorResId = null
             errorDrawable = null
-            fallbackResId = 0
+            fallbackResId = null
             fallbackDrawable = null
+            resolvedLifecycle = null
+            resolvedSizeResolver = null
+            resolvedScale = null
         }
 
         @JvmOverloads
         constructor(request: ImageRequest, context: Context = request.context) {
             this.context = context
+            defaults = request.defaults
             data = request.data
-            key = request.key
             target = request.target
             listener = request.listener
-            lifecycle = request.lifecycle
-            dispatcher = request.dispatcher
-            transformations = request.transformations
-            transition = request.transition
-            bitmapConfig = request.bitmapConfig
+            key = request.key
+            placeholderKey = request.placeholderKey
             if (SDK_INT >= 26) colorSpace = request.colorSpace
-            sizeResolver = request.sizeResolver
-            scale = request.scale
-            precision = request.precision
             fetcher = request.fetcher
             decoder = request.decoder
-            allowHardware = request.allowHardware
-            allowRgb565 = request.allowRgb565
-            memoryCachePolicy = request.memoryCachePolicy
-            diskCachePolicy = request.diskCachePolicy
-            networkCachePolicy = request.networkCachePolicy
+            transformations = request.transformations
             headers = request.headers.newBuilder()
             parameters = request.parameters.newBuilder()
+            lifecycle = request.defined.lifecycle
+            sizeResolver = request.defined.sizeResolver
+            scale = request.defined.scale
+            dispatcher = request.defined.dispatcher
+            transition = request.defined.transition
+            precision = request.defined.precision
+            bitmapConfig = request.defined.bitmapConfig
+            allowHardware = request.defined.allowHardware
+            allowRgb565 = request.defined.allowRgb565
+            memoryCachePolicy = request.defined.memoryCachePolicy
+            diskCachePolicy = request.defined.diskCachePolicy
+            networkCachePolicy = request.defined.networkCachePolicy
             placeholderResId = request.placeholderResId
             placeholderDrawable = request.placeholderDrawable
             errorResId = request.errorResId
             errorDrawable = request.errorDrawable
             fallbackResId = request.fallbackResId
             fallbackDrawable = request.fallbackDrawable
+
+            // If the context changes, recompute the resolved values.
+            if (request.context === context) {
+                resolvedLifecycle = request.lifecycle
+                resolvedSizeResolver = request.sizeResolver
+                resolvedScale = request.scale
+            } else {
+                resolvedLifecycle = null
+                resolvedSizeResolver = null
+                resolvedScale = null
+            }
         }
 
         /**
@@ -370,15 +410,18 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the cache key for this request.
+         * Set the memory cache key for this request.
+         *
+         * If this is null or is not set the [ImageLoader] will compute a memory cache key.
          */
-        fun key(key: String) = key(MemoryCache.Key(key))
+        fun key(key: String?) = key(key?.let { MemoryCache.Key(it) })
 
         /**
-         * Set the cache key for this request.
+         * Set the memory cache key for this request.
+         *
+         * If this is null or is not set the [ImageLoader] will compute a memory cache key.
          */
-        @ExperimentalCoilApi
-        fun key(key: MemoryCache.Key) = apply {
+        fun key(key: MemoryCache.Key?) = apply {
             this.key = key
         }
 
@@ -405,7 +448,7 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the [CoroutineDispatcher] to run the fetching, decoding, and transforming work on.
+         * Set the [CoroutineDispatcher] to launch the request.
          */
         fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.dispatcher = dispatcher
@@ -414,9 +457,7 @@ class ImageRequest private constructor(
         /**
          * Set the list of [Transformation]s to be applied to this request.
          */
-        fun transformations(vararg transformations: Transformation) = apply {
-            this.transformations = transformations.toList()
-        }
+        fun transformations(vararg transformations: Transformation) = transformations(transformations.toList())
 
         /**
          * Set the list of [Transformation]s to be applied to this request.
@@ -428,12 +469,14 @@ class ImageRequest private constructor(
         /**
          * @see ImageLoader.Builder.bitmapConfig
          */
-        fun bitmapConfig(bitmapConfig: Bitmap.Config) = apply {
-            this.bitmapConfig = bitmapConfig
+        fun bitmapConfig(config: Bitmap.Config) = apply {
+            this.bitmapConfig = config
         }
 
         /**
          * Set the preferred [ColorSpace].
+         *
+         * This is not guaranteed and a different color space may be used in some situations.
          */
         @RequiresApi(26)
         fun colorSpace(colorSpace: ColorSpace) = apply {
@@ -443,37 +486,28 @@ class ImageRequest private constructor(
         /**
          * Set the requested width/height.
          */
-        fun size(@Px size: Int) = apply {
-            size(size, size)
-        }
+        fun size(@Px size: Int) = size(size, size)
 
         /**
          * Set the requested width/height.
          */
-        fun size(@Px width: Int, @Px height: Int) = apply {
-            size(PixelSize(width, height))
-        }
+        fun size(@Px width: Int, @Px height: Int) = size(PixelSize(width, height))
 
         /**
          * Set the requested width/height.
          */
-        fun size(size: Size) = apply {
-            this.sizeResolver = SizeResolver(size)
-        }
+        fun size(size: Size) = size(SizeResolver(size))
 
         /**
-         * Set the [SizeResolver] for this request. It will be used to determine the requested width/height for this request.
-         *
-         * If this isn't set, Coil will attempt to determine the size of the request using the logic in [RequestService.sizeResolver].
+         * Set the [SizeResolver] to resolve the requested width/height.
          */
         fun size(resolver: SizeResolver) = apply {
             this.sizeResolver = resolver
+            resetResolvedValues()
         }
 
         /**
-         * Set the scaling algorithm that will be used to fit/fill the image into the dimensions provided by [sizeResolver].
-         *
-         * If this isn't set, Coil will attempt to determine the scale of the request using the logic in [RequestService.scale].
+         * Set the scaling algorithm that will be used to fit/fill the image into the size provided by [sizeResolver].
          *
          * NOTE: If [scale] is not set, it is automatically computed for [ImageView] targets.
          */
@@ -482,13 +516,13 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the required precision for the size of the loaded image.
+         * Set the precision for the size of the loaded image.
          *
-         * The default value is [Precision.AUTOMATIC], which uses the logic in [RequestService.allowInexactSize]
+         * The default value is [Precision.AUTOMATIC], which uses the logic in [allowInexactSize]
          * to determine if output image's dimensions must match the input [size] and [scale] exactly.
          *
-         * NOTE: If [size] is [OriginalSize], image's dimensions will always be equal to or greater than
-         * the image's original dimensions.
+         * NOTE: If [size] is [OriginalSize], the returned image's size will always be equal to or greater than
+         * the image's original size.
          *
          * @see Precision
          */
@@ -497,28 +531,34 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the [Fetcher] to handle fetching any image data.
+         * Use [fetcher] to handle fetching any image data.
          *
-         * If this isn't set, the [ImageLoader] will find an applicable [Fetcher] that's registered in its [ComponentRegistry].
-         *
-         * NOTE: This skips calling [Fetcher.handles] for [fetcher].
+         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its [ComponentRegistry].
          */
-        inline fun <reified R : Any> fetcher(fetcher: Fetcher<R>) = fetcher(R::class.java, fetcher)
+        inline fun <reified T : Any> fetcher(fetcher: Fetcher<T>) = fetcher(fetcher, T::class.java)
 
         /**
-         * @see Builder.fetcher
+         * Use [fetcher] to handle fetching any image data.
+         *
+         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its [ComponentRegistry].
          */
         @PublishedApi
-        internal fun <R : Any> fetcher(type: Class<R>, fetcher: Fetcher<R>) = apply {
-            this.fetcher = type to fetcher
+        internal fun <T : Any> fetcher(fetcher: Fetcher<T>, type: Class<T>) = apply {
+            this.fetcher = fetcher to type
         }
 
+        @Deprecated(
+            message = "Parameter order is reversed.",
+            replaceWith = ReplaceWith("add(fetcher, type)"),
+            level = DeprecationLevel.ERROR
+        )
+        @PublishedApi
+        internal fun <T : Any> fetcher(type: Class<T>, fetcher: Fetcher<T>) = fetcher(fetcher, type)
+
         /**
-         * Set the [Decoder] to handle decoding any image data.
+         * Use [decoder] to handle decoding any image data.
          *
-         * If this isn't set, the [ImageLoader] will find an applicable [Decoder] that's registered in its [ComponentRegistry].
-         *
-         * NOTE: This skips calling [Decoder.handles] for [decoder].
+         * If this is null or is not set the [ImageLoader] will find an applicable decoder in its [ComponentRegistry].
          */
         fun decoder(decoder: Decoder) = apply {
             this.decoder = decoder
@@ -528,8 +568,6 @@ class ImageRequest private constructor(
          * Enable/disable the use of [Bitmap.Config.HARDWARE] for this request.
          *
          * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
-         *
-         * This is useful for shared element transitions, which do not support hardware bitmaps.
          */
         fun allowHardware(enable: Boolean) = apply {
             this.allowHardware = enable
@@ -624,18 +662,43 @@ class ImageRequest private constructor(
         }
 
         /**
+         * Set the memory cache [key] whose value will be used as the placeholder drawable.
+         *
+         * If there is no value in the memory cache for [key], fall back to [placeholder].
+         */
+        fun placeholderKey(key: MemoryCache.Key?) = apply {
+            this.placeholderKey = key
+        }
+
+        /**
+         * Set the placeholder drawable to use when the request starts.
+         */
+        fun placeholder(@DrawableRes drawableResId: Int) = apply {
+            this.placeholderResId = drawableResId
+            this.placeholderDrawable = null
+        }
+
+        /**
+         * Set the placeholder drawable to use when the request starts.
+         */
+        fun placeholder(drawable: Drawable?) = apply {
+            this.placeholderDrawable = drawable
+            this.placeholderResId = 0
+        }
+
+        /**
          * Set the error drawable to use if the request fails.
          */
         fun error(@DrawableRes drawableResId: Int) = apply {
             this.errorResId = drawableResId
-            this.errorDrawable = EMPTY_DRAWABLE
+            this.errorDrawable = null
         }
 
         /**
          * Set the error drawable to use if the request fails.
          */
         fun error(drawable: Drawable?) = apply {
-            this.errorDrawable = drawable ?: EMPTY_DRAWABLE
+            this.errorDrawable = drawable
             this.errorResId = 0
         }
 
@@ -644,23 +707,21 @@ class ImageRequest private constructor(
          */
         fun fallback(@DrawableRes drawableResId: Int) = apply {
             this.fallbackResId = drawableResId
-            this.fallbackDrawable = EMPTY_DRAWABLE
+            this.fallbackDrawable = null
         }
 
         /**
          * Set the fallback drawable to use if [data] is null.
          */
         fun fallback(drawable: Drawable?) = apply {
-            this.fallbackDrawable = drawable ?: EMPTY_DRAWABLE
+            this.fallbackDrawable = drawable
             this.fallbackResId = 0
         }
 
         /**
          * Convenience function to set [imageView] as the [Target].
          */
-        fun target(imageView: ImageView) = apply {
-            target(ImageViewTarget(imageView))
-        }
+        fun target(imageView: ImageView) = target(ImageViewTarget(imageView))
 
         /**
          * Convenience function to create and set the [Target].
@@ -676,25 +737,23 @@ class ImageRequest private constructor(
         })
 
         /**
-         * Set the [Target]. If the target is null, this request will preload the image into memory.
+         * Set the [Target].
          */
         fun target(target: Target?) = apply {
             this.target = target
+            resetResolvedValues()
         }
 
         /**
          * @see ImageLoader.Builder.crossfade
          */
-        fun crossfade(enable: Boolean) = apply {
-            crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
-        }
+        fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
         /**
          * @see ImageLoader.Builder.crossfade
          */
-        fun crossfade(durationMillis: Int) = apply {
-            this.transition = if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE
-        }
+        fun crossfade(durationMillis: Int) =
+            transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
 
         /**
          * @see ImageLoader.Builder.transition
@@ -707,9 +766,7 @@ class ImageRequest private constructor(
         /**
          * Set the [Lifecycle] for this request.
          */
-        fun lifecycle(owner: LifecycleOwner?) = apply {
-            lifecycle(owner?.lifecycle)
-        }
+        fun lifecycle(owner: LifecycleOwner?) = lifecycle(owner?.lifecycle)
 
         /**
          * Set the [Lifecycle] for this request.
@@ -717,26 +774,19 @@ class ImageRequest private constructor(
          * Requests are queued while the lifecycle is not at least [Lifecycle.State.STARTED].
          * Requests are cancelled when the lifecycle reaches [Lifecycle.State.DESTROYED].
          *
-         * If this isn't set, Coil will attempt to find the lifecycle for this request through its [context].
+         * If this is null or is not set the [ImageLoader] will attempt to find the lifecycle
+         * for this request through its [context].
          */
         fun lifecycle(lifecycle: Lifecycle?) = apply {
             this.lifecycle = lifecycle
         }
 
         /**
-         * Set the placeholder drawable to use when the request starts.
+         * Set the defaults for any unset request values.
          */
-        fun placeholder(@DrawableRes drawableResId: Int) = apply {
-            this.placeholderResId = drawableResId
-            this.placeholderDrawable = EMPTY_DRAWABLE
-        }
-
-        /**
-         * Set the placeholder drawable to use when the request starts.
-         */
-        fun placeholder(drawable: Drawable?) = apply {
-            this.placeholderDrawable = drawable ?: EMPTY_DRAWABLE
-            this.placeholderResId = 0
+        fun defaults(defaults: DefaultRequestOptions) = apply {
+            this.defaults = defaults
+            resetResolvedScale()
         }
 
         /**
@@ -744,36 +794,79 @@ class ImageRequest private constructor(
          */
         fun build(): ImageRequest {
             return ImageRequest(
-                context,
-                data,
-                key,
-                target,
-                listener,
-                lifecycle,
-                dispatcher,
-                transformations,
-                transition,
-                bitmapConfig,
-                colorSpace,
-                sizeResolver,
-                scale,
-                precision,
-                fetcher,
-                decoder,
-                allowHardware,
-                allowRgb565,
-                memoryCachePolicy,
-                diskCachePolicy,
-                networkCachePolicy,
-                headers?.build().orEmpty(),
-                parameters?.build().orEmpty(),
-                placeholderResId,
-                placeholderDrawable,
-                errorResId,
-                errorDrawable,
-                fallbackResId,
-                fallbackDrawable
+                context = context,
+                data = data ?: NullRequestData,
+                target = target,
+                listener = listener,
+                key = key,
+                placeholderKey = placeholderKey,
+                colorSpace = colorSpace,
+                fetcher = fetcher,
+                decoder = decoder,
+                transformations = transformations,
+                headers = headers?.build().orEmpty(),
+                parameters = parameters?.build().orEmpty(),
+                lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
+                sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
+                scale = scale ?: resolvedScale ?: resolveScale(),
+                dispatcher = dispatcher ?: defaults.dispatcher,
+                transition = transition ?: defaults.transition,
+                precision = precision ?: defaults.precision,
+                bitmapConfig = bitmapConfig ?: defaults.bitmapConfig,
+                allowHardware = allowHardware ?: defaults.allowHardware,
+                allowRgb565 = allowRgb565 ?: defaults.allowRgb565,
+                memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,
+                diskCachePolicy = diskCachePolicy ?: defaults.diskCachePolicy,
+                networkCachePolicy = networkCachePolicy ?: defaults.networkCachePolicy,
+                defined = DefinedRequestOptions(lifecycle, sizeResolver, scale, dispatcher, transition, precision,
+                    bitmapConfig, allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy, networkCachePolicy),
+                defaults = defaults,
+                placeholderResId = placeholderResId,
+                placeholderDrawable = placeholderDrawable,
+                errorResId = errorResId,
+                errorDrawable = errorDrawable,
+                fallbackResId = fallbackResId,
+                fallbackDrawable = fallbackDrawable
             )
+        }
+
+        /** Ensure these values will be recomputed when [build] is called. */
+        private fun resetResolvedValues() {
+            resolvedLifecycle = null
+            resolvedSizeResolver = null
+            resolvedScale = null
+        }
+
+        /** Ensure the scale will be recomputed when [build] is called. */
+        private fun resetResolvedScale() {
+            resolvedScale = null
+        }
+
+        private fun resolveLifecycle(): Lifecycle {
+            val target = target
+            val context = if (target is ViewTarget<*>) target.view.context else context
+            return context.getLifecycle() ?: GlobalLifecycle
+        }
+
+        private fun resolveSizeResolver(): SizeResolver {
+            val target = target
+            return if (target is ViewTarget<*>) ViewSizeResolver(target.view) else DisplaySizeResolver(context)
+        }
+
+        private fun resolveScale(): Scale {
+            val sizeResolver = sizeResolver
+            if (sizeResolver is ViewSizeResolver<*>) {
+                val view = sizeResolver.view
+                if (view is ImageView) return view.scale
+            }
+
+            val target = target
+            if (target is ViewTarget<*>) {
+                val view = target.view
+                if (view is ImageView) return view.scale
+            }
+
+            return Scale.FILL
         }
     }
 }

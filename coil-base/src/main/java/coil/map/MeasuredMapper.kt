@@ -14,6 +14,7 @@ import coil.target.Target
  *
  * @see Mapper
  */
+@Deprecated("Superseded by `coil.interceptor.Interceptor` which offers a more versatile API.")
 interface MeasuredMapper<T : Any, V : Any> {
 
     /** Return true if this can convert [data]. */

@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalCoilApi::class)
-
 package coil.memory
 
 import android.content.ComponentCallbacks2
@@ -9,7 +7,6 @@ import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache.Value
 import coil.util.Logger

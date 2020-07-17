@@ -12,6 +12,7 @@ import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
 import coil.request.Metadata
 import coil.request.SuccessResult
+import coil.util.createRequest
 import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,7 +64,11 @@ class CrossfadeTransitionTest {
                         assertEquals(drawable, result)
                     }
                 ),
-                result = SuccessResult(drawable, Metadata(null, false, DataSource.MEMORY_CACHE))
+                result = SuccessResult(
+                    drawable = drawable,
+                    request = createRequest(context),
+                    metadata = Metadata(null, false, DataSource.MEMORY_CACHE)
+                )
             )
         }
 
@@ -89,7 +94,11 @@ class CrossfadeTransitionTest {
                         result.stop()
                     }
                 ),
-                result = SuccessResult(drawable, Metadata(null, false, DataSource.DISK))
+                result = SuccessResult(
+                    drawable = drawable,
+                    request = createRequest(context),
+                    metadata = Metadata(null, false, DataSource.DISK)
+                )
             )
         }
 
@@ -115,7 +124,11 @@ class CrossfadeTransitionTest {
                         assertFalse(result is CrossfadeDrawable)
                     }
                 ),
-                result = SuccessResult(drawable, Metadata(null, false, DataSource.NETWORK))
+                result = SuccessResult(
+                    drawable = drawable,
+                    request = createRequest(context),
+                    metadata = Metadata(null, false, DataSource.NETWORK)
+                )
             )
         }
     }
@@ -139,7 +152,11 @@ class CrossfadeTransitionTest {
                         error.stop()
                     }
                 ),
-                result = ErrorResult(drawable, Throwable())
+                result = ErrorResult(
+                    drawable = drawable,
+                    request = createRequest(context),
+                    throwable = Throwable()
+                )
             )
         }
 

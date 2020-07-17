@@ -1,10 +1,8 @@
 package coil.memory
 
 import android.graphics.Bitmap
-import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache.Key
 
-@OptIn(ExperimentalCoilApi::class)
 internal class RealMemoryCache(
     private val strongMemoryCache: StrongMemoryCache,
     private val weakMemoryCache: WeakMemoryCache,

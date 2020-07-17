@@ -1,11 +1,9 @@
 package coil.fetch
 
-import android.net.Uri
 import android.webkit.MimeTypeMap
 import coil.bitmappool.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
-import coil.map.Mapper
 import coil.network.HttpException
 import coil.size.Size
 import coil.util.await
@@ -16,40 +14,17 @@ import okhttp3.HttpUrl
 import okhttp3.Request
 import okhttp3.ResponseBody
 
-internal class HttpUriFetcher(callFactory: Call.Factory) : HttpFetcher<Uri>(callFactory) {
-
-    override fun handles(data: Uri) = data.scheme == "http" || data.scheme == "https"
-
-    override fun key(data: Uri) = data.toString()
-
-    override fun Uri.toHttpUrl(): HttpUrl = HttpUrl.get(toString())
-}
-
-internal class HttpUrlFetcher(callFactory: Call.Factory) : HttpFetcher<HttpUrl>(callFactory) {
+internal class HttpUrlFetcher(private val callFactory: Call.Factory) : Fetcher<HttpUrl> {
 
     override fun key(data: HttpUrl) = data.toString()
 
-    override fun HttpUrl.toHttpUrl(): HttpUrl = this
-}
-
-internal abstract class HttpFetcher<T : Any>(
-    private val callFactory: Call.Factory
-) : Fetcher<T> {
-
-    /**
-     * Perform this conversion in a [Fetcher] instead of a [Mapper] so
-     * [HttpUriFetcher] can execute [HttpUrl.get] on a background thread.
-     */
-    abstract fun T.toHttpUrl(): HttpUrl
-
     override suspend fun fetch(
         pool: BitmapPool,
-        data: T,
+        data: HttpUrl,
         size: Size,
         options: Options
     ): FetchResult {
-        val url = data.toHttpUrl()
-        val request = Request.Builder().url(url).headers(options.headers)
+        val request = Request.Builder().url(data).headers(options.headers)
 
         val networkRead = options.networkCachePolicy.readEnabled
         val diskRead = options.diskCachePolicy.readEnabled
@@ -76,7 +51,7 @@ internal abstract class HttpFetcher<T : Any>(
 
         return SourceResult(
             source = body.source(),
-            mimeType = getMimeType(url, body),
+            mimeType = getMimeType(data, body),
             dataSource = if (response.cacheResponse() != null) DataSource.DISK else DataSource.NETWORK
         )
     }

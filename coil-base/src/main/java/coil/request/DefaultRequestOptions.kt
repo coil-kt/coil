@@ -1,10 +1,11 @@
-package coil
+@file:OptIn(ExperimentalCoilApi::class)
+
+package coil.request
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.request.CachePolicy
-import coil.request.ImageRequest
 import coil.size.Precision
 import coil.transition.Transition
 import coil.util.Utils
@@ -15,8 +16,8 @@ import kotlinx.coroutines.Dispatchers
  * A set of default options that are used to fill in unset [ImageRequest] values.
  *
  * @see ImageLoader.defaults
+ * @see ImageRequest.defaults
  */
-@OptIn(ExperimentalCoilApi::class)
 class DefaultRequestOptions(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     val transition: Transition = Transition.NONE,
@@ -31,6 +32,22 @@ class DefaultRequestOptions(
     val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
     val networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 ) {
+
+    fun copy(
+        dispatcher: CoroutineDispatcher = this.dispatcher,
+        transition: Transition = this.transition,
+        precision: Precision = this.precision,
+        bitmapConfig: Bitmap.Config = this.bitmapConfig,
+        allowHardware: Boolean = this.allowHardware,
+        allowRgb565: Boolean = this.allowRgb565,
+        placeholder: Drawable? = this.placeholder,
+        error: Drawable? = this.error,
+        fallback: Drawable? = this.fallback,
+        memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+        diskCachePolicy: CachePolicy = this.diskCachePolicy,
+        networkCachePolicy: CachePolicy = this.networkCachePolicy
+    ) = DefaultRequestOptions(dispatcher, transition, precision, bitmapConfig, allowHardware, allowRgb565, placeholder,
+        error, fallback, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -70,5 +87,9 @@ class DefaultRequestOptions(
             "bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
             "placeholder=$placeholder, error=$error, fallback=$fallback, memoryCachePolicy=$memoryCachePolicy, " +
             "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
+    }
+
+    companion object {
+        @JvmField val INSTANCE = DefaultRequestOptions()
     }
 }
