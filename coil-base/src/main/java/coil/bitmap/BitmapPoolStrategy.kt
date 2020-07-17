@@ -95,7 +95,7 @@ internal class SizeStrategy : BitmapPoolStrategy {
     override fun toString() = "SizeStrategy: entries=$entries, sizes=$sizes"
 
     companion object {
-        private const val MAX_SIZE_MULTIPLE = 8
+        private const val MAX_SIZE_MULTIPLE = 4
     }
 }
 
