@@ -16,12 +16,12 @@ import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.bitmap.BitmapPool
+import coil.bitmap.BitmapReferenceCounter
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
-import coil.memory.BitmapReferenceCounter
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
