@@ -171,7 +171,7 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun pooledBitmap_inexactSize() {
-        val pooledBitmap = createBitmap(1080, 1350, Bitmap.Config.ARGB_8888)
+        val pooledBitmap = createBitmap(900, 850, Bitmap.Config.ARGB_8888)
         pool.put(pooledBitmap)
 
         val result = decodeBitmap(
