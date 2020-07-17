@@ -11,6 +11,7 @@ import coil.decode.DataSource
  */
 sealed class RequestResult {
     abstract val drawable: Drawable?
+    abstract val request: ImageRequest
 }
 
 /**
@@ -21,6 +22,7 @@ sealed class RequestResult {
  */
 data class SuccessResult(
     override val drawable: Drawable,
+    override val request: ImageRequest,
     val metadata: Metadata
 ) : RequestResult() {
 
@@ -39,5 +41,6 @@ data class SuccessResult(
  */
 data class ErrorResult(
     override val drawable: Drawable?,
+    override val request: ImageRequest,
     val throwable: Throwable
 ) : RequestResult()

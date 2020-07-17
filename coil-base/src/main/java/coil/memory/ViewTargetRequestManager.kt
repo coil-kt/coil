@@ -6,6 +6,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.collection.arrayMapOf
 import coil.request.ImageRequest
+import coil.request.Metadata
 import coil.util.isMainThread
 import coil.util.requestManager
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,9 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     @Volatile var currentRequestJob: Job? = null
         private set
 
+    // Metadata of the successful request attached to this view.
+    @Volatile var metadata: Metadata? = null
+
     // A pending operation that is posting to the main thread to clear the current request.
     @Volatile private var pendingClear: Job? = null
 
@@ -37,7 +41,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
     private var isRestart = false
     private var skipAttach = true
 
-    // Temporary storage for bitmap pooling.
+    // Only accessed from the main thread. Temporary storage for bitmap pooling.
     private val bitmaps = arrayMapOf<Any, Bitmap>()
 
     /** Associate [bitmap] with [tag] and cache it on this view. Return the previous bitmap associated with [tag]. */

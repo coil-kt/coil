@@ -40,6 +40,20 @@ class Options(
     val networkCachePolicy: CachePolicy
 ) {
 
+    fun copy(
+        config: Bitmap.Config = this.config,
+        colorSpace: ColorSpace? = this.colorSpace,
+        scale: Scale = this.scale,
+        allowInexactSize: Boolean = this.allowInexactSize,
+        allowRgb565: Boolean = this.allowRgb565,
+        headers: Headers = this.headers,
+        parameters: Parameters = this.parameters,
+        memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+        diskCachePolicy: CachePolicy = this.diskCachePolicy,
+        networkCachePolicy: CachePolicy = this.networkCachePolicy
+    ) = Options(config, colorSpace, scale, allowInexactSize, allowRgb565, headers, parameters, memoryCachePolicy,
+        diskCachePolicy, networkCachePolicy)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         return other is Options &&

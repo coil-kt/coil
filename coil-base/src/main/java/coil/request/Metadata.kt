@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoilApi::class)
+
 package coil.request
 
 import coil.annotation.ExperimentalCoilApi
@@ -12,7 +14,6 @@ import coil.memory.MemoryCache
  * @param isSampled True if [drawable] is sampled (i.e. loaded into memory at less than its original size).
  * @param dataSource The data source that the image was loaded from.
  */
-@OptIn(ExperimentalCoilApi::class)
 class Metadata(
     val key: MemoryCache.Key?,
     val isSampled: Boolean,

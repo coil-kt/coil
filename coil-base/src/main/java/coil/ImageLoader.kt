@@ -18,6 +18,7 @@ import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
+import coil.request.DefaultRequestOptions
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.RequestDisposable
@@ -30,14 +31,12 @@ import coil.transition.Transition
 import coil.util.CoilUtils
 import coil.util.Logger
 import coil.util.Utils
-import coil.util.copy
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Call
 import okhttp3.OkHttpClient
-import java.io.File
 
 /**
  * A service class that loads images by executing [ImageRequest]s. Image loaders handle caching, data fetching,
@@ -132,7 +131,6 @@ interface ImageLoader {
 
         private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
         private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
-        private var addLastModifiedToFileCacheKey = true
         private var trackWeakReferences = true
 
         /**
@@ -262,18 +260,6 @@ interface ImageLoader {
         }
 
         /**
-         * Enables adding [File.lastModified] to the memory cache key when loading an image from a [File].
-         *
-         * This allows subsequent requests that load the same file to miss the memory cache if the file has been updated.
-         * To ensure a cached image is returned synchronously, [File.lastModified] is called on the main thread.
-         *
-         * Default: true
-         */
-        fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
-            this.addLastModifiedToFileCacheKey = enable
-        }
-
-        /**
          * Enables weak reference tracking of loaded images.
          *
          * This allows the image loader to hold weak references to loaded images.
@@ -314,7 +300,8 @@ interface ImageLoader {
          *
          * @see `crossfade(Boolean)`
          */
-        fun crossfade(durationMillis: Int) = transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
+        fun crossfade(durationMillis: Int) =
+            transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
 
         /**
          * Set the default [Transition] for each request.
@@ -441,8 +428,7 @@ interface ImageLoader {
                 weakMemoryCache = weakMemoryCache,
                 callFactory = callFactory ?: buildDefaultCallFactory(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
-                registry = registry ?: ComponentRegistry(),
-                addLastModifiedToFileCacheKey = addLastModifiedToFileCacheKey,
+                componentRegistry = registry ?: ComponentRegistry(),
                 logger = logger
             )
         }

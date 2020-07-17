@@ -11,7 +11,6 @@ import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
 import coil.map.Mapper
-import coil.map.MeasuredMapper
 import coil.request.ImageRequest
 import coil.request.Metadata
 import coil.size.Size
@@ -30,29 +29,6 @@ import coil.transition.TransitionTarget
 interface EventListener : ImageRequest.Listener {
 
     /**
-     * Called immediately after the request is dispatched.
-     */
-    @MainThread
-    fun onDispatch(request: ImageRequest) {}
-
-    /**
-     * Called before any [Mapper]s and/or [MeasuredMapper]s are called to convert the request's data.
-     *
-     * @param input The data that will be converted.
-     */
-    @MainThread
-    fun mapStart(request: ImageRequest, input: Any) {}
-
-    /**
-     * Called after the request's data has been converted by all applicable [Mapper]s and/or [MeasuredMapper]s.
-     *
-     * @param output The data after it has been converted. If there were no applicable mappers,
-     *  [output] will be the same as [ImageRequest.data].
-     */
-    @MainThread
-    fun mapEnd(request: ImageRequest, output: Any) {}
-
-    /**
      * @see ImageRequest.Listener.onStart
      */
     @MainThread
@@ -60,20 +36,34 @@ interface EventListener : ImageRequest.Listener {
 
     /**
      * Called before [SizeResolver.size].
-     *
-     * @param sizeResolver The [SizeResolver] that will be used to determine the [Size] for the request.
      */
     @MainThread
-    fun resolveSizeStart(request: ImageRequest, sizeResolver: SizeResolver) {}
+    fun resolveSizeStart(request: ImageRequest) {}
 
     /**
      * Called after [SizeResolver.size].
      *
-     * @param sizeResolver The [SizeResolver] that was used to determine the [Size] for the request.
      * @param size The resolved [Size] for this request.
      */
     @MainThread
-    fun resolveSizeEnd(request: ImageRequest, sizeResolver: SizeResolver, size: Size) {}
+    fun resolveSizeEnd(request: ImageRequest, size: Size) {}
+
+    /**
+     * Called before [Mapper.map].
+     *
+     * @param input The data that will be converted.
+     */
+    @WorkerThread
+    fun mapStart(request: ImageRequest, input: Any) {}
+
+    /**
+     * Called after [Mapper.map].
+     *
+     * @param output The data after it has been converted. If there were no applicable mappers,
+     *  [output] will be the same as [ImageRequest.data].
+     */
+    @WorkerThread
+    fun mapEnd(request: ImageRequest, output: Any) {}
 
     /**
      * Called before [Fetcher.fetch].
@@ -148,7 +138,7 @@ interface EventListener : ImageRequest.Listener {
      * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     @MainThread
-    fun transitionStart(request: ImageRequest, transition: Transition) {}
+    fun transitionStart(request: ImageRequest) {}
 
     /**
      * Called after [Transition.transition].
@@ -157,7 +147,7 @@ interface EventListener : ImageRequest.Listener {
      * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     @MainThread
-    fun transitionEnd(request: ImageRequest, transition: Transition) {}
+    fun transitionEnd(request: ImageRequest) {}
 
     /**
      * @see ImageRequest.Listener.onSuccess
