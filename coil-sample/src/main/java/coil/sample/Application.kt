@@ -21,6 +21,7 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
+            .allowHardware(false)
             .availableMemoryPercentage(0.25) // Use 25% of the application's available memory.
             .crossfade(false) // Show a short crossfade when loading images from network or disk.
             .componentRegistry {

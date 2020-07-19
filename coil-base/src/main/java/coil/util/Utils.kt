@@ -63,9 +63,8 @@ internal object Utils {
 
     fun getDefaultBitmapPoolPercentage(): Double {
         return when {
-            // We prefer immutable bitmaps (which cannot be pooled) on API 24 and greater.
-            // Maintain a small pool for cases where we need to draw on a canvas.
-            SDK_INT >= 24 -> 0.1
+            // Prefer immutable bitmaps (which cannot be pooled) on API 24 and greater.
+            SDK_INT >= 24 -> 0.0
             // Bitmap pooling is most effective for APIs 19 to 23.
             SDK_INT >= 19 -> 0.5
             // The requirements for bitmap reuse are strict below API 19.

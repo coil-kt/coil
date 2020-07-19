@@ -204,9 +204,9 @@ interface ImageLoader {
          *
          * Default: [Utils.getDefaultAvailableMemoryPercentage]
          */
-        fun availableMemoryPercentage(@FloatRange(from = 0.0, to = 1.0) multiplier: Double) = apply {
-            require(multiplier in 0.0..1.0) { "Multiplier must be within the range [0.0, 1.0]." }
-            this.availableMemoryPercentage = multiplier
+        fun availableMemoryPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
+            require(percent in 0.0..1.0) { "Percent must be in the range [0.0, 1.0]." }
+            this.availableMemoryPercentage = percent
         }
 
         /**
@@ -219,9 +219,9 @@ interface ImageLoader {
          *
          * Default: [Utils.getDefaultBitmapPoolPercentage]
          */
-        fun bitmapPoolPercentage(@FloatRange(from = 0.0, to = 1.0) multiplier: Double) = apply {
-            require(multiplier in 0.0..1.0) { "Multiplier must be within the range [0.0, 1.0]." }
-            this.bitmapPoolPercentage = multiplier
+        fun bitmapPoolPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
+            require(percent in 0.0..1.0) { "Percent must be in the range [0.0, 1.0]." }
+            this.bitmapPoolPercentage = percent
         }
 
         /**
@@ -416,8 +416,7 @@ interface ImageLoader {
 
             val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
             val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache(logger) else EmptyWeakMemoryCache
-            val referenceCounter =
-                BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
+            val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
             val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
 
             return RealImageLoader(
