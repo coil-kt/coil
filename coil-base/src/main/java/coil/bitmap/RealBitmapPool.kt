@@ -11,7 +11,6 @@ import androidx.annotation.Px
 import androidx.core.graphics.createBitmap
 import coil.util.Logger
 import coil.util.allocationByteCountCompat
-import coil.util.identityHashCode
 import coil.util.isHardware
 import coil.util.log
 
@@ -45,7 +44,7 @@ internal class RealBitmapPool(
     override fun put(bitmap: Bitmap) {
         if (bitmap.isRecycled) {
             logger?.log(TAG, Log.ERROR) {
-                "Rejecting recycled bitmap from pool; bitmap: ${bitmap.identityHashCode}"
+                "Rejecting recycled bitmap from pool; bitmap: $bitmap"
             }
             return
         }
