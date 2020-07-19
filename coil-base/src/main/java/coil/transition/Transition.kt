@@ -31,6 +31,6 @@ interface Transition {
     suspend fun transition(target: TransitionTarget<*>, result: RequestResult)
 
     companion object {
-        @JvmField val NONE: Transition = EmptyTransition
+        @JvmField val NONE: Transition = NoneTransition
     }
 }

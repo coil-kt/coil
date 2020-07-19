@@ -72,6 +72,25 @@ class BlurTransformation @JvmOverloads constructor(
         return output
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is BlurTransformation &&
+            context == other.context &&
+            radius == other.radius &&
+            sampling == other.sampling
+    }
+
+    override fun hashCode(): Int {
+        var result = context.hashCode()
+        result = 31 * result + radius.hashCode()
+        result = 31 * result + sampling.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "BlurTransformation(context=$context, radius=$radius, sampling=$sampling)"
+    }
+
     private companion object {
         private const val DEFAULT_RADIUS = 10f
         private const val DEFAULT_SAMPLING = 1f
