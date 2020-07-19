@@ -16,6 +16,8 @@ import coil.size.Scale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.setMain
 import okhttp3.Headers
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -115,3 +117,7 @@ fun runBlockingTest(
     context: CoroutineContext = Dispatchers.Main.immediate,
     block: suspend CoroutineScope.() -> Unit
 ) = runBlocking(context, block)
+
+fun createTestMainDispatcher(): TestCoroutineDispatcher {
+    return TestCoroutineDispatcher().apply { Dispatchers.setMain(this) }
+}

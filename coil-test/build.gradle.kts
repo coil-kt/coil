@@ -1,6 +1,4 @@
 import coil.Library
-import coil.addAndroidTestDependencies
-import coil.addTestDependencies
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
@@ -32,6 +30,7 @@ dependencies {
 
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
     implementation(Library.KOTLINX_COROUTINES_ANDROID)
+    implementation(Library.KOTLINX_COROUTINES_TEST)
 
     implementation(Library.ANDROIDX_CORE)
     implementation(Library.ANDROIDX_LIFECYCLE_COMMON)
@@ -43,6 +42,6 @@ dependencies {
 
     implementation(Library.JUNIT)
 
-    addTestDependencies(KotlinCompilerVersion.VERSION, includeTestProject = false)
-    addAndroidTestDependencies(KotlinCompilerVersion.VERSION, includeTestProject = false)
+    testImplementation(Library.JUNIT)
+    testImplementation(kotlin("test-junit", KotlinCompilerVersion.VERSION))
 }

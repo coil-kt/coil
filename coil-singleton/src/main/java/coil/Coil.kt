@@ -4,6 +4,7 @@ package coil
 
 import android.app.Application
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import coil.request.ImageRequest
 import coil.request.RequestDisposable
 import coil.request.RequestResult
@@ -21,16 +22,6 @@ object Coil {
      */
     @JvmStatic
     fun imageLoader(context: Context): ImageLoader = imageLoader ?: newImageLoader(context)
-
-    /**
-     * Set the default [ImageLoader]. Shutdown the current instance if there is one.
-     */
-    @JvmStatic
-    fun setImageLoader(loader: ImageLoader) {
-        setImageLoader(object : ImageLoaderFactory {
-            override fun newImageLoader() = loader
-        })
-    }
 
     /**
      * Convenience function to get the default [ImageLoader] and enqueue the [request].
@@ -53,21 +44,25 @@ object Coil {
     }
 
     /**
+     * Set the default [ImageLoader]. Shutdown the current instance if there is one.
+     */
+    @JvmStatic
+    @Synchronized
+    fun setImageLoader(loader: ImageLoader) {
+        updateImageLoader(loader)
+    }
+
+    /**
      * Set the [ImageLoaderFactory] that will be used to create the default [ImageLoader].
      * Shutdown the current instance if there is one. The [factory] is guaranteed to be called at most once.
      *
-     * Using this method to set an explicit [factory] takes precedence over an [Application] that
-     * implements [ImageLoaderFactory].
+     * NOTE: [factory] will take precedence over an [Application] that implements [ImageLoaderFactory].
      */
     @JvmStatic
     @Synchronized
     fun setImageLoader(factory: ImageLoaderFactory) {
         imageLoaderFactory = factory
-
-        // Shutdown the image loader after clearing the reference.
-        val loader = imageLoader
-        imageLoader = null
-        loader?.shutdown()
+        updateImageLoader(null)
     }
 
     /** Create and set the new default [ImageLoader]. */
@@ -81,7 +76,22 @@ object Coil {
             ?: (context.applicationContext as? ImageLoaderFactory)?.newImageLoader()
             ?: ImageLoader(context)
         imageLoaderFactory = null
-        setImageLoader(loader)
+        updateImageLoader(loader)
         return loader
+    }
+
+    /** Update the current image loader. Shutdown the existing image loader if there is one. */
+    @Synchronized
+    private fun updateImageLoader(loader: ImageLoader?) {
+        val previous = imageLoader
+        imageLoader = loader
+        previous?.shutdown()
+    }
+
+    /** Reset the internal state. */
+    @VisibleForTesting
+    internal fun reset() {
+        imageLoader = null
+        imageLoaderFactory = null
     }
 }

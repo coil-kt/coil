@@ -1,3 +1,5 @@
+import coil.addAndroidTestDependencies
+import coil.addTestDependencies
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
@@ -42,4 +44,7 @@ afterEvaluate {
 
 dependencies {
     api(project(":coil-base"))
+
+    addTestDependencies(org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION)
+    addAndroidTestDependencies(org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION)
 }
