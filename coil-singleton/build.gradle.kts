@@ -4,6 +4,7 @@ import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.config.KotlinCompilerVersion
 import java.net.URL
 
 plugins {
@@ -45,6 +46,6 @@ afterEvaluate {
 dependencies {
     api(project(":coil-base"))
 
-    addTestDependencies(org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION)
-    addAndroidTestDependencies(org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION)
+    addTestDependencies(KotlinCompilerVersion.VERSION)
+    addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
 }

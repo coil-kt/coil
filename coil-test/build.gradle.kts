@@ -25,12 +25,11 @@ android {
 }
 
 dependencies {
-    // compileOnly to avoid duplicate class issues.
     compileOnly(project(":coil-base"))
 
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
     implementation(Library.KOTLINX_COROUTINES_ANDROID)
-    implementation(Library.KOTLINX_COROUTINES_TEST)
+    compileOnly(Library.KOTLINX_COROUTINES_TEST)
 
     implementation(Library.ANDROIDX_CORE)
     implementation(Library.ANDROIDX_LIFECYCLE_COMMON)
