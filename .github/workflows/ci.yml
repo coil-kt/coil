@@ -15,9 +15,11 @@ jobs:
             - uses: actions/setup-java@v1
               with:
                   java-version: 11
-            - uses: actions/cache@v1
+            - uses: actions/cache@v2
               with:
-                  path: ~/.gradle/caches
+                  path: |
+                    ~/.gradle/caches
+                    ~/.gradle/wrapper/dists
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Check style
@@ -38,7 +40,7 @@ jobs:
             - uses: actions/setup-java@v1
               with:
                   java-version: 11
-            - uses: actions/cache@v1
+            - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
@@ -63,7 +65,7 @@ jobs:
 
             # Restore the cache.
             # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
-            - uses: actions/cache@v1
+            - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
@@ -88,7 +90,7 @@ jobs:
             - uses: actions/setup-java@v1
               with:
                   java-version: 11
-            - uses: actions/cache@v1
+            - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
