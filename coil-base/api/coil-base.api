@@ -683,7 +683,10 @@ public final class coil/request/SuccessResult : coil/request/RequestResult {
 
 public final class coil/size/DisplaySizeResolver : coil/size/SizeResolver {
 	public fun <init> (Landroid/content/Context;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
 	public fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/size/OriginalSize : coil/size/Size {
@@ -770,9 +773,11 @@ public final class coil/size/ViewSizeResolver$DefaultImpls {
 
 public class coil/target/ImageViewTarget : androidx/lifecycle/DefaultLifecycleObserver, coil/target/PoolableViewTarget, coil/transition/TransitionTarget {
 	public fun <init> (Landroid/widget/ImageView;)V
+	public fun equals (Ljava/lang/Object;)Z
 	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public synthetic fun getView ()Landroid/view/View;
 	public fun getView ()Landroid/widget/ImageView;
+	public fun hashCode ()I
 	public fun onClear ()V
 	public fun onError (Landroid/graphics/drawable/Drawable;)V
 	public fun onStart (Landroid/graphics/drawable/Drawable;)V
@@ -780,6 +785,7 @@ public class coil/target/ImageViewTarget : androidx/lifecycle/DefaultLifecycleOb
 	public fun onStop (Landroidx/lifecycle/LifecycleOwner;)V
 	public fun onSuccess (Landroid/graphics/drawable/Drawable;)V
 	protected fun setDrawable (Landroid/graphics/drawable/Drawable;)V
+	public fun toString ()Ljava/lang/String;
 	protected fun updateAnimation ()V
 }
 
@@ -820,19 +826,28 @@ public final class coil/transform/BlurTransformation : coil/transform/Transforma
 	public fun <init> (Landroid/content/Context;F)V
 	public fun <init> (Landroid/content/Context;FF)V
 	public synthetic fun <init> (Landroid/content/Context;FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
 	public fun key ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
 	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/transform/CircleCropTransformation : coil/transform/Transformation {
 	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
 	public fun key ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
 	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/transform/GrayscaleTransformation : coil/transform/Transformation {
 	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
 	public fun key ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
 	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -841,7 +856,10 @@ public final class coil/transform/RoundedCornersTransformation : coil/transform/
 	public fun <init> (F)V
 	public fun <init> (FFFF)V
 	public synthetic fun <init> (FFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
 	public fun key ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
 	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -854,7 +872,10 @@ public final class coil/transition/CrossfadeTransition : coil/transition/Transit
 	public fun <init> ()V
 	public fun <init> (I)V
 	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDurationMillis ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 	public fun transition (Lcoil/transition/TransitionTarget;Lcoil/request/RequestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

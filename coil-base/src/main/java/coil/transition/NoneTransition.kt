@@ -8,8 +8,8 @@ import coil.request.SuccessResult
 /**
  * A transition that applies the [RequestResult] on the [TransitionTarget] without animating.
  */
-@OptIn(ExperimentalCoilApi::class)
-internal object EmptyTransition : Transition {
+@ExperimentalCoilApi
+internal object NoneTransition : Transition {
 
     override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
         when (result) {
@@ -17,4 +17,6 @@ internal object EmptyTransition : Transition {
             is ErrorResult -> target.onError(result.drawable)
         }
     }
+
+    override fun toString() = "coil.transition.NoneTransition"
 }

@@ -19,6 +19,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -144,5 +145,28 @@ class ImageRequestTest {
         assertSame(defaults.dispatcher, request.dispatcher)
         assertSame(defaults.transition, request.transition)
         assertSame(defaults.precision, request.precision)
+    }
+
+    @Test
+    fun `test equality`() {
+        val imageView = ImageView(context)
+        val request1 = ImageRequest.Builder(context)
+            .data("https://www.example.com/image.jpg")
+            .target(imageView)
+            .allowHardware(true)
+            .build()
+        val request2 = ImageRequest.Builder(context)
+            .data("https://www.example.com/image.jpg")
+            .target(imageView)
+            .allowHardware(true)
+            .build()
+
+        assertEquals(request1, request2)
+
+        val request3 = request2.newBuilder()
+            .allowHardware(false)
+            .build()
+
+        assertNotEquals(request1, request3)
     }
 }

@@ -87,4 +87,26 @@ class RoundedCornersTransformation(
 
         return output
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is RoundedCornersTransformation &&
+            topLeft == other.topLeft &&
+            topRight == other.topRight &&
+            bottomLeft == other.bottomLeft &&
+            bottomRight == other.bottomRight
+    }
+
+    override fun hashCode(): Int {
+        var result = topLeft.hashCode()
+        result = 31 * result + topRight.hashCode()
+        result = 31 * result + bottomLeft.hashCode()
+        result = 31 * result + bottomRight.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "RoundedCornersTransformation(topLeft=$topLeft, topRight=$topRight, " +
+            "bottomLeft=$bottomLeft, bottomRight=$bottomRight)"
+    }
 }

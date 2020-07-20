@@ -31,6 +31,12 @@ class GrayscaleTransformation : Transformation {
         return output
     }
 
+    override fun equals(other: Any?) = other is GrayscaleTransformation
+
+    override fun hashCode() = javaClass.hashCode()
+
+    override fun toString() = "GrayscaleTransformation()"
+
     private companion object {
         val COLOR_FILTER = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
     }
