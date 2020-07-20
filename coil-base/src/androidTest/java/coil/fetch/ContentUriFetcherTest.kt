@@ -7,6 +7,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.os.Build.VERSION.SDK_INT
 import android.provider.ContactsContract
 import android.provider.ContactsContract.AUTHORITY
 import android.provider.ContactsContract.CommonDataKinds.Phone
@@ -24,6 +25,7 @@ import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.sink
 import okio.source
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -51,6 +53,9 @@ class ContentUriFetcherTest {
 
     @Test
     fun contactsThumbnail() {
+        // This test is flaky on API 30.
+        assumeTrue(SDK_INT <= 30)
+
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$CONTENT_DIRECTORY".toUri()
 
         assertFalse(fetcher.isContactPhotoUri(uri))
@@ -60,6 +65,9 @@ class ContentUriFetcherTest {
 
     @Test
     fun contactsDisplayPhoto() {
+        // This test is flaky on API 30.
+        assumeTrue(SDK_INT <= 30)
+
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$DISPLAY_PHOTO".toUri()
 
         assertTrue(fetcher.isContactPhotoUri(uri))
