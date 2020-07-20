@@ -49,4 +49,12 @@ open class ImageViewTarget(
         val animatable = view.drawable as? Animatable ?: return
         if (isStarted) animatable.start() else animatable.stop()
     }
+
+    override fun equals(other: Any?): Boolean {
+        return (this === other) || (other is ImageViewTarget && view == other.view)
+    }
+
+    override fun hashCode() = view.hashCode()
+
+    override fun toString() = "ImageViewTarget(view=$view)"
 }

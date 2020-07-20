@@ -70,4 +70,12 @@ class CrossfadeTransition @JvmOverloads constructor(
             throw throwable
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        return (this === other) || (other is CrossfadeTransition && durationMillis == other.durationMillis)
+    }
+
+    override fun hashCode() = durationMillis.hashCode()
+
+    override fun toString() = "CrossfadeTransition(durationMillis=$durationMillis)"
 }
