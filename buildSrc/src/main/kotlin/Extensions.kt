@@ -62,10 +62,8 @@ private fun DependencyHandler.androidTestImplementation(dependencyNotation: Any)
     return add("androidTestImplementation", dependencyNotation)
 }
 
-fun DependencyHandler.addTestDependencies(kotlinVersion: String, includeTestProject: Boolean = true) {
-    if (includeTestProject) {
-        testImplementation(project(":coil-test"))
-    }
+fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
+    testImplementation(project(":coil-test"))
 
     testImplementation(Library.JUNIT)
     testImplementation(kotlin("test-junit", kotlinVersion))
