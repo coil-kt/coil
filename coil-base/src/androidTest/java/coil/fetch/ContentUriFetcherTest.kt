@@ -120,6 +120,9 @@ class ContentUriFetcherTest {
             Thread.sleep(100)
         }
 
+        // Wait a little longer.
+        Thread.sleep(1000)
+
         return id
     }
 
