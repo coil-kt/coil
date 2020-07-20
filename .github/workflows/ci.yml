@@ -17,9 +17,7 @@ jobs:
                   java-version: 11
             - uses: actions/cache@v2
               with:
-                  path: |
-                    ~/.gradle/caches
-                    ~/.gradle/wrapper/dists
+                  path: ~/.gradle/caches
                   key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Check style
