@@ -8,7 +8,7 @@ import coil.request.ImageRequest
  *
  * @see ImageRequest.Builder.size
  */
-interface SizeResolver {
+fun interface SizeResolver {
 
     companion object {
         /** Create a [SizeResolver] with a fixed [size]. */

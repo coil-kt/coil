@@ -154,10 +154,4 @@ class RealInterceptorChainTest {
         )
         return runBlocking { chain.proceed(request) }
     }
-
-    private inline fun Interceptor(crossinline block: suspend (Interceptor.Chain) -> ImageResult): Interceptor {
-        return object : Interceptor {
-            override suspend fun intercept(chain: Interceptor.Chain) = block(chain)
-        }
-    }
 }

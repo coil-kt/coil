@@ -16,7 +16,6 @@ import coil.request.SuccessResult
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
 import coil.transition.Transition
-import coil.transition.TransitionTarget
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.createBitmap
@@ -216,13 +215,11 @@ class TargetDelegateTest {
             val bitmap = createBitmap()
             counter.setValid(bitmap, true)
             var isRunning = true
-            val transition = object : Transition {
-                override suspend fun transition(target: TransitionTarget, result: ImageResult) {
-                    assertFalse(initialBitmap in pool.bitmaps)
-                    delay(100) // Simulate an animation.
-                    assertFalse(initialBitmap in pool.bitmaps)
-                    isRunning = false
-                }
+            val transition = Transition { _, _ ->
+                assertFalse(initialBitmap in pool.bitmaps)
+                delay(100) // Simulate an animation.
+                assertFalse(initialBitmap in pool.bitmaps)
+                isRunning = false
             }
             val result = SuccessResult(
                 drawable = bitmap.toDrawable(context),

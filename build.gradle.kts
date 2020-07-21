@@ -1,5 +1,3 @@
-import coil.groupId
-import coil.versionName
 import com.android.build.gradle.BaseExtension
 import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -15,6 +13,7 @@ buildscript {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
         jcenter()
     }
     dependencies {
@@ -23,7 +22,7 @@ buildscript {
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.3.0")
-        classpath(kotlin("gradle-plugin", version = "1.3.72"))
+        classpath(kotlin("gradle-plugin", version = "1.4-M3"))
     }
 }
 
@@ -37,6 +36,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
         jcenter()
     }
 
@@ -53,7 +53,7 @@ allprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             allWarningsAsErrors = true
-            freeCompilerArgs = listOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
+            freeCompilerArgs = listOf("-progressive", "-Xjvm-default=all", "-Xopt-in=kotlin.RequiresOptIn")
             jvmTarget = "1.8"
         }
     }
