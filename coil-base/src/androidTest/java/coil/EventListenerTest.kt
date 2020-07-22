@@ -7,7 +7,7 @@ import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options

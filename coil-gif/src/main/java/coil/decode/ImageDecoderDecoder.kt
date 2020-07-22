@@ -11,7 +11,7 @@ import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
 import androidx.core.util.component2
 import coil.annotation.InternalCoilApi
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.drawable.ScaleDrawable
 import coil.request.repeatCount
 import coil.size.PixelSize

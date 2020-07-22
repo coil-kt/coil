@@ -3,7 +3,7 @@ package coil.decode
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.util.createOptions

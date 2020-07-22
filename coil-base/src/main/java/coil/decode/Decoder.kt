@@ -2,7 +2,7 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.Size
 import okio.BufferedSource
 

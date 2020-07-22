@@ -18,7 +18,7 @@ import java.nio.ByteBuffer
 enum class DataSource {
 
     /**
-     * Represents an [ImageLoader]'s internal memory cache.
+     * Represents an [ImageLoader]'s memory cache.
      *
      * This is a special data source as it means the request was
      * short circuited and skipped the full image pipeline.

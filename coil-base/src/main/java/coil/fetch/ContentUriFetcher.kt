@@ -6,7 +6,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Contacts
 import androidx.annotation.VisibleForTesting
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.size.Size

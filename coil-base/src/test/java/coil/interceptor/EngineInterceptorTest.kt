@@ -11,13 +11,13 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
+import coil.bitmap.BitmapReferenceCounter
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.Options
 import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
-import coil.memory.BitmapReferenceCounter
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache
 import coil.memory.RealWeakMemoryCache

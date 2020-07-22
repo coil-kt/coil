@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.TypedValue
 import android.webkit.MimeTypeMap
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.Options

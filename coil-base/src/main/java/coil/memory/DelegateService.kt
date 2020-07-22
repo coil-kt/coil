@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleObserver
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
+import coil.bitmap.BitmapReferenceCounter
 import coil.request.ImageRequest
 import coil.target.PoolableViewTarget
 import coil.target.Target

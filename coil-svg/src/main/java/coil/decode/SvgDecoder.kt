@@ -8,7 +8,7 @@ import android.graphics.Canvas
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toDrawable
 import coil.annotation.InternalCoilApi
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size

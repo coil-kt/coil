@@ -1,6 +1,7 @@
 package coil.memory
 
 import android.graphics.Bitmap
+import coil.bitmap.BitmapReferenceCounter
 import coil.memory.MemoryCache.Key
 
 internal class RealMemoryCache(

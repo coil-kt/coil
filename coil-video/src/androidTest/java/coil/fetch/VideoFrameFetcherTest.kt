@@ -6,7 +6,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.fetch.VideoFrameFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Parameters

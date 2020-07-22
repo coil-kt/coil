@@ -78,7 +78,7 @@ public abstract interface class coil/ImageLoader {
 	public static fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 	public abstract fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/RequestDisposable;
 	public abstract fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getBitmapPool ()Lcoil/bitmappool/BitmapPool;
+	public abstract fun getBitmapPool ()Lcoil/bitmap/BitmapPool;
 	public abstract fun getDefaults ()Lcoil/request/DefaultRequestOptions;
 	public abstract fun getMemoryCache ()Lcoil/memory/MemoryCache;
 	public abstract fun invalidate (Ljava/lang/String;)V
@@ -134,10 +134,10 @@ public abstract interface annotation class coil/annotation/ExperimentalCoilApi :
 public abstract interface annotation class coil/annotation/InternalCoilApi : java/lang/annotation/Annotation {
 }
 
-public abstract interface class coil/bitmappool/BitmapPool {
-	public static final field Companion Lcoil/bitmappool/BitmapPool$Companion;
+public abstract interface class coil/bitmap/BitmapPool {
+	public static final field Companion Lcoil/bitmap/BitmapPool$Companion;
 	public abstract fun clear ()V
-	public static fun create (I)Lcoil/bitmappool/BitmapPool;
+	public static fun create (I)Lcoil/bitmap/BitmapPool;
 	public abstract fun get (IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;
 	public abstract fun getDirty (IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;
 	public abstract fun getDirtyOrNull (IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;
@@ -146,8 +146,8 @@ public abstract interface class coil/bitmappool/BitmapPool {
 	public abstract fun trimMemory (I)V
 }
 
-public final class coil/bitmappool/BitmapPool$Companion {
-	public final fun create (I)Lcoil/bitmappool/BitmapPool;
+public final class coil/bitmap/BitmapPool$Companion {
+	public final fun create (I)Lcoil/bitmap/BitmapPool;
 }
 
 public final class coil/collection/SparseIntArraySet {
@@ -213,7 +213,7 @@ public final class coil/decode/DecodeUtils {
 }
 
 public abstract interface class coil/decode/Decoder {
-	public abstract fun decode (Lcoil/bitmappool/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun decode (Lcoil/bitmap/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
 }
 
@@ -321,7 +321,7 @@ public abstract class coil/fetch/FetchResult {
 }
 
 public abstract interface class coil/fetch/Fetcher {
-	public abstract fun fetch (Lcoil/bitmappool/BitmapPool;Ljava/lang/Object;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun fetch (Lcoil/bitmap/BitmapPool;Ljava/lang/Object;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun handles (Ljava/lang/Object;)Z
 	public abstract fun key (Ljava/lang/Object;)Ljava/lang/String;
 }
@@ -830,7 +830,7 @@ public final class coil/transform/BlurTransformation : coil/transform/Transforma
 	public fun hashCode ()I
 	public fun key ()Ljava/lang/String;
 	public fun toString ()Ljava/lang/String;
-	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun transform (Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/transform/CircleCropTransformation : coil/transform/Transformation {
@@ -839,7 +839,7 @@ public final class coil/transform/CircleCropTransformation : coil/transform/Tran
 	public fun hashCode ()I
 	public fun key ()Ljava/lang/String;
 	public fun toString ()Ljava/lang/String;
-	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun transform (Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/transform/GrayscaleTransformation : coil/transform/Transformation {
@@ -848,7 +848,7 @@ public final class coil/transform/GrayscaleTransformation : coil/transform/Trans
 	public fun hashCode ()I
 	public fun key ()Ljava/lang/String;
 	public fun toString ()Ljava/lang/String;
-	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun transform (Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/transform/RoundedCornersTransformation : coil/transform/Transformation {
@@ -860,12 +860,12 @@ public final class coil/transform/RoundedCornersTransformation : coil/transform/
 	public fun hashCode ()I
 	public fun key ()Ljava/lang/String;
 	public fun toString ()Ljava/lang/String;
-	public fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun transform (Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class coil/transform/Transformation {
 	public abstract fun key ()Ljava/lang/String;
-	public abstract fun transform (Lcoil/bitmappool/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun transform (Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap;Lcoil/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/transition/CrossfadeTransition : coil/transition/Transition {

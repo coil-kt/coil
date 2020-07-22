@@ -1,4 +1,4 @@
-package coil.bitmappool
+package coil.bitmap
 
 import android.graphics.Bitmap
 import java.util.ArrayDeque

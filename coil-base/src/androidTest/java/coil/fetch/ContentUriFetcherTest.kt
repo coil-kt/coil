@@ -18,7 +18,7 @@ import android.provider.ContactsContract.RawContacts
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.PixelSize
 import coil.util.createOptions
 import kotlinx.coroutines.runBlocking

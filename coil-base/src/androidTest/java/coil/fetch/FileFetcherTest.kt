@@ -2,7 +2,7 @@ package coil.fetch
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.PixelSize
 import coil.util.copyAssetToFile
 import coil.util.createOptions

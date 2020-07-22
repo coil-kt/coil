@@ -1,4 +1,4 @@
-package coil.bitmappool
+package coil.bitmap
 
 import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE
