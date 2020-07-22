@@ -22,8 +22,8 @@ import coil.memory.RequestService
 import coil.memory.StrongMemoryCache
 import coil.memory.WeakMemoryCache
 import coil.request.ImageRequest
+import coil.request.ImageResult
 import coil.request.Metadata
-import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -63,7 +63,7 @@ internal class EngineInterceptor(
     private val logger: Logger?
 ) : Interceptor {
 
-    override suspend fun intercept(chain: Interceptor.Chain): RequestResult {
+    override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         try {
             // This interceptor uses some internal APIs.
             check(chain is RealInterceptorChain)

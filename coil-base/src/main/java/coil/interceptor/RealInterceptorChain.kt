@@ -3,8 +3,8 @@ package coil.interceptor
 import coil.EventListener
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
+import coil.request.ImageResult
 import coil.request.NullRequestData
-import coil.request.RequestResult
 import coil.size.Size
 
 @OptIn(ExperimentalCoilApi::class)
@@ -20,7 +20,7 @@ internal class RealInterceptorChain(
 
     override fun withSize(size: Size) = copy(size = size)
 
-    override suspend fun proceed(request: ImageRequest): RequestResult {
+    override suspend fun proceed(request: ImageRequest): ImageResult {
         if (index > 0) checkRequest(request, interceptors[index - 1])
         val interceptor = interceptors[index]
         val next = copy(index = index + 1, request = request)

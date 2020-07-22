@@ -76,7 +76,7 @@ public abstract interface class coil/ImageLoader {
 	public static final field Companion Lcoil/ImageLoader$Companion;
 	public abstract fun clearMemory ()V
 	public static fun create (Landroid/content/Context;)Lcoil/ImageLoader;
-	public abstract fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/RequestDisposable;
+	public abstract fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
 	public abstract fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getBitmapPool ()Lcoil/bitmap/BitmapPool;
 	public abstract fun getDefaults ()Lcoil/request/DefaultRequestOptions;
@@ -457,7 +457,13 @@ public final class coil/request/DefinedRequestOptions {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class coil/request/ErrorResult : coil/request/RequestResult {
+public abstract interface class coil/request/Disposable {
+	public abstract fun await (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun dispose ()V
+	public abstract fun isDisposed ()Z
+}
+
+public final class coil/request/ErrorResult : coil/request/ImageResult {
 	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public final fun component1 ()Landroid/graphics/drawable/Drawable;
 	public final fun component2 ()Lcoil/request/ImageRequest;
@@ -584,6 +590,11 @@ public final class coil/request/ImageRequest$Listener$DefaultImpls {
 	public static fun onSuccess (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
 }
 
+public abstract class coil/request/ImageResult {
+	public abstract fun getDrawable ()Landroid/graphics/drawable/Drawable;
+	public abstract fun getRequest ()Lcoil/request/ImageRequest;
+}
+
 public final class coil/request/Metadata {
 	public fun <init> (Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;)V
 	public fun equals (Ljava/lang/Object;)Z
@@ -654,18 +665,7 @@ public final class coil/request/ParametersKt {
 	public static final fun isNotEmpty (Lcoil/request/Parameters;)Z
 }
 
-public abstract interface class coil/request/RequestDisposable {
-	public abstract fun await (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun dispose ()V
-	public abstract fun isDisposed ()Z
-}
-
-public abstract class coil/request/RequestResult {
-	public abstract fun getDrawable ()Landroid/graphics/drawable/Drawable;
-	public abstract fun getRequest ()Lcoil/request/ImageRequest;
-}
-
-public final class coil/request/SuccessResult : coil/request/RequestResult {
+public final class coil/request/SuccessResult : coil/request/ImageResult {
 	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
 	public final fun component1 ()Landroid/graphics/drawable/Drawable;
 	public final fun component2 ()Lcoil/request/ImageRequest;
@@ -876,13 +876,13 @@ public final class coil/transition/CrossfadeTransition : coil/transition/Transit
 	public final fun getDurationMillis ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public fun transition (Lcoil/transition/TransitionTarget;Lcoil/request/RequestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun transition (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class coil/transition/Transition {
 	public static final field Companion Lcoil/transition/Transition$Companion;
 	public static final field NONE Lcoil/transition/Transition;
-	public abstract fun transition (Lcoil/transition/TransitionTarget;Lcoil/request/RequestResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun transition (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/transition/Transition$Companion {

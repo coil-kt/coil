@@ -8,9 +8,9 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.request.Metadata
-import coil.request.RequestDisposable
 import coil.util.CoilUtils
 import okhttp3.HttpUrl
 import java.io.File
@@ -21,7 +21,7 @@ inline fun ImageView.load(
     uri: String?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = loadAny(uri, imageLoader, builder)
+): Disposable = loadAny(uri, imageLoader, builder)
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
@@ -29,7 +29,7 @@ inline fun ImageView.load(
     url: HttpUrl?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = loadAny(url, imageLoader, builder)
+): Disposable = loadAny(url, imageLoader, builder)
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
@@ -37,7 +37,7 @@ inline fun ImageView.load(
     uri: Uri?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = loadAny(uri, imageLoader, builder)
+): Disposable = loadAny(uri, imageLoader, builder)
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
@@ -45,7 +45,7 @@ inline fun ImageView.load(
     file: File?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = loadAny(file, imageLoader, builder)
+): Disposable = loadAny(file, imageLoader, builder)
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
@@ -53,7 +53,7 @@ inline fun ImageView.load(
     @DrawableRes drawableResId: Int,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = loadAny(drawableResId, imageLoader, builder)
+): Disposable = loadAny(drawableResId, imageLoader, builder)
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
@@ -61,7 +61,7 @@ inline fun ImageView.load(
     drawable: Drawable?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = loadAny(drawable, imageLoader, builder)
+): Disposable = loadAny(drawable, imageLoader, builder)
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
@@ -69,7 +69,7 @@ inline fun ImageView.load(
     bitmap: Bitmap?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = loadAny(bitmap, imageLoader, builder)
+): Disposable = loadAny(bitmap, imageLoader, builder)
 
 /**
  * Load the image referenced by [data] and set it on this [ImageView].
@@ -93,7 +93,7 @@ inline fun ImageView.loadAny(
     data: Any?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable {
+): Disposable {
     val request = ImageRequest.Builder(context)
         .data(data)
         .target(this)
