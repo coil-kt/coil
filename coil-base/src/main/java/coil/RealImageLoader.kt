@@ -4,7 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.MainThread
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
+import coil.bitmap.BitmapReferenceCounter
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DrawableDecoderService
 import coil.fetch.AssetUriFetcher
@@ -21,7 +22,6 @@ import coil.map.HttpUriMapper
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.map.StringMapper
-import coil.memory.BitmapReferenceCounter
 import coil.memory.DelegateService
 import coil.memory.RealMemoryCache
 import coil.memory.RequestService

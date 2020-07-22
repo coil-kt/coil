@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Movie
 import android.os.Build.VERSION.SDK_INT
 import coil.annotation.InternalCoilApi
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.request.repeatCount
 import coil.size.Size

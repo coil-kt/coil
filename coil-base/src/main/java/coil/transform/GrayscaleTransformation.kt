@@ -7,7 +7,7 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import androidx.core.graphics.applyCanvas
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.Size
 import coil.util.safeConfig
 

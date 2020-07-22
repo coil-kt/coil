@@ -2,7 +2,7 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.drawable.VectorDrawable
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.util.size

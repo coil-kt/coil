@@ -7,7 +7,7 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DrawableDecoderService
 import coil.map.ResourceUriMapper
 import coil.size.PixelSize

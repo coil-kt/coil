@@ -11,6 +11,7 @@ import androidx.annotation.MainThread
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
+import coil.bitmap.BitmapReferenceCounter
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.RequestResult

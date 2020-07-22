@@ -1,7 +1,7 @@
 public final class coil/decode/SvgDecoder : coil/decode/Decoder {
 	public static final field Companion Lcoil/decode/SvgDecoder$Companion;
 	public fun <init> (Landroid/content/Context;)V
-	public fun decode (Lcoil/bitmappool/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun decode (Lcoil/bitmap/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
 }
 

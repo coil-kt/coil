@@ -1,4 +1,4 @@
-package coil.bitmappool
+package coil.bitmap
 
 import android.content.ComponentCallbacks2
 import android.graphics.Bitmap

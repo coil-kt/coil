@@ -2,7 +2,7 @@ package coil.fetch
 
 import android.content.Context
 import android.graphics.Bitmap
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.size.Size

@@ -7,6 +7,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
+import coil.bitmap.BitmapReferenceCounter
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache.Value
 import coil.util.Logger

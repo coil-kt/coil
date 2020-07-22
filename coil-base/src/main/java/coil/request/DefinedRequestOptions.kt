@@ -12,7 +12,8 @@ import coil.transition.Transition
 import kotlinx.coroutines.CoroutineDispatcher
 
 /**
- * Tracks which values have been set (instead of computed automatically using a default) when building an [ImageRequest].
+ * Tracks which values have been set (instead of computed automatically using a default)
+ * when building an [ImageRequest].
  *
  * @see ImageRequest.defined
  */

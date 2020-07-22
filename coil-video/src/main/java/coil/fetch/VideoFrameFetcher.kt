@@ -14,7 +14,7 @@ import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.DecodeUtils
 import coil.decode.Decoder

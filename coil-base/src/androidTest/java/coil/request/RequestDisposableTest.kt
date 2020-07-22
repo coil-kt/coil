@@ -8,7 +8,7 @@ import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.size.Size
 import coil.transform.Transformation

@@ -7,7 +7,7 @@ import androidx.annotation.VisibleForTesting
 import coil.ComponentRegistry
 import coil.EventListener
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.DecodeUtils
 import coil.decode.DrawableDecoderService

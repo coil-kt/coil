@@ -2,7 +2,7 @@ package coil.transform
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.decode.DecodeResult
 import coil.fetch.DrawableResult
 import coil.request.ImageRequest

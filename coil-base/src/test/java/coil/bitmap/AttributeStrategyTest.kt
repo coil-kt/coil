@@ -1,4 +1,4 @@
-package coil.bitmappool
+package coil.bitmap
 
 import android.graphics.Bitmap
 import coil.util.createBitmap
@@ -9,13 +9,13 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-class SizeStrategyTest {
+class AttributeStrategyTest {
 
-    private lateinit var strategy: SizeStrategy
+    private lateinit var strategy: AttributeStrategy
 
     @Before
     fun before() {
-        strategy = SizeStrategy()
+        strategy = AttributeStrategy()
     }
 
     @Test
@@ -35,20 +35,18 @@ class SizeStrategyTest {
     }
 
     @Test
-    fun `large enough bitmap with different config is reused`() {
+    fun `large enough bitmap with different config is not reused`() {
         val bitmap = createBitmap(width = 250, height = 250, config = Bitmap.Config.RGB_565)
         strategy.put(bitmap)
 
-        assertEquals(bitmap, strategy.get(100, 100, Bitmap.Config.ARGB_8888))
+        assertEquals(null, strategy.get(100, 100, Bitmap.Config.ARGB_8888))
     }
 
     @Test
-    fun `only puts are factored into ceilingKey`() {
-        strategy.put(createBitmap(100, 100, Bitmap.Config.ARGB_8888))
-        strategy.get(200, 100, Bitmap.Config.ARGB_8888)
-        val expected = createBitmap(300, 100, Bitmap.Config.ARGB_8888)
-        strategy.put(expected)
+    fun `large enough bitmap with different size is not reused`() {
+        val bitmap = createBitmap(width = 150, height = 150)
+        strategy.put(bitmap)
 
-        assertEquals(expected, strategy.get(200, 100, Bitmap.Config.ARGB_8888))
+        assertEquals(null, strategy.get(100, 100, Bitmap.Config.ARGB_8888))
     }
 }

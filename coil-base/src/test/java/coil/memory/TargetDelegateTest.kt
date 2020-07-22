@@ -6,7 +6,8 @@ import androidx.test.core.app.ApplicationProvider
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmappool.FakeBitmapPool
+import coil.bitmap.BitmapReferenceCounter
+import coil.bitmap.FakeBitmapPool
 import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.Metadata

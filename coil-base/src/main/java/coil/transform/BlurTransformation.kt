@@ -11,7 +11,7 @@ import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.applyCanvas
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.Size
 import coil.util.safeConfig
 

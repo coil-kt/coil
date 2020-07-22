@@ -9,7 +9,7 @@ import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import androidx.core.graphics.component3
 import androidx.core.graphics.component4
-import coil.bitmappool.BitmapPool
+import coil.bitmap.BitmapPool
 import coil.size.OriginalSize
 import coil.size.Scale
 import coil.size.Size

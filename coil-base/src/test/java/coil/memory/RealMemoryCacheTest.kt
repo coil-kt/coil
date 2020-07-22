@@ -1,6 +1,7 @@
 package coil.memory
 
-import coil.bitmappool.FakeBitmapPool
+import coil.bitmap.BitmapReferenceCounter
+import coil.bitmap.FakeBitmapPool
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.allocationByteCountCompat
 import coil.util.createBitmap

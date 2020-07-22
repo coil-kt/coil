@@ -2,7 +2,7 @@ package coil.util
 
 import android.graphics.Bitmap
 import androidx.annotation.VisibleForTesting
-import coil.memory.BitmapReferenceCounter
+import coil.bitmap.BitmapReferenceCounter
 import coil.memory.RealWeakMemoryCache
 
 /** Return the current reference count for [bitmap]. */
