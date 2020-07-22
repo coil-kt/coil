@@ -65,7 +65,7 @@ internal object Utils {
         return when {
             // Prefer immutable bitmaps (which cannot be pooled) on API 24 and greater.
             SDK_INT >= 24 -> 0.0
-            // Bitmap pooling is most effective for APIs 19 to 23.
+            // Bitmap pooling is most effective on APIs 19 to 23.
             SDK_INT >= 19 -> 0.5
             // The requirements for bitmap reuse are strict below API 19.
             else -> 0.25
