@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalCoilApi::class)
-
 package coil.request
 
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.memory.MemoryCache
 
@@ -19,6 +16,12 @@ class Metadata(
     val isSampled: Boolean,
     val dataSource: DataSource
 ) {
+
+    fun copy(
+        key: MemoryCache.Key? = this.key,
+        isSampled: Boolean = this.isSampled,
+        dataSource: DataSource = this.dataSource
+    ) = Metadata(key, isSampled, dataSource)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
