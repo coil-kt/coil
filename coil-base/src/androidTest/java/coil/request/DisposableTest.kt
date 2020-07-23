@@ -28,7 +28,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class, FlowPreview::class)
-class RequestDisposableTest {
+class DisposableTest {
 
     private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader
