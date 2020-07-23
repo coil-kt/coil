@@ -127,7 +127,7 @@ interface ImageLoader {
         private var eventListenerFactory: EventListener.Factory? = null
         private var registry: ComponentRegistry? = null
         private var logger: Logger? = null
-        private var defaults = DefaultRequestOptions()
+        private var defaults = DefaultRequestOptions.INSTANCE
 
         private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
         private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
