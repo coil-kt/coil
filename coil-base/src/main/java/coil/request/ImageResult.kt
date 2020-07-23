@@ -17,7 +17,7 @@ sealed class ImageResult {
 /**
  * Indicates that the request completed successfully.
  *
- * @param drawable The result drawable.
+ * @param drawable The success drawable.
  * @param request The request that was executed to create this result.
  * @param metadata Metadata about the request that created this response.
  */
