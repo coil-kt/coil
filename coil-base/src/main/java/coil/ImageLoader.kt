@@ -444,6 +444,6 @@ interface ImageLoader {
         /** Create a new [ImageLoader] without configuration. */
         @JvmStatic
         @JvmName("create")
-        inline operator fun invoke(context: Context) = Builder(context).build()
+        operator fun invoke(context: Context) = Builder(context).build()
     }
 }
