@@ -1,3 +1,5 @@
+import coil.groupId
+import coil.versionName
 import com.android.build.gradle.BaseExtension
 import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
