@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE", "TestFunctionName")
+@file:Suppress("NOTHING_TO_INLINE")
 
 package coil.intercept
 
@@ -153,5 +153,12 @@ class RealInterceptorChainTest {
             eventListener = EventListener.NONE
         )
         return runBlocking { chain.proceed(request) }
+    }
+
+    @Suppress("TestFunctionName")
+    private inline fun Interceptor(crossinline block: suspend (Interceptor.Chain) -> ImageResult): Interceptor {
+        return object : Interceptor {
+            override suspend fun intercept(chain: Interceptor.Chain) = block(chain)
+        }
     }
 }

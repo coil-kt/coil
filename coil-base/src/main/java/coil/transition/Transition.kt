@@ -13,7 +13,7 @@ import coil.target.Target
  * If the [Target] does not implement [TransitionTarget], any [Transition]s will be ignored.
  */
 @ExperimentalCoilApi
-fun interface Transition {
+interface Transition {
 
     /**
      * Start the transition animation and suspend until it completes or is cancelled.

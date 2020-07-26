@@ -16,6 +16,7 @@ import coil.request.SuccessResult
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
 import coil.transition.Transition
+import coil.transition.TransitionTarget
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.createBitmap
@@ -236,6 +237,13 @@ class TargetDelegateTest {
             // Ensure that the animation completed and the initial bitmap was not pooled until this method completes.
             assertFalse(isRunning)
             assertTrue(initialBitmap in pool.bitmaps)
+        }
+    }
+
+    @Suppress("TestFunctionName")
+    private inline fun Transition(crossinline block: suspend (TransitionTarget<*>, ImageResult) -> Unit): Transition {
+        return object : Transition {
+            override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) = block(target, result)
         }
     }
 }

@@ -19,6 +19,8 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Size
 import coil.transform.Transformation
+import coil.transition.Transition
+import coil.transition.TransitionTarget
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -114,13 +116,15 @@ class EventListenerTest {
         runBlocking {
             imageLoader.testEnqueue {
                 data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
-                transition { target, result ->
-                    transitionIsCalled = true
-                    when (result) {
-                        is SuccessResult -> target.onSuccess(result.drawable)
-                        is ErrorResult -> target.onError(result.drawable)
+                transition(object : Transition {
+                    override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
+                        transitionIsCalled = true
+                        when (result) {
+                            is SuccessResult -> target.onSuccess(result.drawable)
+                            is ErrorResult -> target.onError(result.drawable)
+                        }
                     }
-                }
+                })
             }
         }
 

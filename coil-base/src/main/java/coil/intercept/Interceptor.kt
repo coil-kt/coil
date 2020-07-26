@@ -10,7 +10,7 @@ import coil.size.Size
  * Observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine.
  */
 @ExperimentalCoilApi
-fun interface Interceptor {
+interface Interceptor {
 
     suspend fun intercept(chain: Chain): ImageResult
 
