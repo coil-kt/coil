@@ -230,8 +230,8 @@ class ImageRequest private constructor(
             "placeholderKey=$placeholderKey, colorSpace=$colorSpace, fetcher=$fetcher, decoder=$decoder, " +
             "transformations=$transformations, headers=$headers, parameters=$parameters, lifecycle=$lifecycle, " +
             "sizeResolver=$sizeResolver, scale=$scale, dispatcher=$dispatcher, transition=$transition, " +
-            "precision=$precision, bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
-            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
+            "precision=$precision, bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, " +
+            "allowRgb565=$allowRgb565, memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
             "networkCachePolicy=$networkCachePolicy, placeholderResId=$placeholderResId, " +
             "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
             "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable, defined=$defined, defaults=$defaults)"

@@ -3,7 +3,7 @@ package coil.interceptor
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
-import coil.request.RequestResult
+import coil.request.ImageResult
 import coil.size.Size
 
 /**
@@ -12,7 +12,7 @@ import coil.size.Size
 @ExperimentalCoilApi
 interface Interceptor {
 
-    suspend fun intercept(chain: Chain): RequestResult
+    suspend fun intercept(chain: Chain): ImageResult
 
     interface Chain {
 
@@ -32,6 +32,6 @@ interface Interceptor {
          *
          * @param request The request to proceed with.
          */
-        suspend fun proceed(request: ImageRequest): RequestResult
+        suspend fun proceed(request: ImageRequest): ImageResult
     }
 }

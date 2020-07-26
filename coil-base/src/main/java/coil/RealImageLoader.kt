@@ -28,16 +28,16 @@ import coil.memory.RequestService
 import coil.memory.StrongMemoryCache
 import coil.memory.TargetDelegate
 import coil.memory.WeakMemoryCache
-import coil.request.BaseTargetRequestDisposable
+import coil.request.BaseTargetDisposable
 import coil.request.DefaultRequestOptions
+import coil.request.Disposable
 import coil.request.ErrorResult
 import coil.request.ImageRequest
+import coil.request.ImageResult
 import coil.request.NullRequestData
 import coil.request.NullRequestDataException
-import coil.request.RequestDisposable
-import coil.request.RequestResult
 import coil.request.SuccessResult
-import coil.request.ViewTargetRequestDisposable
+import coil.request.ViewTargetDisposable
 import coil.size.Size
 import coil.target.ViewTarget
 import coil.util.Emoji
@@ -107,7 +107,7 @@ internal class RealImageLoader(
         strongMemoryCache, weakMemoryCache, requestService, systemCallbacks, drawableDecoder, logger)
     private val isShutdown = AtomicBoolean(false)
 
-    override fun enqueue(request: ImageRequest): RequestDisposable {
+    override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
         val job = scope.launch {
             val result = executeMain(request, REQUEST_TYPE_ENQUEUE)
@@ -117,13 +117,13 @@ internal class RealImageLoader(
         // Update the current request attached to the view and return a new disposable.
         return if (request.target is ViewTarget<*>) {
             val requestId = request.target.view.requestManager.setCurrentRequestJob(job)
-            ViewTargetRequestDisposable(requestId, request.target)
+            ViewTargetDisposable(requestId, request.target)
         } else {
-            BaseTargetRequestDisposable(job)
+            BaseTargetDisposable(job)
         }
     }
 
-    override suspend fun execute(request: ImageRequest): RequestResult {
+    override suspend fun execute(request: ImageRequest): ImageResult {
         // Update the current request attached to the view synchronously.
         if (request.target is ViewTarget<*>) {
             request.target.view.requestManager.setCurrentRequestJob(coroutineContext.job)
@@ -136,7 +136,7 @@ internal class RealImageLoader(
     }
 
     @MainThread
-    private suspend fun executeMain(initialRequest: ImageRequest, type: Int): RequestResult {
+    private suspend fun executeMain(initialRequest: ImageRequest, type: Int): ImageResult {
         // Ensure this image loader isn't shutdown.
         check(!isShutdown.get()) { "The image loader is shutdown." }
 
@@ -220,7 +220,7 @@ internal class RealImageLoader(
         type: Int,
         size: Size,
         eventListener: EventListener
-    ): RequestResult = withContext(request.dispatcher) {
+    ): ImageResult = withContext(request.dispatcher) {
         RealInterceptorChain(request, type, interceptors, 0, request, size, eventListener).proceed(request)
     }
 

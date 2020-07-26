@@ -10,7 +10,7 @@ import java.util.UUID
 /**
  * Represents the work of an executed [ImageRequest].
  */
-interface RequestDisposable {
+interface Disposable {
 
     /**
      * Returns true if the request is complete or cancelling.
@@ -32,7 +32,7 @@ interface RequestDisposable {
 /**
  * A disposable for one-shot image requests.
  */
-internal class BaseTargetRequestDisposable(private val job: Job) : RequestDisposable {
+internal class BaseTargetDisposable(private val job: Job) : Disposable {
 
     override val isDisposed
         get() = !job.isActive
@@ -52,14 +52,14 @@ internal class BaseTargetRequestDisposable(private val job: Job) : RequestDispos
 /**
  * A disposable for requests that are attached to a [View].
  *
- * [ViewTargetRequestDisposable] is not disposed until its request is detached from the view.
+ * [ViewTargetDisposable] is not disposed until its request is detached from the view.
  * This is because requests are automatically cancelled in [View.onDetachedFromWindow] and are
  * restarted in [View.onAttachedToWindow].
  */
-internal class ViewTargetRequestDisposable(
+internal class ViewTargetDisposable(
     private val requestId: UUID,
     private val target: ViewTarget<*>
-) : RequestDisposable {
+) : Disposable {
 
     override val isDisposed
         get() = target.view.requestManager.currentRequestId != requestId

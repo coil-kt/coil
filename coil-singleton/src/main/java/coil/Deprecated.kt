@@ -10,8 +10,8 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import coil.Coil
 import coil.ImageLoader
+import coil.request.Disposable
 import coil.request.ImageRequest
-import coil.request.RequestDisposable
 import okhttp3.HttpUrl
 import java.io.File
 import coil.clear as _clear
@@ -24,7 +24,7 @@ inline fun ImageView.load(
     uri: String?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = _load(uri, imageLoader, builder)
+): Disposable = _load(uri, imageLoader, builder)
 
 @Deprecated("Replace `coil.api.load` with `coil.load`.")
 @JvmSynthetic
@@ -32,7 +32,7 @@ inline fun ImageView.load(
     url: HttpUrl?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = _load(url, imageLoader, builder)
+): Disposable = _load(url, imageLoader, builder)
 
 @Deprecated("Replace `coil.api.load` with `coil.load`.")
 @JvmSynthetic
@@ -40,7 +40,7 @@ inline fun ImageView.load(
     uri: Uri?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = _load(uri, imageLoader, builder)
+): Disposable = _load(uri, imageLoader, builder)
 
 @Deprecated("Replace `coil.api.load` with `coil.load`.")
 @JvmSynthetic
@@ -48,7 +48,7 @@ inline fun ImageView.load(
     file: File?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = _load(file, imageLoader, builder)
+): Disposable = _load(file, imageLoader, builder)
 
 @Deprecated("Replace `coil.api.load` with `coil.load`.")
 @JvmSynthetic
@@ -56,7 +56,7 @@ inline fun ImageView.load(
     @DrawableRes drawableResId: Int,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = _load(drawableResId, imageLoader, builder)
+): Disposable = _load(drawableResId, imageLoader, builder)
 
 @Deprecated("Replace `coil.api.load` with `coil.load`.")
 @JvmSynthetic
@@ -64,7 +64,7 @@ inline fun ImageView.load(
     drawable: Drawable?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = _load(drawable, imageLoader, builder)
+): Disposable = _load(drawable, imageLoader, builder)
 
 @Deprecated("Replace `coil.api.load` with `coil.load`.")
 @JvmSynthetic
@@ -72,7 +72,7 @@ inline fun ImageView.load(
     bitmap: Bitmap?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = _load(bitmap, imageLoader, builder)
+): Disposable = _load(bitmap, imageLoader, builder)
 
 @Deprecated("Replace `coil.api.load` with `coil.load`.")
 @JvmSynthetic
@@ -80,7 +80,7 @@ inline fun ImageView.loadAny(
     data: Any?,
     imageLoader: ImageLoader = Coil.imageLoader(context),
     builder: ImageRequest.Builder.() -> Unit = {}
-): RequestDisposable = _loadAny(data, imageLoader, builder)
+): Disposable = _loadAny(data, imageLoader, builder)
 
 @Deprecated("Replace `coil.api.clear` with `coil.clear`.")
 fun ImageView.clear() = _clear()

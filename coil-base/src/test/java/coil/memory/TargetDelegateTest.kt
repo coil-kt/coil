@@ -10,8 +10,8 @@ import coil.bitmap.BitmapReferenceCounter
 import coil.bitmap.FakeBitmapPool
 import coil.decode.DataSource
 import coil.request.ErrorResult
+import coil.request.ImageResult
 import coil.request.Metadata
-import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
@@ -190,7 +190,7 @@ class TargetDelegateTest {
             val bitmap = createBitmap()
             var isRunning = true
             val transition = object : Transition {
-                override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
+                override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
                     assertFalse(initialBitmap in pool.bitmaps)
                     delay(100) // Simulate an animation.
                     assertFalse(initialBitmap in pool.bitmaps)

@@ -19,10 +19,10 @@ import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
 import coil.request.DefaultRequestOptions
+import coil.request.Disposable
 import coil.request.ErrorResult
 import coil.request.ImageRequest
-import coil.request.RequestDisposable
-import coil.request.RequestResult
+import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
 import coil.target.ViewTarget
@@ -69,9 +69,9 @@ interface ImageLoader {
      * Enqueue the [request] to be executed asynchronously.
      *
      * @param request The request to execute.
-     * @return A [RequestDisposable] which can be used to cancel or check the status of the request.
+     * @return A [Disposable] which can be used to cancel or check the status of the request.
      */
-    fun enqueue(request: ImageRequest): RequestDisposable
+    fun enqueue(request: ImageRequest): Disposable
 
     /**
      * Execute the [request] in the current coroutine scope.
@@ -82,7 +82,7 @@ interface ImageLoader {
      * @param request The request to execute.
      * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
      */
-    suspend fun execute(request: ImageRequest): RequestResult
+    suspend fun execute(request: ImageRequest): ImageResult
 
     /**
      * Shutdown this image loader.
@@ -127,7 +127,7 @@ interface ImageLoader {
         private var eventListenerFactory: EventListener.Factory? = null
         private var registry: ComponentRegistry? = null
         private var logger: Logger? = null
-        private var defaults = DefaultRequestOptions()
+        private var defaults = DefaultRequestOptions.INSTANCE
 
         private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
         private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
@@ -444,6 +444,6 @@ interface ImageLoader {
         /** Create a new [ImageLoader] without configuration. */
         @JvmStatic
         @JvmName("create")
-        inline operator fun invoke(context: Context) = Builder(context).build()
+        operator fun invoke(context: Context) = Builder(context).build()
     }
 }
