@@ -11,7 +11,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.lifecycle.FakeLifecycle
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
-import coil.request.RequestResult
+import coil.request.ImageResult
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
@@ -141,7 +141,7 @@ class RealInterceptorChainTest {
         assertSame(request, result.request)
     }
 
-    private fun testChain(request: ImageRequest, interceptors: List<Interceptor>): RequestResult {
+    private fun testChain(request: ImageRequest, interceptors: List<Interceptor>): ImageResult {
         val chain = RealInterceptorChain(
             initialRequest = request,
             requestType = REQUEST_TYPE_ENQUEUE,
@@ -154,7 +154,7 @@ class RealInterceptorChainTest {
         return runBlocking { chain.proceed(request) }
     }
 
-    private inline fun Interceptor(crossinline block: suspend (Interceptor.Chain) -> RequestResult): Interceptor {
+    private inline fun Interceptor(crossinline block: suspend (Interceptor.Chain) -> ImageResult): Interceptor {
         return object : Interceptor {
             override suspend fun intercept(chain: Interceptor.Chain) = block(chain)
         }

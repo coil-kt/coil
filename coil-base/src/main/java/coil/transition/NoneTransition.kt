@@ -2,16 +2,16 @@ package coil.transition
 
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ErrorResult
-import coil.request.RequestResult
+import coil.request.ImageResult
 import coil.request.SuccessResult
 
 /**
- * A transition that applies the [RequestResult] on the [TransitionTarget] without animating.
+ * A transition that applies the [ImageResult] on the [TransitionTarget] without animating.
  */
 @ExperimentalCoilApi
 internal object NoneTransition : Transition {
 
-    override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
+    override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
         when (result) {
             is SuccessResult -> target.onSuccess(result.drawable)
             is ErrorResult -> target.onError(result.drawable)

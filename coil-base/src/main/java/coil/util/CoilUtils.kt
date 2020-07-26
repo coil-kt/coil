@@ -2,8 +2,8 @@ package coil.util
 
 import android.content.Context
 import android.view.View
+import coil.request.Disposable
 import coil.request.Metadata
-import coil.request.RequestDisposable
 import okhttp3.Cache
 
 /** Public utility methods for Coil. */
@@ -20,7 +20,7 @@ object CoilUtils {
     /**
      * Cancel any in progress requests attached to [view] and clear any associated resources.
      *
-     * NOTE: Typically you should use [RequestDisposable.dispose] to clear any associated resources,
+     * NOTE: Typically you should use [Disposable.dispose] to clear any associated resources,
      * however this method is provided for convenience.
      */
     @JvmStatic

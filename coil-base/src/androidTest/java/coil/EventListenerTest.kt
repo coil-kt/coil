@@ -15,8 +15,8 @@ import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.request.ErrorResult
 import coil.request.ImageRequest
+import coil.request.ImageResult
 import coil.request.Metadata
-import coil.request.RequestResult
 import coil.request.SuccessResult
 import coil.size.Size
 import coil.transform.Transformation
@@ -118,7 +118,7 @@ class EventListenerTest {
             imageLoader.testEnqueue {
                 data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
                 transition(object : Transition {
-                    override suspend fun transition(target: TransitionTarget<*>, result: RequestResult) {
+                    override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
                         transitionIsCalled = true
                         when (result) {
                             is SuccessResult -> target.onSuccess(result.drawable)

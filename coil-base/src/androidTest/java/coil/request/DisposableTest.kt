@@ -28,7 +28,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoilApi::class, ExperimentalCoroutinesApi::class, FlowPreview::class)
-class RequestDisposableTest {
+class DisposableTest {
 
     private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader
@@ -56,7 +56,7 @@ class RequestDisposableTest {
             .build()
         val disposable = imageLoader.enqueue(request)
 
-        assertTrue(disposable is BaseTargetRequestDisposable)
+        assertTrue(disposable is BaseTargetDisposable)
         assertFalse(disposable.isDisposed)
         disposable.dispose()
         assertTrue(disposable.isDisposed)
@@ -74,7 +74,7 @@ class RequestDisposableTest {
             .build()
         val disposable = imageLoader.enqueue(request)
 
-        assertTrue(disposable is BaseTargetRequestDisposable)
+        assertTrue(disposable is BaseTargetDisposable)
         assertNull(result)
         transformation.open()
         disposable.await()
@@ -93,7 +93,7 @@ class RequestDisposableTest {
             .build()
         val disposable = imageLoader.enqueue(request)
 
-        assertTrue(disposable is ViewTargetRequestDisposable)
+        assertTrue(disposable is ViewTargetDisposable)
         assertFalse(disposable.isDisposed)
         disposable.dispose()
         assertTrue(disposable.isDisposed)
@@ -112,7 +112,7 @@ class RequestDisposableTest {
             .build()
         val disposable = imageLoader.enqueue(request)
 
-        assertTrue(disposable is ViewTargetRequestDisposable)
+        assertTrue(disposable is ViewTargetDisposable)
         assertNull(imageView.drawable)
         transformation.open()
         disposable.await()
@@ -132,7 +132,7 @@ class RequestDisposableTest {
             .build()
         val disposable = imageLoader.enqueue(request)
 
-        assertTrue(disposable is ViewTargetRequestDisposable)
+        assertTrue(disposable is ViewTargetDisposable)
         assertFalse(disposable.isDisposed)
 
         transformation.open()
@@ -153,7 +153,7 @@ class RequestDisposableTest {
     fun viewTargetRequestDisposable_replace() = runBlockingTest {
         val imageView = ImageView(context)
 
-        fun launchNewRequest(): RequestDisposable {
+        fun launchNewRequest(): Disposable {
             val request = ImageRequest.Builder(context)
                 .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
                 // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.

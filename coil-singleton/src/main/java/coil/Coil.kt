@@ -5,9 +5,9 @@ package coil
 import android.app.Application
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import coil.request.Disposable
 import coil.request.ImageRequest
-import coil.request.RequestDisposable
-import coil.request.RequestResult
+import coil.request.ImageResult
 
 /**
  * A singleton that holds the default [ImageLoader] instance.
@@ -29,7 +29,7 @@ object Coil {
      * @see ImageLoader.enqueue
      */
     @JvmStatic
-    inline fun enqueue(request: ImageRequest): RequestDisposable {
+    inline fun enqueue(request: ImageRequest): Disposable {
         return imageLoader(request.context).enqueue(request)
     }
 
@@ -39,7 +39,7 @@ object Coil {
      * @see ImageLoader.execute
      */
     @JvmStatic
-    suspend inline fun execute(request: ImageRequest): RequestResult {
+    suspend inline fun execute(request: ImageRequest): ImageResult {
         return imageLoader(request.context).execute(request)
     }
 
