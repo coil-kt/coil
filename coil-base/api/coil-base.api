@@ -21,44 +21,25 @@ public final class coil/ComponentRegistry$Builder {
 public abstract interface class coil/EventListener : coil/request/ImageRequest$Listener {
 	public static final field Companion Lcoil/EventListener$Companion;
 	public static final field NONE Lcoil/EventListener;
-	public abstract fun decodeEnd (Lcoil/request/ImageRequest;Lcoil/decode/Decoder;Lcoil/decode/Options;Lcoil/decode/DecodeResult;)V
-	public abstract fun decodeStart (Lcoil/request/ImageRequest;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
-	public abstract fun fetchEnd (Lcoil/request/ImageRequest;Lcoil/fetch/Fetcher;Lcoil/decode/Options;Lcoil/fetch/FetchResult;)V
-	public abstract fun fetchStart (Lcoil/request/ImageRequest;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
-	public abstract fun mapEnd (Lcoil/request/ImageRequest;Ljava/lang/Object;)V
-	public abstract fun mapStart (Lcoil/request/ImageRequest;Ljava/lang/Object;)V
-	public abstract fun onCancel (Lcoil/request/ImageRequest;)V
-	public abstract fun onError (Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
-	public abstract fun onStart (Lcoil/request/ImageRequest;)V
-	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
-	public abstract fun resolveSizeEnd (Lcoil/request/ImageRequest;Lcoil/size/Size;)V
-	public abstract fun resolveSizeStart (Lcoil/request/ImageRequest;)V
-	public abstract fun transformEnd (Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
-	public abstract fun transformStart (Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
-	public abstract fun transitionEnd (Lcoil/request/ImageRequest;)V
-	public abstract fun transitionStart (Lcoil/request/ImageRequest;)V
+	public fun decodeEnd (Lcoil/request/ImageRequest;Lcoil/decode/Decoder;Lcoil/decode/Options;Lcoil/decode/DecodeResult;)V
+	public fun decodeStart (Lcoil/request/ImageRequest;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
+	public fun fetchEnd (Lcoil/request/ImageRequest;Lcoil/fetch/Fetcher;Lcoil/decode/Options;Lcoil/fetch/FetchResult;)V
+	public fun fetchStart (Lcoil/request/ImageRequest;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
+	public fun mapEnd (Lcoil/request/ImageRequest;Ljava/lang/Object;)V
+	public fun mapStart (Lcoil/request/ImageRequest;Ljava/lang/Object;)V
+	public fun onCancel (Lcoil/request/ImageRequest;)V
+	public fun onError (Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
+	public fun onStart (Lcoil/request/ImageRequest;)V
+	public fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
+	public fun resolveSizeEnd (Lcoil/request/ImageRequest;Lcoil/size/Size;)V
+	public fun resolveSizeStart (Lcoil/request/ImageRequest;)V
+	public fun transformEnd (Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
+	public fun transformStart (Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
+	public fun transitionEnd (Lcoil/request/ImageRequest;)V
+	public fun transitionStart (Lcoil/request/ImageRequest;)V
 }
 
 public final class coil/EventListener$Companion {
-}
-
-public final class coil/EventListener$DefaultImpls {
-	public static fun decodeEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/decode/Decoder;Lcoil/decode/Options;Lcoil/decode/DecodeResult;)V
-	public static fun decodeStart (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/decode/Decoder;Lcoil/decode/Options;)V
-	public static fun fetchEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/fetch/Fetcher;Lcoil/decode/Options;Lcoil/fetch/FetchResult;)V
-	public static fun fetchStart (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/fetch/Fetcher;Lcoil/decode/Options;)V
-	public static fun mapEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Ljava/lang/Object;)V
-	public static fun mapStart (Lcoil/EventListener;Lcoil/request/ImageRequest;Ljava/lang/Object;)V
-	public static fun onCancel (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
-	public static fun onError (Lcoil/EventListener;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
-	public static fun onStart (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
-	public static fun onSuccess (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
-	public static fun resolveSizeEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/size/Size;)V
-	public static fun resolveSizeStart (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
-	public static fun transformEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
-	public static fun transformStart (Lcoil/EventListener;Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
-	public static fun transitionEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
-	public static fun transitionStart (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
 }
 
 public abstract interface class coil/EventListener$Factory {
@@ -74,14 +55,14 @@ public final class coil/EventListener$Factory$Companion {
 
 public abstract interface class coil/ImageLoader {
 	public static final field Companion Lcoil/ImageLoader$Companion;
-	public abstract fun clearMemory ()V
+	public fun clearMemory ()V
 	public static fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 	public abstract fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
 	public abstract fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getBitmapPool ()Lcoil/bitmap/BitmapPool;
 	public abstract fun getDefaults ()Lcoil/request/DefaultRequestOptions;
 	public abstract fun getMemoryCache ()Lcoil/memory/MemoryCache;
-	public abstract fun invalidate (Ljava/lang/String;)V
+	public fun invalidate (Ljava/lang/String;)V
 	public abstract fun shutdown ()V
 }
 
@@ -122,11 +103,6 @@ public final class coil/ImageLoader$Builder {
 
 public final class coil/ImageLoader$Companion {
 	public final fun create (Landroid/content/Context;)Lcoil/ImageLoader;
-}
-
-public final class coil/ImageLoader$DefaultImpls {
-	public static fun clearMemory (Lcoil/ImageLoader;)V
-	public static fun invalidate (Lcoil/ImageLoader;Ljava/lang/String;)V
 }
 
 public abstract interface annotation class coil/annotation/ExperimentalCoilApi : java/lang/annotation/Annotation {
@@ -286,12 +262,8 @@ public abstract class coil/fetch/FetchResult {
 
 public abstract interface class coil/fetch/Fetcher {
 	public abstract fun fetch (Lcoil/bitmap/BitmapPool;Ljava/lang/Object;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun handles (Ljava/lang/Object;)Z
+	public fun handles (Ljava/lang/Object;)Z
 	public abstract fun key (Ljava/lang/Object;)Ljava/lang/String;
-}
-
-public final class coil/fetch/Fetcher$DefaultImpls {
-	public static fun handles (Lcoil/fetch/Fetcher;Ljava/lang/Object;)Z
 }
 
 public final class coil/fetch/SourceResult : coil/fetch/FetchResult {
@@ -321,21 +293,13 @@ public abstract interface class coil/intercept/Interceptor$Chain {
 }
 
 public abstract interface class coil/map/Mapper {
-	public abstract fun handles (Ljava/lang/Object;)Z
+	public fun handles (Ljava/lang/Object;)Z
 	public abstract fun map (Ljava/lang/Object;)Ljava/lang/Object;
 }
 
-public final class coil/map/Mapper$DefaultImpls {
-	public static fun handles (Lcoil/map/Mapper;Ljava/lang/Object;)Z
-}
-
 public abstract interface class coil/map/MeasuredMapper {
-	public abstract fun handles (Ljava/lang/Object;)Z
+	public fun handles (Ljava/lang/Object;)Z
 	public abstract fun map (Ljava/lang/Object;Lcoil/size/Size;)Ljava/lang/Object;
-}
-
-public final class coil/map/MeasuredMapper$DefaultImpls {
-	public static fun handles (Lcoil/map/MeasuredMapper;Ljava/lang/Object;)Z
 }
 
 public abstract interface class coil/memory/MemoryCache {
@@ -548,13 +512,6 @@ public abstract interface class coil/request/ImageRequest$Listener {
 	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
 }
 
-public final class coil/request/ImageRequest$Listener$DefaultImpls {
-	public static fun onCancel (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;)V
-	public static fun onError (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
-	public static fun onStart (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;)V
-	public static fun onSuccess (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
-}
-
 public abstract class coil/request/ImageResult {
 	public abstract fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public abstract fun getRequest ()Lcoil/request/ImageRequest;
@@ -728,19 +685,14 @@ public final class coil/size/SizeResolver$Companion {
 public abstract interface class coil/size/ViewSizeResolver : coil/size/SizeResolver {
 	public static final field Companion Lcoil/size/ViewSizeResolver$Companion;
 	public static fun create (Landroid/view/View;Z)Lcoil/size/ViewSizeResolver;
-	public abstract fun getSubtractPadding ()Z
+	public fun getSubtractPadding ()Z
 	public abstract fun getView ()Landroid/view/View;
-	public abstract fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class coil/size/ViewSizeResolver$Companion {
 	public final fun create (Landroid/view/View;Z)Lcoil/size/ViewSizeResolver;
 	public static synthetic fun create$default (Lcoil/size/ViewSizeResolver$Companion;Landroid/view/View;ZILjava/lang/Object;)Lcoil/size/ViewSizeResolver;
-}
-
-public final class coil/size/ViewSizeResolver$DefaultImpls {
-	public static fun getSubtractPadding (Lcoil/size/ViewSizeResolver;)Z
-	public static fun size (Lcoil/size/ViewSizeResolver;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public class coil/target/ImageViewTarget : androidx/lifecycle/DefaultLifecycleObserver, coil/target/PoolableViewTarget, coil/transition/TransitionTarget {
@@ -765,32 +717,14 @@ public abstract interface class coil/target/PoolableViewTarget : coil/target/Vie
 	public abstract fun onClear ()V
 }
 
-public final class coil/target/PoolableViewTarget$DefaultImpls {
-	public static fun onError (Lcoil/target/PoolableViewTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun onStart (Lcoil/target/PoolableViewTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun onSuccess (Lcoil/target/PoolableViewTarget;Landroid/graphics/drawable/Drawable;)V
-}
-
 public abstract interface class coil/target/Target {
-	public abstract fun onError (Landroid/graphics/drawable/Drawable;)V
-	public abstract fun onStart (Landroid/graphics/drawable/Drawable;)V
-	public abstract fun onSuccess (Landroid/graphics/drawable/Drawable;)V
-}
-
-public final class coil/target/Target$DefaultImpls {
-	public static fun onError (Lcoil/target/Target;Landroid/graphics/drawable/Drawable;)V
-	public static fun onStart (Lcoil/target/Target;Landroid/graphics/drawable/Drawable;)V
-	public static fun onSuccess (Lcoil/target/Target;Landroid/graphics/drawable/Drawable;)V
+	public fun onError (Landroid/graphics/drawable/Drawable;)V
+	public fun onStart (Landroid/graphics/drawable/Drawable;)V
+	public fun onSuccess (Landroid/graphics/drawable/Drawable;)V
 }
 
 public abstract interface class coil/target/ViewTarget : coil/target/Target {
 	public abstract fun getView ()Landroid/view/View;
-}
-
-public final class coil/target/ViewTarget$DefaultImpls {
-	public static fun onError (Lcoil/target/ViewTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun onStart (Lcoil/target/ViewTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun onSuccess (Lcoil/target/ViewTarget;Landroid/graphics/drawable/Drawable;)V
 }
 
 public final class coil/transform/BlurTransformation : coil/transform/Transformation {
@@ -863,12 +797,6 @@ public final class coil/transition/Transition$Companion {
 public abstract interface class coil/transition/TransitionTarget : coil/target/Target {
 	public abstract fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public abstract fun getView ()Landroid/view/View;
-}
-
-public final class coil/transition/TransitionTarget$DefaultImpls {
-	public static fun onError (Lcoil/transition/TransitionTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun onStart (Lcoil/transition/TransitionTarget;Landroid/graphics/drawable/Drawable;)V
-	public static fun onSuccess (Lcoil/transition/TransitionTarget;Landroid/graphics/drawable/Drawable;)V
 }
 
 public final class coil/util/CoilUtils {
