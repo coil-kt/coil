@@ -57,7 +57,7 @@ tasks.withType<KotlinCompile> {
 
 ## Image Loaders
 
-[`ImageLoader`](image_loaders.md)s are service classes that execute [`ImageRequest`](requests.md)s. `ImageLoader`s handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
+[`ImageLoader`](image_loaders.md)s are service classes that execute [`ImageRequest`](image_requests.md)s. `ImageLoader`s handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
@@ -72,7 +72,7 @@ It's recommended, though not required, to call [`shutdown`](../api/coil-base/coi
 
 ## Image Requests
 
-[`ImageRequest`](requests.md)s are value classes that are executed by [`ImageLoader`](image_loaders.md)s. They describe where an image should be loaded from, how it should be loaded, and any extra parameters. An `ImageLoader` has two methods that can execute a request:
+[`ImageRequest`](image_requests.md)s are value classes that are executed by [`ImageLoader`](image_loaders.md)s. They describe where an image should be loaded from, how it should be loaded, and any extra parameters. An `ImageLoader` has two methods that can execute a request:
 
 - `enqueue`: Enqueues the `ImageRequest` to be executed asynchronously on a background thread.
 - `execute`: Executes the `ImageRequest` in the current coroutine and returns an [`ImageResult`](../api/coil-base/coil/request/-image-result).

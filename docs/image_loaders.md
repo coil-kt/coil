@@ -1,6 +1,6 @@
 # Image Loaders
 
-[`ImageLoader`](image_loaders.md)s are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute [`Request`](requests.md)s. They handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
+`ImageLoader`s are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute [`ImageRequest`](image_requests.md)s. They handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)

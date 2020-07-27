@@ -37,7 +37,7 @@ nav:
   - 'Getting Started': getting_started.md
   - 'Migrating from Glide/Picasso': migrating.md
   - 'Image Loaders': image_loaders.md
-  - 'Requests': requests.md
+  - 'Image Requests': image_requests.md
   - 'Targets': targets.md
   - 'Transformations': transformations.md
   - 'Transitions': transitions.md
