@@ -15,8 +15,8 @@ import coil.fetch.DrawableFetcher
 import coil.fetch.FileFetcher
 import coil.fetch.HttpUrlFetcher
 import coil.fetch.ResourceUriFetcher
-import coil.interceptor.EngineInterceptor
-import coil.interceptor.RealInterceptorChain
+import coil.intercept.EngineInterceptor
+import coil.intercept.RealInterceptorChain
 import coil.map.FileUriMapper
 import coil.map.HttpUriMapper
 import coil.map.ResourceIntMapper

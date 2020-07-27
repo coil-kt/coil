@@ -6,7 +6,7 @@ package coil
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.Decoder
 import coil.fetch.Fetcher
-import coil.interceptor.Interceptor
+import coil.intercept.Interceptor
 import coil.map.Mapper
 import coil.map.MeasuredMapper
 import coil.util.MultiList

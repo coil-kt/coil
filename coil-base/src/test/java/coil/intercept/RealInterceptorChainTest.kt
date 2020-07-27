@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE", "TestFunctionName")
 
-package coil.interceptor
+package coil.intercept
 
 import android.content.Context
 import android.graphics.Bitmap
