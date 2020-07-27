@@ -1,4 +1,4 @@
-package coil.interceptor
+package coil.intercept
 
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi

@@ -1,4 +1,4 @@
-package coil.interceptor
+package coil.intercept
 
 import coil.EventListener
 import coil.annotation.ExperimentalCoilApi
