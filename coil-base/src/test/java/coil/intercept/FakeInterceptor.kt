@@ -1,4 +1,4 @@
-package coil.interceptor
+package coil.intercept
 
 import android.graphics.drawable.ColorDrawable
 import coil.annotation.ExperimentalCoilApi

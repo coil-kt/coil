@@ -9,7 +9,7 @@ public final class coil/ComponentRegistry$Builder {
 	public fun <init> (Lcoil/ComponentRegistry;)V
 	public final fun add (Lcoil/decode/Decoder;)Lcoil/ComponentRegistry$Builder;
 	public final fun add (Lcoil/fetch/Fetcher;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
-	public final fun add (Lcoil/interceptor/Interceptor;)Lcoil/ComponentRegistry$Builder;
+	public final fun add (Lcoil/intercept/Interceptor;)Lcoil/ComponentRegistry$Builder;
 	public final fun add (Lcoil/map/Mapper;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
 	public final fun add (Lcoil/map/MeasuredMapper;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
 	public final fun add (Ljava/lang/Class;Lcoil/fetch/Fetcher;)Lcoil/ComponentRegistry$Builder;
@@ -345,15 +345,15 @@ public final class coil/fetch/SourceResult : coil/fetch/FetchResult {
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class coil/interceptor/Interceptor {
-	public abstract fun intercept (Lcoil/interceptor/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public abstract interface class coil/intercept/Interceptor {
+	public abstract fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class coil/interceptor/Interceptor$Chain {
+public abstract interface class coil/intercept/Interceptor$Chain {
 	public abstract fun getRequest ()Lcoil/request/ImageRequest;
 	public abstract fun getSize ()Lcoil/size/Size;
 	public abstract fun proceed (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun withSize (Lcoil/size/Size;)Lcoil/interceptor/Interceptor$Chain;
+	public abstract fun withSize (Lcoil/size/Size;)Lcoil/intercept/Interceptor$Chain;
 }
 
 public abstract interface class coil/map/Mapper {
