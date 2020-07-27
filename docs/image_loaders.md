@@ -9,8 +9,6 @@ val imageLoader = ImageLoader.Builder(context)
     .build()
 ```
 
-Internally, this constructs a `RealImageLoader` using [ImageLoaderBuilder](../api/coil-base/coil/-image-loader-builder).
-
 Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
 
 It's recommended, though not required, to call [`shutdown`](../api/coil-base/coil/-image-loader/shutdown/) when you've finished using an image loader. This preemptively frees its memory and cleans up any observers. If you only create and use one `ImageLoader`, you do not need to shut it down as it will be freed when your app is killed.
@@ -52,10 +50,10 @@ For instance, you could inject a fake `ImageLoader` implementation which always 
 
 ```kotlin
 val fakeImageLoader = object : ImageLoader {
-    
+
     private val drawable = ColorDrawable(Color.BLACK)
 
-    private val disposable = object : RequestDisposable {
+    private val disposable = object : Disposable {
         override val isDisposed = true
         override fun dispose() {}
         override suspend fun await() {}
@@ -63,20 +61,29 @@ val fakeImageLoader = object : ImageLoader {
 
     override val defaults = DefaultRequestOptions()
 
-    override fun execute(request: LoadRequest): RequestDisposable {
+    // Optionally, you can add a custom fake memory cache implementation.
+    override val memoryCache get() = throw UnsupportedOperationException()
+
+    override val bitmapPool = BitmapPool(0)
+
+    override fun enqueue(request: ImageRequest): Disposable {
         // Always call onStart before onSuccess.
         request.target?.onStart(drawable)
         request.target?.onSuccess(drawable)
         return disposable
     }
 
-    override suspend fun execute(request: GetRequest): RequestResult {
-        return SuccessResult(drawable, DataSource.MEMORY_CACHE)
+    override suspend fun execute(request: ImageRequest): ImageResult {
+        return SuccessResult(
+            drawable = drawable,
+            request = request,
+            metadata = Metadata(
+                key = MemoryCache.Key(""),
+                isSampled = false,
+                dataSource = DataSource.MEMORY_CACHE
+            )
+        )
     }
-
-    override fun invalidate(key: String) {}
-
-    override fun clearMemory() {}
 
     override fun shutdown() {}
 }

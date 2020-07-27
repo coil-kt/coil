@@ -4,19 +4,19 @@ Coil's API is designed to be Kotlin-first. It leverages Kotlin language features
 
 Importantly, suspend functions cannot be implemented in Java. This means custom [Transformations](transformations.md), [Size Resolvers](../api/coil-base/coil.size/-size-resolver), [Fetchers](../image_pipeline/#fetchers), and [Decoders](../image_pipeline/#decoders) **must** be implemented in Kotlin.
 
-Despite these limitations, most of Coil's API is Java compatible. For instance, the syntax to launch a `LoadRequest` is almost the same in Java and Kotlin:
+Despite these limitations, most of Coil's API is Java compatible. For instance, the syntax to enqueue an `ImageRequest` is almost the same in Java and Kotlin:
 
 ```java
-LoadRequest request = LoadRequest.builder(context)
+ImageRequest request = new ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .crossfade(true)
     .target(imageView)
     .build();
-imageLoader.execute(request)
+imageLoader.enqueue(request)
 ```
 
 !!! Note
-    `ImageView.load` extension functions cannot be used from Java. Use the `LoadRequest.Builder` API instead.
+    `ImageView.load` extension functions cannot be used from Java. Use the `ImageRequest.Builder` API instead.
 
 `suspend` functions cannot be easily called from Java. Thus, to get an image synchronously you'll have to create a wrapper function to execute `GetRequest`s:
 
@@ -24,7 +24,7 @@ imageLoader.execute(request)
 @file:JvmName("ImageLoaders")
 
 @WorkerThread
-fun ImageLoader.executeBlocking(request: GetRequest): RequestResult {
+fun ImageLoader.executeBlocking(request: ImageRequest): ImageResult {
     return runBlocking { execute(request) }
 }
 ```
@@ -32,7 +32,7 @@ fun ImageLoader.executeBlocking(request: GetRequest): RequestResult {
 Then call the `ImageLoaders` function from Java:
 
 ```java
-GetRequest request = GetRequest.builder(context)
+ImageRequest request = ImageRequest.builder(context)
     .data("https://www.example.com/image.jpg")
     .size(1080, 1920)
     .build();

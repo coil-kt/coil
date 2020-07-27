@@ -2,19 +2,26 @@
 
 Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, TIFF, etc.)
 
-Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of three main parts: [Mappers](../api/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
+Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of four main parts: [Interceptors](../api/coil-base/coil.interceptor/-interceptor/), [Mappers](../api/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
 
 Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-base/coil/-component-registry):
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
     .componentRegistry {
+        add(CustomCacheInterceptor())
         add(ItemMapper())
         add(CronetFetcher())
         add(GifDecoder())
     }
     .build()
 ```
+
+## Interceptors
+
+Interceptors allow you to observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine.
+
+See [Interceptor](../api/coil-base/coil.intercept/-interceptor) for more information.
 
 ## Mappers
 
@@ -40,19 +47,14 @@ class ItemMapper : Mapper<Item, String> {
 After registering it when building our `ImageLoader` (see above), we can safely load an `Item`:
 
 ```kotlin
-val request = LoadRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data(item)
     .target(imageView)
     .build()
-imageLoader.execute(request)
+imageLoader.enqueue(request)
 ```
 
-If you want to know a request's size when mapping an object, you can implement [MeasuredMapper](../api/coil-base/coil.map/-measured-mapper) instead of [Mapper](../api/coil-base/coil.map/-mapper).
-
-!!! Note
-    `MeasuredMapper`s force the request to suspend until the size is measured. This can prevent setting placeholders and or cached drawables synchronously. Prefer extending `Mapper` if you do not need to know the request's size.
-
-See [Mapper](../api/coil-base/coil.map/-mapper) and [Measured Mapper](../api/coil-base/coil.map/-measured-mapper) for more information.
+See [Mapper](../api/coil-base/coil.map/-mapper) for more information.
 
 ## Fetchers
 
