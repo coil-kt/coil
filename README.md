@@ -48,7 +48,7 @@ imageView.load("https://www.example.com/image.jpg") {
 
 #### Image Loaders
 
-`imageView.load` uses the singleton `ImageLoader` to execute a `LoadRequest`. The singleton `ImageLoader` can be accessed using:
+`imageView.load` uses the singleton `ImageLoader` to enqueue an `ImageRequest`. The singleton `ImageLoader` can be accessed using:
 
 ```kotlin
 val imageLoader = Coil.imageLoader(context)
@@ -64,22 +64,22 @@ If you do not want the singleton `ImageLoader`, depend on `io.coil-kt:coil-base`
 
 #### Requests
 
-To load an image into a custom target, execute a `LoadRequest`:
+To load an image into a custom target, enqueue an `ImageRequest`:
 
 ```kotlin
-val request = LoadRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .target { drawable ->
         // Handle the result.
     }
     .build()
-imageLoader.execute(request)
+val disposable = imageLoader.enqueue(request)
 ```
 
-To get an image imperatively, execute a `GetRequest`:
+To load an image imperatively, execute an `ImageRequest`:
 
 ```kotlin
-val request = GetRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
