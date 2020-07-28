@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import coil.bitmap.BitmapPool
 import coil.decode.Options
-import coil.memory.StrongMemoryCache
+import coil.memory.MemoryCache
 import coil.size.Size
 import okio.BufferedSource
 
@@ -29,7 +29,7 @@ interface Fetcher<T : Any> {
     /**
      * Compute the memory cache key for [data].
      *
-     * Items with the same cache key will be treated as equivalent by the [StrongMemoryCache].
+     * Items with the same cache key will be treated as equivalent by the [MemoryCache].
      *
      * Returning null will prevent the result of [fetch] from being added to the memory cache.
      */
