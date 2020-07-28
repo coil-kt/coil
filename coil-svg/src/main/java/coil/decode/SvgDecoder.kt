@@ -86,7 +86,7 @@ class SvgDecoder(private val context: Context) : Decoder {
         )
     }
 
-    companion object {
+    private companion object {
         private const val MIME_TYPE_SVG = "image/svg+xml"
         private const val DEFAULT_SIZE = 512
     }
