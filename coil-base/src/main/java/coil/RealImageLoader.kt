@@ -160,7 +160,7 @@ internal class RealImageLoader(
             if (type == REQUEST_TYPE_ENQUEUE) request.lifecycle.awaitStarted()
 
             // Set the placeholder on the target.
-            val cached = request.placeholderKey
+            val cached = request.placeholderMemoryCacheKey
                 ?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
                 ?.bitmap?.toDrawable(request.context)
             targetDelegate.metadata = null
@@ -174,7 +174,7 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
-            val result = executeChain(request, type, size, eventListener)
+            val result = executeChain(request, type, size, eventListener, cached != null)
 
             // Set the result on the target.
             when (result) {
@@ -219,9 +219,11 @@ internal class RealImageLoader(
         request: ImageRequest,
         type: Int,
         size: Size,
-        eventListener: EventListener
+        eventListener: EventListener,
+        isPlaceholderMemoryCacheKeyPresent: Boolean
     ): ImageResult = withContext(request.dispatcher) {
-        RealInterceptorChain(request, type, interceptors, 0, request, size, eventListener).proceed(request)
+        RealInterceptorChain(request, type, interceptors, 0, request, size, eventListener,
+            isPlaceholderMemoryCacheKeyPresent).proceed(request)
     }
 
     private suspend inline fun onSuccess(

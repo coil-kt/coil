@@ -6,5 +6,5 @@ sealed class Screen {
 
     object List : Screen()
 
-    data class Detail(val image: Image, val placeholderKey: MemoryCache.Key?) : Screen()
+    data class Detail(val image: Image, val placeholder: MemoryCache.Key?) : Screen()
 }

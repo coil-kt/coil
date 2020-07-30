@@ -357,7 +357,7 @@ class RealImageLoaderTest {
         assertTrue(result is SuccessResult)
         val bitmap = (result.drawable as BitmapDrawable).bitmap
         assertNotNull(bitmap)
-        assertEquals(bitmap, imageLoader.memoryCache[result.metadata.key!!])
+        assertEquals(bitmap, imageLoader.memoryCache[result.metadata.memoryCacheKey!!])
     }
 
     @Test
@@ -369,8 +369,8 @@ class RealImageLoaderTest {
         runBlocking {
             suspendCancellableCoroutine<Unit> { continuation ->
                 val request = ImageRequest.Builder(context)
-                    .key(key)
-                    .placeholderKey(key)
+                    .memoryCacheKey(key)
+                    .placeholderMemoryCacheKey(key)
                     .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
                     .size(100, 100)
                     .precision(Precision.INEXACT)

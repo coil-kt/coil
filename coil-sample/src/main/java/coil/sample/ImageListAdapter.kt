@@ -45,7 +45,7 @@ class ImageListAdapter(
             }
 
             setOnClickListener {
-                setScreen(Screen.Detail(item, metadata?.key))
+                setScreen(Screen.Detail(item, metadata?.memoryCacheKey))
             }
         }
     }

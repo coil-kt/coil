@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                 binding.list.isVisible = false
                 binding.detail.isVisible = true
                 binding.detail.load(screen.image.uri) {
-                    placeholderKey(screen.placeholderKey)
+                    placeholderMemoryCacheKey(screen.placeholder)
                     parameters(screen.image.parameters)
                 }
             }

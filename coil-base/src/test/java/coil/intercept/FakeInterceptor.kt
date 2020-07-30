@@ -15,9 +15,10 @@ class FakeInterceptor : Interceptor {
             drawable = ColorDrawable(),
             request = chain.request,
             metadata = Metadata(
-                key = null,
+                memoryCacheKey = null,
                 isSampled = false,
-                dataSource = DataSource.MEMORY
+                dataSource = DataSource.MEMORY,
+                isPlaceholderMemoryCacheKeyPresent = true
             )
         )
     }
