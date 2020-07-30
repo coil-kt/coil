@@ -409,7 +409,7 @@ class ImageRequest private constructor(
             this.data = data
         }
 
-        @Deprecated("Replaced by memoryCacheKey(key).", ReplaceWith("memoryCacheKey(key)"))
+        @Deprecated("Replace with `memoryCacheKey(key)`.", ReplaceWith("memoryCacheKey(key)"))
         fun key(key: String?) = memoryCacheKey(key)
 
         /**
