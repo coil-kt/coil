@@ -100,7 +100,7 @@ internal class EngineInterceptor(
                         memoryCacheKey = key,
                         isSampled = value.isSampled,
                         dataSource = DataSource.MEMORY_CACHE,
-                        isPlaceholderMemoryCacheKeyPresent = chain.isPlaceholderMemoryCacheKeyPresent
+                        isPlaceholderMemoryCacheKeyPresent = chain.cached != null
                     )
                 )
             }
@@ -118,7 +118,7 @@ internal class EngineInterceptor(
                     memoryCacheKey = key.takeIf { isCached },
                     isSampled = isSampled,
                     dataSource = dataSource,
-                    isPlaceholderMemoryCacheKeyPresent = chain.isPlaceholderMemoryCacheKeyPresent
+                    isPlaceholderMemoryCacheKeyPresent = chain.cached != null
                 )
             )
         } catch (throwable: Throwable) {

@@ -149,8 +149,8 @@ class RealInterceptorChainTest {
             index = 0,
             request = request,
             size = PixelSize(100, 100),
-            eventListener = EventListener.NONE,
-            isPlaceholderMemoryCacheKeyPresent = false
+            cached = null,
+            eventListener = EventListener.NONE
         )
         return runBlocking { chain.proceed(request) }
     }
