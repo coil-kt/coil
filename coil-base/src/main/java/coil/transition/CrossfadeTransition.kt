@@ -50,7 +50,8 @@ class CrossfadeTransition @JvmOverloads constructor(
                     start = target.drawable,
                     end = result.drawable,
                     scale = (target.view as? ImageView)?.scale ?: Scale.FILL,
-                    durationMillis = durationMillis
+                    durationMillis = durationMillis,
+                    fadeStart = result !is SuccessResult || !result.metadata.isPlaceholderMemoryCacheKeyPresent
                 )
                 outerCrossfade = crossfade
                 crossfade.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {

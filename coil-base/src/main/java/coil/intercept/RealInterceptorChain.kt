@@ -1,5 +1,6 @@
 package coil.intercept
 
+import android.graphics.drawable.Drawable
 import coil.EventListener
 import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
@@ -15,6 +16,7 @@ internal class RealInterceptorChain(
     val index: Int,
     override val request: ImageRequest,
     override val size: Size,
+    val cached: Drawable?,
     val eventListener: EventListener
 ) : Interceptor.Chain {
 
@@ -51,5 +53,5 @@ internal class RealInterceptorChain(
         index: Int = this.index,
         request: ImageRequest = this.request,
         size: Size = this.size
-    ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, size, eventListener)
+    ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, size, cached, eventListener)
 }

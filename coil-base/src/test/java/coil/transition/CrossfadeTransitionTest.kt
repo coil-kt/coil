@@ -67,7 +67,12 @@ class CrossfadeTransitionTest {
                 result = SuccessResult(
                     drawable = drawable,
                     request = createRequest(context),
-                    metadata = Metadata(null, false, DataSource.MEMORY_CACHE)
+                    metadata = Metadata(
+                        memoryCacheKey = null,
+                        isSampled = false,
+                        dataSource = DataSource.MEMORY_CACHE,
+                        isPlaceholderMemoryCacheKeyPresent = false
+                    )
                 )
             )
         }
@@ -88,7 +93,6 @@ class CrossfadeTransitionTest {
                         onSuccessCalled = true
 
                         assertTrue(result is CrossfadeDrawable)
-                        assertEquals(drawable, result.end)
 
                         // Stop the transition early to simulate the end of the animation.
                         result.stop()
@@ -97,7 +101,12 @@ class CrossfadeTransitionTest {
                 result = SuccessResult(
                     drawable = drawable,
                     request = createRequest(context),
-                    metadata = Metadata(null, false, DataSource.DISK)
+                    metadata = Metadata(
+                        memoryCacheKey = null,
+                        isSampled = false,
+                        dataSource = DataSource.DISK,
+                        isPlaceholderMemoryCacheKeyPresent = false
+                    )
                 )
             )
         }
@@ -127,7 +136,12 @@ class CrossfadeTransitionTest {
                 result = SuccessResult(
                     drawable = drawable,
                     request = createRequest(context),
-                    metadata = Metadata(null, false, DataSource.NETWORK)
+                    metadata = Metadata(
+                        memoryCacheKey = null,
+                        isSampled = false,
+                        dataSource = DataSource.NETWORK,
+                        isPlaceholderMemoryCacheKeyPresent = false
+                    )
                 )
             )
         }
@@ -146,7 +160,6 @@ class CrossfadeTransitionTest {
                         onSuccessCalled = true
 
                         assertTrue(error is CrossfadeDrawable)
-                        assertEquals(drawable, error.end)
 
                         // Stop the animation early to simulate the end of the animation.
                         error.stop()

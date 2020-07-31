@@ -1,6 +1,7 @@
 package coil
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.MainThread
 import coil.annotation.ExperimentalCoilApi
@@ -160,7 +161,7 @@ internal class RealImageLoader(
             if (type == REQUEST_TYPE_ENQUEUE) request.lifecycle.awaitStarted()
 
             // Set the placeholder on the target.
-            val cached = request.placeholderKey
+            val cached = request.placeholderMemoryCacheKey
                 ?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
                 ?.bitmap?.toDrawable(request.context)
             targetDelegate.metadata = null
@@ -174,7 +175,7 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
-            val result = executeChain(request, type, size, eventListener)
+            val result = executeChain(request, type, size, cached, eventListener)
 
             // Set the result on the target.
             when (result) {
@@ -219,9 +220,10 @@ internal class RealImageLoader(
         request: ImageRequest,
         type: Int,
         size: Size,
+        cached: Drawable?,
         eventListener: EventListener
     ): ImageResult = withContext(request.dispatcher) {
-        RealInterceptorChain(request, type, interceptors, 0, request, size, eventListener).proceed(request)
+        RealInterceptorChain(request, type, interceptors, 0, request, size, cached, eventListener).proceed(request)
     }
 
     private suspend inline fun onSuccess(

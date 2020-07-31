@@ -81,7 +81,7 @@ internal class EngineInterceptor(
 
             // Check the memory cache.
             val fetcher = request.fetcher(mappedData) ?: registry.requireFetcher(mappedData)
-            val key = request.key ?: computeKey(request, mappedData, fetcher, size)
+            val key = request.memoryCacheKey ?: computeKey(request, mappedData, fetcher, size)
             val value = takeIf(request.memoryCachePolicy.readEnabled) {
                 key?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
             }
@@ -96,7 +96,12 @@ internal class EngineInterceptor(
                 return SuccessResult(
                     drawable = value.bitmap.toDrawable(context),
                     request = request,
-                    metadata = Metadata(key, value.isSampled, DataSource.MEMORY_CACHE)
+                    metadata = Metadata(
+                        memoryCacheKey = key,
+                        isSampled = value.isSampled,
+                        dataSource = DataSource.MEMORY_CACHE,
+                        isPlaceholderMemoryCacheKeyPresent = chain.cached != null
+                    )
                 )
             }
 
@@ -109,7 +114,12 @@ internal class EngineInterceptor(
             return SuccessResult(
                 drawable = drawable,
                 request = request,
-                metadata = Metadata(key.takeIf { isCached }, isSampled, dataSource)
+                metadata = Metadata(
+                    memoryCacheKey = key.takeIf { isCached },
+                    isSampled = isSampled,
+                    dataSource = dataSource,
+                    isPlaceholderMemoryCacheKeyPresent = chain.cached != null
+                )
             )
         } catch (throwable: Throwable) {
             if (throwable is CancellationException) {
