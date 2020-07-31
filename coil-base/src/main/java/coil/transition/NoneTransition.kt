@@ -11,7 +11,7 @@ import coil.request.SuccessResult
 @ExperimentalCoilApi
 internal object NoneTransition : Transition {
 
-    override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
+    override suspend fun transition(target: TransitionTarget, result: ImageResult) {
         when (result) {
             is SuccessResult -> target.onSuccess(result.drawable)
             is ErrorResult -> target.onError(result.drawable)

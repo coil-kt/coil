@@ -13,7 +13,7 @@ import coil.transition.TransitionTarget
 /** A [Target] that handles setting images on an [ImageView]. */
 open class ImageViewTarget(
     override val view: ImageView
-) : PoolableViewTarget<ImageView>, TransitionTarget<ImageView>, DefaultLifecycleObserver {
+) : PoolableViewTarget<ImageView>, TransitionTarget, DefaultLifecycleObserver {
 
     private var isStarted = false
 
