@@ -12,7 +12,7 @@ import coil.fetch.Fetcher
 import coil.fetch.SourceResult
 import coil.map.Mapper
 import coil.request.ImageRequest
-import coil.request.Metadata
+import coil.request.ImageResult
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.Transformation
@@ -153,7 +153,7 @@ interface EventListener : ImageRequest.Listener {
      * @see ImageRequest.Listener.onSuccess
      */
     @MainThread
-    override fun onSuccess(request: ImageRequest, metadata: Metadata) {}
+    override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
 
     /**
      * @see ImageRequest.Listener.onCancel

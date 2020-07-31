@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Parcelable
 import coil.ImageLoader
 import coil.request.ImageRequest
+import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Size
 import kotlinx.android.parcel.Parcelize
@@ -52,7 +53,7 @@ interface MemoryCache {
         /**
          * A complex memory cache key. Instances cannot be created directly as they often cannot be created
          * synchronously. Instead they are created by an [ImageLoader]'s image pipeline and are returned as part
-         * of a successful image request's [Metadata].
+         * of a successful image request's [ImageResult.Metadata].
          *
          * A request's metadata is accessible through [ImageRequest.Listener.onSuccess] and [SuccessResult].
          *
