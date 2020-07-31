@@ -66,11 +66,11 @@ class ImageRequest private constructor(
     /** @see Builder.listener */
     val listener: Listener?,
 
-    /** @see Builder.key */
-    val key: MemoryCache.Key?,
+    /** @see Builder.memoryCacheKey */
+    val memoryCacheKey: MemoryCache.Key?,
 
-    /** @see Builder.placeholderKey */
-    val placeholderKey: MemoryCache.Key?,
+    /** @see Builder.placeholderMemoryCacheKey */
+    val placeholderMemoryCacheKey: MemoryCache.Key?,
 
     /** @see Builder.colorSpace */
     val colorSpace: ColorSpace?,
@@ -159,8 +159,8 @@ class ImageRequest private constructor(
             data == other.data &&
             target == other.target &&
             listener == other.listener &&
-            key == other.key &&
-            placeholderKey == other.placeholderKey &&
+            memoryCacheKey == other.memoryCacheKey &&
+            placeholderMemoryCacheKey == other.placeholderMemoryCacheKey &&
             colorSpace == other.colorSpace &&
             fetcher == other.fetcher &&
             decoder == other.decoder &&
@@ -194,8 +194,8 @@ class ImageRequest private constructor(
         result = 31 * result + data.hashCode()
         result = 31 * result + (target?.hashCode() ?: 0)
         result = 31 * result + (listener?.hashCode() ?: 0)
-        result = 31 * result + (key?.hashCode() ?: 0)
-        result = 31 * result + (placeholderKey?.hashCode() ?: 0)
+        result = 31 * result + (memoryCacheKey?.hashCode() ?: 0)
+        result = 31 * result + (placeholderMemoryCacheKey?.hashCode() ?: 0)
         result = 31 * result + (colorSpace?.hashCode() ?: 0)
         result = 31 * result + (fetcher?.hashCode() ?: 0)
         result = 31 * result + (decoder?.hashCode() ?: 0)
@@ -226,12 +226,13 @@ class ImageRequest private constructor(
     }
 
     override fun toString(): String {
-        return "ImageRequest(context=$context, data=$data, target=$target, listener=$listener, key=$key, " +
-            "placeholderKey=$placeholderKey, colorSpace=$colorSpace, fetcher=$fetcher, decoder=$decoder, " +
-            "transformations=$transformations, headers=$headers, parameters=$parameters, lifecycle=$lifecycle, " +
-            "sizeResolver=$sizeResolver, scale=$scale, dispatcher=$dispatcher, transition=$transition, " +
-            "precision=$precision, bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, " +
-            "allowRgb565=$allowRgb565, memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
+        return "ImageRequest(context=$context, data=$data, target=$target, listener=$listener, " +
+            "memoryCacheKey=$memoryCacheKey, placeholderMemoryCacheKey=$placeholderMemoryCacheKey, " +
+            "colorSpace=$colorSpace, fetcher=$fetcher, decoder=$decoder, transformations=$transformations, " +
+            "headers=$headers, parameters=$parameters, lifecycle=$lifecycle, sizeResolver=$sizeResolver, " +
+            "scale=$scale, dispatcher=$dispatcher, transition=$transition, precision=$precision, " +
+            "bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
+            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
             "networkCachePolicy=$networkCachePolicy, placeholderResId=$placeholderResId, " +
             "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
             "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable, defined=$defined, defaults=$defaults)"
@@ -275,8 +276,8 @@ class ImageRequest private constructor(
 
         private var target: Target?
         private var listener: Listener?
-        private var key: MemoryCache.Key?
-        private var placeholderKey: MemoryCache.Key?
+        private var memoryCacheKey: MemoryCache.Key?
+        private var placeholderMemoryCacheKey: MemoryCache.Key?
         private var colorSpace: ColorSpace? = null
         private var fetcher: Pair<Fetcher<*>, Class<*>>?
         private var decoder: Decoder?
@@ -316,8 +317,8 @@ class ImageRequest private constructor(
             data = null
             target = null
             listener = null
-            key = null
-            placeholderKey = null
+            memoryCacheKey = null
+            placeholderMemoryCacheKey = null
             if (SDK_INT >= 26) colorSpace = null
             fetcher = null
             decoder = null
@@ -354,8 +355,8 @@ class ImageRequest private constructor(
             data = request.data
             target = request.target
             listener = request.listener
-            key = request.key
-            placeholderKey = request.placeholderKey
+            memoryCacheKey = request.memoryCacheKey
+            placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
             if (SDK_INT >= 26) colorSpace = request.colorSpace
             fetcher = request.fetcher
             decoder = request.decoder
@@ -409,20 +410,23 @@ class ImageRequest private constructor(
             this.data = data
         }
 
-        /**
-         * Set the memory cache key for this request.
-         *
-         * If this is null or is not set the [ImageLoader] will compute a memory cache key.
-         */
-        fun key(key: String?) = key(key?.let { MemoryCache.Key(it) })
+        @Deprecated("Replace with `memoryCacheKey(key)`.", ReplaceWith("memoryCacheKey(key)"))
+        fun key(key: String?) = memoryCacheKey(key)
 
         /**
          * Set the memory cache key for this request.
          *
          * If this is null or is not set the [ImageLoader] will compute a memory cache key.
          */
-        fun key(key: MemoryCache.Key?) = apply {
-            this.key = key
+        fun memoryCacheKey(key: String?) = memoryCacheKey(key?.let { MemoryCache.Key(it) })
+
+        /**
+         * Set the memory cache key for this request.
+         *
+         * If this is null or is not set the [ImageLoader] will compute a memory cache key.
+         */
+        fun memoryCacheKey(key: MemoryCache.Key?) = apply {
+            this.memoryCacheKey = key
         }
 
         /**
@@ -666,8 +670,8 @@ class ImageRequest private constructor(
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
-        fun placeholderKey(key: MemoryCache.Key?) = apply {
-            this.placeholderKey = key
+        fun placeholderMemoryCacheKey(key: MemoryCache.Key?) = apply {
+            this.placeholderMemoryCacheKey = key
         }
 
         /**
@@ -798,8 +802,8 @@ class ImageRequest private constructor(
                 data = data ?: NullRequestData,
                 target = target,
                 listener = listener,
-                key = key,
-                placeholderKey = placeholderKey,
+                memoryCacheKey = memoryCacheKey,
+                placeholderMemoryCacheKey = placeholderMemoryCacheKey,
                 colorSpace = colorSpace,
                 fetcher = fetcher,
                 decoder = decoder,

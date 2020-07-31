@@ -95,7 +95,7 @@ class RealInterceptorChainTest {
         var request = initialRequest
         val interceptor1 = Interceptor { chain ->
             assertSame(request, chain.request)
-            request = chain.request.newBuilder().key(MemoryCache.Key("test")).build()
+            request = chain.request.newBuilder().memoryCacheKey(MemoryCache.Key("test")).build()
             chain.proceed(request)
         }
         val interceptor2 = Interceptor { chain ->
@@ -149,6 +149,7 @@ class RealInterceptorChainTest {
             index = 0,
             request = request,
             size = PixelSize(100, 100),
+            cached = null,
             eventListener = EventListener.NONE
         )
         return runBlocking { chain.proceed(request) }

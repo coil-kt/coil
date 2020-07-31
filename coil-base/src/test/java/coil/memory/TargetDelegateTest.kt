@@ -82,7 +82,12 @@ class TargetDelegateTest {
             val result = SuccessResult(
                 drawable = bitmap.toDrawable(context),
                 request = request,
-                metadata = Metadata(null, false, DataSource.DISK)
+                metadata = Metadata(
+                    memoryCacheKey = null,
+                    isSampled = false,
+                    dataSource = DataSource.DISK,
+                    isPlaceholderMemoryCacheKeyPresent = false
+                )
             )
             delegate.success(result)
             assertFalse(counter.isInvalid(bitmap))
@@ -99,7 +104,12 @@ class TargetDelegateTest {
             val result = SuccessResult(
                 drawable = bitmap.toDrawable(context),
                 request = request,
-                metadata = Metadata(null, false, DataSource.DISK)
+                metadata = Metadata(
+                    memoryCacheKey = null,
+                    isSampled = false,
+                    dataSource = DataSource.DISK,
+                    isPlaceholderMemoryCacheKeyPresent = false
+                )
             )
             delegate.success(result)
             assertTrue(counter.isInvalid(bitmap))
@@ -127,7 +137,12 @@ class TargetDelegateTest {
             val result = SuccessResult(
                 drawable = bitmap.toDrawable(context),
                 request = request,
-                metadata = Metadata(null, false, DataSource.DISK)
+                metadata = Metadata(
+                    memoryCacheKey = null,
+                    isSampled = false,
+                    dataSource = DataSource.DISK,
+                    isPlaceholderMemoryCacheKeyPresent = false
+                )
             )
             delegate.success(result)
             assertTrue(target.success)
@@ -165,7 +180,12 @@ class TargetDelegateTest {
             val result = SuccessResult(
                 drawable = bitmap.toDrawable(context),
                 request = request,
-                metadata = Metadata(null, false, DataSource.DISK)
+                metadata = Metadata(
+                    memoryCacheKey = null,
+                    isSampled = false,
+                    dataSource = DataSource.DISK,
+                    isPlaceholderMemoryCacheKeyPresent = false
+                )
             )
             delegate.success(result)
             assertFalse(counter.isInvalid(bitmap))
@@ -200,7 +220,12 @@ class TargetDelegateTest {
             val result = SuccessResult(
                 drawable = bitmap.toDrawable(context),
                 request = request.newBuilder().transition(transition).build(),
-                metadata = Metadata(null, false, DataSource.DISK)
+                metadata = Metadata(
+                    memoryCacheKey = null,
+                    isSampled = false,
+                    dataSource = DataSource.DISK,
+                    isPlaceholderMemoryCacheKeyPresent = false
+                )
             )
             delegate.success(result)
 
