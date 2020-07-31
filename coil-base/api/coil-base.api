@@ -897,8 +897,9 @@ public abstract interface class coil/transition/Transition {
 public final class coil/transition/Transition$Companion {
 }
 
-public abstract interface class coil/transition/TransitionTarget : coil/target/ViewTarget {
+public abstract interface class coil/transition/TransitionTarget : coil/target/Target {
 	public abstract fun getDrawable ()Landroid/graphics/drawable/Drawable;
+	public abstract fun getView ()Landroid/view/View;
 }
 
 public final class coil/transition/TransitionTarget$DefaultImpls {
