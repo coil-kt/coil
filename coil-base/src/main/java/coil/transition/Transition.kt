@@ -28,7 +28,7 @@ interface Transition {
      * @param result The result of the image request.
      */
     @MainThread
-    suspend fun transition(target: TransitionTarget<*>, result: ImageResult)
+    suspend fun transition(target: TransitionTarget, result: ImageResult)
 
     companion object {
         @JvmField val NONE: Transition = NoneTransition
