@@ -27,7 +27,7 @@ import coil.memory.MemoryCache
 import coil.memory.StrongMemoryCache
 import coil.memory.TargetDelegate
 import coil.memory.ViewTargetRequestManager
-import coil.request.Metadata
+import coil.request.ImageResult
 import coil.request.Parameters
 import coil.size.Scale
 import coil.size.Size
@@ -165,7 +165,7 @@ internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
 
 internal inline val CoroutineContext.job: Job get() = get(Job)!!
 
-internal var TargetDelegate.metadata: Metadata?
+internal var TargetDelegate.metadata: ImageResult.Metadata?
     get() = (target as? ViewTarget<*>)?.view?.requestManager?.metadata
     set(value) {
         (target as? ViewTarget<*>)?.view?.requestManager?.metadata = value

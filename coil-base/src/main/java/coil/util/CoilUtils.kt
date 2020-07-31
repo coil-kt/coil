@@ -3,7 +3,7 @@ package coil.util
 import android.content.Context
 import android.view.View
 import coil.request.Disposable
-import coil.request.Metadata
+import coil.request.ImageResult
 import okhttp3.Cache
 
 /** Public utility methods for Coil. */
@@ -30,7 +30,7 @@ object CoilUtils {
 
     /** Get the metadata of the successful request attached to this view. */
     @JvmStatic
-    fun metadata(view: View): Metadata? {
+    fun metadata(view: View): ImageResult.Metadata? {
         return view.requestManager.metadata
     }
 }

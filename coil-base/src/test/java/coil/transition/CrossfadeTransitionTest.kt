@@ -10,7 +10,7 @@ import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
-import coil.request.Metadata
+import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
 import coil.util.createRequest
 import coil.util.createTestMainDispatcher

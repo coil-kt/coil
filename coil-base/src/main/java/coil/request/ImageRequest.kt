@@ -49,7 +49,7 @@ import okhttp3.HttpUrl
 import java.io.File
 
 /**
- * An immutable data object that represents a request for an image.
+ * An immutable value object that represents a request for an image.
  *
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
@@ -253,7 +253,7 @@ class ImageRequest private constructor(
          * Called if the request completes successfully.
          */
         @MainThread
-        fun onSuccess(request: ImageRequest, metadata: Metadata) {}
+        fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
 
         /**
          * Called if the request is cancelled.
@@ -436,12 +436,12 @@ class ImageRequest private constructor(
             crossinline onStart: (request: ImageRequest) -> Unit = {},
             crossinline onCancel: (request: ImageRequest) -> Unit = {},
             crossinline onError: (request: ImageRequest, throwable: Throwable) -> Unit = { _, _ -> },
-            crossinline onSuccess: (request: ImageRequest, metadata: Metadata) -> Unit = { _, _ -> }
+            crossinline onSuccess: (request: ImageRequest, metadata: ImageResult.Metadata) -> Unit = { _, _ -> }
         ) = listener(object : Listener {
             override fun onStart(request: ImageRequest) = onStart(request)
             override fun onCancel(request: ImageRequest) = onCancel(request)
             override fun onError(request: ImageRequest, throwable: Throwable) = onError(request, throwable)
-            override fun onSuccess(request: ImageRequest, metadata: Metadata) = onSuccess(request, metadata)
+            override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) = onSuccess(request, metadata)
         })
 
         /**

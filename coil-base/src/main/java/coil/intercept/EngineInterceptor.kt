@@ -23,7 +23,7 @@ import coil.memory.StrongMemoryCache
 import coil.memory.WeakMemoryCache
 import coil.request.ImageRequest
 import coil.request.ImageResult
-import coil.request.Metadata
+import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
 import coil.size.OriginalSize
 import coil.size.PixelSize

@@ -4,7 +4,7 @@ import android.graphics.drawable.ColorDrawable
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.request.ImageResult
-import coil.request.Metadata
+import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
 
 @OptIn(ExperimentalCoilApi::class)

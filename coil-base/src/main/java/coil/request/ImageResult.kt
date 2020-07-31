@@ -3,6 +3,7 @@ package coil.request
 import android.graphics.drawable.Drawable
 import coil.ImageLoader
 import coil.decode.DataSource
+import coil.memory.MemoryCache
 
 /**
  * Represents the result of an image request.
@@ -10,8 +11,26 @@ import coil.decode.DataSource
  * @see ImageLoader.execute
  */
 sealed class ImageResult {
+
     abstract val drawable: Drawable?
     abstract val request: ImageRequest
+
+    /**
+     * Supplemental information about a successful image request.
+     *
+     * @param memoryCacheKey The cache key for the image in the memory cache.
+     *  It is null if the image was not written to the memory cache.
+     * @param isSampled True if [drawable] is sampled (i.e. loaded into memory at less than its original size).
+     * @param dataSource The data source that the image was loaded from.
+     * @param isPlaceholderMemoryCacheKeyPresent True if the request's [ImageRequest.placeholderMemoryCacheKey] was
+     *  present in the memory cache and was set as the placeholder.
+     */
+    data class Metadata(
+        val memoryCacheKey: MemoryCache.Key?,
+        val isSampled: Boolean,
+        val dataSource: DataSource,
+        val isPlaceholderMemoryCacheKeyPresent: Boolean
+    )
 }
 
 /**
@@ -27,10 +46,7 @@ data class SuccessResult(
     val metadata: Metadata
 ) : ImageResult() {
 
-    @Deprecated(
-        message = "Moved to Metadata.",
-        replaceWith = ReplaceWith("metadata.dataSource")
-    )
+    @Deprecated("Moved to Metadata.", ReplaceWith("metadata.dataSource"))
     val source: DataSource get() = metadata.dataSource
 }
 

@@ -30,7 +30,7 @@ public abstract interface class coil/EventListener : coil/request/ImageRequest$L
 	public abstract fun onCancel (Lcoil/request/ImageRequest;)V
 	public abstract fun onError (Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public abstract fun onStart (Lcoil/request/ImageRequest;)V
-	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
+	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
 	public abstract fun resolveSizeEnd (Lcoil/request/ImageRequest;Lcoil/size/Size;)V
 	public abstract fun resolveSizeStart (Lcoil/request/ImageRequest;)V
 	public abstract fun transformEnd (Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
@@ -52,7 +52,7 @@ public final class coil/EventListener$DefaultImpls {
 	public static fun onCancel (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
 	public static fun onError (Lcoil/EventListener;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public static fun onStart (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
-	public static fun onSuccess (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
+	public static fun onSuccess (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
 	public static fun resolveSizeEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/size/Size;)V
 	public static fun resolveSizeStart (Lcoil/EventListener;Lcoil/request/ImageRequest;)V
 	public static fun transformEnd (Lcoil/EventListener;Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
@@ -582,14 +582,14 @@ public abstract interface class coil/request/ImageRequest$Listener {
 	public abstract fun onCancel (Lcoil/request/ImageRequest;)V
 	public abstract fun onError (Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public abstract fun onStart (Lcoil/request/ImageRequest;)V
-	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
+	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
 }
 
 public final class coil/request/ImageRequest$Listener$DefaultImpls {
 	public static fun onCancel (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;)V
 	public static fun onError (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
 	public static fun onStart (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;)V
-	public static fun onSuccess (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
+	public static fun onSuccess (Lcoil/request/ImageRequest$Listener;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
 }
 
 public abstract class coil/request/ImageResult {
@@ -597,14 +597,14 @@ public abstract class coil/request/ImageResult {
 	public abstract fun getRequest ()Lcoil/request/ImageRequest;
 }
 
-public final class coil/request/Metadata {
+public final class coil/request/ImageResult$Metadata {
 	public fun <init> (Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;Z)V
 	public final fun component1 ()Lcoil/memory/MemoryCache$Key;
 	public final fun component2 ()Z
 	public final fun component3 ()Lcoil/decode/DataSource;
 	public final fun component4 ()Z
-	public final fun copy (Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;Z)Lcoil/request/Metadata;
-	public static synthetic fun copy$default (Lcoil/request/Metadata;Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;ZILjava/lang/Object;)Lcoil/request/Metadata;
+	public final fun copy (Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;Z)Lcoil/request/ImageResult$Metadata;
+	public static synthetic fun copy$default (Lcoil/request/ImageResult$Metadata;Lcoil/memory/MemoryCache$Key;ZLcoil/decode/DataSource;ZILjava/lang/Object;)Lcoil/request/ImageResult$Metadata;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDataSource ()Lcoil/decode/DataSource;
 	public final fun getMemoryCacheKey ()Lcoil/memory/MemoryCache$Key;
@@ -675,15 +675,15 @@ public final class coil/request/ParametersKt {
 }
 
 public final class coil/request/SuccessResult : coil/request/ImageResult {
-	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/request/Metadata;)V
+	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
 	public final fun component1 ()Landroid/graphics/drawable/Drawable;
 	public final fun component2 ()Lcoil/request/ImageRequest;
-	public final fun component3 ()Lcoil/request/Metadata;
-	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/request/Metadata;)Lcoil/request/SuccessResult;
-	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/request/Metadata;ILjava/lang/Object;)Lcoil/request/SuccessResult;
+	public final fun component3 ()Lcoil/request/ImageResult$Metadata;
+	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)Lcoil/request/SuccessResult;
+	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;ILjava/lang/Object;)Lcoil/request/SuccessResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
-	public final fun getMetadata ()Lcoil/request/Metadata;
+	public final fun getMetadata ()Lcoil/request/ImageResult$Metadata;
 	public fun getRequest ()Lcoil/request/ImageRequest;
 	public final fun getSource ()Lcoil/decode/DataSource;
 	public fun hashCode ()I
@@ -912,7 +912,7 @@ public final class coil/util/CoilUtils {
 	public static final field INSTANCE Lcoil/util/CoilUtils;
 	public static final fun clear (Landroid/view/View;)V
 	public static final fun createDefaultCache (Landroid/content/Context;)Lokhttp3/Cache;
-	public static final fun metadata (Landroid/view/View;)Lcoil/request/Metadata;
+	public static final fun metadata (Landroid/view/View;)Lcoil/request/ImageResult$Metadata;
 }
 
 public final class coil/util/DebugLogger : coil/util/Logger {
