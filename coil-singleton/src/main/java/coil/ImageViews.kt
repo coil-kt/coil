@@ -10,7 +10,7 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import coil.request.Disposable
 import coil.request.ImageRequest
-import coil.request.Metadata
+import coil.request.ImageResult
 import coil.util.CoilUtils
 import okhttp3.HttpUrl
 import java.io.File
@@ -112,5 +112,5 @@ fun ImageView.clear() {
 /**
  * Get the metadata of the successful request attached to this view.
  */
-val ImageView.metadata: Metadata?
+val ImageView.metadata: ImageResult.Metadata?
     @JvmName("metadata") get() = CoilUtils.metadata(this)

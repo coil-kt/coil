@@ -11,7 +11,7 @@ import coil.bitmap.FakeBitmapPool
 import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageResult
-import coil.request.Metadata
+import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
