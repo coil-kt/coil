@@ -4,13 +4,17 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import coil.annotation.ExperimentalCoilApi
 import coil.target.Target
-import coil.target.ViewTarget
 
 /**
  * A [Target] that supports applying [Transition]s.
  */
 @ExperimentalCoilApi
-interface TransitionTarget<T : View> : ViewTarget<T> {
+interface TransitionTarget : Target {
+
+    /**
+     * The [View] used by this [Target].
+     */
+    val view: View
 
     /**
      * The [view]'s current [Drawable].

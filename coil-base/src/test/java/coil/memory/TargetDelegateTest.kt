@@ -210,7 +210,7 @@ class TargetDelegateTest {
             val bitmap = createBitmap()
             var isRunning = true
             val transition = object : Transition {
-                override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
+                override suspend fun transition(target: TransitionTarget, result: ImageResult) {
                     assertFalse(initialBitmap in pool.bitmaps)
                     delay(100) // Simulate an animation.
                     assertFalse(initialBitmap in pool.bitmaps)

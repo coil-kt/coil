@@ -166,7 +166,7 @@ private suspend inline fun Target.onSuccess(
         return
     }
 
-    if (this !is TransitionTarget<*>) {
+    if (this !is TransitionTarget) {
         logger?.log(TAG, Log.DEBUG) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
@@ -191,7 +191,7 @@ private suspend inline fun Target.onError(
         return
     }
 
-    if (this !is TransitionTarget<*>) {
+    if (this !is TransitionTarget) {
         logger?.log(TAG, Log.DEBUG) {
             "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
         }
