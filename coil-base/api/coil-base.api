@@ -506,10 +506,10 @@ public final class coil/request/ImageRequest$Builder {
 }
 
 public abstract interface class coil/request/ImageRequest$Listener {
-	public abstract fun onCancel (Lcoil/request/ImageRequest;)V
-	public abstract fun onError (Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
-	public abstract fun onStart (Lcoil/request/ImageRequest;)V
-	public abstract fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
+	public fun onCancel (Lcoil/request/ImageRequest;)V
+	public fun onError (Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
+	public fun onStart (Lcoil/request/ImageRequest;)V
+	public fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
 }
 
 public abstract class coil/request/ImageResult {
