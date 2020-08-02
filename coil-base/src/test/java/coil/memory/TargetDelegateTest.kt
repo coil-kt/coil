@@ -241,9 +241,9 @@ class TargetDelegateTest {
     }
 
     @Suppress("TestFunctionName")
-    private inline fun Transition(crossinline block: suspend (TransitionTarget<*>, ImageResult) -> Unit): Transition {
+    private inline fun Transition(crossinline block: suspend (TransitionTarget, ImageResult) -> Unit): Transition {
         return object : Transition {
-            override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) = block(target, result)
+            override suspend fun transition(target: TransitionTarget, result: ImageResult) = block(target, result)
         }
     }
 }

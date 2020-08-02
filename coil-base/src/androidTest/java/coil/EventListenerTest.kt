@@ -117,7 +117,7 @@ class EventListenerTest {
             imageLoader.testEnqueue {
                 data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
                 transition(object : Transition {
-                    override suspend fun transition(target: TransitionTarget<*>, result: ImageResult) {
+                    override suspend fun transition(target: TransitionTarget, result: ImageResult) {
                         transitionIsCalled = true
                         when (result) {
                             is SuccessResult -> target.onSuccess(result.drawable)
