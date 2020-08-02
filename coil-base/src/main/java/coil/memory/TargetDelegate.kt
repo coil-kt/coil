@@ -167,8 +167,11 @@ private suspend inline fun Target.onSuccess(
     }
 
     if (this !is TransitionTarget) {
-        logger?.log(TAG, Log.DEBUG) {
-            "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
+        // Only log if the transition was set explicitly.
+        if (result.request.defined.transition != null) {
+            logger?.log(TAG, Log.DEBUG) {
+                "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
+            }
         }
         onSuccess(result.drawable)
         return
@@ -192,8 +195,11 @@ private suspend inline fun Target.onError(
     }
 
     if (this !is TransitionTarget) {
-        logger?.log(TAG, Log.DEBUG) {
-            "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
+        // Only log if the transition was set explicitly.
+        if (result.request.defined.transition != null) {
+            logger?.log(TAG, Log.DEBUG) {
+                "Ignoring '$transition' as '$this' does not implement coil.transition.TransitionTarget."
+            }
         }
         onError(result.drawable)
         return
