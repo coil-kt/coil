@@ -19,7 +19,9 @@ fun crossCorrelation(x: IntArray, y: IntArray): Double {
     val squaredVariance = sqrt(xVar * yVar)
 
     // Handle this case explicitly to avoid dividing by zero.
-    if (squaredVariance == 0.0) return 1.0
+    if (squaredVariance == 0.0) {
+        return if (xVar == yVar) 1.0 else -1.0
+    }
 
     val xAvg = x.average()
     val yAvg = y.average()
