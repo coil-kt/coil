@@ -104,7 +104,7 @@ internal class RealImageLoader(
         // Decoders
         .add(BitmapFactoryDecoder(context))
         .build()
-    private val interceptors = registry.interceptors + EngineInterceptor(registry, bitmapPool,
+    private val interceptors = registry.interceptors + EngineInterceptor(registry, bitmapPool, referenceCounter,
         strongMemoryCache, weakMemoryCache, requestService, systemCallbacks, drawableDecoder, logger)
     private val isShutdown = AtomicBoolean(false)
 
@@ -175,7 +175,7 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
-            val result = executeChain(request, type, size, cached, eventListener)
+            val result = executeChain(request, type, size, cached, targetDelegate.invalidate, eventListener)
 
             // Set the result on the target.
             when (result) {
@@ -221,9 +221,10 @@ internal class RealImageLoader(
         type: Int,
         size: Size,
         cached: Drawable?,
+        invalidate: Boolean,
         eventListener: EventListener
     ): ImageResult = withContext(request.dispatcher) {
-        RealInterceptorChain(request, type, interceptors, 0, request, size, cached, eventListener).proceed(request)
+        RealInterceptorChain(request, type, interceptors, 0, request, size, cached, invalidate, eventListener).proceed(request)
     }
 
     private suspend inline fun onSuccess(
