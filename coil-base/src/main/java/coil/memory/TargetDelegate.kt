@@ -33,6 +33,8 @@ internal sealed class TargetDelegate {
 
     open val target: Target? get() = null
 
+    open val invalidate: Boolean get() = true
+
     @MainThread
     open fun start(cached: BitmapDrawable?, placeholder: Drawable?) {}
 
@@ -54,7 +56,7 @@ internal object EmptyTargetDelegate : TargetDelegate()
 /**
  * Only invalidate the success bitmaps.
  *
- * Used if [ImageRequest.target] is null and the success [Drawable] is leaked.
+ * Used if [ImageRequest.target] is null and the success [Drawable] is exposed.
  *
  * @see ImageLoader.execute
  */
@@ -101,6 +103,8 @@ internal class PoolableTargetDelegate(
     private val eventListener: EventListener,
     private val logger: Logger?
 ) : TargetDelegate(), Poolable {
+
+    override val invalidate get() = false
 
     override fun start(cached: BitmapDrawable?, placeholder: Drawable?) {
         instrument(cached?.bitmap) { onStart(placeholder) }

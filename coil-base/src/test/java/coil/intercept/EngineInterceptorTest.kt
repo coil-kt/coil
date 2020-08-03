@@ -68,6 +68,7 @@ class EngineInterceptorTest {
         interceptor = EngineInterceptor(
             registry = ComponentRegistry(),
             bitmapPool = bitmapPool,
+            referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null),
             strongMemoryCache = strongMemoryCache,
             weakMemoryCache = weakMemoryCache,
             requestService = RequestService(null),
@@ -78,31 +79,31 @@ class EngineInterceptorTest {
     }
 
     @Test
-    fun `computeKey - null key`() {
+    fun `computeMemoryCacheKey - null key`() {
         val request = createRequest(context)
         val fetcher = createFakeFetcher(key = null)
         val size = OriginalSize
         val key = runBlocking {
-            interceptor.computeKey(request, Unit, fetcher, size)
+            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
         }
 
         assertNull(key)
     }
 
     @Test
-    fun `computeKey - simple key`() {
+    fun `computeMemoryCacheKey - simple key`() {
         val request = createRequest(context)
         val fetcher = createFakeFetcher()
         val size = OriginalSize
         val result = runBlocking {
-            interceptor.computeKey(request, Unit, fetcher, size)
+            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
         }
 
         assertEquals(Key("base_key", Parameters.EMPTY), result)
     }
 
     @Test
-    fun `computeKey - params only`() {
+    fun `computeMemoryCacheKey - params only`() {
         val parameters = createFakeParameters()
         val request = createRequest(context) {
             parameters(parameters)
@@ -110,14 +111,14 @@ class EngineInterceptorTest {
         val fetcher = createFakeFetcher()
         val size = OriginalSize
         val result = runBlocking {
-            interceptor.computeKey(request, Unit, fetcher, size)
+            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
         }
 
         assertEquals(Key("base_key", parameters), result)
     }
 
     @Test
-    fun `computeKey - transformations only`() {
+    fun `computeMemoryCacheKey - transformations only`() {
         val transformations = createFakeTransformations()
         val request = createRequest(context) {
             transformations(transformations)
@@ -125,14 +126,14 @@ class EngineInterceptorTest {
         val fetcher = createFakeFetcher()
         val size = PixelSize(123, 332)
         val result = runBlocking {
-            interceptor.computeKey(request, Unit, fetcher, size)
+            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
         }
 
         assertEquals(Key("base_key", transformations, size, Parameters.EMPTY), result)
     }
 
     @Test
-    fun `computeKey - complex key`() {
+    fun `computeMemoryCacheKey - complex key`() {
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
         val request = createRequest(context) {
@@ -142,7 +143,7 @@ class EngineInterceptorTest {
         val fetcher = createFakeFetcher()
         val size = OriginalSize
         val result = runBlocking {
-            interceptor.computeKey(request, Unit, fetcher, size)
+            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
         }
 
         assertEquals(Key("base_key", transformations, size, parameters), result)
