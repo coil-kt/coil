@@ -150,6 +150,7 @@ class RealInterceptorChainTest {
             request = request,
             size = PixelSize(100, 100),
             cached = null,
+            invalidate = false,
             eventListener = EventListener.NONE
         )
         return runBlocking { chain.proceed(request) }

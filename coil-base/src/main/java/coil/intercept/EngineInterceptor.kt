@@ -1,5 +1,6 @@
 package coil.intercept
 
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -8,6 +9,7 @@ import coil.ComponentRegistry
 import coil.EventListener
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
+import coil.bitmap.BitmapReferenceCounter
 import coil.decode.DataSource
 import coil.decode.DecodeUtils
 import coil.decode.DrawableDecoderService
@@ -42,7 +44,6 @@ import coil.util.mapData
 import coil.util.requireDecoder
 import coil.util.requireFetcher
 import coil.util.safeConfig
-import coil.util.set
 import coil.util.takeIf
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
@@ -55,6 +56,7 @@ import kotlin.math.abs
 internal class EngineInterceptor(
     private val registry: ComponentRegistry,
     private val bitmapPool: BitmapPool,
+    private val referenceCounter: BitmapReferenceCounter,
     private val strongMemoryCache: StrongMemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
     private val requestService: RequestService,
@@ -74,6 +76,9 @@ internal class EngineInterceptor(
             val size = chain.size
             val eventListener = chain.eventListener
 
+            // Invalidate the bitmap if it was provided as input.
+            invalidateData(data)
+
             // Perform any data mapping.
             eventListener.mapStart(request, data)
             val mappedData = registry.mapData(data, size)
@@ -81,7 +86,7 @@ internal class EngineInterceptor(
 
             // Check the memory cache.
             val fetcher = request.fetcher(mappedData) ?: registry.requireFetcher(mappedData)
-            val key = request.memoryCacheKey ?: computeKey(request, mappedData, fetcher, size)
+            val key = request.memoryCacheKey ?: computeMemoryCacheKey(request, mappedData, fetcher, size)
             val value = takeIf(request.memoryCachePolicy.readEnabled) {
                 key?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
             }
@@ -109,7 +114,7 @@ internal class EngineInterceptor(
             val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
 
             // Cache the result in the memory cache.
-            val isCached = request.memoryCachePolicy.writeEnabled && strongMemoryCache.set(key, drawable, isSampled)
+            val isCached = writeToMemoryCache(request, key, drawable, isSampled, chain.invalidate)
 
             return SuccessResult(
                 drawable = drawable,
@@ -130,9 +135,17 @@ internal class EngineInterceptor(
         }
     }
 
+    /** Invalidate the bitmap if it was provided as input. */
+    private fun invalidateData(data: Any) {
+        when (data) {
+            is BitmapDrawable -> data.bitmap?.let(referenceCounter::invalidate)
+            is Bitmap -> referenceCounter.invalidate(data)
+        }
+    }
+
     /** Compute the complex cache key for this request. */
     @VisibleForTesting
-    internal fun computeKey(
+    internal fun computeMemoryCacheKey(
         request: ImageRequest,
         data: Any,
         fetcher: Fetcher<Any>,
@@ -335,6 +348,31 @@ internal class EngineInterceptor(
         }
         eventListener.transformEnd(request, output)
         return result.copy(drawable = output.toDrawable(request.context))
+    }
+
+    /** Attempt to write [drawable] to the memory cache. Return true if it was added to the cache. */
+    private fun writeToMemoryCache(
+        request: ImageRequest,
+        key: MemoryCache.Key?,
+        drawable: Drawable,
+        isSampled: Boolean,
+        invalidate: Boolean
+    ): Boolean {
+        if (!request.memoryCachePolicy.writeEnabled) {
+            return false
+        }
+
+        if (key != null) {
+            val bitmap = (drawable as? BitmapDrawable)?.bitmap
+            if (bitmap != null) {
+                if (invalidate) {
+                    referenceCounter.invalidate(bitmap)
+                }
+                strongMemoryCache.set(key, bitmap, isSampled)
+                return true
+            }
+        }
+        return false
     }
 
     companion object {

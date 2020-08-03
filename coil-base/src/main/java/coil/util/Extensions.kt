@@ -24,7 +24,6 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.base.R
 import coil.decode.DataSource
 import coil.memory.MemoryCache
-import coil.memory.StrongMemoryCache
 import coil.memory.TargetDelegate
 import coil.memory.ViewTargetRequestManager
 import coil.request.ImageResult
@@ -50,17 +49,6 @@ internal inline val StatFs.blockCountCompat: Long
 @Suppress("DEPRECATION")
 internal inline val StatFs.blockSizeCompat: Long
     get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
-
-internal fun StrongMemoryCache.set(key: MemoryCache.Key?, value: Drawable, isSampled: Boolean): Boolean {
-    if (key != null) {
-        val bitmap = (value as? BitmapDrawable)?.bitmap
-        if (bitmap != null) {
-            set(key, bitmap, isSampled)
-            return true
-        }
-    }
-    return false
-}
 
 internal inline fun <T> takeIf(take: Boolean, factory: () -> T): T? {
     return if (take) factory() else null
