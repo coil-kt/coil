@@ -203,6 +203,12 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
+    fun lossyWebP() {
+        val expectedBitmap = decodeBitmap("normal.jpg", PixelSize(450, 675))
+        assertTrue(decodeBitmap("lossy.webp", PixelSize(450, 675)).isSimilarTo(expectedBitmap))
+    }
+
+    @Test
     fun png_16bit() {
         // The emulator runs out of memory on pre-23.
         assumeTrue(SDK_INT >= 23)
