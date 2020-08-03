@@ -64,7 +64,7 @@ If you do not want the singleton `ImageLoader`, depend on `io.coil-kt:coil-base`
 
 #### Requests
 
-To load an image into a custom target, enqueue an `ImageRequest`:
+To load an image into a custom target, `enqueue` an `ImageRequest`:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
@@ -76,7 +76,7 @@ val request = ImageRequest.Builder(context)
 val disposable = imageLoader.enqueue(request)
 ```
 
-To load an image imperatively, execute an `ImageRequest`:
+To load an image imperatively, `execute` an `ImageRequest`:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
