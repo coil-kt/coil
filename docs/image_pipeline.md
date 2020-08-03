@@ -19,7 +19,29 @@ val imageLoader = ImageLoader.Builder(context)
 
 ## Interceptors
 
-Interceptors allow you to observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine.
+Interceptors allow you to observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine. For example, you can add a custom cache layer like so:
+
+```kotlin
+class CustomCacheInterceptor(
+    private val context: Context,
+    private val cache: LruCache<String, Drawable>
+) : Interceptor {
+
+    override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
+        val value = cache.get(chain.request.data.toString())
+        if (value != null) {
+            return SuccessResult(
+                drawable = value.bitmap.toDrawable(context),
+                request = chain.request,
+                metadata = TODO()
+            )
+        }
+        return chain.proceed(chain.request)
+    }
+}
+```
+
+Interceptors are an advanced feature that let you wrap an `ImageLoader`'s image pipeline with custom logic. Their design is heavily based on [OkHttp's `Interceptor` interface](https://square.github.io/okhttp/interceptors/#interceptors).
 
 See [Interceptor](../api/coil-base/coil.intercept/-interceptor) for more information.
 

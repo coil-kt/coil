@@ -8,9 +8,9 @@ See a common use case that isn't covered? Feel free to submit a PR with a new se
 
 [Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to exact prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done a number of ways:
 
-#### LoadRequest
+#### Enqueue
 
-You can get access to an image's bitmap by setting a `Target` on a `LoadRequest`:
+You can get access to an image's bitmap by setting a `Target` and enqueuing `ImageRequest`:
 
 ```kotlin
 val request = LoadRequest.Builder(context)
@@ -25,15 +25,15 @@ val request = LoadRequest.Builder(context)
         }
     }
     .build()
-val disposable = imageLoader.execute(request)
+val disposable = imageLoader.enqueue(request)
 ```
 
-#### GetRequest
+#### Execute
 
-You can also use a `GetRequest`, which returns the drawable imperatively:
+You can also execute an `ImageRequest`, which returns the drawable imperatively:
 
 ```kotlin
-val request = GetRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .allowHardware(false) // Disable hardware bitmaps.
     .build()
@@ -56,10 +56,7 @@ class PaletteTransition(
     private val onGenerated: (Palette) -> Unit
 ) : Transition {
 
-    override suspend fun transition(
-        target: TransitionTarget<*>,
-        result: RequestResult
-    ) {
+    override suspend fun transition(target: TransitionTarget, result: RequestResult) {
         // Execute the delegate transition.
         val delegateJob = delegate?.let { delegate ->
             coroutineScope {
@@ -82,8 +79,8 @@ class PaletteTransition(
     }
 }
 
-// LoadRequest
-val request = LoadRequest.Builder(context)
+// ImageRequest
+val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .allowHardware(false) // Disable hardware bitmaps.
     .transition(PaletteTransition(CrossfadeTransition()) { palette ->
@@ -91,7 +88,7 @@ val request = LoadRequest.Builder(context)
     })
     .target(imageView)
     .build()
-imageLoader.execute(request)
+imageLoader.enqueue(request)
 
 // ImageView.load
 imageView.load("https://www.example.com/image.jpg") {
@@ -103,7 +100,7 @@ imageView.load("https://www.example.com/image.jpg") {
 ```
 
 !!! Note
-    You should not pass the drawable outside of `Transition.transition`. This can cause the drawable's underlying bitmap to be pooled while it is still in use, which can result in rendering issues and crashes.
+    You should not pass the drawable outside the scope of `Transition.transition`. This can cause the drawable's underlying bitmap to be pooled while it is still in use, which can result in rendering issues and crashes.
 
 ## Using a custom OkHttpClient
 
@@ -129,7 +126,7 @@ val imageLoader = ImageLoader.Builder(context)
 Headers can be added to your image requests in one of two ways. You can set headers for a single request:
 
 ```kotlin
-val request = LoadRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .setHeader("Cache-Control", "max-age=31536000,public")
     .target(imageView)
@@ -137,7 +134,7 @@ val request = LoadRequest.Builder(context)
 imageLoader.execute(request)
 ```
 
-Or you can create an [`Interceptor`](https://square.github.io/okhttp/interceptors/) that sets headers for every request executed by your `ImageLoader`:
+Or you can create an OkHttp [`Interceptor`](https://square.github.io/okhttp/interceptors/) that sets headers for every request executed by your `ImageLoader`:
 
 ```kotlin
 class ResponseHeaderInterceptor(
@@ -164,8 +161,10 @@ val imageLoader = ImageLoader.Builder(context)
 
 ## Shared Element Transitions
 
-[Shared element transitions](https://developer.android.com/training/transitions/start-activity) allow you to animate between `Activites` and `Fragments`. Here are some recommendations on how use them with Coil:
+[Shared element transitions](https://developer.android.com/training/transitions/start-activity) allow you to animate between `Activites` and `Fragments`. Here are some recommendations on how to get them to work with Coil:
 
 - **Shared element transitions are incompatible with hardware bitmaps.** You should set `allowHardware(false)` to disable hardware bitmaps for both the `ImageView` you are animating from and the view you are animating to. If you don't, the transition will throw an `java.lang.IllegalArgumentException: Software rendering doesn't support hardware bitmaps` exception.
-- Prefer using `target(imageView)` or `ImageView.load` for any requests targeting an `ImageView` in the transition.
+
+- Use the [`MemoryCache.Key`](../api/coil-base/coil.memory/-memory-cache/-key) of the start image as the [`placeholderMemoryCacheKey`](../api/coil-base/coil.request/-image-request/-builder/placeholder-memory-cache-key) for the end image. This ensures that the start image is used as the placeholder for the end image, which results in a smooth transition with no white flashes.
+
 - Use [`ChangeImageTransform`](https://developer.android.com/reference/android/transition/ChangeImageTransform) and [`ChangeBounds`](https://developer.android.com/reference/android/transition/ChangeBounds) together for optimal results.

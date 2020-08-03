@@ -176,7 +176,7 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-See the docs [here](../api/coil-singleton/coil.api/) and [here](../api/coil-base/coil.api/) for more information.
+See the docs [here](../api/coil-singleton/coil/) and [here](../api/coil-base/coil/) for more information.
 
 ## Supported Data Types
 
@@ -220,7 +220,7 @@ imageLoader.enqueue(request)
 - `request.lifecycle` reaches the `DESTROYED` state.
 - `request.target` is a `ViewTarget` and its `View` is detached.
 
-Additionally, `ImageLoader.enqueue` returns a [RequestDisposable](../api/coil-base/coil.request/-request-disposable), which can be used to dispose the request (which cancels it and frees its associated resources):
+Additionally, `ImageLoader.enqueue` returns a [Disposable](../api/coil-base/coil.request/-disposable), which can be used to dispose the request (which cancels it and frees its associated resources):
 
 ```kotlin
 val disposable = imageView.load("https://www.example.com/image.jpg")
