@@ -268,7 +268,8 @@ interface ImageLoader {
          *
          * Only certain requests are eligible for bitmap pooling. See [PoolableViewTarget] for more information.
          *
-         * If this is disabled, no bitmaps will be added to this [ImageLoader]'s [BitmapPool] automatically.
+         * If this is disabled, no bitmaps will be added to this [ImageLoader]'s [BitmapPool] automatically and
+         * the [BitmapPool] will not be allocated any memory (this overrides [bitmapPoolPercentage]).
          *
          * Default: true
          */
@@ -428,6 +429,7 @@ interface ImageLoader {
          */
         fun build(): ImageLoader {
             val availableMemorySize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
+            val bitmapPoolPercentage = if (bitmapPoolingEnabled) bitmapPoolPercentage else 0.0
             val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toInt()
             val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
