@@ -58,9 +58,6 @@ internal class RealBitmapReferenceCounter(
     @VisibleForTesting internal val values = SparseArrayCompat<Value>()
     @VisibleForTesting internal var operationsSinceCleanUp = 0
 
-    /**
-     * Increase the reference count for this [Bitmap] by one.
-     */
     @Synchronized
     override fun increment(bitmap: Bitmap) {
         val key = bitmap.identityHashCode
@@ -73,13 +70,6 @@ internal class RealBitmapReferenceCounter(
         cleanUpIfNecessary()
     }
 
-    /**
-     * Decrease the reference count for this [Bitmap] by one.
-     *
-     * If the reference count is now zero, add the [Bitmap] to [bitmapPool].
-     *
-     * @return True if [bitmap] was added to [bitmapPool] as a result of this decrement operation.
-     */
     @Synchronized
     override fun decrement(bitmap: Bitmap): Boolean {
         val key = bitmap.identityHashCode
