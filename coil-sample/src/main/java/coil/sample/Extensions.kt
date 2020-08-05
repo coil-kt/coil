@@ -55,12 +55,14 @@ fun <T> DiffUtil.ItemCallback<T>.asConfig(): AsyncDifferConfig<T> {
 @Suppress("DEPRECATION")
 fun Window.setDecorFitsSystemWindowsCompat(decorFitsSystemWindows: Boolean) {
     if (SDK_INT >= 30) {
-        setDecorFitsSystemWindows(false)
+        setDecorFitsSystemWindows(decorFitsSystemWindows)
     } else {
         decorView.apply {
-            systemUiVisibility = systemUiVisibility or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            systemUiVisibility = if (decorFitsSystemWindows) {
+                systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            } else {
+                systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION.inv()
+            }
         }
     }
 }
