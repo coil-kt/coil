@@ -124,7 +124,7 @@ class ContentUriFetcherTest {
 
         // Wait for the display image to be parsed by the system.
         var attempts = 0
-        while (attempts++ <= 300 && !isContactParsed(id)) {
+        while (attempts++ < 300 && !isContactParsed(id)) {
             Thread.sleep(100)
         }
 

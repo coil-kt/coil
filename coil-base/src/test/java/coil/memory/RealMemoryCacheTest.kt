@@ -1,7 +1,7 @@
 package coil.memory
 
-import coil.bitmap.BitmapReferenceCounter
 import coil.bitmap.FakeBitmapPool
+import coil.bitmap.RealBitmapReferenceCounter
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.allocationByteCountCompat
 import coil.util.createBitmap
@@ -19,14 +19,14 @@ import kotlin.test.assertTrue
 class RealMemoryCacheTest {
 
     private lateinit var weakCache: WeakMemoryCache
-    private lateinit var counter: BitmapReferenceCounter
+    private lateinit var counter: RealBitmapReferenceCounter
     private lateinit var strongCache: StrongMemoryCache
     private lateinit var cache: MemoryCache
 
     @Before
     fun before() {
         weakCache = RealWeakMemoryCache(null)
-        counter = BitmapReferenceCounter(weakCache, FakeBitmapPool(), null)
+        counter = RealBitmapReferenceCounter(weakCache, FakeBitmapPool(), null)
         strongCache = StrongMemoryCache(weakCache, counter, Int.MAX_VALUE, null)
         cache = RealMemoryCache(strongCache, weakCache, counter)
     }
@@ -115,5 +115,17 @@ class RealMemoryCacheTest {
         assertTrue(counter.isInvalid(expected))
         assertEquals(expected, strongCache.get(key)?.bitmap)
         assertNull(weakCache.get(key))
+    }
+
+    @Test
+    fun `setting the same bitmap multiple times can only be removed once`() {
+        val key = MemoryCache.Key("a")
+        val bitmap = createBitmap()
+
+        weakCache.set(key, bitmap, false, 100)
+        weakCache.set(key, bitmap, false, 100)
+
+        assertTrue(weakCache.remove(bitmap))
+        assertFalse(weakCache.remove(bitmap))
     }
 }

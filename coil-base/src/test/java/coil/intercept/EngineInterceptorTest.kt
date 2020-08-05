@@ -12,7 +12,7 @@ import coil.ImageLoader
 import coil.RealImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
-import coil.bitmap.BitmapReferenceCounter
+import coil.bitmap.RealBitmapReferenceCounter
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.Options
@@ -63,12 +63,12 @@ class EngineInterceptorTest {
         context = ApplicationProvider.getApplicationContext()
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
         val weakMemoryCache = RealWeakMemoryCache(null)
-        val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
+        val referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         interceptor = EngineInterceptor(
             registry = ComponentRegistry(),
             bitmapPool = bitmapPool,
-            referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null),
+            referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null),
             strongMemoryCache = strongMemoryCache,
             weakMemoryCache = weakMemoryCache,
             requestService = RequestService(null),

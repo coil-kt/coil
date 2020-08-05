@@ -5,6 +5,7 @@ package coil.util
 
 import android.app.ActivityManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
@@ -22,6 +23,7 @@ import android.widget.ImageView.ScaleType.FIT_START
 import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.base.R
+import coil.bitmap.BitmapReferenceCounter
 import coil.decode.DataSource
 import coil.memory.MemoryCache
 import coil.memory.TargetDelegate
@@ -183,4 +185,8 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
         size = size,
         parameters = parameters.cacheKeys()
     )
+}
+
+internal inline fun BitmapReferenceCounter.setValid(bitmap: Bitmap?, isValid: Boolean) {
+    if (bitmap != null) setValid(bitmap, isValid)
 }

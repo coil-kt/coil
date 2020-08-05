@@ -6,8 +6,8 @@ import androidx.test.core.app.ApplicationProvider
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmap.BitmapReferenceCounter
 import coil.bitmap.FakeBitmapPool
+import coil.bitmap.RealBitmapReferenceCounter
 import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageResult
@@ -46,7 +46,7 @@ class TargetDelegateTest {
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var imageLoader: ImageLoader
     private lateinit var pool: FakeBitmapPool
-    private lateinit var counter: BitmapReferenceCounter
+    private lateinit var counter: RealBitmapReferenceCounter
     private lateinit var delegateService: DelegateService
 
     @Before
@@ -55,7 +55,7 @@ class TargetDelegateTest {
         mainDispatcher = createTestMainDispatcher()
         imageLoader = ImageLoader(context)
         pool = FakeBitmapPool()
-        counter = BitmapReferenceCounter(EmptyWeakMemoryCache, pool, null)
+        counter = RealBitmapReferenceCounter(EmptyWeakMemoryCache, pool, null)
         delegateService = DelegateService(imageLoader, counter, null)
     }
 
@@ -171,6 +171,7 @@ class TargetDelegateTest {
 
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)
+        counter.setValid(initialBitmap, true)
         delegate.start(initialDrawable, initialDrawable)
         assertFalse(counter.isInvalid(initialBitmap))
         assertFalse(initialBitmap in pool.bitmaps)
@@ -202,6 +203,7 @@ class TargetDelegateTest {
 
         val initialBitmap = createBitmap()
         val initialDrawable = initialBitmap.toDrawable(context)
+        counter.setValid(initialBitmap, true)
         delegate.start(initialDrawable, initialDrawable)
         assertFalse(counter.isInvalid(initialBitmap))
         assertFalse(initialBitmap in pool.bitmaps)

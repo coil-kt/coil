@@ -175,7 +175,7 @@ internal class RealImageLoader(
             eventListener.resolveSizeEnd(request, size)
 
             // Execute the interceptor chain.
-            val result = executeChain(request, type, size, cached, targetDelegate.invalidate, eventListener)
+            val result = executeChain(request, type, size, cached, eventListener)
 
             // Set the result on the target.
             when (result) {
@@ -221,10 +221,9 @@ internal class RealImageLoader(
         type: Int,
         size: Size,
         cached: Drawable?,
-        invalidate: Boolean,
         eventListener: EventListener
     ): ImageResult = withContext(request.dispatcher) {
-        RealInterceptorChain(request, type, interceptors, 0, request, size, cached, invalidate, eventListener).proceed(request)
+        RealInterceptorChain(request, type, interceptors, 0, request, size, cached, eventListener).proceed(request)
     }
 
     private suspend inline fun onSuccess(

@@ -83,7 +83,6 @@ class RoundedCornersTransformation(
             val path = Path().apply { addRoundRect(rect, radii, Path.Direction.CW) }
             drawPath(path, paint)
         }
-        pool.put(input)
 
         return output
     }
