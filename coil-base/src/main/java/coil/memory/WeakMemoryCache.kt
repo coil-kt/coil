@@ -80,8 +80,7 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
 
     @Synchronized
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean, size: Int) {
-        val rawValues = cache[key]
-        val values = rawValues ?: arrayListOf()
+        val values = cache.getOrPut(key) { arrayListOf() }
 
         // Insert the value into the list sorted descending by size.
         run {
@@ -99,11 +98,6 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
                 }
             }
             values += newValue
-        }
-
-        // Only put the list if it's not already in the map.
-        if (rawValues == null) {
-            cache[key] = values
         }
 
         cleanUpIfNecessary()

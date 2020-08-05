@@ -61,19 +61,18 @@ internal class RealBitmapReferenceCounter(
     @Synchronized
     override fun increment(bitmap: Bitmap) {
         val key = bitmap.identityHashCode
-        val rawValue = getCount(key, bitmap)
-        val value = rawValue ?: newValue(bitmap)
+        val value = getValue(key, bitmap)
         val newCount = value.count + 1
         value.count = newCount
-        if (rawValue == null) values[key] = value
         logger?.log(TAG, Log.VERBOSE) { "INCREMENT: [$key, $newCount]" }
+
         cleanUpIfNecessary()
     }
 
     @Synchronized
     override fun decrement(bitmap: Bitmap): Boolean {
         val key = bitmap.identityHashCode
-        val value = getCount(key, bitmap) ?: return false
+        val value = getValueOrNull(key, bitmap) ?: return false
         val newCount = value.count - 1
         value.count = newCount
         logger?.log(TAG, Log.VERBOSE) { "DECREMENT: [$key, $newCount]" }
@@ -94,12 +93,10 @@ internal class RealBitmapReferenceCounter(
     @Synchronized
     override fun setValid(bitmap: Bitmap, isValid: Boolean) {
         val key = bitmap.identityHashCode
-        val rawValue = getCount(key, bitmap)
-        val value = rawValue ?: newValue(bitmap)
+        val value = getValue(key, bitmap)
         if (value.state != STATE_INVALID) {
             value.state = if (isValid) STATE_VALID else STATE_INVALID
         }
-        if (rawValue == null) values[key] = value
         cleanUpIfNecessary()
     }
 
@@ -123,12 +120,17 @@ internal class RealBitmapReferenceCounter(
         toRemove.forEachIndices(values::removeAt)
     }
 
-    private fun getCount(key: Int, bitmap: Bitmap): Value? {
-        return values[key]?.takeIf { it.bitmap.get() === bitmap }
+    private fun getValue(key: Int, bitmap: Bitmap): Value {
+        var value = getValueOrNull(key, bitmap)
+        if (value == null) {
+            value = Value(WeakReference(bitmap), 0, STATE_UNSET)
+            values[key] = value
+        }
+        return value
     }
 
-    private fun newValue(bitmap: Bitmap): Value {
-        return Value(WeakReference(bitmap), 0, STATE_UNSET)
+    private fun getValueOrNull(key: Int, bitmap: Bitmap): Value? {
+        return values[key]?.takeIf { it.bitmap.get() === bitmap }
     }
 
     @VisibleForTesting
