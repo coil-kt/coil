@@ -92,6 +92,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun availableMemoryPercentage (D)Lcoil/ImageLoader$Builder;
 	public final fun bitmapConfig (Landroid/graphics/Bitmap$Config;)Lcoil/ImageLoader$Builder;
 	public final fun bitmapPoolPercentage (D)Lcoil/ImageLoader$Builder;
+	public final fun bitmapPoolingEnabled (Z)Lcoil/ImageLoader$Builder;
 	public final fun build ()Lcoil/ImageLoader;
 	public final fun callFactory (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoader$Builder;
 	public final fun callFactory (Lokhttp3/Call$Factory;)Lcoil/ImageLoader$Builder;
@@ -148,32 +149,6 @@ public abstract interface class coil/bitmap/BitmapPool {
 
 public final class coil/bitmap/BitmapPool$Companion {
 	public final fun create (I)Lcoil/bitmap/BitmapPool;
-}
-
-public final class coil/collection/SparseIntArraySet {
-	public fun <init> ()V
-	public fun <init> (I)V
-	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun add (I)Z
-	public final fun clear ()V
-	public final fun contains (I)Z
-	public final fun elementAt (I)I
-	public final fun indexOfElement (I)I
-	public final fun remove (I)Z
-	public final fun removeAt (I)V
-	public final fun size ()I
-}
-
-public final class coil/collection/SparseIntArraySetKt {
-	public static final fun addAll (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)V
-	public static final fun count (Lcoil/collection/SparseIntArraySet;)I
-	public static final fun forEach (Lcoil/collection/SparseIntArraySet;Lkotlin/jvm/functions/Function1;)V
-	public static final fun isEmpty (Lcoil/collection/SparseIntArraySet;)Z
-	public static final fun isNotEmpty (Lcoil/collection/SparseIntArraySet;)Z
-	public static final fun iterator (Lcoil/collection/SparseIntArraySet;)Lkotlin/collections/IntIterator;
-	public static final fun minusAssign (Lcoil/collection/SparseIntArraySet;I)V
-	public static final fun plus (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)Lcoil/collection/SparseIntArraySet;
-	public static final fun plusAssign (Lcoil/collection/SparseIntArraySet;I)V
 }
 
 public final class coil/decode/DataSource : java/lang/Enum {
@@ -289,18 +264,6 @@ public final class coil/extension/Parameters {
 	public static final fun count (Lcoil/request/Parameters;)I
 	public static final fun get (Lcoil/request/Parameters;Ljava/lang/String;)Ljava/lang/Object;
 	public static final fun isNotEmpty (Lcoil/request/Parameters;)Z
-}
-
-public final class coil/extension/SparseIntArraySets {
-	public static final fun addAll (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)V
-	public static final fun count (Lcoil/collection/SparseIntArraySet;)I
-	public static final fun forEach (Lcoil/collection/SparseIntArraySet;Lkotlin/jvm/functions/Function1;)V
-	public static final fun isEmpty (Lcoil/collection/SparseIntArraySet;)Z
-	public static final fun isNotEmpty (Lcoil/collection/SparseIntArraySet;)Z
-	public static final fun iterator (Lcoil/collection/SparseIntArraySet;)Lkotlin/collections/IntIterator;
-	public static final fun minusAssign (Lcoil/collection/SparseIntArraySet;I)V
-	public static final fun plus (Lcoil/collection/SparseIntArraySet;Lcoil/collection/SparseIntArraySet;)Lcoil/collection/SparseIntArraySet;
-	public static final fun plusAssign (Lcoil/collection/SparseIntArraySet;I)V
 }
 
 public final class coil/fetch/DrawableResult : coil/fetch/FetchResult {

@@ -9,7 +9,7 @@ import androidx.annotation.MainThread
  * A [ViewTarget] that supports [Bitmap] pooling.
  *
  * Implementing [PoolableViewTarget] opts this target into bitmap pooling. This allows Coil to re-use [Bitmap]s
- * given to this target, which improves performance.
+ * given to this target, which can conserve memory by avoiding a new [Bitmap] allocation.
  *
  * To opt out of bitmap pooling, implement [ViewTarget] instead.
  *

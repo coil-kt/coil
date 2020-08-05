@@ -1,30 +1,43 @@
 package coil.util
 
 import android.graphics.Bitmap
-import androidx.annotation.VisibleForTesting
-import coil.bitmap.BitmapReferenceCounter
+import androidx.collection.forEach
+import coil.bitmap.RealBitmapReferenceCounter
+import coil.bitmap.RealBitmapReferenceCounter.Companion.STATE_INVALID
 import coil.memory.RealWeakMemoryCache
 
 /** Return the current reference count for [bitmap]. */
-internal fun BitmapReferenceCounter.count(bitmap: Bitmap): Int {
-    return counts[bitmap.identityHashCode]
+internal fun RealBitmapReferenceCounter.count(bitmap: Bitmap): Int {
+    return values[bitmap.identityHashCode]?.takeIf { it.bitmap.get() === bitmap }?.count ?: 0
 }
 
 /** Return true if [bitmap]'s reference count is invalid. */
-internal fun BitmapReferenceCounter.isInvalid(bitmap: Bitmap): Boolean {
-    return bitmap.identityHashCode in invalidKeys
+internal fun RealBitmapReferenceCounter.isInvalid(bitmap: Bitmap): Boolean {
+    return values[bitmap.identityHashCode]?.takeIf { it.bitmap.get() === bitmap }?.state == STATE_INVALID
 }
 
 /**
  * Clears [bitmap]'s weak reference without removing its entry from [RealWeakMemoryCache.cache].
  * This simulates garbage collection.
  */
-@VisibleForTesting
+internal fun RealBitmapReferenceCounter.clear(bitmap: Bitmap) {
+    values.forEach { _, value ->
+        if (value.bitmap.get() === bitmap) {
+            value.bitmap.clear()
+            return
+        }
+    }
+}
+
+/**
+ * Clears [bitmap]'s weak reference without removing its entry from [RealWeakMemoryCache.cache].
+ * This simulates garbage collection.
+ */
 internal fun RealWeakMemoryCache.clear(bitmap: Bitmap) {
     cache.values.forEach { values ->
         values.forEachIndices { value ->
-            if (value.reference.get() == bitmap) {
-                value.reference.clear()
+            if (value.bitmap.get() === bitmap) {
+                value.bitmap.clear()
                 return
             }
         }
@@ -32,5 +45,4 @@ internal fun RealWeakMemoryCache.clear(bitmap: Bitmap) {
 }
 
 /** Return the number of values currently in the cache. */
-@VisibleForTesting
 internal fun RealWeakMemoryCache.count(): Int = cache.count()

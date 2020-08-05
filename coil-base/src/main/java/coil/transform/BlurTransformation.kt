@@ -67,7 +67,6 @@ class BlurTransformation @JvmOverloads constructor(
             tmpOut?.destroy()
             blur?.destroy()
         }
-        pool.put(input)
 
         return output
     }

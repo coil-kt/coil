@@ -28,16 +28,9 @@ interface Transformation {
     /**
      * Apply the transformation to [input].
      *
-     * For optimal performance, do not use [Bitmap.createBitmap] inside this method. Instead, use the provided
-     * [BitmapPool] to get new [Bitmap]s. Also, you should return every bitmap except the output bitmap to [pool]
-     * so that they can be reused.
-     *
      * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
      * @param input The input [Bitmap] to transform. Its config will always be [Bitmap.Config.ARGB_8888] or [Bitmap.Config.RGBA_F16].
      * @param size The size of the image request.
-     *
-     * @see BitmapPool.get
-     * @see BitmapPool.put
      */
     suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap
 }

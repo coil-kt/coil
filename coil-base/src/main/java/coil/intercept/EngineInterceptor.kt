@@ -76,7 +76,7 @@ internal class EngineInterceptor(
             val size = chain.size
             val eventListener = chain.eventListener
 
-            // Invalidate the bitmap if it was provided as input.
+            // Prevent pooling the input data.
             invalidateData(data)
 
             // Perform any data mapping.
@@ -114,7 +114,7 @@ internal class EngineInterceptor(
             val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
 
             // Cache the result in the memory cache.
-            val isCached = writeToMemoryCache(request, key, drawable, isSampled, chain.invalidate)
+            val isCached = writeToMemoryCache(request, key, drawable, isSampled)
 
             return SuccessResult(
                 drawable = drawable,
@@ -135,11 +135,11 @@ internal class EngineInterceptor(
         }
     }
 
-    /** Invalidate the bitmap if it was provided as input. */
+    /** Prevent pooling the input data. */
     private fun invalidateData(data: Any) {
         when (data) {
-            is BitmapDrawable -> data.bitmap?.let(referenceCounter::invalidate)
-            is Bitmap -> referenceCounter.invalidate(data)
+            is BitmapDrawable -> data.bitmap?.let { referenceCounter.setValid(it, false) }
+            is Bitmap -> referenceCounter.setValid(data, false)
         }
     }
 
@@ -355,8 +355,7 @@ internal class EngineInterceptor(
         request: ImageRequest,
         key: MemoryCache.Key?,
         drawable: Drawable,
-        isSampled: Boolean,
-        invalidate: Boolean
+        isSampled: Boolean
     ): Boolean {
         if (!request.memoryCachePolicy.writeEnabled) {
             return false
@@ -365,9 +364,6 @@ internal class EngineInterceptor(
         if (key != null) {
             val bitmap = (drawable as? BitmapDrawable)?.bitmap
             if (bitmap != null) {
-                if (invalidate) {
-                    referenceCounter.invalidate(bitmap)
-                }
                 strongMemoryCache.set(key, bitmap, isSampled)
                 return true
             }

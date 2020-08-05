@@ -71,7 +71,7 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
 
         // Find the first bitmap that hasn't been collected.
         val strongValue = values.firstNotNullIndices { value ->
-            value.reference.get()?.let { bitmap -> StrongValue(bitmap, value.isSampled) }
+            value.bitmap.get()?.let { bitmap -> StrongValue(bitmap, value.isSampled) }
         }
 
         cleanUpIfNecessary()
@@ -85,14 +85,20 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
 
         // Insert the value into the list sorted descending by size.
         run {
-            val value = WeakValue(bitmap.identityHashCode, WeakReference(bitmap), isSampled, size)
+            val identityHashCode = bitmap.identityHashCode
+            val newValue = WeakValue(identityHashCode, WeakReference(bitmap), isSampled, size)
             for (index in values.indices) {
-                if (size >= values[index].size) {
-                    values.add(index, value)
+                val value = values[index]
+                if (size >= value.size) {
+                    if (value.identityHashCode == identityHashCode && value.bitmap.get() === bitmap) {
+                        values[index] = newValue
+                    } else {
+                        values.add(index, newValue)
+                    }
                     return@run
                 }
             }
-            values += value
+            values += newValue
         }
 
         // Only put the list if it's not already in the map.
@@ -105,11 +111,7 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
 
     @Synchronized
     override fun remove(key: Key): Boolean {
-        val value = get(key)
-        if (value != null) {
-            return remove(value.bitmap)
-        }
-        return false
+        return cache.remove(key) != null
     }
 
     @Synchronized
@@ -142,6 +144,7 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
     }
 
     /** @see ComponentCallbacks2.onTrimMemory */
+    @Synchronized
     override fun trimMemory(level: Int) {
         logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_RUNNING_LOW && level != TRIM_MEMORY_UI_HIDDEN) {
@@ -157,7 +160,6 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
 
     /** Remove any dereferenced bitmaps from the cache. */
     @VisibleForTesting
-    @Synchronized
     internal fun cleanUp() {
         operationsSinceCleanUp = 0
 
@@ -168,15 +170,15 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
 
             if (list.count() <= 1) {
                 // Typically, the list will only contain 1 item. Handle this case in an optimal way here.
-                if (list.firstOrNull()?.reference?.get() == null) {
+                if (list.firstOrNull()?.bitmap?.get() == null) {
                     iterator.remove()
                 }
             } else {
                 // Iterate over the list of values and delete individual entries that have been collected.
                 if (SDK_INT >= 24) {
-                    list.removeIf { it.reference.get() == null }
+                    list.removeIf { it.bitmap.get() == null }
                 } else {
-                    list.removeIfIndices { it.reference.get() == null }
+                    list.removeIfIndices { it.bitmap.get() == null }
                 }
 
                 if (list.isEmpty()) {
@@ -189,7 +191,7 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
     @VisibleForTesting
     internal class WeakValue(
         val identityHashCode: Int,
-        val reference: WeakReference<Bitmap>,
+        val bitmap: WeakReference<Bitmap>,
         val isSampled: Boolean,
         val size: Int
     )

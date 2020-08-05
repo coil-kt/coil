@@ -16,7 +16,7 @@ import androidx.test.core.app.ApplicationProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.bitmap.BitmapPool
-import coil.bitmap.BitmapReferenceCounter
+import coil.bitmap.RealBitmapReferenceCounter
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DecodeResult
 import coil.decode.Decoder
@@ -76,7 +76,7 @@ class RealImageLoaderTest {
         server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
         val weakMemoryCache = RealWeakMemoryCache(null)
-        val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
+        val referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         imageLoader = RealImageLoader(
             context = context,
