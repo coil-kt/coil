@@ -12,6 +12,7 @@ import coil.util.count
 import coil.util.createBitmap
 import coil.util.identityHashCode
 import coil.util.isInvalid
+import coil.util.isValid
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -103,15 +104,15 @@ class RealBitmapReferenceCounterTest {
 
         counter.setValid(bitmap, true)
 
-        assertTrue(counter.isInvalid(bitmap))
+        assertTrue(counter.isValid(bitmap))
 
         counter.setValid(bitmap, false)
 
-        assertFalse(counter.isInvalid(bitmap))
+        assertFalse(counter.isValid(bitmap))
 
         counter.setValid(bitmap, true)
 
-        assertFalse(counter.isInvalid(bitmap))
+        assertFalse(counter.isValid(bitmap))
     }
 
     @Test
