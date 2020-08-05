@@ -10,8 +10,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
-import coil.bitmap.BitmapReferenceCounter
+import coil.bitmap.EmptyBitmapReferenceCounter
 import coil.bitmap.RealBitmapPool
+import coil.bitmap.RealBitmapReferenceCounter
 import coil.drawable.CrossfadeDrawable
 import coil.memory.EmptyWeakMemoryCache
 import coil.memory.MemoryCache
@@ -25,6 +26,7 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
+import coil.target.PoolableViewTarget
 import coil.target.ViewTarget
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
@@ -131,6 +133,7 @@ interface ImageLoader {
 
         private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
         private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
+        private var bitmapPoolingEnabled = true
         private var trackWeakReferences = true
 
         /**
@@ -257,6 +260,21 @@ interface ImageLoader {
          */
         fun allowRgb565(enable: Boolean) = apply {
             this.defaults = this.defaults.copy(allowRgb565 = enable)
+        }
+
+        /**
+         * Enables counting references to bitmaps so they can be automatically reused by a [BitmapPool]
+         * when their reference count reaches zero.
+         *
+         * Only certain requests are eligible for bitmap pooling. See [PoolableViewTarget] for more information.
+         *
+         * If this is disabled, no bitmaps will be added to this [ImageLoader]'s [BitmapPool] automatically and
+         * the [BitmapPool] will not be allocated any memory (this overrides [bitmapPoolPercentage]).
+         *
+         * Default: true
+         */
+        fun bitmapPoolingEnabled(enable: Boolean) = apply {
+            this.bitmapPoolingEnabled = enable
         }
 
         /**
@@ -411,12 +429,13 @@ interface ImageLoader {
          */
         fun build(): ImageLoader {
             val availableMemorySize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
+            val bitmapPoolPercentage = if (bitmapPoolingEnabled) bitmapPoolPercentage else 0.0
             val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toInt()
             val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
             val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
             val weakMemoryCache = if (trackWeakReferences) RealWeakMemoryCache(logger) else EmptyWeakMemoryCache
-            val referenceCounter = BitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
+            val referenceCounter = if (bitmapPoolingEnabled) RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, logger) else EmptyBitmapReferenceCounter
             val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
 
             return RealImageLoader(

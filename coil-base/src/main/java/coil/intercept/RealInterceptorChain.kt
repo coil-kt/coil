@@ -17,7 +17,6 @@ internal class RealInterceptorChain(
     override val request: ImageRequest,
     override val size: Size,
     val cached: Drawable?,
-    val invalidate: Boolean,
     val eventListener: EventListener
 ) : Interceptor.Chain {
 
@@ -54,5 +53,5 @@ internal class RealInterceptorChain(
         index: Int = this.index,
         request: ImageRequest = this.request,
         size: Size = this.size
-    ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, size, cached, invalidate, eventListener)
+    ) = RealInterceptorChain(initialRequest, requestType, interceptors, index, request, size, cached, eventListener)
 }
