@@ -33,7 +33,9 @@ internal interface BitmapReferenceCounter {
     fun decrement(bitmap: Bitmap): Boolean
 
     /**
-     * Mark this bitmap as invalid so it is not added to the [BitmapPool] when its reference count reaches zero.
+     * Mark [bitmap] as valid/invalid.
+     *
+     * Only valid bitmaps are added to the [BitmapPool] when its reference count reaches zero.
      */
     fun setValid(bitmap: Bitmap, isValid: Boolean)
 }
