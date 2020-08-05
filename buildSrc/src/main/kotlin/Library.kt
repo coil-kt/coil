@@ -11,8 +11,8 @@ object Library {
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.1.0"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.1.0"
-    const val ANDROIDX_APPCOMPAT = "androidx.appcompat:appcompat:1.1.0"
-    const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:1.1.0"
+    const val ANDROIDX_APPCOMPAT = "androidx.appcompat:appcompat:1.2.0"
+    const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:1.2.0"
     const val ANDROIDX_COLLECTION = "androidx.collection:collection-ktx:1.1.0"
     const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:1.1.3"
     const val ANDROIDX_CORE = "androidx.core:core-ktx:1.3.1"
@@ -25,7 +25,7 @@ object Library {
     const val ANDROIDX_LIFECYCLE_COMMON = "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
 
-    const val MATERIAL = "com.google.android.material:material:1.1.0"
+    const val MATERIAL = "com.google.android.material:material:1.2.0"
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
