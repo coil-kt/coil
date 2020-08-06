@@ -4,11 +4,15 @@ package coil.sample
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowInsets
 import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
@@ -47,3 +51,23 @@ fun <T> DiffUtil.ItemCallback<T>.asConfig(): AsyncDifferConfig<T> {
         .setBackgroundThreadExecutor(Dispatchers.Default.asExecutor())
         .build()
 }
+
+@Suppress("DEPRECATION")
+fun Window.setDecorFitsSystemWindowsCompat(decorFitsSystemWindows: Boolean) {
+    if (SDK_INT >= 30) {
+        setDecorFitsSystemWindows(decorFitsSystemWindows)
+    } else {
+        decorView.apply {
+            systemUiVisibility = if (decorFitsSystemWindows) {
+                systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            } else {
+                systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION.inv()
+            }
+        }
+    }
+}
+
+val WindowInsets.systemWindowInsetTopCompat: Int
+    @RequiresApi(21) @Suppress("DEPRECATION") get() {
+        return if (SDK_INT >= 30) getInsets(WindowInsets.Type.systemBars()).top else systemWindowInsetTop
+    }
