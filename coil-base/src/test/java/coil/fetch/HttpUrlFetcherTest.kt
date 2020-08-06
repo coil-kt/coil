@@ -27,6 +27,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -100,5 +101,13 @@ class HttpUrlFetcherTest {
         val url3 = HttpUrl.get("https://www.example.com/image")
         val body3 = ResponseBody.create(MediaType.get("image/svg+xml;charset=utf-8"), byteArrayOf())
         assertEquals("image/svg+xml", fetcher.getMimeType(url3, body3))
+
+        val url4 = HttpUrl.get("https://www.example.com/image.svg")
+        val body4 = ResponseBody.create(MediaType.get("text/plain"), byteArrayOf())
+        assertEquals("image/svg+xml", fetcher.getMimeType(url4, body4))
+
+        val url5 = HttpUrl.get("https://www.example.com/image")
+        val body5 = ResponseBody.create(null, byteArrayOf())
+        assertNull(fetcher.getMimeType(url5, body5))
     }
 }
