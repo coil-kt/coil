@@ -1,6 +1,7 @@
 package coil.fetch
 
 import android.webkit.MimeTypeMap
+import androidx.annotation.VisibleForTesting
 import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
@@ -57,16 +58,18 @@ internal class HttpUrlFetcher(private val callFactory: Call.Factory) : Fetcher<H
     }
 
     /**
+     * Parse the response's `content-type` header.
+     *
      * "text/plain" is often used as a default/fallback MIME type.
      * Attempt to guess a better MIME type from the file extension.
      */
-    private fun getMimeType(data: HttpUrl, body: ResponseBody): String? {
+    @VisibleForTesting
+    internal fun getMimeType(data: HttpUrl, body: ResponseBody): String? {
         val rawContentType = body.contentType()?.toString()
-        return if (rawContentType == null || rawContentType.startsWith(MIME_TYPE_TEXT_PLAIN)) {
-            MimeTypeMap.getSingleton().getMimeTypeFromUrl(data.toString()) ?: rawContentType
-        } else {
-            rawContentType
+        if (rawContentType == null || rawContentType.startsWith(MIME_TYPE_TEXT_PLAIN)) {
+            MimeTypeMap.getSingleton().getMimeTypeFromUrl(data.toString())?.let { return it }
         }
+        return rawContentType?.substringBefore(';')
     }
 
     companion object {
