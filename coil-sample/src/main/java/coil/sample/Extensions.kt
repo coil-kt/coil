@@ -59,9 +59,9 @@ fun Window.setDecorFitsSystemWindowsCompat(decorFitsSystemWindows: Boolean) {
     } else {
         decorView.apply {
             systemUiVisibility = if (decorFitsSystemWindows) {
-                systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE and View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION.inv()
             } else {
-                systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION.inv()
+                systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             }
         }
     }
