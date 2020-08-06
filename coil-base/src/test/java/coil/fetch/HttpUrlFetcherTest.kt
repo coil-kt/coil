@@ -86,6 +86,7 @@ class HttpUrlFetcherTest {
 
     @Test
     fun `mime type is parsed correctly from content type`() {
+        // https://android.googlesource.com/platform/frameworks/base/+/61ae88e/core/java/android/webkit/MimeTypeMap.java#407
         Shadows.shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("svg", "image/svg+xml")
 
         val url1 = HttpUrl.get("https://www.example.com/image.jpg")
