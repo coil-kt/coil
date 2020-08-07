@@ -410,9 +410,6 @@ class ImageRequest private constructor(
             this.data = data
         }
 
-        @Deprecated("Replace with `memoryCacheKey(key)`.", ReplaceWith("memoryCacheKey(key)"))
-        fun key(key: String?) = memoryCacheKey(key)
-
         /**
          * Set the memory cache key for this request.
          *
@@ -550,14 +547,6 @@ class ImageRequest private constructor(
         internal fun <T : Any> fetcher(fetcher: Fetcher<T>, type: Class<T>) = apply {
             this.fetcher = fetcher to type
         }
-
-        @Deprecated(
-            message = "Parameter order is reversed.",
-            replaceWith = ReplaceWith("add(fetcher, type)"),
-            level = DeprecationLevel.ERROR
-        )
-        @PublishedApi
-        internal fun <T : Any> fetcher(type: Class<T>, fetcher: Fetcher<T>) = fetcher(fetcher, type)
 
         /**
          * Use [decoder] to handle decoding any image data.

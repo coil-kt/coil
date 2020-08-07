@@ -96,31 +96,6 @@ interface ImageLoader {
      */
     fun shutdown()
 
-    /**
-     * Remove the value referenced by [key] from the memory cache.
-     *
-     * @param key The cache key to remove.
-     */
-    @Deprecated(
-        message = "Call the memory cache directly.",
-        replaceWith = ReplaceWith("memoryCache.remove(MemoryCache.Key(key))", "coil.memory.MemoryCache")
-    )
-    fun invalidate(key: String) {
-        memoryCache.remove(MemoryCache.Key(key))
-    }
-
-    /**
-     * Clear this image loader's memory cache and bitmap pool.
-     */
-    @Deprecated(
-        message = "Call the memory cache and bitmap pool directly.",
-        replaceWith = ReplaceWith("apply { memoryCache.clear(); bitmapPool.clear() }")
-    )
-    fun clearMemory() {
-        memoryCache.clear()
-        bitmapPool.clear()
-    }
-
     class Builder(context: Context) {
 
         private val applicationContext = context.applicationContext

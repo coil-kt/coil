@@ -81,7 +81,7 @@ internal class EngineInterceptor(
 
             // Perform any data mapping.
             eventListener.mapStart(request, data)
-            val mappedData = registry.mapData(data, size)
+            val mappedData = registry.mapData(data)
             eventListener.mapEnd(request, mappedData)
 
             // Check the memory cache.
