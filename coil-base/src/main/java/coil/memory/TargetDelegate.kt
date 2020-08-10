@@ -61,7 +61,7 @@ internal object EmptyTargetDelegate : TargetDelegate()
  * @see ImageLoader.execute
  */
 internal class InvalidatableEmptyTargetDelegate(
-    val referenceCounter: BitmapReferenceCounter
+    private val referenceCounter: BitmapReferenceCounter
 ) : TargetDelegate() {
 
     override suspend fun success(result: SuccessResult) {
@@ -74,7 +74,7 @@ internal class InvalidatableEmptyTargetDelegate(
  */
 internal class InvalidatableTargetDelegate(
     override val target: Target,
-    val referenceCounter: BitmapReferenceCounter,
+    private val referenceCounter: BitmapReferenceCounter,
     private val eventListener: EventListener,
     private val logger: Logger?
 ) : TargetDelegate() {
