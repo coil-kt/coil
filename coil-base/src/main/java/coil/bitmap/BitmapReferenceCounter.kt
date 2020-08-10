@@ -1,6 +1,8 @@
 package coil.bitmap
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.collection.SparseArrayCompat
@@ -65,7 +67,6 @@ internal class RealBitmapReferenceCounter(
         val newCount = value.count + 1
         value.count = newCount
         logger?.log(TAG, Log.VERBOSE) { "INCREMENT: [$key, $newCount]" }
-
         cleanUpIfNecessary()
     }
 
@@ -81,9 +82,9 @@ internal class RealBitmapReferenceCounter(
         // WeakMemoryCache and add it to the BitmapPool.
         val removed = newCount <= 0 && value.state == STATE_VALID
         if (removed) {
-            values.remove(key)
             weakMemoryCache.remove(bitmap)
-            bitmapPool.put(bitmap)
+            // Add the bitmap to the pool on the next frame.
+            MAIN_HANDLER.post { bitmapPool.put(bitmap) }
         }
 
         cleanUpIfNecessary()
@@ -143,6 +144,8 @@ internal class RealBitmapReferenceCounter(
     companion object {
         private const val TAG = "RealBitmapReferenceCounter"
         private const val CLEAN_UP_INTERVAL = 50
+
+        private val MAIN_HANDLER = Handler(Looper.getMainLooper())
 
         internal const val STATE_UNSET = 0
         internal const val STATE_VALID = 1
