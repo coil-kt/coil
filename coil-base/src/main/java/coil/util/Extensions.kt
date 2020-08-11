@@ -187,10 +187,6 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
     )
 }
 
-internal inline fun BitmapReferenceCounter.validate(drawable: Drawable?) {
-    if (drawable is BitmapDrawable) drawable.bitmap?.let(::validate)
-}
-
 internal inline fun BitmapReferenceCounter.invalidate(bitmap: Bitmap?) {
     if (bitmap != null) invalidate(bitmap)
 }

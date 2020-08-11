@@ -47,7 +47,6 @@ import coil.util.requireFetcher
 import coil.util.safeConfig
 import coil.util.takeIf
 import coil.util.toDrawable
-import coil.util.validate
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
 import kotlin.coroutines.coroutineContext
@@ -78,7 +77,7 @@ internal class EngineInterceptor(
             val size = chain.size
             val eventListener = chain.eventListener
 
-            // Prevent pooling the input data.
+            // Mark the input data's bitmap as ineligible for pooling.
             invalidateData(data)
 
             // Perform any data mapping.
@@ -115,8 +114,8 @@ internal class EngineInterceptor(
             // Fetch and decode the image.
             val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
 
-            // Mark this drawable's bitmap as eligible for pooling.
-            referenceCounter.validate(drawable)
+            // Mark the drawable's bitmap as eligible for pooling.
+            validateDrawable(drawable)
 
             // Cache the result in the memory cache.
             val isCached = writeToMemoryCache(request, key, drawable, isSampled)
@@ -140,12 +139,19 @@ internal class EngineInterceptor(
         }
     }
 
-    /** Prevent pooling the input data. */
+    /** Prevent pooling the input data's bitmap. */
     @Suppress("USELESS_CAST")
     private fun invalidateData(data: Any) {
         when (data) {
             is BitmapDrawable -> referenceCounter.invalidate(data.bitmap as Bitmap?)
             is Bitmap -> referenceCounter.invalidate(data)
+        }
+    }
+
+    /** Allow pooling the drawable's bitmap. */
+    private fun validateDrawable(drawable: Drawable) {
+        if (drawable is BitmapDrawable) {
+            drawable.bitmap?.let(referenceCounter::validate)
         }
     }
 
