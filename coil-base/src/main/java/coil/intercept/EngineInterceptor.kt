@@ -45,7 +45,6 @@ import coil.util.mapData
 import coil.util.requireDecoder
 import coil.util.requireFetcher
 import coil.util.safeConfig
-import coil.util.takeIf
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
@@ -87,10 +86,8 @@ internal class EngineInterceptor(
 
             // Check the memory cache.
             val fetcher = request.fetcher(mappedData) ?: registry.requireFetcher(mappedData)
-            val key = request.memoryCacheKey ?: computeMemoryCacheKey(request, mappedData, fetcher, size)
-            val value = takeIf(request.memoryCachePolicy.readEnabled) {
-                key?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
-            }
+            val memoryCacheKey = request.memoryCacheKey ?: computeMemoryCacheKey(request, mappedData, fetcher, size)
+            val value = readFromMemoryCache(request, memoryCacheKey)
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
             val cachedDrawable = value?.bitmap
@@ -98,12 +95,12 @@ internal class EngineInterceptor(
                 ?.toDrawable(context)
 
             // Short circuit if the cached bitmap is valid.
-            if (cachedDrawable != null && isCachedValueValid(key, value, request, size)) {
+            if (cachedDrawable != null && isCachedValueValid(memoryCacheKey, value, request, size)) {
                 return SuccessResult(
                     drawable = value.bitmap.toDrawable(context),
                     request = request,
                     metadata = Metadata(
-                        memoryCacheKey = key,
+                        memoryCacheKey = memoryCacheKey,
                         isSampled = value.isSampled,
                         dataSource = DataSource.MEMORY_CACHE,
                         isPlaceholderMemoryCacheKeyPresent = chain.cached != null
@@ -118,13 +115,13 @@ internal class EngineInterceptor(
             validateDrawable(drawable)
 
             // Cache the result in the memory cache.
-            val isCached = writeToMemoryCache(request, key, drawable, isSampled)
+            val isCached = writeToMemoryCache(request, memoryCacheKey, drawable, isSampled)
 
             return SuccessResult(
                 drawable = drawable,
                 request = request,
                 metadata = Metadata(
-                    memoryCacheKey = key.takeIf { isCached },
+                    memoryCacheKey = memoryCacheKey.takeIf { isCached },
                     isSampled = isSampled,
                     dataSource = dataSource,
                     isPlaceholderMemoryCacheKeyPresent = chain.cached != null
@@ -362,7 +359,19 @@ internal class EngineInterceptor(
         return result.copy(drawable = output.toDrawable(request.context))
     }
 
-    /** Attempt to write [drawable] to the memory cache. Return true if it was added to the cache. */
+    /** Return the value associated with [memoryCacheKey]. */
+    private fun readFromMemoryCache(
+        request: ImageRequest,
+        memoryCacheKey: MemoryCache.Key?
+    ): RealMemoryCache.Value? {
+        if (!request.memoryCachePolicy.readEnabled || memoryCacheKey == null) {
+            return null
+        }
+
+        return strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
+    }
+
+    /** Write [drawable] to the memory cache. Return true if it was added to the cache. */
     private fun writeToMemoryCache(
         request: ImageRequest,
         key: MemoryCache.Key?,

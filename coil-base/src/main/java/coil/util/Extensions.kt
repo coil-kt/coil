@@ -52,10 +52,6 @@ internal inline val StatFs.blockCountCompat: Long
 internal inline val StatFs.blockSizeCompat: Long
     get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 
-internal inline fun <T> takeIf(take: Boolean, factory: () -> T): T? {
-    return if (take) factory() else null
-}
-
 internal val View.requestManager: ViewTargetRequestManager
     get() {
         var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
