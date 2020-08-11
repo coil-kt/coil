@@ -55,7 +55,7 @@ internal class RealBitmapPool(
             logger?.log(TAG, Log.VERBOSE) {
                 "Rejecting bitmap from pool; bitmap: ${strategy.stringify(bitmap)}, " +
                     "is mutable: ${bitmap.isMutable}, " +
-                    "is greater than max size: ${size > maxSize}" +
+                    "is greater than max size: ${size > maxSize}, " +
                     "is allowed config: ${bitmap.config in allowedConfigs}"
             }
             bitmap.recycle()
