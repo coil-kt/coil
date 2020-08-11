@@ -38,13 +38,13 @@ import coil.util.allowInexactSize
 import coil.util.closeQuietly
 import coil.util.fetcher
 import coil.util.foldIndices
-import coil.util.invalidate
 import coil.util.invoke
 import coil.util.log
 import coil.util.mapData
 import coil.util.requireDecoder
 import coil.util.requireFetcher
 import coil.util.safeConfig
+import coil.util.setValid
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
@@ -106,6 +106,9 @@ internal class EngineInterceptor(
                         isPlaceholderMemoryCacheKeyPresent = chain.cached != null
                     )
                 )
+            } else {
+                // Decrement the value from the memory cache if it was not used.
+                if (value != null) referenceCounter.decrement(value.bitmap)
             }
 
             // Fetch and decode the image.
@@ -140,15 +143,17 @@ internal class EngineInterceptor(
     @Suppress("USELESS_CAST")
     private fun invalidateData(data: Any) {
         when (data) {
-            is BitmapDrawable -> referenceCounter.invalidate(data.bitmap as Bitmap?)
-            is Bitmap -> referenceCounter.invalidate(data)
+            is BitmapDrawable -> referenceCounter.setValid(data.bitmap as Bitmap?, false)
+            is Bitmap -> referenceCounter.setValid(data, false)
         }
     }
 
-    /** Allow pooling the drawable's bitmap. */
+    /** Allow pooling the successful drawable's bitmap. */
     private fun validateDrawable(drawable: Drawable) {
-        if (drawable is BitmapDrawable) {
-            drawable.bitmap?.let(referenceCounter::validate)
+        val bitmap = (drawable as? BitmapDrawable)?.bitmap
+        if (bitmap != null) {
+            referenceCounter.setValid(bitmap, true)
+            referenceCounter.increment(bitmap) // Decremented in RealImageLoader.onSuccess.
         }
     }
 
@@ -368,7 +373,11 @@ internal class EngineInterceptor(
             return null
         }
 
-        return strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
+        synchronized(referenceCounter) {
+            val value = strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
+            if (value != null) referenceCounter.increment(value.bitmap)
+            return value
+        }
     }
 
     /** Write [drawable] to the memory cache. Return true if it was added to the cache. */

@@ -1,6 +1,7 @@
 package coil
 
 import android.content.Context
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.MainThread
@@ -70,7 +71,7 @@ internal class RealImageLoader(
     context: Context,
     override val defaults: DefaultRequestOptions,
     override val bitmapPool: BitmapPool,
-    referenceCounter: BitmapReferenceCounter,
+    private val referenceCounter: BitmapReferenceCounter,
     private val strongMemoryCache: StrongMemoryCache,
     private val weakMemoryCache: WeakMemoryCache,
     callFactory: Call.Factory,
@@ -231,14 +232,19 @@ internal class RealImageLoader(
         targetDelegate: TargetDelegate,
         eventListener: EventListener
     ) {
-        val request = result.request
-        val metadata = result.metadata
-        val dataSource = metadata.dataSource
-        logger?.log(TAG, Log.INFO) { "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}" }
-        targetDelegate.metadata = metadata
-        targetDelegate.success(result)
-        eventListener.onSuccess(request, metadata)
-        request.listener?.onSuccess(request, metadata)
+        try {
+            val request = result.request
+            val metadata = result.metadata
+            val dataSource = metadata.dataSource
+            logger?.log(TAG, Log.INFO) { "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}" }
+            targetDelegate.metadata = metadata
+            targetDelegate.success(result)
+            eventListener.onSuccess(request, metadata)
+            request.listener?.onSuccess(request, metadata)
+        } finally {
+            // Corresponding call to increment in EngineInterceptor.
+            (result.drawable as? BitmapDrawable)?.bitmap?.let(referenceCounter::decrement)
+        }
     }
 
     private suspend inline fun onError(

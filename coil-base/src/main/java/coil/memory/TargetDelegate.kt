@@ -22,9 +22,9 @@ import coil.target.Target
 import coil.transition.Transition
 import coil.transition.TransitionTarget
 import coil.util.Logger
-import coil.util.invalidate
 import coil.util.log
 import coil.util.requestManager
+import coil.util.setValid
 
 /**
  * Wrap a [Target] to support [Bitmap] pooling.
@@ -65,7 +65,7 @@ internal class InvalidatableEmptyTargetDelegate(
 ) : TargetDelegate() {
 
     override suspend fun success(result: SuccessResult) {
-        referenceCounter.invalidate(result.bitmap)
+        referenceCounter.setValid(result.bitmap, false)
     }
 }
 
@@ -80,12 +80,12 @@ internal class InvalidatableTargetDelegate(
 ) : TargetDelegate() {
 
     override fun start(placeholder: Drawable?, cached: BitmapDrawable?) {
-        referenceCounter.invalidate(cached?.bitmap)
+        referenceCounter.setValid(cached?.bitmap, false)
         target.onStart(placeholder)
     }
 
     override suspend fun success(result: SuccessResult) {
-        referenceCounter.invalidate(result.bitmap)
+        referenceCounter.setValid(result.bitmap, false)
         target.onSuccess(result, eventListener, logger)
     }
 

@@ -35,16 +35,13 @@ internal interface BitmapReferenceCounter {
     fun decrement(bitmap: Bitmap): Boolean
 
     /**
-     * Mark [bitmap] as valid if has not been referenced before and it is not already invalid.
-     */
-    fun validate(bitmap: Bitmap)
-
-    /**
-     * Mark [bitmap] as invalid so it will not be added to the [BitmapPool] when its reference count reaches zero.
+     * Mark [bitmap] as valid/invalid.
      *
-     * Marking a bitmap as invalid takes precedence over [validate].
+     * Once a bitmap has been marked as invalid it cannot be made valid again.
+     *
+     * Only valid bitmaps are added to the [BitmapPool] when its reference count reaches zero.
      */
-    fun invalidate(bitmap: Bitmap)
+    fun setValid(bitmap: Bitmap, isValid: Boolean)
 }
 
 internal object EmptyBitmapReferenceCounter : BitmapReferenceCounter {
@@ -53,9 +50,7 @@ internal object EmptyBitmapReferenceCounter : BitmapReferenceCounter {
 
     override fun decrement(bitmap: Bitmap) = false
 
-    override fun validate(bitmap: Bitmap) {}
-
-    override fun invalidate(bitmap: Bitmap) {}
+    override fun setValid(bitmap: Bitmap, isValid: Boolean) {}
 }
 
 internal class RealBitmapReferenceCounter(
@@ -101,20 +96,17 @@ internal class RealBitmapReferenceCounter(
     }
 
     @Synchronized
-    override fun validate(bitmap: Bitmap) {
+    override fun setValid(bitmap: Bitmap, isValid: Boolean) {
         val key = bitmap.identityHashCode
-        val value = getValueOrNull(key, bitmap)
-        if (value == null) {
-            values[key] = Value(WeakReference(bitmap), 0, true)
+        if (isValid) {
+            val value = getValueOrNull(key, bitmap)
+            if (value == null) {
+                values[key] = Value(WeakReference(bitmap), 0, true)
+            }
+        } else {
+            val value = getValue(key, bitmap)
+            value.isValid = false
         }
-        cleanUpIfNecessary()
-    }
-
-    @Synchronized
-    override fun invalidate(bitmap: Bitmap) {
-        val key = bitmap.identityHashCode
-        val value = getValue(key, bitmap)
-        value.isValid = false
         cleanUpIfNecessary()
     }
 
