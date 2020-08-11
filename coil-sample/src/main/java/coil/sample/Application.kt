@@ -3,6 +3,7 @@
 package coil.sample
 
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.multidex.MultiDexApplication
 import coil.ImageLoader
 import coil.ImageLoaderFactory
@@ -59,7 +60,7 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
             .apply {
                 // Enable logging to the standard Android log if this is a debug build.
                 if (BuildConfig.DEBUG) {
-                    logger(DebugLogger())
+                    logger(DebugLogger(Log.VERBOSE))
                 }
             }
             .build()
