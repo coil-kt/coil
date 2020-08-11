@@ -35,7 +35,14 @@ internal interface BitmapReferenceCounter {
     fun decrement(bitmap: Bitmap): Boolean
 
     /**
+     * Mark [bitmap] as valid if has not been referenced before and it is not already invalid.
+     */
+    fun validate(bitmap: Bitmap)
+
+    /**
      * Mark [bitmap] as invalid so it will not be added to the [BitmapPool] when its reference count reaches zero.
+     *
+     * Marking a bitmap as invalid takes precedence over [validate].
      */
     fun invalidate(bitmap: Bitmap)
 }
@@ -45,6 +52,8 @@ internal object EmptyBitmapReferenceCounter : BitmapReferenceCounter {
     override fun increment(bitmap: Bitmap) {}
 
     override fun decrement(bitmap: Bitmap) = false
+
+    override fun validate(bitmap: Bitmap) {}
 
     override fun invalidate(bitmap: Bitmap) {}
 }
@@ -92,6 +101,16 @@ internal class RealBitmapReferenceCounter(
     }
 
     @Synchronized
+    override fun validate(bitmap: Bitmap) {
+        val key = bitmap.identityHashCode
+        val value = getValueOrNull(key, bitmap)
+        if (value == null) {
+            values[key] = Value(WeakReference(bitmap), 0, true)
+        }
+        cleanUpIfNecessary()
+    }
+
+    @Synchronized
     override fun invalidate(bitmap: Bitmap) {
         val key = bitmap.identityHashCode
         val value = getValue(key, bitmap)
@@ -122,7 +141,7 @@ internal class RealBitmapReferenceCounter(
     private fun getValue(key: Int, bitmap: Bitmap): Value {
         var value = getValueOrNull(key, bitmap)
         if (value == null) {
-            value = Value(WeakReference(bitmap), 0, true)
+            value = Value(WeakReference(bitmap), 0, false)
             values[key] = value
         }
         return value

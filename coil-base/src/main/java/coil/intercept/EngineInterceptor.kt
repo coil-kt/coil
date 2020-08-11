@@ -47,6 +47,7 @@ import coil.util.requireFetcher
 import coil.util.safeConfig
 import coil.util.takeIf
 import coil.util.toDrawable
+import coil.util.validate
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
 import kotlin.coroutines.coroutineContext
@@ -113,6 +114,9 @@ internal class EngineInterceptor(
 
             // Fetch and decode the image.
             val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
+
+            // Mark this drawable's bitmap as eligible for pooling.
+            referenceCounter.validate(drawable)
 
             // Cache the result in the memory cache.
             val isCached = writeToMemoryCache(request, key, drawable, isSampled)
