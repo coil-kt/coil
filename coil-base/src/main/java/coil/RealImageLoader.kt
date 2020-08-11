@@ -165,7 +165,7 @@ internal class RealImageLoader(
                 ?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
                 ?.bitmap?.toDrawable(request.context)
             targetDelegate.metadata = null
-            targetDelegate.start(cached, cached ?: request.placeholder)
+            targetDelegate.start(cached ?: request.placeholder, cached)
             eventListener.onStart(request)
             request.listener?.onStart(request)
 

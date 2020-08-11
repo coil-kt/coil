@@ -36,7 +36,7 @@ internal sealed class TargetDelegate {
     open val target: Target? get() = null
 
     @MainThread
-    open fun start(cached: BitmapDrawable?, placeholder: Drawable?) {}
+    open fun start(placeholder: Drawable?, cached: BitmapDrawable?) {}
 
     @MainThread
     open suspend fun success(result: SuccessResult) {}
@@ -79,7 +79,7 @@ internal class InvalidatableTargetDelegate(
     private val logger: Logger?
 ) : TargetDelegate() {
 
-    override fun start(cached: BitmapDrawable?, placeholder: Drawable?) {
+    override fun start(placeholder: Drawable?, cached: BitmapDrawable?) {
         referenceCounter.setValid(cached?.bitmap, false)
         target.onStart(placeholder)
     }
@@ -104,7 +104,7 @@ internal class PoolableTargetDelegate(
     private val logger: Logger?
 ) : TargetDelegate() {
 
-    override fun start(cached: BitmapDrawable?, placeholder: Drawable?) {
+    override fun start(placeholder: Drawable?, cached: BitmapDrawable?) {
         replace(cached?.bitmap) { onStart(placeholder) }
     }
 

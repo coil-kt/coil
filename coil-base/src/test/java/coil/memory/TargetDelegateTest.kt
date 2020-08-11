@@ -127,7 +127,7 @@ class TargetDelegateTest {
         runBlocking {
             val bitmap = createBitmap()
             val drawable = bitmap.toDrawable(context)
-            delegate.start(drawable, null)
+            delegate.start(null, drawable)
             assertTrue(target.start)
             assertTrue(counter.isInvalid(bitmap))
         }
