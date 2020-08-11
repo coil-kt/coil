@@ -3,7 +3,6 @@ package coil.memory
 import android.graphics.Bitmap
 import coil.bitmap.BitmapReferenceCounter
 import coil.memory.MemoryCache.Key
-import coil.util.setValid
 
 internal class RealMemoryCache(
     private val strongMemoryCache: StrongMemoryCache,
@@ -15,10 +14,10 @@ internal class RealMemoryCache(
 
     override val maxSize get() = strongMemoryCache.maxSize
 
-    override fun get(key: Key): Bitmap? = synchronized(referenceCounter) {
+    override fun get(key: Key): Bitmap? {
         val value = strongMemoryCache.get(key) ?: weakMemoryCache.get(key)
         val bitmap = value?.bitmap
-        referenceCounter.setValid(bitmap, false)
+        if (bitmap != null) referenceCounter.setValid(bitmap, false)
         return bitmap
     }
 

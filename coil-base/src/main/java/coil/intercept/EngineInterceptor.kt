@@ -373,11 +373,9 @@ internal class EngineInterceptor(
             return null
         }
 
-        synchronized(referenceCounter) {
-            val value = strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
-            if (value != null) referenceCounter.increment(value.bitmap)
-            return value
-        }
+        val value = strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
+        if (value != null) referenceCounter.increment(value.bitmap)
+        return value
     }
 
     /** Write [drawable] to the memory cache. Return true if it was added to the cache. */
