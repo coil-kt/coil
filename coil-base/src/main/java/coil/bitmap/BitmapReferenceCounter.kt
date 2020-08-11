@@ -73,7 +73,10 @@ internal class RealBitmapReferenceCounter(
     @Synchronized
     override fun decrement(bitmap: Bitmap): Boolean {
         val key = bitmap.identityHashCode
-        val value = getValueOrNull(key, bitmap) ?: return false
+        val value = getValueOrNull(key, bitmap) ?: run {
+            logger?.log(TAG, Log.WARN) { "DECREMENT: [$key, UNKNOWN]" }
+            return false
+        }
         val newCount = value.count - 1
         value.count = newCount
         logger?.log(TAG, Log.VERBOSE) { "DECREMENT: [$key, $newCount]" }
