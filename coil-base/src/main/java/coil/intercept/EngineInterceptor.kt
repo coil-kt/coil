@@ -38,6 +38,7 @@ import coil.util.allowInexactSize
 import coil.util.closeQuietly
 import coil.util.fetcher
 import coil.util.foldIndices
+import coil.util.invalidate
 import coil.util.invoke
 import coil.util.log
 import coil.util.mapData
@@ -136,10 +137,11 @@ internal class EngineInterceptor(
     }
 
     /** Prevent pooling the input data. */
+    @Suppress("USELESS_CAST")
     private fun invalidateData(data: Any) {
         when (data) {
-            is BitmapDrawable -> data.bitmap?.let { referenceCounter.setValid(it, false) }
-            is Bitmap -> referenceCounter.setValid(data, false)
+            is BitmapDrawable -> referenceCounter.invalidate(data.bitmap as Bitmap?)
+            is Bitmap -> referenceCounter.invalidate(data)
         }
     }
 

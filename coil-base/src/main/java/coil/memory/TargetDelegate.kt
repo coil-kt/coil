@@ -22,9 +22,9 @@ import coil.target.Target
 import coil.transition.Transition
 import coil.transition.TransitionTarget
 import coil.util.Logger
+import coil.util.invalidate
 import coil.util.log
 import coil.util.requestManager
-import coil.util.setValid
 
 /**
  * Wrap a [Target] to support [Bitmap] pooling.
@@ -54,7 +54,7 @@ internal sealed class TargetDelegate {
 internal object EmptyTargetDelegate : TargetDelegate()
 
 /**
- * Only invalidate the success bitmaps.
+ * Only invalidate the success bitmap.
  *
  * Used if [ImageRequest.target] is null and the success [Drawable] is exposed.
  *
@@ -65,7 +65,7 @@ internal class InvalidatableEmptyTargetDelegate(
 ) : TargetDelegate() {
 
     override suspend fun success(result: SuccessResult) {
-        referenceCounter.setValid(result.bitmap, false)
+        referenceCounter.invalidate(result.bitmap)
     }
 }
 
@@ -80,12 +80,12 @@ internal class InvalidatableTargetDelegate(
 ) : TargetDelegate() {
 
     override fun start(placeholder: Drawable?, cached: BitmapDrawable?) {
-        referenceCounter.setValid(cached?.bitmap, false)
+        referenceCounter.invalidate(cached?.bitmap)
         target.onStart(placeholder)
     }
 
     override suspend fun success(result: SuccessResult) {
-        referenceCounter.setValid(result.bitmap, false)
+        referenceCounter.invalidate(result.bitmap)
         target.onSuccess(result, eventListener, logger)
     }
 
@@ -109,7 +109,6 @@ internal class PoolableTargetDelegate(
     }
 
     override suspend fun success(result: SuccessResult) {
-        referenceCounter.setValid(result.bitmap, true)
         replace(result.bitmap) { onSuccess(result, eventListener, logger) }
     }
 
@@ -138,7 +137,7 @@ internal class PoolableTargetDelegate(
         bitmap?.let(referenceCounter::increment)
     }
 
-    /** Replace the reference to the currently cached bitmap. */
+    /** Replace the reference to the previous bitmap and decrement its reference count. */
     private fun decrement(bitmap: Bitmap?) {
         val previous = target.view.requestManager.put(this, bitmap)
         previous?.let(referenceCounter::decrement)

@@ -16,11 +16,11 @@ internal class RealMemoryCache(
 
     override fun get(key: Key): Bitmap? {
         val value = strongMemoryCache.get(key) ?: weakMemoryCache.get(key)
-        return value?.bitmap?.also { referenceCounter.setValid(it, false) }
+        return value?.bitmap?.also(referenceCounter::invalidate)
     }
 
     override fun set(key: Key, bitmap: Bitmap) {
-        referenceCounter.setValid(bitmap, false)
+        referenceCounter.invalidate(bitmap)
         strongMemoryCache.set(key, bitmap, false)
         weakMemoryCache.remove(key) // Clear any existing weak values.
     }

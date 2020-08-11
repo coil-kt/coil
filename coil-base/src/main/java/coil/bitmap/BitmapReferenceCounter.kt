@@ -21,25 +21,23 @@ import java.lang.ref.WeakReference
 internal interface BitmapReferenceCounter {
 
     /**
-     * Increase the reference count for this [Bitmap] by one.
+     * Increase the reference count for [bitmap] by one.
      */
     fun increment(bitmap: Bitmap)
 
     /**
-     * Decrease the reference count for this [Bitmap] by one.
+     * Decrease the reference count for [bitmap] by one.
      *
-     * If the reference count is now zero, add the [Bitmap] to the [BitmapPool].
+     * If the reference count is now zero, add [bitmap] to the [BitmapPool].
      *
      * @return True if [bitmap] was added to the [BitmapPool] as a result of this decrement operation.
      */
     fun decrement(bitmap: Bitmap): Boolean
 
     /**
-     * Mark [bitmap] as valid/invalid.
-     *
-     * Only valid bitmaps are added to the [BitmapPool] when its reference count reaches zero.
+     * Mark [bitmap] as invalid so it will not be added to the [BitmapPool] when its reference count reaches zero.
      */
-    fun setValid(bitmap: Bitmap, isValid: Boolean)
+    fun invalidate(bitmap: Bitmap)
 }
 
 internal object EmptyBitmapReferenceCounter : BitmapReferenceCounter {
@@ -48,7 +46,7 @@ internal object EmptyBitmapReferenceCounter : BitmapReferenceCounter {
 
     override fun decrement(bitmap: Bitmap) = false
 
-    override fun setValid(bitmap: Bitmap, isValid: Boolean) {}
+    override fun invalidate(bitmap: Bitmap) {}
 }
 
 internal class RealBitmapReferenceCounter(
@@ -62,26 +60,28 @@ internal class RealBitmapReferenceCounter(
 
     @Synchronized
     override fun increment(bitmap: Bitmap) {
-        val value = getValue(bitmap)
+        val key = bitmap.identityHashCode
+        val value = getValue(key, bitmap)
         value.count++
-        logger?.log(TAG, Log.VERBOSE) { "INCREMENT: [${bitmap.identityHashCode}, ${value.count}, ${value.state}]" }
+        logger?.log(TAG, Log.VERBOSE) { "INCREMENT: [$key, ${value.count}, ${value.isValid}]" }
         cleanUpIfNecessary()
     }
 
     @Synchronized
     override fun decrement(bitmap: Bitmap): Boolean {
-        val value = getValueOrNull(bitmap)
-        if (value == null) {
-            logger?.log(TAG, Log.VERBOSE) { "DECREMENT: [${bitmap.identityHashCode}, UNKNOWN, UNKNOWN]" }
+        val key = bitmap.identityHashCode
+        val value = getValueOrNull(key, bitmap) ?: run {
+            logger?.log(TAG, Log.VERBOSE) { "DECREMENT: [$key, UNKNOWN, UNKNOWN]" }
             return false
         }
         value.count--
-        logger?.log(TAG, Log.VERBOSE) { "DECREMENT: [${bitmap.identityHashCode}, ${value.count}, ${value.state}]" }
+        logger?.log(TAG, Log.VERBOSE) { "DECREMENT: [$key, ${value.count}, ${value.isValid}]" }
 
-        // If the bitmap is valid and its count reaches 0, remove it from the
-        // WeakMemoryCache and add it to the BitmapPool.
-        val removed = value.count <= 0 && value.state == STATE_VALID
+        // If the bitmap is valid and its count reaches 0, remove it
+        // from the WeakMemoryCache and add it to the BitmapPool.
+        val removed = value.count <= 0 && value.isValid
         if (removed) {
+            values.remove(key)
             weakMemoryCache.remove(bitmap)
             // Add the bitmap to the pool on the next frame.
             MAIN_HANDLER.post { bitmapPool.put(bitmap) }
@@ -92,11 +92,10 @@ internal class RealBitmapReferenceCounter(
     }
 
     @Synchronized
-    override fun setValid(bitmap: Bitmap, isValid: Boolean) {
-        val value = getValue(bitmap)
-        if (value.state != STATE_INVALID) {
-            value.state = if (isValid) STATE_VALID else STATE_INVALID
-        }
+    override fun invalidate(bitmap: Bitmap) {
+        val key = bitmap.identityHashCode
+        val value = getValue(key, bitmap)
+        value.isValid = false
         cleanUpIfNecessary()
     }
 
@@ -120,18 +119,16 @@ internal class RealBitmapReferenceCounter(
         toRemove.forEachIndices(values::removeAt)
     }
 
-    private fun getValue(bitmap: Bitmap): Value {
-        val key = bitmap.identityHashCode
-        var value = values[key]?.takeIf { it.bitmap.get() === bitmap }
+    private fun getValue(key: Int, bitmap: Bitmap): Value {
+        var value = getValueOrNull(key, bitmap)
         if (value == null) {
-            value = Value(WeakReference(bitmap), 0, STATE_UNSET)
+            value = Value(WeakReference(bitmap), 0, true)
             values[key] = value
         }
         return value
     }
 
-    private fun getValueOrNull(bitmap: Bitmap): Value? {
-        val key = bitmap.identityHashCode
+    private fun getValueOrNull(key: Int, bitmap: Bitmap): Value? {
         return values[key]?.takeIf { it.bitmap.get() === bitmap }
     }
 
@@ -139,17 +136,12 @@ internal class RealBitmapReferenceCounter(
     internal class Value(
         val bitmap: WeakReference<Bitmap>,
         var count: Int,
-        var state: Int
+        var isValid: Boolean
     )
 
     companion object {
         private const val TAG = "RealBitmapReferenceCounter"
         private const val CLEAN_UP_INTERVAL = 50
-
         private val MAIN_HANDLER = Handler(Looper.getMainLooper())
-
-        internal const val STATE_UNSET = 0
-        internal const val STATE_VALID = 1
-        internal const val STATE_INVALID = 2
     }
 }
