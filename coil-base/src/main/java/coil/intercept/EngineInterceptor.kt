@@ -19,10 +19,10 @@ import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
 import coil.memory.MemoryCache
+import coil.memory.MemoryCacheService
 import coil.memory.RealMemoryCache
 import coil.memory.RequestService
 import coil.memory.StrongMemoryCache
-import coil.memory.WeakMemoryCache
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.ImageResult.Metadata
@@ -58,7 +58,7 @@ internal class EngineInterceptor(
     private val bitmapPool: BitmapPool,
     private val referenceCounter: BitmapReferenceCounter,
     private val strongMemoryCache: StrongMemoryCache,
-    private val weakMemoryCache: WeakMemoryCache,
+    private val memoryCacheService: MemoryCacheService,
     private val requestService: RequestService,
     private val systemCallbacks: SystemCallbacks,
     private val drawableDecoder: DrawableDecoderService,
@@ -87,7 +87,7 @@ internal class EngineInterceptor(
             // Check the memory cache.
             val fetcher = request.fetcher(mappedData) ?: registry.requireFetcher(mappedData)
             val memoryCacheKey = request.memoryCacheKey ?: computeMemoryCacheKey(request, mappedData, fetcher, size)
-            val value = readFromMemoryCache(request, memoryCacheKey)
+            val value = if (request.memoryCachePolicy.readEnabled) memoryCacheService[memoryCacheKey] else null
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
             val cachedDrawable = value?.bitmap
@@ -365,23 +365,6 @@ internal class EngineInterceptor(
         }
         eventListener.transformEnd(request, output)
         return result.copy(drawable = output.toDrawable(request.context))
-    }
-
-    /** Return the value associated with [memoryCacheKey]. */
-    private fun readFromMemoryCache(
-        request: ImageRequest,
-        memoryCacheKey: MemoryCache.Key?
-    ): RealMemoryCache.Value? {
-        if (!request.memoryCachePolicy.readEnabled || memoryCacheKey == null) {
-            return null
-        }
-
-        val value = strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
-
-        // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
-        if (value != null) referenceCounter.increment(value.bitmap)
-
-        return value
     }
 
     /** Write [drawable] to the memory cache. Return true if it was added to the cache. */

@@ -183,6 +183,14 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
     )
 }
 
+internal inline fun BitmapReferenceCounter.decrement(bitmap: Bitmap?) {
+    if (bitmap != null) decrement(bitmap)
+}
+
+internal inline fun BitmapReferenceCounter.decrement(drawable: Drawable?) {
+    if (drawable != null && drawable is BitmapDrawable) drawable.bitmap?.let(::decrement)
+}
+
 internal inline fun BitmapReferenceCounter.setValid(bitmap: Bitmap?, isValid: Boolean) {
     if (bitmap != null) setValid(bitmap, isValid)
 }

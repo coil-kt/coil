@@ -74,7 +74,7 @@ class TargetDelegateTest {
             val bitmap = createBitmap()
             counter.setValid(bitmap, true)
             val drawable = bitmap.toDrawable(context)
-            delegate.start(drawable, drawable)
+            delegate.start(drawable, bitmap)
             assertTrue(counter.isValid(bitmap))
         }
 
@@ -130,8 +130,7 @@ class TargetDelegateTest {
         runBlocking {
             val bitmap = createBitmap()
             counter.setValid(bitmap, true)
-            val drawable = bitmap.toDrawable(context)
-            delegate.start(null, drawable)
+            delegate.start(bitmap.toDrawable(context), bitmap)
             assertTrue(target.start)
             assertFalse(counter.isValid(bitmap))
         }
@@ -177,8 +176,7 @@ class TargetDelegateTest {
 
         val initialBitmap = createBitmap()
         counter.setValid(initialBitmap, true)
-        val initialDrawable = initialBitmap.toDrawable(context)
-        delegate.start(initialDrawable, initialDrawable)
+        delegate.start(initialBitmap.toDrawable(context), initialBitmap)
         assertTrue(counter.isValid(initialBitmap))
         assertFalse(initialBitmap in pool.bitmaps)
 
@@ -210,8 +208,7 @@ class TargetDelegateTest {
 
         val initialBitmap = createBitmap()
         counter.setValid(initialBitmap, true)
-        val initialDrawable = initialBitmap.toDrawable(context)
-        delegate.start(initialDrawable, initialDrawable)
+        delegate.start(initialBitmap.toDrawable(context), initialBitmap)
         assertTrue(counter.isValid(initialBitmap))
         assertFalse(initialBitmap in pool.bitmaps)
 
