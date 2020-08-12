@@ -106,10 +106,10 @@ internal class EngineInterceptor(
                         isPlaceholderMemoryCacheKeyPresent = chain.cached != null
                     )
                 )
-            } else {
-                // Decrement the value from the memory cache if it was not used.
-                if (value != null) referenceCounter.decrement(value.bitmap)
             }
+
+            // Decrement the value from the memory cache if it was not used.
+            if (value != null) referenceCounter.decrement(value.bitmap)
 
             // Fetch and decode the image.
             val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
@@ -152,7 +152,10 @@ internal class EngineInterceptor(
     private fun validateDrawable(drawable: Drawable) {
         val bitmap = (drawable as? BitmapDrawable)?.bitmap
         if (bitmap != null) {
+            // Mark this bitmap as valid for pooling (if it has not already been made invalid).
             referenceCounter.setValid(bitmap, true)
+
+            // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
             referenceCounter.increment(bitmap)
         }
     }
@@ -374,7 +377,10 @@ internal class EngineInterceptor(
         }
 
         val value = strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
+
+        // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
         if (value != null) referenceCounter.increment(value.bitmap)
+
         return value
     }
 
