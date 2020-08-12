@@ -374,7 +374,7 @@ internal class EngineInterceptor(
         }
 
         val value = strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
-        if (value != null) referenceCounter.increment(value.bitmap)
+        if (value != null) referenceCounter.increment(value.bitmap) // Decremented in RealImageLoader.onSuccess.
         return value
     }
 
