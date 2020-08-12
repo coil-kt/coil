@@ -242,7 +242,7 @@ internal class RealImageLoader(
             eventListener.onSuccess(request, metadata)
             request.listener?.onSuccess(request, metadata)
         } finally {
-            // Corresponding call to increment in EngineInterceptor.
+            // The corresponding call to 'increment' is in EngineInterceptor.
             (result.drawable as? BitmapDrawable)?.bitmap?.let(referenceCounter::decrement)
         }
     }
