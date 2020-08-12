@@ -153,7 +153,7 @@ internal class EngineInterceptor(
         val bitmap = (drawable as? BitmapDrawable)?.bitmap
         if (bitmap != null) {
             referenceCounter.setValid(bitmap, true)
-            referenceCounter.increment(bitmap) // Decremented in RealImageLoader.onSuccess.
+            referenceCounter.increment(bitmap)
         }
     }
 
@@ -374,7 +374,7 @@ internal class EngineInterceptor(
         }
 
         val value = strongMemoryCache.get(memoryCacheKey) ?: weakMemoryCache.get(memoryCacheKey)
-        if (value != null) referenceCounter.increment(value.bitmap) // Decremented in RealImageLoader.onSuccess.
+        if (value != null) referenceCounter.increment(value.bitmap)
         return value
     }
 
