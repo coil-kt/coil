@@ -162,7 +162,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         var outBitmap: Bitmap? = null
         try {
             outBitmap = safeBufferedSource.use {
-                // outMimeType is null for unsupported formats as well as on older devices with incomplete WebP support
+                // outMimeType is null for unsupported formats as well as on older devices with incomplete WebP support.
                 if (SDK_INT < 19 && outMimeType == null) {
                     val bytes = it.readByteArray()
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size, this)
