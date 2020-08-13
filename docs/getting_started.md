@@ -228,30 +228,3 @@ val disposable = imageView.load("https://www.example.com/image.jpg")
 // Cancel the request.
 disposable.dispose()
 ```
-
-## Image Sampling
-
-Suppose you have an image that is 500x500 on disk, but you only need to load it into memory at 100x100 to be displayed in a view. Coil will load the image into memory, but what happens now if you need the image at 500x500? There's still more "quality" to read from disk, but the image is already loaded into memory at 100x100. Ideally, we would use the 100x100 image as a placeholder while we read the image from disk at 500x500.
-
-This is exactly what Coil does and **Coil handles this process automatically for all BitmapDrawables**. Paired with `crossfade(true)`, this can create a visual effect where the image detail appears to fade in, similar to a [progressive JPEG](https://www.liquidweb.com/kb/what-is-a-progressive-jpeg/).
-
-Here's what it looks like in the sample app:
-
-<p style="text-align: center;">
-    <video width="360" height="640" autoplay loop muted playsinline>
-        <source src="../images/crossfade.mp4" type="video/mp4">
-    </video>
-</p>
-
-*Images in the list have intentionally been loaded with very low detail and the crossfade is slowed down to highlight the visual effect.*
-
-## Bitmap Pooling
-
-Similar to Glide and Fresco, Coil supports bitmap pooling. Bitmap pooling is a technique to re-use Bitmap objects once they are no longer in use (i.e. when a View is detached, a Fragment's view is destroyed, etc.). This can significantly improve memory performance (especially on pre-Oreo devices), however it creates several API limitations.
-
-To make this optimization as seamless and transparent to the consumer as possible, [Targets](targets.md) must opt-in to bitmap pooling. To opt in, implement `PoolableViewTarget`; this requires the target to release all references to its current `Drawable` when its next lifecycle method is called.
-
-See [PoolableViewTarget](../api/coil-base/coil.target/-poolable-view-target) for more information.
-
-!!! Note
-    Do not use `ImageView.getDrawable` if the `ImageView`'s `Drawable` has been set through Coil's `ImageViewTarget`. Instead, either load the image using a custom `Target` or copy underlying `Bitmap` using `Bitmap.copy`.
