@@ -1,5 +1,59 @@
 # Changelog
 
+## [0.12.0] - August XX, 2020
+
+- **Breaking**: `LoadRequest` and `GetRequest` have been replaced with `ImageRequest`:
+  - `ImageLoader.execute(LoadRequest)` -> `ImageLoader.enqueue(ImageRequest)`
+  - `ImageLoader.execute(GetRequest)` -> `ImageLoader.execute(ImageRequest)`
+  - `ImageRequest` implements `equals`/`hashCode`.
+- **Breaking**: A number of classes have been renamed:
+  - `RequestResult` -> `ImageResult`
+  - `RequestDisposable` -> `Disposable`
+- **Breaking**: [`SparseIntArraySet`](https://github.com/coil-kt/coil/blob/f52addd039f0195b66f93cb0f1cad59b0832f784/coil-base/src/main/java/coil/collection/SparseIntArraySet.kt) has been removed from the public API.
+- **Breaking**: `TransitionTarget` no longer implements `ViewTarget`.
+- **Breaking**: `ImageRequest.Listener.onSuccess`'s signature has changed to return an `ImageResult.Metadata` instead of just a `DataSource`.
+- **Breaking**: Remove support for `LoadRequest.aliasKeys`. This API is limiting and can be replaced with direct read/write access to the memory cache.
+
+---
+
+- **New**: Add support for direct read/write access to an `ImageLoader`'s `MemoryCache`. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information.
+- **New**: Add support for `Interceptor`s. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information.
+- **New**: Add the ability to enable/disable bitmap pooling using `ImageLoader.Builder.bitmapPoolingEnabled`.
+- **New**: Support thread interruption while decoding.
+
+---
+
+- **Important**: `Mappers` are now executed on a background dispatcher. As a side effect, automatic bitmap sampling is no longer **automatically** supported. To achieve the same affect, use the `MemoryCache.Key` of a previous request as the `placeholderMemoryCacheKey` of the subsequent request. Here's an example:
+  ```kotlin
+  listImageView.load("https://www.example.com/image.jpg")
+
+  // Later when you navigate to your app's detail view.
+  detailImageView.load("https://www.example.com/image.jpg") {
+      placeholderMemoryCacheKey(listImageView.metadata.memoryCacheKey)
+  }
+  ```
+- **Important**: Coil's `ImageView` extension functions have been moved from the `coil.api` package to the `coil` package.
+  - Use find + replace to refactor `import coil.api.load` -> `import coil.load`. Unfortunately, it's not possible to use Kotlin's `ReplaceWith` functionality to replace imports.
+- **Important**: Use standard crossfade if drawables are not the same image.
+- **Important**: Prefer immutable bitmaps on API 24+.
+
+---
+
+- Fix parsing multiple segments in content-type header.
+- Rework BitmapReferenceCounter to be more robust.
+- Fix WebP decoding on API < 19 devices.
+- Expose FetchResult and DecodeResult in the EventListener API.
+
+---
+
+- Compile with SDK 30.
+- Update Coroutines to 1.3.8.
+- Update OkHttp to 3.12.12.
+- Update Okio to 2.7.0.
+- Update AndroidX dependencies:
+    - `androidx.appcompat:appcompat-resources` -> 1.2.0
+    - `androidx.core:core-ktx` -> 1.3.1
+
 ## [0.11.0] - May 14, 2020
 
 - **Breaking**: **This version removes all existing deprecated functions.**
