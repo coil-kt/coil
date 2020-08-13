@@ -23,10 +23,10 @@
 
 ---
 
-- **Important**: `Mappers` are now executed on a background dispatcher. As a side effect, automatic bitmap sampling is no longer **automatically** supported. To achieve the same affect, use the `MemoryCache.Key` of a previous request as the `placeholderMemoryCacheKey` of the subsequent request. Here's an example:
+- **Important**: `Mappers` are now executed on a background dispatcher. As a side effect, automatic bitmap sampling is no longer **automatically** supported. To achieve the same effect, use the `MemoryCache.Key` of a previous request as the `placeholderMemoryCacheKey` of the subsequent request. Here's an example:
 
   ```kotlin
-  // Load 
+  // Load a small version of your image in a list.
   listImageView.load("https://www.example.com/image.jpg")
 
   // Later when you navigate to your app's detail view.
@@ -36,6 +36,7 @@
   ```
 
   - This also offers more freedom as you can "link" two image requests with different data (e.g. different URLs for small/large images).
+  - This change was also necessary to support executing `Interceptor`s on a background dispatcher.
 
 - **Important**: Coil's `ImageView` extension functions have been moved from the `coil.api` package to the `coil` package.
   - Use find + replace to refactor `import coil.api.load` -> `import coil.load`. Unfortunately, it's not possible to use Kotlin's `ReplaceWith` functionality to replace imports.
