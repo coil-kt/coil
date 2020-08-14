@@ -1,16 +1,15 @@
 ﻿![Coil](logo.svg)
 
-Coil是一个Android图片加载库，通过Kotlin协程的方式加载图片。
-An image loading library for Android backed by Kotlin Coroutines. Coil is:
+Coil是一个Android图片加载库，通过Kotlin协程的方式加载图片。特点：
 
-- **更快**: Coil在性能上有很多优化包括内存缓存和磁盘缓存，把缩略图存保存在内存中，循环利于bitmap，自动暂停和取消图片网络请求等。
+- **更快**: Coil在性能上有很多优化包括内存缓存和磁盘缓存，把缩略图存保存在内存中，循环利用bitmap，自动暂停和取消图片网络请求等。
 - **更轻量级**: Coil 只有2000个方法（前提是你的APP里面集成了OkHttp和Coroutines），Coil和Picasso的方法数差不多相比Glide和Fresco要轻量级很多。
 - **更容易使用**: Coil's API 充分利用了Kotlin语言的新特性简化和减少了很多重复的代码。
 - **更流行**: Coil首选Kotlin语言开发并且使用包含Coroutines, OkHttp, Okio和AndroidX Lifecycles在内的最流行的开源库。
 
 Coil的首字母由来：取**Co**routine，**I**mage和**L**oader得来Coil。
 
-用❤️服务于[Instacart](https://www.instacart.com).
+在[Instacart](https://www.instacart.com)用❤️打造。
 
 ## 下载
 
@@ -94,7 +93,7 @@ val drawable = imageLoader.execute(request).drawable
 
 ## R8 / Proguard
 
-Coil兼容R8混淆您无需在添加其他的规则 
+Coil兼容R8混淆您无需再添加其他的规则 
 
 如果您需要混淆代码，你可能需要添加对应的混淆规则：[Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro), [OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/main/resources/META-INF/proguard/okhttp3.pro) and [Okio](https://github.com/square/okio/blob/master/okio/src/jvmMain/resources/META-INF/proguard/okio.pro)。
 
