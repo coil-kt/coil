@@ -52,10 +52,6 @@ internal inline val StatFs.blockCountCompat: Long
 internal inline val StatFs.blockSizeCompat: Long
     get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
 
-internal inline fun <T> takeIf(take: Boolean, factory: () -> T): T? {
-    return if (take) factory() else null
-}
-
 internal val View.requestManager: ViewTargetRequestManager
     get() {
         var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
@@ -185,6 +181,14 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
         size = size,
         parameters = parameters.cacheKeys()
     )
+}
+
+internal inline fun BitmapReferenceCounter.decrement(bitmap: Bitmap?) {
+    if (bitmap != null) decrement(bitmap)
+}
+
+internal inline fun BitmapReferenceCounter.decrement(drawable: Drawable?) {
+    if (drawable != null && drawable is BitmapDrawable) drawable.bitmap?.let(::decrement)
 }
 
 internal inline fun BitmapReferenceCounter.setValid(bitmap: Bitmap?, isValid: Boolean) {

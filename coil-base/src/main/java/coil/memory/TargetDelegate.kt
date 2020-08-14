@@ -36,7 +36,7 @@ internal sealed class TargetDelegate {
     open val target: Target? get() = null
 
     @MainThread
-    open fun start(cached: BitmapDrawable?, placeholder: Drawable?) {}
+    open fun start(placeholder: Drawable?, cached: Bitmap?) {}
 
     @MainThread
     open suspend fun success(result: SuccessResult) {}
@@ -54,14 +54,14 @@ internal sealed class TargetDelegate {
 internal object EmptyTargetDelegate : TargetDelegate()
 
 /**
- * Only invalidate the success bitmaps.
+ * Only invalidate the success bitmap.
  *
  * Used if [ImageRequest.target] is null and the success [Drawable] is exposed.
  *
  * @see ImageLoader.execute
  */
 internal class InvalidatableEmptyTargetDelegate(
-    val referenceCounter: BitmapReferenceCounter
+    private val referenceCounter: BitmapReferenceCounter
 ) : TargetDelegate() {
 
     override suspend fun success(result: SuccessResult) {
@@ -74,13 +74,13 @@ internal class InvalidatableEmptyTargetDelegate(
  */
 internal class InvalidatableTargetDelegate(
     override val target: Target,
-    val referenceCounter: BitmapReferenceCounter,
+    private val referenceCounter: BitmapReferenceCounter,
     private val eventListener: EventListener,
     private val logger: Logger?
 ) : TargetDelegate() {
 
-    override fun start(cached: BitmapDrawable?, placeholder: Drawable?) {
-        referenceCounter.setValid(cached?.bitmap, false)
+    override fun start(placeholder: Drawable?, cached: Bitmap?) {
+        referenceCounter.setValid(cached, false)
         target.onStart(placeholder)
     }
 
@@ -104,12 +104,11 @@ internal class PoolableTargetDelegate(
     private val logger: Logger?
 ) : TargetDelegate() {
 
-    override fun start(cached: BitmapDrawable?, placeholder: Drawable?) {
-        replace(cached?.bitmap) { onStart(placeholder) }
+    override fun start(placeholder: Drawable?, cached: Bitmap?) {
+        replace(cached) { onStart(placeholder) }
     }
 
     override suspend fun success(result: SuccessResult) {
-        referenceCounter.setValid(result.bitmap, true)
         replace(result.bitmap) { onSuccess(result, eventListener, logger) }
     }
 
@@ -138,7 +137,7 @@ internal class PoolableTargetDelegate(
         bitmap?.let(referenceCounter::increment)
     }
 
-    /** Replace the reference to the currently cached bitmap. */
+    /** Replace the reference to the previous bitmap and decrement its reference count. */
     private fun decrement(bitmap: Bitmap?) {
         val previous = target.view.requestManager.put(this, bitmap)
         previous?.let(referenceCounter::decrement)

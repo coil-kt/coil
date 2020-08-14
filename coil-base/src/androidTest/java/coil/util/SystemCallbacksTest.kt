@@ -57,13 +57,13 @@ class SystemCallbacksTest {
         val bitmapPool = BitmapPool(Int.MAX_VALUE)
         val weakMemoryCache = RealWeakMemoryCache(null)
         val referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        val memoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        val strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
         val imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
             bitmapPool = bitmapPool,
             referenceCounter = referenceCounter,
-            strongMemoryCache = memoryCache,
+            strongMemoryCache = strongMemoryCache,
             weakMemoryCache = weakMemoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
@@ -72,22 +72,22 @@ class SystemCallbacksTest {
         )
         val systemCallbacks = SystemCallbacks(imageLoader, context)
 
-        memoryCache.set(
+        strongMemoryCache.set(
             key = MemoryCache.Key("1"),
             bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
             isSampled = false
         )
 
-        memoryCache.set(
+        strongMemoryCache.set(
             key = MemoryCache.Key("2"),
             bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
             isSampled = false
         )
 
-        assertTrue(memoryCache.size == 8000000)
+        assertTrue(strongMemoryCache.size == 8000000)
 
         systemCallbacks.onTrimMemory(TRIM_MEMORY_COMPLETE)
 
-        assertTrue(memoryCache.size == 0)
+        assertTrue(strongMemoryCache.size == 0)
     }
 }

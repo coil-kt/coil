@@ -59,7 +59,7 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
     override fun trimMemory(level: Int) {}
 }
 
-/** A [WeakMemoryCache] implementation backed by a [MutableMap]. */
+/** A [WeakMemoryCache] implementation backed by a [HashMap]. */
 internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCache {
 
     @VisibleForTesting internal val cache = hashMapOf<Key, ArrayList<WeakValue>>()
@@ -71,7 +71,7 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
 
         // Find the first bitmap that hasn't been collected.
         val strongValue = values.firstNotNullIndices { value ->
-            value.bitmap.get()?.let { bitmap -> StrongValue(bitmap, value.isSampled) }
+            value.bitmap.get()?.let { StrongValue(it, value.isSampled) }
         }
 
         cleanUpIfNecessary()

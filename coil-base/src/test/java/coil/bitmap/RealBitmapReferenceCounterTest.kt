@@ -11,7 +11,6 @@ import coil.util.clear
 import coil.util.count
 import coil.util.createBitmap
 import coil.util.identityHashCode
-import coil.util.isInvalid
 import coil.util.isValid
 import org.junit.Before
 import org.junit.Test
@@ -119,11 +118,12 @@ class RealBitmapReferenceCounterTest {
     fun `invalid bitmaps are not removed from values`() {
         val bitmap = createBitmap()
 
+        counter.setValid(bitmap, true)
         counter.increment(bitmap)
         counter.setValid(bitmap, false)
         counter.decrement(bitmap)
 
-        assertTrue(counter.isInvalid(bitmap))
+        assertFalse(counter.isValid(bitmap))
         assertSame(bitmap, counter.values[bitmap.identityHashCode]?.bitmap?.get())
     }
 
