@@ -19,10 +19,10 @@ import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
 import coil.memory.MemoryCache
+import coil.memory.MemoryCacheService
 import coil.memory.RealMemoryCache
 import coil.memory.RequestService
 import coil.memory.StrongMemoryCache
-import coil.memory.WeakMemoryCache
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.ImageResult.Metadata
@@ -44,7 +44,7 @@ import coil.util.mapData
 import coil.util.requireDecoder
 import coil.util.requireFetcher
 import coil.util.safeConfig
-import coil.util.takeIf
+import coil.util.setValid
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
@@ -58,7 +58,7 @@ internal class EngineInterceptor(
     private val bitmapPool: BitmapPool,
     private val referenceCounter: BitmapReferenceCounter,
     private val strongMemoryCache: StrongMemoryCache,
-    private val weakMemoryCache: WeakMemoryCache,
+    private val memoryCacheService: MemoryCacheService,
     private val requestService: RequestService,
     private val systemCallbacks: SystemCallbacks,
     private val drawableDecoder: DrawableDecoderService,
@@ -76,7 +76,7 @@ internal class EngineInterceptor(
             val size = chain.size
             val eventListener = chain.eventListener
 
-            // Prevent pooling the input data.
+            // Mark the input data's bitmap as ineligible for pooling.
             invalidateData(data)
 
             // Perform any data mapping.
@@ -86,10 +86,8 @@ internal class EngineInterceptor(
 
             // Check the memory cache.
             val fetcher = request.fetcher(mappedData) ?: registry.requireFetcher(mappedData)
-            val key = request.memoryCacheKey ?: computeMemoryCacheKey(request, mappedData, fetcher, size)
-            val value = takeIf(request.memoryCachePolicy.readEnabled) {
-                key?.let { strongMemoryCache.get(it) ?: weakMemoryCache.get(it) }
-            }
+            val memoryCacheKey = request.memoryCacheKey ?: computeMemoryCacheKey(request, mappedData, fetcher, size)
+            val value = if (request.memoryCachePolicy.readEnabled) memoryCacheService[memoryCacheKey] else null
 
             // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
             val cachedDrawable = value?.bitmap
@@ -97,12 +95,12 @@ internal class EngineInterceptor(
                 ?.toDrawable(context)
 
             // Short circuit if the cached bitmap is valid.
-            if (cachedDrawable != null && isCachedValueValid(key, value, request, size)) {
+            if (cachedDrawable != null && isCachedValueValid(memoryCacheKey, value, request, size)) {
                 return SuccessResult(
                     drawable = value.bitmap.toDrawable(context),
                     request = request,
                     metadata = Metadata(
-                        memoryCacheKey = key,
+                        memoryCacheKey = memoryCacheKey,
                         isSampled = value.isSampled,
                         dataSource = DataSource.MEMORY_CACHE,
                         isPlaceholderMemoryCacheKeyPresent = chain.cached != null
@@ -110,17 +108,23 @@ internal class EngineInterceptor(
                 )
             }
 
+            // Decrement the value from the memory cache if it was not used.
+            if (value != null) referenceCounter.decrement(value.bitmap)
+
             // Fetch and decode the image.
             val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
 
+            // Mark the drawable's bitmap as eligible for pooling.
+            validateDrawable(drawable)
+
             // Cache the result in the memory cache.
-            val isCached = writeToMemoryCache(request, key, drawable, isSampled)
+            val isCached = writeToMemoryCache(request, memoryCacheKey, drawable, isSampled)
 
             return SuccessResult(
                 drawable = drawable,
                 request = request,
                 metadata = Metadata(
-                    memoryCacheKey = key.takeIf { isCached },
+                    memoryCacheKey = memoryCacheKey.takeIf { isCached },
                     isSampled = isSampled,
                     dataSource = dataSource,
                     isPlaceholderMemoryCacheKeyPresent = chain.cached != null
@@ -135,11 +139,24 @@ internal class EngineInterceptor(
         }
     }
 
-    /** Prevent pooling the input data. */
+    /** Prevent pooling the input data's bitmap. */
+    @Suppress("USELESS_CAST")
     private fun invalidateData(data: Any) {
         when (data) {
-            is BitmapDrawable -> data.bitmap?.let { referenceCounter.setValid(it, false) }
+            is BitmapDrawable -> referenceCounter.setValid(data.bitmap as Bitmap?, false)
             is Bitmap -> referenceCounter.setValid(data, false)
+        }
+    }
+
+    /** Allow pooling the successful drawable's bitmap. */
+    private fun validateDrawable(drawable: Drawable) {
+        val bitmap = (drawable as? BitmapDrawable)?.bitmap
+        if (bitmap != null) {
+            // Mark this bitmap as valid for pooling (if it has not already been made invalid).
+            referenceCounter.setValid(bitmap, true)
+
+            // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
+            referenceCounter.increment(bitmap)
         }
     }
 
@@ -350,7 +367,7 @@ internal class EngineInterceptor(
         return result.copy(drawable = output.toDrawable(request.context))
     }
 
-    /** Attempt to write [drawable] to the memory cache. Return true if it was added to the cache. */
+    /** Write [drawable] to the memory cache. Return true if it was added to the cache. */
     private fun writeToMemoryCache(
         request: ImageRequest,
         key: MemoryCache.Key?,

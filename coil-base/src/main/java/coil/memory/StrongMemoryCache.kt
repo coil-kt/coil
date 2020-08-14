@@ -123,9 +123,11 @@ private class RealStrongMemoryCache(
 
     override val maxSize get() = cache.maxSize()
 
+    @Synchronized
     override fun get(key: Key) = cache.get(key)
 
-    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) = synchronized(cache) {
+    @Synchronized
+    override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
         // If the bitmap is too big for the cache, don't even attempt to store it. Doing so will cause
         // the cache to be cleared. Instead just evict an existing element with the same key if it exists.
         val size = bitmap.allocationByteCountCompat
@@ -135,22 +137,25 @@ private class RealStrongMemoryCache(
                 // If previous != null, the value was already added to the weak memory cache in LruCache.entryRemoved.
                 weakMemoryCache.set(key, bitmap, isSampled, size)
             }
-            return@synchronized
+            return
         }
 
         referenceCounter.increment(bitmap)
         cache.put(key, InternalValue(bitmap, isSampled, size))
     }
 
+    @Synchronized
     override fun remove(key: Key): Boolean {
         return cache.remove(key) != null
     }
 
+    @Synchronized
     override fun clearMemory() {
         logger?.log(TAG, Log.VERBOSE) { "clearMemory" }
         cache.trimToSize(-1)
     }
 
+    @Synchronized
     override fun trimMemory(level: Int) {
         logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         if (level >= TRIM_MEMORY_BACKGROUND) {

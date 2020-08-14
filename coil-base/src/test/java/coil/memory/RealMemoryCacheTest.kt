@@ -5,7 +5,7 @@ import coil.bitmap.RealBitmapReferenceCounter
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.allocationByteCountCompat
 import coil.util.createBitmap
-import coil.util.isInvalid
+import coil.util.isValid
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,11 +38,12 @@ class RealMemoryCacheTest {
 
         assertNull(cache[key])
 
+        counter.setValid(bitmap, true)
         strongCache.set(key, bitmap, false)
 
-        assertFalse(counter.isInvalid(bitmap))
+        assertTrue(counter.isValid(bitmap))
         assertEquals(bitmap, cache[key])
-        assertTrue(counter.isInvalid(bitmap))
+        assertFalse(counter.isValid(bitmap))
     }
 
     @Test
@@ -52,11 +53,12 @@ class RealMemoryCacheTest {
 
         assertNull(cache[key])
 
+        counter.setValid(bitmap, true)
         weakCache.set(key, bitmap, false, bitmap.allocationByteCountCompat)
 
-        assertFalse(counter.isInvalid(bitmap))
+        assertTrue(counter.isValid(bitmap))
         assertEquals(bitmap, cache[key])
-        assertTrue(counter.isInvalid(bitmap))
+        assertFalse(counter.isValid(bitmap))
     }
 
     @Test
@@ -66,6 +68,7 @@ class RealMemoryCacheTest {
 
         assertNull(cache[key])
 
+        counter.setValid(bitmap, true)
         strongCache.set(key, bitmap, false)
         weakCache.set(key, bitmap, false, bitmap.allocationByteCountCompat)
 
@@ -112,7 +115,7 @@ class RealMemoryCacheTest {
         weakCache.set(key, createBitmap(), false, 100)
         cache[key] = expected
 
-        assertTrue(counter.isInvalid(expected))
+        assertFalse(counter.isValid(expected))
         assertEquals(expected, strongCache.get(key)?.bitmap)
         assertNull(weakCache.get(key))
     }

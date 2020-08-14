@@ -19,6 +19,7 @@ import coil.decode.Options
 import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
 import coil.memory.MemoryCache.Key
+import coil.memory.MemoryCacheService
 import coil.memory.RealMemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.RequestService
@@ -68,9 +69,9 @@ class EngineInterceptorTest {
         interceptor = EngineInterceptor(
             registry = ComponentRegistry(),
             bitmapPool = bitmapPool,
-            referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null),
+            referenceCounter = referenceCounter,
             strongMemoryCache = strongMemoryCache,
-            weakMemoryCache = weakMemoryCache,
+            memoryCacheService = MemoryCacheService(referenceCounter, strongMemoryCache, weakMemoryCache),
             requestService = RequestService(null),
             systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context),
             drawableDecoder = DrawableDecoderService(bitmapPool),
