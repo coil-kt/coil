@@ -6,20 +6,13 @@
   - `ImageLoader.execute(LoadRequest)` -> `ImageLoader.enqueue(ImageRequest)`
   - `ImageLoader.execute(GetRequest)` -> `ImageLoader.execute(ImageRequest)`
   - `ImageRequest` implements `equals`/`hashCode`.
-- **Breaking**: A number of classes have been renamed:
+- **Breaking**: `RequestResult` and `RequestDisposable` have been renamed:
   - `RequestResult` -> `ImageResult`
   - `RequestDisposable` -> `Disposable`
 - **Breaking**: [`SparseIntArraySet`](https://github.com/coil-kt/coil/blob/f52addd039f0195b66f93cb0f1cad59b0832f784/coil-base/src/main/java/coil/collection/SparseIntArraySet.kt) has been removed from the public API.
 - **Breaking**: `TransitionTarget` no longer implements `ViewTarget`.
 - **Breaking**: `ImageRequest.Listener.onSuccess`'s signature has changed to return an `ImageResult.Metadata` instead of just a `DataSource`.
-- **Breaking**: Remove support for `LoadRequest.aliasKeys`. This API is limiting and can be replaced with direct read/write access to the memory cache.
-
----
-
-- **New**: Add support for direct read/write access to an `ImageLoader`'s `MemoryCache`. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information.
-- **New**: Add support for `Interceptor`s. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information.
-- **New**: Add the ability to enable/disable bitmap pooling using `ImageLoader.Builder.bitmapPoolingEnabled`.
-- **New**: Support thread interruption while decoding.
+- **Breaking**: Remove support for `LoadRequest.aliasKeys`. This API is better handled with direct read/write access to the memory cache.
 
 ---
 
@@ -42,6 +35,16 @@
   - Use find + replace to refactor `import coil.api.load` -> `import coil.load`. Unfortunately, it's not possible to use Kotlin's `ReplaceWith` functionality to replace imports.
 - **Important**: Use standard crossfade if drawables are not the same image.
 - **Important**: Prefer immutable bitmaps on API 24+.
+- **Important**: `MeasuredMapper` has been deprecated in favour of the new `Interceptor` interface. See [here](https://gist.github.com/colinrtwhite/90267704091467451e46b21b95154299) for an example of how to convert a `MeasuredMapper` into an `Interceptor`.
+  - `Interceptor` is a much less restrictive API that allows for a wider range of custom logic.
+
+---
+
+- **New**: Add support for direct read/write access to an `ImageLoader`'s `MemoryCache`. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information.
+- **New**: Add support for `Interceptor`s. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information.
+- **New**: Add the ability to enable/disable bitmap pooling using `ImageLoader.Builder.bitmapPoolingEnabled`.
+  - Bitmap pooling is most effective on API 23 and below, but may still be benificial on API 24 and up (by eagerly calling `Bitmap.recycle`).
+- **New**: Support thread interruption while decoding.
 
 ---
 

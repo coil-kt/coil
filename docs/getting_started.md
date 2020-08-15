@@ -228,3 +228,42 @@ val disposable = imageView.load("https://www.example.com/image.jpg")
 // Cancel the request.
 disposable.dispose()
 ```
+
+## Memory Cache
+
+Each `ImageLoader` has its own `MemoryCache` of recently loaded images. To read/write a `Bitmap` to the memory cache, you need a `MemoryCache.Key`. There are two ways to get a `MemoryCache.Key`:
+
+- Create a `MemoryCache.Key` using its constructor: `MemoryCache.Key("my_cache_key")`
+- Get the `MemoryCache.Key` from an executed request:
+
+```kotlin
+// If using the ImageLoader singleton
+val memoryCacheKey = imageView.metadata.memoryCacheKey
+
+// Enqueue
+val request = ImageRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .target(imageView)
+    .listener { _, metadata ->
+        val memoryCacheKey = metadata.memoryCacheKey
+    }
+    .build()
+imageLoader.enqueue(request)
+
+// Execute
+val request = ImageRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .build()
+val result = imageLoader.execute(request)
+if (result is SuccessResult) {
+    val memoryCacheKey = result.metadata.memoryCacheKey
+}
+```
+
+Once you have the memory cache key, you can read/write to the memory cache synchronously:
+
+```kotlin
+val bitmap: Bitmap? = imageLoader.memoryCache[memoryCacheKey]
+
+imageLoader.memoryCache[memoryCacheKey] = bitmap
+```
