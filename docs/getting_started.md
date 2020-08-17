@@ -233,7 +233,7 @@ disposable.dispose()
 
 Each `ImageLoader` has its own `MemoryCache` of recently loaded images. To read/write a `Bitmap` to the memory cache, you need a `MemoryCache.Key`. There are two ways to get a `MemoryCache.Key`:
 
-- Create a `MemoryCache.Key` using its constructor: `MemoryCache.Key("my_cache_key")`
+- Create a `MemoryCache.Key` using its `String` constructor: `MemoryCache.Key("my_cache_key")`
 - Get the `MemoryCache.Key` from an executed request:
 
 ```kotlin
@@ -263,7 +263,9 @@ if (result is SuccessResult) {
 Once you have the memory cache key, you can read/write to the memory cache synchronously:
 
 ```kotlin
+// Get
 val bitmap: Bitmap? = imageLoader.memoryCache[memoryCacheKey]
 
+// Set
 imageLoader.memoryCache[memoryCacheKey] = bitmap
 ```
