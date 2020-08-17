@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.12.0] - August XX, 2020
+## [0.12.0] - August 17, 2020
 
 - **Breaking**: `LoadRequest` and `GetRequest` have been replaced with `ImageRequest`:
   - `ImageLoader.execute(LoadRequest)` -> `ImageLoader.enqueue(ImageRequest)`
