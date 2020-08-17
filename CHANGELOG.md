@@ -16,19 +16,8 @@
 
 ---
 
-- **Important**: `Mappers` are now executed on a background dispatcher. As a side effect, automatic bitmap sampling is no longer **automatically** supported. To achieve the same effect, use the `MemoryCache.Key` of a previous request as the `placeholderMemoryCacheKey` of the subsequent request. Here's an example:
-
-  ```kotlin
-  // Load a small version of your image in a list.
-  listImageView.load("https://www.example.com/image.jpg")
-
-  // Later when you navigate to your app's detail view.
-  detailImageView.load("https://www.example.com/image.jpg") {
-      placeholderMemoryCacheKey(listImageView.metadata.memoryCacheKey)
-  }
-  ```
-
-  - This also offers more freedom as you can "link" two image requests with different data (e.g. different URLs for small/large images).
+- **Important**: `Mappers` are now executed on a background dispatcher. As a side effect, automatic bitmap sampling is no longer **automatically** supported. To achieve the same effect, use the `MemoryCache.Key` of a previous request as the `placeholderMemoryCacheKey` of the subsequent request. [See here for an example](https://coil-kt.github.io/coil/recipes/#using-a-memory-cache-key-as-a-placeholder).
+  - The `placeholderMemoryCacheKey` API offers more freedom as you can "link" two image requests with different data (e.g. different URLs for small/large images).
   - This change was also necessary to support executing `Interceptor`s on a background dispatcher.
 
 - **Important**: Coil's `ImageView` extension functions have been moved from the `coil.api` package to the `coil` package.
@@ -40,8 +29,8 @@
 
 ---
 
-- **New**: Add support for direct read/write access to an `ImageLoader`'s `MemoryCache`. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information.
-- **New**: Add support for `Interceptor`s. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information.
+- **New**: Add support for direct read/write access to an `ImageLoader`'s `MemoryCache`. See [the docs](https://coil-kt.github.io/coil/getting_started/#memory-cache) for more information.
+- **New**: Add support for `Interceptor`s. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information. Coil's `Interceptor` design is heavily inspired by [OkHttp](https://github.com/square/okhttp)'s!
 - **New**: Add the ability to enable/disable bitmap pooling using `ImageLoader.Builder.bitmapPoolingEnabled`.
   - Bitmap pooling is most effective on API 23 and below, but may still be benificial on API 24 and up (by eagerly calling `Bitmap.recycle`).
 - **New**: Support thread interruption while decoding.
@@ -49,7 +38,7 @@
 ---
 
 - Fix parsing multiple segments in content-type header.
-- Rework BitmapReferenceCounter to be more robust.
+- Rework bitmap reference counting to be more robust.
 - Fix WebP decoding on API < 19 devices.
 - Expose FetchResult and DecodeResult in the EventListener API.
 

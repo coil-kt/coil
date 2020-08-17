@@ -254,10 +254,8 @@ imageLoader.enqueue(request)
 val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .build()
-val result = imageLoader.execute(request)
-if (result is SuccessResult) {
-    val memoryCacheKey = result.metadata.memoryCacheKey
-}
+val result = imageLoader.execute(request) as SuccessResult
+val memoryCacheKey = result.metadata.memoryCacheKey
 ```
 
 Once you have the memory cache key, you can read/write to the memory cache synchronously:

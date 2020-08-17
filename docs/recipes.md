@@ -13,7 +13,7 @@ See a common use case that isn't covered? Feel free to submit a PR with a new se
 You can get access to an image's bitmap by setting a `Target` and enqueuing `ImageRequest`:
 
 ```kotlin
-val request = LoadRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .allowHardware(false) // Disable hardware bitmaps.
     .target { drawable ->
@@ -159,12 +159,41 @@ val imageLoader = ImageLoader.Builder(context)
     .build()
 ```
 
+## Using a Memory Cache Key as a Placeholder
+
+Using a previous request's [`MemoryCache.Key`](getting_started.md#memory-cache) as a placeholder for a subsequent request can be useful if the two images are the same, though loaded at different sizes. For instance, if the first request loads the image at 100x100 and the second request loads the image at 500x500, we can use the first image as a synchronous placeholder for the second request.
+
+Here's what this effect looks like in the sample app:
+
+<p style="text-align: center;">	```kotlin
+    <video width="360" height="640" autoplay loop muted playsinline>
+        <source src="../images/crossfade.mp4" type="video/mp4">
+    </video>	
+</p>	
+
+*Images in the list have intentionally been loaded with very low detail and the crossfade is slowed down to highlight the visual effect.*
+
+To achieve this effect, use the `MemoryCache.Key` of the first request as the `ImageRequest.placeholderMemoryCacheKey` of the second request. Here's an example:
+
+```kotlin
+// First request
+listImageView.load("https://www.example.com/image.jpg")
+
+// Second request
+detailImageView.load("https://www.example.com/image.jpg") {
+    placeholderMemoryCacheKey(listImageView.metadata.memoryCacheKey)
+}
+```
+
+!!! Note
+    Previous versions of Coil would attempt to set up this effect **automatically**. This required executing parts of the image pipeline synchronously on the main thread and it was ultimately removed in version `0.12.0`.
+
 ## Shared Element Transitions
 
 [Shared element transitions](https://developer.android.com/training/transitions/start-activity) allow you to animate between `Activites` and `Fragments`. Here are some recommendations on how to get them to work with Coil:
 
 - **Shared element transitions are incompatible with hardware bitmaps.** You should set `allowHardware(false)` to disable hardware bitmaps for both the `ImageView` you are animating from and the view you are animating to. If you don't, the transition will throw an `java.lang.IllegalArgumentException: Software rendering doesn't support hardware bitmaps` exception.
 
-- Use the [`MemoryCache.Key`](../api/coil-base/coil.memory/-memory-cache/-key) of the start image as the [`placeholderMemoryCacheKey`](../api/coil-base/coil.request/-image-request/-builder/placeholder-memory-cache-key) for the end image. This ensures that the start image is used as the placeholder for the end image, which results in a smooth transition with no white flashes.
+- Use the [`MemoryCache.Key`](getting_started.md#memory-cache) of the start image as the [`placeholderMemoryCacheKey`](../api/coil-base/coil.request/-image-request/-builder/placeholder-memory-cache-key) for the end image. This ensures that the start image is used as the placeholder for the end image, which results in a smooth transition with no white flashes if the image is in the memory cache.
 
 - Use [`ChangeImageTransform`](https://developer.android.com/reference/android/transition/ChangeImageTransform) and [`ChangeBounds`](https://developer.android.com/reference/android/transition/ChangeBounds) together for optimal results.

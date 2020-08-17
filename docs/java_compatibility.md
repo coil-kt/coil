@@ -18,7 +18,7 @@ imageLoader.enqueue(request)
 !!! Note
     `ImageView.load` extension functions cannot be used from Java. Use the `ImageRequest.Builder` API instead.
 
-`suspend` functions cannot be easily called from Java. Thus, to get an image synchronously you'll have to create a wrapper function to execute `GetRequest`s:
+`suspend` functions cannot be easily called from Java. Thus, to get an image synchronously you'll have to create a wrapper function to `execute` an `ImageRequest`:
 
 ```kotlin
 @file:JvmName("ImageLoaders")
