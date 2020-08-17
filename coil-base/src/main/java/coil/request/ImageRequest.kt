@@ -239,7 +239,7 @@ class ImageRequest private constructor(
     }
 
     /**
-     * A set of callbacks for a [ImageRequest].
+     * A set of callbacks for an [ImageRequest].
      */
     interface Listener {
 
