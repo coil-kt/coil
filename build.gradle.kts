@@ -50,7 +50,7 @@ allprojects {
         enableExperimentalRules.set(true)
         disabledRules.set(setOf("experimental:annotation", "import-ordering", "indent", "max-line-length"))
         filter {
-            // https://github.com/pinterest/ktlint/issues/726
+            // https://github.com/pinterest/ktlint/issues/830
             exclude("**/ImageLoaderFactory.kt")
         }
     }
