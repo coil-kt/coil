@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0-rc1] - August 18, 2020
+
+- **This release requires Kotlin 1.4.0 or above.**
+- Update Kotlin to 1.4.0 and enable [`-Xjvm-default=all`](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/).
+    - This generates Java 8 default methods for default Kotlin interface methods.
+- Remove all existing deprecated methods in 0.12.0.
+- Update Coroutines to 1.3.9.
+
 ## [0.12.0] - August 18, 2020
 
 - **Breaking**: `LoadRequest` and `GetRequest` have been replaced with `ImageRequest`:
