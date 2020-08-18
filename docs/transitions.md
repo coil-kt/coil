@@ -2,7 +2,7 @@
 
 Transitions allow you to animate setting the result of an image request on a `Target`.
 
-Both `ImageLoader` and `LoadRequest` builders accept a `Transition`. Transitions allow you to control how the sucess/error drawable is set on the `Target`. This allows you to animate the target's view or wrap the input drawable.
+Both `ImageLoader` and `ImageRequest` builders accept a `Transition`. Transitions allow you to control how the sucess/error drawable is set on the `Target`. This allows you to animate the target's view or wrap the input drawable.
 
 By default, Coil comes packaged with 2 transitions:
 

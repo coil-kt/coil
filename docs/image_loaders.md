@@ -1,6 +1,6 @@
 # Image Loaders
 
-[`ImageLoader`](image_loaders.md)s are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute [`Request`](requests.md)s. They handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
+`ImageLoader`s are [service objects](https://publicobject.com/2019/06/10/value-objects-service-objects-and-glue/) that execute [`ImageRequest`](image_requests.md)s. They handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
@@ -8,8 +8,6 @@ val imageLoader = ImageLoader.Builder(context)
     .crossfade(true)
     .build()
 ```
-
-Internally, this constructs a `RealImageLoader` using [ImageLoaderBuilder](../api/coil-base/coil/-image-loader-builder).
 
 Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
 
@@ -52,10 +50,10 @@ For instance, you could inject a fake `ImageLoader` implementation which always 
 
 ```kotlin
 val fakeImageLoader = object : ImageLoader {
-    
+
     private val drawable = ColorDrawable(Color.BLACK)
 
-    private val disposable = object : RequestDisposable {
+    private val disposable = object : Disposable {
         override val isDisposed = true
         override fun dispose() {}
         override suspend fun await() {}
@@ -63,20 +61,29 @@ val fakeImageLoader = object : ImageLoader {
 
     override val defaults = DefaultRequestOptions()
 
-    override fun execute(request: LoadRequest): RequestDisposable {
+    // Optionally, you can add a custom fake memory cache implementation.
+    override val memoryCache get() = throw UnsupportedOperationException()
+
+    override val bitmapPool = BitmapPool(0)
+
+    override fun enqueue(request: ImageRequest): Disposable {
         // Always call onStart before onSuccess.
         request.target?.onStart(drawable)
         request.target?.onSuccess(drawable)
         return disposable
     }
 
-    override suspend fun execute(request: GetRequest): RequestResult {
-        return SuccessResult(drawable, DataSource.MEMORY_CACHE)
+    override suspend fun execute(request: ImageRequest): ImageResult {
+        return SuccessResult(
+            drawable = drawable,
+            request = request,
+            metadata = Metadata(
+                key = MemoryCache.Key(""),
+                isSampled = false,
+                dataSource = DataSource.MEMORY_CACHE
+            )
+        )
     }
-
-    override fun invalidate(key: String) {}
-
-    override fun clearMemory() {}
 
     override fun shutdown() {}
 }

@@ -239,7 +239,7 @@ class ImageRequest private constructor(
     }
 
     /**
-     * A set of callbacks for a [ImageRequest].
+     * A set of callbacks for an [ImageRequest].
      */
     interface Listener {
 
@@ -248,12 +248,6 @@ class ImageRequest private constructor(
          */
         @MainThread
         fun onStart(request: ImageRequest) {}
-
-        /**
-         * Called if the request completes successfully.
-         */
-        @MainThread
-        fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
 
         /**
          * Called if the request is cancelled.
@@ -266,6 +260,12 @@ class ImageRequest private constructor(
          */
         @MainThread
         fun onError(request: ImageRequest, throwable: Throwable) {}
+
+        /**
+         * Called if the request completes successfully.
+         */
+        @MainThread
+        fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
     }
 
     class Builder {
