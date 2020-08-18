@@ -1,7 +1,7 @@
 package coil.request
 
 /**
- * Returned by [ImageRequest.data] if the request was built with null data.
+ * The value for [ImageRequest.data] if the request's data was not set or was set to null.
  *
  * @see ImageRequest.data
  */

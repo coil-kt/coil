@@ -1,5 +1,59 @@
 # Changelog
 
+## [0.12.0] - August 18, 2020
+
+- **Breaking**: `LoadRequest` and `GetRequest` have been replaced with `ImageRequest`:
+  - `ImageLoader.execute(LoadRequest)` -> `ImageLoader.enqueue(ImageRequest)`
+  - `ImageLoader.execute(GetRequest)` -> `ImageLoader.execute(ImageRequest)`
+  - `ImageRequest` implements `equals`/`hashCode`.
+- **Breaking**: `RequestResult` and `RequestDisposable` have been renamed:
+  - `RequestResult` -> `ImageResult`
+  - `RequestDisposable` -> `Disposable`
+- **Breaking**: [`SparseIntArraySet`](https://github.com/coil-kt/coil/blob/f52addd039f0195b66f93cb0f1cad59b0832f784/coil-base/src/main/java/coil/collection/SparseIntArraySet.kt) has been removed from the public API.
+- **Breaking**: `TransitionTarget` no longer implements `ViewTarget`.
+- **Breaking**: `ImageRequest.Listener.onSuccess`'s signature has changed to return an `ImageResult.Metadata` instead of just a `DataSource`.
+- **Breaking**: Remove support for `LoadRequest.aliasKeys`. This API is better handled with direct read/write access to the memory cache.
+
+---
+
+- **Important**: Values in the memory cache are no longer resolved synchronously (if called from the main thread).
+  - This change was also necessary to support executing `Interceptor`s on a background dispatcher.
+  - This change also moves more work off the main thread, improving performance.
+- **Important**: `Mappers` are now executed on a background dispatcher. As a side effect, automatic bitmap sampling is no longer **automatically** supported. To achieve the same effect, use the `MemoryCache.Key` of a previous request as the `placeholderMemoryCacheKey` of the subsequent request. [See here for an example](https://coil-kt.github.io/coil/recipes/#using-a-memory-cache-key-as-a-placeholder).
+  - The `placeholderMemoryCacheKey` API offers more freedom as you can "link" two image requests with different data (e.g. different URLs for small/large images).
+- **Important**: Coil's `ImageView` extension functions have been moved from the `coil.api` package to the `coil` package.
+  - Use find + replace to refactor `import coil.api.load` -> `import coil.load`. Unfortunately, it's not possible to use Kotlin's `ReplaceWith` functionality to replace imports.
+- **Important**: Use standard crossfade if drawables are not the same image.
+- **Important**: Prefer immutable bitmaps on API 24+.
+- **Important**: `MeasuredMapper` has been deprecated in favour of the new `Interceptor` interface. See [here](https://gist.github.com/colinrtwhite/90267704091467451e46b21b95154299) for an example of how to convert a `MeasuredMapper` into an `Interceptor`.
+  - `Interceptor` is a much less restrictive API that allows for a wider range of custom logic.
+- **Important**: `ImageRequest.data` is now not null. If you create an `ImageRequest` without setting its data it will return `NullRequestData` as its data.
+
+---
+
+- **New**: Add support for direct read/write access to an `ImageLoader`'s `MemoryCache`. See [the docs](https://coil-kt.github.io/coil/getting_started/#memory-cache) for more information.
+- **New**: Add support for `Interceptor`s. See [the docs](https://coil-kt.github.io/coil/image_pipeline/#interceptors) for more information. Coil's `Interceptor` design is heavily inspired by [OkHttp](https://github.com/square/okhttp)'s!
+- **New**: Add the ability to enable/disable bitmap pooling using `ImageLoader.Builder.bitmapPoolingEnabled`.
+  - Bitmap pooling is most effective on API 23 and below, but may still be benificial on API 24 and up (by eagerly calling `Bitmap.recycle`).
+- **New**: Support thread interruption while decoding.
+
+---
+
+- Fix parsing multiple segments in content-type header.
+- Rework bitmap reference counting to be more robust.
+- Fix WebP decoding on API < 19 devices.
+- Expose FetchResult and DecodeResult in the EventListener API.
+
+---
+
+- Compile with SDK 30.
+- Update Coroutines to 1.3.8.
+- Update OkHttp to 3.12.12.
+- Update Okio to 2.7.0.
+- Update AndroidX dependencies:
+    - `androidx.appcompat:appcompat-resources` -> 1.2.0
+    - `androidx.core:core-ktx` -> 1.3.1
+
 ## [0.11.0] - May 14, 2020
 
 - **Breaking**: **This version removes all existing deprecated functions.**

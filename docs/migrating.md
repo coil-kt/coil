@@ -79,7 +79,7 @@ Picasso.get()
 
 // Coil
 val imageLoader = Coil.imageLoader(context)
-val request = LoadRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data(url)
     .target(
         onStart = { placeholder ->
@@ -93,7 +93,7 @@ val request = LoadRequest.Builder(context)
         }
     )
     .build()
-imageLoader.execute(request)
+imageLoader.enqueue(request)
 ```
 
 ### Background Thread
@@ -113,7 +113,7 @@ val drawable = Picasso.get()
 
 // Coil (suspends the current coroutine; non-blocking and thread safe)
 val imageLoader = Coil.imageLoader(context)
-val request = GetRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data(url)
     .size(width, height)
     .build()

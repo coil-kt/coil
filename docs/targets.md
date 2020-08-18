@@ -1,11 +1,11 @@
 # Targets
 
-Targets receive the result of a `LoadRequest`. They often act as "view adapters" by taking the placeholder/error/success drawables and applying them to a `View` (e.g. `ImageViewTarget`).
+Targets receive the result of an `ImageRequest`. They often act as "view adapters" by taking the placeholder/error/success drawables and applying them to a `View` (e.g. `ImageViewTarget`).
 
 Here's the easiest way to create a custom target:
 
 ```kotlin
-val request = LoadRequest.Builder(context)
+val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .target(
         onStart = { placeholder ->
@@ -19,7 +19,7 @@ val request = LoadRequest.Builder(context)
         }
     )
     .build()
-imageLoader.execute(request)
+imageLoader.enqueue(request)
 ```
 
 There are 3 types of targets:

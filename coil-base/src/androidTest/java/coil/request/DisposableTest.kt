@@ -47,7 +47,7 @@ class DisposableTest {
     }
 
     @Test
-    fun baseTargetRequestDisposable_dispose() = runBlockingTest {
+    fun baseTargetDisposable_dispose() = runBlockingTest {
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             .size(100, 100)
@@ -63,7 +63,7 @@ class DisposableTest {
     }
 
     @Test
-    fun baseTargetRequestDisposable_await() = runBlockingTest {
+    fun baseTargetDisposable_await() = runBlockingTest {
         val transformation = GateTransformation()
         var result: Drawable? = null
         val request = ImageRequest.Builder(context)
@@ -82,7 +82,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_dispose() = runBlockingTest {
+    fun viewTargetDisposable_dispose() = runBlockingTest {
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
@@ -100,7 +100,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_await() = runBlockingTest {
+    fun viewTargetDisposable_await() = runBlockingTest {
         val transformation = GateTransformation()
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
@@ -120,7 +120,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_restart() = runBlockingTest {
+    fun viewTargetDisposable_restart() = runBlockingTest {
         val transformation = GateTransformation()
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
@@ -150,7 +150,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_replace() = runBlockingTest {
+    fun viewTargetDisposable_replace() = runBlockingTest {
         val imageView = ImageView(context)
 
         fun launchNewRequest(): Disposable {
@@ -177,7 +177,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetRequestDisposable_clear() = runBlockingTest {
+    fun viewTargetDisposable_clear() = runBlockingTest {
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")

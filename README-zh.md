@@ -16,7 +16,7 @@ Coil的首字母由来：取**Co**routine，**I**mage和**L**oader得来Coil。
 Coil允许使用`mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.11.0")
+implementation("io.coil-kt:coil:0.12.0")
 ```
 
 ## 快速使用
@@ -44,43 +44,6 @@ imageView.load("https://www.example.com/image.jpg") {
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
 }
-```
-
-#### 图片加载
-`imageView.load`使用单例`ImageLoader`来执行`LoadRequest`。您也可以通过以下方式获得单例。
-```kotlin
-val imageLoader = Coil.imageLoader(context)
-```
-
-您也可以通过依赖注入的方式创建您自己的`ImageLoader`：
-```kotlin
-val imageLoader = ImageLoader(context)
-```
-
-如果您不需要单例`ImageLoader`，只需要添加依赖：`io.coil-kt:coil-base`。
-
-
-#### 请求
-
-通过`LoadRequest`加载自定义标签:
-
-```kotlin
-val request = LoadRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .target { drawable ->
-        // Handle the result.
-    }
-    .build()
-imageLoader.execute(request)
-```
-
-也可以通过`GetRequest`获得一个drawable对象：
-
-```kotlin
-val request = GetRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .build()
-val drawable = imageLoader.execute(request).drawable
 ```
 
 也可以查看Coli文档获得更多信息： [full documentation here](https://coil-kt.github.io/coil/getting_started/).
