@@ -75,9 +75,9 @@ It's recommended, though not required, to call [`shutdown`](../api/coil-base/coi
 [`ImageRequest`](image_requests.md)s are value classes that are executed by [`ImageLoader`](image_loaders.md)s. They describe where an image should be loaded from, how it should be loaded, and any extra parameters. An `ImageLoader` has two methods that can execute a request:
 
 - `enqueue`: Enqueues the `ImageRequest` to be executed asynchronously on a background thread.
-- `execute`: Executes the `ImageRequest` in the current coroutine and returns an [`ImageResult`](../api/coil-base/coil/request/-image-result).
+- `execute`: Executes the `ImageRequest` in the current coroutine and returns an [`ImageResult`](../api/coil-base/coil.request/-image-result).
 
-All requests should set `data` (i.e. url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to decide where to fetch the image data from. If you do not set `data`, it will default to [`NullRequestData`](../api/coil-base/coil/request/-null-request-data).
+All requests should set `data` (i.e. url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to decide where to fetch the image data from. If you do not set `data`, it will default to [`NullRequestData`](../api/coil-base/coil.request/-null-request-data).
 
 Additionally, you likely want to set a `target` when enqueuing a request. It's optional, but the `target` is what will receive the loaded placeholder/success/error drawables. Executed requests return an `ImageResult` which has the success/error drawable.
 
