@@ -23,7 +23,7 @@ buildscript {
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.3.0")
-        classpath(kotlin("gradle-plugin", version = "1.3.72"))
+        classpath(kotlin("gradle-plugin", version = "1.4.0"))
     }
 }
 
@@ -48,12 +48,17 @@ allprojects {
     extensions.configure<KtlintExtension>("ktlint") {
         version.set("0.37.2")
         enableExperimentalRules.set(true)
+        disabledRules.set(setOf("experimental:annotation", "import-ordering", "indent", "max-line-length"))
+        filter {
+            // https://github.com/pinterest/ktlint/issues/726
+            exclude("**/ImageLoaderFactory.kt")
+        }
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             allWarningsAsErrors = true
-            freeCompilerArgs = listOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
+            freeCompilerArgs = listOf("-progressive", "-Xjvm-default=all", "-Xopt-in=kotlin.RequiresOptIn")
             jvmTarget = "1.8"
         }
     }
