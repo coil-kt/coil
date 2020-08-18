@@ -216,13 +216,11 @@ class TargetDelegateTest {
             val bitmap = createBitmap()
             counter.setValid(bitmap, true)
             var isRunning = true
-            val transition = object : Transition {
-                override suspend fun transition(target: TransitionTarget, result: ImageResult) {
-                    assertFalse(initialBitmap in pool.bitmaps)
-                    delay(100) // Simulate an animation.
-                    assertFalse(initialBitmap in pool.bitmaps)
-                    isRunning = false
-                }
+            val transition = Transition { _, _ ->
+                assertFalse(initialBitmap in pool.bitmaps)
+                delay(100) // Simulate an animation.
+                assertFalse(initialBitmap in pool.bitmaps)
+                isRunning = false
             }
             val result = SuccessResult(
                 drawable = bitmap.toDrawable(context),
@@ -239,6 +237,13 @@ class TargetDelegateTest {
             // Ensure that the animation completed and the initial bitmap was not pooled until this method completes.
             assertFalse(isRunning)
             assertTrue(initialBitmap in pool.bitmaps)
+        }
+    }
+
+    @Suppress("TestFunctionName")
+    private inline fun Transition(crossinline block: suspend (TransitionTarget, ImageResult) -> Unit): Transition {
+        return object : Transition {
+            override suspend fun transition(target: TransitionTarget, result: ImageResult) = block(target, result)
         }
     }
 }

@@ -12,7 +12,6 @@ public abstract class coil/fetch/VideoFrameFetcher : coil/fetch/Fetcher {
 	public static final field VIDEO_FRAME_OPTION_KEY Ljava/lang/String;
 	public fun <init> (Landroid/content/Context;)V
 	public fun fetch (Lcoil/bitmap/BitmapPool;Ljava/lang/Object;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun handles (Ljava/lang/Object;)Z
 	protected abstract fun setDataSource (Landroid/media/MediaMetadataRetriever;Ljava/lang/Object;)V
 }
 
