@@ -165,11 +165,11 @@ Using a previous request's [`MemoryCache.Key`](getting_started.md#memory-cache) 
 
 Here's what this effect looks like in the sample app:
 
-<p style="text-align: center;">	```kotlin
+<p style="text-align: center;">
     <video width="360" height="640" autoplay loop muted playsinline>
         <source src="../images/crossfade.mp4" type="video/mp4">
-    </video>	
-</p>	
+    </video>
+</p>
 
 *Images in the list have intentionally been loaded with very low detail and the crossfade is slowed down to highlight the visual effect.*
 
