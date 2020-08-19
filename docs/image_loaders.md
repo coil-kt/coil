@@ -78,9 +78,10 @@ val fakeImageLoader = object : ImageLoader {
             drawable = drawable,
             request = request,
             metadata = Metadata(
-                key = MemoryCache.Key(""),
+                memoryCacheKey = MemoryCache.Key(""),
                 isSampled = false,
-                dataSource = DataSource.MEMORY_CACHE
+                dataSource = DataSource.MEMORY_CACHE,
+                isPlaceholderMemoryCacheKeyPresent = false
             )
         )
     }
