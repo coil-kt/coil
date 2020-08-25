@@ -45,13 +45,9 @@ allprojects {
     version = project.versionName
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version.set("0.37.2")
+        version.set("0.38.1")
         enableExperimentalRules.set(true)
-        disabledRules.set(setOf("experimental:annotation", "import-ordering", "indent", "max-line-length"))
-        filter {
-            // https://github.com/pinterest/ktlint/issues/726
-            exclude("**/ImageLoaderFactory.kt")
-        }
+        disabledRules.set(setOf("experimental:annotation", "import-ordering", "indent", "max-line-length", "parameter-list-wrapping"))
     }
 
     tasks.withType<KotlinCompile> {
