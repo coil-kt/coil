@@ -15,7 +15,9 @@ import kotlin.math.min
 /**
  * A [Transformation] that crops an image using a centered circle as the mask.
  */
-class CircleCropTransformation : Transformation {
+class CircleCropTransformation(
+    private val strokeConfig: Stroke? = null
+) : Transformation {
 
     override fun key(): String = CircleCropTransformation::class.java.name
 
@@ -29,6 +31,14 @@ class CircleCropTransformation : Transformation {
             drawCircle(radius, radius, radius, paint)
             paint.xfermode = XFERMODE
             drawBitmap(input, radius - input.width / 2f, radius - input.height / 2f, paint)
+
+            strokeConfig?.let { cnf ->
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    style = Paint.Style.STROKE
+                    color = cnf.color
+                    strokeWidth = cnf.widthPx
+                }.let { drawCircle(radius, radius, radius - cnf.widthPx / 2f, it) }
+            }
         }
 
         return output
@@ -39,6 +49,8 @@ class CircleCropTransformation : Transformation {
     override fun hashCode() = javaClass.hashCode()
 
     override fun toString() = "CircleCropTransformation()"
+
+    data class Stroke(val widthPx: Float, val color: Int)
 
     private companion object {
         val XFERMODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
