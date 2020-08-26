@@ -8,6 +8,9 @@ import coil.size.Size
 
 /**
  * Observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine.
+ *
+ * By default, the [Interceptor] chain is launched on the main thread. To launch it on a
+ * background dispatcher, set [ImageLoader.Builder.launchInterceptorChainOnMainThread] to false.
  */
 @ExperimentalCoilApi
 interface Interceptor {

@@ -48,6 +48,7 @@ import coil.util.setValid
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 
@@ -75,9 +76,6 @@ internal class EngineInterceptor(
             val data = request.data
             val size = chain.size
             val eventListener = chain.eventListener
-
-            // Mark the input data's bitmap as ineligible for pooling.
-            invalidateData(data)
 
             // Perform any data mapping.
             eventListener.mapStart(request, data)
@@ -111,52 +109,14 @@ internal class EngineInterceptor(
             // Decrement the value from the memory cache if it was not used.
             if (value != null) referenceCounter.decrement(value.bitmap)
 
-            // Fetch and decode the image.
-            val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
-
-            // Mark the drawable's bitmap as eligible for pooling.
-            validateDrawable(drawable)
-
-            // Cache the result in the memory cache.
-            val isCached = writeToMemoryCache(request, memoryCacheKey, drawable, isSampled)
-
-            return SuccessResult(
-                drawable = drawable,
-                request = request,
-                metadata = Metadata(
-                    memoryCacheKey = memoryCacheKey.takeIf { isCached },
-                    isSampled = isSampled,
-                    dataSource = dataSource,
-                    isPlaceholderMemoryCacheKeyPresent = chain.cached != null
-                )
-            )
+            // Fetch, decode, transform, and cache the image on a background dispatcher.
+            return execute(chain, mappedData, fetcher, request, size, memoryCacheKey)
         } catch (throwable: Throwable) {
             if (throwable is CancellationException) {
                 throw throwable
             } else {
                 return requestService.errorResult(chain.request, throwable)
             }
-        }
-    }
-
-    /** Prevent pooling the input data's bitmap. */
-    @Suppress("USELESS_CAST")
-    private fun invalidateData(data: Any) {
-        when (data) {
-            is BitmapDrawable -> referenceCounter.setValid(data.bitmap as Bitmap?, false)
-            is Bitmap -> referenceCounter.setValid(data, false)
-        }
-    }
-
-    /** Allow pooling the successful drawable's bitmap. */
-    private fun validateDrawable(drawable: Drawable) {
-        val bitmap = (drawable as? BitmapDrawable)?.bitmap
-        if (bitmap != null) {
-            // Mark this bitmap as valid for pooling (if it has not already been made invalid).
-            referenceCounter.setValid(bitmap, true)
-
-            // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
-            referenceCounter.increment(bitmap)
         }
     }
 
@@ -202,8 +162,7 @@ internal class EngineInterceptor(
     }
 
     /** Return true if [cacheValue]'s size satisfies the [request]. */
-    @VisibleForTesting
-    internal fun isSizeValid(
+    private fun isSizeValid(
         cacheKey: MemoryCache.Key?,
         cacheValue: RealMemoryCache.Value,
         request: ImageRequest,
@@ -267,9 +226,63 @@ internal class EngineInterceptor(
         return true
     }
 
+    /** Fetch, decode, transform, and cache the image on a background dispatcher. */
+    private suspend inline fun execute(
+        chain: RealInterceptorChain,
+        mappedData: Any,
+        fetcher: Fetcher<Any>,
+        request: ImageRequest,
+        size: Size,
+        memoryCacheKey: MemoryCache.Key?
+    ) = withContext(request.dispatcher) {
+        // Mark the input data's bitmap as ineligible for pooling.
+        invalidateData(request.data)
+
+        // Fetch and decode the image.
+        val (drawable, isSampled, dataSource) = loadDrawable(mappedData, fetcher, request, chain.requestType, size, chain.eventListener)
+
+        // Mark the drawable's bitmap as eligible for pooling.
+        validateDrawable(drawable)
+
+        // Cache the result in the memory cache.
+        val isCached = writeToMemoryCache(request, memoryCacheKey, drawable, isSampled)
+
+        // Return the result.
+        SuccessResult(
+            drawable = drawable,
+            request = request,
+            metadata = Metadata(
+                memoryCacheKey = memoryCacheKey.takeIf { isCached },
+                isSampled = isSampled,
+                dataSource = dataSource,
+                isPlaceholderMemoryCacheKeyPresent = chain.cached != null
+            )
+        )
+    }
+
+    /** Prevent pooling the input data's bitmap. */
+    @Suppress("USELESS_CAST")
+    private fun invalidateData(data: Any) {
+        when (data) {
+            is BitmapDrawable -> referenceCounter.setValid(data.bitmap as Bitmap?, false)
+            is Bitmap -> referenceCounter.setValid(data, false)
+        }
+    }
+
+    /** Allow pooling the successful drawable's bitmap. */
+    private fun validateDrawable(drawable: Drawable) {
+        val bitmap = (drawable as? BitmapDrawable)?.bitmap
+        if (bitmap != null) {
+            // Mark this bitmap as valid for pooling (if it has not already been made invalid).
+            referenceCounter.setValid(bitmap, true)
+
+            // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
+            referenceCounter.increment(bitmap)
+        }
+    }
+
     /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
-    @VisibleForTesting
-    internal suspend inline fun execute(
+    private suspend inline fun loadDrawable(
         data: Any,
         fetcher: Fetcher<Any>,
         request: ImageRequest,

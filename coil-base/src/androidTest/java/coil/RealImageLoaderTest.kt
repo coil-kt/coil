@@ -88,6 +88,7 @@ class RealImageLoaderTest {
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             componentRegistry = ComponentRegistry(),
+            launchInterceptorChainOnMainThread = true,
             logger = null
         )
     }
@@ -395,6 +396,26 @@ class RealImageLoaderTest {
                 imageLoader.enqueue(request)
             }
         }
+    }
+
+    @Test
+    fun cachedValueIsResolvedSynchronously() = runBlocking(Dispatchers.Main.immediate) {
+        val key = MemoryCache.Key("fake_key")
+        val fileName = "normal.jpg"
+        decodeAssetAndAddToMemoryCache(key, fileName)
+
+        var isSuccessful = false
+        val request = ImageRequest.Builder(context)
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
+            .size(100, 100)
+            .precision(Precision.INEXACT)
+            .memoryCacheKey(key)
+            .target { isSuccessful = true }
+            .build()
+        imageLoader.enqueue(request).dispose()
+
+        // isSuccessful should be synchronously set to true
+        assertTrue(isSuccessful)
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {

@@ -108,6 +108,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun eventListener (Lcoil/EventListener;)Lcoil/ImageLoader$Builder;
 	public final fun fallback (I)Lcoil/ImageLoader$Builder;
 	public final fun fallback (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoader$Builder;
+	public final fun launchInterceptorChainOnMainThread (Z)Lcoil/ImageLoader$Builder;
 	public final fun logger (Lcoil/util/Logger;)Lcoil/ImageLoader$Builder;
 	public final fun memoryCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
 	public final fun networkCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;

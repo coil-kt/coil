@@ -78,6 +78,7 @@ internal class RealImageLoader(
     callFactory: Call.Factory,
     private val eventListenerFactory: EventListener.Factory,
     componentRegistry: ComponentRegistry,
+    private val launchInterceptorChainOnMainThread: Boolean,
     val logger: Logger?
 ) : ImageLoader {
 
@@ -227,8 +228,15 @@ internal class RealImageLoader(
         size: Size,
         cached: Bitmap?,
         eventListener: EventListener
-    ): ImageResult = withContext(request.dispatcher) {
-        RealInterceptorChain(request, type, interceptors, 0, request, size, cached, eventListener).proceed(request)
+    ): ImageResult {
+        val chain = RealInterceptorChain(request, type, interceptors, 0, request, size, cached, eventListener)
+        return if (launchInterceptorChainOnMainThread) {
+            chain.proceed(request)
+        } else {
+            withContext(request.dispatcher) {
+                chain.proceed(request)
+            }
+        }
     }
 
     private suspend inline fun onSuccess(

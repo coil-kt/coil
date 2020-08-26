@@ -14,6 +14,9 @@ import coil.bitmap.EmptyBitmapReferenceCounter
 import coil.bitmap.RealBitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
 import coil.drawable.CrossfadeDrawable
+import coil.fetch.Fetcher
+import coil.intercept.Interceptor
+import coil.map.Mapper
 import coil.memory.EmptyWeakMemoryCache
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
@@ -37,6 +40,7 @@ import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.OkHttpClient
 
@@ -134,6 +138,7 @@ interface ImageLoader {
         private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
         private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
         private var bitmapPoolingEnabled = true
+        private var launchInterceptorChainOnMainThread = true
         private var trackWeakReferences = true
 
         /**
@@ -287,6 +292,25 @@ interface ImageLoader {
          */
         fun trackWeakReferences(enable: Boolean) = apply {
             this.trackWeakReferences = enable
+        }
+
+        /**
+         * Enables executing [Interceptor]s on the main thread.
+         *
+         * If true, this allows the [ImageLoader] to check its memory cache synchronously on the main thread.
+         * However, [Mapper.map] and [Fetcher.key] operations will be executed on the main thread as well.
+         *
+         * If false, [Interceptor]s will be executed on the request's [ImageRequest.dispatcher].
+         * This will result in better UI performance, but values from the memory cache will not
+         * be resolved synchronously.
+         *
+         * It's worth noting that [Interceptor]s can also control which [CoroutineDispatcher] the
+         * memory cache is checked on by calling [Interceptor.Chain.proceed] inside a [withContext] block.
+         *
+         * Default: true
+         */
+        fun launchInterceptorChainOnMainThread(enable: Boolean) = apply {
+            this.launchInterceptorChainOnMainThread = enable
         }
 
         /**
@@ -456,6 +480,7 @@ interface ImageLoader {
                 callFactory = callFactory ?: buildDefaultCallFactory(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = registry ?: ComponentRegistry(),
+                launchInterceptorChainOnMainThread = launchInterceptorChainOnMainThread,
                 logger = logger
             )
         }
