@@ -16,7 +16,7 @@ import okio.BufferedSource
  * To accomplish this, fetchers fit into one of two types:
  *
  * - Uses the data as a key to fetch bytes from a remote source (e.g. network or disk)
- *   and exposes it as a [BufferedSource]. e.g. [HttpUrlFetcher]
+ *   and exposes it as a [BufferedSource]. e.g. [HttpFetcher]
  * - Reads the data directly and translates it into a [Drawable]. e.g. [BitmapFetcher]
  */
 interface Fetcher<T : Any> {

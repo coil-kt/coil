@@ -14,12 +14,12 @@ import coil.fetch.BitmapFetcher
 import coil.fetch.ContentUriFetcher
 import coil.fetch.DrawableFetcher
 import coil.fetch.FileFetcher
+import coil.fetch.HttpUriFetcher
 import coil.fetch.HttpUrlFetcher
 import coil.fetch.ResourceUriFetcher
 import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
 import coil.map.FileUriMapper
-import coil.map.HttpUriMapper
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.map.StringMapper
@@ -93,11 +93,11 @@ internal class RealImageLoader(
     private val registry = componentRegistry.newBuilder()
         // Mappers
         .add(StringMapper())
-        .add(HttpUriMapper())
         .add(FileUriMapper())
         .add(ResourceUriMapper(context))
         .add(ResourceIntMapper(context))
         // Fetchers
+        .add(HttpUriFetcher(callFactory))
         .add(HttpUrlFetcher(callFactory))
         .add(FileFetcher())
         .add(AssetUriFetcher(context))
