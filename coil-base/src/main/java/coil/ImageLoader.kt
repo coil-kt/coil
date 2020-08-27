@@ -283,19 +283,7 @@ interface ImageLoader {
         }
 
         /**
-         * Enables weak reference tracking of loaded images.
-         *
-         * This allows the image loader to hold weak references to loaded images.
-         * This ensures that if an image is still in memory it will be returned from the memory cache.
-         *
-         * Default: true
-         */
-        fun trackWeakReferences(enable: Boolean) = apply {
-            this.trackWeakReferences = enable
-        }
-
-        /**
-         * Enables executing [Interceptor]s on the main thread.
+         * Enables launching the [Interceptor] chain on the main thread.
          *
          * If true, this allows the [ImageLoader] to check its memory cache synchronously on the main thread.
          * However, [Mapper.map] and [Fetcher.key] operations will be executed on the main thread as well.
@@ -307,10 +295,22 @@ interface ImageLoader {
          * It's worth noting that [Interceptor]s can also control which [CoroutineDispatcher] the
          * memory cache is checked on by calling [Interceptor.Chain.proceed] inside a [withContext] block.
          *
-         * Default: true
+         * Default: false
          */
         fun launchInterceptorChainOnMainThread(enable: Boolean) = apply {
             this.launchInterceptorChainOnMainThread = enable
+        }
+
+        /**
+         * Enables weak reference tracking of loaded images.
+         *
+         * This allows the image loader to hold weak references to loaded images.
+         * This ensures that if an image is still in memory it will be returned from the memory cache.
+         *
+         * Default: true
+         */
+        fun trackWeakReferences(enable: Boolean) = apply {
+            this.trackWeakReferences = enable
         }
 
         /**
