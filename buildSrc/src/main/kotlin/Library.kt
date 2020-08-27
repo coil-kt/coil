@@ -6,7 +6,7 @@ object Library {
 
     // CORE
 
-    private const val COROUTINES_VERSION = "1.3.8"
+    private const val COROUTINES_VERSION = "1.3.9"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.1.0"
@@ -32,7 +32,7 @@ object Library {
     private const val OKHTTP_VERSION = "3.12.12"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
-    const val OKIO = "com.squareup.okio:okio:2.7.0"
+    const val OKIO = "com.squareup.okio:okio:2.8.0"
 
     // TEST
 
