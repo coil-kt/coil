@@ -60,12 +60,10 @@ class ImageLoaderFactoryTest {
         val imageLoader1 = ImageLoader(context)
 
         val isInitialized = AtomicBoolean(false)
-        Coil.setImageLoader(object : ImageLoaderFactory {
-            override fun newImageLoader(): ImageLoader {
-                check(!isInitialized.getAndSet(true)) { "newImageLoader was invoked more than once." }
-                return imageLoader1
-            }
-        })
+        Coil.setImageLoader {
+            check(!isInitialized.getAndSet(true)) { "newImageLoader was invoked more than once." }
+            imageLoader1
+        }
 
         assertFalse(isInitialized.get())
 
@@ -88,12 +86,10 @@ class ImageLoaderFactoryTest {
         assertFalse(isInitialized.get())
         assertFalse((context.applicationContext as TestApplication).isInitialized.get())
 
-        Coil.setImageLoader(object : ImageLoaderFactory {
-            override fun newImageLoader(): ImageLoader {
-                check(!isInitialized.getAndSet(true)) { "newImageLoader was invoked more than once." }
-                return ImageLoader(context)
-            }
-        })
+        Coil.setImageLoader {
+            check(!isInitialized.getAndSet(true)) { "newImageLoader was invoked more than once." }
+            ImageLoader(context)
+        }
 
         Coil.imageLoader(context)
 
