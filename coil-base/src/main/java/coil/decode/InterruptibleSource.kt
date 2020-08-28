@@ -54,7 +54,7 @@ internal class InterruptibleSource(
     delegate: Source
 ) : ForwardingSource(delegate), CompletionHandler {
 
-    private val _state = AtomicInteger(WORKING)
+    private val _state = AtomicInteger(UNINTERRUPTIBLE)
     private val targetThread = Thread.currentThread()
 
     init {
@@ -64,8 +64,8 @@ internal class InterruptibleSource(
         run {
             _state.loop { state ->
                 when (state) {
-                    WORKING -> if (_state.compareAndSet(state, WORKING)) return@run
-                    INTERRUPTING, INTERRUPTED -> return@run
+                    UNINTERRUPTIBLE -> if (_state.compareAndSet(state, UNINTERRUPTIBLE)) return@run
+                    PENDING, INTERRUPTING, INTERRUPTED -> return@run
                     else -> invalidState(state)
                 }
             }
