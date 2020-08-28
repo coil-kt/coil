@@ -6,7 +6,6 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.utils.addToStdlib.cast
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
@@ -18,12 +17,12 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.0.1")
+        classpath("com.android.tools.build:gradle:4.1.0-rc01")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.12.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.3.0")
-        classpath(kotlin("gradle-plugin", version = "1.3.72"))
+        classpath(kotlin("gradle-plugin", version = "1.4.0"))
     }
 }
 
@@ -46,8 +45,15 @@ allprojects {
     version = project.versionName
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version.set("0.37.2")
+        version.set("0.38.1")
         enableExperimentalRules.set(true)
+        disabledRules.set(setOf(
+            "experimental:annotation",
+            "import-ordering",
+            "indent",
+            "max-line-length",
+            "parameter-list-wrapping"
+        ))
     }
 
     tasks.withType<KotlinCompile> {
@@ -111,14 +117,14 @@ subprojects {
 
             // Work around Robolectric issues.
             testOptions {
-                unitTests.all(closureOf<Test> {
+                unitTests.all {
                     // https://github.com/robolectric/robolectric/issues/5115
-                    systemProperty("javax.net.ssl.trustStoreType", "JKS")
+                    it.systemProperty("javax.net.ssl.trustStoreType", "JKS")
 
                     // https://github.com/robolectric/robolectric/issues/5456
-                    systemProperty("robolectric.dependency.repo.id", "central")
-                    systemProperty("robolectric.dependency.repo.url", "https://repo1.maven.org/maven2")
-                }.cast())
+                    it.systemProperty("robolectric.dependency.repo.id", "central")
+                    it.systemProperty("robolectric.dependency.repo.url", "https://repo1.maven.org/maven2")
+                }
             }
         }
     }

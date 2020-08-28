@@ -1,6 +1,6 @@
 package coil.size
 
-internal class RealSizeResolver(val size: Size) : SizeResolver {
+internal class RealSizeResolver(private val size: Size) : SizeResolver {
 
     override suspend fun size() = size
 
