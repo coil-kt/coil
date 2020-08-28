@@ -47,7 +47,13 @@ allprojects {
     extensions.configure<KtlintExtension>("ktlint") {
         version.set("0.38.1")
         enableExperimentalRules.set(true)
-        disabledRules.set(setOf("experimental:annotation", "import-ordering", "indent", "max-line-length", "parameter-list-wrapping"))
+        disabledRules.set(setOf(
+            "experimental:annotation",
+            "import-ordering",
+            "indent",
+            "max-line-length",
+            "parameter-list-wrapping"
+        ))
     }
 
     tasks.withType<KotlinCompile> {
