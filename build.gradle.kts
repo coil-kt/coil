@@ -117,7 +117,7 @@ subprojects {
 
             // Work around Robolectric issues.
             testOptions {
-                unitTests.all  {
+                unitTests.all {
                     // https://github.com/robolectric/robolectric/issues/5115
                     it.systemProperty("javax.net.ssl.trustStoreType", "JKS")
 
