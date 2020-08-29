@@ -12,6 +12,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 
 @RunWith(RobolectricTestRunner::class)
 class StrongMemoryCacheTest {
@@ -96,7 +97,7 @@ class StrongMemoryCacheTest {
 
         assertNull(strongCache.get(Key("1")))
         assertNull(weakCache.get(Key("1")))
-        assertEquals(first, pool.getDirtyOrNull(first.width, first.height, first.config))
+        assertSame(first, pool.getDirtyOrNull(first.width, first.height, first.config))
     }
 
     @Test
