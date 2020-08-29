@@ -292,8 +292,8 @@ interface ImageLoader {
          * main thread as well, which has a performance cost.
          *
          * If false, the [Interceptor] chain will be launched from the request's [ImageRequest.dispatcher].
-         * This will result in better UI performance, but values from the memory cache will not
-         * be resolved synchronously.
+         * This will result in better UI performance, but values from the memory cache will not be resolved
+         * synchronously.
          *
          * The actual fetch + decode process always occurs on [ImageRequest.dispatcher] and is unaffected by this flag.
          *
