@@ -5,6 +5,7 @@ import coil.bitmap.RealBitmapReferenceCounter
 import coil.memory.MemoryCache.Key
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
+import coil.util.executeQueuedMainThreadTasks
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -90,6 +91,8 @@ class StrongMemoryCacheTest {
         val second = createBitmap()
         counter.setValid(second, true)
         strongCache.set(Key("2"), second, false)
+
+        executeQueuedMainThreadTasks()
 
         assertNull(strongCache.get(Key("1")))
         assertNull(weakCache.get(Key("1")))
