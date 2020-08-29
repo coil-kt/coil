@@ -38,6 +38,7 @@ import coil.util.Utils
 import coil.util.createMockWebServer
 import coil.util.decodeBitmapAsset
 import coil.util.getDrawableCompat
+import coil.util.runBlockingTest
 import coil.util.size
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -400,7 +401,7 @@ class RealImageLoaderTest {
     }
 
     @Test
-    fun cachedValueIsResolvedSynchronously() = runBlocking(Dispatchers.Main.immediate) {
+    fun cachedValueIsResolvedSynchronously() = runBlockingTest {
         val key = MemoryCache.Key("fake_key")
         val fileName = "normal.jpg"
         decodeAssetAndAddToMemoryCache(key, fileName)
