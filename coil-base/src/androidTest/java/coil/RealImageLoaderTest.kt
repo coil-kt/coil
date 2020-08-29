@@ -416,7 +416,7 @@ class RealImageLoaderTest {
             .build()
         imageLoader.enqueue(request).dispose()
 
-        // isSuccessful should be synchronously set to true
+        // isSuccessful should be synchronously set to true.
         assertTrue(isSuccessful)
     }
 
