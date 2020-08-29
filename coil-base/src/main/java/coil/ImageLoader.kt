@@ -40,6 +40,7 @@ import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.OkHttpClient
@@ -285,17 +286,23 @@ interface ImageLoader {
         /**
          * Enables launching the [Interceptor] chain on the main thread.
          *
-         * If true, this allows the [ImageLoader] to check its memory cache synchronously on the main thread.
-         * However, [Mapper.map] and [Fetcher.key] operations will be executed on the main thread as well.
+         * If true, the [Interceptor] chain will be launched from [MainCoroutineDispatcher.immediate]. This allows
+         * the [ImageLoader] to check its memory cache and return a cached value synchronously if the request is
+         * started from the main thread. However, [Mapper.map] and [Fetcher.key] operations will be executed on the
+         * main thread as well, which has a performance cost.
          *
-         * If false, [Interceptor]s will be executed on the request's [ImageRequest.dispatcher].
+         * If false, the [Interceptor] chain will be launched from the request's [ImageRequest.dispatcher].
          * This will result in better UI performance, but values from the memory cache will not
          * be resolved synchronously.
          *
+         * The actual fetch + decode process always occurs on [ImageRequest.dispatcher] and is unaffected by this flag.
+         *
          * It's worth noting that [Interceptor]s can also control which [CoroutineDispatcher] the
          * memory cache is checked on by calling [Interceptor.Chain.proceed] inside a [withContext] block.
+         * Therefore if you set [launchInterceptorChainOnMainThread] to true, you can control which [ImageRequest]s
+         * check the memory cache synchronously at runtime.
          *
-         * Default: false
+         * Default: true
          */
         fun launchInterceptorChainOnMainThread(enable: Boolean) = apply {
             this.launchInterceptorChainOnMainThread = enable

@@ -106,11 +106,36 @@ internal class EngineInterceptor(
                 )
             }
 
-            // Decrement the value from the memory cache if it was not used.
-            if (value != null) referenceCounter.decrement(value.bitmap)
-
             // Fetch, decode, transform, and cache the image on a background dispatcher.
-            return execute(chain, mappedData, fetcher, request, size, memoryCacheKey)
+            return withContext(request.dispatcher) {
+                // Mark the input data as ineligible for pooling (if necessary).
+                invalidateData(request.data)
+
+                // Decrement the value from the memory cache if it was not used.
+                if (value != null) referenceCounter.decrement(value.bitmap)
+
+                // Fetch and decode the image.
+                val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request,
+                    chain.requestType, size, chain.eventListener)
+
+                // Mark the drawable's bitmap as eligible for pooling.
+                validateDrawable(drawable)
+
+                // Cache the result in the memory cache.
+                val isCached = writeToMemoryCache(request, memoryCacheKey, drawable, isSampled)
+
+                // Return the result.
+                SuccessResult(
+                    drawable = drawable,
+                    request = request,
+                    metadata = Metadata(
+                        memoryCacheKey = memoryCacheKey.takeIf { isCached },
+                        isSampled = isSampled,
+                        dataSource = dataSource,
+                        isPlaceholderMemoryCacheKeyPresent = chain.cached != null
+                    )
+                )
+            }
         } catch (throwable: Throwable) {
             if (throwable is CancellationException) {
                 throw throwable
@@ -226,40 +251,6 @@ internal class EngineInterceptor(
         return true
     }
 
-    /** Fetch, decode, transform, and cache the image on a background dispatcher. */
-    private suspend inline fun execute(
-        chain: RealInterceptorChain,
-        mappedData: Any,
-        fetcher: Fetcher<Any>,
-        request: ImageRequest,
-        size: Size,
-        memoryCacheKey: MemoryCache.Key?
-    ) = withContext(request.dispatcher) {
-        // Mark the input data's bitmap as ineligible for pooling.
-        invalidateData(request.data)
-
-        // Fetch and decode the image.
-        val (drawable, isSampled, dataSource) = loadDrawable(mappedData, fetcher, request, chain.requestType, size, chain.eventListener)
-
-        // Mark the drawable's bitmap as eligible for pooling.
-        validateDrawable(drawable)
-
-        // Cache the result in the memory cache.
-        val isCached = writeToMemoryCache(request, memoryCacheKey, drawable, isSampled)
-
-        // Return the result.
-        SuccessResult(
-            drawable = drawable,
-            request = request,
-            metadata = Metadata(
-                memoryCacheKey = memoryCacheKey.takeIf { isCached },
-                isSampled = isSampled,
-                dataSource = dataSource,
-                isPlaceholderMemoryCacheKeyPresent = chain.cached != null
-            )
-        )
-    }
-
     /** Prevent pooling the input data's bitmap. */
     @Suppress("USELESS_CAST")
     private fun invalidateData(data: Any) {
@@ -282,7 +273,7 @@ internal class EngineInterceptor(
     }
 
     /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
-    private suspend inline fun loadDrawable(
+    private suspend inline fun execute(
         data: Any,
         fetcher: Fetcher<Any>,
         request: ImageRequest,
