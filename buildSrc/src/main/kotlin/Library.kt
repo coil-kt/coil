@@ -14,7 +14,7 @@ object Library {
     const val ANDROIDX_APPCOMPAT = "androidx.appcompat:appcompat:1.2.0"
     const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:1.2.0"
     const val ANDROIDX_COLLECTION = "androidx.collection:collection-ktx:1.1.0"
-    const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:1.1.3"
+    const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:2.0.1"
     const val ANDROIDX_CORE = "androidx.core:core-ktx:1.3.1"
     const val ANDROIDX_EXIF_INTERFACE = "androidx.exifinterface:exifinterface:1.2.0"
     const val ANDROIDX_MULTIDEX = "androidx.multidex:multidex:2.0.1"
