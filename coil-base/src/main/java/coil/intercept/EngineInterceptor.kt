@@ -115,8 +115,8 @@ internal class EngineInterceptor(
                 if (value != null) referenceCounter.decrement(value.bitmap)
 
                 // Fetch and decode the image.
-                val (drawable, isSampled, dataSource) = execute(mappedData, fetcher, request,
-                    chain.requestType, size, chain.eventListener)
+                val (drawable, isSampled, dataSource) =
+                    execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
 
                 // Mark the drawable's bitmap as eligible for pooling.
                 validateDrawable(drawable)
@@ -294,7 +294,9 @@ internal class EngineInterceptor(
                     coroutineContext.ensureActive()
 
                     // Find the relevant decoder.
-                    val isDiskOnlyPreload = type == REQUEST_TYPE_ENQUEUE && request.target == null && !request.memoryCachePolicy.writeEnabled
+                    val isDiskOnlyPreload = type == REQUEST_TYPE_ENQUEUE &&
+                        request.target == null &&
+                        !request.memoryCachePolicy.writeEnabled
                     val decoder = if (isDiskOnlyPreload) {
                         // Skip decoding the result if we are preloading the data and writing to the memory cache is
                         // disabled. Instead, we exhaust the source and return an empty result.
