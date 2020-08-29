@@ -87,6 +87,7 @@ public abstract interface class coil/ImageLoader {
 
 public final class coil/ImageLoader$Builder {
 	public fun <init> (Landroid/content/Context;)V
+	public final fun addLastModifiedToFileCacheKey (Z)Lcoil/ImageLoader$Builder;
 	public final fun allowHardware (Z)Lcoil/ImageLoader$Builder;
 	public final fun allowRgb565 (Z)Lcoil/ImageLoader$Builder;
 	public final fun availableMemoryPercentage (D)Lcoil/ImageLoader$Builder;
