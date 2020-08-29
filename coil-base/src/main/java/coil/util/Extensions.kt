@@ -46,11 +46,11 @@ internal inline val ActivityManager.isLowRamDeviceCompat: Boolean
 
 @Suppress("DEPRECATION")
 internal inline val StatFs.blockCountCompat: Long
-    get() = if (SDK_INT > 18) blockCountLong else blockCount.toLong()
+    get() = if (SDK_INT >= 18) blockCountLong else blockCount.toLong()
 
 @Suppress("DEPRECATION")
 internal inline val StatFs.blockSizeCompat: Long
-    get() = if (SDK_INT > 18) blockSizeLong else blockSize.toLong()
+    get() = if (SDK_INT >= 18) blockSizeLong else blockSize.toLong()
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {
