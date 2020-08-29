@@ -10,6 +10,7 @@ import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.clear
 import coil.util.count
 import coil.util.createBitmap
+import coil.util.executeQueuedMainThreadTasks
 import coil.util.identityHashCode
 import coil.util.isValid
 import org.junit.Before
@@ -70,8 +71,10 @@ class RealBitmapReferenceCounterTest {
 
         assertTrue(counter.decrement(bitmap))
 
+        executeQueuedMainThreadTasks()
+
         assertEquals(0, counter.count(bitmap))
-        assertEquals(bitmap, pool.getDirtyOrNull(bitmap.width, bitmap.height, bitmap.config))
+        assertSame(bitmap, pool.getDirtyOrNull(bitmap.width, bitmap.height, bitmap.config))
 
         // The bitmap should be removed from the weak memory cache.
         assertNull(weakMemoryCache.get(key))
