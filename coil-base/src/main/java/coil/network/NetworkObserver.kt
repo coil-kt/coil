@@ -68,7 +68,7 @@ internal interface NetworkObserver {
 
 private object EmptyNetworkObserver : NetworkObserver {
 
-    override val isOnline = true
+    override val isOnline get() = true
 
     override fun shutdown() {}
 }

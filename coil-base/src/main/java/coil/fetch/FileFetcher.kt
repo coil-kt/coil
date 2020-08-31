@@ -9,9 +9,11 @@ import okio.buffer
 import okio.source
 import java.io.File
 
-internal class FileFetcher : Fetcher<File> {
+internal class FileFetcher(private val addLastModifiedToFileCacheKey: Boolean) : Fetcher<File> {
 
-    override fun key(data: File) = "${data.path}:${data.lastModified()}"
+    override fun key(data: File): String {
+        return if (addLastModifiedToFileCacheKey) "${data.path}:${data.lastModified()}" else data.path
+    }
 
     override suspend fun fetch(
         pool: BitmapPool,
