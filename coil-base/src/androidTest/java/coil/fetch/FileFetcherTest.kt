@@ -34,7 +34,7 @@ class FileFetcherTest {
 
         val size = PixelSize(100, 100)
         val result = runBlocking {
-            fetcher.fetch(pool, file, size, createOptions())
+            fetcher.fetch(pool, file, size, createOptions(context))
         }
 
         assertTrue(result is SourceResult)

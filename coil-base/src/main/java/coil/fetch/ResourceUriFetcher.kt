@@ -38,6 +38,7 @@ internal class ResourceUriFetcher(
         val packageName = data.authority?.takeIf { it.isNotBlank() } ?: throwInvalidUriException(data)
         val resId = data.pathSegments.lastOrNull()?.toIntOrNull() ?: throwInvalidUriException(data)
 
+        val context = options.context
         val resources = context.packageManager.getResourcesForApplication(packageName)
         val path = TypedValue().apply { resources.getValue(resId, this, true) }.string
         val entryName = path.substring(path.lastIndexOf('/'))

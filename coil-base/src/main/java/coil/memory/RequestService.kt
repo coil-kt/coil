@@ -48,6 +48,7 @@ internal class RequestService(private val logger: Logger?) {
         val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() && config != Bitmap.Config.ALPHA_8
 
         return Options(
+            context = request.context,
             config = config,
             colorSpace = request.colorSpace,
             scale = request.scale,
