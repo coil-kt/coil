@@ -461,7 +461,7 @@ class EngineInterceptorTest {
                 ),
                 request = createRequest(context) { transformations(CircleCropTransformation()) },
                 size = size,
-                options = createOptions(),
+                options = createOptions(context),
                 eventListener = EventListener.NONE
             )
         }
@@ -484,7 +484,7 @@ class EngineInterceptorTest {
                 ),
                 request = createRequest(context) { transformations(emptyList()) },
                 size = size,
-                options = createOptions(),
+                options = createOptions(context),
                 eventListener = EventListener.NONE
             )
         }

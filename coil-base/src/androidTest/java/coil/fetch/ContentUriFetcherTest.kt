@@ -79,7 +79,7 @@ class ContentUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
+            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
         }
 
         assertTrue(result is SourceResult)

@@ -207,14 +207,15 @@ public final class coil/decode/InterruptibleSourceKt {
 }
 
 public final class coil/decode/Options {
-	public fun <init> (Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)V
-	public final fun copy (Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)Lcoil/decode/Options;
-	public static synthetic fun copy$default (Lcoil/decode/Options;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;ILjava/lang/Object;)Lcoil/decode/Options;
+	public fun <init> (Landroid/content/Context;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)V
+	public final fun copy (Landroid/content/Context;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)Lcoil/decode/Options;
+	public static synthetic fun copy$default (Lcoil/decode/Options;Landroid/content/Context;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;ILjava/lang/Object;)Lcoil/decode/Options;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAllowInexactSize ()Z
 	public final fun getAllowRgb565 ()Z
 	public final fun getColorSpace ()Landroid/graphics/ColorSpace;
 	public final fun getConfig ()Landroid/graphics/Bitmap$Config;
+	public final fun getContext ()Landroid/content/Context;
 	public final fun getDiskCachePolicy ()Lcoil/request/CachePolicy;
 	public final fun getHeaders ()Lokhttp3/Headers;
 	public final fun getMemoryCachePolicy ()Lcoil/request/CachePolicy;

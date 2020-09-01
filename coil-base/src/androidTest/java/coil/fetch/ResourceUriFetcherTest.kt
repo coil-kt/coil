@@ -4,14 +4,22 @@ import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.launchActivity
 import coil.base.test.R
 import coil.bitmap.BitmapPool
 import coil.decode.DrawableDecoderService
+import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
+import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.util.createOptions
+import coil.util.getDrawableCompat
+import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import org.junit.Assume.assumeTrue
 import org.junit.Before
@@ -42,7 +50,7 @@ class ResourceUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
+            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
         }
 
         assertTrue(result is SourceResult)
@@ -57,7 +65,7 @@ class ResourceUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
+            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
         }
 
         assertTrue(result is DrawableResult)
@@ -75,7 +83,7 @@ class ResourceUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
+            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
         }
 
         assertTrue(result is SourceResult)
@@ -95,11 +103,31 @@ class ResourceUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
+            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
         }
 
         assertTrue(result is DrawableResult)
         assertTrue(result.drawable is BitmapDrawable)
         assertTrue(result.isSampled)
     }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/469 */
+    @Test
+    fun colorAttributeIsApplied() {
+        val scenario = launchActivity<TestActivity>()
+        scenario.moveToState(Lifecycle.State.RESUMED)
+        scenario.onActivity { activity ->
+            runBlocking {
+                val result = runBlocking {
+                    val uri = ResourceIntMapper(context).map(R.drawable.ic_tinted_vector)
+                    fetcher.fetch(pool, uri, OriginalSize, createOptions(activity))
+                }
+                val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
+                val actual = (result as DrawableResult).drawable.toBitmap()
+                assertTrue(actual.isSimilarTo(expected))
+            }
+        }
+    }
+
+    class TestActivity : AppCompatActivity()
 }

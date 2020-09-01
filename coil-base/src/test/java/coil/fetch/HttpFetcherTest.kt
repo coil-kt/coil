@@ -64,7 +64,7 @@ class HttpFetcherTest {
         assertEquals(url.toString(), fetcher.key(url))
 
         val result = runBlocking {
-            fetcher.fetch(pool, url, PixelSize(100, 100), createOptions())
+            fetcher.fetch(pool, url, PixelSize(100, 100), createOptions(context))
         }
 
         assertTrue(result is SourceResult)
@@ -79,7 +79,7 @@ class HttpFetcherTest {
         assertEquals(uri.toString(), fetcher.key(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
+            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
         }
 
         assertTrue(result is SourceResult)

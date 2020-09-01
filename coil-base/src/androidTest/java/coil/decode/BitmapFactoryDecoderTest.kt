@@ -106,7 +106,11 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(1500, 1500),
-            options = createOptions(scale = Scale.FIT, allowInexactSize = true)
+            options = createOptions(
+                context = context,
+                scale = Scale.FIT,
+                allowInexactSize = true
+            )
         )
         assertEquals(PixelSize(1080, 1350), result.size)
     }
@@ -116,7 +120,11 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(1500, 1500),
-            options = createOptions(scale = Scale.FIT, allowInexactSize = false)
+            options = createOptions(
+                context = context,
+                scale = Scale.FIT,
+                allowInexactSize = false
+            )
         )
         assertEquals(PixelSize(1200, 1500), result.size)
     }
@@ -126,7 +134,10 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(500, 500),
-            options = createOptions(allowRgb565 = true)
+            options = createOptions(
+                context = context,
+                allowRgb565 = true
+            )
         )
         assertEquals(PixelSize(500, 625), result.size)
         assertEquals(Bitmap.Config.RGB_565, result.config)
@@ -137,7 +148,10 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(500, 500),
-            options = createOptions(allowRgb565 = false)
+            options = createOptions(
+                context = context,
+                allowRgb565 = false
+            )
         )
         assertEquals(PixelSize(500, 625), result.size)
         assertEquals(Bitmap.Config.ARGB_8888, result.config)
@@ -152,6 +166,7 @@ class BitmapFactoryDecoderTest {
             assetName = "normal.jpg",
             size = PixelSize(1080, 1350),
             options = createOptions(
+                context = context,
                 config = Bitmap.Config.ARGB_8888,
                 scale = Scale.FIT,
                 allowInexactSize = false
@@ -178,6 +193,7 @@ class BitmapFactoryDecoderTest {
             assetName = "normal.jpg",
             size = PixelSize(500, 500),
             options = createOptions(
+                context = context,
                 config = Bitmap.Config.ARGB_8888,
                 scale = Scale.FILL,
                 allowInexactSize = false
@@ -260,7 +276,7 @@ class BitmapFactoryDecoderTest {
     private fun decode(
         assetName: String,
         size: Size,
-        options: Options = createOptions()
+        options: Options = createOptions(context)
     ): DecodeResult = runBlocking {
         val source = context.assets.open(assetName).source().buffer()
         val result = service.decode(
@@ -280,6 +296,6 @@ class BitmapFactoryDecoderTest {
     private fun decodeBitmap(
         assetName: String,
         size: Size,
-        options: Options = createOptions()
+        options: Options = createOptions(context)
     ): Bitmap = (decode(assetName, size, options).drawable as BitmapDrawable).bitmap
 }
