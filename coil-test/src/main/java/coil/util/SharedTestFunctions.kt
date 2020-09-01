@@ -40,6 +40,7 @@ fun createMockWebServer(context: Context, vararg images: String): MockWebServer 
 }
 
 fun createOptions(
+    context: Context,
     config: Bitmap.Config = Bitmap.Config.ARGB_8888,
     scale: Scale = Scale.FILL,
     allowInexactSize: Boolean = false,
@@ -51,6 +52,7 @@ fun createOptions(
     networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 ): Options {
     return Options(
+        context,
         config,
         null,
         scale,
@@ -66,6 +68,7 @@ fun createOptions(
 
 @RequiresApi(26)
 fun createOptions(
+    context: Context,
     config: Bitmap.Config = Bitmap.Config.ARGB_8888,
     colorSpace: ColorSpace? = null,
     scale: Scale = Scale.FILL,
@@ -78,6 +81,7 @@ fun createOptions(
     networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 ): Options {
     return Options(
+        context,
         config,
         colorSpace,
         scale,

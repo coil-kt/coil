@@ -53,6 +53,7 @@ dependencies {
     implementation(Library.ANDROIDX_EXIF_INTERFACE)
 
     api(Library.ANDROIDX_LIFECYCLE_COMMON)
+    implementation(Library.ANDROIDX_LIFECYCLE_RUNTIME)
 
     api(Library.OKHTTP)
     api(Library.OKIO)

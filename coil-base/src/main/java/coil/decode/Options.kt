@@ -1,5 +1,6 @@
 package coil.decode
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
 import coil.fetch.Fetcher
@@ -13,6 +14,7 @@ import okhttp3.Headers
  *
  * [Fetcher]s and [Decoder]s should respect these options as best as possible.
  *
+ * @param context The [Context] used to execute this request.
  * @param config The requested config for any [Bitmap]s.
  * @param colorSpace The preferred color space for any [Bitmap]s.
  *  If null, components should typically default to [ColorSpace.Rgb].
@@ -28,6 +30,7 @@ import okhttp3.Headers
  * @param networkCachePolicy Determines if this request is allowed to read from the network.
  */
 class Options(
+    val context: Context,
     val config: Bitmap.Config,
     val colorSpace: ColorSpace?,
     val scale: Scale,
@@ -41,6 +44,7 @@ class Options(
 ) {
 
     fun copy(
+        context: Context = this.context,
         config: Bitmap.Config = this.config,
         colorSpace: ColorSpace? = this.colorSpace,
         scale: Scale = this.scale,
@@ -51,12 +55,13 @@ class Options(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
-    ) = Options(config, colorSpace, scale, allowInexactSize, allowRgb565, headers, parameters, memoryCachePolicy,
-        diskCachePolicy, networkCachePolicy)
+    ) = Options(context, config, colorSpace, scale, allowInexactSize, allowRgb565, headers, parameters,
+        memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         return other is Options &&
+            context == other.context &&
             config == other.config &&
             colorSpace == other.colorSpace &&
             scale == other.scale &&
@@ -70,7 +75,8 @@ class Options(
     }
 
     override fun hashCode(): Int {
-        var result = config.hashCode()
+        var result = context.hashCode()
+        result = 31 * result + config.hashCode()
         result = 31 * result + (colorSpace?.hashCode() ?: 0)
         result = 31 * result + scale.hashCode()
         result = 31 * result + allowInexactSize.hashCode()
@@ -84,8 +90,9 @@ class Options(
     }
 
     override fun toString(): String {
-        return "Options(config=$config, colorSpace=$colorSpace, scale=$scale, allowInexactSize=$allowInexactSize, " +
-            "allowRgb565=$allowRgb565, headers=$headers, parameters=$parameters, memoryCachePolicy=$memoryCachePolicy, " +
-            "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
+        return "Options(context=$context, config=$config, colorSpace=$colorSpace, scale=$scale, " +
+            "allowInexactSize=$allowInexactSize, allowRgb565=$allowRgb565, headers=$headers, " +
+            "parameters=$parameters, memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
+            "networkCachePolicy=$networkCachePolicy)"
     }
 }
