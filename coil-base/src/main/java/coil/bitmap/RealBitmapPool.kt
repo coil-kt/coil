@@ -125,7 +125,7 @@ internal class RealBitmapPool(
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
-            trimToSize(currentSize / 2)
+            trimToSize(currentSize shr 1)
         }
     }
 

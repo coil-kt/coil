@@ -72,7 +72,7 @@ class RealBitmapPoolTest {
     @Test
     fun `trim memory running low or critical removes half`() {
         listOf(TRIM_MEMORY_RUNNING_LOW, TRIM_MEMORY_RUNNING_CRITICAL).forEach { trimLevel ->
-            testTrimMemory(trimLevel, MAX_BITMAPS / 2)
+            testTrimMemory(trimLevel, MAX_BITMAPS shr 1)
         }
     }
 
@@ -81,10 +81,10 @@ class RealBitmapPoolTest {
         pool.fill(MAX_BITMAPS)
 
         pool.trimMemory(TRIM_MEMORY_RUNNING_LOW)
-        assertEquals(MAX_BITMAPS / 2, strategy.numRemoves)
+        assertEquals(MAX_BITMAPS shr 1, strategy.numRemoves)
 
         pool.trimMemory(TRIM_MEMORY_RUNNING_LOW)
-        assertEquals(MAX_BITMAPS - (MAX_BITMAPS / 4), strategy.numRemoves)
+        assertEquals(MAX_BITMAPS - (MAX_BITMAPS shr 2), strategy.numRemoves)
     }
 
     @Test

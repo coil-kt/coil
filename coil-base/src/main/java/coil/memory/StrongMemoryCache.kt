@@ -161,7 +161,7 @@ private class RealStrongMemoryCache(
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
         } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
-            cache.trimToSize(size / 2)
+            cache.trimToSize(size shr 1)
         }
     }
 
