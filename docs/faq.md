@@ -45,7 +45,7 @@ allprojects {
 }
 ```
 
-Then depend on the same artifacts with [the latest snapshot version](https://github.com/coil-kt/coil/blob/master/gradle.properties#L16).
+Then depend on the same artifacts with [the latest snapshot version](https://github.com/coil-kt/coil/blob/master/gradle.properties#L19).
 
 !!! Note
     Snapshots are deployed for each new commit on `master` that passes CI. They can potentially contain breaking changes or may be unstable. Use at your own risk.
