@@ -4,6 +4,7 @@ import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.widget.ImageView
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
@@ -16,6 +17,7 @@ import coil.transform.Transformation
 import coil.util.CoilUtils
 import coil.util.TestActivity
 import coil.util.activity
+import coil.util.isAttachedToWindowCompat
 import coil.util.requestManager
 import coil.util.runBlockingTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -199,6 +201,24 @@ class DisposableTest {
         assertFalse(disposable.isDisposed)
         CoilUtils.clear(imageView)
         assertTrue(disposable.isDisposed)
+    }
+
+    @Test
+    fun viewTargetDisposable_detachedViewIsImmediatelyCancelled() = runBlockingTest {
+        val imageView = ImageView(context)
+
+        assertFalse(imageView.isAttachedToWindowCompat)
+
+        val request = ImageRequest.Builder(context)
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
+            // Set a fixed size so we don't suspend indefinitely waiting for the view to be measured.
+            .size(100, 100)
+            .target(imageView)
+            .build()
+        val disposable = imageLoader.enqueue(request)
+
+        assertFalse(disposable.isDisposed)
+        assertTrue(imageView.requestManager.currentRequestJob!!.isCancelled)
     }
 
     /**
