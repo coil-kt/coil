@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.0-rc2] - September 3, 2020
+
+- **This release requires Kotlin 1.4.0 or above.**
+- All the changes present in [0.13.0](#0130---september-3-2020).
+- Depend on the base Kotlin `stdlib` instead of `stdlib-jdk8`.
+
 ## [0.13.0] - September 3, 2020
 
 - **Important**: Launch the Interceptor chain on the main thread by default. ([#513](https://github.com/coil-kt/coil/pull/513))
