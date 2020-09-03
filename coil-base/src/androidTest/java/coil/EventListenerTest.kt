@@ -3,8 +3,9 @@ package coil
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import android.graphics.Bitmap
-import android.widget.ImageView
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.bitmap.BitmapPool
@@ -21,10 +22,13 @@ import coil.size.Size
 import coil.transform.Transformation
 import coil.transition.Transition
 import coil.transition.TransitionTarget
+import coil.util.TestActivity
+import coil.util.activity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
@@ -36,9 +40,13 @@ class EventListenerTest {
 
     private lateinit var context: Context
 
+    @get:Rule
+    val activityRule = activityScenarioRule<TestActivity>()
+
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
+        activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
     }
 
     @Test
@@ -202,7 +210,7 @@ class EventListenerTest {
     ) = suspendCancellableCoroutine<Unit> { continuation ->
         val request = ImageRequest.Builder(context)
             .size(100, 100)
-            .target(ImageView(context))
+            .target(activityRule.scenario.activity.imageView)
             .listener(
                 onSuccess = { _, _ -> continuation.resume(Unit) },
                 onError = { _, throwable -> continuation.resumeWithException(throwable) },

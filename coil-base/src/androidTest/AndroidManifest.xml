@@ -10,7 +10,7 @@
 
     <application android:usesCleartextTraffic="true">
         <activity
-            android:name="coil.fetch.ResourceUriFetcherTest$TestActivity"
+            android:name="coil.util.TestActivity"
             android:theme="@style/Theme.TestActivity"/>
 
         <provider
