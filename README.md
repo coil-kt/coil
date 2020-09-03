@@ -1,4 +1,8 @@
 ﻿![Coil](logo.svg)
+[![GitHub issues](https://img.shields.io/github/issues/coil-kt/coil)](https://github.com/coil-kt/coil/issues)
+[![GitHub forks](https://img.shields.io/github/forks/coil-kt/coil)](https://github.com/coil-kt/coil/network)
+[![GitHub stars](https://img.shields.io/github/stars/coil-kt/coil)](https://github.com/coil-kt/coil/stargazers)
+[![GitHub license](https://img.shields.io/github/license/coil-kt/coil)](https://github.com/coil-kt/coil/blob/master/LICENSE.txt)
 
 An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
