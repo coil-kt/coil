@@ -14,6 +14,7 @@ import coil.target.ViewTarget
 import coil.util.Logger
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.Utils.REQUEST_TYPE_EXECUTE
+import coil.util.isAttachedToWindowCompat
 import coil.util.requestManager
 import kotlinx.coroutines.Job
 
@@ -55,12 +56,17 @@ internal class DelegateService(
     ): RequestDelegate {
         val lifecycle = request.lifecycle
         val delegate: RequestDelegate
-        when (request.target) {
+        when (val target = request.target) {
             is ViewTarget<*> -> {
                 delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, job)
                 lifecycle.addObserver(delegate)
-                if (request.target is LifecycleObserver) lifecycle.addObserver(request.target)
-                request.target.view.requestManager.setCurrentRequest(delegate)
+                if (target is LifecycleObserver) lifecycle.addObserver(target)
+                target.view.requestManager.setCurrentRequest(delegate)
+
+                // Call onViewDetachedFromWindow immediately if the view is already detached.
+                if (!target.view.isAttachedToWindowCompat) {
+                    target.view.requestManager.onViewDetachedFromWindow(target.view)
+                }
             }
             else -> {
                 delegate = BaseRequestDelegate(lifecycle, job)

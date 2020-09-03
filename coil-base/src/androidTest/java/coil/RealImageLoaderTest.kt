@@ -12,7 +12,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.widget.ImageView
 import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.bitmap.BitmapPool
@@ -34,10 +36,13 @@ import coil.request.SuccessResult
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Size
+import coil.util.TestActivity
 import coil.util.Utils
+import coil.util.activity
 import coil.util.createMockWebServer
 import coil.util.decodeBitmapAsset
 import coil.util.getDrawableCompat
+import coil.util.runBlockingTest
 import coil.util.size
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +57,7 @@ import okio.sink
 import okio.source
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.io.File
 import kotlin.coroutines.resume
@@ -69,6 +75,9 @@ class RealImageLoaderTest {
     private lateinit var server: MockWebServer
     private lateinit var strongMemoryCache: StrongMemoryCache
     private lateinit var imageLoader: RealImageLoader
+
+    @get:Rule
+    val activityRule = activityScenarioRule<TestActivity>()
 
     @Before
     fun before() {
@@ -88,8 +97,11 @@ class RealImageLoaderTest {
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             componentRegistry = ComponentRegistry(),
+            addLastModifiedToFileCacheKey = true,
+            launchInterceptorChainOnMainThread = true,
             logger = null
         )
+        activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
     }
 
     @After
@@ -397,8 +409,28 @@ class RealImageLoaderTest {
         }
     }
 
+    @Test
+    fun cachedValueIsResolvedSynchronously() = runBlockingTest {
+        val key = MemoryCache.Key("fake_key")
+        val fileName = "normal.jpg"
+        decodeAssetAndAddToMemoryCache(key, fileName)
+
+        var isSuccessful = false
+        val request = ImageRequest.Builder(context)
+            .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
+            .size(100, 100)
+            .precision(Precision.INEXACT)
+            .memoryCacheKey(key)
+            .target { isSuccessful = true }
+            .build()
+        imageLoader.enqueue(request).dispose()
+
+        // isSuccessful should be synchronously set to true.
+        assertTrue(isSuccessful)
+    }
+
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
-        val imageView = ImageView(context)
+        val imageView = activityRule.scenario.activity.imageView
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
         assertNull(imageView.drawable)

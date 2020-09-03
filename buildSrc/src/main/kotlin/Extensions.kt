@@ -91,6 +91,9 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
     androidTestImplementation(Library.JUNIT)
     androidTestImplementation(kotlin("test-junit", kotlinVersion))
 
+    androidTestImplementation(Library.ANDROIDX_APPCOMPAT)
+    androidTestImplementation(Library.MATERIAL)
+
     androidTestImplementation(Library.ANDROIDX_TEST_CORE)
     androidTestImplementation(Library.ANDROIDX_TEST_JUNIT)
     androidTestImplementation(Library.ANDROIDX_TEST_RULES)

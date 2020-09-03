@@ -27,14 +27,14 @@ class FileFetcherTest {
 
     @Test
     fun basic() {
-        val fetcher = FileFetcher()
+        val fetcher = FileFetcher(true)
         val file = context.copyAssetToFile("normal.jpg")
 
         assertTrue(fetcher.handles(file))
 
         val size = PixelSize(100, 100)
         val result = runBlocking {
-            fetcher.fetch(pool, file, size, createOptions())
+            fetcher.fetch(pool, file, size, createOptions(context))
         }
 
         assertTrue(result is SourceResult)
@@ -44,7 +44,7 @@ class FileFetcherTest {
 
     @Test
     fun fileCacheKeyWithLastModified() {
-        val fetcher = FileFetcher()
+        val fetcher = FileFetcher(true)
         val file = context.copyAssetToFile("normal.jpg")
 
         file.setLastModified(1234L)
@@ -54,5 +54,19 @@ class FileFetcherTest {
         val secondKey = fetcher.key(file)
 
         assertNotEquals(secondKey, firstKey)
+    }
+
+    @Test
+    fun fileCacheKeyWithoutLastModified() {
+        val fetcher = FileFetcher(false)
+        val file = context.copyAssetToFile("normal.jpg")
+
+        file.setLastModified(1234L)
+        val firstKey = fetcher.key(file)
+
+        file.setLastModified(4321L)
+        val secondKey = fetcher.key(file)
+
+        assertEquals(secondKey, firstKey)
     }
 }

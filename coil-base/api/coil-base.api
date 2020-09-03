@@ -62,6 +62,7 @@ public abstract interface class coil/ImageLoader {
 
 public final class coil/ImageLoader$Builder {
 	public fun <init> (Landroid/content/Context;)V
+	public final fun addLastModifiedToFileCacheKey (Z)Lcoil/ImageLoader$Builder;
 	public final fun allowHardware (Z)Lcoil/ImageLoader$Builder;
 	public final fun allowRgb565 (Z)Lcoil/ImageLoader$Builder;
 	public final fun availableMemoryPercentage (D)Lcoil/ImageLoader$Builder;
@@ -83,6 +84,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun eventListener (Lcoil/EventListener;)Lcoil/ImageLoader$Builder;
 	public final fun fallback (I)Lcoil/ImageLoader$Builder;
 	public final fun fallback (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoader$Builder;
+	public final fun launchInterceptorChainOnMainThread (Z)Lcoil/ImageLoader$Builder;
 	public final fun logger (Lcoil/util/Logger;)Lcoil/ImageLoader$Builder;
 	public final fun memoryCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
 	public final fun networkCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
@@ -175,14 +177,15 @@ public final class coil/decode/InterruptibleSourceKt {
 }
 
 public final class coil/decode/Options {
-	public fun <init> (Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)V
-	public final fun copy (Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)Lcoil/decode/Options;
-	public static synthetic fun copy$default (Lcoil/decode/Options;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;ILjava/lang/Object;)Lcoil/decode/Options;
+	public fun <init> (Landroid/content/Context;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)V
+	public final fun copy (Landroid/content/Context;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;)Lcoil/decode/Options;
+	public static synthetic fun copy$default (Lcoil/decode/Options;Landroid/content/Context;Landroid/graphics/Bitmap$Config;Landroid/graphics/ColorSpace;Lcoil/size/Scale;ZZLokhttp3/Headers;Lcoil/request/Parameters;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;Lcoil/request/CachePolicy;ILjava/lang/Object;)Lcoil/decode/Options;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAllowInexactSize ()Z
 	public final fun getAllowRgb565 ()Z
 	public final fun getColorSpace ()Landroid/graphics/ColorSpace;
 	public final fun getConfig ()Landroid/graphics/Bitmap$Config;
+	public final fun getContext ()Landroid/content/Context;
 	public final fun getDiskCachePolicy ()Lcoil/request/CachePolicy;
 	public final fun getHeaders ()Lokhttp3/Headers;
 	public final fun getMemoryCachePolicy ()Lcoil/request/CachePolicy;

@@ -1,14 +1,25 @@
 # Changelog
 
+## [1.0.0-rc1] - August 18, 2020
+
+- **This release requires Kotlin 1.4.0 or above.**
+- Update Kotlin to 1.4.0 and enable [`-Xjvm-default=all`](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/).
+    - **[See here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to enable `-Xjvm-default=all` in your build file.**
+    - This generates Java 8 default methods for default Kotlin interface methods.
+- Remove all existing deprecated methods in 0.12.0.
+- Update Coroutines to 1.3.9.
+
 ## [0.12.0] - August 18, 2020
 
 - **Breaking**: `LoadRequest` and `GetRequest` have been replaced with `ImageRequest`:
     - `ImageLoader.execute(LoadRequest)` -> `ImageLoader.enqueue(ImageRequest)`
     - `ImageLoader.execute(GetRequest)` -> `ImageLoader.execute(ImageRequest)`
     - `ImageRequest` implements `equals`/`hashCode`.
-- **Breaking**: `RequestResult` and `RequestDisposable` have been renamed:
-    - `RequestResult` -> `ImageResult`
-    - `RequestDisposable` -> `Disposable`
+- **Breaking**: A number of classes were renamed and/or changed package:
+    - `coil.request.RequestResult` -> `coil.request.ImageResult`
+    - `coil.request.RequestDisposable` -> `coil.request.Disposable`
+    - `coil.bitmappool.BitmapPool` -> `coil.bitmap.BitmapPool`
+    - `coil.DefaultRequestOptions` -> `coil.request.DefaultRequestOptions`
 - **Breaking**: [`SparseIntArraySet`](https://github.com/coil-kt/coil/blob/f52addd039f0195b66f93cb0f1cad59b0832f784/coil-base/src/main/java/coil/collection/SparseIntArraySet.kt) has been removed from the public API.
 - **Breaking**: `TransitionTarget` no longer implements `ViewTarget`.
 - **Breaking**: `ImageRequest.Listener.onSuccess`'s signature has changed to return an `ImageResult.Metadata` instead of just a `DataSource`.

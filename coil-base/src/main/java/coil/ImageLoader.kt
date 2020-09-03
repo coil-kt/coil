@@ -14,6 +14,9 @@ import coil.bitmap.EmptyBitmapReferenceCounter
 import coil.bitmap.RealBitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
 import coil.drawable.CrossfadeDrawable
+import coil.fetch.Fetcher
+import coil.intercept.Interceptor
+import coil.map.Mapper
 import coil.memory.EmptyWeakMemoryCache
 import coil.memory.MemoryCache
 import coil.memory.RealWeakMemoryCache
@@ -37,8 +40,11 @@ import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.OkHttpClient
+import java.io.File
 
 /**
  * A service class that loads images by executing [ImageRequest]s. Image loaders handle caching, data fetching,
@@ -108,7 +114,9 @@ interface ImageLoader {
 
         private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
         private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
+        private var addLastModifiedToFileCacheKey = true
         private var bitmapPoolingEnabled = true
+        private var launchInterceptorChainOnMainThread = true
         private var trackWeakReferences = true
 
         /**
@@ -238,6 +246,19 @@ interface ImageLoader {
         }
 
         /**
+         * Enables adding [File.lastModified] to the memory cache key when loading an image from a [File].
+         *
+         * This allows subsequent requests that load the same file to miss the memory cache if the file has been updated.
+         * However, if the memory cache check occurs on the main thread (see [launchInterceptorChainOnMainThread])
+         * calling [File.lastModified] will cause a strict mode violation.
+         *
+         * Default: true
+         */
+        fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
+            this.addLastModifiedToFileCacheKey = enable
+        }
+
+        /**
          * Enables counting references to bitmaps so they can be automatically reused by a [BitmapPool]
          * when their reference count reaches zero.
          *
@@ -250,6 +271,31 @@ interface ImageLoader {
          */
         fun bitmapPoolingEnabled(enable: Boolean) = apply {
             this.bitmapPoolingEnabled = enable
+        }
+
+        /**
+         * Enables launching the [Interceptor] chain on the main thread.
+         *
+         * If true, the [Interceptor] chain will be launched from [MainCoroutineDispatcher.immediate]. This allows
+         * the [ImageLoader] to check its memory cache and return a cached value synchronously if the request is
+         * started from the main thread. However, [Mapper.map] and [Fetcher.key] operations will be executed on the
+         * main thread as well, which has a performance cost.
+         *
+         * If false, the [Interceptor] chain will be launched from the request's [ImageRequest.dispatcher].
+         * This will result in better UI performance, but values from the memory cache will not be resolved
+         * synchronously.
+         *
+         * The actual fetch + decode process always occurs on [ImageRequest.dispatcher] and is unaffected by this flag.
+         *
+         * It's worth noting that [Interceptor]s can also control which [CoroutineDispatcher] the
+         * memory cache is checked on by calling [Interceptor.Chain.proceed] inside a [withContext] block.
+         * Therefore if you set [launchInterceptorChainOnMainThread] to true, you can control which [ImageRequest]s
+         * check the memory cache synchronously at runtime.
+         *
+         * Default: true
+         */
+        fun launchInterceptorChainOnMainThread(enable: Boolean) = apply {
+            this.launchInterceptorChainOnMainThread = enable
         }
 
         /**
@@ -431,6 +477,8 @@ interface ImageLoader {
                 callFactory = callFactory ?: buildDefaultCallFactory(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = registry ?: ComponentRegistry(),
+                addLastModifiedToFileCacheKey = addLastModifiedToFileCacheKey,
+                launchInterceptorChainOnMainThread = launchInterceptorChainOnMainThread,
                 logger = logger
             )
         }

@@ -28,7 +28,7 @@ internal class SystemCallbacks(
     private val networkObserver = NetworkObserver(context, this, imageLoader.logger)
 
     @Volatile private var _isOnline = networkObserver.isOnline
-    private var _isShutdown = AtomicBoolean(false)
+    private val _isShutdown = AtomicBoolean(false)
 
     val isOnline get() = _isOnline
     val isShutdown get() = _isShutdown.get()

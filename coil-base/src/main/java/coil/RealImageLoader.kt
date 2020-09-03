@@ -14,12 +14,12 @@ import coil.fetch.BitmapFetcher
 import coil.fetch.ContentUriFetcher
 import coil.fetch.DrawableFetcher
 import coil.fetch.FileFetcher
+import coil.fetch.HttpUriFetcher
 import coil.fetch.HttpUrlFetcher
 import coil.fetch.ResourceUriFetcher
 import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
 import coil.map.FileUriMapper
-import coil.map.HttpUriMapper
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.map.StringMapper
@@ -78,6 +78,8 @@ internal class RealImageLoader(
     callFactory: Call.Factory,
     private val eventListenerFactory: EventListener.Factory,
     componentRegistry: ComponentRegistry,
+    addLastModifiedToFileCacheKey: Boolean,
+    private val launchInterceptorChainOnMainThread: Boolean,
     val logger: Logger?
 ) : ImageLoader {
 
@@ -92,18 +94,18 @@ internal class RealImageLoader(
     private val registry = componentRegistry.newBuilder()
         // Mappers
         .add(StringMapper())
-        .add(HttpUriMapper())
         .add(FileUriMapper())
         .add(ResourceUriMapper(context))
         .add(ResourceIntMapper(context))
         // Fetchers
+        .add(HttpUriFetcher(callFactory))
         .add(HttpUrlFetcher(callFactory))
-        .add(FileFetcher())
+        .add(FileFetcher(addLastModifiedToFileCacheKey))
         .add(AssetUriFetcher(context))
         .add(ContentUriFetcher(context))
         .add(ResourceUriFetcher(context, drawableDecoder))
-        .add(DrawableFetcher(context, drawableDecoder))
-        .add(BitmapFetcher(context))
+        .add(DrawableFetcher(drawableDecoder))
+        .add(BitmapFetcher())
         // Decoders
         .add(BitmapFactoryDecoder(context))
         .build()
@@ -227,8 +229,15 @@ internal class RealImageLoader(
         size: Size,
         cached: Bitmap?,
         eventListener: EventListener
-    ): ImageResult = withContext(request.dispatcher) {
-        RealInterceptorChain(request, type, interceptors, 0, request, size, cached, eventListener).proceed(request)
+    ): ImageResult {
+        val chain = RealInterceptorChain(request, type, interceptors, 0, request, size, cached, eventListener)
+        return if (launchInterceptorChainOnMainThread) {
+            chain.proceed(request)
+        } else {
+            withContext(request.dispatcher) {
+                chain.proceed(request)
+            }
+        }
     }
 
     private suspend inline fun onSuccess(

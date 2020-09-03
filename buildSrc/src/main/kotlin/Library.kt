@@ -14,7 +14,7 @@ object Library {
     const val ANDROIDX_APPCOMPAT = "androidx.appcompat:appcompat:1.2.0"
     const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:1.2.0"
     const val ANDROIDX_COLLECTION = "androidx.collection:collection-ktx:1.1.0"
-    const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:1.1.3"
+    const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:2.0.1"
     const val ANDROIDX_CORE = "androidx.core:core-ktx:1.3.1"
     const val ANDROIDX_EXIF_INTERFACE = "androidx.exifinterface:exifinterface:1.2.0"
     const val ANDROIDX_MULTIDEX = "androidx.multidex:multidex:2.0.1"
@@ -23,6 +23,7 @@ object Library {
 
     private const val LIFECYCLE_VERSION = "2.2.0"
     const val ANDROIDX_LIFECYCLE_COMMON = "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
+    const val ANDROIDX_LIFECYCLE_RUNTIME = "androidx.lifecycle:lifecycle-runtime:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
 
     const val MATERIAL = "com.google.android.material:material:1.2.0"
@@ -40,12 +41,12 @@ object Library {
 
     const val KOTLINX_COROUTINES_TEST = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$COROUTINES_VERSION"
 
-    const val ANDROIDX_TEST_CORE = "androidx.test:core-ktx:1.2.0"
-    const val ANDROIDX_TEST_JUNIT = "androidx.test.ext:junit-ktx:1.1.1"
-    const val ANDROIDX_TEST_RULES = "androidx.test:rules:1.2.0"
-    const val ANDROIDX_TEST_RUNNER = "androidx.test:runner:1.2.0"
+    const val ANDROIDX_TEST_CORE = "androidx.test:core-ktx:1.3.0"
+    const val ANDROIDX_TEST_JUNIT = "androidx.test.ext:junit-ktx:1.1.2"
+    const val ANDROIDX_TEST_RULES = "androidx.test:rules:1.3.0"
+    const val ANDROIDX_TEST_RUNNER = "androidx.test:runner:1.3.0"
 
     const val OKHTTP_MOCK_WEB_SERVER = "com.squareup.okhttp3:mockwebserver:$OKHTTP_VERSION"
 
-    const val ROBOLECTRIC = "org.robolectric:robolectric:4.3.1"
+    const val ROBOLECTRIC = "org.robolectric:robolectric:4.4"
 }

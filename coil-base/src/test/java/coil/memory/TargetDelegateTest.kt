@@ -22,6 +22,7 @@ import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.createBitmap
 import coil.util.createRequest
 import coil.util.createTestMainDispatcher
+import coil.util.executeQueuedMainThreadTasks
 import coil.util.isValid
 import coil.util.toDrawable
 import kotlinx.coroutines.Dispatchers
@@ -194,6 +195,7 @@ class TargetDelegateTest {
                 )
             )
             delegate.success(result)
+            executeQueuedMainThreadTasks()
             assertTrue(counter.isValid(bitmap))
             assertTrue(initialBitmap in pool.bitmaps)
         }
@@ -235,6 +237,7 @@ class TargetDelegateTest {
             delegate.success(result)
 
             // Ensure that the animation completed and the initial bitmap was not pooled until this method completes.
+            executeQueuedMainThreadTasks()
             assertFalse(isRunning)
             assertTrue(initialBitmap in pool.bitmaps)
         }

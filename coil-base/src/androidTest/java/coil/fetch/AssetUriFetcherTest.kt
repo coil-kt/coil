@@ -47,7 +47,7 @@ class AssetUriFetcherTest {
 
     private fun assertUriFetchesCorrectly(uri: Uri) {
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions())
+            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
         }
 
         assertTrue(result is SourceResult)

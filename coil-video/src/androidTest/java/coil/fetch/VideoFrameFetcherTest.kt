@@ -45,7 +45,7 @@ class VideoFrameFetcherTest {
                 pool = pool,
                 data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/video.mp4".toUri(),
                 size = OriginalSize,
-                options = createOptions()
+                options = createOptions(context)
             )
         }
 
@@ -69,6 +69,7 @@ class VideoFrameFetcherTest {
                 data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/video.mp4".toUri(),
                 size = OriginalSize,
                 options = createOptions(
+                    context = context,
                     parameters = Parameters.Builder()
                         .set(VIDEO_FRAME_MICROS_KEY, 32600000L)
                         .build()

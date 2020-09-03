@@ -1,6 +1,7 @@
 package coil
 
 import android.graphics.Bitmap
+import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import coil.annotation.ExperimentalCoilApi
@@ -53,7 +54,7 @@ interface EventListener : ImageRequest.Listener {
      *
      * @param input The data that will be converted.
      */
-    @WorkerThread
+    @AnyThread
     fun mapStart(request: ImageRequest, input: Any) {}
 
     /**
@@ -62,7 +63,7 @@ interface EventListener : ImageRequest.Listener {
      * @param output The data after it has been converted. If there were no applicable mappers,
      *  [output] will be the same as [ImageRequest.data].
      */
-    @WorkerThread
+    @AnyThread
     fun mapEnd(request: ImageRequest, output: Any) {}
 
     /**

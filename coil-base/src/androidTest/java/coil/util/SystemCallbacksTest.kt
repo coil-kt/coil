@@ -68,6 +68,8 @@ class SystemCallbacksTest {
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             componentRegistry = ComponentRegistry(),
+            addLastModifiedToFileCacheKey = true,
+            launchInterceptorChainOnMainThread = true,
             logger = null
         )
         val systemCallbacks = SystemCallbacks(imageLoader, context)
