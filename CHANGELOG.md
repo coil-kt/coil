@@ -11,7 +11,7 @@
 
 - Fix: Fix potential memory leak if request is started on a `ViewTarget` in a detached fragment. ([#518](https://github.com/coil-kt/coil/pull/518))
 - Fix: Use `ImageRequest.context` to load resource URIs. ([#517](https://github.com/coil-kt/coil/pull/517))
-- Fix: Fix race condition that could cause subsequent requests to to not be saved to the disk cache. ([#510](https://github.com/coil-kt/coil/pull/510))
+- Fix: Fix race condition that could cause subsequent requests to not be saved to the disk cache. ([#510](https://github.com/coil-kt/coil/pull/510))
 - Fix: Use `blockCountLong` and `blockSizeLong` on API 18.
 
 ---
