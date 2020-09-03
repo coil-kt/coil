@@ -21,8 +21,7 @@ fun withTestActivity(block: (TestActivity) -> Unit) {
  *
  * NOTE: [ActivityScenario.onActivity] explicitly recommends against holding a
  * reference to the [Activity] outside of its scope. However, it should be safe
- * as long we use [ActivityScenarioRule] and do not call [ActivityScenario.moveToState]
- * with [Lifecycle.State.DESTROYED].
+ * as long we use [ActivityScenarioRule].
  */
 val <T : Activity> ActivityScenario<T>.activity: T
     get() {
