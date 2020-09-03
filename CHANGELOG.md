@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.13.0] - September 3, 2020
+
+- **Important**: Launch the Interceptor chain on the main thread by default. ([#513](https://github.com/coil-kt/coil/pull/513))
+    - This largely restores the behaviour from `0.11.0` and below where the memory cache would be checked synchronously on the main thread.
+    - To revert to using the same behaviour as `0.12.0` where the memory cache is checked on `ImageRequest.dispatcher`, set `ImageLoader.Builder.launchInterceptorChainOnMainThread(false)`.
+    - See [`launchInterceptorChainOnMainThread`](https://coil-kt.github.io/coil/api/coil-base/coil/-image-loader/-builder/launch-interceptor-chain-on-main-thread/) for more information.
+
+---
+
+- Fix: Fix potential memory leak if request is started on a `ViewTarget` in a detached fragment. ([#518](https://github.com/coil-kt/coil/pull/518))
+- Fix: Use `ImageRequest.context` to load resource URIs. ([#517](https://github.com/coil-kt/coil/pull/517))
+- Fix: Fix race condition that could cause subsequent requests to to not be saved to the disk cache. ([#510](https://github.com/coil-kt/coil/pull/510))
+- Fix: Use `blockCountLong` and `blockSizeLong` on API 18.
+
+---
+
+- Make `ImageLoaderFactory` a fun interface.
+- Add `ImageLoader.Builder.addLastModifiedToFileCacheKey` which allows you to enable/disable adding the last modified timestamp to the memory cache key for an image loaded from a `File`.
+
+---
+
+- Update Kotlin to 1.4.0.
+- Update Coroutines to 1.3.9.
+- Update Okio to 2.8.0.
+
 ## [1.0.0-rc1] - August 18, 2020
 
 - **This release requires Kotlin 1.4.0 or above.**
