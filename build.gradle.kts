@@ -17,7 +17,7 @@ buildscript {
         classpath(rootProject.extra["androidPlugin"].toString())
         classpath(rootProject.extra["kotlinPlugin"].toString())
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.14.2")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.4.0")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.5.0")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:10.0.0")
     }
@@ -66,32 +66,30 @@ allprojects {
         }
     }
 
-    // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our dokka configuration.
-    afterEvaluate {
-        tasks.withType<DokkaTask>().configureEach {
-            configuration {
-                jdkVersion = 8
-                reportUndocumented = false
-                skipDeprecated = true
-                skipEmptyPackages = true
-                outputDirectory = "$rootDir/docs/api"
-                outputFormat = "gfm"
+    tasks.withType<DokkaTask>().configureEach {
+        dokkaSourceSets {
+            configureEach {
+                jdkVersion.set(8)
+                reportUndocumented.set(false)
+                skipDeprecated.set(true)
+                skipEmptyPackages.set(true)
+                outputDirectory.set(file("$rootDir/docs/api"))
 
                 externalDocumentationLink {
-                    url = URL("https://developer.android.com/reference/")
-                    packageListUrl = URL("https://developer.android.com/reference/androidx/package-list")
+                    url.set(URL("https://developer.android.com/reference/"))
+                    packageListUrl.set(URL("https://developer.android.com/reference/androidx/package-list"))
                 }
                 externalDocumentationLink {
-                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-                    packageListUrl = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list")
+                    url.set(URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/"))
+                    packageListUrl.set(URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list"))
                 }
                 externalDocumentationLink {
-                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                    packageListUrl = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list")
+                    url.set(URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/"))
+                    packageListUrl.set(URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list"))
                 }
                 externalDocumentationLink {
-                    url = URL("https://square.github.io/okhttp/3.x/okhttp/")
-                    packageListUrl = URL("https://square.github.io/okhttp/3.x/okhttp/package-list")
+                    url.set(URL("https://square.github.io/okhttp/3.x/okhttp/"))
+                    packageListUrl.set(URL("https://square.github.io/okhttp/3.x/okhttp/package-list"))
                 }
                 externalDocumentationLink {
                     url = URL("https://square.github.io/okio/2.x/okio/")
