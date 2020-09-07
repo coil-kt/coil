@@ -114,18 +114,6 @@ subprojects {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
-
-            // Work around Robolectric issues.
-            testOptions {
-                unitTests.all {
-                    // https://github.com/robolectric/robolectric/issues/5115
-                    it.systemProperty("javax.net.ssl.trustStoreType", "JKS")
-
-                    // https://github.com/robolectric/robolectric/issues/5456
-                    it.systemProperty("robolectric.dependency.repo.id", "central")
-                    it.systemProperty("robolectric.dependency.repo.url", "https://repo1.maven.org/maven2")
-                }
-            }
         }
     }
 }
