@@ -4,7 +4,6 @@ import coil.addTestDependencies
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
@@ -33,13 +32,6 @@ android {
 androidExtensions {
     isExperimental = true
     features = setOf("parcelize")
-}
-
-afterEvaluate {
-    tasks.withType<DokkaTask> {
-        outputDirectory = "$rootDir/docs/api"
-        outputFormat = "gfm"
-    }
 }
 
 dependencies {
