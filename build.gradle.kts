@@ -23,7 +23,7 @@ buildscript {
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.3.0")
-        classpath(kotlin("gradle-plugin", version = "1.4.0"))
+        classpath(kotlin("gradle-plugin", version = "1.4.10"))
     }
 }
 
