@@ -36,7 +36,7 @@ internal suspend fun Lifecycle.observeStarted() {
             addObserver(observer!!)
         }
     } finally {
-        // 'observer' will always be null if this method is inlined.
+        // 'observer' will always be null if this method is marked as 'inline'.
         observer?.let(::removeObserver)
     }
 }
