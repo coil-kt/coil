@@ -61,4 +61,19 @@ class LifecyclesTest {
         assertTrue(job.isCompleted)
         assertEquals(0, lifecycle.observerCount)
     }
+
+    @Test
+    fun `observer is removed if cancelled`() = runBlockingTest {
+        assertEquals(0, lifecycle.observerCount)
+
+        val job = launch { lifecycle.awaitStarted() }
+
+        assertFalse(job.isCompleted)
+        assertEquals(1, lifecycle.observerCount)
+
+        job.cancel()
+
+        assertTrue(job.isCompleted)
+        assertEquals(0, lifecycle.observerCount)
+    }
 }
