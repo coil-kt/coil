@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -48,12 +49,16 @@ class LifecyclesTest {
 
     @Test
     fun `dispatches after start event`() = runBlockingTest {
+        assertEquals(0, lifecycle.observerCount)
+
         val job = launch { lifecycle.awaitStarted() }
 
         assertFalse(job.isCompleted)
+        assertEquals(1, lifecycle.observerCount)
 
         lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_START)
 
         assertTrue(job.isCompleted)
+        assertEquals(0, lifecycle.observerCount)
     }
 }
