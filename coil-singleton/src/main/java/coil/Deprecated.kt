@@ -74,7 +74,7 @@ inline fun ImageView.load(
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable = _load(bitmap, imageLoader, builder)
 
-@Deprecated("Replace `coil.api.load` with `coil.load`.")
+@Deprecated("Replace `coil.api.loadAny` with `coil.loadAny`.")
 @JvmSynthetic
 inline fun ImageView.loadAny(
     data: Any?,
