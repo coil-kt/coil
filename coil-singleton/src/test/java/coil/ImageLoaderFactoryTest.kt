@@ -3,9 +3,7 @@ package coil
 import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import coil.request.ImageRequest
 import coil.util.createTestMainDispatcher
-import coil.util.runBlockingTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -17,7 +15,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -95,22 +92,6 @@ class ImageLoaderFactoryTest {
 
         assertTrue(isInitialized.get())
         assertFalse((context.applicationContext as TestApplication).isInitialized.get())
-    }
-
-    @Test
-    fun `setImageLoader shuts down previous instance`() = runBlockingTest {
-        val imageLoader1 = ImageLoader(context)
-
-        Coil.setImageLoader(imageLoader1)
-
-        val imageLoader2 = ImageLoader(context)
-
-        Coil.setImageLoader(imageLoader2)
-
-        // The request should fail instantly since imageLoader1 is shut down.
-        assertFailsWith<IllegalStateException> {
-            imageLoader1.execute(ImageRequest.Builder(context).data(Unit).build())
-        }
     }
 
     class TestApplication : Application(), ImageLoaderFactory {
