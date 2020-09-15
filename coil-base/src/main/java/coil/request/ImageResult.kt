@@ -44,11 +44,7 @@ data class SuccessResult(
     override val drawable: Drawable,
     override val request: ImageRequest,
     val metadata: Metadata
-) : ImageResult() {
-
-    @Deprecated("Moved to Metadata.", ReplaceWith("metadata.dataSource"))
-    val source: DataSource get() = metadata.dataSource
-}
+) : ImageResult()
 
 /**
  * Indicates that an error occurred while executing the request.
