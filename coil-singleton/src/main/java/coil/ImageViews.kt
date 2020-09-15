@@ -19,7 +19,7 @@ import java.io.File
 @JvmSynthetic
 inline fun ImageView.load(
     uri: String?,
-    imageLoader: ImageLoader = Coil.imageLoader(context),
+    imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable = loadAny(uri, imageLoader, builder)
 
@@ -27,7 +27,7 @@ inline fun ImageView.load(
 @JvmSynthetic
 inline fun ImageView.load(
     url: HttpUrl?,
-    imageLoader: ImageLoader = Coil.imageLoader(context),
+    imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable = loadAny(url, imageLoader, builder)
 
@@ -35,7 +35,7 @@ inline fun ImageView.load(
 @JvmSynthetic
 inline fun ImageView.load(
     uri: Uri?,
-    imageLoader: ImageLoader = Coil.imageLoader(context),
+    imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable = loadAny(uri, imageLoader, builder)
 
@@ -43,7 +43,7 @@ inline fun ImageView.load(
 @JvmSynthetic
 inline fun ImageView.load(
     file: File?,
-    imageLoader: ImageLoader = Coil.imageLoader(context),
+    imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable = loadAny(file, imageLoader, builder)
 
@@ -51,7 +51,7 @@ inline fun ImageView.load(
 @JvmSynthetic
 inline fun ImageView.load(
     @DrawableRes drawableResId: Int,
-    imageLoader: ImageLoader = Coil.imageLoader(context),
+    imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable = loadAny(drawableResId, imageLoader, builder)
 
@@ -59,7 +59,7 @@ inline fun ImageView.load(
 @JvmSynthetic
 inline fun ImageView.load(
     drawable: Drawable?,
-    imageLoader: ImageLoader = Coil.imageLoader(context),
+    imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable = loadAny(drawable, imageLoader, builder)
 
@@ -67,14 +67,14 @@ inline fun ImageView.load(
 @JvmSynthetic
 inline fun ImageView.load(
     bitmap: Bitmap?,
-    imageLoader: ImageLoader = Coil.imageLoader(context),
+    imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable = loadAny(bitmap, imageLoader, builder)
 
 /**
  * Load the image referenced by [data] and set it on this [ImageView].
  *
- * This is the type-unsafe version of [ImageView.load].
+ * [ImageView.loadAny] is the type-unsafe version of [ImageView.load].
  *
  * Example:
  * ```
@@ -91,7 +91,7 @@ inline fun ImageView.load(
 @JvmSynthetic
 inline fun ImageView.loadAny(
     data: Any?,
-    imageLoader: ImageLoader = Coil.imageLoader(context),
+    imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable {
     val request = ImageRequest.Builder(context)

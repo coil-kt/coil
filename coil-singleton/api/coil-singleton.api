@@ -7,6 +7,10 @@ public final class coil/Coil {
 	public static final fun setImageLoader (Lcoil/ImageLoaderFactory;)V
 }
 
+public final class coil/Contexts {
+	public static final fun imageLoader (Landroid/content/Context;)Lcoil/ImageLoader;
+}
+
 public abstract interface class coil/ImageLoaderFactory {
 	public abstract fun newImageLoader ()Lcoil/ImageLoader;
 }

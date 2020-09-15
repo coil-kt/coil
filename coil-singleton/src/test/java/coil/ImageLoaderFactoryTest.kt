@@ -46,11 +46,11 @@ class ImageLoaderFactoryTest {
     fun `application factory is invoked exactly once`() {
         assertFalse((context.applicationContext as TestApplication).isInitialized.get())
 
-        val imageLoader1 = Coil.imageLoader(context)
+        val imageLoader1 = context.imageLoader
 
         assertTrue((context.applicationContext as TestApplication).isInitialized.get())
 
-        val imageLoader2 = Coil.imageLoader(context)
+        val imageLoader2 = context.imageLoader
 
         assertSame(imageLoader1, imageLoader2)
     }
@@ -67,13 +67,13 @@ class ImageLoaderFactoryTest {
 
         assertFalse(isInitialized.get())
 
-        val imageLoader2 = Coil.imageLoader(context)
+        val imageLoader2 = context.imageLoader
 
         assertSame(imageLoader1, imageLoader2)
 
         assertTrue(isInitialized.get())
 
-        val imageLoader3 = Coil.imageLoader(context)
+        val imageLoader3 = context.imageLoader
 
         assertSame(imageLoader1, imageLoader3)
     }
@@ -91,7 +91,7 @@ class ImageLoaderFactoryTest {
             ImageLoader(context)
         }
 
-        Coil.imageLoader(context)
+        context.imageLoader
 
         assertTrue(isInitialized.get())
         assertFalse((context.applicationContext as TestApplication).isInitialized.get())

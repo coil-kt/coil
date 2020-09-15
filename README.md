@@ -48,10 +48,10 @@ imageView.load("https://www.example.com/image.jpg") {
 
 #### Image Loaders
 
-`imageView.load` uses the singleton `ImageLoader` to enqueue an `ImageRequest`. The singleton `ImageLoader` can be accessed using:
+`imageView.load` uses the singleton `ImageLoader` to enqueue an `ImageRequest`. The singleton `ImageLoader` can be accessed using an extension function:
 
 ```kotlin
-val imageLoader = Coil.imageLoader(context)
+val imageLoader = context.imageLoader
 ```
 
 Optionally, you can create your own `ImageLoader` instance(s) and inject them with dependency injection:
