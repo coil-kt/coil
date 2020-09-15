@@ -128,10 +128,10 @@ val imageLoader = ImageLoader.Builder(context)
 Coil.setImageLoader(imageLoader)
 ```
 
-The default `ImageLoader` can be retrieved like so:
+The default `ImageLoader` can be retrieved using an extension function on `Context`:
 
 ```kotlin
-val imageLoader = Coil.imageLoader(context)
+val imageLoader = context.imageLoader
 ```
 
 Setting a default `ImageLoader` is optional. If you don't set one, Coil will lazily create an `ImageLoader` with the default values.
@@ -152,7 +152,7 @@ imageView.load("https://www.example.com/image.jpg")
 The above call is equivalent to:
 
 ```kotlin
-val imageLoader = Coil.imageLoader(context)
+val imageLoader = context.imageLoader
 val request = ImageRequest.Builder(imageView.context)
     .data("https://www.example.com/image.jpg")
     .target(imageView)
