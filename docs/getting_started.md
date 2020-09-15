@@ -152,11 +152,12 @@ imageView.load("https://www.example.com/image.jpg")
 The above call is equivalent to:
 
 ```kotlin
+val imageLoader = context.imageLoader
 val request = ImageRequest.Builder(imageView.context)
     .data("https://www.example.com/image.jpg")
     .target(imageView)
     .build()
-context.imageLoader.enqueue(request)
+imageLoader.enqueue(request)
 ```
 
 `ImageView.load` calls can be configured with an optional trailing lambda parameter:
