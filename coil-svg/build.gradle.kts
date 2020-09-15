@@ -4,9 +4,7 @@ import coil.addTestDependencies
 import coil.compileSdk
 import coil.minSdk
 import coil.targetSdk
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
-import java.net.URL
 
 plugins {
     id("com.android.library")
@@ -27,20 +25,6 @@ android {
     }
     testOptions {
         unitTests.isIncludeAndroidResources = true
-    }
-}
-
-afterEvaluate {
-    tasks.withType<DokkaTask> {
-        outputDirectory = "$rootDir/docs/api"
-        outputFormat = "gfm"
-
-        configuration {
-            externalDocumentationLink {
-                url = URL("file://$rootDir/docs/api/coil-base/")
-                packageListUrl = URL("file://$rootDir/docs/api/coil-base/package-list")
-            }
-        }
     }
 }
 

@@ -19,20 +19,24 @@ internal suspend inline fun Lifecycle.awaitStarted() {
     if (currentState.isAtLeast(STARTED)) return
 
     // Slow path: observe the lifecycle until we're started.
+    observeStarted()
+}
+
+/** Cannot be 'inline' due to a compiler bug. There is a test that guards against this bug. */
+@MainThread
+internal suspend fun Lifecycle.observeStarted() {
     var observer: LifecycleObserver? = null
     try {
         suspendCancellableCoroutine<Unit> { continuation ->
             observer = object : DefaultLifecycleObserver {
                 override fun onStart(owner: LifecycleOwner) {
-                    removeObserver(this)
                     continuation.resume(Unit)
                 }
             }
             addObserver(observer!!)
         }
-    } catch (throwable: Throwable) {
-        // Ensure exceptions are handled on the main thread.
+    } finally {
+        // 'observer' will always be null if this method is marked as 'inline'.
         observer?.let(::removeObserver)
-        throw throwable
     }
 }

@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Clean any previous Dokka docs.
-rm -rf docs/api
-
 # Build the Dokka docs.
-./gradlew clean :coil-base:dokka :coil-gif:dokka :coil-svg:dokka :coil-video:dokka :coil-singleton:dokka
+./assemble_docs.sh
 
 # Copy outside files into the docs folder.
 sed -e '/full documentation here/ { N; d; }' < README.md > docs/index.md
