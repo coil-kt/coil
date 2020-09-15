@@ -44,17 +44,19 @@ object Coil {
     }
 
     /**
-     * Set the default [ImageLoader]. Shutdown the current instance if there is one.
+     * Set the default [ImageLoader]. Prefer using `setImageLoader(ImageLoaderFactory)`
+     * to create the [ImageLoader] lazily.
      */
     @JvmStatic
     @Synchronized
-    fun setImageLoader(loader: ImageLoader) {
-        updateImageLoader(loader)
+    fun setImageLoader(imageLoader: ImageLoader) {
+        this.imageLoaderFactory = null
+        this.imageLoader = imageLoader
     }
 
     /**
      * Set the [ImageLoaderFactory] that will be used to create the default [ImageLoader].
-     * Shutdown the current instance if there is one. The [factory] is guaranteed to be called at most once.
+     * The [factory] is guaranteed to be called at most once.
      *
      * NOTE: [factory] will take precedence over an [Application] that implements [ImageLoaderFactory].
      */
@@ -62,7 +64,7 @@ object Coil {
     @Synchronized
     fun setImageLoader(factory: ImageLoaderFactory) {
         imageLoaderFactory = factory
-        updateImageLoader(null)
+        imageLoader = null
     }
 
     /** Create and set the new default [ImageLoader]. */
@@ -72,24 +74,17 @@ object Coil {
         imageLoader?.let { return it }
 
         // Create a new ImageLoader.
-        val loader = imageLoaderFactory?.newImageLoader()
+        val newImageLoader = imageLoaderFactory?.newImageLoader()
             ?: (context.applicationContext as? ImageLoaderFactory)?.newImageLoader()
             ?: ImageLoader(context)
         imageLoaderFactory = null
-        updateImageLoader(loader)
-        return loader
-    }
-
-    /** Update the current image loader. Shutdown the existing image loader if there is one. */
-    @Synchronized
-    private fun updateImageLoader(loader: ImageLoader?) {
-        val previous = imageLoader
-        imageLoader = loader
-        previous?.shutdown()
+        imageLoader = newImageLoader
+        return newImageLoader
     }
 
     /** Reset the internal state. */
     @VisibleForTesting
+    @Synchronized
     internal fun reset() {
         imageLoader = null
         imageLoaderFactory = null

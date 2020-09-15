@@ -38,7 +38,7 @@ class ImageRequestTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/221 */
     @Test
     fun `crossfade false creates none transition`() {
-        val loader = ImageLoader.Builder(context)
+        val imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .build()
 
@@ -48,7 +48,7 @@ class ImageRequestTest {
 
         assertEquals(Transition.NONE, request.transition)
 
-        loader.shutdown()
+        imageLoader.shutdown()
     }
 
     @Test
