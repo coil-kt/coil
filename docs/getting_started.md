@@ -19,7 +19,7 @@ If you need [transformations](transformations.md) that aren't part of the base C
 
 ## Java 8
 
-Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support) and [Kotlin's Java 8 default method support](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces). To enable these features add the following to your Gradle build script:
+Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support). To enable this feature add the following to your Gradle build script:
 
 Gradle (`.gradle`):
 
@@ -29,12 +29,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-}
-
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
-        // "-Xjvm-default=all-compatibility" will also work.
-        freeCompilerArgs = ["-Xjvm-default=all"]
         jvmTarget = "1.8"
     }
 }
@@ -48,12 +43,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-}
-
-tasks.withType<KotlinCompile> {
     kotlinOptions {
-        // "-Xjvm-default=all-compatibility" will also work.
-        freeCompilerArgs = listOf("-Xjvm-default=all")
         jvmTarget = "1.8"
     }
 }

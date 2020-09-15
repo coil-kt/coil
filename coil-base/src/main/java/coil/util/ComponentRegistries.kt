@@ -7,18 +7,11 @@ import coil.ComponentRegistry
 import coil.decode.Decoder
 import coil.fetch.Fetcher
 import coil.map.Mapper
-import coil.map.MeasuredMapper
-import coil.size.Size
 import okio.BufferedSource
 
 @Suppress("UNCHECKED_CAST")
-internal fun ComponentRegistry.mapData(data: Any, size: Size): Any {
+internal fun ComponentRegistry.mapData(data: Any): Any {
     var mappedData = data
-    measuredMappers.forEachIndices { (mapper, type) ->
-        if (type.isAssignableFrom(mappedData::class.java) && (mapper as MeasuredMapper<Any, *>).handles(mappedData)) {
-            mappedData = mapper.map(mappedData, size)
-        }
-    }
     mappers.forEachIndices { (mapper, type) ->
         if (type.isAssignableFrom(mappedData::class.java) && (mapper as Mapper<Any, *>).handles(mappedData)) {
             mappedData = mapper.map(mappedData)

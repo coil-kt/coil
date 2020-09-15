@@ -57,7 +57,7 @@ allprojects {
         )
     }
 
-    tasks.withType<KotlinCompile> {
+    tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
             allWarningsAsErrors = true
             freeCompilerArgs = listOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
@@ -65,7 +65,7 @@ allprojects {
         }
     }
 
-    tasks.withType<Test> {
+    tasks.withType<Test>().configureEach {
         testLogging {
             exceptionFormat = TestExceptionFormat.FULL
             events = setOf(TestLogEvent.SKIPPED, TestLogEvent.PASSED, TestLogEvent.FAILED)
@@ -75,7 +75,7 @@ allprojects {
 
     // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our dokka configuration.
     afterEvaluate {
-        tasks.withType<DokkaTask> {
+        tasks.withType<DokkaTask>().configureEach {
             configuration {
                 jdkVersion = 8
                 reportUndocumented = false

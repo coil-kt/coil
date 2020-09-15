@@ -1,6 +1,6 @@
 public final class coil/ComponentRegistry {
 	public fun <init> ()V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun newBuilder ()Lcoil/ComponentRegistry$Builder;
 }
 
@@ -11,10 +11,6 @@ public final class coil/ComponentRegistry$Builder {
 	public final fun add (Lcoil/fetch/Fetcher;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
 	public final fun add (Lcoil/intercept/Interceptor;)Lcoil/ComponentRegistry$Builder;
 	public final fun add (Lcoil/map/Mapper;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
-	public final fun add (Lcoil/map/MeasuredMapper;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
-	public final fun add (Ljava/lang/Class;Lcoil/fetch/Fetcher;)Lcoil/ComponentRegistry$Builder;
-	public final fun add (Ljava/lang/Class;Lcoil/map/Mapper;)Lcoil/ComponentRegistry$Builder;
-	public final fun add (Ljava/lang/Class;Lcoil/map/MeasuredMapper;)Lcoil/ComponentRegistry$Builder;
 	public final fun build ()Lcoil/ComponentRegistry;
 }
 
@@ -74,14 +70,12 @@ public final class coil/EventListener$Factory$Companion {
 
 public abstract interface class coil/ImageLoader {
 	public static final field Companion Lcoil/ImageLoader$Companion;
-	public abstract fun clearMemory ()V
 	public static fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 	public abstract fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
 	public abstract fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getBitmapPool ()Lcoil/bitmap/BitmapPool;
 	public abstract fun getDefaults ()Lcoil/request/DefaultRequestOptions;
 	public abstract fun getMemoryCache ()Lcoil/memory/MemoryCache;
-	public abstract fun invalidate (Ljava/lang/String;)V
 	public abstract fun shutdown ()V
 }
 
@@ -124,11 +118,6 @@ public final class coil/ImageLoader$Builder {
 
 public final class coil/ImageLoader$Companion {
 	public final fun create (Landroid/content/Context;)Lcoil/ImageLoader;
-}
-
-public final class coil/ImageLoader$DefaultImpls {
-	public static fun clearMemory (Lcoil/ImageLoader;)V
-	public static fun invalidate (Lcoil/ImageLoader;Ljava/lang/String;)V
 }
 
 public abstract interface annotation class coil/annotation/ExperimentalCoilApi : java/lang/annotation/Annotation {
@@ -263,12 +252,6 @@ public final class coil/drawable/CrossfadeDrawable : android/graphics/drawable/D
 public final class coil/drawable/CrossfadeDrawable$Companion {
 }
 
-public final class coil/extension/Parameters {
-	public static final fun count (Lcoil/request/Parameters;)I
-	public static final fun get (Lcoil/request/Parameters;Ljava/lang/String;)Ljava/lang/Object;
-	public static final fun isNotEmpty (Lcoil/request/Parameters;)Z
-}
-
 public final class coil/fetch/DrawableResult : coil/fetch/FetchResult {
 	public fun <init> (Landroid/graphics/drawable/Drawable;ZLcoil/decode/DataSource;)V
 	public final fun component1 ()Landroid/graphics/drawable/Drawable;
@@ -330,15 +313,6 @@ public abstract interface class coil/map/Mapper {
 
 public final class coil/map/Mapper$DefaultImpls {
 	public static fun handles (Lcoil/map/Mapper;Ljava/lang/Object;)Z
-}
-
-public abstract interface class coil/map/MeasuredMapper {
-	public abstract fun handles (Ljava/lang/Object;)Z
-	public abstract fun map (Ljava/lang/Object;Lcoil/size/Size;)Ljava/lang/Object;
-}
-
-public final class coil/map/MeasuredMapper$DefaultImpls {
-	public static fun handles (Lcoil/map/MeasuredMapper;Ljava/lang/Object;)Z
 }
 
 public abstract interface class coil/memory/MemoryCache {
@@ -507,9 +481,7 @@ public final class coil/request/ImageRequest$Builder {
 	public final fun fallback (I)Lcoil/request/ImageRequest$Builder;
 	public final fun fallback (Landroid/graphics/drawable/Drawable;)Lcoil/request/ImageRequest$Builder;
 	public final fun fetcher (Lcoil/fetch/Fetcher;Ljava/lang/Class;)Lcoil/request/ImageRequest$Builder;
-	public final fun fetcher (Ljava/lang/Class;Lcoil/fetch/Fetcher;)Lcoil/request/ImageRequest$Builder;
 	public final fun headers (Lokhttp3/Headers;)Lcoil/request/ImageRequest$Builder;
-	public final fun key (Ljava/lang/String;)Lcoil/request/ImageRequest$Builder;
 	public final fun lifecycle (Landroidx/lifecycle/Lifecycle;)Lcoil/request/ImageRequest$Builder;
 	public final fun lifecycle (Landroidx/lifecycle/LifecycleOwner;)Lcoil/request/ImageRequest$Builder;
 	public final fun listener (Lcoil/request/ImageRequest$Listener;)Lcoil/request/ImageRequest$Builder;
@@ -651,7 +623,6 @@ public final class coil/request/SuccessResult : coil/request/ImageResult {
 	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public final fun getMetadata ()Lcoil/request/ImageResult$Metadata;
 	public fun getRequest ()Lcoil/request/ImageRequest;
-	public final fun getSource ()Lcoil/decode/DataSource;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
