@@ -128,7 +128,7 @@ val imageLoader = ImageLoader.Builder(context)
 Coil.setImageLoader(imageLoader)
 ```
 
-The default `ImageLoader` can be retrieved using an extension function on `Context`:
+The default `ImageLoader` can be retrieved using the `Context.imageLoader` extension function:
 
 ```kotlin
 val imageLoader = context.imageLoader
