@@ -10,7 +10,7 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 
 /**
- * A singleton that holds the singleton [ImageLoader] instance.
+ * A class that holds the singleton [ImageLoader] instance.
  */
 object Coil {
 
