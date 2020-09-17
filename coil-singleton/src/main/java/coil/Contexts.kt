@@ -1,5 +1,5 @@
 @file:JvmName("Contexts")
-@file:Suppress("unused")
+@file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil
 
