@@ -37,7 +37,7 @@ Coil performs best when you create a single `ImageLoader` and share it throughou
 
 If you use a dependency injector like [Dagger](https://github.com/google/dagger), then you should create a single `ImageLoader` instance and inject it throughout your app.
 
-However, if you'd prefer a singleton the `io.coil-kt:coil` artifact provides a default `ImageLoader` instance that can be accessed using the extension function `context.imageLoader`. [Read here](../getting_started/#singleton) for how to initialize the singleton `ImageLoader` instance.
+However, if you'd prefer a singleton the `io.coil-kt:coil` artifact provides a singleton `ImageLoader` instance that can be accessed using the `Context.imageLoader` extension function. [Read here](../getting_started/#singleton) for how to initialize the singleton `ImageLoader` instance.
 
 !!! Note
     Use the `io.coil-kt:coil-base` artifact if you are using dependency injection.
