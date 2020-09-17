@@ -120,6 +120,10 @@ public final class coil/ImageLoader$Companion {
 	public final fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 }
 
+public final class coil/ImageLoaders {
+	public static final fun executeBlocking (Lcoil/ImageLoader;Lcoil/request/ImageRequest;)Lcoil/request/ImageResult;
+}
+
 public abstract interface annotation class coil/annotation/ExperimentalCoilApi : java/lang/annotation/Annotation {
 }
 

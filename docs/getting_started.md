@@ -128,13 +128,13 @@ val imageLoader = ImageLoader.Builder(context)
 Coil.setImageLoader(imageLoader)
 ```
 
-The default `ImageLoader` can be retrieved using an extension function on `Context`:
+The singleton `ImageLoader` can be retrieved using the `Context.imageLoader` extension function:
 
 ```kotlin
 val imageLoader = context.imageLoader
 ```
 
-Setting a default `ImageLoader` is optional. If you don't set one, Coil will lazily create an `ImageLoader` with the default values.
+Setting the singleton `ImageLoader` is optional. If you don't set one, Coil will lazily create an `ImageLoader` with the default values.
 
 If you're using the `io.coil-kt:coil-base` artifact, you should create your own `ImageLoader` instance(s) and inject them throughout your app with dependency injection. [Read more about dependency injection here](../image_loaders/#singleton-vs-dependency-injection).
 
