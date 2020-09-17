@@ -10,7 +10,7 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 
 /**
- * A singleton that holds the default [ImageLoader] instance.
+ * A singleton that holds the singleton [ImageLoader] instance.
  */
 object Coil {
 
@@ -18,13 +18,13 @@ object Coil {
     private var imageLoaderFactory: ImageLoaderFactory? = null
 
     /**
-     * Get the default [ImageLoader]. Creates a new instance if none has been set.
+     * Get the singleton [ImageLoader]. Creates a new instance if none has been set.
      */
     @JvmStatic
     fun imageLoader(context: Context): ImageLoader = imageLoader ?: newImageLoader(context)
 
     /**
-     * Convenience function to get the default [ImageLoader] and enqueue the [request].
+     * Convenience function to get the singleton [ImageLoader] and enqueue the [request].
      *
      * @see ImageLoader.enqueue
      */
@@ -34,7 +34,7 @@ object Coil {
     }
 
     /**
-     * Convenience function to get the default [ImageLoader] and execute the [request].
+     * Convenience function to get the singleton [ImageLoader] and execute the [request].
      *
      * @see ImageLoader.execute
      */
@@ -44,7 +44,7 @@ object Coil {
     }
 
     /**
-     * Set the default [ImageLoader]. Prefer using `setImageLoader(ImageLoaderFactory)`
+     * Set the singleton [ImageLoader]. Prefer using `setImageLoader(ImageLoaderFactory)`
      * to create the [ImageLoader] lazily.
      */
     @JvmStatic
@@ -55,7 +55,7 @@ object Coil {
     }
 
     /**
-     * Set the [ImageLoaderFactory] that will be used to create the default [ImageLoader].
+     * Set the [ImageLoaderFactory] that will be used to create the singleton [ImageLoader].
      * The [factory] is guaranteed to be called at most once.
      *
      * NOTE: [factory] will take precedence over an [Application] that implements [ImageLoaderFactory].
@@ -67,7 +67,7 @@ object Coil {
         imageLoader = null
     }
 
-    /** Create and set the new default [ImageLoader]. */
+    /** Create and set the new singleton [ImageLoader]. */
     @Synchronized
     private fun newImageLoader(context: Context): ImageLoader {
         // Check again in case imageLoader was just set.
