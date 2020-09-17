@@ -338,12 +338,6 @@ public final class coil/network/HttpException : java/lang/RuntimeException {
 	public final fun getResponse ()Lokhttp3/Response;
 }
 
-public final class coil/request/-Parameters {
-	public static final fun count (Lcoil/request/Parameters;)I
-	public static final fun get (Lcoil/request/Parameters;Ljava/lang/String;)Ljava/lang/Object;
-	public static final fun isNotEmpty (Lcoil/request/Parameters;)Z
-}
-
 public final class coil/request/CachePolicy : java/lang/Enum {
 	public static final field DISABLED Lcoil/request/CachePolicy;
 	public static final field ENABLED Lcoil/request/CachePolicy;
@@ -610,6 +604,12 @@ public final class coil/request/Parameters$Entry {
 	public final fun getValue ()Ljava/lang/Object;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/request/ParametersKt {
+	public static final fun count (Lcoil/request/Parameters;)I
+	public static final fun get (Lcoil/request/Parameters;Ljava/lang/String;)Ljava/lang/Object;
+	public static final fun isNotEmpty (Lcoil/request/Parameters;)Z
 }
 
 public final class coil/request/SuccessResult : coil/request/ImageResult {
