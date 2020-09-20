@@ -151,12 +151,6 @@ interface EventListener : ImageRequest.Listener {
     fun transitionEnd(request: ImageRequest) {}
 
     /**
-     * @see ImageRequest.Listener.onSuccess
-     */
-    @MainThread
-    override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
-
-    /**
      * @see ImageRequest.Listener.onCancel
      */
     @MainThread
@@ -167,6 +161,12 @@ interface EventListener : ImageRequest.Listener {
      */
     @MainThread
     override fun onError(request: ImageRequest, throwable: Throwable) {}
+
+    /**
+     * @see ImageRequest.Listener.onSuccess
+     */
+    @MainThread
+    override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
 
     /** A factory that creates new [EventListener] instances. */
     interface Factory {

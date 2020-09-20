@@ -15,14 +15,14 @@ interface Target {
     fun onStart(placeholder: Drawable?) {}
 
     /**
-     * Called if the request completes successfully.
-     */
-    @MainThread
-    fun onSuccess(result: Drawable) {}
-
-    /**
      * Called if an error occurs while executing the request.
      */
     @MainThread
     fun onError(error: Drawable?) {}
+
+    /**
+     * Called if the request completes successfully.
+     */
+    @MainThread
+    fun onSuccess(result: Drawable) {}
 }
