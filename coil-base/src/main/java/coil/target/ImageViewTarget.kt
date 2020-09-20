@@ -21,9 +21,9 @@ open class ImageViewTarget(
 
     override fun onStart(placeholder: Drawable?) = setDrawable(placeholder)
 
-    override fun onSuccess(result: Drawable) = setDrawable(result)
-
     override fun onError(error: Drawable?) = setDrawable(error)
+
+    override fun onSuccess(result: Drawable) = setDrawable(result)
 
     override fun onClear() = setDrawable(null)
 
