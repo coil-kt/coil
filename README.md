@@ -16,7 +16,7 @@ Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한�
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.13.0")
+implementation("io.coil-kt:coil:1.0.0-rc3")
 ```
 
 ## Quick Start
@@ -48,10 +48,10 @@ imageView.load("https://www.example.com/image.jpg") {
 
 #### Image Loaders
 
-`imageView.load` uses the singleton `ImageLoader` to enqueue an `ImageRequest`. The singleton `ImageLoader` can be accessed using:
+`imageView.load` uses the singleton `ImageLoader` to enqueue an `ImageRequest`. The singleton `ImageLoader` can be accessed using an extension function:
 
 ```kotlin
-val imageLoader = Coil.imageLoader(context)
+val imageLoader = context.imageLoader
 ```
 
 Optionally, you can create your own `ImageLoader` instance(s) and inject them with dependency injection:
