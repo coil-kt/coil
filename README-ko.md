@@ -16,7 +16,7 @@ Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
 Coil은 `mavenCentral()`로 이용 가능합니다.
 
 ```kotlin
-implementation("io.coil-kt:coil:0.13.0")
+implementation("io.coil-kt:coil:1.0.0-rc3")
 ```
 
 ## 빠른 시작
