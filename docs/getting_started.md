@@ -94,7 +94,7 @@ val result = imageLoader.execute(request)
 
 ## Singleton
 
-If you are using the `io.coil-kt:coil` artifact, you can set a default [`ImageLoader`](image_loaders.md) instance by either:
+If you are using the `io.coil-kt:coil` artifact, you can set the singleton [`ImageLoader`](image_loaders.md) instance by either:
 
 - Implementing `ImageLoaderFactory` on your `Application` class (prefer this method):
 
@@ -152,7 +152,7 @@ imageView.load("https://www.example.com/image.jpg")
 The above call is equivalent to:
 
 ```kotlin
-val imageLoader = context.imageLoader
+val imageLoader = imageView.context.imageLoader
 val request = ImageRequest.Builder(imageView.context)
     .data("https://www.example.com/image.jpg")
     .target(imageView)
