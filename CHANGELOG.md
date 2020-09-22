@@ -4,9 +4,9 @@
 
 - Revert using the [`-Xjvm-default=all`](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) compiler flag due to instability.
     - **This is a source compatible, but binary incompatible change from previous release candidate versions.**
-- Add `Context.imageLoader` extension function. ([#534]((https://github.com/coil-kt/coil/pull/534)))
-- Add `ImageLoader.executeBlocking` extension function. ([#537]((https://github.com/coil-kt/coil/pull/537)))
-- Don't shutdown previous singleton image loader if replaced. ([#533]((https://github.com/coil-kt/coil/pull/533)))
+- Add `Context.imageLoader` extension function. ([#534](https://github.com/coil-kt/coil/pull/534))
+- Add `ImageLoader.executeBlocking` extension function. ([#537](https://github.com/coil-kt/coil/pull/537))
+- Don't shutdown previous singleton image loader if replaced. ([#533](https://github.com/coil-kt/coil/pull/533))
 - Update AndroidX dependencies:
     - `androidx.exifinterface:exifinterface` -> 1.3.0
 
