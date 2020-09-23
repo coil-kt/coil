@@ -19,7 +19,7 @@ val imageLoader = ImageLoader.Builder(context)
 
 ## Interceptors
 
-Interceptors allow you to observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine. For example, you can add a custom cache layer like so:
+Interceptors allow you to observe, transform, short circuit, or retry requests to an `ImageLoader`'s image engine. For example, you can add a custom cache layer like so:
 
 ```kotlin
 class CustomCacheInterceptor(
