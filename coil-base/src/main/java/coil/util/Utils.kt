@@ -22,7 +22,7 @@ internal object Utils {
     private const val STANDARD_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
 
-    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 2L * 1024 // 2GB
+    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 2 * 1024 // 2GB
 
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
@@ -52,14 +52,14 @@ internal object Utils {
 
     /** Modified from Picasso. */
     fun calculateAvailableMemorySize(context: Context, percentage: Double): Long {
-        return try {
+        val memoryClassMegabytes = try {
             val activityManager: ActivityManager = context.requireSystemService()
             val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
-            val memoryClassMegabytes = if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
-            (percentage * memoryClassMegabytes * 1024 * 1024).toLong()
+            if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
         } catch (_: Exception) {
             DEFAULT_MEMORY_CLASS_MEGABYTES
         }
+        return (percentage * memoryClassMegabytes * 1024 * 1024).toLong()
     }
 
     fun getDefaultAvailableMemoryPercentage(context: Context): Double {
