@@ -14,15 +14,15 @@ internal object Utils {
 
     private const val CACHE_DIRECTORY_NAME = "image_cache"
 
-    private const val MIN_DISK_CACHE_SIZE = 10L * 1024 * 1024 // 10MB
-    private const val MAX_DISK_CACHE_SIZE = 250L * 1024 * 1024 // 250MB
+    private const val MIN_DISK_CACHE_SIZE_BYTES = 10L * 1024 * 1024 // 10MB
+    private const val MAX_DISK_CACHE_SIZE_BYTES = 250L * 1024 * 1024 // 250MB
 
     private const val DISK_CACHE_PERCENTAGE = 0.02
 
     private const val STANDARD_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
 
-    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 2 * 1024 // 2GB
+    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 2 * 1024
 
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
@@ -44,9 +44,9 @@ internal object Utils {
         return try {
             val cacheDir = StatFs(cacheDirectory.absolutePath)
             val size = DISK_CACHE_PERCENTAGE * cacheDir.blockCountCompat * cacheDir.blockSizeCompat
-            return size.toLong().coerceIn(MIN_DISK_CACHE_SIZE, MAX_DISK_CACHE_SIZE)
+            return size.toLong().coerceIn(MIN_DISK_CACHE_SIZE_BYTES, MAX_DISK_CACHE_SIZE_BYTES)
         } catch (_: Exception) {
-            MIN_DISK_CACHE_SIZE
+            MIN_DISK_CACHE_SIZE_BYTES
         }
     }
 
