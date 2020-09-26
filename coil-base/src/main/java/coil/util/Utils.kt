@@ -14,13 +14,15 @@ internal object Utils {
 
     private const val CACHE_DIRECTORY_NAME = "image_cache"
 
-    private const val MIN_DISK_CACHE_SIZE: Long = 10 * 1024 * 1024 // 10MB
-    private const val MAX_DISK_CACHE_SIZE: Long = 250 * 1024 * 1024 // 250MB
+    private const val MIN_DISK_CACHE_SIZE = 10L * 1024 * 1024 // 10MB
+    private const val MAX_DISK_CACHE_SIZE = 250L * 1024 * 1024 // 250MB
 
     private const val DISK_CACHE_PERCENTAGE = 0.02
 
     private const val STANDARD_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
+
+    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 2L * 1024 // 2GB
 
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
@@ -50,15 +52,23 @@ internal object Utils {
 
     /** Modified from Picasso. */
     fun calculateAvailableMemorySize(context: Context, percentage: Double): Long {
-        val activityManager: ActivityManager = context.requireSystemService()
-        val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
-        val memoryClassMegabytes = if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
-        return (percentage * memoryClassMegabytes * 1024 * 1024).toLong()
+        return try {
+            val activityManager: ActivityManager = context.requireSystemService()
+            val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
+            val memoryClassMegabytes = if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
+            (percentage * memoryClassMegabytes * 1024 * 1024).toLong()
+        } catch (_: Exception) {
+            DEFAULT_MEMORY_CLASS_MEGABYTES
+        }
     }
 
     fun getDefaultAvailableMemoryPercentage(context: Context): Double {
-        val activityManager: ActivityManager = context.requireSystemService()
-        return if (activityManager.isLowRamDeviceCompat) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
+        return try {
+            val activityManager: ActivityManager = context.requireSystemService()
+            if (activityManager.isLowRamDeviceCompat) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
+        } catch (_: Exception) {
+            STANDARD_MULTIPLIER
+        }
     }
 
     fun getDefaultBitmapPoolPercentage(): Double {
