@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Clean any previous Dokka docs.
-rm -rf docs/api
+# Build the Dokka docs.
+./assemble_docs.sh
 
 # Build the new Dokka docs.
-./gradlew clean installArchives --no-daemon --no-parallel
+./gradlew installArchives --no-daemon --no-parallel
