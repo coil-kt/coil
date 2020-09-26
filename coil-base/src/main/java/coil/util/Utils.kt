@@ -22,7 +22,7 @@ internal object Utils {
     private const val STANDARD_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
 
-    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 2 * 1024
+    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
 
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
