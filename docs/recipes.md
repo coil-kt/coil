@@ -197,3 +197,43 @@ detailImageView.load("https://www.example.com/image.jpg") {
 - Use the [`MemoryCache.Key`](getting_started.md#memory-cache) of the start image as the [`placeholderMemoryCacheKey`](../api/coil-base/coil.request/-image-request/-builder/placeholder-memory-cache-key) for the end image. This ensures that the start image is used as the placeholder for the end image, which results in a smooth transition with no white flashes if the image is in the memory cache.
 
 - Use [`ChangeImageTransform`](https://developer.android.com/reference/android/transition/ChangeImageTransform) and [`ChangeBounds`](https://developer.android.com/reference/android/transition/ChangeBounds) together for optimal results.
+
+## Remote Views
+
+Coil does not provide a `RemoteViewTarget` out of the box. You can easily recreate one though for updating remote views like widgets.
+
+```kotlin
+class RemoteViewsTarget(private val context: Context, private val componentName: ComponentName, private val remoteViews: RemoteViews, @IdRes val imageViewId: Int) : Target {
+    override fun onStart(placeholder: Drawable?) {
+        setDrawable(placeholder)
+    }
+
+    override fun onError(error: Drawable?) {
+        setDrawable(error)
+    }
+
+    override fun onSuccess(result: Drawable) {
+        setDrawable(result)
+    }
+
+    private fun setDrawable(drawable: Drawable?) {
+        remoteViews.setImageViewBitmap(imageViewId, (drawable as? BitmapDrawable)?.bitmap)
+        update()
+    }
+
+    private fun update() {
+        val appWidgetManager = AppWidgetManager.getInstance(this.context)
+        appWidgetManager.updateAppWidget(this.componentName, remoteViews)
+    }
+}
+```
+
+Then just set it as your target when enqueuing.
+```kotlin
+val remoteViewTarget = RemoteViewTarget(...)
+val request = ImageRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .target(remoteViewTarget).build()
+
+context.imageLoader.enqueue(request)
+```
