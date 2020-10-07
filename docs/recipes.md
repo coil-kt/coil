@@ -203,7 +203,13 @@ detailImageView.load("https://www.example.com/image.jpg") {
 Coil does not provide a `RemoteViewTarget` out of the box. You can easily recreate one though for updating remote views like widgets.
 
 ```kotlin
-class RemoteViewsTarget(private val context: Context, private val componentName: ComponentName, private val remoteViews: RemoteViews, @IdRes val imageViewId: Int) : Target {
+class RemoteViewsTarget(
+    private val context: Context, 
+    private val componentName: ComponentName, 
+    private val remoteViews: RemoteViews, 
+    @IdRes val imageViewId: Int
+) : Target {
+
     override fun onStart(placeholder: Drawable?) {
         setDrawable(placeholder)
     }
@@ -233,7 +239,8 @@ Then just set it as your target when enqueuing.
 val remoteViewTarget = RemoteViewTarget(...)
 val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
-    .target(remoteViewTarget).build()
+    .target(remoteViewTarget)
+    .build()
 
 context.imageLoader.enqueue(request)
 ```
