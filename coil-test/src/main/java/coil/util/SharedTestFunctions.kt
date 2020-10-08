@@ -30,10 +30,18 @@ import kotlin.coroutines.CoroutineContext
 
 fun createMockWebServer(context: Context, vararg images: String): MockWebServer {
     return MockWebServer().apply {
-        images.forEach { image ->
-            val buffer = Buffer()
-            context.assets.open(image).source().buffer().readAll(buffer)
-            enqueue(MockResponse().setBody(buffer))
+        if (images.isNotEmpty()) {
+            images.forEach { image ->
+                val buffer = Buffer()
+                context.assets.open(image).source().buffer().readAll(buffer)
+                enqueue(MockResponse().setBody(buffer))
+            }
+        } else {
+            enqueue(
+                MockResponse()
+                    .setResponseCode(404)
+                    .addHeader("Cache-Control", "public,max-age=60")
+            )
         }
         start()
     }
