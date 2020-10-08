@@ -25,8 +25,8 @@ data class SourceResult(
  * A direct [Drawable] result. Return this from a [Fetcher] if its data cannot be converted into a [BufferedSource].
  *
  * @param drawable The loaded [Drawable].
- * @param dataSource The source that [drawable] was fetched from.
  * @param isSampled True if [drawable] is sampled (i.e. not loaded into memory at full size).
+ * @param dataSource The source that [drawable] was fetched from.
  */
 data class DrawableResult(
     val drawable: Drawable,
