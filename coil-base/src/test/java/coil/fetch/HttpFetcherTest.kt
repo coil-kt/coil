@@ -122,7 +122,7 @@ class HttpFetcherTest {
 
     @Test
     fun `not found response is cached`() {
-        val uri = createMockWebServer(context).url("/normal.jpg").toString().toUri()
+        val uri = createMockWebServer(context).url("/notfound.jpg").toString().toUri()
         val fetcher = HttpUriFetcher(callFactory)
 
         assertFailsWith<HttpException> {
@@ -130,6 +130,6 @@ class HttpFetcherTest {
                 fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
             }
         }
-        assertTrue(cache.urls().hasNext())
+        assertEquals(uri.toString(), cache.urls().next())
     }
 }
