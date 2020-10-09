@@ -69,6 +69,7 @@ internal abstract class HttpFetcher<T : Any>(private val callFactory: Call.Facto
 
         val response = callFactory.newCall(request.build()).await()
         if (!response.isSuccessful) {
+            response.body()?.close()
             throw HttpException(response)
         }
         val body = checkNotNull(response.body()) { "Null response body!" }
