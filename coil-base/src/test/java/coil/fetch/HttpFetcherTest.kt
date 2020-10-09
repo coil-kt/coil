@@ -5,6 +5,7 @@ import android.webkit.MimeTypeMap
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmap.BitmapPool
+import coil.network.HttpException
 import coil.size.PixelSize
 import coil.util.createMockWebServer
 import coil.util.createOptions
@@ -14,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
+import okhttp3.Cache
 import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.MediaType
@@ -26,7 +28,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
+import java.io.File
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -35,6 +39,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class HttpFetcherTest {
 
+    private lateinit var cache: Cache
     private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var server: MockWebServer
@@ -46,7 +51,8 @@ class HttpFetcherTest {
         context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg")
-        callFactory = OkHttpClient()
+        cache = Cache(File("build/cache"), 1024).apply { evictAll() }
+        callFactory = OkHttpClient().newBuilder().cache(cache).build()
         pool = BitmapPool(0)
     }
 
@@ -112,5 +118,18 @@ class HttpFetcherTest {
         val url5 = HttpUrl.get("https://www.example.com/image")
         val body5 = ResponseBody.create(null, byteArrayOf())
         assertNull(fetcher.getMimeType(url5, body5))
+    }
+
+    @Test
+    fun `not found response is cached`() {
+        val uri = createMockWebServer(context).url("/notfound.jpg").toString().toUri()
+        val fetcher = HttpUriFetcher(callFactory)
+
+        assertFailsWith<HttpException> {
+            runBlocking {
+                fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
+            }
+        }
+        assertEquals(uri.toString(), cache.urls().next())
     }
 }
