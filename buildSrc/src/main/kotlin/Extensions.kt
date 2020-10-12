@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil
 
@@ -99,6 +99,6 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
     androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
 }
 
-infix fun <T> Property<T>.by(value: T) = set(value)
+inline infix fun <T> Property<T>.by(value: T) = set(value)
 
-infix fun <T> SetProperty<T>.by(value: Set<T>) = set(value)
+inline infix fun <T> SetProperty<T>.by(value: Set<T>) = set(value)
