@@ -18,7 +18,9 @@ interface BitmapPool {
          */
         @JvmStatic
         @JvmName("create")
-        operator fun invoke(maxSize: Int): BitmapPool = RealBitmapPool(maxSize)
+        operator fun invoke(maxSize: Int): BitmapPool {
+            return if (maxSize == 0) EmptyBitmapPool() else RealBitmapPool(maxSize)
+        }
     }
 
     /**
