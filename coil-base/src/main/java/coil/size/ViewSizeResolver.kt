@@ -33,7 +33,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
 
     override suspend fun size(): Size {
         // Fast path: the view is already measured.
-        getSize(view.isLayoutRequested)?.let { return it }
+        getSize()?.let { return it }
 
         // Slow path: wait for the view to be measured.
         return suspendCancellableCoroutine { continuation ->
@@ -41,7 +41,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
 
             val preDrawListener = object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
-                    val size = getSize(false)
+                    val size = getSize()
                     if (size != null) {
                         viewTreeObserver.removePreDrawListenerSafe(this)
                         continuation.resume(size)
@@ -58,56 +58,48 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         }
     }
 
-    private fun getSize(isLayoutRequested: Boolean): PixelSize? {
-        val width = getWidth(isLayoutRequested).also { if (it <= 0) return null }
-        val height = getHeight(isLayoutRequested).also { if (it <= 0) return null }
+    private fun getSize(): PixelSize? {
+        val width = getWidth().also { if (it <= 0) return null }
+        val height = getHeight().also { if (it <= 0) return null }
         return PixelSize(width, height)
     }
 
-    private fun getWidth(isLayoutRequested: Boolean): Int {
+    private fun getWidth(): Int {
         return getDimension(
             paramSize = view.layoutParams?.width ?: -1,
             viewSize = view.width,
             paddingSize = if (subtractPadding) view.paddingLeft + view.paddingRight else 0,
-            isLayoutRequested = isLayoutRequested,
             isWidth = true
         )
     }
 
-    private fun getHeight(isLayoutRequested: Boolean): Int {
+    private fun getHeight(): Int {
         return getDimension(
             paramSize = view.layoutParams?.height ?: -1,
             viewSize = view.height,
             paddingSize = if (subtractPadding) view.paddingTop + view.paddingBottom else 0,
-            isLayoutRequested = isLayoutRequested,
             isWidth = false
         )
     }
 
-    /** Modified from Glide. */
     private fun getDimension(
         paramSize: Int,
         viewSize: Int,
         paddingSize: Int,
-        isLayoutRequested: Boolean,
         isWidth: Boolean
     ): Int {
+        // If the dimension is set to WRAP_CONTENT, fall back to the size of the display.
+        if (paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            return view.context.resources.displayMetrics.run { if (isWidth) widthPixels else heightPixels }
+        }
+
         // Assume the dimension will match the value in the view's layout params.
         val insetParamSize = paramSize - paddingSize
-        if (insetParamSize > 0) {
-            return insetParamSize
-        }
+        if (insetParamSize > 0) return insetParamSize
 
         // Fallback to the view's current size.
         val insetViewSize = viewSize - paddingSize
-        if (insetViewSize > 0) {
-            return insetViewSize
-        }
-
-        // If the dimension is set to WRAP_CONTENT and the view is fully laid out, fallback to the size of the display.
-        if (!isLayoutRequested && paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            return view.context.resources.displayMetrics.run { if (isWidth) widthPixels else heightPixels }
-        }
+        if (insetViewSize > 0) return insetViewSize
 
         // Unable to resolve the dimension's size.
         return -1
