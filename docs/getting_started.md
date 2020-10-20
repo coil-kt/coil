@@ -102,11 +102,11 @@ If you are using the `io.coil-kt:coil` artifact, you can set the singleton [`Ima
 class MyApplication : Application(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
-        return ImageLoader.Builder(context)
+        return ImageLoader.Builder(applicationContext)
             .crossfade(true)
             .okHttpClient {
                 OkHttpClient.Builder()
-                    .cache(CoilUtils.createDefaultCache(context))
+                    .cache(CoilUtils.createDefaultCache(applicationContext))
                     .build()
             }
             .build()
