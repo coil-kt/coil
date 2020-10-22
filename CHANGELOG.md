@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.0] - October 22, 2020
+
+Changes since `0.13.0`:
+- Add `Context.imageLoader` extension function. ([#534](https://github.com/coil-kt/coil/pull/534))
+- Add `ImageLoader.executeBlocking` extension function. ([#537](https://github.com/coil-kt/coil/pull/537))
+- Don't shutdown previous singleton image loader if replaced. ([#533](https://github.com/coil-kt/coil/pull/533))
+
+Changes since `1.0.0-rc3`:
+- Fix: Guard against missing/invalid ActivityManager. ([#541](https://github.com/coil-kt/coil/pull/541))
+- Fix: Allow OkHttp to cache unsuccessful responses. ([#551](https://github.com/coil-kt/coil/pull/551))
+- Update Kotlin to 1.4.10.
+- Update Okio to 2.9.0.
+- Update `androidx.exifinterface:exifinterface` to 1.3.1.
+
 ## [1.0.0-rc3] - September 21, 2020
 
 - Revert using the [`-Xjvm-default=all`](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) compiler flag due to instability.
