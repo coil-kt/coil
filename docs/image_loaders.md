@@ -54,7 +54,7 @@ val fakeImageLoader = object : ImageLoader {
     private val drawable = ColorDrawable(Color.BLACK)
 
     private val disposable = object : Disposable {
-        override val isDisposed = true
+        override val isDisposed get() = true
         override fun dispose() {}
         override suspend fun await() {}
     }

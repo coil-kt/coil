@@ -27,7 +27,7 @@ imageLoader.enqueue(request)
 `suspend` functions cannot be easily called from Java. Thus, to get an image synchronously you'll have to use the `ImageLoader.executeBlocking` extension function which can be called from Java like so:
 
 ```java
-ImageRequest request = ImageRequest.builder(context)
+ImageRequest request = new ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .size(1080, 1920)
     .build();
