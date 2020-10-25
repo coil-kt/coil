@@ -46,10 +46,11 @@ allprojects {
     version = project.versionName
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.38.1"
+        version by "0.39.0"
         enableExperimentalRules by true
         disabledRules by setOf(
             "experimental:annotation",
+            "experimental:argument-list-wrapping",
             "import-ordering",
             "indent",
             "max-line-length",
