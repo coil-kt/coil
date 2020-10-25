@@ -7,13 +7,16 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
+import android.os.Build.VERSION.SDK_INT
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -150,6 +153,17 @@ class RealBitmapPoolTest {
         pool.put(bitmap)
 
         assertEquals(1, strategy.numPuts)
+    }
+
+    @Test
+    fun `hardware bitmaps are not kept`() {
+        assumeTrue(SDK_INT >= 26)
+
+        val bitmap = createBitmap(config = Bitmap.Config.HARDWARE)
+
+        pool.put(bitmap)
+
+        assertNull(pool.getOrNull(bitmap.width, bitmap.height, bitmap.config))
     }
 
     private fun RealBitmapPool.fill(fillCount: Int) {

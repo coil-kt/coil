@@ -92,24 +92,27 @@ internal class RealBitmapPool(
         return getDirtyOrNull(width, height, config) ?: createBitmap(width, height, config)
     }
 
-    @Synchronized
     override fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
-        require(!config.isHardware) { "Cannot create a mutable hardware bitmap." }
+        // Short circuit as the pool does not keep hardware bitmaps.
+        if (config.isHardware) return null
 
-        val result = strategy.get(width, height, config)
-        if (result == null) {
-            logger?.log(TAG, Log.VERBOSE) { "Missing bitmap=${strategy.stringify(width, height, config)}" }
-            misses++
-        } else {
-            bitmaps -= result
-            currentSize -= result.allocationByteCountCompat
-            hits++
-            normalize(result)
+        // Check the strategy and update our metadata.
+        synchronized(this) {
+            val result = strategy.get(width, height, config)
+            if (result == null) {
+                logger?.log(TAG, Log.VERBOSE) { "Missing bitmap=${strategy.stringify(width, height, config)}" }
+                misses++
+            } else {
+                bitmaps -= result
+                currentSize -= result.allocationByteCountCompat
+                hits++
+                normalize(result)
+            }
+
+            logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.stringify(width, height, config)}\n${logStats()}" }
+
+            return result
         }
-
-        logger?.log(TAG, Log.VERBOSE) { "Get bitmap=${strategy.stringify(width, height, config)}\n${logStats()}" }
-
-        return result
     }
 
     override fun clear() = clearMemory()
