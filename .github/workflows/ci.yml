@@ -54,7 +54,6 @@ jobs:
             fail-fast: true
             matrix:
                 api-level: [15, 19, 21, 25, 30]
-                target: google_apis
         steps:
             - uses: actions/checkout@v2
             - uses: gradle/wrapper-validation-action@v1
@@ -74,6 +73,7 @@ jobs:
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: x86
+                  target: google_apis
                   script: ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
