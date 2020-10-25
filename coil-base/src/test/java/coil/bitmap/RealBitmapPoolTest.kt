@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -58,7 +58,7 @@ class RealBitmapPoolTest {
     @Test
     fun `clear memory removes all bitmaps`() {
         pool.fill(MAX_BITMAPS)
-        pool.clearMemory()
+        pool.clear()
 
         assertEquals(MAX_BITMAPS, strategy.numRemoves)
     }
@@ -67,7 +67,7 @@ class RealBitmapPoolTest {
     fun `evicted bitmaps are recycled`() {
         pool.fill(MAX_BITMAPS)
         val bitmaps = strategy.bitmaps.toList()
-        pool.clearMemory()
+        pool.clear()
 
         bitmaps.forEach { assertTrue(it.isRecycled) }
     }
@@ -156,17 +156,31 @@ class RealBitmapPoolTest {
     }
 
     @Test
-    fun `hardware bitmaps are not kept`() {
+    fun `real - getting a hardware bitmap throws`() {
         assumeTrue(SDK_INT >= 26)
 
         val bitmap = createBitmap(config = Bitmap.Config.HARDWARE)
 
         pool.put(bitmap)
 
-        assertNull(pool.getOrNull(bitmap.width, bitmap.height, bitmap.config))
+        assertFailsWith<IllegalArgumentException> { pool.get(bitmap.width, bitmap.height, bitmap.config) }
+        assertFailsWith<IllegalArgumentException> { pool.getOrNull(bitmap.width, bitmap.height, bitmap.config) }
     }
 
-    private fun RealBitmapPool.fill(fillCount: Int) {
+    @Test
+    fun `empty - getting a hardware bitmap throws`() {
+        assumeTrue(SDK_INT >= 26)
+
+        val pool = EmptyBitmapPool()
+        val bitmap = createBitmap(config = Bitmap.Config.HARDWARE)
+
+        pool.put(bitmap)
+
+        assertFailsWith<IllegalArgumentException> { pool.get(bitmap.width, bitmap.height, bitmap.config) }
+        assertFailsWith<IllegalArgumentException> { pool.getOrNull(bitmap.width, bitmap.height, bitmap.config) }
+    }
+
+    private fun BitmapPool.fill(fillCount: Int) {
         repeat(fillCount) { put(createBitmap()) }
     }
 

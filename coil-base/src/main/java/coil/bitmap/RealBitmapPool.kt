@@ -93,10 +93,8 @@ internal class RealBitmapPool(
     }
 
     override fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
-        // Short circuit as the pool does not keep hardware bitmaps.
-        if (config.isHardware) return null
+        require(!config.isHardware) { "Cannot create a mutable hardware bitmap." }
 
-        // Check the strategy and update our metadata.
         synchronized(this) {
             val result = strategy.get(width, height, config)
             if (result == null) {
