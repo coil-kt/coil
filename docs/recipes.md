@@ -17,10 +17,8 @@ val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
     .allowHardware(false) // Disable hardware bitmaps.
     .target { drawable ->
-        val bitmap = (drawable as BitmapDrawable).bitmap
-
         // Generate the Palette on a background thread.
-        val task = Palette.Builder(bitmap).generateAsync { palette ->
+        val task = Palette.Builder(drawable.toBitmap()).generateAsync { palette ->
             // Consume the palette.
         }
     }
@@ -41,7 +39,7 @@ val drawable = (imageLoader.execute(request) as SuccessResult).drawable
 
 val palette = coroutineScope {
     launch(Dispatchers.IO) {
-        Palette.Builder((drawable as BitmapDrawable).bitmap).generate()
+        Palette.Builder(drawable.toBitmap()).generate()
     }
 }
 ```
@@ -68,7 +66,7 @@ class PaletteTransition(
 
         // Compute the palette on a background thread.
         if (result is SuccessResult) {
-            val bitmap = (result.drawable as BitmapDrawable).bitmap
+            val bitmap = result.drawable.toBitmap()
             val palette = withContext(Dispatchers.IO) {
                 Palette.Builder(bitmap).generate()
             }
@@ -200,47 +198,36 @@ detailImageView.load("https://www.example.com/image.jpg") {
 
 ## Remote Views
 
-Coil does not provide a `RemoteViewTarget` out of the box. You can easily recreate one though for updating remote views like widgets.
+Coil does not provide a `Target` for [`RemoteViews`](https://developer.android.com/reference/android/widget/RemoteViews) out of the box, however you can create one like so:
 
 ```kotlin
 class RemoteViewsTarget(
     private val context: Context, 
     private val componentName: ComponentName, 
     private val remoteViews: RemoteViews, 
-    @IdRes val imageViewId: Int
+    @IdRes private val imageViewResId: Int
 ) : Target {
 
-    override fun onStart(placeholder: Drawable?) {
-        setDrawable(placeholder)
-    }
+    override fun onStart(placeholder: Drawable?) = setDrawable(placeholder)
 
-    override fun onError(error: Drawable?) {
-        setDrawable(error)
-    }
+    override fun onError(error: Drawable?) = setDrawable(error)
 
-    override fun onSuccess(result: Drawable) {
-        setDrawable(result)
-    }
+    override fun onSuccess(result: Drawable) = setDrawable(result)
 
     private fun setDrawable(drawable: Drawable?) {
-        remoteViews.setImageViewBitmap(imageViewId, (drawable as? BitmapDrawable)?.bitmap)
-        update()
-    }
-
-    private fun update() {
-        val appWidgetManager = AppWidgetManager.getInstance(this.context)
-        appWidgetManager.updateAppWidget(this.componentName, remoteViews)
+        remoteViews.setImageViewBitmap(imageViewResId, drawable?.toBitmap())
+        AppWidgetManager.getInstance(context).updateAppWidget(componentName, remoteViews)
     }
 }
 ```
 
-Then just set it as your target when enqueuing.
+Then `enqueue`/`execute` the request like normal:
+
 ```kotlin
-val remoteViewTarget = RemoteViewTarget(...)
+val target = RemoteViewsTarget(...)
 val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
-    .target(remoteViewTarget)
+    .target(target)
     .build()
-
-context.imageLoader.enqueue(request)
+imageLoader.enqueue(request)
 ```
