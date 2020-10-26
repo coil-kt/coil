@@ -16,8 +16,9 @@ import kotlin.math.roundToInt
 /** A collection of useful utility methods for decoding images. */
 object DecodeUtils {
 
-    // https://www.onicos.com/staff/iz/formats/gif.html
-    private val GIF_HEADER = "GIF".encodeUtf8()
+    // https://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
+    private val GIF_HEADER_87A = "GIF87a".encodeUtf8()
+    private val GIF_HEADER_89A = "GIF89a".encodeUtf8()
 
     // https://developers.google.com/speed/webp/docs/riff_container
     private val WEBP_HEADER_RIFF = "RIFF".encodeUtf8()
@@ -33,7 +34,7 @@ object DecodeUtils {
     /** Return true if the [source] contains a GIF image. The [source] is not consumed. */
     @JvmStatic
     fun isGif(source: BufferedSource): Boolean {
-        return source.rangeEquals(0, GIF_HEADER)
+        return source.rangeEquals(0, GIF_HEADER_89A) || source.rangeEquals(0, GIF_HEADER_87A)
     }
 
     /** Return true if the [source] contains a WebP image. The [source] is not consumed. */
