@@ -23,6 +23,7 @@ public final class coil/decode/ImageDecoderDecoder$Companion {
 public final class coil/drawable/MovieDrawable : android/graphics/drawable/Drawable, androidx/vectordrawable/graphics/drawable/Animatable2Compat {
 	public static final field Companion Lcoil/drawable/MovieDrawable$Companion;
 	public static final field REPEAT_INFINITE I
+	public fun <init> (Landroid/graphics/Movie;)V
 	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmap/BitmapPool;)V
 	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap$Config;)V
 	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap$Config;Lcoil/size/Scale;)V

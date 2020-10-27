@@ -7,13 +7,16 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
+import android.os.Build.VERSION.SDK_INT
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -55,7 +58,7 @@ class RealBitmapPoolTest {
     @Test
     fun `clear memory removes all bitmaps`() {
         pool.fill(MAX_BITMAPS)
-        pool.clearMemory()
+        pool.clear()
 
         assertEquals(MAX_BITMAPS, strategy.numRemoves)
     }
@@ -64,7 +67,7 @@ class RealBitmapPoolTest {
     fun `evicted bitmaps are recycled`() {
         pool.fill(MAX_BITMAPS)
         val bitmaps = strategy.bitmaps.toList()
-        pool.clearMemory()
+        pool.clear()
 
         bitmaps.forEach { assertTrue(it.isRecycled) }
     }
@@ -152,7 +155,32 @@ class RealBitmapPoolTest {
         assertEquals(1, strategy.numPuts)
     }
 
-    private fun RealBitmapPool.fill(fillCount: Int) {
+    @Test
+    fun `real - getting a hardware bitmap throws`() {
+        assumeTrue(SDK_INT >= 26)
+
+        val bitmap = createBitmap(config = Bitmap.Config.HARDWARE)
+
+        pool.put(bitmap)
+
+        assertFailsWith<IllegalArgumentException> { pool.get(bitmap.width, bitmap.height, bitmap.config) }
+        assertFailsWith<IllegalArgumentException> { pool.getOrNull(bitmap.width, bitmap.height, bitmap.config) }
+    }
+
+    @Test
+    fun `empty - getting a hardware bitmap throws`() {
+        assumeTrue(SDK_INT >= 26)
+
+        val pool = EmptyBitmapPool()
+        val bitmap = createBitmap(config = Bitmap.Config.HARDWARE)
+
+        pool.put(bitmap)
+
+        assertFailsWith<IllegalArgumentException> { pool.get(bitmap.width, bitmap.height, bitmap.config) }
+        assertFailsWith<IllegalArgumentException> { pool.getOrNull(bitmap.width, bitmap.height, bitmap.config) }
+    }
+
+    private fun BitmapPool.fill(fillCount: Int) {
         repeat(fillCount) { put(createBitmap()) }
     }
 

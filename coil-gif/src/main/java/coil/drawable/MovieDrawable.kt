@@ -29,7 +29,7 @@ import coil.size.Scale
  */
 class MovieDrawable @JvmOverloads constructor(
     private val movie: Movie,
-    private val pool: BitmapPool,
+    private val pool: BitmapPool = BitmapPool(0),
     val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
     val scale: Scale = Scale.FIT
 ) : Drawable(), Animatable2Compat {
