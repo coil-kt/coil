@@ -99,6 +99,8 @@ class ImageDecoderDecoder : Decoder {
                 if (options.colorSpace != null) {
                     setTargetColorSpace(options.colorSpace)
                 }
+
+                isUnpremultipliedRequired = !options.premultipliedAlpha
             }
 
             val drawable = if (baseDrawable is AnimatedImageDrawable) {

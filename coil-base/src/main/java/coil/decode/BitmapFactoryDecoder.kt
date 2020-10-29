@@ -79,6 +79,10 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
             inPreferredColorSpace = options.colorSpace
         }
 
+        if (SDK_INT >= 19) {
+            inPremultiplied = options.premultipliedAlpha
+        }
+
         // Create immutable bitmaps on API 24 and above.
         inMutable = SDK_INT < 24
         inScaled = false
