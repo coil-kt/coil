@@ -54,6 +54,7 @@ internal class RequestService(private val logger: Logger?) {
             scale = request.scale,
             allowInexactSize = request.allowInexactSize,
             allowRgb565 = allowRgb565,
+            premultipliedAlpha = request.premultipliedAlpha,
             headers = request.headers,
             parameters = request.parameters,
             memoryCachePolicy = request.memoryCachePolicy,

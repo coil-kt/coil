@@ -158,6 +158,38 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
+    fun premultipliedAlpha_true() {
+        val result = decodeBitmap(
+            assetName = "normal_alpha.png",
+            size = PixelSize(400, 200),
+            options = createOptions(
+                context = context,
+                premultipliedAlpha = true
+            )
+        )
+        assertEquals(PixelSize(400, 200), result.size)
+        if (SDK_INT >= 19) {
+            assertTrue(result.isPremultiplied)
+        }
+    }
+
+    @Test
+    fun premultipliedAlpha_false() {
+        val result = decodeBitmap(
+            assetName = "normal_alpha.png",
+            size = PixelSize(400, 200),
+            options = createOptions(
+                context = context,
+                premultipliedAlpha = false
+            )
+        )
+        assertEquals(PixelSize(400, 200), result.size)
+        if (SDK_INT >= 19) {
+            assertFalse(result.isPremultiplied)
+        }
+    }
+
+    @Test
     fun pooledBitmap_exactSize() {
         val pooledBitmap = createBitmap(1080, 1350, Bitmap.Config.ARGB_8888)
         pool.put(pooledBitmap)
