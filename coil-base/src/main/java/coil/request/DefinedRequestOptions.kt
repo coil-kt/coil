@@ -28,7 +28,6 @@ class DefinedRequestOptions(
     val bitmapConfig: Bitmap.Config?,
     val allowHardware: Boolean?,
     val allowRgb565: Boolean?,
-    val premultipliedAlpha: Boolean?,
     val memoryCachePolicy: CachePolicy?,
     val diskCachePolicy: CachePolicy?,
     val networkCachePolicy: CachePolicy?
@@ -44,12 +43,11 @@ class DefinedRequestOptions(
         bitmapConfig: Bitmap.Config? = this.bitmapConfig,
         allowHardware: Boolean? = this.allowHardware,
         allowRgb565: Boolean? = this.allowRgb565,
-        premultipliedAlpha: Boolean? = this.premultipliedAlpha,
         memoryCachePolicy: CachePolicy? = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy? = this.diskCachePolicy,
         networkCachePolicy: CachePolicy? = this.networkCachePolicy
     ) = DefinedRequestOptions(lifecycle, sizeResolver, scale, dispatcher, transition, precision, bitmapConfig,
-        allowHardware, allowRgb565, premultipliedAlpha, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+        allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -63,7 +61,6 @@ class DefinedRequestOptions(
             bitmapConfig == other.bitmapConfig &&
             allowHardware == other.allowHardware &&
             allowRgb565 == other.allowRgb565 &&
-            premultipliedAlpha == other.premultipliedAlpha &&
             memoryCachePolicy == other.memoryCachePolicy &&
             diskCachePolicy == other.diskCachePolicy &&
             networkCachePolicy == other.networkCachePolicy
@@ -79,7 +76,6 @@ class DefinedRequestOptions(
         result = 31 * result + (bitmapConfig?.hashCode() ?: 0)
         result = 31 * result + (allowHardware?.hashCode() ?: 0)
         result = 31 * result + (allowRgb565?.hashCode() ?: 0)
-        result = 31 * result + (premultipliedAlpha?.hashCode() ?: 0)
         result = 31 * result + (memoryCachePolicy?.hashCode() ?: 0)
         result = 31 * result + (diskCachePolicy?.hashCode() ?: 0)
         result = 31 * result + (networkCachePolicy?.hashCode() ?: 0)
@@ -89,8 +85,7 @@ class DefinedRequestOptions(
     override fun toString(): String {
         return "DefinedRequestOptions(lifecycle=$lifecycle, sizeResolver=$sizeResolver, scale=$scale, " +
             "dispatcher=$dispatcher, transition=$transition, precision=$precision, bitmapConfig=$bitmapConfig, " +
-            "allowHardware=$allowHardware, allowRgb565=$allowRgb565, premultipliedAlpha=$premultipliedAlpha, " +
-            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
-            "networkCachePolicy=$networkCachePolicy)"
+            "allowHardware=$allowHardware, allowRgb565=$allowRgb565, memoryCachePolicy=$memoryCachePolicy, " +
+            "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
     }
 }

@@ -380,7 +380,7 @@ class ImageRequest private constructor(
             bitmapConfig = request.defined.bitmapConfig
             allowHardware = request.defined.allowHardware
             allowRgb565 = request.defined.allowRgb565
-            premultipliedAlpha = request.defined.premultipliedAlpha
+            premultipliedAlpha = request.premultipliedAlpha
             memoryCachePolicy = request.defined.memoryCachePolicy
             diskCachePolicy = request.defined.diskCachePolicy
             networkCachePolicy = request.defined.networkCachePolicy
@@ -824,13 +824,12 @@ class ImageRequest private constructor(
                 bitmapConfig = bitmapConfig ?: defaults.bitmapConfig,
                 allowHardware = allowHardware ?: defaults.allowHardware,
                 allowRgb565 = allowRgb565 ?: defaults.allowRgb565,
-                premultipliedAlpha = premultipliedAlpha ?: defaults.premultipliedAlpha,
+                premultipliedAlpha = premultipliedAlpha ?: true,
                 memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,
                 diskCachePolicy = diskCachePolicy ?: defaults.diskCachePolicy,
                 networkCachePolicy = networkCachePolicy ?: defaults.networkCachePolicy,
                 defined = DefinedRequestOptions(lifecycle, sizeResolver, scale, dispatcher, transition, precision,
-                    bitmapConfig, allowHardware, allowRgb565, premultipliedAlpha, memoryCachePolicy, diskCachePolicy,
-                    networkCachePolicy),
+                    bitmapConfig, allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy, networkCachePolicy),
                 defaults = defaults,
                 placeholderResId = placeholderResId,
                 placeholderDrawable = placeholderDrawable,

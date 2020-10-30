@@ -7,6 +7,7 @@ import coil.fetch.Fetcher
 import coil.request.CachePolicy
 import coil.request.Parameters
 import coil.size.Scale
+import coil.util.EMPTY_HEADERS
 import okhttp3.Headers
 
 /**
@@ -34,17 +35,17 @@ import okhttp3.Headers
  */
 class Options(
     val context: Context,
-    val config: Bitmap.Config,
-    val colorSpace: ColorSpace?,
-    val scale: Scale,
-    val allowInexactSize: Boolean,
-    val allowRgb565: Boolean,
-    val premultipliedAlpha: Boolean,
-    val headers: Headers,
-    val parameters: Parameters,
-    val memoryCachePolicy: CachePolicy,
-    val diskCachePolicy: CachePolicy,
-    val networkCachePolicy: CachePolicy
+    val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
+    val colorSpace: ColorSpace? = null,
+    val scale: Scale = Scale.FIT,
+    val allowInexactSize: Boolean = false,
+    val allowRgb565: Boolean = false,
+    val premultipliedAlpha: Boolean = true,
+    val headers: Headers = EMPTY_HEADERS,
+    val parameters: Parameters = Parameters.EMPTY,
+    val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    val networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 ) {
 
     fun copy(
@@ -102,4 +103,36 @@ class Options(
             "headers=$headers, parameters=$parameters, memoryCachePolicy=$memoryCachePolicy, " +
             "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
     }
+
+    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        context: Context,
+        config: Bitmap.Config,
+        colorSpace: ColorSpace?,
+        scale: Scale,
+        allowInexactSize: Boolean,
+        allowRgb565: Boolean,
+        headers: Headers,
+        parameters: Parameters,
+        memoryCachePolicy: CachePolicy,
+        diskCachePolicy: CachePolicy,
+        networkCachePolicy: CachePolicy
+    ): this(context, config, colorSpace, scale, allowInexactSize, allowRgb565, true, headers, parameters,
+        memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+
+    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    fun copy(
+        context: Context = this.context,
+        config: Bitmap.Config = this.config,
+        colorSpace: ColorSpace? = this.colorSpace,
+        scale: Scale = this.scale,
+        allowInexactSize: Boolean = this.allowInexactSize,
+        allowRgb565: Boolean = this.allowRgb565,
+        headers: Headers = this.headers,
+        parameters: Parameters = this.parameters,
+        memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+        diskCachePolicy: CachePolicy = this.diskCachePolicy,
+        networkCachePolicy: CachePolicy = this.networkCachePolicy
+    ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, true,
+        headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 }

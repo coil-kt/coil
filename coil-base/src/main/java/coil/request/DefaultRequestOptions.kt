@@ -26,7 +26,6 @@ class DefaultRequestOptions(
     val bitmapConfig: Bitmap.Config = Utils.DEFAULT_BITMAP_CONFIG,
     val allowHardware: Boolean = true,
     val allowRgb565: Boolean = false,
-    val premultipliedAlpha: Boolean = true,
     val placeholder: Drawable? = null,
     val error: Drawable? = null,
     val fallback: Drawable? = null,
@@ -42,15 +41,14 @@ class DefaultRequestOptions(
         bitmapConfig: Bitmap.Config = this.bitmapConfig,
         allowHardware: Boolean = this.allowHardware,
         allowRgb565: Boolean = this.allowRgb565,
-        premultipliedAlpha: Boolean = this.premultipliedAlpha,
         placeholder: Drawable? = this.placeholder,
         error: Drawable? = this.error,
         fallback: Drawable? = this.fallback,
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
-    ) = DefaultRequestOptions(dispatcher, transition, precision, bitmapConfig, allowHardware, allowRgb565,
-        premultipliedAlpha, placeholder, error, fallback, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+    ) = DefaultRequestOptions(dispatcher, transition, precision, bitmapConfig, allowHardware, allowRgb565, placeholder,
+        error, fallback, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -61,7 +59,6 @@ class DefaultRequestOptions(
             bitmapConfig == other.bitmapConfig &&
             allowHardware == other.allowHardware &&
             allowRgb565 == other.allowRgb565 &&
-            premultipliedAlpha == other.premultipliedAlpha &&
             placeholder == other.placeholder &&
             error == other.error &&
             fallback == other.fallback &&
@@ -77,7 +74,6 @@ class DefaultRequestOptions(
         result = 31 * result + bitmapConfig.hashCode()
         result = 31 * result + allowHardware.hashCode()
         result = 31 * result + allowRgb565.hashCode()
-        result = 31 * result + premultipliedAlpha.hashCode()
         result = 31 * result + (placeholder?.hashCode() ?: 0)
         result = 31 * result + (error?.hashCode() ?: 0)
         result = 31 * result + (fallback?.hashCode() ?: 0)
@@ -90,9 +86,8 @@ class DefaultRequestOptions(
     override fun toString(): String {
         return "DefaultRequestOptions(dispatcher=$dispatcher, transition=$transition, precision=$precision, " +
             "bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
-            "premultipliedAlpha=$premultipliedAlpha, placeholder=$placeholder, error=$error, fallback=$fallback, " +
-            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
-            "networkCachePolicy=$networkCachePolicy)"
+            "placeholder=$placeholder, error=$error, fallback=$fallback, memoryCachePolicy=$memoryCachePolicy, " +
+            "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
     }
 
     companion object {
