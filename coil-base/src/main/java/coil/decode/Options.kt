@@ -117,7 +117,7 @@ class Options(
         memoryCachePolicy: CachePolicy,
         diskCachePolicy: CachePolicy,
         networkCachePolicy: CachePolicy
-    ): this(context, config, colorSpace, scale, allowInexactSize, allowRgb565, true, headers, parameters,
+    ) : this(context, config, colorSpace, scale, allowInexactSize, allowRgb565, true, headers, parameters,
         memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
