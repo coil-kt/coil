@@ -6,9 +6,9 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmap.BitmapPool
+import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.size.PixelSize
-import coil.util.createOptions
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -47,7 +47,7 @@ class AssetUriFetcherTest {
 
     private fun assertUriFetchesCorrectly(uri: Uri) {
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
+            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
         }
 
         assertTrue(result is SourceResult)

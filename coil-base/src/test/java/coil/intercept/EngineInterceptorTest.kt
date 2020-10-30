@@ -35,7 +35,6 @@ import coil.transform.CircleCropTransformation
 import coil.transform.Transformation
 import coil.util.SystemCallbacks
 import coil.util.createBitmap
-import coil.util.createOptions
 import coil.util.createRequest
 import coil.util.invoke
 import coil.util.size
@@ -461,7 +460,7 @@ class EngineInterceptorTest {
                 ),
                 request = createRequest(context) { transformations(CircleCropTransformation()) },
                 size = size,
-                options = createOptions(context),
+                options = Options(context),
                 eventListener = EventListener.NONE
             )
         }
@@ -484,7 +483,7 @@ class EngineInterceptorTest {
                 ),
                 request = createRequest(context) { transformations(emptyList()) },
                 size = size,
-                options = createOptions(context),
+                options = Options(context),
                 eventListener = EventListener.NONE
             )
         }
