@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Parameters
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -18,7 +17,6 @@ import okio.source
 import org.json.JSONArray
 import kotlin.random.Random
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _images: MutableStateFlow<List<Image>> = MutableStateFlow(emptyList())
