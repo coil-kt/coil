@@ -1,6 +1,7 @@
 package coil.drawable
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
@@ -157,6 +158,19 @@ class CrossfadeDrawableTest {
 
         drawable.updateBounds(end, bounds)
         assertEquals(Rect(0, 70, 200, 140), end.bounds)
+    }
+
+    @Test
+    fun `alpha change should not change alpha of original placeholder`() {
+        val placeholder = TestBitmapDrawable(100, 100)
+        val endDrawable = TestBitmapDrawable(100, 100)
+        assertEquals(0, placeholder.alpha)
+
+        val crossfadeDrawable = CrossfadeDrawable(placeholder, endDrawable)
+        crossfadeDrawable.alpha = 255
+        crossfadeDrawable.draw(Canvas())
+
+        assertEquals(0, placeholder.alpha)
     }
 
     private class TestDrawable(
