@@ -313,7 +313,6 @@ interface ImageLoader {
         /**
          * Set a single [EventListener] that will receive all callbacks for requests launched by this image loader.
          */
-        @ExperimentalCoilApi
         fun eventListener(listener: EventListener) = eventListener(EventListener.Factory(listener))
 
         /**
@@ -321,7 +320,6 @@ interface ImageLoader {
          *
          * @see eventListener
          */
-        @ExperimentalCoilApi
         fun eventListener(factory: EventListener.Factory) = apply {
             this.eventListenerFactory = factory
         }
