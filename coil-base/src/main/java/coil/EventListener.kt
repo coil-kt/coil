@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
+import coil.EventListener.Factory
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DecodeResult
 import coil.decode.Decoder
@@ -169,7 +170,7 @@ interface EventListener : ImageRequest.Listener {
     override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
 
     /** A factory that creates new [EventListener] instances. */
-    interface Factory {
+    fun interface Factory {
 
         companion object {
             @JvmField val NONE = Factory(EventListener.NONE)
@@ -177,11 +178,7 @@ interface EventListener : ImageRequest.Listener {
             /** Create an [EventListener.Factory] that always returns [listener]. */
             @JvmStatic
             @JvmName("create")
-            operator fun invoke(listener: EventListener): Factory {
-                return object : Factory {
-                    override fun create(request: ImageRequest) = listener
-                }
-            }
+            operator fun invoke(listener: EventListener) = Factory { listener }
         }
 
         /** Return a new [EventListener]. */
