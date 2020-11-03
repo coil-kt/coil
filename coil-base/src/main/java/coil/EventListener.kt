@@ -5,7 +5,6 @@ import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import coil.EventListener.Factory
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.decode.Options
@@ -27,7 +26,6 @@ import coil.transition.TransitionTarget
  *
  * @see ImageLoader.Builder.eventListener
  */
-@ExperimentalCoilApi
 interface EventListener : ImageRequest.Listener {
 
     /**

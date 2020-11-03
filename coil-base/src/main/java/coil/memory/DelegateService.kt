@@ -5,7 +5,6 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleObserver
 import coil.EventListener
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapReferenceCounter
 import coil.request.ImageRequest
 import coil.target.PoolableViewTarget
@@ -19,7 +18,6 @@ import coil.util.requestManager
 import kotlinx.coroutines.Job
 
 /** [DelegateService] wraps [Target]s to support [Bitmap] pooling and [ImageRequest]s to manage their lifecycle. */
-@OptIn(ExperimentalCoilApi::class)
 internal class DelegateService(
     private val imageLoader: ImageLoader,
     private val referenceCounter: BitmapReferenceCounter,

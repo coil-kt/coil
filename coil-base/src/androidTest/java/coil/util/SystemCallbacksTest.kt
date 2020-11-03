@@ -10,7 +10,6 @@ import coil.ComponentRegistry
 import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
 import coil.memory.MemoryCache
@@ -22,7 +21,6 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoilApi::class)
 class SystemCallbacksTest {
 
     private lateinit var context: Context
