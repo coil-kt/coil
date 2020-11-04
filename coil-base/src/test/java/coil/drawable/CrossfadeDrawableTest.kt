@@ -161,16 +161,30 @@ class CrossfadeDrawableTest {
     }
 
     @Test
-    fun `alpha change should not change alpha of original placeholder`() {
-        val placeholder = TestBitmapDrawable(100, 100)
+    fun `alpha change should not change alpha of original start drawable`() {
+        val startDrawable = TestBitmapDrawable(100, 100)
         val endDrawable = TestBitmapDrawable(100, 100)
-        assertEquals(0, placeholder.alpha)
+        assertEquals(0, startDrawable.alpha)
 
-        val crossfadeDrawable = CrossfadeDrawable(placeholder, endDrawable)
+        val crossfadeDrawable = CrossfadeDrawable(startDrawable, endDrawable)
         crossfadeDrawable.alpha = 255
         crossfadeDrawable.draw(Canvas())
 
-        assertEquals(0, placeholder.alpha)
+        assertEquals(0, startDrawable.alpha)
+    }
+
+    @Test
+    fun `alpha change should not change alpha of original end drawable`() {
+        val startDrawable = TestBitmapDrawable(100, 100)
+        val endDrawable = TestBitmapDrawable(100, 100)
+        assertEquals(0, endDrawable.alpha)
+
+        val crossfadeDrawable = CrossfadeDrawable(startDrawable, endDrawable)
+        crossfadeDrawable.alpha = 255
+        crossfadeDrawable.stop()
+        crossfadeDrawable.draw(Canvas())
+
+        assertEquals(0, endDrawable.alpha)
     }
 
     private class TestDrawable(
