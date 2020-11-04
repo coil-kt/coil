@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
  *
  * NOTE: The animation can only be executed once as the [start] drawable is dereferenced at the end of the transition.
  *
- * @param start The [Drawable] to crossfade from. Will be mutated to prevent modifying alpha of original drawable
+ * @param start The [Drawable] to crossfade from.
  * @param end The [Drawable] to crossfade to.
  * @param scale The scaling algorithm for [start] and [end].
  * @param durationMillis The duration of the crossfade animation.
@@ -32,7 +32,7 @@ import kotlin.math.roundToInt
  */
 class CrossfadeDrawable @JvmOverloads constructor(
     start: Drawable?,
-    private val end: Drawable?,
+    end: Drawable?,
     val scale: Scale = Scale.FIT,
     val durationMillis: Int = DEFAULT_DURATION,
     val fadeStart: Boolean = true
@@ -43,7 +43,8 @@ class CrossfadeDrawable @JvmOverloads constructor(
     private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth, end?.intrinsicWidth)
     private val intrinsicHeight = computeIntrinsicDimension(start?.intrinsicHeight, end?.intrinsicHeight)
 
-    private var start: Drawable? = null
+    private var start: Drawable?
+    private val end: Drawable?
     private var startTimeMillis = 0L
     private var maxAlpha = 255
     private var state = STATE_START
@@ -52,8 +53,9 @@ class CrossfadeDrawable @JvmOverloads constructor(
         require(durationMillis > 0) { "durationMillis must be > 0." }
 
         this.start = start?.mutate()
-        start?.callback = this
-        end?.callback = this
+        this.end = end?.mutate()
+        this.start?.callback = this
+        this.end?.callback = this
     }
 
     override fun draw(canvas: Canvas) {
