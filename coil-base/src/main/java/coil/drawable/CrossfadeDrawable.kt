@@ -31,8 +31,8 @@ import kotlin.math.roundToInt
  * @param fadeStart If false, the start drawable will not fade out while the end drawable fades in.
  */
 class CrossfadeDrawable @JvmOverloads constructor(
-    private var start: Drawable?,
-    private val end: Drawable?,
+    start: Drawable?,
+    end: Drawable?,
     val scale: Scale = Scale.FIT,
     val durationMillis: Int = DEFAULT_DURATION,
     val fadeStart: Boolean = true
@@ -43,6 +43,8 @@ class CrossfadeDrawable @JvmOverloads constructor(
     private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth, end?.intrinsicWidth)
     private val intrinsicHeight = computeIntrinsicDimension(start?.intrinsicHeight, end?.intrinsicHeight)
 
+    private var start: Drawable?
+    private val end: Drawable?
     private var startTimeMillis = 0L
     private var maxAlpha = 255
     private var state = STATE_START
@@ -50,8 +52,10 @@ class CrossfadeDrawable @JvmOverloads constructor(
     init {
         require(durationMillis > 0) { "durationMillis must be > 0." }
 
-        start?.callback = this
-        end?.callback = this
+        this.start = start?.mutate()
+        this.end = end?.mutate()
+        this.start?.callback = this
+        this.end?.callback = this
     }
 
     override fun draw(canvas: Canvas) {
