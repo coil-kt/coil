@@ -18,7 +18,7 @@ val request = ImageRequest.Builder(context)
     .allowHardware(false) // Disable hardware bitmaps.
     .target { drawable ->
         // Generate the Palette on a background thread.
-        val task = Palette.Builder(drawable.toBitmap()).generateAsync { palette ->
+        val task = Palette.Builder(drawable.toBitmap()).generate { palette ->
             // Consume the palette.
         }
     }
