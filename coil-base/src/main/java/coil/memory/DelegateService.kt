@@ -58,7 +58,12 @@ internal class DelegateService(
             is ViewTarget<*> -> {
                 delegate = ViewTargetRequestDelegate(imageLoader, request, targetDelegate, job)
                 lifecycle.addObserver(delegate)
-                if (target is LifecycleObserver) lifecycle.addObserver(target)
+
+                if (target is LifecycleObserver) {
+                    lifecycle.removeObserver(target)
+                    lifecycle.addObserver(target)
+                }
+
                 target.view.requestManager.setCurrentRequest(delegate)
 
                 // Call onViewDetachedFromWindow immediately if the view is already detached.
