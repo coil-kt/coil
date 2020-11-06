@@ -43,8 +43,8 @@ class CrossfadeDrawable @JvmOverloads constructor(
     private val intrinsicWidth = computeIntrinsicDimension(start?.intrinsicWidth, end?.intrinsicWidth)
     private val intrinsicHeight = computeIntrinsicDimension(start?.intrinsicHeight, end?.intrinsicHeight)
 
-    private var start: Drawable?
-    private val end: Drawable?
+    private var start = start?.mutate()
+    private val end = end?.mutate()
     private var startTimeMillis = 0L
     private var maxAlpha = 255
     private var state = STATE_START
@@ -52,8 +52,6 @@ class CrossfadeDrawable @JvmOverloads constructor(
     init {
         require(durationMillis > 0) { "durationMillis must be > 0." }
 
-        this.start = start?.mutate()
-        this.end = end?.mutate()
         this.start?.callback = this
         this.end?.callback = this
     }

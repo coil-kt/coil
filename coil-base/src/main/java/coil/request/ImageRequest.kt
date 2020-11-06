@@ -567,9 +567,7 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Enable/disable the use of [Bitmap.Config.HARDWARE] for this request.
-         *
-         * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
+         * @see ImageLoader.Builder.allowHardware
          */
         fun allowHardware(enable: Boolean) = apply {
             this.allowHardware = enable
@@ -583,10 +581,13 @@ class ImageRequest private constructor(
         }
 
         /**
-         * @see ImageLoader.Builder.premultipliedAlpha
+         * Enable/disable pre-multiplication of the color (RGB) channels of the decoded image by the alpha channel.
+         *
+         * The default behavior is to enable pre-multiplication but in some environments it can be necessary
+         * to disable this feature to leave the source pixels unmodified.
          */
-        fun premultipliedAlpha(premultiplied: Boolean) = apply {
-            this.premultipliedAlpha = premultiplied
+        fun premultipliedAlpha(enable: Boolean) = apply {
+            this.premultipliedAlpha = enable
         }
 
         /**
