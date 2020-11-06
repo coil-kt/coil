@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package coil.decode
 
 import android.content.Context
@@ -117,8 +119,9 @@ class Options(
         memoryCachePolicy: CachePolicy,
         diskCachePolicy: CachePolicy,
         networkCachePolicy: CachePolicy
-    ) : this(context, config, colorSpace, scale, allowInexactSize, allowRgb565, true, headers, parameters,
-        memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+    ) : this(context = context, config = config, colorSpace = colorSpace, scale = scale, allowInexactSize = allowInexactSize,
+        allowRgb565 = allowRgb565, headers = headers, parameters = parameters, memoryCachePolicy = memoryCachePolicy,
+        diskCachePolicy = diskCachePolicy, networkCachePolicy = networkCachePolicy)
 
     @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
     fun copy(
@@ -133,6 +136,6 @@ class Options(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
-    ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, true,
-        headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+    ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha, headers, parameters,
+        memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 }
