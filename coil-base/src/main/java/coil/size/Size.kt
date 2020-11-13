@@ -3,7 +3,7 @@ package coil.size
 import android.os.Parcelable
 import androidx.annotation.Px
 import coil.request.ImageRequest
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Represents the target size of an image request.
