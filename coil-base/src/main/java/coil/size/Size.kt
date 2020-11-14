@@ -27,6 +27,6 @@ data class PixelSize(
 ) : Size() {
 
     init {
-        require(width > 0 && height > 0) { "Width and height must be > 0." }
+        require(width > 0 && height > 0) { "width and height must be > 0." }
     }
 }
