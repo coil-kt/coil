@@ -231,7 +231,8 @@ public final class coil/drawable/CrossfadeDrawable : android/graphics/drawable/D
 	public fun <init> (Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/size/Scale;)V
 	public fun <init> (Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/size/Scale;I)V
 	public fun <init> (Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/size/Scale;IZ)V
-	public synthetic fun <init> (Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/size/Scale;IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/size/Scale;IZZ)V
+	public synthetic fun <init> (Landroid/graphics/drawable/Drawable;Landroid/graphics/drawable/Drawable;Lcoil/size/Scale;IZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun clearAnimationCallbacks ()V
 	public fun draw (Landroid/graphics/Canvas;)V
 	public fun getAlpha ()I
@@ -241,6 +242,7 @@ public final class coil/drawable/CrossfadeDrawable : android/graphics/drawable/D
 	public fun getIntrinsicHeight ()I
 	public fun getIntrinsicWidth ()I
 	public fun getOpacity ()I
+	public final fun getPreferExactIntrinsicSize ()Z
 	public final fun getScale ()Lcoil/size/Scale;
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isRunning ()Z
@@ -832,9 +834,11 @@ public abstract interface class coil/transform/Transformation {
 public final class coil/transition/CrossfadeTransition : coil/transition/Transition {
 	public fun <init> ()V
 	public fun <init> (I)V
-	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IZ)V
+	public synthetic fun <init> (IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDurationMillis ()I
+	public final fun getPreferExactIntrinsicSize ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 	public fun transition (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
