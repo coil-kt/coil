@@ -656,8 +656,10 @@ public final class coil/size/OriginalSize : coil/size/Size {
 
 public class coil/size/OriginalSize$Creator : android/os/Parcelable$Creator {
 	public fun <init> ()V
-	public final fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
-	public final fun newArray (I)[Ljava/lang/Object;
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcoil/size/OriginalSize;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcoil/size/OriginalSize;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
 public final class coil/size/PixelSize : coil/size/Size {
@@ -678,8 +680,10 @@ public final class coil/size/PixelSize : coil/size/Size {
 
 public class coil/size/PixelSize$Creator : android/os/Parcelable$Creator {
 	public fun <init> ()V
-	public final fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
-	public final fun newArray (I)[Ljava/lang/Object;
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcoil/size/PixelSize;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcoil/size/PixelSize;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
 public final class coil/size/Precision : java/lang/Enum {
