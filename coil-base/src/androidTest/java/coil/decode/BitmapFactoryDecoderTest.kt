@@ -106,11 +106,10 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(1500, 1500),
-            options = createOptions(
-                context = context,
-                scale = Scale.FIT,
-                allowInexactSize = true
-            )
+            options = createOptions(context) {
+                scale(Scale.FIT)
+                allowInexactSize(true)
+            }
         )
         assertEquals(PixelSize(1080, 1350), result.size)
     }
@@ -120,11 +119,10 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(1500, 1500),
-            options = createOptions(
-                context = context,
-                scale = Scale.FIT,
-                allowInexactSize = false
-            )
+            options = createOptions(context) {
+                scale(Scale.FIT)
+                allowInexactSize(false)
+            }
         )
         assertEquals(PixelSize(1200, 1500), result.size)
     }
@@ -134,10 +132,9 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(500, 500),
-            options = createOptions(
-                context = context,
-                allowRgb565 = true
-            )
+            options = createOptions(context) {
+                allowRgb565(true)
+            }
         )
         assertEquals(PixelSize(500, 625), result.size)
         assertEquals(Bitmap.Config.RGB_565, result.config)
@@ -148,10 +145,9 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(500, 500),
-            options = createOptions(
-                context = context,
-                allowRgb565 = false
-            )
+            options = createOptions(context) {
+                allowRgb565(false)
+            }
         )
         assertEquals(PixelSize(500, 625), result.size)
         assertEquals(Bitmap.Config.ARGB_8888, result.config)
@@ -162,10 +158,9 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal_alpha.png",
             size = PixelSize(400, 200),
-            options = createOptions(
-                context = context,
-                premultipliedAlpha = true
-            )
+            options = createOptions(context) {
+                premultipliedAlpha(true)
+            }
         )
         assertEquals(PixelSize(400, 200), result.size)
         if (SDK_INT >= 19) {
@@ -178,10 +173,9 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal_alpha.png",
             size = PixelSize(400, 200),
-            options = createOptions(
-                context = context,
-                premultipliedAlpha = false
-            )
+            options = createOptions(context) {
+                premultipliedAlpha(false)
+            }
         )
         assertEquals(PixelSize(400, 200), result.size)
         if (SDK_INT >= 19) {
@@ -197,12 +191,11 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(1080, 1350),
-            options = createOptions(
-                context = context,
-                config = Bitmap.Config.ARGB_8888,
-                scale = Scale.FIT,
-                allowInexactSize = false
-            )
+            options = createOptions(context) {
+                config(Bitmap.Config.ARGB_8888)
+                scale(Scale.FIT)
+                allowInexactSize(false)
+            }
         )
         assertEquals(PixelSize(1080, 1350), result.size)
 
@@ -224,12 +217,11 @@ class BitmapFactoryDecoderTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             size = PixelSize(500, 500),
-            options = createOptions(
-                context = context,
-                config = Bitmap.Config.ARGB_8888,
-                scale = Scale.FILL,
-                allowInexactSize = false
-            )
+            options = createOptions(context) {
+                config(Bitmap.Config.ARGB_8888)
+                scale(Scale.FILL)
+                allowInexactSize(false)
+            }
         )
         assertEquals(PixelSize(500, 625), result.size)
 

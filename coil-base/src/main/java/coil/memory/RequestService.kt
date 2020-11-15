@@ -47,20 +47,19 @@ internal class RequestService(private val logger: Logger?) {
         // ALPHA_8 is a mask config where each pixel is 1 byte so it wouldn't make sense to use RGB_565 as an optimization in that case.
         val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() && config != Bitmap.Config.ALPHA_8
 
-        return Options(
-            context = request.context,
-            config = config,
-            colorSpace = request.colorSpace,
-            scale = request.scale,
-            allowInexactSize = request.allowInexactSize,
-            allowRgb565 = allowRgb565,
-            premultipliedAlpha = request.premultipliedAlpha,
-            headers = request.headers,
-            parameters = request.parameters,
-            memoryCachePolicy = request.memoryCachePolicy,
-            diskCachePolicy = request.diskCachePolicy,
-            networkCachePolicy = networkCachePolicy
-        )
+        return Options.Builder(request.context)
+            .config(config)
+            .apply { if (SDK_INT >= 26) request.colorSpace?.let(::colorSpace) }
+            .scale(request.scale)
+            .allowInexactSize(request.allowInexactSize)
+            .allowRgb565(allowRgb565)
+            .premultipliedAlpha(request.premultipliedAlpha)
+            .headers(request.headers)
+            .parameters(request.parameters)
+            .memoryCachePolicy(request.memoryCachePolicy)
+            .diskCachePolicy(request.diskCachePolicy)
+            .networkCachePolicy(networkCachePolicy)
+            .build()
     }
 
     /** Return true if [requestedConfig] is a valid (i.e. can be returned to its [Target]) config for [request]. */
