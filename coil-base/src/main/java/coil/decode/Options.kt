@@ -5,6 +5,7 @@ package coil.decode
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
+import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import coil.decode.Options.Builder
 import coil.fetch.Fetcher
@@ -55,6 +56,9 @@ class Options private constructor(
     val networkCachePolicy: CachePolicy
 ) {
 
+    @JvmOverloads
+    fun newBuilder(context: Context = this.context) = Builder(this, context)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         return other is Options &&
@@ -95,19 +99,51 @@ class Options private constructor(
             "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
     }
 
-    class Builder(private val context: Context) {
+    class Builder {
 
-        private var config = Bitmap.Config.ARGB_8888
+        private val context: Context
+        private var config: Bitmap.Config
         private var colorSpace: ColorSpace? = null
-        private var scale = Scale.FIT
-        private var allowInexactSize = false
-        private var allowRgb565 = false
-        private var premultipliedAlpha = true
-        private var headers = EMPTY_HEADERS
-        private var parameters = Parameters.EMPTY
-        private var memoryCachePolicy = CachePolicy.ENABLED
-        private var diskCachePolicy = CachePolicy.ENABLED
-        private var networkCachePolicy = CachePolicy.ENABLED
+        private var scale: Scale
+        private var allowInexactSize: Boolean
+        private var allowRgb565: Boolean
+        private var premultipliedAlpha: Boolean
+        private var headers: Headers
+        private var parameters: Parameters
+        private var memoryCachePolicy: CachePolicy
+        private var diskCachePolicy: CachePolicy
+        private var networkCachePolicy: CachePolicy
+
+        constructor(context: Context) {
+            this.context = context
+            config = Bitmap.Config.ARGB_8888
+            if (SDK_INT >= 26) colorSpace = null
+            scale = Scale.FIT
+            allowInexactSize = false
+            allowRgb565 = false
+            premultipliedAlpha = true
+            headers = EMPTY_HEADERS
+            parameters = Parameters.EMPTY
+            memoryCachePolicy = CachePolicy.ENABLED
+            diskCachePolicy = CachePolicy.ENABLED
+            networkCachePolicy = CachePolicy.ENABLED
+        }
+
+        @JvmOverloads
+        constructor(options: Options, context: Context = options.context) {
+            this.context = context
+            config = options.config
+            if (SDK_INT >= 26) colorSpace = options.colorSpace
+            scale = options.scale
+            allowInexactSize = options.allowInexactSize
+            allowRgb565 = options.allowRgb565
+            premultipliedAlpha = options.premultipliedAlpha
+            headers = options.headers
+            parameters = options.parameters
+            memoryCachePolicy = options.memoryCachePolicy
+            diskCachePolicy = options.diskCachePolicy
+            networkCachePolicy = options.networkCachePolicy
+        }
 
         /**
          * The requested config for any [Bitmap]s.
