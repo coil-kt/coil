@@ -302,7 +302,7 @@ class ImageRequest private constructor(
         private var bitmapConfig: Bitmap.Config?
         private var allowHardware: Boolean?
         private var allowRgb565: Boolean?
-        private var premultipliedAlpha: Boolean?
+        private var premultipliedAlpha: Boolean
         private var memoryCachePolicy: CachePolicy?
         private var diskCachePolicy: CachePolicy?
         private var networkCachePolicy: CachePolicy?
@@ -341,7 +341,7 @@ class ImageRequest private constructor(
             bitmapConfig = null
             allowHardware = null
             allowRgb565 = null
-            premultipliedAlpha = null
+            premultipliedAlpha = true
             memoryCachePolicy = null
             diskCachePolicy = null
             networkCachePolicy = null
@@ -825,7 +825,7 @@ class ImageRequest private constructor(
                 bitmapConfig = bitmapConfig ?: defaults.bitmapConfig,
                 allowHardware = allowHardware ?: defaults.allowHardware,
                 allowRgb565 = allowRgb565 ?: defaults.allowRgb565,
-                premultipliedAlpha = premultipliedAlpha ?: true,
+                premultipliedAlpha = premultipliedAlpha,
                 memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,
                 diskCachePolicy = diskCachePolicy ?: defaults.diskCachePolicy,
                 networkCachePolicy = networkCachePolicy ?: defaults.networkCachePolicy,
