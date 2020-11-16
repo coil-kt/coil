@@ -6,6 +6,7 @@ package coil.util
 import android.app.ActivityManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.ColorSpace
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
@@ -133,6 +134,9 @@ internal val Uri.firstPathSegment: String?
 
 internal val Configuration.nightMode: Int
     get() = uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+/** Required for compatibility with API 25 and below. */
+internal val NULL_COLOR_SPACE: ColorSpace? = null
 
 internal val EMPTY_HEADERS = Headers.Builder().build()
 

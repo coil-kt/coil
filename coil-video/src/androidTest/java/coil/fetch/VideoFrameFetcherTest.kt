@@ -7,11 +7,11 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmap.BitmapPool
+import coil.decode.Options
 import coil.fetch.VideoFrameFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Parameters
 import coil.size.OriginalSize
-import coil.util.createOptions
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
@@ -45,7 +45,7 @@ class VideoFrameFetcherTest {
                 pool = pool,
                 data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/video.mp4".toUri(),
                 size = OriginalSize,
-                options = createOptions(context)
+                options = Options(context)
             )
         }
 
@@ -68,7 +68,7 @@ class VideoFrameFetcherTest {
                 pool = pool,
                 data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/video.mp4".toUri(),
                 size = OriginalSize,
-                options = createOptions(
+                options = Options(
                     context = context,
                     parameters = Parameters.Builder()
                         .set(VIDEO_FRAME_MICROS_KEY, 32600000L)

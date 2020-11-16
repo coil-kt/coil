@@ -19,8 +19,8 @@ import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import coil.bitmap.BitmapPool
+import coil.decode.Options
 import coil.size.PixelSize
-import coil.util.createOptions
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.sink
@@ -79,7 +79,7 @@ class ContentUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
+            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
         }
 
         assertTrue(result is SourceResult)
