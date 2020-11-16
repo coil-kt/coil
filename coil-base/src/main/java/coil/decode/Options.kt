@@ -10,6 +10,7 @@ import coil.request.CachePolicy
 import coil.request.Parameters
 import coil.size.Scale
 import coil.util.EMPTY_HEADERS
+import coil.util.NULL_COLOR_SPACE
 import okhttp3.Headers
 
 /**
@@ -38,7 +39,7 @@ import okhttp3.Headers
 class Options(
     val context: Context,
     val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
-    val colorSpace: ColorSpace? = null,
+    val colorSpace: ColorSpace? = NULL_COLOR_SPACE,
     val scale: Scale = Scale.FIT,
     val allowInexactSize: Boolean = false,
     val allowRgb565: Boolean = false,
