@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.annotation.MainThread
-import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
 import coil.bitmap.BitmapReferenceCounter
 import coil.decode.BitmapFactoryDecoder
@@ -67,7 +66,7 @@ import okhttp3.Call
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.coroutineContext
 
-@OptIn(ExperimentalCoilApi::class, ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class)
 internal class RealImageLoader(
     context: Context,
     override val defaults: DefaultRequestOptions,
