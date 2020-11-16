@@ -863,7 +863,7 @@ class ImageRequest private constructor(
 
         private fun resolveSizeResolver(): SizeResolver {
             val target = target
-            return if (target is ImageViewTarget && target.view.scaleType.let { it == MATRIX || it == CENTER }) {
+            return if (target is ImageViewTarget && target.view.scaleType.let { it == CENTER || it == MATRIX }) {
                 SizeResolver(OriginalSize)
             } else if (target is ViewTarget<*>) {
                 ViewSizeResolver(target.view)
