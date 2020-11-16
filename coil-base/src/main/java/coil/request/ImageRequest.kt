@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
+import android.widget.ImageView.ScaleType.CENTER
+import android.widget.ImageView.ScaleType.MATRIX
 import androidx.annotation.DrawableRes
 import androidx.annotation.MainThread
 import androidx.annotation.Px
@@ -861,7 +863,13 @@ class ImageRequest private constructor(
 
         private fun resolveSizeResolver(): SizeResolver {
             val target = target
-            return if (target is ViewTarget<*>) ViewSizeResolver(target.view) else DisplaySizeResolver(context)
+            return if (target is ImageViewTarget && target.view.scaleType.let { it == CENTER || it == MATRIX }) {
+                SizeResolver(OriginalSize)
+            } else if (target is ViewTarget<*>) {
+                ViewSizeResolver(target.view)
+            } else {
+                DisplaySizeResolver(context)
+            }
         }
 
         private fun resolveScale(): Scale {

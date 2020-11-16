@@ -3,10 +3,14 @@ package coil.request
 import android.app.Activity
 import android.content.Context
 import android.widget.ImageView
+import android.widget.ImageView.ScaleType.CENTER
+import android.widget.ImageView.ScaleType.MATRIX
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.lifecycle.FakeLifecycle
+import coil.size.OriginalSize
+import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.ViewSizeResolver
@@ -14,6 +18,7 @@ import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.scale
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -148,7 +153,7 @@ class ImageRequestTest {
     }
 
     @Test
-    fun `test equality`() {
+    fun `equals and hashCode are implemented`() {
         val imageView = ImageView(context)
         val request1 = ImageRequest.Builder(context)
             .data("https://www.example.com/image.jpg")
@@ -162,11 +167,42 @@ class ImageRequestTest {
             .build()
 
         assertEquals(request1, request2)
+        assertEquals(request1.hashCode(), request2.hashCode())
 
         val request3 = request2.newBuilder()
             .allowHardware(false)
             .build()
 
         assertNotEquals(request1, request3)
+        assertNotEquals(request1.hashCode(), request3.hashCode())
+    }
+
+    @Test
+    fun `ImageView with scale type MATRIX or CENTER should default to original size`() {
+        val request1 = ImageRequest.Builder(context)
+            .data("https://www.example.com/image.jpg")
+            .target(ImageView(context).apply { scaleType = MATRIX })
+            .build()
+        val request2 = ImageRequest.Builder(context)
+            .data("https://www.example.com/image.jpg")
+            .target(ImageView(context).apply { scaleType = CENTER })
+            .build()
+        val request3 = ImageRequest.Builder(context)
+            .data("https://www.example.com/image.jpg")
+            .target(ImageView(context).apply { scaleType = MATRIX })
+            .size(100, 100)
+            .build()
+        val request4 = ImageRequest.Builder(context)
+            .data("https://www.example.com/image.jpg")
+            .target(ImageView(context).apply { scaleType = CENTER })
+            .size(100, 100)
+            .build()
+
+        runBlocking {
+            assertEquals(OriginalSize, request1.sizeResolver.size())
+            assertEquals(OriginalSize, request2.sizeResolver.size())
+            assertEquals(PixelSize(100, 100), request3.sizeResolver.size())
+            assertEquals(PixelSize(100, 100), request4.sizeResolver.size())
+        }
     }
 }
