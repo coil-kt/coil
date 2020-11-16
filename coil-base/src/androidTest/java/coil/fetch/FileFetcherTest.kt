@@ -3,9 +3,9 @@ package coil.fetch
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmap.BitmapPool
+import coil.decode.Options
 import coil.size.PixelSize
 import coil.util.copyAssetToFile
-import coil.util.createOptions
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -34,7 +34,7 @@ class FileFetcherTest {
 
         val size = PixelSize(100, 100)
         val result = runBlocking {
-            fetcher.fetch(pool, file, size, createOptions(context))
+            fetcher.fetch(pool, file, size, Options(context))
         }
 
         assertTrue(result is SourceResult)

@@ -10,11 +10,11 @@ import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
 import coil.bitmap.BitmapPool
 import coil.decode.DrawableDecoderService
+import coil.decode.Options
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.size.OriginalSize
 import coil.size.PixelSize
-import coil.util.createOptions
 import coil.util.getDrawableCompat
 import coil.util.isSimilarTo
 import coil.util.withTestActivity
@@ -48,7 +48,7 @@ class ResourceUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
+            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
         }
 
         assertTrue(result is SourceResult)
@@ -63,7 +63,7 @@ class ResourceUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
+            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
         }
 
         assertTrue(result is DrawableResult)
@@ -81,7 +81,7 @@ class ResourceUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
+            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
         }
 
         assertTrue(result is SourceResult)
@@ -101,7 +101,7 @@ class ResourceUriFetcherTest {
         assertTrue(fetcher.handles(uri))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), createOptions(context))
+            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
         }
 
         assertTrue(result is DrawableResult)
@@ -114,7 +114,7 @@ class ResourceUriFetcherTest {
     fun colorAttributeIsApplied() = withTestActivity { activity ->
         val result = runBlocking {
             val uri = ResourceIntMapper(context).map(R.drawable.ic_tinted_vector)
-            fetcher.fetch(pool, uri, OriginalSize, createOptions(activity))
+            fetcher.fetch(pool, uri, OriginalSize, Options(activity))
         }
         val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
         val actual = (result as DrawableResult).drawable.toBitmap()
