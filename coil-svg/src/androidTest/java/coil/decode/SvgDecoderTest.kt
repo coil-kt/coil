@@ -36,7 +36,7 @@ class SvgDecoderTest {
                 pool = pool,
                 source = source,
                 size = PixelSize(400, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
-                options = Options(context = context, scale = Scale.FIT)
+                options = Options(context, scale = Scale.FIT)
             )
         }
 
@@ -55,7 +55,7 @@ class SvgDecoderTest {
                 pool = pool,
                 source = source,
                 size = PixelSize(326, 50),
-                options = Options(context = context, scale = Scale.FILL)
+                options = Options(context, scale = Scale.FILL)
             )
         }
 
