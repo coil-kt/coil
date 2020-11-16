@@ -135,6 +135,7 @@ class BitmapFactoryDecoderTest {
             size = PixelSize(500, 500),
             options = Options(
                 context = context,
+                scale = Scale.FILL,
                 allowRgb565 = true
             )
         )
@@ -149,6 +150,7 @@ class BitmapFactoryDecoderTest {
             size = PixelSize(500, 500),
             options = Options(
                 context = context,
+                scale = Scale.FILL,
                 allowRgb565 = false
             )
         )
@@ -163,6 +165,7 @@ class BitmapFactoryDecoderTest {
             size = PixelSize(400, 200),
             options = Options(
                 context = context,
+                scale = Scale.FILL,
                 premultipliedAlpha = true
             )
         )
@@ -179,6 +182,7 @@ class BitmapFactoryDecoderTest {
             size = PixelSize(400, 200),
             options = Options(
                 context = context,
+                scale = Scale.FILL,
                 premultipliedAlpha = false
             )
         )
@@ -307,7 +311,7 @@ class BitmapFactoryDecoderTest {
     private fun decode(
         assetName: String,
         size: Size,
-        options: Options = Options(context)
+        options: Options = Options(context, scale = Scale.FILL)
     ): DecodeResult = runBlocking {
         val source = context.assets.open(assetName).source().buffer()
         val result = service.decode(
@@ -327,6 +331,6 @@ class BitmapFactoryDecoderTest {
     private fun decodeBitmap(
         assetName: String,
         size: Size,
-        options: Options = Options(context)
+        options: Options = Options(context, scale = Scale.FILL)
     ): Bitmap = (decode(assetName, size, options).drawable as BitmapDrawable).bitmap
 }
