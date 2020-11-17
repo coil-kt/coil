@@ -281,7 +281,7 @@ class CrossfadeDrawable(
         const val DEFAULT_DURATION = 100
     }
 
-    // region - Kept for binary compatibility. Only visible from Java.
+    // region - Simulates `@JvmOverloads` for Java callers. Kept for binary compatibility.
 
     @SinceKotlin("999.9")
     constructor(start: Drawable?, end: Drawable?) :
