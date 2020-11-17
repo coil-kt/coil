@@ -1,3 +1,5 @@
+@file:Suppress("NEWER_VERSION_IN_SINCE_KOTLIN", "unused")
+
 package coil.transition
 
 import android.graphics.drawable.Drawable
@@ -15,10 +17,16 @@ import coil.util.scale
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-/** A [Transition] that crossfades from the current drawable to a new one. */
+/**
+ * A [Transition] that crossfades from the current drawable to a new one.
+ *
+ * @param durationMillis The duration of the animation in milliseconds.
+ * @param preferExactIntrinsicSize See [CrossfadeDrawable.preferExactIntrinsicSize].
+ */
 @ExperimentalCoilApi
-class CrossfadeTransition @JvmOverloads constructor(
-    val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION
+class CrossfadeTransition(
+    val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
+    val preferExactIntrinsicSize: Boolean = false
 ) : Transition {
 
     init {
@@ -51,7 +59,8 @@ class CrossfadeTransition @JvmOverloads constructor(
                     end = result.drawable,
                     scale = (target.view as? ImageView)?.scale ?: Scale.FILL,
                     durationMillis = durationMillis,
-                    fadeStart = result !is SuccessResult || !result.metadata.isPlaceholderMemoryCacheKeyPresent
+                    fadeStart = result !is SuccessResult || !result.metadata.isPlaceholderMemoryCacheKeyPresent,
+                    preferExactIntrinsicSize = preferExactIntrinsicSize
                 )
                 outerCrossfade = crossfade
                 crossfade.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
@@ -79,4 +88,14 @@ class CrossfadeTransition @JvmOverloads constructor(
     override fun hashCode() = durationMillis.hashCode()
 
     override fun toString() = "CrossfadeTransition(durationMillis=$durationMillis)"
+
+    // region - Simulates `@JvmOverloads` for Java callers. Kept for binary compatibility.
+
+    @SinceKotlin("999.9")
+    constructor() : this(CrossfadeDrawable.DEFAULT_DURATION, false)
+
+    @SinceKotlin("999.9")
+    constructor(durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION) : this(durationMillis, false)
+
+    // endregion
 }

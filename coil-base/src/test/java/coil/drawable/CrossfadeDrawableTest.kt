@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.size.Scale
 import coil.util.createBitmap
+import coil.util.toDrawable
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -185,6 +186,48 @@ class CrossfadeDrawableTest {
         crossfadeDrawable.draw(Canvas())
 
         assertEquals(0, endDrawable.alpha)
+    }
+
+    @Test
+    fun `preferExactIntrinsicSize=false`() {
+        val drawable1 = CrossfadeDrawable(
+            start = ColorDrawable(),
+            end = createBitmap().toDrawable(context),
+            preferExactIntrinsicSize = false
+        )
+
+        assertEquals(-1, drawable1.intrinsicWidth)
+        assertEquals(-1, drawable1.intrinsicHeight)
+
+        val drawable2 = CrossfadeDrawable(
+            start = null,
+            end = createBitmap().toDrawable(context),
+            preferExactIntrinsicSize = false
+        )
+
+        assertEquals(100, drawable2.intrinsicWidth)
+        assertEquals(100, drawable2.intrinsicHeight)
+    }
+
+    @Test
+    fun `preferExactIntrinsicSize=true`() {
+        val drawable1 = CrossfadeDrawable(
+            start = ColorDrawable(),
+            end = createBitmap().toDrawable(context),
+            preferExactIntrinsicSize = true
+        )
+
+        assertEquals(100, drawable1.intrinsicWidth)
+        assertEquals(100, drawable1.intrinsicHeight)
+
+        val drawable2 = CrossfadeDrawable(
+            start = null,
+            end = createBitmap().toDrawable(context),
+            preferExactIntrinsicSize = true
+        )
+
+        assertEquals(100, drawable2.intrinsicWidth)
+        assertEquals(100, drawable2.intrinsicHeight)
     }
 
     private class TestDrawable(
