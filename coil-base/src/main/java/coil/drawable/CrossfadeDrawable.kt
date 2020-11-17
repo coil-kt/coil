@@ -1,3 +1,5 @@
+@file:Suppress("NEWER_VERSION_IN_SINCE_KOTLIN", "unused")
+
 package coil.drawable
 
 import android.content.res.ColorStateList
@@ -34,7 +36,7 @@ import kotlin.math.roundToInt
  *  [start] **or** [end] return -1 for that dimension. This is useful for views that require an exact intrinsic
  *  size to scale the drawable.
  */
-class CrossfadeDrawable @JvmOverloads constructor(
+class CrossfadeDrawable(
     start: Drawable?,
     end: Drawable?,
     val scale: Scale = Scale.FIT,
@@ -278,4 +280,24 @@ class CrossfadeDrawable @JvmOverloads constructor(
 
         const val DEFAULT_DURATION = 100
     }
+
+    // region - Kept for binary compatibility. Only visible from Java.
+
+    @SinceKotlin("999.9")
+    constructor(start: Drawable?, end: Drawable?) :
+        this(start, end, Scale.FIT, DEFAULT_DURATION, true, false)
+
+    @SinceKotlin("999.9")
+    constructor(start: Drawable?, end: Drawable?, scale: Scale) :
+        this(start, end, scale, DEFAULT_DURATION, true, false)
+
+    @SinceKotlin("999.9")
+    constructor(start: Drawable?, end: Drawable?, scale: Scale, durationMillis: Int) :
+        this(start, end, scale, durationMillis, true, false)
+
+    @SinceKotlin("999.9")
+    constructor(start: Drawable?, end: Drawable?, scale: Scale = Scale.FIT, durationMillis: Int = DEFAULT_DURATION, fadeStart: Boolean = true) :
+        this(start, end, scale, durationMillis, fadeStart, false)
+
+    // endregion
 }

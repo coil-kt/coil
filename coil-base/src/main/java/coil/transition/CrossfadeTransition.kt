@@ -1,3 +1,5 @@
+@file:Suppress("NEWER_VERSION_IN_SINCE_KOTLIN", "unused")
+
 package coil.transition
 
 import android.graphics.drawable.Drawable
@@ -22,7 +24,7 @@ import kotlin.coroutines.resume
  * @param preferExactIntrinsicSize See [CrossfadeDrawable.preferExactIntrinsicSize].
  */
 @ExperimentalCoilApi
-class CrossfadeTransition @JvmOverloads constructor(
+class CrossfadeTransition(
     val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
     val preferExactIntrinsicSize: Boolean = false
 ) : Transition {
@@ -86,4 +88,14 @@ class CrossfadeTransition @JvmOverloads constructor(
     override fun hashCode() = durationMillis.hashCode()
 
     override fun toString() = "CrossfadeTransition(durationMillis=$durationMillis)"
+
+    // region - Kept for binary compatibility. Only visible from Java.
+
+    @SinceKotlin("999.9")
+    constructor() : this(CrossfadeDrawable.DEFAULT_DURATION, false)
+
+    @SinceKotlin("999.9")
+    constructor(durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION) : this(durationMillis, false)
+
+    // endregion
 }
