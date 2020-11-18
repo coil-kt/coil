@@ -273,6 +273,16 @@ class CrossfadeDrawable(
         callbacks.forEachIndices { it.onAnimationEnd(this) }
     }
 
+    @JvmOverloads
+    @SinceKotlin("999.9") // Kept for binary compatibility.
+    constructor(
+        start: Drawable?,
+        end: Drawable?,
+        scale: Scale = Scale.FIT,
+        durationMillis: Int = DEFAULT_DURATION,
+        fadeStart: Boolean = true
+    ) : this(start, end, scale, durationMillis, fadeStart)
+
     companion object {
         private const val STATE_START = 0
         private const val STATE_RUNNING = 1
@@ -280,24 +290,4 @@ class CrossfadeDrawable(
 
         const val DEFAULT_DURATION = 100
     }
-
-    // region - Simulates `@JvmOverloads` for Java callers. Kept for binary compatibility.
-
-    @SinceKotlin("999.9")
-    constructor(start: Drawable?, end: Drawable?) :
-        this(start, end, Scale.FIT, DEFAULT_DURATION, true, false)
-
-    @SinceKotlin("999.9")
-    constructor(start: Drawable?, end: Drawable?, scale: Scale) :
-        this(start, end, scale, DEFAULT_DURATION, true, false)
-
-    @SinceKotlin("999.9")
-    constructor(start: Drawable?, end: Drawable?, scale: Scale, durationMillis: Int) :
-        this(start, end, scale, durationMillis, true, false)
-
-    @SinceKotlin("999.9")
-    constructor(start: Drawable?, end: Drawable?, scale: Scale = Scale.FIT, durationMillis: Int = DEFAULT_DURATION, fadeStart: Boolean = true) :
-        this(start, end, scale, durationMillis, fadeStart, false)
-
-    // endregion
 }
