@@ -89,13 +89,9 @@ class CrossfadeTransition(
 
     override fun toString() = "CrossfadeTransition(durationMillis=$durationMillis)"
 
-    // region - Simulates `@JvmOverloads` for Java callers. Kept for binary compatibility.
+    @SinceKotlin("999.9") // Kept for binary compatibility.
+    constructor() : this()
 
-    @SinceKotlin("999.9")
-    constructor() : this(CrossfadeDrawable.DEFAULT_DURATION, false)
-
-    @SinceKotlin("999.9")
-    constructor(durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION) : this(durationMillis, false)
-
-    // endregion
+    @SinceKotlin("999.9") // Kept for binary compatibility.
+    constructor(durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION) : this(durationMillis)
 }
