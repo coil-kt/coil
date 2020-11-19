@@ -15,7 +15,6 @@ buildscript {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
         jcenter()
     }
     dependencies {
@@ -24,7 +23,7 @@ buildscript {
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.4.1")
-        classpath(kotlin("gradle-plugin", version = "1.4.20-RC"))
+        classpath(kotlin("gradle-plugin", version = "1.4.20"))
     }
 }
 
@@ -38,7 +37,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
         jcenter()
     }
 
