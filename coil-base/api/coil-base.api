@@ -719,6 +719,7 @@ public final class coil/size/SizeResolver$Companion {
 
 public abstract interface class coil/size/ViewSizeResolver : coil/size/SizeResolver {
 	public static final field Companion Lcoil/size/ViewSizeResolver$Companion;
+	public static fun create (Landroid/view/View;)Lcoil/size/ViewSizeResolver;
 	public static fun create (Landroid/view/View;Z)Lcoil/size/ViewSizeResolver;
 	public abstract fun getSubtractPadding ()Z
 	public abstract fun getView ()Landroid/view/View;
@@ -726,6 +727,7 @@ public abstract interface class coil/size/ViewSizeResolver : coil/size/SizeResol
 }
 
 public final class coil/size/ViewSizeResolver$Companion {
+	public final fun create (Landroid/view/View;)Lcoil/size/ViewSizeResolver;
 	public final fun create (Landroid/view/View;Z)Lcoil/size/ViewSizeResolver;
 	public static synthetic fun create$default (Lcoil/size/ViewSizeResolver$Companion;Landroid/view/View;ZILjava/lang/Object;)Lcoil/size/ViewSizeResolver;
 }

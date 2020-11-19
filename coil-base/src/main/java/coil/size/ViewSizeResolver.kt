@@ -17,7 +17,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
          * @param subtractPadding If true, the view's padding will be subtracted from its size.
          */
         @JvmStatic
-        // @JvmOverloads https://youtrack.jetbrains.com/issue/KT-35716
+        @JvmOverloads
         @JvmName("create")
         operator fun <T : View> invoke(
             view: T,
