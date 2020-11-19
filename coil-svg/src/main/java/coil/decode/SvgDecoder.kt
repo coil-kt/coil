@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toDrawable
-import coil.annotation.InternalCoilApi
 import coil.bitmap.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -23,7 +22,6 @@ class SvgDecoder(private val context: Context) : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?) = mimeType == MIME_TYPE_SVG
 
-    @OptIn(InternalCoilApi::class)
     override suspend fun decode(
         pool: BitmapPool,
         source: BufferedSource,

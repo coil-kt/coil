@@ -5,7 +5,6 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.Movie
 import android.os.Build.VERSION.SDK_INT
-import coil.annotation.InternalCoilApi
 import coil.bitmap.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.request.repeatCount
@@ -24,7 +23,6 @@ class GifDecoder : Decoder {
         return DecodeUtils.isGif(source)
     }
 
-    @OptIn(InternalCoilApi::class)
     override suspend fun decode(
         pool: BitmapPool,
         source: BufferedSource,

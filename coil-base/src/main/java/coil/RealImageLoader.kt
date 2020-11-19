@@ -66,7 +66,6 @@ import okhttp3.Call
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.coroutineContext
 
-@OptIn(ExperimentalStdlibApi::class)
 internal class RealImageLoader(
     context: Context,
     override val defaults: DefaultRequestOptions,

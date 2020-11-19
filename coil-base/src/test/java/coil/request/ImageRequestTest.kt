@@ -7,7 +7,6 @@ import android.widget.ImageView.ScaleType.CENTER
 import android.widget.ImageView.ScaleType.MATRIX
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.lifecycle.FakeLifecycle
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -30,7 +29,6 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@OptIn(ExperimentalCoilApi::class)
 class ImageRequestTest {
 
     private lateinit var context: Context

@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import coil.ComponentRegistry
 import coil.EventListener
-import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
 import coil.bitmap.BitmapReferenceCounter
 import coil.decode.DataSource
@@ -53,7 +52,6 @@ import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 
 /** The last interceptor in the chain which executes the [ImageRequest]. */
-@OptIn(ExperimentalCoilApi::class)
 internal class EngineInterceptor(
     private val registry: ComponentRegistry,
     private val bitmapPool: BitmapPool,

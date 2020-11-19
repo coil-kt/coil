@@ -61,7 +61,12 @@ allprojects {
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
             allWarningsAsErrors = true
-            freeCompilerArgs = listOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
+            freeCompilerArgs = listOf(
+                "-progressive",
+                "-Xopt-in=coil.annotation.ExperimentalCoilApi",
+                "-Xopt-in=coil.annotation.InternalCoilApi",
+                "-Xopt-in=kotlin.RequiresOptIn"
+            )
             jvmTarget = "1.8"
         }
     }

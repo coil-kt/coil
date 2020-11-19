@@ -1,5 +1,4 @@
 @file:Suppress("NOTHING_TO_INLINE", "unused")
-@file:OptIn(ExperimentalCoilApi::class)
 
 package coil
 
