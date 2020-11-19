@@ -61,12 +61,12 @@ allprojects {
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
             allWarningsAsErrors = true
-            freeCompilerArgs = listOf(
-                "-progressive",
-                "-Xopt-in=coil.annotation.ExperimentalCoilApi",
-                "-Xopt-in=coil.annotation.InternalCoilApi",
-                "-Xopt-in=kotlin.RequiresOptIn"
-            )
+            val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
+            if (project.name != "coil-test") {
+                arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
+                arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
+            }
+            freeCompilerArgs = arguments
             jvmTarget = "1.8"
         }
     }
