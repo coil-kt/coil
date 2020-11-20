@@ -1,4 +1,3 @@
-@file:OptIn(ExperimentalCoilApi::class)
 @file:Suppress("unused")
 
 package coil.request

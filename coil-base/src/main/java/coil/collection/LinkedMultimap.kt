@@ -93,7 +93,6 @@ internal class LinkedMultimap<K, V> {
         entry.next.prev = entry.prev
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     private class LinkedEntry<K, V>(val key: K?) {
 
         private var values: MutableList<V>? = null

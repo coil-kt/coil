@@ -9,7 +9,6 @@ import android.graphics.RectF
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
 import androidx.exifinterface.media.ExifInterface
-import coil.annotation.InternalCoilApi
 import coil.bitmap.BitmapPool
 import coil.size.PixelSize
 import coil.size.Size
@@ -31,7 +30,6 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?) = true
 
-    @OptIn(InternalCoilApi::class)
     override suspend fun decode(
         pool: BitmapPool,
         source: BufferedSource,

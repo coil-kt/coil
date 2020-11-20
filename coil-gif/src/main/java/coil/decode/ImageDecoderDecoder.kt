@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
 import androidx.core.util.component2
-import coil.annotation.InternalCoilApi
 import coil.bitmap.BitmapPool
 import coil.drawable.ScaleDrawable
 import coil.request.repeatCount
@@ -37,7 +36,6 @@ class ImageDecoderDecoder : Decoder {
             (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
     }
 
-    @OptIn(InternalCoilApi::class)
     override suspend fun decode(
         pool: BitmapPool,
         source: BufferedSource,

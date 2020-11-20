@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
-import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.bitmap.BitmapPool
 import coil.decode.DecodeResult
@@ -35,7 +34,6 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoilApi::class)
 class EventListenerTest {
 
     private lateinit var context: Context

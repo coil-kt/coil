@@ -10,7 +10,6 @@ import coil.ComponentRegistry
 import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
 import coil.decode.DataSource
@@ -51,7 +50,6 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
-@OptIn(ExperimentalCoilApi::class)
 class EngineInterceptorTest {
 
     private lateinit var context: Context
