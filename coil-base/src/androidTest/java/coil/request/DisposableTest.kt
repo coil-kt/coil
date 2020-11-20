@@ -9,7 +9,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.size.Size
@@ -31,7 +30,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoilApi::class)
 class DisposableTest {
 
     private lateinit var context: Context

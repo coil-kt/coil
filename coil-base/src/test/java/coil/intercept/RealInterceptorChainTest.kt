@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.EventListener
-import coil.annotation.ExperimentalCoilApi
 import coil.lifecycle.FakeLifecycle
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
@@ -29,7 +28,6 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
 
 @RunWith(RobolectricTestRunner::class)
-@OptIn(ExperimentalCoilApi::class)
 class RealInterceptorChainTest {
 
     private lateinit var context: Context

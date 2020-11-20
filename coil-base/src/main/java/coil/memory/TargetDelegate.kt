@@ -1,4 +1,3 @@
-@file:OptIn(ExperimentalCoilApi::class)
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil.memory
@@ -10,7 +9,6 @@ import android.util.Log
 import androidx.annotation.MainThread
 import coil.EventListener
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapReferenceCounter
 import coil.bitmap.EmptyBitmapReferenceCounter
 import coil.request.ErrorResult

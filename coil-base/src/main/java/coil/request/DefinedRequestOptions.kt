@@ -1,11 +1,9 @@
-@file:OptIn(ExperimentalCoilApi::class)
 @file:Suppress("unused")
 
 package coil.request
 
 import android.graphics.Bitmap
 import androidx.lifecycle.Lifecycle
-import coil.annotation.ExperimentalCoilApi
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.SizeResolver

@@ -1,9 +1,7 @@
-@file:OptIn(ExperimentalCoilApi::class)
-@file:Suppress("DEPRECATION", "unused")
+@file:Suppress("unused")
 
 package coil
 
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.Decoder
 import coil.fetch.Fetcher
 import coil.intercept.Interceptor

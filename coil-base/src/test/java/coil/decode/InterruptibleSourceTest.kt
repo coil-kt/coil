@@ -1,7 +1,6 @@
 package coil.decode
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import coil.annotation.InternalCoilApi
 import coil.util.createTestMainDispatcher
 import coil.util.runBlockingTest
 import kotlinx.coroutines.CancellationException
@@ -26,7 +25,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
-@OptIn(ExperimentalCoroutinesApi::class, InternalCoilApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class InterruptibleSourceTest {
 
     private lateinit var mainDispatcher: TestCoroutineDispatcher

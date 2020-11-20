@@ -2,13 +2,11 @@ package coil.intercept
 
 import android.graphics.Bitmap
 import coil.EventListener
-import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.NullRequestData
 import coil.size.Size
 
-@OptIn(ExperimentalCoilApi::class)
 internal class RealInterceptorChain(
     val initialRequest: ImageRequest,
     val requestType: Int,

@@ -15,7 +15,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
-import coil.annotation.ExperimentalCoilApi
 import coil.base.test.R
 import coil.bitmap.BitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
@@ -68,7 +67,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoilApi::class)
 class RealImageLoaderTest {
 
     private lateinit var context: Context
