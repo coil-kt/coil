@@ -88,18 +88,22 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         paddingSize: Int,
         isWidth: Boolean
     ): Int {
+        // Assume the dimension will match the value in the view's layout params.
+        val insetParamSize = paramSize - paddingSize
+        if (insetParamSize > 0) {
+            return insetParamSize
+        }
+
+        // Fallback to the view's current size.
+        val insetViewSize = viewSize - paddingSize
+        if (insetViewSize > 0) {
+            return insetViewSize
+        }
+
         // If the dimension is set to WRAP_CONTENT, fall back to the size of the display.
         if (paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
             return view.context.resources.displayMetrics.run { if (isWidth) widthPixels else heightPixels }
         }
-
-        // Assume the dimension will match the value in the view's layout params.
-        val insetParamSize = paramSize - paddingSize
-        if (insetParamSize > 0) return insetParamSize
-
-        // Fallback to the view's current size.
-        val insetViewSize = viewSize - paddingSize
-        if (insetViewSize > 0) return insetViewSize
 
         // Unable to resolve the dimension's size.
         return -1
