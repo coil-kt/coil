@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.0] - November 24, 2020
+
+- **Important**: Change the `CENTER` and `MATRIX` `ImageView` scale types to resolve to `OriginalSize`. ([#587](https://github.com/coil-kt/coil/pull/587))
+    - This change only affects the implicit size resolution algorithm when the request's size isn't specified explicitly.
+    - This change was made to ensure that the visual result of an image request is consistent with `ImageView.setImageResource`/`ImageView.setImageURI`. To revert to the old behaviour set a `ViewSizeResolver` when constructing your request.
+- **Important**: Return the display size from `ViewSizeResolver` if the view's layout param is `WRAP_CONTENT`. ([#562](https://github.com/coil-kt/coil/pull/562))
+    - Previously, we would only return the display size if the view has been fully laid out. This change makes the typical behaviour more consistent and intuitive.
+- Add the ability to control alpha pre-multiplication. ([#569](https://github.com/coil-kt/coil/pull/569))
+- Support preferring exact intrinsic size in `CrossfadeDrawable`. ([#585](https://github.com/coil-kt/coil/pull/585))
+- Check for the full GIF header including version. ([#564](https://github.com/coil-kt/coil/pull/564))
+- Add an empty bitmap pool implementation. ([#561](https://github.com/coil-kt/coil/pull/561))
+- Make `EventListener.Factory` a functional interface. ([#575](https://github.com/coil-kt/coil/pull/575))
+- Stabilize `EventListener`. ([#574](https://github.com/coil-kt/coil/pull/574))
+- Add `String` overload for `ImageRequest.Builder.placeholderMemoryCacheKey`.
+- Add `@JvmOverloads` to the `ViewSizeResolver` constructor.
+- Fix: Mutate start/end drawables in `CrossfadeDrawable`. ([#572](https://github.com/coil-kt/coil/pull/572))
+- Fix: Fix GIF not playing on second load. ([#577](https://github.com/coil-kt/coil/pull/534))
+- Update Kotlin (1.4.20) and migrate to the `kotlin-parcelize` plugin.
+- Update Coroutines (1.4.1).
+
 ## [1.0.0] - October 22, 2020
 
 Changes since `0.13.0`:
