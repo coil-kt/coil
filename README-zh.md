@@ -16,7 +16,7 @@ Coil的首字母由来：取**Co**routine，**I**mage和**L**oader得来Coil。
 Coil允许使用`mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:1.0.0")
+implementation("io.coil-kt:coil:1.1.0")
 ```
 
 ## 快速使用
@@ -46,7 +46,7 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-也可以查看Coli文档获得更多信息： [full documentation here](https://coil-kt.github.io/coil/getting_started/).
+也可以查看Coil文档获得更多信息： [full documentation here](https://coil-kt.github.io/coil/getting_started/).
 
 ## 环境要求
 
