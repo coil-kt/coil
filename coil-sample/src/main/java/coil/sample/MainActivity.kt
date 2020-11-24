@@ -45,15 +45,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.apply {
-            launch {
-                viewModel.assetType.collect { setAssetType(it) }
-            }
-            launch {
-                viewModel.images.collect { setImages(it) }
-            }
-            launch {
-                viewModel.screen.collect { setScreen(it) }
-            }
+            launch { viewModel.assetType.collect(::setAssetType) }
+            launch { viewModel.images.collect(::setImages) }
+            launch { viewModel.screen.collect(::setScreen) }
         }
     }
 
