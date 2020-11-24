@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Paint
 import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
+import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.net.Uri
@@ -97,8 +98,14 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             var srcHeight = 0
             val destSize = when (size) {
                 is PixelSize -> {
-                    srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
-                    srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+                    val rotation = if (SDK_INT >= 17) retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0 else 0
+                    if (rotation == 90 || rotation == 270) {
+                        srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+                        srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+                    } else {
+                        srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+                        srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+                    }
 
                     if (srcWidth > 0 && srcHeight > 0) {
                         val rawScale = DecodeUtils.computeSizeMultiplier(
