@@ -677,6 +677,13 @@ class ImageRequest private constructor(
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
+        fun placeholderMemoryCacheKey(key: String?) = placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
+
+        /**
+         * Set the memory cache [key] whose value will be used as the placeholder drawable.
+         *
+         * If there is no value in the memory cache for [key], fall back to [placeholder].
+         */
         fun placeholderMemoryCacheKey(key: MemoryCache.Key?) = apply {
             this.placeholderMemoryCacheKey = key
         }

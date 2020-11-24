@@ -508,6 +508,7 @@ public final class coil/request/ImageRequest$Builder {
 	public final fun placeholder (I)Lcoil/request/ImageRequest$Builder;
 	public final fun placeholder (Landroid/graphics/drawable/Drawable;)Lcoil/request/ImageRequest$Builder;
 	public final fun placeholderMemoryCacheKey (Lcoil/memory/MemoryCache$Key;)Lcoil/request/ImageRequest$Builder;
+	public final fun placeholderMemoryCacheKey (Ljava/lang/String;)Lcoil/request/ImageRequest$Builder;
 	public final fun precision (Lcoil/size/Precision;)Lcoil/request/ImageRequest$Builder;
 	public final fun premultipliedAlpha (Z)Lcoil/request/ImageRequest$Builder;
 	public final fun removeHeader (Ljava/lang/String;)Lcoil/request/ImageRequest$Builder;
