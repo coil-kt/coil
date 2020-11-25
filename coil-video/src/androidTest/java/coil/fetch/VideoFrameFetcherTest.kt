@@ -107,6 +107,6 @@ class VideoFrameFetcherTest {
         assertTrue(result.isSampled)
 
         val expected = context.decodeBitmapAsset("video_frame_rotated.jpg")
-        assertTrue(actual.isSimilarTo(expected))
+        assertTrue(actual.isSimilarTo(expected, threshold = 0.97))
     }
 }
