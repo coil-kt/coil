@@ -12,6 +12,7 @@ import coil.fetch.VideoFrameFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Parameters
 import coil.size.OriginalSize
+import coil.size.PixelSize
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
@@ -84,5 +85,28 @@ class VideoFrameFetcherTest {
 
         val expected = context.decodeBitmapAsset("video_frame_2.jpg")
         assertTrue(actual.isSimilarTo(expected))
+    }
+
+    @Test
+    fun rotation() {
+        // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+
+        val result = runBlocking {
+            fetcher.fetch(
+                pool = pool,
+                data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/video_rotated.mp4".toUri(),
+                size = PixelSize(150, 150),
+                options = Options(context)
+            )
+        }
+
+        assertTrue(result is DrawableResult)
+        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        assertNotNull(actual)
+        assertTrue(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_rotated.jpg")
+        assertTrue(actual.isSimilarTo(expected, threshold = 0.97))
     }
 }
