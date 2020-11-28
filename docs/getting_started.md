@@ -7,6 +7,7 @@ Coil has 5 artifacts published to `mavenCentral()`:
 * `io.coil-kt:coil`: The default artifact which depends on `io.coil-kt:coil-base` and includes the `Coil` singleton and the `ImageView` extension functions.
 * `io.coil-kt:coil-base`: The base artifact which **does not** include the `Coil` singleton and the `ImageView` extension functions.
 * `io.coil-kt:coil-gif`: Includes two [decoders](../api/coil-base/coil.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
+* `io.coil-kt:coil-pdf`: Includes two [fetchers](../api/coil-base/coil.fetch/-fetcher) to support fetching and rendering PDF pages on Android 5.0+. See [PDFs](pdfs.md) for more details.
 * `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
 * `io.coil-kt:coil-video`: Includes two [fetchers](../api/coil-base/coil.fetch/-fetcher) to support fetching and decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
 
