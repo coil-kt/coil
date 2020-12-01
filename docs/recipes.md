@@ -6,7 +6,7 @@ See a common use case that isn't covered? Feel free to submit a PR with a new se
 
 ## Palette
 
-[Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to exact prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done a number of ways:
+[Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to exact prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done in a number of ways:
 
 #### Enqueue
 
