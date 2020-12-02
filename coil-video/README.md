@@ -11,14 +11,10 @@ And add the two fetchers to your component registry when constructing your `Imag
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
     .componentRegistry {
-         add(VideoFrameFileFetcher())
-         add(VideoFrameUriFetcher())
+         add(VideoFrameDecoder())
     }
     .build()
 ```
-
-!!! Note
-    Video frame decoding is only supported for `File`s and `Uri`s (`content` and `file` schemes only).
 
 To specify the time code of the frame to extract from a video, use `videoFrameMillis` or `videoFrameMicros`:
 

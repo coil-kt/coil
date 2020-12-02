@@ -8,15 +8,17 @@ import android.media.MediaMetadataRetriever.OPTION_CLOSEST
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.media.MediaMetadataRetriever.OPTION_NEXT_SYNC
 import android.media.MediaMetadataRetriever.OPTION_PREVIOUS_SYNC
+import coil.decode.VideoFrameDecoder
+import coil.decode.VideoFrameDecoderDelegate.Companion.VIDEO_FRAME_MICROS_KEY
+import coil.decode.VideoFrameDecoderDelegate.Companion.VIDEO_FRAME_OPTION_KEY
 import coil.fetch.VideoFrameFetcher
-import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
-import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_OPTION_KEY
 
 /**
  * Set the time **in milliseconds** of the frame to extract from a video.
  *
  * Default: 0
  *
+ * @see VideoFrameDecoder
  * @see VideoFrameFetcher
  */
 fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long): ImageRequest.Builder {
@@ -28,6 +30,7 @@ fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long): ImageRequest.Build
  *
  * Default: 0
  *
+ * @see VideoFrameDecoder
  * @see VideoFrameFetcher
  */
 fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Builder {
@@ -43,6 +46,7 @@ fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Build
  * Default: [OPTION_CLOSEST_SYNC]
  *
  * @see MediaMetadataRetriever
+ * @see VideoFrameDecoder
  * @see VideoFrameFetcher
  */
 fun ImageRequest.Builder.videoFrameOption(option: Int): ImageRequest.Builder {
