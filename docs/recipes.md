@@ -1,12 +1,12 @@
 # Recipes
 
-This page provides guidance on how to handle some common use cases with Coil. You might have to modify this code to fix your exact requirements, but it should hopefully give you a push in the right direction!
+This page provides guidance on how to handle some common use cases with Coil. You might have to modify this code to fit your exact requirements, but it should hopefully give you a push in the right direction!
 
 See a common use case that isn't covered? Feel free to submit a PR with a new section.
 
 ## Palette
 
-[Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to exact prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done a number of ways:
+[Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to exact prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done in a number of ways:
 
 #### Enqueue
 
@@ -188,7 +188,7 @@ detailImageView.load("https://www.example.com/image.jpg") {
 
 ## Shared Element Transitions
 
-[Shared element transitions](https://developer.android.com/training/transitions/start-activity) allow you to animate between `Activites` and `Fragments`. Here are some recommendations on how to get them to work with Coil:
+[Shared element transitions](https://developer.android.com/training/transitions/start-activity) allow you to animate between `Activities` and `Fragments`. Here are some recommendations on how to get them to work with Coil:
 
 - **Shared element transitions are incompatible with hardware bitmaps.** You should set `allowHardware(false)` to disable hardware bitmaps for both the `ImageView` you are animating from and the view you are animating to. If you don't, the transition will throw an `java.lang.IllegalArgumentException: Software rendering doesn't support hardware bitmaps` exception.
 
