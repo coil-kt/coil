@@ -112,7 +112,7 @@ class ScaleDrawable @JvmOverloads constructor(
     @RequiresApi(29)
     override fun setTintBlendMode(blendMode: BlendMode?) = child.setTintBlendMode(blendMode)
 
-    override fun isRunning() = if (child is Animatable) child.isRunning else false
+    override fun isRunning() = child is Animatable && child.isRunning
 
     override fun start() {
         if (child is Animatable) child.start()
