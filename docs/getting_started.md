@@ -114,7 +114,7 @@ class MyApplication : Application(), ImageLoaderFactory {
 }
 ```
 
-**Or** calling `Coil.setImageLoader`:
+- **Or** calling `Coil.setImageLoader`:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
