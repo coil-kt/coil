@@ -21,9 +21,9 @@ buildscript {
         classpath("com.android.tools.build:gradle:4.1.1")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.13.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
-        classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
+        classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.4")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.4.1")
-        classpath(kotlin("gradle-plugin", version = "1.4.20"))
+        classpath(kotlin("gradle-plugin", version = "1.4.21"))
     }
 }
 
@@ -46,16 +46,8 @@ allprojects {
     version = project.versionName
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.39.0"
-        enableExperimentalRules by true
-        disabledRules by setOf(
-            "experimental:annotation",
-            "experimental:argument-list-wrapping",
-            "import-ordering",
-            "indent",
-            "max-line-length",
-            "parameter-list-wrapping"
-        )
+        version by "0.40.0"
+        disabledRules by setOf("indent", "max-line-length")
     }
 
     tasks.withType<KotlinCompile>().configureEach {
