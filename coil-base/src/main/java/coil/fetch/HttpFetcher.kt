@@ -1,6 +1,7 @@
 package coil.fetch
 
 import android.net.Uri
+import android.os.NetworkOnMainThreadException
 import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import coil.bitmap.BitmapPool
@@ -11,11 +12,14 @@ import coil.network.HttpException
 import coil.size.Size
 import coil.util.await
 import coil.util.getMimeTypeFromUrl
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.MainCoroutineDispatcher
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.Request
 import okhttp3.ResponseBody
+import kotlin.coroutines.coroutineContext
 
 internal class HttpUriFetcher(callFactory: Call.Factory) : HttpFetcher<Uri>(callFactory) {
 
@@ -41,6 +45,7 @@ internal abstract class HttpFetcher<T : Any>(private val callFactory: Call.Facto
      */
     abstract fun T.toHttpUrl(): HttpUrl
 
+    @OptIn(ExperimentalStdlibApi::class)
     override suspend fun fetch(
         pool: BitmapPool,
         data: T,
@@ -67,7 +72,19 @@ internal abstract class HttpFetcher<T : Any>(private val callFactory: Call.Facto
             }
         }
 
-        val response = callFactory.newCall(request.build()).await()
+        val response = if (coroutineContext[CoroutineDispatcher] is MainCoroutineDispatcher) {
+            if (networkRead) {
+                // Prevent executing requests on the main thread that could block due to a networking operation.
+                throw NetworkOnMainThreadException()
+            } else {
+                // Work around https://github.com/Kotlin/kotlinx.coroutines/issues/2448 by blocking the current context.
+                callFactory.newCall(request.build()).execute()
+            }
+        } else {
+            // Suspend and enqueue the request on one of OkHttp's dispatcher threads.
+            callFactory.newCall(request.build()).await()
+        }
+
         if (!response.isSuccessful) {
             response.body()?.close()
             throw HttpException(response)
