@@ -1,15 +1,19 @@
 package coil.fetch
 
 import android.content.Context
+import android.os.NetworkOnMainThreadException
 import android.webkit.MimeTypeMap
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmap.BitmapPool
+import coil.decode.DataSource
 import coil.decode.Options
 import coil.network.HttpException
+import coil.request.CachePolicy
 import coil.size.PixelSize
 import coil.util.createMockWebServer
 import coil.util.createTestMainDispatcher
+import coil.util.runBlockingTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -51,7 +55,7 @@ class HttpFetcherTest {
         context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg")
-        cache = Cache(File("build/cache"), 1024).apply { evictAll() }
+        cache = Cache(File("build/cache"), Long.MAX_VALUE).apply { evictAll() }
         callFactory = OkHttpClient().newBuilder().cache(cache).build()
         pool = BitmapPool(0)
     }
@@ -127,9 +131,45 @@ class HttpFetcherTest {
 
         assertFailsWith<HttpException> {
             runBlocking {
-                fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
+                val result = fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
+                (result as SourceResult).source.close()
             }
         }
         assertEquals(uri.toString(), cache.urls().next())
+    }
+
+    @Test
+    fun `request on main thread throws NetworkOnMainThreadException`() = runBlockingTest {
+        val fetcher = HttpUriFetcher(callFactory)
+        val uri = server.url("/normal.jpg").toString().toUri()
+        val options = Options(context)
+
+        assertFailsWith<NetworkOnMainThreadException> {
+            fetcher.fetch(pool, uri, PixelSize(100, 100), options)
+        }
+        assertFalse(cache.urls().hasNext())
+    }
+
+    @Test
+    fun `request on main thread with network cache policy disabled executes correctly`() {
+        val fetcher = HttpUriFetcher(callFactory)
+        val uri = server.url("/normal.jpg").toString().toUri()
+
+        // Save the image in the disk cache.
+        runBlocking {
+            val result = fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
+            (result as SourceResult).source.close()
+        }
+
+        assertEquals(uri.toString(), cache.urls().next())
+
+        // Load it from the disk cache on the main thread.
+        val result = runBlocking(Dispatchers.Main.immediate) {
+            val options = Options(context, networkCachePolicy = CachePolicy.DISABLED)
+            fetcher.fetch(pool, uri, PixelSize(100, 100), options)
+        }
+
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.DISK, result.dataSource)
     }
 }
