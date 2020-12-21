@@ -2,8 +2,11 @@ plugins {
     `kotlin-dsl`
 }
 
-repositories {
-    mavenCentral()
+apply("extra.gradle.kts")
+
+dependencies {
+    implementation(rootProject.extra.get("androidGradlePlugin").toString())
+    implementation(rootProject.extra.get("kotlinPlugin").toString())
 }
 
 kotlinDslPluginOptions {

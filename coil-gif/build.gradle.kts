@@ -1,7 +1,5 @@
 import coil.Library
-import coil.compileSdk
-import coil.minSdk
-import coil.targetSdk
+import coil.setupBase
 
 plugins {
     id("com.android.library")
@@ -10,20 +8,7 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-android {
-    compileSdkVersion(project.compileSdk)
-    defaultConfig {
-        minSdkVersion(project.minSdk)
-        targetSdkVersion(project.targetSdk)
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    libraryVariants.all {
-        generateBuildConfigProvider?.configure { enabled = false }
-    }
-    testOptions {
-        unitTests.isIncludeAndroidResources = true
-    }
-}
+setupBase()
 
 dependencies {
     api(project(":coil-base"))

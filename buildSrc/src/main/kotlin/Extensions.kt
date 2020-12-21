@@ -2,11 +2,14 @@
 
 package coil
 
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
 import kotlin.math.pow
@@ -54,30 +57,34 @@ private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
     return sum
 }
 
-private fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? {
-    return add("testImplementation", dependencyNotation)
-}
+private fun DependencyHandler.testImplementation(vararg names: Any): Array<Dependency?> =
+    names.map {
+        add("testImplementation", it)
+    }.toTypedArray()
 
-private fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? {
-    return add("androidTestImplementation", dependencyNotation)
-}
+private fun DependencyHandler.androidTestImplementation(vararg names: Any): Array<Dependency?> =
+    names.map {
+        add("androidTestImplementation", it)
+    }.toTypedArray()
 
 fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
-    testImplementation(project(":coil-test"))
+    testImplementation(
+        project(":coil-test"),
 
-    testImplementation(Library.JUNIT)
-    testImplementation(kotlin("test-junit", kotlinVersion))
+        Library.JUNIT,
+        kotlin("test-junit", kotlinVersion),
 
-    testImplementation(Library.KOTLINX_COROUTINES_TEST)
+        Library.KOTLINX_COROUTINES_TEST,
 
-    testImplementation(Library.ANDROIDX_TEST_CORE)
-    testImplementation(Library.ANDROIDX_TEST_JUNIT)
-    testImplementation(Library.ANDROIDX_TEST_RULES)
-    testImplementation(Library.ANDROIDX_TEST_RUNNER)
+        Library.ANDROIDX_TEST_CORE,
+        Library.ANDROIDX_TEST_JUNIT,
+        Library.ANDROIDX_TEST_RULES,
+        Library.ANDROIDX_TEST_RUNNER,
 
-    testImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
+        Library.OKHTTP_MOCK_WEB_SERVER,
 
-    testImplementation(Library.ROBOLECTRIC)
+        Library.ROBOLECTRIC
+    )
 }
 
 fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeTestProject: Boolean = true) {
@@ -85,18 +92,38 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
         androidTestImplementation(project(":coil-test"))
     }
 
-    androidTestImplementation(Library.JUNIT)
-    androidTestImplementation(kotlin("test-junit", kotlinVersion))
+    androidTestImplementation(
+        Library.JUNIT,
+        kotlin("test-junit", kotlinVersion),
 
-    androidTestImplementation(Library.ANDROIDX_APPCOMPAT)
-    androidTestImplementation(Library.MATERIAL)
+        Library.ANDROIDX_APPCOMPAT,
+        Library.MATERIAL,
 
-    androidTestImplementation(Library.ANDROIDX_TEST_CORE)
-    androidTestImplementation(Library.ANDROIDX_TEST_JUNIT)
-    androidTestImplementation(Library.ANDROIDX_TEST_RULES)
-    androidTestImplementation(Library.ANDROIDX_TEST_RUNNER)
+        Library.ANDROIDX_TEST_CORE,
+        Library.ANDROIDX_TEST_JUNIT,
+        Library.ANDROIDX_TEST_RULES,
+        Library.ANDROIDX_TEST_RUNNER,
 
-    androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
+        Library.OKHTTP_MOCK_WEB_SERVER
+    )
+}
+
+fun Project.setupBase(block: LibraryExtension.() -> Unit = {}): LibraryExtension {
+    return (extensions.getByName<BaseExtension>("android") as LibraryExtension).apply {
+        compileSdkVersion(project.compileSdk)
+        defaultConfig {
+            minSdkVersion(project.minSdk)
+            targetSdkVersion(project.targetSdk)
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+        libraryVariants.all {
+            generateBuildConfigProvider?.configure { enabled = false }
+        }
+        testOptions {
+            unitTests.isIncludeAndroidResources = true
+        }
+        block()
+    }
 }
 
 inline infix fun <T> Property<T>.by(value: T) = set(value)
