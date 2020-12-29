@@ -668,6 +668,7 @@ public class coil/size/OriginalSize$Creator : android/os/Parcelable$Creator {
 
 public final class coil/size/PixelSize : coil/size/Size {
 	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public fun <init> (I)V
 	public fun <init> (II)V
 	public final fun component1 ()I
 	public final fun component2 ()I

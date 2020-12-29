@@ -26,6 +26,8 @@ data class PixelSize(
     @Px val height: Int
 ) : Size() {
 
+    constructor(@Px side: Int) : this(side, side)
+
     init {
         require(width > 0 && height > 0) { "width and height must be > 0." }
     }
