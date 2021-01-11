@@ -11,8 +11,8 @@ repositories {
 apply(from = "extra.gradle.kts")
 
 dependencies {
-    implementation(rootProject.extra.get("androidPlugin").toString())
-    implementation(rootProject.extra.get("kotlinPlugin").toString())
+    implementation(rootProject.extra["androidPlugin"].toString())
+    implementation(rootProject.extra["kotlinPlugin"].toString())
 }
 
 kotlinDslPluginOptions {
