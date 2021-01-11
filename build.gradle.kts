@@ -19,7 +19,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath(rootProject.extra.get("androidGradlePlugin").toString())
+        classpath(rootProject.extra.get("androidPlugin").toString())
         classpath(rootProject.extra.get("kotlinPlugin").toString())
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.13.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
