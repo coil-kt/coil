@@ -4,12 +4,15 @@ plugins {
 
 repositories {
     google()
+    mavenCentral()
     jcenter()
 }
 
+apply(from = "extra.gradle.kts")
+
 dependencies {
-    implementation("com.android.tools.build:gradle:4.1.1")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.21")
+    implementation(rootProject.extra.get("androidGradlePlugin").toString())
+    implementation(rootProject.extra.get("kotlinPlugin").toString())
 }
 
 kotlinDslPluginOptions {
