@@ -11,8 +11,6 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
-    apply(from = "buildSrc/extra.gradle.kts")
-
     repositories {
         google()
         mavenCentral()
@@ -20,12 +18,12 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath(rootProject.extra.get("androidGradlePlugin").toString())
-        classpath(rootProject.extra.get("kotlinPlugin").toString())
+        classpath("com.android.tools.build:gradle:4.1.1")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.13.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.4")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.4.1")
+        classpath(kotlin("gradle-plugin", version = "1.4.21"))
     }
 }
 
@@ -36,10 +34,13 @@ extensions.configure<ApiValidationExtension> {
 }
 
 allprojects {
-    apply {
-        from("${rootDir.path}/buildSrc/extra.gradle.kts")
-        plugin("org.jlleitschuh.gradle.ktlint")
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
     }
+
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     group = project.groupId
     version = project.versionName

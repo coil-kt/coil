@@ -1,6 +1,6 @@
 import coil.addAndroidTestDependencies
 import coil.addTestDependencies
-import coil.setupBase
+import coil.setupLibraryModule
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
@@ -10,7 +10,7 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-setupBase()
+setupLibraryModule()
 
 dependencies {
     api(project(":coil-base"))

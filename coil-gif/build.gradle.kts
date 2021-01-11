@@ -1,5 +1,5 @@
 import coil.Library
-import coil.setupBase
+import coil.setupLibraryModule
 
 plugins {
     id("com.android.library")
@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-setupBase()
+setupLibraryModule()
 
 dependencies {
     api(project(":coil-base"))

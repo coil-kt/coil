@@ -1,5 +1,5 @@
 import coil.Library
-import coil.setupBase
+import coil.setupLibraryModule
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
@@ -7,7 +7,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupBase()
+setupLibraryModule()
 
 dependencies {
     compileOnly(project(":coil-base"))
