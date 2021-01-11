@@ -2,11 +2,14 @@
 
 package coil
 
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
 import kotlin.math.pow
@@ -97,6 +100,24 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
     androidTestImplementation(Library.ANDROIDX_TEST_RUNNER)
 
     androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
+}
+
+fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}): LibraryExtension {
+    return (extensions.getByName<BaseExtension>("android") as LibraryExtension).apply {
+        compileSdkVersion(project.compileSdk)
+        defaultConfig {
+            minSdkVersion(project.minSdk)
+            targetSdkVersion(project.targetSdk)
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+        libraryVariants.all {
+            generateBuildConfigProvider?.configure { enabled = false }
+        }
+        testOptions {
+            unitTests.isIncludeAndroidResources = true
+        }
+        block()
+    }
 }
 
 inline infix fun <T> Property<T>.by(value: T) = set(value)
