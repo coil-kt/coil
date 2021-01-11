@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.1] - January 11, 2021
+
+- Fix a case where `ViewSizeResolver.size` could throw an `IllegalStateException` due to resuming a coroutine more than once.
+- Fix `HttpFetcher` blocking forever if called from the main thread.
+    - Requests that are forced to execute on the main thread using `ImageRequest.dispatcher(Dispatchers.Main.immediate)` will fail with a `NetworkOnMainThreadException` unless `ImageRequest.networkCachePolicy` is set to `CachePolicy.DISABLED` or `CachePolicy.WRITE_ONLY`.
+- Rotate video frames from `VideoFrameFetcher` if the video has rotation metadata.
+- Update Kotlin (1.4.21).
+- Update Coroutines (1.4.2).
+- Update Okio (2.10.0).
+- Update `androidx.exifinterface:exifinterface` (1.3.2).
+
 ## [1.1.0] - November 24, 2020
 
 - **Important**: Change the `CENTER` and `MATRIX` `ImageView` scale types to resolve to `OriginalSize`. ([#587](https://github.com/coil-kt/coil/pull/587))

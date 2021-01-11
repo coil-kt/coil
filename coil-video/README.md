@@ -3,7 +3,7 @@
 To add video frame support, import the extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-video:1.1.0")
+implementation("io.coil-kt:coil-video:1.1.1")
 ```
 
 And add the two fetchers to your component registry when constructing your `ImageLoader`:
