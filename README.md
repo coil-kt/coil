@@ -16,7 +16,7 @@ Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한�
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:1.1.0")
+implementation("io.coil-kt:coil:1.1.1")
 ```
 
 ## Quick Start
@@ -101,7 +101,7 @@ If you use Proguard, you may need to add rules for [Coroutines](https://github.c
 
 ## License
 
-    Copyright 2020 Coil Contributors
+    Copyright 2021 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

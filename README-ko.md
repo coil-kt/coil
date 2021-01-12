@@ -16,7 +16,7 @@ Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
 Coil은 `mavenCentral()`로 이용 가능합니다.
 
 ```kotlin
-implementation("io.coil-kt:coil:1.1.0")
+implementation("io.coil-kt:coil:1.1.1")
 ```
 
 ## 빠른 시작
@@ -62,7 +62,7 @@ Proguard를 사용할 경우, [Coroutines](https://github.com/Kotlin/kotlinx.cor
 
 ## 라이선스
 
-    Copyright 2020 Coil Contributors
+    Copyright 2021 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

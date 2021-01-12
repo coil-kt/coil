@@ -33,7 +33,7 @@ object Library {
     private const val OKHTTP_VERSION = "3.12.12"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
-    const val OKIO = "com.squareup.okio:okio:2.9.0"
+    const val OKIO = "com.squareup.okio:okio:2.10.0"
 
     // TEST
 

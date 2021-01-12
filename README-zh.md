@@ -16,7 +16,7 @@ Coil的首字母由来：取**Co**routine，**I**mage和**L**oader得来Coil。
 Coil允许使用`mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:1.1.0")
+implementation("io.coil-kt:coil:1.1.1")
 ```
 
 ## 快速使用
@@ -62,7 +62,7 @@ Coil兼容R8混淆您无需再添加其他的规则
 
 ## License
 
-    Copyright 2020 Coil Contributors
+    Copyright 2021 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
