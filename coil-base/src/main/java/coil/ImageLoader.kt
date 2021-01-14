@@ -9,6 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
+import coil.bitmap.EmptyBitmapPool
 import coil.bitmap.EmptyBitmapReferenceCounter
 import coil.bitmap.RealBitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
@@ -451,7 +452,11 @@ interface ImageLoader {
             val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toInt()
             val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
-            val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
+            val bitmapPool = if (bitmapPoolSize == 0) {
+                EmptyBitmapPool()
+            } else {
+                RealBitmapPool(bitmapPoolSize, logger = logger)
+            }
             val weakMemoryCache = if (trackWeakReferences) {
                 RealWeakMemoryCache(logger)
             } else {
