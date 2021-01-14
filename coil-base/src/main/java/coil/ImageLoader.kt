@@ -9,6 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
 import coil.bitmap.BitmapPool
+import coil.bitmap.EmptyBitmapPool
 import coil.bitmap.EmptyBitmapReferenceCounter
 import coil.bitmap.RealBitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
@@ -37,13 +38,13 @@ import coil.util.Logger
 import coil.util.Utils
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
+import java.io.File
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.OkHttpClient
-import java.io.File
 
 /**
  * A service class that loads images by executing [ImageRequest]s. Image loaders handle caching, data fetching,
@@ -451,7 +452,11 @@ interface ImageLoader {
             val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toInt()
             val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
 
-            val bitmapPool = RealBitmapPool(bitmapPoolSize, logger = logger)
+            val bitmapPool = if (bitmapPoolSize == 0) {
+                EmptyBitmapPool()
+            } else {
+                RealBitmapPool(bitmapPoolSize, logger = logger)
+            }
             val weakMemoryCache = if (trackWeakReferences) {
                 RealWeakMemoryCache(logger)
             } else {
