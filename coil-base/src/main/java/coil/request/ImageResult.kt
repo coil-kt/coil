@@ -38,7 +38,7 @@ sealed class ImageResult {
  *
  * @param drawable The success drawable.
  * @param request The request that was executed to create this result.
- * @param metadata Metadata about the request that created this response.
+ * @param metadata Metadata about the request that created this result.
  */
 data class SuccessResult(
     override val drawable: Drawable,
