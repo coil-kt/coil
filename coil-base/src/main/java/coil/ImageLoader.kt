@@ -38,13 +38,13 @@ import coil.util.Logger
 import coil.util.Utils
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
-import java.io.File
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.OkHttpClient
+import java.io.File
 
 /**
  * A service class that loads images by executing [ImageRequest]s. Image loaders handle caching, data fetching,
