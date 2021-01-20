@@ -13,7 +13,7 @@ A clear and concise description of what the bug is. **Please [enable logging](ht
 A clear and concise description of what you expected to happen.
 
 **To Reproduce**
-How can we reproduce this? If possible, please attach a small project that reproduces the bug.
+How can we reproduce this? Please attach a small project that reproduces the bug.
 
 **Logs/Screenshots**
 If applicable, add logs or screenshots to help explain your problem.
