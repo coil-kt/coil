@@ -59,7 +59,7 @@ internal interface NetworkObserver {
     fun shutdown()
 
     /** Calls [onConnectivityChange] when a connectivity change event occurs. */
-    interface Listener {
+    fun interface Listener {
 
         @MainThread
         fun onConnectivityChange(isOnline: Boolean)
