@@ -118,12 +118,19 @@ private object HardwareBitmapBlocklist {
                 "G3112", "G3116", "G3121", "G3123", "G3125", // Xperia XA1
                 "G3412", "G3416", "G3421", "G3423", "G3426", // Xperia XA1 Plus
                 "G3212", "G3221", "G3223", "G3226", // Xperia XA1 Ultra
+                "F5321", "SO-02J", // Xperia X Compact
+                "602SO", "G8231", "G8232", "SO-03J", "SOV35", // Xperia XZs
 
                 "BV6800Pro", // BlackView BV6800Pro
                 "CatS41", // Cat S41
                 "Hi9Pro", // CHUWI Hi9 Pro
                 "manning", // Lenovo K8 Note
-                "N5702L" // NUU Mobile G3
+                "N5702L", // NUU Mobile G3
+
+                "Infinix-X573", "Infinix-X573B", // Infinix HOT S3
+                "Infinix-X608", // Infinix HOT 6 Pro
+                "SHIFT6m", // SHIFT6m
+                "CUBOT_X18_Plus", // CUBOT X18 Plus
             )
         }
         27 -> run {
