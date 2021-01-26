@@ -4,6 +4,8 @@ package coil
 
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -102,19 +104,40 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
     androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
 }
 
-fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}): LibraryExtension {
-    return (extensions.getByName<BaseExtension>("android") as LibraryExtension).apply {
+private fun Project.setupBaseModule(): BaseExtension {
+    return extensions.getByName<BaseExtension>("android").apply {
         compileSdkVersion(project.compileSdk)
         defaultConfig {
             minSdkVersion(project.minSdk)
             targetSdkVersion(project.targetSdk)
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+}
+
+fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}): LibraryExtension {
+    return (setupBaseModule() as LibraryExtension).apply {
         libraryVariants.all {
             generateBuildConfigProvider?.configure { enabled = false }
         }
         testOptions {
             unitTests.isIncludeAndroidResources = true
+        }
+        block()
+    }
+}
+
+fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}): BaseAppModuleExtension {
+    return (setupBaseModule() as BaseAppModuleExtension).apply {
+        defaultConfig {
+            versionCode = project.versionCode
+            versionName = project.versionName
+            resConfigs("en")
+            vectorDrawables.useSupportLibrary = true
         }
         block()
     }
