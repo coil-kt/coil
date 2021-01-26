@@ -9,7 +9,7 @@ Coil 是一个 Android 图片加载库，通过 Kotlin 协程的方式加载图�
 
 Coil 名字的由来：取 **Co**routine **I**mage **L**oader 首字母得来 Coil。
 
-在 [Instacart ](https://www.instacart.com)用❤️打造。
+在 [Instacart](https://www.instacart.com) 用❤️打造。
 
 ## 下载
 
@@ -35,7 +35,6 @@ imageView.load(File("/path/to/image.jpg"))
 // And more...
 ```
 
-
 可以使用 lambda 语法轻松配置请求选项：
 
 ```kotlin
@@ -58,7 +57,7 @@ imageView.load("https://www.example.com/image.jpg") {
 
 Coil 兼容 R8 混淆您无需再添加其他的规则 
 
-如果您需要混淆代码，你可能需要添加对应的混淆规则：[Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro), [OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/main/resources/META-INF/proguard/okhttp3.pro) , [Okio](https://github.com/square/okio/blob/master/okio/src/jvmMain/resources/META-INF/proguard/okio.pro)。
+如果您需要混淆代码，你可能需要添加对应的混淆规则：[Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro), [OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/main/resources/META-INF/proguard/okhttp3.pro), [Okio](https://github.com/square/okio/blob/master/okio/src/jvmMain/resources/META-INF/proguard/okio.pro)。
 
 ## License
 
