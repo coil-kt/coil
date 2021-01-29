@@ -42,4 +42,3 @@ fun ImageRequest.Builder.animatedTransformation(animatedTransformation: Animated
 fun Parameters.animatedTransformation(): AnimatedTransformation? {
     return value(ANIMATED_TRANSFORMATION) as AnimatedTransformation?
 }
-
