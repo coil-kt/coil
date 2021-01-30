@@ -115,15 +115,3 @@ allprojects {
         }
     }
 }
-
-subprojects {
-    afterEvaluate {
-        extensions.configure<BaseExtension> {
-            // Require that all Android projects target Java 8.
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
-            }
-        }
-    }
-}
