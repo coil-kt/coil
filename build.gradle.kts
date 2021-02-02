@@ -1,7 +1,6 @@
 import coil.by
 import coil.groupId
 import coil.versionName
-import com.android.build.gradle.BaseExtension
 import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -111,18 +110,6 @@ allprojects {
                         packageListUrl = URL("file://$rootDir/package-list-coil-base")
                     }
                 }
-            }
-        }
-    }
-}
-
-subprojects {
-    afterEvaluate {
-        extensions.configure<BaseExtension> {
-            // Require that all Android projects target Java 8.
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
             }
         }
     }
