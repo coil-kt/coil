@@ -11,8 +11,10 @@ import coil.bitmap.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
+import coil.util.indexOf
 import com.caverock.androidsvg.SVG
 import okio.BufferedSource
+import okio.ByteString.Companion.encodeUtf8
 import okio.buffer
 
 /**
@@ -20,7 +22,14 @@ import okio.buffer
  */
 class SvgDecoder(private val context: Context) : Decoder {
 
-    override fun handles(source: BufferedSource, mimeType: String?) = mimeType == MIME_TYPE_SVG
+    override fun handles(source: BufferedSource, mimeType: String?): Boolean {
+        return mimeType == MIME_TYPE_SVG || containsSvgTag(source)
+    }
+
+    private fun containsSvgTag(source: BufferedSource): Boolean {
+        return source.rangeEquals(0, LEFT_ANGLE_BRACKET) &&
+            source.indexOf(SVG_TAG, 0, SVG_TAG_SEARCH_THRESHOLD_BYTES) != -1L
+    }
 
     override suspend fun decode(
         pool: BitmapPool,
@@ -87,5 +96,8 @@ class SvgDecoder(private val context: Context) : Decoder {
     private companion object {
         private const val MIME_TYPE_SVG = "image/svg+xml"
         private const val DEFAULT_SIZE = 512
+        private const val SVG_TAG_SEARCH_THRESHOLD_BYTES = 1024L
+        private val SVG_TAG = "<svg ".encodeUtf8()
+        private val LEFT_ANGLE_BRACKET = "<".encodeUtf8()
     }
 }
