@@ -13,6 +13,7 @@ import okio.buffer
 import okio.source
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class SvgDecoderTest {
@@ -26,6 +27,30 @@ class SvgDecoderTest {
         context = ApplicationProvider.getApplicationContext()
         pool = BitmapPool(0)
         decoder = SvgDecoder(context)
+    }
+
+    @Test
+    fun handlesMimeType() {
+        var source = context.assets.open("coil_logo.svg").source().buffer()
+        assertTrue(decoder.handles(source, "image/svg+xml"))
+
+        source = context.assets.open("coil_logo_250.png").source().buffer()
+        assertFalse(decoder.handles(source, "image/png"))
+    }
+
+    @Test
+    fun handlesSource() {
+        var source = context.assets.open("coil_logo.svg").source().buffer()
+        assertTrue(decoder.handles(source, null))
+
+        source = context.assets.open("coil_logo_250.png").source().buffer()
+        assertFalse(decoder.handles(source, null))
+
+        source = context.assets.open("instacart_logo.svg").source().buffer()
+        assertTrue(decoder.handles(source, null))
+
+        source = context.assets.open("instacart_logo_326.png").source().buffer()
+        assertFalse(decoder.handles(source, null))
     }
 
     @Test
