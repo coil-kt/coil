@@ -1,21 +1,20 @@
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="coil.base">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
     <application android:usesCleartextTraffic="true">
         <activity
             android:name="coil.util.TestActivity"
-            android:theme="@style/Theme.TestActivity"/>
+            android:theme="@style/Theme.TestActivity" />
 
         <provider
             android:name="coil.util.AssetContentProvider"
             android:authorities="coil"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 </manifest>

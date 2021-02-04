@@ -4,6 +4,6 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="AppTheme" parent="AppTheme.v29"/>
+    <style name="AppTheme" parent="AppTheme.v29" />
 
 </resources>

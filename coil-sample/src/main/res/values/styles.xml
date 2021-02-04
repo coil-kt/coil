@@ -6,6 +6,6 @@
         <item name="colorAccent">#CCC</item>
     </style>
 
-    <style name="AppTheme" parent="AppTheme.v16"/>
+    <style name="AppTheme" parent="AppTheme.v16" />
 
 </resources>

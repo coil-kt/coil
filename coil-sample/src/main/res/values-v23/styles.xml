@@ -9,6 +9,6 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="AppTheme" parent="AppTheme.v23"/>
+    <style name="AppTheme" parent="AppTheme.v23" />
 
 </resources>
