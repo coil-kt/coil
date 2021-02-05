@@ -12,9 +12,7 @@ class RoundedCornerTransformation : AnimatedTransformation {
         path.fillType = Path.FillType.INVERSE_EVEN_ODD
         val width = canvas.width
         val height = canvas.height
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            path.addRoundRect(0f, 0f, width.toFloat(), height.toFloat(), 20f, 20f, Path.Direction.CW)
-        }
+        path.addRoundRect(0f, 0f, width.toFloat(), height.toFloat(), 20f, 20f, Path.Direction.CW)
         val paint = Paint()
         paint.isAntiAlias = true
         paint.color = Color.TRANSPARENT
