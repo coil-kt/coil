@@ -1,10 +1,13 @@
 package coil.util
 
-import android.graphics.*
-import android.os.Build
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import coil.size.Size
 import coil.transform.AnimatedTransformation
-import kotlin.math.min
 
 class RoundedCornerTransformation : AnimatedTransformation {
     override fun transform(canvas: Canvas, size: Size): AnimatedTransformation.PixelFormat {

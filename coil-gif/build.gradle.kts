@@ -3,7 +3,6 @@ import coil.addAndroidTestDependencies
 import coil.setupLibraryModule
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
-
 plugins {
     id("com.android.library")
     id("com.vanniktech.maven.publish")
