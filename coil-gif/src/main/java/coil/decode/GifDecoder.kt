@@ -52,7 +52,8 @@ class GifDecoder : Decoder {
                 SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
                 else -> options.config
             },
-            scale = options.scale
+            scale = options.scale,
+            size = size
         )
 
         drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
