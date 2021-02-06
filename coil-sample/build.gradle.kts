@@ -1,8 +1,5 @@
 import coil.Library
-import coil.compileSdk
-import coil.targetSdk
-import coil.versionCode
-import coil.versionName
+import coil.setupAppModule
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
@@ -10,17 +7,11 @@ plugins {
     id("kotlin-android")
 }
 
-android {
-    compileSdkVersion(project.compileSdk)
+setupAppModule {
     defaultConfig {
         applicationId = "coil.sample"
         minSdkVersion(16)
-        targetSdkVersion(project.targetSdk)
-        versionCode = project.versionCode
-        versionName = project.versionName
         multiDexEnabled = true
-        resConfigs("en")
-        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         getByName("release") {

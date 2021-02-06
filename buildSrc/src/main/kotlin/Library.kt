@@ -30,7 +30,7 @@ object Library {
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
-    private const val OKHTTP_VERSION = "3.12.12"
+    private const val OKHTTP_VERSION = "3.12.13"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
     const val OKIO = "com.squareup.okio:okio:2.10.0"
@@ -48,5 +48,5 @@ object Library {
 
     const val OKHTTP_MOCK_WEB_SERVER = "com.squareup.okhttp3:mockwebserver:$OKHTTP_VERSION"
 
-    const val ROBOLECTRIC = "org.robolectric:robolectric:4.4"
+    const val ROBOLECTRIC = "org.robolectric:robolectric:4.5.1"
 }
