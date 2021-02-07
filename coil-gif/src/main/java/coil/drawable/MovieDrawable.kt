@@ -27,11 +27,11 @@ import coil.size.Scale
  *
  * NOTE: Prefer using [ImageDecoderDecoder] and [AnimatedImageDrawable] on API 28 and above.
  */
-class MovieDrawable @JvmOverloads constructor(
+public class MovieDrawable @JvmOverloads constructor(
     private val movie: Movie,
     private val pool: BitmapPool = BitmapPool(0),
-    val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
-    val scale: Scale = Scale.FIT
+    public val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
+    public val scale: Scale = Scale.FIT
 ) : Drawable(), Animatable2Compat {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -113,13 +113,13 @@ class MovieDrawable @JvmOverloads constructor(
      *
      * Default: [REPEAT_INFINITE]
      */
-    fun setRepeatCount(repeatCount: Int) {
+    public fun setRepeatCount(repeatCount: Int) {
         require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
         this.repeatCount = repeatCount
     }
 
     /** Get the number of times the animation will repeat. */
-    fun getRepeatCount(): Int = repeatCount
+    public fun getRepeatCount(): Int = repeatCount
 
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }
@@ -167,11 +167,11 @@ class MovieDrawable @JvmOverloads constructor(
         hardwareDy = bounds.top + (boundsHeight - hardwareScale * bitmapHeight) / 2
     }
 
-    override fun getIntrinsicWidth() = movie.width()
+    override fun getIntrinsicWidth(): Int = movie.width()
 
-    override fun getIntrinsicHeight() = movie.height()
+    override fun getIntrinsicHeight(): Int = movie.height()
 
-    override fun isRunning() = isRunning
+    override fun isRunning(): Boolean = isRunning
 
     override fun start() {
         if (isRunning) return
@@ -204,10 +204,10 @@ class MovieDrawable @JvmOverloads constructor(
         return callbacks.remove(callback)
     }
 
-    override fun clearAnimationCallbacks() = callbacks.clear()
+    override fun clearAnimationCallbacks(): Unit = callbacks.clear()
 
-    companion object {
+    public companion object {
         /** Pass this to [setRepeatCount] to repeat infinitely. */
-        const val REPEAT_INFINITE = -1
+        public const val REPEAT_INFINITE: Int = -1
     }
 }

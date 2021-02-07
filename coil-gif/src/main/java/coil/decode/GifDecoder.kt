@@ -17,7 +17,7 @@ import okio.buffer
  *
  * NOTE: Prefer using [ImageDecoderDecoder] on API 28 and above.
  */
-class GifDecoder : Decoder {
+public class GifDecoder : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source)
@@ -62,7 +62,7 @@ class GifDecoder : Decoder {
         )
     }
 
-    companion object {
-        const val REPEAT_COUNT_KEY = "coil#repeat_count"
+    public companion object {
+        public const val REPEAT_COUNT_KEY: String = "coil#repeat_count"
     }
 }

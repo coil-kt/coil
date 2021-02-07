@@ -28,7 +28,7 @@ import kotlin.math.roundToInt
  * NOTE: Animated HEIF files are only supported on API 30 and above.
  */
 @RequiresApi(28)
-class ImageDecoderDecoder : Decoder {
+public class ImageDecoderDecoder : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) ||
@@ -119,7 +119,7 @@ class ImageDecoderDecoder : Decoder {
         }
     }
 
-    companion object {
-        const val REPEAT_COUNT_KEY = GifDecoder.REPEAT_COUNT_KEY
+    public companion object {
+        public const val REPEAT_COUNT_KEY: String = GifDecoder.REPEAT_COUNT_KEY
     }
 }

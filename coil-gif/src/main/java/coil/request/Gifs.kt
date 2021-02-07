@@ -16,10 +16,10 @@ import coil.drawable.MovieDrawable
  * @see MovieDrawable.setRepeatCount
  * @see AnimatedImageDrawable.setRepeatCount
  */
-fun ImageRequest.Builder.repeatCount(repeatCount: Int): ImageRequest.Builder {
+public fun ImageRequest.Builder.repeatCount(repeatCount: Int): ImageRequest.Builder {
     require(repeatCount >= MovieDrawable.REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
     return setParameter(REPEAT_COUNT_KEY, repeatCount)
 }
 
 /** Get the number of times to repeat the animation if the result is an animated [Drawable]. */
-fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY) as Int?
+public fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY) as Int?

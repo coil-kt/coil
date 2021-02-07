@@ -21,8 +21,8 @@ import kotlin.math.roundToInt
  * This allows drawables that only draw within their intrinsic dimensions
  * (e.g. [AnimatedImageDrawable]) to fill their entire bounds.
  */
-class ScaleDrawable @JvmOverloads constructor(
-    val child: Drawable,
+public class ScaleDrawable @JvmOverloads constructor(
+    public val child: Drawable,
     private val scale: Scale = Scale.FIT
 ) : Drawable(), Drawable.Callback, Animatable {
 
@@ -43,17 +43,17 @@ class ScaleDrawable @JvmOverloads constructor(
     }
 
     @RequiresApi(19)
-    override fun getAlpha() = child.alpha
+    override fun getAlpha(): Int = child.alpha
 
     override fun setAlpha(alpha: Int) {
         child.alpha = alpha
     }
 
     @Suppress("DEPRECATION")
-    override fun getOpacity() = child.opacity
+    override fun getOpacity(): Int = child.opacity
 
     @RequiresApi(21)
-    override fun getColorFilter() = child.colorFilter
+    override fun getColorFilter(): ColorFilter? = child.colorFilter
 
     @RequiresApi(21)
     override fun setColorFilter(colorFilter: ColorFilter?) {
@@ -86,33 +86,33 @@ class ScaleDrawable @JvmOverloads constructor(
         childScale = multiplier.toFloat()
     }
 
-    override fun onLevelChange(level: Int) = child.setLevel(level)
+    override fun onLevelChange(level: Int): Boolean = child.setLevel(level)
 
-    override fun onStateChange(state: IntArray) = child.setState(state)
+    override fun onStateChange(state: IntArray): Boolean = child.setState(state)
 
-    override fun getIntrinsicWidth() = child.intrinsicWidth
+    override fun getIntrinsicWidth(): Int = child.intrinsicWidth
 
-    override fun getIntrinsicHeight() = child.intrinsicHeight
+    override fun getIntrinsicHeight(): Int = child.intrinsicHeight
 
-    override fun unscheduleDrawable(who: Drawable, what: Runnable) = unscheduleSelf(what)
+    override fun unscheduleDrawable(who: Drawable, what: Runnable): Unit = unscheduleSelf(what)
 
-    override fun invalidateDrawable(who: Drawable) = invalidateSelf()
+    override fun invalidateDrawable(who: Drawable): Unit = invalidateSelf()
 
-    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
-
-    @RequiresApi(21)
-    override fun setTint(tintColor: Int) = child.setTint(tintColor)
+    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long): Unit = scheduleSelf(what, `when`)
 
     @RequiresApi(21)
-    override fun setTintList(tint: ColorStateList?) = child.setTintList(tint)
+    override fun setTint(tintColor: Int): Unit = child.setTint(tintColor)
 
     @RequiresApi(21)
-    override fun setTintMode(tintMode: PorterDuff.Mode?) = child.setTintMode(tintMode)
+    override fun setTintList(tint: ColorStateList?): Unit = child.setTintList(tint)
+
+    @RequiresApi(21)
+    override fun setTintMode(tintMode: PorterDuff.Mode?): Unit = child.setTintMode(tintMode)
 
     @RequiresApi(29)
-    override fun setTintBlendMode(blendMode: BlendMode?) = child.setTintBlendMode(blendMode)
+    override fun setTintBlendMode(blendMode: BlendMode?): Unit = child.setTintBlendMode(blendMode)
 
-    override fun isRunning() = child is Animatable && child.isRunning
+    override fun isRunning(): Boolean = child is Animatable && child.isRunning
 
     override fun start() {
         if (child is Animatable) child.start()
