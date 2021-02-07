@@ -5,6 +5,8 @@ package coil.decode
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toDrawable
 import coil.bitmap.BitmapPool
@@ -19,8 +21,15 @@ import okio.buffer
 
 /**
  * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG files.
+ *
+ * @param context A [Context] used to create the [Drawable].
+ * @param useViewBoundsAsSize If true, uses the SVG's view bounds as the intrinsic size for the SVG.
+ *  If false, uses the SVG's width/height as the intrinsic size for the SVG.
  */
-class SvgDecoder(private val context: Context) : Decoder {
+class SvgDecoder @JvmOverloads constructor(
+    private val context: Context,
+    private val useViewBoundsAsSize: Boolean = true
+) : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return mimeType == MIME_TYPE_SVG || containsSvgTag(source)
@@ -39,8 +48,16 @@ class SvgDecoder(private val context: Context) : Decoder {
     ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
         val svg = interruptibleSource.buffer().use { SVG.getFromInputStream(it.inputStream()) }
 
-        val svgWidth = svg.documentWidth
-        val svgHeight = svg.documentHeight
+        val svgWidth: Float
+        val svgHeight: Float
+        val viewBox: RectF? = svg.documentViewBox
+        if (useViewBoundsAsSize && viewBox != null) {
+            svgWidth = viewBox.width()
+            svgHeight = viewBox.height()
+        } else {
+            svgWidth = svg.documentWidth
+            svgHeight = svg.documentHeight
+        }
 
         val bitmapWidth: Int
         val bitmapHeight: Int
