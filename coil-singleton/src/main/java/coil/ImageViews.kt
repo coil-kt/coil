@@ -17,7 +17,7 @@ import java.io.File
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
-inline fun ImageView.load(
+public inline fun ImageView.load(
     uri: String?,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
@@ -25,7 +25,7 @@ inline fun ImageView.load(
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
-inline fun ImageView.load(
+public inline fun ImageView.load(
     url: HttpUrl?,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
@@ -33,7 +33,7 @@ inline fun ImageView.load(
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
-inline fun ImageView.load(
+public inline fun ImageView.load(
     uri: Uri?,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
@@ -41,7 +41,7 @@ inline fun ImageView.load(
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
-inline fun ImageView.load(
+public inline fun ImageView.load(
     file: File?,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
@@ -49,7 +49,7 @@ inline fun ImageView.load(
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
-inline fun ImageView.load(
+public inline fun ImageView.load(
     @DrawableRes drawableResId: Int,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
@@ -57,7 +57,7 @@ inline fun ImageView.load(
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
-inline fun ImageView.load(
+public inline fun ImageView.load(
     drawable: Drawable?,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
@@ -65,7 +65,7 @@ inline fun ImageView.load(
 
 /** @see ImageView.loadAny */
 @JvmSynthetic
-inline fun ImageView.load(
+public inline fun ImageView.load(
     bitmap: Bitmap?,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
@@ -89,7 +89,7 @@ inline fun ImageView.load(
  * @param builder An optional lambda to configure the request before it is enqueued.
  */
 @JvmSynthetic
-inline fun ImageView.loadAny(
+public inline fun ImageView.loadAny(
     data: Any?,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
@@ -105,12 +105,12 @@ inline fun ImageView.loadAny(
 /**
  * Cancel any in progress requests and clear all resources associated with this [ImageView].
  */
-fun ImageView.clear() {
+public fun ImageView.clear() {
     CoilUtils.clear(this)
 }
 
 /**
  * Get the metadata of the successful request attached to this view.
  */
-val ImageView.metadata: ImageResult.Metadata?
+public val ImageView.metadata: ImageResult.Metadata?
     @JvmName("metadata") get() = CoilUtils.metadata(this)

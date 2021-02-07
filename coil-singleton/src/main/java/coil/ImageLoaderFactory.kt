@@ -9,10 +9,10 @@ import android.app.Application
  * - Implement [ImageLoaderFactory] in your [Application].
  * - **Or** call [Coil.setImageLoader] with your [ImageLoaderFactory].
  */
-fun interface ImageLoaderFactory {
+public fun interface ImageLoaderFactory {
 
     /**
      * Return a new [ImageLoader].
      */
-    fun newImageLoader(): ImageLoader
+    public fun newImageLoader(): ImageLoader
 }

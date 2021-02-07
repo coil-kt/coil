@@ -12,7 +12,7 @@ import coil.request.ImageResult
 /**
  * A class that holds the singleton [ImageLoader] instance.
  */
-object Coil {
+public object Coil {
 
     private var imageLoader: ImageLoader? = null
     private var imageLoaderFactory: ImageLoaderFactory? = null
@@ -21,7 +21,7 @@ object Coil {
      * Get the singleton [ImageLoader]. Creates a new instance if none has been set.
      */
     @JvmStatic
-    fun imageLoader(context: Context): ImageLoader = imageLoader ?: newImageLoader(context)
+    public fun imageLoader(context: Context): ImageLoader = imageLoader ?: newImageLoader(context)
 
     /**
      * Convenience function to get the singleton [ImageLoader] and enqueue the [request].
@@ -29,7 +29,7 @@ object Coil {
      * @see ImageLoader.enqueue
      */
     @JvmStatic
-    inline fun enqueue(request: ImageRequest): Disposable {
+    public inline fun enqueue(request: ImageRequest): Disposable {
         return imageLoader(request.context).enqueue(request)
     }
 
@@ -39,7 +39,7 @@ object Coil {
      * @see ImageLoader.execute
      */
     @JvmStatic
-    suspend inline fun execute(request: ImageRequest): ImageResult {
+    public suspend inline fun execute(request: ImageRequest): ImageResult {
         return imageLoader(request.context).execute(request)
     }
 
@@ -49,7 +49,7 @@ object Coil {
      */
     @JvmStatic
     @Synchronized
-    fun setImageLoader(imageLoader: ImageLoader) {
+    public fun setImageLoader(imageLoader: ImageLoader) {
         this.imageLoaderFactory = null
         this.imageLoader = imageLoader
     }
@@ -62,7 +62,7 @@ object Coil {
      */
     @JvmStatic
     @Synchronized
-    fun setImageLoader(factory: ImageLoaderFactory) {
+    public fun setImageLoader(factory: ImageLoaderFactory) {
         imageLoaderFactory = factory
         imageLoader = null
     }
