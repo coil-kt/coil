@@ -20,7 +20,7 @@ import okio.buffer
 /**
  * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG files.
  */
-class SvgDecoder(private val context: Context) : Decoder {
+public class SvgDecoder(private val context: Context) : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return mimeType == MIME_TYPE_SVG || containsSvgTag(source)
