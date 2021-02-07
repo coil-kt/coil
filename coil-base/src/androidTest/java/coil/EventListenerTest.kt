@@ -34,7 +34,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertTrue
 
-class EventListenerTest {
+internal class EventListenerTest {
 
     private lateinit var context: Context
 

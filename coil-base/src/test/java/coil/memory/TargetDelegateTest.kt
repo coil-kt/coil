@@ -40,7 +40,7 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class TargetDelegateTest {
+internal class TargetDelegateTest {
 
     private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher

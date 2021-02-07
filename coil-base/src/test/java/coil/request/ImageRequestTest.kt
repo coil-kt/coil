@@ -29,7 +29,7 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class ImageRequestTest {
+internal class ImageRequestTest {
 
     private lateinit var context: Context
 

@@ -21,7 +21,7 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class ImageLoaderFactoryTest {
+internal class ImageLoaderFactoryTest {
 
     private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher

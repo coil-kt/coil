@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class FileUriMapperTest {
+internal class FileUriMapperTest {
 
     private lateinit var mapper: FileUriMapper
 

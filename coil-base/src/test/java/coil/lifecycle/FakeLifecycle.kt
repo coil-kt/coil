@@ -3,7 +3,7 @@ package coil.lifecycle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 
-class FakeLifecycle : Lifecycle() {
+internal class FakeLifecycle : Lifecycle() {
 
     val observers = mutableListOf<LifecycleObserver>()
 

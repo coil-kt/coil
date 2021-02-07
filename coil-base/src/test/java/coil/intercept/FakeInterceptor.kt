@@ -6,7 +6,7 @@ import coil.request.ImageResult
 import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
 
-class FakeInterceptor : Interceptor {
+internal class FakeInterceptor : Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         return SuccessResult(

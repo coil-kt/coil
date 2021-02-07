@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
 
-class GrayscaleTransformationTest {
+internal class GrayscaleTransformationTest {
 
     private lateinit var context: Context
     private lateinit var pool: BitmapPool

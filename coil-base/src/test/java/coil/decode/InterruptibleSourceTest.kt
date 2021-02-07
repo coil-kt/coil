@@ -26,7 +26,7 @@ import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class InterruptibleSourceTest {
+internal class InterruptibleSourceTest {
 
     private lateinit var mainDispatcher: TestCoroutineDispatcher
 

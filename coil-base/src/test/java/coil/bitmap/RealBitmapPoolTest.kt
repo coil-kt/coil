@@ -20,7 +20,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class RealBitmapPoolTest {
+internal class RealBitmapPoolTest {
 
     private lateinit var strategy: FakeBitmapPoolStrategy
     private lateinit var pool: RealBitmapPool

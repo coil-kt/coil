@@ -14,7 +14,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class DecodeUtilsTest {
+internal class DecodeUtilsTest {
 
     private lateinit var context: Context
 

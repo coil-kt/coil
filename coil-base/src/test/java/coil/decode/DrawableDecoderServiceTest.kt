@@ -13,7 +13,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-class DrawableDecoderServiceTest {
+internal class DrawableDecoderServiceTest {
 
     private lateinit var service: DrawableDecoderService
 

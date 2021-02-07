@@ -30,7 +30,7 @@ import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class CrossfadeTransitionTest {
+internal class CrossfadeTransitionTest {
 
     private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher

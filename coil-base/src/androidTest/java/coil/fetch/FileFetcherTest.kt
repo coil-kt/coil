@@ -14,7 +14,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-class FileFetcherTest {
+internal class FileFetcherTest {
 
     private lateinit var context: Context
     private lateinit var pool: BitmapPool

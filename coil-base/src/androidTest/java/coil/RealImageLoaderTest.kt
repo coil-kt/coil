@@ -67,7 +67,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class RealImageLoaderTest {
+internal class RealImageLoaderTest {
 
     private lateinit var context: Context
     private lateinit var server: MockWebServer

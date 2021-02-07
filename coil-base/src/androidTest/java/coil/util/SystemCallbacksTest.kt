@@ -21,7 +21,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
 
-class SystemCallbacksTest {
+internal class SystemCallbacksTest {
 
     private lateinit var context: Context
 

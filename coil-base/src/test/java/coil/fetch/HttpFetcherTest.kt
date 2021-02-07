@@ -41,7 +41,7 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class HttpFetcherTest {
+internal class HttpFetcherTest {
 
     private lateinit var cache: Cache
     private lateinit var context: Context

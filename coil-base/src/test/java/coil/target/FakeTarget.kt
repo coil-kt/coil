@@ -2,7 +2,7 @@ package coil.target
 
 import android.graphics.drawable.Drawable
 
-class FakeTarget : Target {
+internal class FakeTarget : Target {
 
     var start = false
     var success = false

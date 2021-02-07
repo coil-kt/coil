@@ -26,7 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class ResourceUriFetcherTest {
+internal class ResourceUriFetcherTest {
 
     private lateinit var context: Context
     private lateinit var pool: BitmapPool

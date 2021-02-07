@@ -10,7 +10,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
-class ResourceIntMapperTest {
+internal class ResourceIntMapperTest {
 
     private lateinit var context: Context
     private lateinit var mapper: ResourceIntMapper

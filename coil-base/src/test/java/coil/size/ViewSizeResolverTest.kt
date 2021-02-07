@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class ViewSizeResolverTest {
+internal class ViewSizeResolverTest {
 
     private lateinit var context: Context
     private lateinit var view: View

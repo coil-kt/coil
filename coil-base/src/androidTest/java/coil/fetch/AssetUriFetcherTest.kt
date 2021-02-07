@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class AssetUriFetcherTest {
+internal class AssetUriFetcherTest {
 
     private lateinit var context: Context
     private lateinit var fetcher: AssetUriFetcher

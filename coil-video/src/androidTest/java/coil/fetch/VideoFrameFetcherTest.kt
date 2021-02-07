@@ -23,7 +23,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class VideoFrameFetcherTest {
+internal class VideoFrameFetcherTest {
 
     private lateinit var context: Context
     private lateinit var pool: BitmapPool

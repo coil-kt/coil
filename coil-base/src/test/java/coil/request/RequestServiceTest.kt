@@ -18,7 +18,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class RequestServiceTest {
+internal class RequestServiceTest {
 
     private lateinit var context: Context
     private lateinit var service: RequestService

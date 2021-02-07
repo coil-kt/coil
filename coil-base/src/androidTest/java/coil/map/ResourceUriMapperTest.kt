@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class ResourceUriMapperTest {
+internal class ResourceUriMapperTest {
 
     private lateinit var context: Context
     private lateinit var mapper: ResourceUriMapper

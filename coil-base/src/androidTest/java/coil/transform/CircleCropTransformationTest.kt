@@ -11,7 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
 
-class CircleCropTransformationTest {
+internal class CircleCropTransformationTest {
 
     private lateinit var context: Context
     private lateinit var pool: BitmapPool

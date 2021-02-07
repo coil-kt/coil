@@ -30,7 +30,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class DisposableTest {
+internal class DisposableTest {
 
     private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader

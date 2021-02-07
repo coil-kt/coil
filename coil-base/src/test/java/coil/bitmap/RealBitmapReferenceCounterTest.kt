@@ -24,7 +24,7 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class RealBitmapReferenceCounterTest {
+internal class RealBitmapReferenceCounterTest {
 
     private lateinit var weakMemoryCache: WeakMemoryCache
     private lateinit var pool: BitmapPool

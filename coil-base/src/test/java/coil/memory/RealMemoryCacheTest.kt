@@ -16,7 +16,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class RealMemoryCacheTest {
+internal class RealMemoryCacheTest {
 
     private lateinit var weakCache: WeakMemoryCache
     private lateinit var counter: RealBitmapReferenceCounter

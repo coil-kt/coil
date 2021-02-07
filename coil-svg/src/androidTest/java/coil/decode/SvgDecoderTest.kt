@@ -16,7 +16,7 @@ import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class SvgDecoderTest {
+internal class SvgDecoderTest {
 
     private lateinit var context: Context
     private lateinit var pool: BitmapPool

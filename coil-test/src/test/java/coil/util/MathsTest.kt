@@ -3,7 +3,7 @@ package coil.util
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class MathsTest {
+internal class MathsTest {
 
     @Test
     fun `empty variance`() {

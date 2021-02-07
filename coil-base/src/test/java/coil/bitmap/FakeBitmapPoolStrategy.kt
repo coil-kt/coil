@@ -3,7 +3,7 @@ package coil.bitmap
 import android.graphics.Bitmap
 import java.util.ArrayDeque
 
-class FakeBitmapPoolStrategy : BitmapPoolStrategy {
+internal class FakeBitmapPoolStrategy : BitmapPoolStrategy {
 
     val bitmaps = ArrayDeque<Bitmap>()
 

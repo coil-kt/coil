@@ -33,7 +33,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class ContentUriFetcherTest {
+internal class ContentUriFetcherTest {
 
     private lateinit var context: Context
     private lateinit var fetcher: ContentUriFetcher

@@ -28,7 +28,7 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
 
 @RunWith(RobolectricTestRunner::class)
-class RealInterceptorChainTest {
+internal class RealInterceptorChainTest {
 
     private lateinit var context: Context
 

@@ -26,7 +26,7 @@ import kotlin.test.assertNotSame
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-class BitmapFactoryDecoderTest {
+internal class BitmapFactoryDecoderTest {
 
     private lateinit var context: Context
     private lateinit var pool: BitmapPool

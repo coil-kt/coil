@@ -9,7 +9,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-class SizeStrategyTest {
+internal class SizeStrategyTest {
 
     private lateinit var strategy: SizeStrategy
 

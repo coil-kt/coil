@@ -8,9 +8,9 @@ import android.os.Looper
 import androidx.core.graphics.createBitmap
 import org.robolectric.Shadows
 
-const val DEFAULT_BITMAP_SIZE = 40000 // 4 * 100 * 100
+internal const val DEFAULT_BITMAP_SIZE = 40000 // 4 * 100 * 100
 
-fun createBitmap(
+internal fun createBitmap(
     width: Int = 100,
     height: Int = 100,
     config: Bitmap.Config = Bitmap.Config.ARGB_8888,
@@ -21,6 +21,6 @@ fun createBitmap(
     return bitmap
 }
 
-fun executeQueuedMainThreadTasks() {
+internal fun executeQueuedMainThreadTasks() {
     Shadows.shadowOf(Looper.getMainLooper()).idle()
 }

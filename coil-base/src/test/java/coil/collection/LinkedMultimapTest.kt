@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
-class LinkedMultimapTest {
+internal class LinkedMultimapTest {
 
     private lateinit var map: LinkedMultimap<Key, Any>
 

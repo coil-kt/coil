@@ -15,7 +15,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 
 @RunWith(RobolectricTestRunner::class)
-class StrongMemoryCacheTest {
+internal class StrongMemoryCacheTest {
 
     @Test
     fun `can retrieve cached value`() {

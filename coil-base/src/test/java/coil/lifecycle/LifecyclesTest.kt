@@ -21,7 +21,7 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class LifecyclesTest {
+internal class LifecyclesTest {
 
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var lifecycle: FakeLifecycleRegistry

@@ -50,7 +50,7 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
-class EngineInterceptorTest {
+internal class EngineInterceptorTest {
 
     private lateinit var context: Context
     private lateinit var strongMemoryCache: StrongMemoryCache

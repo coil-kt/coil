@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-class CrossfadeDrawableTest {
+internal class CrossfadeDrawableTest {
 
     private lateinit var context: Context
 

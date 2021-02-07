@@ -16,7 +16,7 @@ import java.io.File
  *
  * Valid format: content://coil/normal.jpg
  */
-class AssetContentProvider : ContentProvider() {
+internal class AssetContentProvider : ContentProvider() {
 
     override fun onCreate() = true
 

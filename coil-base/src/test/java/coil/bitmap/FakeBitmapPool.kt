@@ -7,7 +7,7 @@ import androidx.core.graphics.createBitmap
 import coil.util.Utils
 import coil.util.allocationByteCountCompat
 
-class FakeBitmapPool : BitmapPool {
+internal class FakeBitmapPool : BitmapPool {
 
     val bitmaps = mutableListOf<Bitmap>()
     val gets = mutableListOf<Get>()

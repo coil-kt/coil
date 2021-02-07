@@ -19,7 +19,7 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [21, 28])
-class WeakMemoryCacheTest {
+internal class WeakMemoryCacheTest {
 
     private lateinit var context: Context
     private lateinit var weakMemoryCache: RealWeakMemoryCache

@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
 /** Launch [TestActivity] and invoke [block]. */
-fun withTestActivity(block: (TestActivity) -> Unit) {
+internal fun withTestActivity(block: (TestActivity) -> Unit) {
     launchActivity<TestActivity>().use { scenario ->
         scenario.moveToState(Lifecycle.State.RESUMED)
         scenario.onActivity(block)
@@ -23,7 +23,7 @@ fun withTestActivity(block: (TestActivity) -> Unit) {
  * reference to the [Activity] outside of its scope. However, it should be safe
  * as long we use [ActivityScenarioRule].
  */
-val <T : Activity> ActivityScenario<T>.activity: T
+internal val <T : Activity> ActivityScenario<T>.activity: T
     get() {
         lateinit var activity: T
         runBlocking(Dispatchers.Main.immediate) {
