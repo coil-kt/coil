@@ -21,7 +21,7 @@ import okio.source
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-fun createMockWebServer(context: Context, vararg images: String): MockWebServer {
+public fun createMockWebServer(context: Context, vararg images: String): MockWebServer {
     return MockWebServer().apply {
         if (images.isNotEmpty()) {
             images.forEach { image ->
@@ -40,12 +40,12 @@ fun createMockWebServer(context: Context, vararg images: String): MockWebServer 
     }
 }
 
-fun Context.decodeBitmapAsset(
+public fun Context.decodeBitmapAsset(
     fileName: String,
     options: BitmapFactory.Options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.ARGB_8888 }
 ): Bitmap = checkNotNull(BitmapFactory.decodeStream(assets.open(fileName), null, options))
 
-fun Context.copyAssetToFile(fileName: String): File {
+public fun Context.copyAssetToFile(fileName: String): File {
     val source = assets.open(fileName).source()
     val file = File(filesDir.absolutePath + File.separator + fileName)
     val sink = file.sink().buffer()
@@ -53,20 +53,20 @@ fun Context.copyAssetToFile(fileName: String): File {
     return file
 }
 
-val Bitmap.size: PixelSize
+public val Bitmap.size: PixelSize
     get() = PixelSize(width, height)
 
-inline fun createRequest(
+public inline fun createRequest(
     context: Context,
     builder: ImageRequest.Builder.() -> Unit = {}
 ): ImageRequest = ImageRequest.Builder(context).data(Unit).apply(builder).build()
 
 /** Runs the given [block] on the main thread by default and returns [Unit]. */
-fun runBlockingTest(
+public fun runBlockingTest(
     context: CoroutineContext = Dispatchers.Main.immediate,
     block: suspend CoroutineScope.() -> Unit
-) = runBlocking(context, block)
+): Unit = runBlocking(context, block)
 
-fun createTestMainDispatcher(): TestCoroutineDispatcher {
+public fun createTestMainDispatcher(): TestCoroutineDispatcher {
     return TestCoroutineDispatcher().apply { Dispatchers.setMain(this) }
 }

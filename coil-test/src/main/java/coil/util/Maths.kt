@@ -11,7 +11,7 @@ import kotlin.math.sqrt
  * https://en.wikipedia.org/wiki/Cross-correlation
  */
 @FloatRange(from = -1.0, to = 1.0)
-fun crossCorrelation(x: IntArray, y: IntArray): Double {
+public fun crossCorrelation(x: IntArray, y: IntArray): Double {
     require(x.count() == y.count()) { "Input arrays must be of equal size." }
 
     val xVar = x.variance()
@@ -37,7 +37,7 @@ fun crossCorrelation(x: IntArray, y: IntArray): Double {
 /**
  * Returns an average value of elements in the array.
  */
-fun IntArray.variance(): Double {
+public fun IntArray.variance(): Double {
     if (isEmpty()) return Double.NaN
     val average = average()
     return sumByDouble { (it - average).pow(2) } / count()
@@ -46,7 +46,7 @@ fun IntArray.variance(): Double {
 /**
  * Round the given value to the nearest [Double] with [precision] number of decimal places.
  */
-fun Double.round(precision: Int): Double {
+public fun Double.round(precision: Int): Double {
     val multiplier = 10.0.pow(precision)
     return (this * multiplier).roundToInt() / multiplier
 }

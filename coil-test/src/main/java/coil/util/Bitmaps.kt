@@ -10,7 +10,7 @@ import androidx.core.graphics.red
 /**
  * Returns an [Array] of 4 [IntArray]s, the alpha, red, green, and blue pixel values.
  */
-fun Bitmap.getPixels(): Array<IntArray> {
+public fun Bitmap.getPixels(): Array<IntArray> {
     val size = width * height
     val pixels = IntArray(size)
     getPixels(pixels, 0, width, 0, 0, width, height)
@@ -34,7 +34,7 @@ fun Bitmap.getPixels(): Array<IntArray> {
  * Compares two [Bitmap]s by ensuring that they are the same size and that
  * the cross correlation of their ARGB channels is >= [threshold].
  */
-fun Bitmap.isSimilarTo(other: Bitmap, @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99): Boolean {
+public fun Bitmap.isSimilarTo(other: Bitmap, @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99): Boolean {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
 
     if (width != other.width || height != other.height) {
