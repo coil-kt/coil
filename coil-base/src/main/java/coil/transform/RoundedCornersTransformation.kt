@@ -30,20 +30,20 @@ import kotlin.math.roundToInt
  * @param bottomLeft The radius for the bottom left corner.
  * @param bottomRight The radius for the bottom right corner.
  */
-class RoundedCornersTransformation(
+public class RoundedCornersTransformation(
     @Px private val topLeft: Float = 0f,
     @Px private val topRight: Float = 0f,
     @Px private val bottomLeft: Float = 0f,
     @Px private val bottomRight: Float = 0f
 ) : Transformation {
 
-    constructor(@Px radius: Float) : this(radius, radius, radius, radius)
+    public constructor(@Px radius: Float) : this(radius, radius, radius, radius)
 
     init {
         require(topLeft >= 0 && topRight >= 0 && bottomLeft >= 0 && bottomRight >= 0) { "All radii must be >= 0." }
     }
 
-    override fun key() = "${RoundedCornersTransformation::class.java.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
+    override fun key(): String = "${RoundedCornersTransformation::class.java.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
 
     override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)

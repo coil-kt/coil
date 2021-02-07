@@ -24,7 +24,7 @@ import coil.util.safeConfig
  *  will downscale the image. Values between 0 and 1 will upscale the image.
  */
 @RequiresApi(18)
-class BlurTransformation @JvmOverloads constructor(
+public class BlurTransformation @JvmOverloads constructor(
     private val context: Context,
     private val radius: Float = DEFAULT_RADIUS,
     private val sampling: Float = DEFAULT_SAMPLING

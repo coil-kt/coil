@@ -10,23 +10,23 @@ import java.util.UUID
 /**
  * Represents the work of an executed [ImageRequest].
  */
-interface Disposable {
+public interface Disposable {
 
     /**
      * Returns true if the request is complete or cancelling.
      */
-    val isDisposed: Boolean
+    public val isDisposed: Boolean
 
     /**
      * Cancels any in progress work and frees any resources associated with this request. This method is idempotent.
      */
-    fun dispose()
+    public fun dispose()
 
     /**
      * Suspends until any in progress work completes.
      */
     @ExperimentalCoilApi
-    suspend fun await()
+    public suspend fun await()
 }
 
 /**

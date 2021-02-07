@@ -8,7 +8,7 @@ import coil.request.ImageRequest
  *
  * @see ImageRequest.Builder.precision
  */
-enum class Precision {
+public enum class Precision {
 
     /**
      * Require that the loaded image's dimensions match the request's size and scale exactly.

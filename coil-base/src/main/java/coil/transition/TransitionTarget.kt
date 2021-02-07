@@ -9,15 +9,15 @@ import coil.target.Target
  * A [Target] that supports applying [Transition]s.
  */
 @ExperimentalCoilApi
-interface TransitionTarget : Target {
+public interface TransitionTarget : Target {
 
     /**
      * The [View] used by this [Target].
      */
-    val view: View
+    public val view: View
 
     /**
      * The [view]'s current [Drawable].
      */
-    val drawable: Drawable?
+    public val drawable: Drawable?
 }

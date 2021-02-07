@@ -26,7 +26,7 @@ import coil.transition.TransitionTarget
  *
  * @see ImageLoader.Builder.eventListener
  */
-interface EventListener : ImageRequest.Listener {
+public interface EventListener : ImageRequest.Listener {
 
     /**
      * @see ImageRequest.Listener.onStart
@@ -38,7 +38,7 @@ interface EventListener : ImageRequest.Listener {
      * Called before [SizeResolver.size].
      */
     @MainThread
-    fun resolveSizeStart(request: ImageRequest) {}
+    public fun resolveSizeStart(request: ImageRequest) {}
 
     /**
      * Called after [SizeResolver.size].
@@ -46,7 +46,7 @@ interface EventListener : ImageRequest.Listener {
      * @param size The resolved [Size] for this request.
      */
     @MainThread
-    fun resolveSizeEnd(request: ImageRequest, size: Size) {}
+    public fun resolveSizeEnd(request: ImageRequest, size: Size) {}
 
     /**
      * Called before [Mapper.map].
@@ -54,7 +54,7 @@ interface EventListener : ImageRequest.Listener {
      * @param input The data that will be converted.
      */
     @AnyThread
-    fun mapStart(request: ImageRequest, input: Any) {}
+    public fun mapStart(request: ImageRequest, input: Any) {}
 
     /**
      * Called after [Mapper.map].
@@ -63,7 +63,7 @@ interface EventListener : ImageRequest.Listener {
      *  [output] will be the same as [ImageRequest.data].
      */
     @AnyThread
-    fun mapEnd(request: ImageRequest, output: Any) {}
+    public fun mapEnd(request: ImageRequest, output: Any) {}
 
     /**
      * Called before [Fetcher.fetch].
@@ -72,7 +72,7 @@ interface EventListener : ImageRequest.Listener {
      * @param options The [Options] that will be passed to [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchStart(request: ImageRequest, fetcher: Fetcher<*>, options: Options) {}
+    public fun fetchStart(request: ImageRequest, fetcher: Fetcher<*>, options: Options) {}
 
     /**
      * Called after [Fetcher.fetch].
@@ -83,7 +83,7 @@ interface EventListener : ImageRequest.Listener {
      *  outside the scope of this method.
      */
     @WorkerThread
-    fun fetchEnd(request: ImageRequest, fetcher: Fetcher<*>, options: Options, result: FetchResult) {}
+    public fun fetchEnd(request: ImageRequest, fetcher: Fetcher<*>, options: Options, result: FetchResult) {}
 
     /**
      * Called before [Decoder.decode].
@@ -94,7 +94,7 @@ interface EventListener : ImageRequest.Listener {
      * @param options The [Options] that will be passed to [Decoder.decode].
      */
     @WorkerThread
-    fun decodeStart(request: ImageRequest, decoder: Decoder, options: Options) {}
+    public fun decodeStart(request: ImageRequest, decoder: Decoder, options: Options) {}
 
     /**
      * Called after [Decoder.decode].
@@ -107,7 +107,7 @@ interface EventListener : ImageRequest.Listener {
      *  outside the scope of this method.
      */
     @WorkerThread
-    fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult) {}
+    public fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult) {}
 
     /**
      * Called before any [Transformation]s are applied.
@@ -118,7 +118,7 @@ interface EventListener : ImageRequest.Listener {
      *  the scope of this method.
      */
     @WorkerThread
-    fun transformStart(request: ImageRequest, input: Bitmap) {}
+    public fun transformStart(request: ImageRequest, input: Bitmap) {}
 
     /**
      * Called after any [Transformation]s are applied.
@@ -129,7 +129,7 @@ interface EventListener : ImageRequest.Listener {
      *  the scope of this method.
      */
     @WorkerThread
-    fun transformEnd(request: ImageRequest, output: Bitmap) {}
+    public fun transformEnd(request: ImageRequest, output: Bitmap) {}
 
     /**
      * Called before [Transition.transition].
@@ -138,7 +138,7 @@ interface EventListener : ImageRequest.Listener {
      * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     @MainThread
-    fun transitionStart(request: ImageRequest) {}
+    public fun transitionStart(request: ImageRequest) {}
 
     /**
      * Called after [Transition.transition].
@@ -147,43 +147,45 @@ interface EventListener : ImageRequest.Listener {
      * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     @MainThread
-    fun transitionEnd(request: ImageRequest) {}
+    public fun transitionEnd(request: ImageRequest) {}
 
     /**
      * @see ImageRequest.Listener.onCancel
      */
     @MainThread
-    override fun onCancel(request: ImageRequest) {}
+    public override fun onCancel(request: ImageRequest) {}
 
     /**
      * @see ImageRequest.Listener.onError
      */
     @MainThread
-    override fun onError(request: ImageRequest, throwable: Throwable) {}
+    public override fun onError(request: ImageRequest, throwable: Throwable) {}
 
     /**
      * @see ImageRequest.Listener.onSuccess
      */
     @MainThread
-    override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
+    public override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
 
     /** A factory that creates new [EventListener] instances. */
-    fun interface Factory {
+    public fun interface Factory {
 
-        companion object {
-            @JvmField val NONE = Factory(EventListener.NONE)
+        public companion object {
+            @JvmField
+            public val NONE: Factory = Factory(EventListener.NONE)
 
             /** Create an [EventListener.Factory] that always returns [listener]. */
             @JvmStatic
             @JvmName("create")
-            operator fun invoke(listener: EventListener) = Factory { listener }
+            public operator fun invoke(listener: EventListener): Factory = Factory { listener }
         }
 
         /** Return a new [EventListener]. */
-        fun create(request: ImageRequest): EventListener
+        public fun create(request: ImageRequest): EventListener
     }
 
-    companion object {
-        @JvmField val NONE = object : EventListener {}
+    public companion object {
+        @JvmField
+        public val NONE: EventListener = object : EventListener {}
     }
 }

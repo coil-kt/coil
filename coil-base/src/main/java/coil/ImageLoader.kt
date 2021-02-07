@@ -56,22 +56,22 @@ import java.io.File
  * It's recommended, though not required, to call [shutdown] when you've finished using an image loader.
  * This preemptively frees its memory and cleans up any observers.
  */
-interface ImageLoader {
+public interface ImageLoader {
 
     /**
      * The default options that are used to fill in unset [ImageRequest] values.
      */
-    val defaults: DefaultRequestOptions
+    public val defaults: DefaultRequestOptions
 
     /**
      * An in-memory cache of recently loaded images.
      */
-    val memoryCache: MemoryCache
+    public val memoryCache: MemoryCache
 
     /**
      * An object pool of reusable [Bitmap]s.
      */
-    val bitmapPool: BitmapPool
+    public val bitmapPool: BitmapPool
 
     /**
      * Enqueue the [request] to be executed asynchronously.
@@ -79,7 +79,7 @@ interface ImageLoader {
      * @param request The request to execute.
      * @return A [Disposable] which can be used to cancel or check the status of the request.
      */
-    fun enqueue(request: ImageRequest): Disposable
+    public fun enqueue(request: ImageRequest): Disposable
 
     /**
      * Execute the [request] in the current coroutine scope.
@@ -90,7 +90,7 @@ interface ImageLoader {
      * @param request The request to execute.
      * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
      */
-    suspend fun execute(request: ImageRequest): ImageResult
+    public suspend fun execute(request: ImageRequest): ImageResult
 
     /**
      * Shutdown this image loader.
@@ -100,9 +100,9 @@ interface ImageLoader {
      * In progress [enqueue] requests will be cancelled immediately.
      * In progress [execute] requests will continue until complete.
      */
-    fun shutdown()
+    public fun shutdown()
 
-    class Builder(context: Context) {
+    public class Builder(context: Context) {
 
         private val applicationContext = context.applicationContext
 
@@ -127,7 +127,7 @@ interface ImageLoader {
          * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
          * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
          */
-        fun okHttpClient(okHttpClient: OkHttpClient) = callFactory(okHttpClient)
+        public fun okHttpClient(okHttpClient: OkHttpClient): Builder = callFactory(okHttpClient)
 
         /**
          * Set a lazy callback to create the [OkHttpClient] used for network requests.
@@ -137,7 +137,7 @@ interface ImageLoader {
          * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
          * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
          */
-        fun okHttpClient(initializer: () -> OkHttpClient) = callFactory(initializer)
+        public fun okHttpClient(initializer: () -> OkHttpClient): Builder = callFactory(initializer)
 
         /**
          * Set the [Call.Factory] used for network requests.
@@ -147,7 +147,7 @@ interface ImageLoader {
          * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
          * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
          */
-        fun callFactory(callFactory: Call.Factory) = apply {
+        public fun callFactory(callFactory: Call.Factory): Builder = apply {
             this.callFactory = callFactory
         }
 
@@ -164,7 +164,7 @@ interface ImageLoader {
          * NOTE: You must set [OkHttpClient.cache] to enable disk caching. A default
          * Coil disk cache instance can be created using [CoilUtils.createDefaultCache].
          */
-        fun callFactory(initializer: () -> Call.Factory) = apply {
+        public fun callFactory(initializer: () -> Call.Factory): Builder = apply {
             this.callFactory = lazyCallFactory(initializer)
         }
 
@@ -172,14 +172,14 @@ interface ImageLoader {
          * Build and set the [ComponentRegistry].
          */
         @JvmSynthetic
-        inline fun componentRegistry(
-            builder: ComponentRegistry.Builder.() -> Unit
-        ) = componentRegistry(ComponentRegistry.Builder().apply(builder).build())
+        public inline fun componentRegistry(
+            builder: ComponentRegistry.Builder.() -> Unit,
+        ): Builder = componentRegistry(ComponentRegistry.Builder().apply(builder).build())
 
         /**
          * Set the [ComponentRegistry].
          */
-        fun componentRegistry(registry: ComponentRegistry) = apply {
+        public fun componentRegistry(registry: ComponentRegistry): Builder = apply {
             this.registry = registry
         }
 
@@ -190,7 +190,7 @@ interface ImageLoader {
          *
          * Default: [Utils.getDefaultAvailableMemoryPercentage]
          */
-        fun availableMemoryPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
+        public fun availableMemoryPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double): Builder = apply {
             require(percent in 0.0..1.0) { "Percent must be in the range [0.0, 1.0]." }
             this.availableMemoryPercentage = percent
         }
@@ -205,7 +205,7 @@ interface ImageLoader {
          *
          * Default: [Utils.getDefaultBitmapPoolPercentage]
          */
-        fun bitmapPoolPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
+        public fun bitmapPoolPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double): Builder = apply {
             require(percent in 0.0..1.0) { "Percent must be in the range [0.0, 1.0]." }
             this.bitmapPoolPercentage = percent
         }
@@ -215,7 +215,7 @@ interface ImageLoader {
          *
          * Default: [Dispatchers.IO]
          */
-        fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
+        public fun dispatcher(dispatcher: CoroutineDispatcher): Builder = apply {
             this.defaults = this.defaults.copy(dispatcher = dispatcher)
         }
 
@@ -228,7 +228,7 @@ interface ImageLoader {
          *
          * Default: true
          */
-        fun allowHardware(enable: Boolean) = apply {
+        public fun allowHardware(enable: Boolean): Builder = apply {
             this.defaults = this.defaults.copy(allowHardware = enable)
         }
 
@@ -241,7 +241,7 @@ interface ImageLoader {
          *
          * Default: false
          */
-        fun allowRgb565(enable: Boolean) = apply {
+        public fun allowRgb565(enable: Boolean): Builder = apply {
             this.defaults = this.defaults.copy(allowRgb565 = enable)
         }
 
@@ -254,7 +254,7 @@ interface ImageLoader {
          *
          * Default: true
          */
-        fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
+        public fun addLastModifiedToFileCacheKey(enable: Boolean): Builder = apply {
             this.addLastModifiedToFileCacheKey = enable
         }
 
@@ -269,7 +269,7 @@ interface ImageLoader {
          *
          * Default: true
          */
-        fun bitmapPoolingEnabled(enable: Boolean) = apply {
+        public fun bitmapPoolingEnabled(enable: Boolean): Builder = apply {
             this.bitmapPoolingEnabled = enable
         }
 
@@ -294,7 +294,7 @@ interface ImageLoader {
          *
          * Default: true
          */
-        fun launchInterceptorChainOnMainThread(enable: Boolean) = apply {
+        public fun launchInterceptorChainOnMainThread(enable: Boolean): Builder = apply {
             this.launchInterceptorChainOnMainThread = enable
         }
 
@@ -306,21 +306,21 @@ interface ImageLoader {
          *
          * Default: true
          */
-        fun trackWeakReferences(enable: Boolean) = apply {
+        public fun trackWeakReferences(enable: Boolean): Builder = apply {
             this.trackWeakReferences = enable
         }
 
         /**
          * Set a single [EventListener] that will receive all callbacks for requests launched by this image loader.
          */
-        fun eventListener(listener: EventListener) = eventListener(EventListener.Factory(listener))
+        public fun eventListener(listener: EventListener): Builder = eventListener(EventListener.Factory(listener))
 
         /**
          * Set the [EventListener.Factory] to create per-request [EventListener]s.
          *
          * @see eventListener
          */
-        fun eventListener(factory: EventListener.Factory) = apply {
+        public fun eventListener(factory: EventListener.Factory): Builder = apply {
             this.eventListenerFactory = factory
         }
 
@@ -330,21 +330,21 @@ interface ImageLoader {
          *
          * Default: false
          */
-        fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+        public fun crossfade(enable: Boolean): Builder = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
         /**
          * Enable a crossfade animation with [durationMillis] milliseconds when a request completes successfully.
          *
          * @see `crossfade(Boolean)`
          */
-        fun crossfade(durationMillis: Int) =
+        public fun crossfade(durationMillis: Int): Builder =
             transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
 
         /**
          * Set the default [Transition] for each request.
          */
         @ExperimentalCoilApi
-        fun transition(transition: Transition) = apply {
+        public fun transition(transition: Transition): Builder = apply {
             this.defaults = this.defaults.copy(transition = transition)
         }
 
@@ -354,7 +354,7 @@ interface ImageLoader {
          *
          * Default: [Precision.AUTOMATIC]
          */
-        fun precision(precision: Precision) = apply {
+        public fun precision(precision: Precision): Builder = apply {
             this.defaults = this.defaults.copy(precision = precision)
         }
 
@@ -365,63 +365,63 @@ interface ImageLoader {
          *
          * Default: [Utils.DEFAULT_BITMAP_CONFIG]
          */
-        fun bitmapConfig(bitmapConfig: Bitmap.Config) = apply {
+        public fun bitmapConfig(bitmapConfig: Bitmap.Config): Builder = apply {
             this.defaults = this.defaults.copy(bitmapConfig = bitmapConfig)
         }
 
         /**
          * Set the default placeholder drawable to use when a request starts.
          */
-        fun placeholder(@DrawableRes drawableResId: Int) = apply {
+        public fun placeholder(@DrawableRes drawableResId: Int): Builder = apply {
             this.defaults = this.defaults.copy(placeholder = applicationContext.getDrawableCompat(drawableResId))
         }
 
         /**
          * Set the default placeholder drawable to use when a request starts.
          */
-        fun placeholder(drawable: Drawable?) = apply {
+        public fun placeholder(drawable: Drawable?): Builder = apply {
             this.defaults = this.defaults.copy(placeholder = drawable)
         }
 
         /**
          * Set the default error drawable to use when a request fails.
          */
-        fun error(@DrawableRes drawableResId: Int) = apply {
+        public fun error(@DrawableRes drawableResId: Int): Builder = apply {
             this.defaults = this.defaults.copy(error = applicationContext.getDrawableCompat(drawableResId))
         }
 
         /**
          * Set the default error drawable to use when a request fails.
          */
-        fun error(drawable: Drawable?) = apply {
+        public fun error(drawable: Drawable?): Builder = apply {
             this.defaults = this.defaults.copy(error = drawable)
         }
 
         /**
          * Set the default fallback drawable to use if [ImageRequest.data] is null.
          */
-        fun fallback(@DrawableRes drawableResId: Int) = apply {
+        public fun fallback(@DrawableRes drawableResId: Int): Builder = apply {
             this.defaults = this.defaults.copy(error = applicationContext.getDrawableCompat(drawableResId))
         }
 
         /**
          * Set the default fallback drawable to use if [ImageRequest.data] is null.
          */
-        fun fallback(drawable: Drawable?) = apply {
+        public fun fallback(drawable: Drawable?): Builder = apply {
             this.defaults = this.defaults.copy(error = drawable)
         }
 
         /**
          * Set the default memory cache policy.
          */
-        fun memoryCachePolicy(policy: CachePolicy) = apply {
+        public fun memoryCachePolicy(policy: CachePolicy): Builder = apply {
             this.defaults = this.defaults.copy(memoryCachePolicy = policy)
         }
 
         /**
          * Set the default disk cache policy.
          */
-        fun diskCachePolicy(policy: CachePolicy) = apply {
+        public fun diskCachePolicy(policy: CachePolicy): Builder = apply {
             this.defaults = this.defaults.copy(diskCachePolicy = policy)
         }
 
@@ -430,7 +430,7 @@ interface ImageLoader {
          *
          * NOTE: Disabling writes has no effect.
          */
-        fun networkCachePolicy(policy: CachePolicy) = apply {
+        public fun networkCachePolicy(policy: CachePolicy): Builder = apply {
             this.defaults = this.defaults.copy(networkCachePolicy = policy)
         }
 
@@ -439,14 +439,14 @@ interface ImageLoader {
          *
          * NOTE: Setting a [Logger] can reduce performance and should be avoided in release builds.
          */
-        fun logger(logger: Logger?) = apply {
+        public fun logger(logger: Logger?): Builder = apply {
             this.logger = logger
         }
 
         /**
          * Create a new [ImageLoader] instance.
          */
-        fun build(): ImageLoader {
+        public fun build(): ImageLoader {
             val availableMemorySize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
             val bitmapPoolPercentage = if (bitmapPoolingEnabled) bitmapPoolPercentage else 0.0
             val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toInt()
@@ -492,10 +492,10 @@ interface ImageLoader {
         }
     }
 
-    companion object {
+    public companion object {
         /** Create a new [ImageLoader] without configuration. */
         @JvmStatic
         @JvmName("create")
-        operator fun invoke(context: Context) = Builder(context).build()
+        public operator fun invoke(context: Context): ImageLoader = Builder(context).build()
     }
 }

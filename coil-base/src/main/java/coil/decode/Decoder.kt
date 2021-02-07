@@ -11,7 +11,7 @@ import okio.BufferedSource
  *
  * Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
  */
-interface Decoder {
+public interface Decoder {
 
     /**
      * Return true if this decoder supports decoding [source].
@@ -25,7 +25,7 @@ interface Decoder {
      * @param source The [BufferedSource] to read from.
      * @param mimeType An optional MIME type for the [source].
      */
-    fun handles(source: BufferedSource, mimeType: String?): Boolean
+    public fun handles(source: BufferedSource, mimeType: String?): Boolean
 
     /**
      * Decode [source] as a [Drawable].
@@ -37,7 +37,7 @@ interface Decoder {
      * @param size The requested dimensions for the image.
      * @param options A set of configuration options for this request.
      */
-    suspend fun decode(
+    public suspend fun decode(
         pool: BitmapPool,
         source: BufferedSource,
         size: Size,

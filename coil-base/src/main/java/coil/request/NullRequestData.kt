@@ -5,6 +5,6 @@ package coil.request
  *
  * @see ImageRequest.data
  */
-object NullRequestData {
-    override fun toString() = "coil.request.NullRequestData"
+public object NullRequestData {
+    override fun toString(): String = "coil.request.NullRequestData"
 }

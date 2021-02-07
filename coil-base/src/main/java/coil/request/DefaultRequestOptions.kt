@@ -17,22 +17,22 @@ import kotlinx.coroutines.Dispatchers
  * @see ImageLoader.defaults
  * @see ImageRequest.defaults
  */
-class DefaultRequestOptions(
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    val transition: Transition = Transition.NONE,
-    val precision: Precision = Precision.AUTOMATIC,
-    val bitmapConfig: Bitmap.Config = Utils.DEFAULT_BITMAP_CONFIG,
-    val allowHardware: Boolean = true,
-    val allowRgb565: Boolean = false,
-    val placeholder: Drawable? = null,
-    val error: Drawable? = null,
-    val fallback: Drawable? = null,
-    val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
-    val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
-    val networkCachePolicy: CachePolicy = CachePolicy.ENABLED
+public class DefaultRequestOptions(
+    public val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    public val transition: Transition = Transition.NONE,
+    public val precision: Precision = Precision.AUTOMATIC,
+    public val bitmapConfig: Bitmap.Config = Utils.DEFAULT_BITMAP_CONFIG,
+    public val allowHardware: Boolean = true,
+    public val allowRgb565: Boolean = false,
+    public val placeholder: Drawable? = null,
+    public val error: Drawable? = null,
+    public val fallback: Drawable? = null,
+    public val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    public val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    public val networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 ) {
 
-    fun copy(
+    public fun copy(
         dispatcher: CoroutineDispatcher = this.dispatcher,
         transition: Transition = this.transition,
         precision: Precision = this.precision,
@@ -45,7 +45,7 @@ class DefaultRequestOptions(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
-    ) = DefaultRequestOptions(dispatcher, transition, precision, bitmapConfig, allowHardware, allowRgb565, placeholder,
+    ): DefaultRequestOptions = DefaultRequestOptions(dispatcher, transition, precision, bitmapConfig, allowHardware, allowRgb565, placeholder,
         error, fallback, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {
@@ -88,7 +88,8 @@ class DefaultRequestOptions(
             "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
     }
 
-    companion object {
-        @JvmField val INSTANCE = DefaultRequestOptions()
+    public companion object {
+        @JvmField
+        public val INSTANCE: DefaultRequestOptions = DefaultRequestOptions()
     }
 }

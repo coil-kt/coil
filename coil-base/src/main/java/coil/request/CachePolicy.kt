@@ -9,9 +9,9 @@ package coil.request
  * @see ImageRequest.diskCachePolicy
  * @see ImageRequest.networkCachePolicy
  */
-enum class CachePolicy(
-    val readEnabled: Boolean,
-    val writeEnabled: Boolean
+public enum class CachePolicy(
+    public val readEnabled: Boolean,
+    public val writeEnabled: Boolean
 ) {
     ENABLED(true, true),
     READ_ONLY(true, false),

@@ -13,7 +13,7 @@ import coil.target.Target
  * If the [Target] does not implement [TransitionTarget], any [Transition]s will be ignored.
  */
 @ExperimentalCoilApi
-interface Transition {
+public interface Transition {
 
     /**
      * Start the transition animation and suspend until it completes or is cancelled.
@@ -28,9 +28,10 @@ interface Transition {
      * @param result The result of the image request.
      */
     @MainThread
-    suspend fun transition(target: TransitionTarget, result: ImageResult)
+    public suspend fun transition(target: TransitionTarget, result: ImageResult)
 
-    companion object {
-        @JvmField val NONE: Transition = NoneTransition
+    public companion object {
+        @JvmField
+        public val NONE: Transition = NoneTransition
     }
 }

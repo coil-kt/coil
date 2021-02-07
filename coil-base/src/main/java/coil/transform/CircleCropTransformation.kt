@@ -15,7 +15,7 @@ import kotlin.math.min
 /**
  * A [Transformation] that crops an image using a centered circle as the mask.
  */
-class CircleCropTransformation : Transformation {
+public class CircleCropTransformation : Transformation {
 
     override fun key(): String = CircleCropTransformation::class.java.name
 
@@ -34,11 +34,11 @@ class CircleCropTransformation : Transformation {
         return output
     }
 
-    override fun equals(other: Any?) = other is CircleCropTransformation
+    override fun equals(other: Any?): Boolean = other is CircleCropTransformation
 
-    override fun hashCode() = javaClass.hashCode()
+    override fun hashCode(): Int = javaClass.hashCode()
 
-    override fun toString() = "CircleCropTransformation()"
+    override fun toString(): String = "CircleCropTransformation()"
 
     private companion object {
         val XFERMODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)

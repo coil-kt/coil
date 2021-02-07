@@ -19,12 +19,12 @@ import okio.BufferedSource
  *   and exposes it as a [BufferedSource]. e.g. [HttpFetcher]
  * - Reads the data directly and translates it into a [Drawable]. e.g. [BitmapFetcher]
  */
-interface Fetcher<T : Any> {
+public interface Fetcher<T : Any> {
 
     /**
      * Return true if this can load [data].
      */
-    fun handles(data: T): Boolean = true
+    public fun handles(data: T): Boolean = true
 
     /**
      * Compute the memory cache key for [data].
@@ -33,7 +33,7 @@ interface Fetcher<T : Any> {
      *
      * Returning null will prevent the result of [fetch] from being added to the memory cache.
      */
-    fun key(data: T): String?
+    public fun key(data: T): String?
 
     /**
      * Load the [data] into memory. Perform any necessary fetching operations.
@@ -43,7 +43,7 @@ interface Fetcher<T : Any> {
      * @param size The requested dimensions for the image.
      * @param options A set of configuration options for this request.
      */
-    suspend fun fetch(
+    public suspend fun fetch(
         pool: BitmapPool,
         data: T,
         size: Size,

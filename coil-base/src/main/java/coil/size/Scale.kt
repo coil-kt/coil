@@ -10,7 +10,7 @@ import coil.request.ImageRequest
  *
  * @see ImageRequest.Builder.scale
  */
-enum class Scale {
+public enum class Scale {
 
     /**
      * Fill the image in the view such that both dimensions (width and height) of the image will be **equal to or larger than**

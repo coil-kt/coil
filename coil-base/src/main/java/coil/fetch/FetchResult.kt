@@ -6,7 +6,7 @@ import coil.decode.Decoder
 import okio.BufferedSource
 
 /** The result of [Fetcher.fetch]. */
-sealed class FetchResult
+public sealed class FetchResult
 
 /**
  * A raw [BufferedSource] result, which will be consumed by the relevant [Decoder].
@@ -15,7 +15,7 @@ sealed class FetchResult
  * @param mimeType An optional MIME type for the [source].
  * @param dataSource Where [source] was loaded from.
  */
-data class SourceResult(
+public data class SourceResult(
     val source: BufferedSource,
     val mimeType: String?,
     val dataSource: DataSource
@@ -28,7 +28,7 @@ data class SourceResult(
  * @param isSampled True if [drawable] is sampled (i.e. not loaded into memory at full size).
  * @param dataSource The source that [drawable] was fetched from.
  */
-data class DrawableResult(
+public data class DrawableResult(
     val drawable: Drawable,
     val isSampled: Boolean,
     val dataSource: DataSource

@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable
  *
  * @see Decoder
  */
-data class DecodeResult(
+public data class DecodeResult(
     val drawable: Drawable,
     val isSampled: Boolean
 )

@@ -14,7 +14,7 @@ import coil.util.safeConfig
 /**
  * A [Transformation] that converts an image to shades of gray.
  */
-class GrayscaleTransformation : Transformation {
+public class GrayscaleTransformation : Transformation {
 
     override fun key(): String = GrayscaleTransformation::class.java.name
 
@@ -30,11 +30,11 @@ class GrayscaleTransformation : Transformation {
         return output
     }
 
-    override fun equals(other: Any?) = other is GrayscaleTransformation
+    override fun equals(other: Any?): Boolean = other is GrayscaleTransformation
 
-    override fun hashCode() = javaClass.hashCode()
+    override fun hashCode(): Int = javaClass.hashCode()
 
-    override fun toString() = "GrayscaleTransformation()"
+    override fun toString(): String = "GrayscaleTransformation()"
 
     private companion object {
         val COLOR_FILTER = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })

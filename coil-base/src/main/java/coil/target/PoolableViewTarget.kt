@@ -27,7 +27,7 @@ import androidx.annotation.MainThread
  * @see ViewTarget
  * @see ImageViewTarget
  */
-interface PoolableViewTarget<T : View> : ViewTarget<T> {
+public interface PoolableViewTarget<T : View> : ViewTarget<T> {
 
     /**
      * Called when the current drawable is no longer usable. Targets **must** stop using the current Drawable.
@@ -35,5 +35,5 @@ interface PoolableViewTarget<T : View> : ViewTarget<T> {
      * In practice, this will only be called when the view is detached or about to be destroyed.
      */
     @MainThread
-    fun onClear()
+    public fun onClear()
 }

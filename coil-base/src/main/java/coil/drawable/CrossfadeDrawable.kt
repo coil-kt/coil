@@ -36,13 +36,13 @@ import kotlin.math.roundToInt
  *  [start] **or** [end] return -1 for that dimension. This is useful for views that require an exact intrinsic
  *  size to scale the drawable.
  */
-class CrossfadeDrawable(
+public class CrossfadeDrawable(
     start: Drawable?,
     end: Drawable?,
-    val scale: Scale = Scale.FIT,
-    val durationMillis: Int = DEFAULT_DURATION,
-    val fadeStart: Boolean = true,
-    val preferExactIntrinsicSize: Boolean = false
+    public val scale: Scale = Scale.FIT,
+    public val durationMillis: Int = DEFAULT_DURATION,
+    public val fadeStart: Boolean = true,
+    public val preferExactIntrinsicSize: Boolean = false
 ) : Drawable(), Drawable.Callback, Animatable2Compat {
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
@@ -107,7 +107,7 @@ class CrossfadeDrawable(
     }
 
     @RequiresApi(19)
-    override fun getAlpha() = maxAlpha
+    override fun getAlpha(): Int = maxAlpha
 
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }
@@ -166,15 +166,15 @@ class CrossfadeDrawable(
         return startChanged || endChanged
     }
 
-    override fun getIntrinsicWidth() = intrinsicWidth
+    override fun getIntrinsicWidth(): Int = intrinsicWidth
 
-    override fun getIntrinsicHeight() = intrinsicHeight
+    override fun getIntrinsicHeight(): Int = intrinsicHeight
 
-    override fun unscheduleDrawable(who: Drawable, what: Runnable) = unscheduleSelf(what)
+    override fun unscheduleDrawable(who: Drawable, what: Runnable): Unit = unscheduleSelf(what)
 
-    override fun invalidateDrawable(who: Drawable) = invalidateSelf()
+    override fun invalidateDrawable(who: Drawable): Unit = invalidateSelf()
 
-    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
+    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long): Unit = scheduleSelf(what, `when`)
 
     @RequiresApi(21)
     override fun setTint(tintColor: Int) {
@@ -200,7 +200,7 @@ class CrossfadeDrawable(
         end?.setTintBlendMode(blendMode)
     }
 
-    override fun isRunning() = state == STATE_RUNNING
+    override fun isRunning(): Boolean = state == STATE_RUNNING
 
     override fun start() {
         (start as? Animatable)?.start()
@@ -234,7 +234,7 @@ class CrossfadeDrawable(
         return callbacks.remove(callback)
     }
 
-    override fun clearAnimationCallbacks() = callbacks.clear()
+    override fun clearAnimationCallbacks(): Unit = callbacks.clear()
 
     /** Update the [Drawable]'s bounds inside [targetBounds] preserving aspect ratio. */
     @VisibleForTesting
@@ -275,7 +275,7 @@ class CrossfadeDrawable(
 
     @JvmOverloads
     @SinceKotlin("999.9") // Kept for binary compatibility.
-    constructor(
+    public constructor(
         start: Drawable?,
         end: Drawable?,
         scale: Scale = Scale.FIT,
@@ -283,11 +283,11 @@ class CrossfadeDrawable(
         fadeStart: Boolean = true
     ) : this(start, end, scale, durationMillis, fadeStart)
 
-    companion object {
+    public companion object {
         private const val STATE_START = 0
         private const val STATE_RUNNING = 1
         private const val STATE_DONE = 2
 
-        const val DEFAULT_DURATION = 100
+        public const val DEFAULT_DURATION: Int = 100
     }
 }

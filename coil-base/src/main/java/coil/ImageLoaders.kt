@@ -14,6 +14,6 @@ import kotlinx.coroutines.runBlocking
  * @see ImageLoader.execute
  */
 @WorkerThread
-fun ImageLoader.executeBlocking(request: ImageRequest): ImageResult {
+public fun ImageLoader.executeBlocking(request: ImageRequest): ImageResult {
     return runBlocking { execute(request) }
 }

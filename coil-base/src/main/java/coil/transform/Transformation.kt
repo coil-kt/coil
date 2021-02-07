@@ -16,14 +16,14 @@ import coil.size.Size
  *
  * @see ImageRequest.Builder.transformations
  */
-interface Transformation {
+public interface Transformation {
 
     /**
      * Return a unique key for this transformation.
      *
      * The key should contain any params that are part of this transformation (e.g. size, scale, color, radius, etc.).
      */
-    fun key(): String
+    public fun key(): String
 
     /**
      * Apply the transformation to [input].
@@ -32,5 +32,5 @@ interface Transformation {
      * @param input The input [Bitmap] to transform. Its config will always be [Bitmap.Config.ARGB_8888] or [Bitmap.Config.RGBA_F16].
      * @param size The size of the image request.
      */
-    suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap
+    public suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap
 }

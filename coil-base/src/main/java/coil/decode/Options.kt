@@ -36,22 +36,22 @@ import okhttp3.Headers
  * @param diskCachePolicy Determines if this request is allowed to read/write from/to disk.
  * @param networkCachePolicy Determines if this request is allowed to read from the network.
  */
-class Options(
-    val context: Context,
-    val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
-    val colorSpace: ColorSpace? = NULL_COLOR_SPACE,
-    val scale: Scale = Scale.FIT,
-    val allowInexactSize: Boolean = false,
-    val allowRgb565: Boolean = false,
-    val premultipliedAlpha: Boolean = true,
-    val headers: Headers = EMPTY_HEADERS,
-    val parameters: Parameters = Parameters.EMPTY,
-    val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
-    val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
-    val networkCachePolicy: CachePolicy = CachePolicy.ENABLED
+public class Options(
+    public val context: Context,
+    public val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
+    public val colorSpace: ColorSpace? = NULL_COLOR_SPACE,
+    public val scale: Scale = Scale.FIT,
+    public val allowInexactSize: Boolean = false,
+    public val allowRgb565: Boolean = false,
+    public val premultipliedAlpha: Boolean = true,
+    public val headers: Headers = EMPTY_HEADERS,
+    public val parameters: Parameters = Parameters.EMPTY,
+    public val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    public val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    public val networkCachePolicy: CachePolicy = CachePolicy.ENABLED
 ) {
 
-    fun copy(
+    public fun copy(
         context: Context = this.context,
         config: Bitmap.Config = this.config,
         colorSpace: ColorSpace? = this.colorSpace,
@@ -64,7 +64,7 @@ class Options(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
-    ) = Options(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
+    ): Options = Options(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
         headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {
@@ -108,7 +108,7 @@ class Options(
     }
 
     @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
-    constructor(
+    public constructor(
         context: Context,
         config: Bitmap.Config,
         colorSpace: ColorSpace?,
@@ -125,7 +125,7 @@ class Options(
         diskCachePolicy = diskCachePolicy, networkCachePolicy = networkCachePolicy)
 
     @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
-    fun copy(
+    public fun copy(
         context: Context = this.context,
         config: Bitmap.Config = this.config,
         colorSpace: ColorSpace? = this.colorSpace,
@@ -137,6 +137,6 @@ class Options(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
-    ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha, headers, parameters,
+    ): Options = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha, headers, parameters,
         memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 }

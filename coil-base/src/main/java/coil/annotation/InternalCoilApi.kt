@@ -12,4 +12,4 @@ package coil.annotation
     message = "This is an internal Coil API that should not be used from outside of the `coil` package. " +
         "No compatibility guarantees are provided."
 )
-annotation class InternalCoilApi
+public annotation class InternalCoilApi

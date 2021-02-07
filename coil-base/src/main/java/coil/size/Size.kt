@@ -11,17 +11,17 @@ import kotlinx.parcelize.Parcelize
  * @see ImageRequest.Builder.size
  * @see SizeResolver.size
  */
-sealed class Size : Parcelable
+public sealed class Size : Parcelable
 
 /** Represents the width and height of the source image. */
 @Parcelize
-object OriginalSize : Size() {
-    override fun toString() = "coil.size.OriginalSize"
+public object OriginalSize : Size() {
+    override fun toString(): String = "coil.size.OriginalSize"
 }
 
 /** A positive width and height in pixels. */
 @Parcelize
-data class PixelSize(
+public data class PixelSize(
     @Px val width: Int,
     @Px val height: Int
 ) : Size() {

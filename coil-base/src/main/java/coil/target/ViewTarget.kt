@@ -9,10 +9,10 @@ import androidx.lifecycle.LifecycleObserver
  * Optionally, [ViewTarget]s can implement [LifecycleObserver]. They are automatically registered when the request
  * starts and unregistered when the request completes.
  */
-interface ViewTarget<T : View> : Target {
+public interface ViewTarget<T : View> : Target {
 
     /**
      * The [View] used by this [Target]. This field should be immutable.
      */
-    val view: T
+    public val view: T
 }

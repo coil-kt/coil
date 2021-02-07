@@ -9,19 +9,19 @@ import coil.ImageLoader
  * @see ImageLoader.Builder.logger
  * @see DebugLogger
  */
-interface Logger {
+public interface Logger {
 
     /**
      * The minimum level for this logger to log.
      *
      * @see Log
      */
-    var level: Int
+    public var level: Int
 
     /**
      * Write [message] and/or [throwable] to a logging destination.
      *
      * [priority] will be greater than or equal to [level].
      */
-    fun log(tag: String, priority: Int, message: String?, throwable: Throwable?)
+    public fun log(tag: String, priority: Int, message: String?, throwable: Throwable?)
 }

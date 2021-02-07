@@ -8,7 +8,7 @@ import androidx.lifecycle.LifecycleOwner
 import coil.transition.TransitionTarget
 
 /** A [Target] that handles setting images on an [ImageView]. */
-open class ImageViewTarget(
+public open class ImageViewTarget(
     override val view: ImageView
 ) : PoolableViewTarget<ImageView>, TransitionTarget, DefaultLifecycleObserver {
 
@@ -16,13 +16,13 @@ open class ImageViewTarget(
 
     override val drawable: Drawable? get() = view.drawable
 
-    override fun onStart(placeholder: Drawable?) = setDrawable(placeholder)
+    override fun onStart(placeholder: Drawable?): Unit = setDrawable(placeholder)
 
-    override fun onError(error: Drawable?) = setDrawable(error)
+    override fun onError(error: Drawable?): Unit = setDrawable(error)
 
-    override fun onSuccess(result: Drawable) = setDrawable(result)
+    override fun onSuccess(result: Drawable): Unit = setDrawable(result)
 
-    override fun onClear() = setDrawable(null)
+    override fun onClear(): Unit = setDrawable(null)
 
     override fun onStart(owner: LifecycleOwner) {
         isStarted = true
@@ -51,7 +51,7 @@ open class ImageViewTarget(
         return (this === other) || (other is ImageViewTarget && view == other.view)
     }
 
-    override fun hashCode() = view.hashCode()
+    override fun hashCode(): Int = view.hashCode()
 
-    override fun toString() = "ImageViewTarget(view=$view)"
+    override fun toString(): String = "ImageViewTarget(view=$view)"
 }

@@ -8,7 +8,7 @@ import coil.request.ImageRequest
  *
  * This is used as the fallback [SizeResolver] for [ImageRequest]s.
  */
-class DisplaySizeResolver(private val context: Context) : SizeResolver {
+public class DisplaySizeResolver(private val context: Context) : SizeResolver {
 
     override suspend fun size(): Size {
         return context.resources.displayMetrics.run { PixelSize(widthPixels, heightPixels) }
@@ -18,7 +18,7 @@ class DisplaySizeResolver(private val context: Context) : SizeResolver {
         return (this === other) || (other is DisplaySizeResolver && context == other.context)
     }
 
-    override fun hashCode() = context.hashCode()
+    override fun hashCode(): Int = context.hashCode()
 
-    override fun toString() = "DisplaySizeResolver(context=$context)"
+    override fun toString(): String = "DisplaySizeResolver(context=$context)"
 }

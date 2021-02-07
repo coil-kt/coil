@@ -10,10 +10,10 @@ import coil.memory.MemoryCache
  *
  * @see ImageLoader.execute
  */
-sealed class ImageResult {
+public sealed class ImageResult {
 
-    abstract val drawable: Drawable?
-    abstract val request: ImageRequest
+    public abstract val drawable: Drawable?
+    public abstract val request: ImageRequest
 
     /**
      * Supplemental information about a successful image request.
@@ -25,7 +25,7 @@ sealed class ImageResult {
      * @param isPlaceholderMemoryCacheKeyPresent True if the request's [ImageRequest.placeholderMemoryCacheKey] was
      *  present in the memory cache and was set as the placeholder.
      */
-    data class Metadata(
+    public data class Metadata(
         val memoryCacheKey: MemoryCache.Key?,
         val isSampled: Boolean,
         val dataSource: DataSource,
@@ -40,7 +40,7 @@ sealed class ImageResult {
  * @param request The request that was executed to create this result.
  * @param metadata Metadata about the request that created this result.
  */
-data class SuccessResult(
+public data class SuccessResult(
     override val drawable: Drawable,
     override val request: ImageRequest,
     val metadata: Metadata
@@ -53,7 +53,7 @@ data class SuccessResult(
  * @param request The request that was executed to create this result.
  * @param throwable The error that failed the request.
  */
-data class ErrorResult(
+public data class ErrorResult(
     override val drawable: Drawable?,
     override val request: ImageRequest,
     val throwable: Throwable

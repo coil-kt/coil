@@ -13,28 +13,28 @@ import coil.size.Size
  * See [ImageLoader.Builder.launchInterceptorChainOnMainThread] for more information.
  */
 @ExperimentalCoilApi
-interface Interceptor {
+public interface Interceptor {
 
-    suspend fun intercept(chain: Chain): ImageResult
+    public suspend fun intercept(chain: Chain): ImageResult
 
-    interface Chain {
+    public interface Chain {
 
-        val request: ImageRequest
+        public val request: ImageRequest
 
-        val size: Size
+        public val size: Size
 
         /**
          * Set the requested [Size] to load the image at.
          *
          * @param size The requested size for the image.
          */
-        fun withSize(size: Size): Chain
+        public fun withSize(size: Size): Chain
 
         /**
          * Continue executing the chain.
          *
          * @param request The request to proceed with.
          */
-        suspend fun proceed(request: ImageRequest): ImageResult
+        public suspend fun proceed(request: ImageRequest): ImageResult
     }
 }

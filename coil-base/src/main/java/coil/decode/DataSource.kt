@@ -15,7 +15,7 @@ import java.nio.ByteBuffer
  * @see SourceResult.dataSource
  * @see DrawableResult.dataSource
  */
-enum class DataSource {
+public enum class DataSource {
 
     /**
      * Represents an [ImageLoader]'s memory cache.

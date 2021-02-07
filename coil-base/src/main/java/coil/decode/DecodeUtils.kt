@@ -14,7 +14,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 /** A collection of useful utility methods for decoding images. */
-object DecodeUtils {
+public object DecodeUtils {
 
     // https://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
     private val GIF_HEADER_87A = "GIF87a".encodeUtf8()
@@ -33,19 +33,19 @@ object DecodeUtils {
 
     /** Return true if the [source] contains a GIF image. The [source] is not consumed. */
     @JvmStatic
-    fun isGif(source: BufferedSource): Boolean {
+    public fun isGif(source: BufferedSource): Boolean {
         return source.rangeEquals(0, GIF_HEADER_89A) || source.rangeEquals(0, GIF_HEADER_87A)
     }
 
     /** Return true if the [source] contains a WebP image. The [source] is not consumed. */
     @JvmStatic
-    fun isWebP(source: BufferedSource): Boolean {
+    public fun isWebP(source: BufferedSource): Boolean {
         return source.rangeEquals(0, WEBP_HEADER_RIFF) && source.rangeEquals(8, WEBP_HEADER_WEBP)
     }
 
     /** Return true if the [source] contains an animated WebP image. The [source] is not consumed. */
     @JvmStatic
-    fun isAnimatedWebP(source: BufferedSource): Boolean {
+    public fun isAnimatedWebP(source: BufferedSource): Boolean {
         return isWebP(source) &&
             source.rangeEquals(12, WEBP_HEADER_VPX8) &&
             source.request(17) &&
@@ -54,13 +54,13 @@ object DecodeUtils {
 
     /** Return true if the [source] contains an HEIF image. The [source] is not consumed. */
     @JvmStatic
-    fun isHeif(source: BufferedSource): Boolean {
+    public fun isHeif(source: BufferedSource): Boolean {
         return source.rangeEquals(4, HEIF_HEADER_FTYP)
     }
 
     /** Return true if the [source] contains an animated HEIF image sequence. The [source] is not consumed. */
     @JvmStatic
-    fun isAnimatedHeif(source: BufferedSource): Boolean {
+    public fun isAnimatedHeif(source: BufferedSource): Boolean {
         return isHeif(source) &&
             (source.rangeEquals(8, HEIF_HEADER_MSF1) ||
                 source.rangeEquals(8, HEIF_HEADER_HEVC) ||
@@ -72,7 +72,7 @@ object DecodeUtils {
      * ([srcWidth] and [srcHeight]), the output dimensions ([dstWidth], [dstHeight]), and the [scale].
      */
     @JvmStatic
-    fun calculateInSampleSize(
+    public fun calculateInSampleSize(
         @Px srcWidth: Int,
         @Px srcHeight: Int,
         @Px dstWidth: Int,
@@ -92,7 +92,7 @@ object DecodeUtils {
      * destination dimensions while preserving aspect ratio.
      */
     @JvmStatic
-    fun computeSizeMultiplier(
+    public fun computeSizeMultiplier(
         @Px srcWidth: Int,
         @Px srcHeight: Int,
         @Px dstWidth: Int,
@@ -109,7 +109,7 @@ object DecodeUtils {
 
     /** @see computeSizeMultiplier */
     @JvmStatic
-    fun computeSizeMultiplier(
+    public fun computeSizeMultiplier(
         @Px srcWidth: Float,
         @Px srcHeight: Float,
         @Px dstWidth: Float,
@@ -126,7 +126,7 @@ object DecodeUtils {
 
     /** @see computeSizeMultiplier */
     @JvmStatic
-    fun computeSizeMultiplier(
+    public fun computeSizeMultiplier(
         @Px srcWidth: Double,
         @Px srcHeight: Double,
         @Px dstWidth: Double,
@@ -146,7 +146,7 @@ object DecodeUtils {
      * destination size while preserving aspect ratio.
      */
     @JvmStatic
-    fun computePixelSize(srcWidth: Int, srcHeight: Int, dstSize: Size, scale: Scale): PixelSize {
+    public fun computePixelSize(srcWidth: Int, srcHeight: Int, dstSize: Size, scale: Scale): PixelSize {
         return when (dstSize) {
             is OriginalSize -> PixelSize(srcWidth, srcHeight)
             is PixelSize -> {

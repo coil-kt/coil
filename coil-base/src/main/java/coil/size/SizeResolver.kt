@@ -8,16 +8,16 @@ import coil.request.ImageRequest
  *
  * @see ImageRequest.Builder.size
  */
-interface SizeResolver {
+public interface SizeResolver {
 
-    companion object {
+    public companion object {
         /** Create a [SizeResolver] with a fixed [size]. */
         @JvmStatic
         @JvmName("create")
-        operator fun invoke(size: Size): SizeResolver = RealSizeResolver(size)
+        public operator fun invoke(size: Size): SizeResolver = RealSizeResolver(size)
     }
 
     /** Return the [Size] that the image should be loaded at. */
     @MainThread
-    suspend fun size(): Size
+    public suspend fun size(): Size
 }

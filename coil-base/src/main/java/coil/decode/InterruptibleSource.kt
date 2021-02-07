@@ -19,7 +19,7 @@ import kotlin.coroutines.resume
  * Consumers **should not** read [source] inside [block]. Instead, read from the [Source] provided to [block].
  */
 @InternalCoilApi
-suspend inline fun <T> withInterruptibleSource(
+public suspend inline fun <T> withInterruptibleSource(
     source: Source,
     crossinline block: (Source) -> T
 ): T = suspendCancellableCoroutine { continuation ->

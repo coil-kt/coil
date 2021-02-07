@@ -12,38 +12,38 @@ import kotlinx.parcelize.Parcelize
 /**
  * An in-memory cache of recently loaded images.
  */
-interface MemoryCache {
+public interface MemoryCache {
 
     /** The current size of the cache in bytes. */
-    val size: Int
+    public val size: Int
 
     /** The maximum size of the cache in bytes. */
-    val maxSize: Int
+    public val maxSize: Int
 
     /** Get the [Bitmap] associated with [key]. */
-    operator fun get(key: Key): Bitmap?
+    public operator fun get(key: Key): Bitmap?
 
     /** Set the [Bitmap] associated with [key]. */
-    operator fun set(key: Key, bitmap: Bitmap)
+    public operator fun set(key: Key, bitmap: Bitmap)
 
     /**
      * Remove the [Bitmap] referenced by [key].
      *
      * @return True if [key] was present in the cache. Else, return false.
      */
-    fun remove(key: Key): Boolean
+    public fun remove(key: Key): Boolean
 
     /** Remove all values from the memory cache. */
-    fun clear()
+    public fun clear()
 
     /** The cache key for an image in the memory cache. */
-    sealed class Key : Parcelable {
+    public sealed class Key : Parcelable {
 
-        companion object {
+        public companion object {
             /** Create a simple memory cache key. */
             @JvmStatic
             @JvmName("create")
-            operator fun invoke(value: String): Key = Simple(value)
+            public operator fun invoke(value: String): Key = Simple(value)
         }
 
         /** A simple memory cache key that wraps a [String]. Create new instances using [invoke]. */

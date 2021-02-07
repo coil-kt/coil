@@ -55,80 +55,80 @@ import java.io.File
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
-class ImageRequest private constructor(
-    val context: Context,
+public class ImageRequest private constructor(
+    public val context: Context,
 
     /** @see Builder.data */
-    val data: Any,
+    public val data: Any,
 
     /** @see Builder.target */
-    val target: Target?,
+    public val target: Target?,
 
     /** @see Builder.listener */
-    val listener: Listener?,
+    public val listener: Listener?,
 
     /** @see Builder.memoryCacheKey */
-    val memoryCacheKey: MemoryCache.Key?,
+    public val memoryCacheKey: MemoryCache.Key?,
 
     /** @see Builder.placeholderMemoryCacheKey */
-    val placeholderMemoryCacheKey: MemoryCache.Key?,
+    public val placeholderMemoryCacheKey: MemoryCache.Key?,
 
     /** @see Builder.colorSpace */
-    val colorSpace: ColorSpace?,
+    public val colorSpace: ColorSpace?,
 
     /** @see Builder.fetcher */
-    val fetcher: Pair<Fetcher<*>, Class<*>>?,
+    public val fetcher: Pair<Fetcher<*>, Class<*>>?,
 
     /** @see Builder.decoder */
-    val decoder: Decoder?,
+    public val decoder: Decoder?,
 
     /** @see Builder.transformations */
-    val transformations: List<Transformation>,
+    public val transformations: List<Transformation>,
 
     /** @see Builder.headers */
-    val headers: Headers,
+    public val headers: Headers,
 
     /** @see Builder.parameters */
-    val parameters: Parameters,
+    public val parameters: Parameters,
 
     /** @see Builder.lifecycle */
-    val lifecycle: Lifecycle,
+    public val lifecycle: Lifecycle,
 
     /** @see Builder.sizeResolver */
-    val sizeResolver: SizeResolver,
+    public val sizeResolver: SizeResolver,
 
     /** @see Builder.scale */
-    val scale: Scale,
+    public val scale: Scale,
 
     /** @see Builder.dispatcher */
-    val dispatcher: CoroutineDispatcher,
+    public val dispatcher: CoroutineDispatcher,
 
     /** @see Builder.transition */
-    val transition: Transition,
+    public val transition: Transition,
 
     /** @see Builder.precision */
-    val precision: Precision,
+    public val precision: Precision,
 
     /** @see Builder.bitmapConfig */
-    val bitmapConfig: Bitmap.Config,
+    public val bitmapConfig: Bitmap.Config,
 
     /** @see Builder.allowHardware */
-    val allowHardware: Boolean,
+    public val allowHardware: Boolean,
 
     /** @see Builder.allowRgb565 */
-    val allowRgb565: Boolean,
+    public val allowRgb565: Boolean,
 
     /** @see Builder.premultipliedAlpha */
-    val premultipliedAlpha: Boolean,
+    public val premultipliedAlpha: Boolean,
 
     /** @see Builder.memoryCachePolicy */
-    val memoryCachePolicy: CachePolicy,
+    public val memoryCachePolicy: CachePolicy,
 
     /** @see Builder.diskCachePolicy */
-    val diskCachePolicy: CachePolicy,
+    public val diskCachePolicy: CachePolicy,
 
     /** @see Builder.networkCachePolicy */
-    val networkCachePolicy: CachePolicy,
+    public val networkCachePolicy: CachePolicy,
 
     private val placeholderResId: Int?,
     private val placeholderDrawable: Drawable?,
@@ -138,23 +138,23 @@ class ImageRequest private constructor(
     private val fallbackDrawable: Drawable?,
 
     /** The raw values set on [Builder]. */
-    val defined: DefinedRequestOptions,
+    public val defined: DefinedRequestOptions,
 
     /** The defaults used to fill unset values. */
-    val defaults: DefaultRequestOptions
+    public val defaults: DefaultRequestOptions,
 ) {
 
     /** @see Builder.placeholder */
-    val placeholder: Drawable? get() = getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
+    public val placeholder: Drawable? get() = getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
 
     /** @see Builder.error */
-    val error: Drawable? get() = getDrawableCompat(errorDrawable, errorResId, defaults.error)
+    public val error: Drawable? get() = getDrawableCompat(errorDrawable, errorResId, defaults.error)
 
     /** @see Builder.fallback */
-    val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
+    public val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
 
     @JvmOverloads
-    fun newBuilder(context: Context = this.context) = Builder(this, context)
+    public fun newBuilder(context: Context = this.context): Builder = Builder(this, context)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -248,34 +248,38 @@ class ImageRequest private constructor(
     /**
      * A set of callbacks for an [ImageRequest].
      */
-    interface Listener {
+    public interface Listener {
 
         /**
          * Called immediately after [Target.onStart].
          */
         @MainThread
-        fun onStart(request: ImageRequest) {}
+        public fun onStart(request: ImageRequest) {
+        }
 
         /**
          * Called if the request is cancelled.
          */
         @MainThread
-        fun onCancel(request: ImageRequest) {}
+        public fun onCancel(request: ImageRequest) {
+        }
 
         /**
          * Called if an error occurs while executing the request.
          */
         @MainThread
-        fun onError(request: ImageRequest, throwable: Throwable) {}
+        public fun onError(request: ImageRequest, throwable: Throwable) {
+        }
 
         /**
          * Called if the request completes successfully.
          */
         @MainThread
-        fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
+        public fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {
+        }
     }
 
-    class Builder {
+    public class Builder {
 
         private val context: Context
         private var defaults: DefaultRequestOptions
@@ -308,18 +312,21 @@ class ImageRequest private constructor(
         private var diskCachePolicy: CachePolicy?
         private var networkCachePolicy: CachePolicy?
 
-        @DrawableRes private var placeholderResId: Int?
+        @DrawableRes
+        private var placeholderResId: Int?
         private var placeholderDrawable: Drawable?
-        @DrawableRes private var errorResId: Int?
+        @DrawableRes
+        private var errorResId: Int?
         private var errorDrawable: Drawable?
-        @DrawableRes private var fallbackResId: Int?
+        @DrawableRes
+        private var fallbackResId: Int?
         private var fallbackDrawable: Drawable?
 
         private var resolvedLifecycle: Lifecycle?
         private var resolvedSizeResolver: SizeResolver?
         private var resolvedScale: Scale?
 
-        constructor(context: Context) {
+        public constructor(context: Context) {
             this.context = context
             defaults = DefaultRequestOptions.INSTANCE
             data = null
@@ -358,7 +365,7 @@ class ImageRequest private constructor(
         }
 
         @JvmOverloads
-        constructor(request: ImageRequest, context: Context = request.context) {
+        public constructor(request: ImageRequest, context: Context = request.context) {
             this.context = context
             defaults = request.defaults
             data = request.data
@@ -416,7 +423,7 @@ class ImageRequest private constructor(
          * - [Drawable]
          * - [Bitmap]
          */
-        fun data(data: Any?) = apply {
+        public fun data(data: Any?): Builder = apply {
             this.data = data
         }
 
@@ -425,26 +432,26 @@ class ImageRequest private constructor(
          *
          * If this is null or is not set the [ImageLoader] will compute a memory cache key.
          */
-        fun memoryCacheKey(key: String?) = memoryCacheKey(key?.let { MemoryCache.Key(it) })
+        public fun memoryCacheKey(key: String?): Builder = memoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
          * Set the memory cache key for this request.
          *
          * If this is null or is not set the [ImageLoader] will compute a memory cache key.
          */
-        fun memoryCacheKey(key: MemoryCache.Key?) = apply {
+        public fun memoryCacheKey(key: MemoryCache.Key?): Builder = apply {
             this.memoryCacheKey = key
         }
 
         /**
          * Convenience function to create and set the [Listener].
          */
-        inline fun listener(
+        public inline fun listener(
             crossinline onStart: (request: ImageRequest) -> Unit = {},
             crossinline onCancel: (request: ImageRequest) -> Unit = {},
             crossinline onError: (request: ImageRequest, throwable: Throwable) -> Unit = { _, _ -> },
-            crossinline onSuccess: (request: ImageRequest, metadata: ImageResult.Metadata) -> Unit = { _, _ -> }
-        ) = listener(object : Listener {
+            crossinline onSuccess: (request: ImageRequest, metadata: ImageResult.Metadata) -> Unit = { _, _ -> },
+        ): Builder = listener(object : Listener {
             override fun onStart(request: ImageRequest) = onStart(request)
             override fun onCancel(request: ImageRequest) = onCancel(request)
             override fun onError(request: ImageRequest, throwable: Throwable) = onError(request, throwable)
@@ -454,33 +461,33 @@ class ImageRequest private constructor(
         /**
          * Set the [Listener].
          */
-        fun listener(listener: Listener?) = apply {
+        public fun listener(listener: Listener?): Builder = apply {
             this.listener = listener
         }
 
         /**
          * Set the [CoroutineDispatcher] to launch the request.
          */
-        fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
+        public fun dispatcher(dispatcher: CoroutineDispatcher): Builder = apply {
             this.dispatcher = dispatcher
         }
 
         /**
          * Set the list of [Transformation]s to be applied to this request.
          */
-        fun transformations(vararg transformations: Transformation) = transformations(transformations.toList())
+        public fun transformations(vararg transformations: Transformation): Builder = transformations(transformations.toList())
 
         /**
          * Set the list of [Transformation]s to be applied to this request.
          */
-        fun transformations(transformations: List<Transformation>) = apply {
+        public fun transformations(transformations: List<Transformation>): Builder = apply {
             this.transformations = transformations.toList()
         }
 
         /**
          * @see ImageLoader.Builder.bitmapConfig
          */
-        fun bitmapConfig(config: Bitmap.Config) = apply {
+        public fun bitmapConfig(config: Bitmap.Config): Builder = apply {
             this.bitmapConfig = config
         }
 
@@ -490,29 +497,29 @@ class ImageRequest private constructor(
          * This is not guaranteed and a different color space may be used in some situations.
          */
         @RequiresApi(26)
-        fun colorSpace(colorSpace: ColorSpace) = apply {
+        public fun colorSpace(colorSpace: ColorSpace): Builder = apply {
             this.colorSpace = colorSpace
         }
 
         /**
          * Set the requested width/height.
          */
-        fun size(@Px size: Int) = size(size, size)
+        public fun size(@Px size: Int): Builder = size(size, size)
 
         /**
          * Set the requested width/height.
          */
-        fun size(@Px width: Int, @Px height: Int) = size(PixelSize(width, height))
+        public fun size(@Px width: Int, @Px height: Int): Builder = size(PixelSize(width, height))
 
         /**
          * Set the requested width/height.
          */
-        fun size(size: Size) = size(SizeResolver(size))
+        public fun size(size: Size): Builder = size(SizeResolver(size))
 
         /**
          * Set the [SizeResolver] to resolve the requested width/height.
          */
-        fun size(resolver: SizeResolver) = apply {
+        public fun size(resolver: SizeResolver): Builder = apply {
             this.sizeResolver = resolver
             resetResolvedValues()
         }
@@ -522,7 +529,7 @@ class ImageRequest private constructor(
          *
          * NOTE: If [scale] is not set, it is automatically computed for [ImageView] targets.
          */
-        fun scale(scale: Scale) = apply {
+        public fun scale(scale: Scale): Builder = apply {
             this.scale = scale
         }
 
@@ -537,7 +544,7 @@ class ImageRequest private constructor(
          *
          * @see Precision
          */
-        fun precision(precision: Precision) = apply {
+        public fun precision(precision: Precision): Builder = apply {
             this.precision = precision
         }
 
@@ -546,7 +553,7 @@ class ImageRequest private constructor(
          *
          * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its [ComponentRegistry].
          */
-        inline fun <reified T : Any> fetcher(fetcher: Fetcher<T>) = fetcher(fetcher, T::class.java)
+        public inline fun <reified T : Any> fetcher(fetcher: Fetcher<T>): Builder = fetcher(fetcher, T::class.java)
 
         /**
          * Use [fetcher] to handle fetching any image data.
@@ -554,7 +561,7 @@ class ImageRequest private constructor(
          * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its [ComponentRegistry].
          */
         @PublishedApi
-        internal fun <T : Any> fetcher(fetcher: Fetcher<T>, type: Class<T>) = apply {
+        internal fun <T : Any> fetcher(fetcher: Fetcher<T>, type: Class<T>): Builder = apply {
             this.fetcher = fetcher to type
         }
 
@@ -563,21 +570,21 @@ class ImageRequest private constructor(
          *
          * If this is null or is not set the [ImageLoader] will find an applicable decoder in its [ComponentRegistry].
          */
-        fun decoder(decoder: Decoder) = apply {
+        public fun decoder(decoder: Decoder): Builder = apply {
             this.decoder = decoder
         }
 
         /**
          * @see ImageLoader.Builder.allowHardware
          */
-        fun allowHardware(enable: Boolean) = apply {
+        public fun allowHardware(enable: Boolean): Builder = apply {
             this.allowHardware = enable
         }
 
         /**
          * @see ImageLoader.Builder.allowRgb565
          */
-        fun allowRgb565(enable: Boolean) = apply {
+        public fun allowRgb565(enable: Boolean): Builder = apply {
             this.allowRgb565 = enable
         }
 
@@ -587,21 +594,21 @@ class ImageRequest private constructor(
          * The default behavior is to enable pre-multiplication but in some environments it can be necessary
          * to disable this feature to leave the source pixels unmodified.
          */
-        fun premultipliedAlpha(enable: Boolean) = apply {
+        public fun premultipliedAlpha(enable: Boolean): Builder = apply {
             this.premultipliedAlpha = enable
         }
 
         /**
          * Enable/disable reading/writing from/to the memory cache.
          */
-        fun memoryCachePolicy(policy: CachePolicy) = apply {
+        public fun memoryCachePolicy(policy: CachePolicy): Builder = apply {
             this.memoryCachePolicy = policy
         }
 
         /**
          * Enable/disable reading/writing from/to the disk cache.
          */
-        fun diskCachePolicy(policy: CachePolicy) = apply {
+        public fun diskCachePolicy(policy: CachePolicy): Builder = apply {
             this.diskCachePolicy = policy
         }
 
@@ -610,14 +617,14 @@ class ImageRequest private constructor(
          *
          * NOTE: Disabling writes has no effect.
          */
-        fun networkCachePolicy(policy: CachePolicy) = apply {
+        public fun networkCachePolicy(policy: CachePolicy): Builder = apply {
             this.networkCachePolicy = policy
         }
 
         /**
          * Set the [Headers] for any network operations performed by this request.
          */
-        fun headers(headers: Headers) = apply {
+        public fun headers(headers: Headers): Builder = apply {
             this.headers = headers.newBuilder()
         }
 
@@ -626,7 +633,7 @@ class ImageRequest private constructor(
          *
          * @see Headers.Builder.add
          */
-        fun addHeader(name: String, value: String) = apply {
+        public fun addHeader(name: String, value: String): Builder = apply {
             this.headers = (this.headers ?: Headers.Builder()).add(name, value)
         }
 
@@ -635,21 +642,21 @@ class ImageRequest private constructor(
          *
          * @see Headers.Builder.set
          */
-        fun setHeader(name: String, value: String) = apply {
+        public fun setHeader(name: String, value: String): Builder = apply {
             this.headers = (this.headers ?: Headers.Builder()).set(name, value)
         }
 
         /**
          * Remove all network headers with the key [name].
          */
-        fun removeHeader(name: String) = apply {
+        public fun removeHeader(name: String): Builder = apply {
             this.headers = this.headers?.removeAll(name)
         }
 
         /**
          * Set the parameters for this request.
          */
-        fun parameters(parameters: Parameters) = apply {
+        public fun parameters(parameters: Parameters): Builder = apply {
             this.parameters = parameters.newBuilder()
         }
 
@@ -659,7 +666,7 @@ class ImageRequest private constructor(
          * @see Parameters.Builder.set
          */
         @JvmOverloads
-        fun setParameter(key: String, value: Any?, cacheKey: String? = value?.toString()) = apply {
+        public fun setParameter(key: String, value: Any?, cacheKey: String? = value?.toString()): Builder = apply {
             this.parameters = (this.parameters ?: Parameters.Builder()).apply { set(key, value, cacheKey) }
         }
 
@@ -668,7 +675,7 @@ class ImageRequest private constructor(
          *
          * @see Parameters.Builder.remove
          */
-        fun removeParameter(key: String) = apply {
+        public fun removeParameter(key: String): Builder = apply {
             this.parameters?.remove(key)
         }
 
@@ -677,21 +684,21 @@ class ImageRequest private constructor(
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
-        fun placeholderMemoryCacheKey(key: String?) = placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
+        public fun placeholderMemoryCacheKey(key: String?): Builder = placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
          * Set the memory cache [key] whose value will be used as the placeholder drawable.
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
-        fun placeholderMemoryCacheKey(key: MemoryCache.Key?) = apply {
+        public fun placeholderMemoryCacheKey(key: MemoryCache.Key?): Builder = apply {
             this.placeholderMemoryCacheKey = key
         }
 
         /**
          * Set the placeholder drawable to use when the request starts.
          */
-        fun placeholder(@DrawableRes drawableResId: Int) = apply {
+        public fun placeholder(@DrawableRes drawableResId: Int): Builder = apply {
             this.placeholderResId = drawableResId
             this.placeholderDrawable = null
         }
@@ -699,7 +706,7 @@ class ImageRequest private constructor(
         /**
          * Set the placeholder drawable to use when the request starts.
          */
-        fun placeholder(drawable: Drawable?) = apply {
+        public fun placeholder(drawable: Drawable?): Builder = apply {
             this.placeholderDrawable = drawable
             this.placeholderResId = 0
         }
@@ -707,7 +714,7 @@ class ImageRequest private constructor(
         /**
          * Set the error drawable to use if the request fails.
          */
-        fun error(@DrawableRes drawableResId: Int) = apply {
+        public fun error(@DrawableRes drawableResId: Int): Builder = apply {
             this.errorResId = drawableResId
             this.errorDrawable = null
         }
@@ -715,7 +722,7 @@ class ImageRequest private constructor(
         /**
          * Set the error drawable to use if the request fails.
          */
-        fun error(drawable: Drawable?) = apply {
+        public fun error(drawable: Drawable?): Builder = apply {
             this.errorDrawable = drawable
             this.errorResId = 0
         }
@@ -723,7 +730,7 @@ class ImageRequest private constructor(
         /**
          * Set the fallback drawable to use if [data] is null.
          */
-        fun fallback(@DrawableRes drawableResId: Int) = apply {
+        public fun fallback(@DrawableRes drawableResId: Int): Builder = apply {
             this.fallbackResId = drawableResId
             this.fallbackDrawable = null
         }
@@ -731,7 +738,7 @@ class ImageRequest private constructor(
         /**
          * Set the fallback drawable to use if [data] is null.
          */
-        fun fallback(drawable: Drawable?) = apply {
+        public fun fallback(drawable: Drawable?): Builder = apply {
             this.fallbackDrawable = drawable
             this.fallbackResId = 0
         }
@@ -739,16 +746,16 @@ class ImageRequest private constructor(
         /**
          * Convenience function to set [imageView] as the [Target].
          */
-        fun target(imageView: ImageView) = target(ImageViewTarget(imageView))
+        public fun target(imageView: ImageView): Builder = target(ImageViewTarget(imageView))
 
         /**
          * Convenience function to create and set the [Target].
          */
-        inline fun target(
+        public inline fun target(
             crossinline onStart: (placeholder: Drawable?) -> Unit = {},
             crossinline onError: (error: Drawable?) -> Unit = {},
-            crossinline onSuccess: (result: Drawable) -> Unit = {}
-        ) = target(object : Target {
+            crossinline onSuccess: (result: Drawable) -> Unit = {},
+        ): Builder = target(object : Target {
             override fun onStart(placeholder: Drawable?) = onStart(placeholder)
             override fun onError(error: Drawable?) = onError(error)
             override fun onSuccess(result: Drawable) = onSuccess(result)
@@ -757,7 +764,7 @@ class ImageRequest private constructor(
         /**
          * Set the [Target].
          */
-        fun target(target: Target?) = apply {
+        public fun target(target: Target?): Builder = apply {
             this.target = target
             resetResolvedValues()
         }
@@ -765,26 +772,26 @@ class ImageRequest private constructor(
         /**
          * @see ImageLoader.Builder.crossfade
          */
-        fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+        public fun crossfade(enable: Boolean): Builder = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
         /**
          * @see ImageLoader.Builder.crossfade
          */
-        fun crossfade(durationMillis: Int) =
+        public fun crossfade(durationMillis: Int): Builder =
             transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
 
         /**
          * @see ImageLoader.Builder.transition
          */
         @ExperimentalCoilApi
-        fun transition(transition: Transition) = apply {
+        public fun transition(transition: Transition): Builder = apply {
             this.transition = transition
         }
 
         /**
          * Set the [Lifecycle] for this request.
          */
-        fun lifecycle(owner: LifecycleOwner?) = lifecycle(owner?.lifecycle)
+        public fun lifecycle(owner: LifecycleOwner?): Builder = lifecycle(owner?.lifecycle)
 
         /**
          * Set the [Lifecycle] for this request.
@@ -795,14 +802,14 @@ class ImageRequest private constructor(
          * If this is null or is not set the [ImageLoader] will attempt to find the lifecycle
          * for this request through its [context].
          */
-        fun lifecycle(lifecycle: Lifecycle?) = apply {
+        public fun lifecycle(lifecycle: Lifecycle?): Builder = apply {
             this.lifecycle = lifecycle
         }
 
         /**
          * Set the defaults for any unset request values.
          */
-        fun defaults(defaults: DefaultRequestOptions) = apply {
+        public fun defaults(defaults: DefaultRequestOptions): Builder = apply {
             this.defaults = defaults
             resetResolvedScale()
         }
@@ -810,7 +817,7 @@ class ImageRequest private constructor(
         /**
          * Create a new [ImageRequest].
          */
-        fun build(): ImageRequest {
+        public fun build(): ImageRequest {
             return ImageRequest(
                 context = context,
                 data = data ?: NullRequestData,

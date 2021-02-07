@@ -16,22 +16,22 @@ import kotlinx.coroutines.CoroutineDispatcher
  *
  * @see ImageRequest.defined
  */
-class DefinedRequestOptions(
-    val lifecycle: Lifecycle?,
-    val sizeResolver: SizeResolver?,
-    val scale: Scale?,
-    val dispatcher: CoroutineDispatcher?,
-    val transition: Transition?,
-    val precision: Precision?,
-    val bitmapConfig: Bitmap.Config?,
-    val allowHardware: Boolean?,
-    val allowRgb565: Boolean?,
-    val memoryCachePolicy: CachePolicy?,
-    val diskCachePolicy: CachePolicy?,
-    val networkCachePolicy: CachePolicy?
+public class DefinedRequestOptions(
+    public val lifecycle: Lifecycle?,
+    public val sizeResolver: SizeResolver?,
+    public val scale: Scale?,
+    public val dispatcher: CoroutineDispatcher?,
+    public val transition: Transition?,
+    public val precision: Precision?,
+    public val bitmapConfig: Bitmap.Config?,
+    public val allowHardware: Boolean?,
+    public val allowRgb565: Boolean?,
+    public val memoryCachePolicy: CachePolicy?,
+    public val diskCachePolicy: CachePolicy?,
+    public val networkCachePolicy: CachePolicy?
 ) {
 
-    fun copy(
+    public fun copy(
         lifecycle: Lifecycle? = this.lifecycle,
         sizeResolver: SizeResolver? = this.sizeResolver,
         scale: Scale? = this.scale,
@@ -44,7 +44,7 @@ class DefinedRequestOptions(
         memoryCachePolicy: CachePolicy? = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy? = this.diskCachePolicy,
         networkCachePolicy: CachePolicy? = this.networkCachePolicy
-    ) = DefinedRequestOptions(lifecycle, sizeResolver, scale, dispatcher, transition, precision, bitmapConfig,
+    ): DefinedRequestOptions = DefinedRequestOptions(lifecycle, sizeResolver, scale, dispatcher, transition, precision, bitmapConfig,
         allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {

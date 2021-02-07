@@ -7,9 +7,9 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 /** A [SizeResolver] that measures the size of a [View]. */
-interface ViewSizeResolver<T : View> : SizeResolver {
+public interface ViewSizeResolver<T : View> : SizeResolver {
 
-    companion object {
+    public companion object {
         /**
          * Create a [ViewSizeResolver] using the default [View] measurement implementation.
          *
@@ -19,17 +19,17 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         @JvmStatic
         @JvmOverloads
         @JvmName("create")
-        operator fun <T : View> invoke(
+        public operator fun <T : View> invoke(
             view: T,
             subtractPadding: Boolean = true
         ): ViewSizeResolver<T> = RealViewSizeResolver(view, subtractPadding)
     }
 
     /** The [View] to measure. This field should be immutable. */
-    val view: T
+    public val view: T
 
     /** If true, the [view]'s padding will be subtracted from its size. */
-    val subtractPadding: Boolean get() = true
+    public val subtractPadding: Boolean get() = true
 
     override suspend fun size(): Size {
         // Fast path: the view is already measured.
