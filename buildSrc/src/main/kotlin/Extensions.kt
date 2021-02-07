@@ -14,6 +14,7 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
+import org.gradle.kotlin.dsl.withType
 import kotlin.math.pow
 
 val Project.minSdk: Int
@@ -121,6 +122,14 @@ private fun Project.setupBaseModule(): BaseExtension {
 
 fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}): LibraryExtension {
     return (setupBaseModule() as LibraryExtension).apply {
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            kotlinOptions {
+                freeCompilerArgs += listOf(
+                    "-Xexplicit-api=strict"
+                )
+            }
+        }
+
         libraryVariants.all {
             generateBuildConfigProvider?.configure { enabled = false }
         }
