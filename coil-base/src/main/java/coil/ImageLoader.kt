@@ -54,9 +54,6 @@ import java.io.File
  *
  * Image loaders are designed to be shareable and work best when you create a single instance and
  * share it throughout your app.
- *
- * It's recommended, though not required, to call [shutdown] when you've finished using an image loader.
- * This preemptively frees its memory and cleans up any observers.
  */
 interface ImageLoader {
 
@@ -99,7 +96,7 @@ interface ImageLoader {
      *
      * All associated resources will be freed and new requests will fail before starting.
      *
-     * Shutting down an image loader is optional. It will free itself if dereferenced.
+     * Shutting down an image loader is optional. It will be cleaned up automatically if dereferenced.
      *
      * In progress [enqueue] requests will be cancelled immediately.
      * In progress [execute] requests will continue until complete.
@@ -237,7 +234,7 @@ interface ImageLoader {
          *
          * Setting this to 0 disables memory caching and bitmap pooling.
          *
-         * Setting this value discards shared memory cache set in [memoryCache].
+         * Setting this value discards the shared memory cache set in [memoryCache].
          *
          * Default: [Utils.getDefaultAvailableMemoryPercentage]
          */
@@ -255,7 +252,7 @@ interface ImageLoader {
          *
          * Setting this to 0 disables bitmap pooling.
          *
-         * Setting this value discards shared memory cache set in [memoryCache].
+         * Setting this value discards the shared memory cache set in [memoryCache].
          *
          * Default: [Utils.getDefaultBitmapPoolPercentage]
          */
@@ -322,7 +319,7 @@ interface ImageLoader {
          * If this is disabled, no bitmaps will be added to this [ImageLoader]'s [BitmapPool] automatically and
          * the [BitmapPool] will not be allocated any memory (this overrides [bitmapPoolPercentage]).
          *
-         * Setting this value discards shared memory cache set in [memoryCache].
+         * Setting this value discards the shared memory cache set in [memoryCache].
          *
          * Default: true
          */
@@ -337,7 +334,7 @@ interface ImageLoader {
          * This allows the image loader to hold weak references to loaded images.
          * This ensures that if an image is still in memory it will be returned from the memory cache.
          *
-         * Setting this value discards shared memory cache set in [memoryCache].
+         * Setting this value discards the shared memory cache set in [memoryCache].
          *
          * Default: true
          */
