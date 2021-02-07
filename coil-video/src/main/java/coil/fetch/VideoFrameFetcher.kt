@@ -31,24 +31,24 @@ import kotlin.math.roundToInt
 /**
  * A [VideoFrameFetcher] that supports fetching and decoding a video frame from a [File].
  */
-class VideoFrameFileFetcher(context: Context) : VideoFrameFetcher<File>(context) {
+public class VideoFrameFileFetcher(context: Context) : VideoFrameFetcher<File>(context) {
 
-    override fun key(data: File) = "${data.path}:${data.lastModified()}"
+    override fun key(data: File): String = "${data.path}:${data.lastModified()}"
 
     override fun handles(data: File): Boolean {
         val fileName = data.name
         return SUPPORTED_FILE_EXTENSIONS.any { fileName.endsWith(it, true) }
     }
 
-    override fun MediaMetadataRetriever.setDataSource(data: File) = setDataSource(data.path)
+    override fun MediaMetadataRetriever.setDataSource(data: File): Unit = setDataSource(data.path)
 }
 
 /**
  * A [VideoFrameFetcher] that supports fetching and decoding a video frame from a [Uri].
  */
-class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri>(context) {
+public class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri>(context) {
 
-    override fun key(data: Uri) = data.toString()
+    override fun key(data: Uri): String = data.toString()
 
     override fun handles(data: Uri): Boolean {
         val fileName = data.lastPathSegment
@@ -72,7 +72,7 @@ class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri
  * Due to [MediaMetadataRetriever] requiring non-sequential reads into the data source it's not
  * possible to make this a [Decoder]. Use the [VideoFrameFileFetcher] and [VideoFrameUriFetcher] implementations.
  */
-abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetcher<T> {
+public abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetcher<T> {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
@@ -219,13 +219,13 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
             size == DecodeUtils.computePixelSize(bitmap.width, bitmap.height, size, options.scale)
     }
 
-    companion object {
+    public companion object {
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
         @JvmField internal val SUPPORTED_FILE_EXTENSIONS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
 
         internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
-        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
-        const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
+        public const val VIDEO_FRAME_MICROS_KEY: String = "coil#video_frame_micros"
+        public const val VIDEO_FRAME_OPTION_KEY: String = "coil#video_frame_option"
     }
 }

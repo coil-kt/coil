@@ -19,7 +19,7 @@ import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_OPTION_KEY
  *
  * @see VideoFrameFetcher
  */
-fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long): ImageRequest.Builder {
+public fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long): ImageRequest.Builder {
     return videoFrameMicros(1000 * frameMillis)
 }
 
@@ -30,7 +30,7 @@ fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long): ImageRequest.Build
  *
  * @see VideoFrameFetcher
  */
-fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Builder {
+public fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Builder {
     require(frameMicros >= 0) { "frameMicros must be >= 0." }
     return setParameter(VIDEO_FRAME_MICROS_KEY, frameMicros)
 }
@@ -45,7 +45,7 @@ fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Build
  * @see MediaMetadataRetriever
  * @see VideoFrameFetcher
  */
-fun ImageRequest.Builder.videoFrameOption(option: Int): ImageRequest.Builder {
+public fun ImageRequest.Builder.videoFrameOption(option: Int): ImageRequest.Builder {
     require(option == OPTION_PREVIOUS_SYNC ||
         option == OPTION_NEXT_SYNC ||
         option == OPTION_CLOSEST_SYNC ||
@@ -58,11 +58,11 @@ fun ImageRequest.Builder.videoFrameOption(option: Int): ImageRequest.Builder {
  *
  * @see VideoFrameFetcher
  */
-fun Parameters.videoFrameMicros(): Long? = value(VIDEO_FRAME_MICROS_KEY) as Long?
+public fun Parameters.videoFrameMicros(): Long? = value(VIDEO_FRAME_MICROS_KEY) as Long?
 
 /**
  * Get the option for how to decode the video frame.
  *
  * @see VideoFrameFetcher
  */
-fun Parameters.videoFrameOption(): Int? = value(VIDEO_FRAME_OPTION_KEY) as Int?
+public fun Parameters.videoFrameOption(): Int? = value(VIDEO_FRAME_OPTION_KEY) as Int?
