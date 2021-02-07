@@ -1,4 +1,5 @@
 public final class coil/decode/GifDecoder : coil/decode/Decoder {
+	public static final field ANIMATED_TRANSFORMATION Ljava/lang/String;
 	public static final field Companion Lcoil/decode/GifDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> ()V
@@ -10,6 +11,7 @@ public final class coil/decode/GifDecoder$Companion {
 }
 
 public final class coil/decode/ImageDecoderDecoder : coil/decode/Decoder {
+	public static final field ANIMATED_TRANSFORMATION Ljava/lang/String;
 	public static final field Companion Lcoil/decode/ImageDecoderDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> ()V
@@ -30,6 +32,7 @@ public final class coil/drawable/MovieDrawable : android/graphics/drawable/Drawa
 	public synthetic fun <init> (Landroid/graphics/Movie;Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap$Config;Lcoil/size/Scale;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun clearAnimationCallbacks ()V
 	public fun draw (Landroid/graphics/Canvas;)V
+	public final fun getAnimatedTransformation ()Lcoil/transform/AnimatedTransformation;
 	public final fun getConfig ()Landroid/graphics/Bitmap$Config;
 	public fun getIntrinsicHeight ()I
 	public fun getIntrinsicWidth ()I
@@ -39,6 +42,7 @@ public final class coil/drawable/MovieDrawable : android/graphics/drawable/Drawa
 	public fun isRunning ()Z
 	public fun registerAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)V
 	public fun setAlpha (I)V
+	public final fun setAnimatedTransformation (Lcoil/transform/AnimatedTransformation;)V
 	public fun setColorFilter (Landroid/graphics/ColorFilter;)V
 	public final fun setRepeatCount (I)V
 	public fun start ()V
@@ -75,7 +79,23 @@ public final class coil/drawable/ScaleDrawable : android/graphics/drawable/Drawa
 }
 
 public final class coil/request/Gifs {
+	public static final fun animatedTransformation (Lcoil/request/ImageRequest$Builder;Lcoil/transform/AnimatedTransformation;)Lcoil/request/ImageRequest$Builder;
+	public static final fun animatedTransformation (Lcoil/request/Parameters;)Lcoil/transform/AnimatedTransformation;
 	public static final fun repeatCount (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
 	public static final fun repeatCount (Lcoil/request/Parameters;)Ljava/lang/Integer;
+}
+
+public abstract interface class coil/transform/AnimatedTransformation {
+	public abstract fun transform (Landroid/graphics/Canvas;Lcoil/size/Size;)Lcoil/transform/AnimatedTransformation$PixelFormat;
+}
+
+public final class coil/transform/AnimatedTransformation$PixelFormat : java/lang/Enum {
+	public static final field OPAQUE Lcoil/transform/AnimatedTransformation$PixelFormat;
+	public static final field TRANSLUCENT Lcoil/transform/AnimatedTransformation$PixelFormat;
+	public static final field TRANSPARENT Lcoil/transform/AnimatedTransformation$PixelFormat;
+	public static final field UNKNOWN Lcoil/transform/AnimatedTransformation$PixelFormat;
+	public final fun getOpacity ()I
+	public static fun valueOf (Ljava/lang/String;)Lcoil/transform/AnimatedTransformation$PixelFormat;
+	public static fun values ()[Lcoil/transform/AnimatedTransformation$PixelFormat;
 }
 

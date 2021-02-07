@@ -52,16 +52,13 @@ class GifDecoder : Decoder {
                 SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
                 else -> options.config
             },
-            scale = options.scale,
-            size = size
+            scale = options.scale
         )
 
         drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
 
         // Set the animated transformation to be applied on each frame.
-        options.parameters.animatedTransformation()?.let {
-            drawable.setAnimatedTransformation(it)
-        }
+        drawable.setAnimatedTransformation(options.parameters.animatedTransformation())
 
         DecodeResult(
             drawable = drawable,

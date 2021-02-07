@@ -16,6 +16,7 @@ import coil.util.RoundedCornerTransformation
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
@@ -61,9 +62,7 @@ class AnimatedTransformationTest {
 
     @Test
     fun heifTransformationTest() {
-        require(SDK_INT >= 28) {
-            "Require API level 28 or above for HEIF support"
-        }
+        assumeTrue(SDK_INT >= 28)
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
                 .decoder(ImageDecoderDecoder())
@@ -77,9 +76,7 @@ class AnimatedTransformationTest {
 
     @Test
     fun webpTransformationTest() {
-        require(SDK_INT >= 28) {
-            "Require API level 28 or above for HEIF support"
-        }
+        assumeTrue(SDK_INT >= 28)
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
                 .decoder(ImageDecoderDecoder())

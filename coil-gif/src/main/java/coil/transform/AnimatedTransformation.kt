@@ -12,21 +12,10 @@ interface AnimatedTransformation {
     /**
      * Apply transformation on [canvas]
      *
-     * Note: Do not allocate objects within if you are using [coil.decode.GifDecoder] as this method would be invoked
-     * for each frame.
+     * Note: Do not allocate objects in this method as it will be invoked for each frame of the animation.
      *
      * @return Opacity of the result after drawing.
-     * [PixelFormat.UNKNOWN] means that the implementation did not change whether the image has alpha. Return
-     * this unless you added transparency (e.g. with the code above, in which case you should return
-     * [PixelFormat.TRANSLUCENT]) or you forced the image to be opaque (e.g. by drawing everywhere with an
-     * opaque color and [PorterDuff.Mode.DST_OVER], in which case you should return [PixelFormat.OPAQUE]).
-     * [PixelFormat.TRANSLUCENT] means that the implementation added transparency. This is safe to return even
-     * if the image already had transparency. This is also safe to return if the result is opaque,
-     * though it may draw more slowly.
-     * [PixelFormat.OPAQUE] means that the implementation forced the image to be opaque. This is safe to return
-     * even if the image was already opaque.
-     * [PixelFormat.TRANSPARENT] (or any other integer) is not allowed, and will result in throwing an
-     * [java.lang.IllegalArgumentException].
+     * @see AndroidPixelFormat
      */
     fun transform(canvas: Canvas, size: Size): PixelFormat
 
