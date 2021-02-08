@@ -59,6 +59,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         val rotationDegrees: Int
         if (shouldReadExifData(outMimeType)) {
             val exifInterface = ExifInterface(ExifInterfaceInputStream(safeBufferedSource.peek().inputStream()))
+            safeSource.exception?.let { throw it }
             isFlipped = exifInterface.isFlipped
             rotationDegrees = exifInterface.rotationDegrees
         } else {
@@ -289,25 +290,26 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
     /** Wrap [delegate] so that it works with [ExifInterface]. */
     private class ExifInterfaceInputStream(private val delegate: InputStream) : InputStream() {
 
-        override fun read() = delegate.read()
+        // Ensure that this value is always larger than the size of the image
+        // so ExifInterface won't stop reading the stream prematurely.
+        @Volatile private var availableBytes = GIGABYTE_IN_BYTES
 
-        override fun read(b: ByteArray) = delegate.read(b)
+        override fun read() = interceptBytesRead(delegate.read())
 
-        override fun read(b: ByteArray, off: Int, len: Int) = delegate.read(b, off, len)
+        override fun read(b: ByteArray) = interceptBytesRead(delegate.read(b))
+
+        override fun read(b: ByteArray, off: Int, len: Int) = interceptBytesRead(delegate.read(b, off, len))
 
         override fun skip(n: Long) = delegate.skip(n)
 
-        // Ensure that this value is always larger than the size of the image
-        // so ExifInterface won't stop reading the stream prematurely.
-        override fun available() = 1024 * 1024 * 1024
+        override fun available() = availableBytes
 
         override fun close() = delegate.close()
 
-        override fun mark(readlimit: Int) = delegate.mark(readlimit)
-
-        override fun reset() = delegate.reset()
-
-        override fun markSupported() = delegate.markSupported()
+        private fun interceptBytesRead(bytesRead: Int): Int {
+            if (bytesRead == -1) availableBytes = 0
+            return bytesRead
+        }
     }
 
     companion object {
@@ -315,6 +317,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         private const val MIME_TYPE_WEBP = "image/webp"
         private const val MIME_TYPE_HEIC = "image/heic"
         private const val MIME_TYPE_HEIF = "image/heif"
+        private const val GIGABYTE_IN_BYTES = 1024 * 1024 * 1024
 
         // NOTE: We don't support PNG EXIF data as it's very rarely used and requires buffering
         // the entire file into memory. All of the supported formats short circuit when the EXIF
