@@ -96,9 +96,9 @@ class BitmapFactoryDecoderTest {
     @Test
     fun largeExifMetadata() {
         val size = PixelSize(500, 500)
-        val normal = decodeBitmap("exif/large_metadata.jpg", size)
-        val actual = decodeBitmap("exif/large_metadata_normalized.jpg", size)
-        assertTrue(normal.isSimilarTo(actual))
+        val expected = decodeBitmap("exif/large_metadata_normalized.jpg", size)
+        val actual = decodeBitmap("exif/large_metadata.jpg", size)
+        assertTrue(expected.isSimilarTo(actual))
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/619 */
