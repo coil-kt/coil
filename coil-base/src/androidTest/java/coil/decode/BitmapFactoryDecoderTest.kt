@@ -11,6 +11,7 @@ import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
+import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import coil.util.size
 import kotlinx.coroutines.runBlocking
@@ -30,13 +31,13 @@ class BitmapFactoryDecoderTest {
 
     private lateinit var context: Context
     private lateinit var pool: BitmapPool
-    private lateinit var service: BitmapFactoryDecoder
+    private lateinit var decoder: BitmapFactoryDecoder
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         pool = BitmapPool(Int.MAX_VALUE)
-        service = BitmapFactoryDecoder(context)
+        decoder = BitmapFactoryDecoder(context)
     }
 
     @Test
@@ -95,8 +96,20 @@ class BitmapFactoryDecoderTest {
     @Test
     fun largeExifMetadata() {
         val size = PixelSize(500, 500)
-        val normal = decodeBitmap("exif/large_metadata_normalized.jpg", size)
-        val actual = decodeBitmap("exif/large_metadata_normalized.jpg", size)
+        val expected = decodeBitmap("exif/large_metadata_normalized.jpg", size)
+        val actual = decodeBitmap("exif/large_metadata.jpg", size)
+        assertTrue(expected.isSimilarTo(actual))
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/619 */
+    @Test
+    fun heicExifMetadata() {
+        // HEIC files are not supported before API 30.
+        assumeTrue(SDK_INT >= 30)
+
+        // Ensure this completes and doesn't end up in an infinite loop.
+        val normal = context.decodeBitmapAsset("exif/basic.heic")
+        val actual = decodeBitmap("exif/basic.heic", OriginalSize)
         assertTrue(normal.isSimilarTo(actual))
     }
 
@@ -314,7 +327,7 @@ class BitmapFactoryDecoderTest {
         options: Options = Options(context, scale = Scale.FILL)
     ): DecodeResult = runBlocking {
         val source = context.assets.open(assetName).source().buffer()
-        val result = service.decode(
+        val result = decoder.decode(
             pool = pool,
             source = source,
             size = size,
