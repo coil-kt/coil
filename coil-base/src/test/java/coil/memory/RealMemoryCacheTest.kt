@@ -1,5 +1,6 @@
 package coil.memory
 
+import coil.bitmap.BitmapPool
 import coil.bitmap.FakeBitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
 import coil.util.DEFAULT_BITMAP_SIZE
@@ -18,6 +19,7 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class RealMemoryCacheTest {
 
+    private lateinit var bitmapPool: BitmapPool
     private lateinit var weakCache: WeakMemoryCache
     private lateinit var counter: RealBitmapReferenceCounter
     private lateinit var strongCache: StrongMemoryCache
@@ -25,10 +27,11 @@ class RealMemoryCacheTest {
 
     @Before
     fun before() {
+        bitmapPool = FakeBitmapPool()
         weakCache = RealWeakMemoryCache(null)
-        counter = RealBitmapReferenceCounter(weakCache, FakeBitmapPool(), null)
+        counter = RealBitmapReferenceCounter(weakCache, bitmapPool, null)
         strongCache = StrongMemoryCache(weakCache, counter, Int.MAX_VALUE, null)
-        cache = RealMemoryCache(strongCache, weakCache, counter)
+        cache = RealMemoryCache(strongCache, weakCache, counter, bitmapPool)
     }
 
     @Test

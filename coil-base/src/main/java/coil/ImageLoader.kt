@@ -19,6 +19,7 @@ import coil.intercept.Interceptor
 import coil.map.Mapper
 import coil.memory.EmptyWeakMemoryCache
 import coil.memory.MemoryCache
+import coil.memory.RealMemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
@@ -34,6 +35,7 @@ import coil.target.ViewTarget
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.CoilUtils
+import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.Utils
 import coil.util.getDrawableCompat
@@ -52,9 +54,6 @@ import java.io.File
  *
  * Image loaders are designed to be shareable and work best when you create a single instance and
  * share it throughout your app.
- *
- * It's recommended, though not required, to call [shutdown] when you've finished using an image loader.
- * This preemptively frees its memory and cleans up any observers.
  */
 interface ImageLoader {
 
@@ -95,29 +94,64 @@ interface ImageLoader {
     /**
      * Shutdown this image loader.
      *
-     * All associated resources will be freed and any new requests will fail before starting.
+     * All associated resources will be freed and new requests will fail before starting.
+     *
+     * Shutting down an image loader is optional. It will be cleaned up automatically if dereferenced.
      *
      * In progress [enqueue] requests will be cancelled immediately.
      * In progress [execute] requests will continue until complete.
      */
     fun shutdown()
 
-    class Builder(context: Context) {
+    /**
+     * Create an [ImageLoader.Builder] that shares the same resources and configuration as this image loader.
+     */
+    fun newBuilder(): Builder
 
-        private val applicationContext = context.applicationContext
+    class Builder {
 
-        private var callFactory: Call.Factory? = null
-        private var eventListenerFactory: EventListener.Factory? = null
-        private var registry: ComponentRegistry? = null
-        private var logger: Logger? = null
-        private var defaults = DefaultRequestOptions.INSTANCE
+        private val applicationContext: Context
+        private var defaults: DefaultRequestOptions
+        private var callFactory: Call.Factory?
+        private var eventListenerFactory: EventListener.Factory?
+        private var componentRegistry: ComponentRegistry?
+        private var options: ImageLoaderOptions
+        private var logger: Logger?
+        private var memoryCache: RealMemoryCache?
+        private var availableMemoryPercentage: Double
+        private var bitmapPoolPercentage: Double
+        private var bitmapPoolingEnabled: Boolean
+        private var trackWeakReferences: Boolean
 
-        private var availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
-        private var bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
-        private var addLastModifiedToFileCacheKey = true
-        private var bitmapPoolingEnabled = true
-        private var launchInterceptorChainOnMainThread = true
-        private var trackWeakReferences = true
+        constructor(context: Context) {
+            applicationContext = context.applicationContext
+            defaults = DefaultRequestOptions.INSTANCE
+            callFactory = null
+            eventListenerFactory = null
+            componentRegistry = null
+            options = ImageLoaderOptions()
+            logger = null
+            memoryCache = null
+            availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
+            bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
+            bitmapPoolingEnabled = true
+            trackWeakReferences = true
+        }
+
+        internal constructor(imageLoader: RealImageLoader) {
+            applicationContext = imageLoader.context.applicationContext
+            defaults = imageLoader.defaults
+            callFactory = imageLoader.callFactory
+            eventListenerFactory = imageLoader.eventListenerFactory
+            componentRegistry = imageLoader.componentRegistry
+            options = imageLoader.options
+            logger = imageLoader.logger
+            memoryCache = imageLoader.memoryCache
+            availableMemoryPercentage = 0.0
+            bitmapPoolPercentage = 0.0
+            bitmapPoolingEnabled = true
+            trackWeakReferences = true
+        }
 
         /**
          * Set the [OkHttpClient] used for network requests.
@@ -180,7 +214,19 @@ interface ImageLoader {
          * Set the [ComponentRegistry].
          */
         fun componentRegistry(registry: ComponentRegistry) = apply {
-            this.registry = registry
+            this.componentRegistry = registry
+        }
+
+        /**
+         * Set the [MemoryCache]. This also sets the [BitmapPool] to the instance used by this [MemoryCache].
+         *
+         * This is useful for sharing [MemoryCache] and [BitmapPool] instances between [ImageLoader]s.
+         *
+         * NOTE: Custom memory cache implementations are currently not supported.
+         */
+        fun memoryCache(memoryCache: MemoryCache) = apply {
+            require(memoryCache is RealMemoryCache) { "Custom memory cache implementations are currently not supported." }
+            this.memoryCache = memoryCache
         }
 
         /**
@@ -188,11 +234,14 @@ interface ImageLoader {
          *
          * Setting this to 0 disables memory caching and bitmap pooling.
          *
+         * Setting this value discards the shared memory cache set in [memoryCache].
+         *
          * Default: [Utils.getDefaultAvailableMemoryPercentage]
          */
         fun availableMemoryPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
             require(percent in 0.0..1.0) { "Percent must be in the range [0.0, 1.0]." }
             this.availableMemoryPercentage = percent
+            this.memoryCache = null
         }
 
         /**
@@ -203,11 +252,14 @@ interface ImageLoader {
          *
          * Setting this to 0 disables bitmap pooling.
          *
+         * Setting this value discards the shared memory cache set in [memoryCache].
+         *
          * Default: [Utils.getDefaultBitmapPoolPercentage]
          */
         fun bitmapPoolPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
             require(percent in 0.0..1.0) { "Percent must be in the range [0.0, 1.0]." }
             this.bitmapPoolPercentage = percent
+            this.memoryCache = null
         }
 
         /**
@@ -255,7 +307,7 @@ interface ImageLoader {
          * Default: true
          */
         fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
-            this.addLastModifiedToFileCacheKey = enable
+            this.options = this.options.copy(addLastModifiedToFileCacheKey = enable)
         }
 
         /**
@@ -267,10 +319,28 @@ interface ImageLoader {
          * If this is disabled, no bitmaps will be added to this [ImageLoader]'s [BitmapPool] automatically and
          * the [BitmapPool] will not be allocated any memory (this overrides [bitmapPoolPercentage]).
          *
+         * Setting this value discards the shared memory cache set in [memoryCache].
+         *
          * Default: true
          */
         fun bitmapPoolingEnabled(enable: Boolean) = apply {
             this.bitmapPoolingEnabled = enable
+            this.memoryCache = null
+        }
+
+        /**
+         * Enables weak reference tracking of loaded images.
+         *
+         * This allows the image loader to hold weak references to loaded images.
+         * This ensures that if an image is still in memory it will be returned from the memory cache.
+         *
+         * Setting this value discards the shared memory cache set in [memoryCache].
+         *
+         * Default: true
+         */
+        fun trackWeakReferences(enable: Boolean) = apply {
+            this.trackWeakReferences = enable
+            this.memoryCache = null
         }
 
         /**
@@ -295,19 +365,7 @@ interface ImageLoader {
          * Default: true
          */
         fun launchInterceptorChainOnMainThread(enable: Boolean) = apply {
-            this.launchInterceptorChainOnMainThread = enable
-        }
-
-        /**
-         * Enables weak reference tracking of loaded images.
-         *
-         * This allows the image loader to hold weak references to loaded images.
-         * This ensures that if an image is still in memory it will be returned from the memory cache.
-         *
-         * Default: true
-         */
-        fun trackWeakReferences(enable: Boolean) = apply {
-            this.trackWeakReferences = enable
+            this.options = this.options.copy(launchInterceptorChainOnMainThread = enable)
         }
 
         /**
@@ -447,6 +505,27 @@ interface ImageLoader {
          * Create a new [ImageLoader] instance.
          */
         fun build(): ImageLoader {
+            val memoryCache = memoryCache ?: buildDefaultMemoryCache()
+            return RealImageLoader(
+                context = applicationContext,
+                defaults = defaults,
+                bitmapPool = memoryCache.bitmapPool,
+                memoryCache = memoryCache,
+                callFactory = callFactory ?: buildDefaultCallFactory(),
+                eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
+                componentRegistry = componentRegistry ?: ComponentRegistry(),
+                options = options,
+                logger = logger
+            )
+        }
+
+        private fun buildDefaultCallFactory() = lazyCallFactory {
+            OkHttpClient.Builder()
+                .cache(CoilUtils.createDefaultCache(applicationContext))
+                .build()
+        }
+
+        private fun buildDefaultMemoryCache(): RealMemoryCache {
             val availableMemorySize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
             val bitmapPoolPercentage = if (bitmapPoolingEnabled) bitmapPoolPercentage else 0.0
             val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toInt()
@@ -468,27 +547,7 @@ interface ImageLoader {
                 EmptyBitmapReferenceCounter
             }
             val strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
-
-            return RealImageLoader(
-                context = applicationContext,
-                defaults = defaults,
-                bitmapPool = bitmapPool,
-                referenceCounter = referenceCounter,
-                strongMemoryCache = strongMemoryCache,
-                weakMemoryCache = weakMemoryCache,
-                callFactory = callFactory ?: buildDefaultCallFactory(),
-                eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
-                componentRegistry = registry ?: ComponentRegistry(),
-                addLastModifiedToFileCacheKey = addLastModifiedToFileCacheKey,
-                launchInterceptorChainOnMainThread = launchInterceptorChainOnMainThread,
-                logger = logger
-            )
-        }
-
-        private fun buildDefaultCallFactory() = lazyCallFactory {
-            OkHttpClient.Builder()
-                .cache(CoilUtils.createDefaultCache(applicationContext))
-                .build()
+            return RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter, bitmapPool)
         }
     }
 

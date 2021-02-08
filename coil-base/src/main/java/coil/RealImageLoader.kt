@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.annotation.MainThread
 import coil.bitmap.BitmapPool
-import coil.bitmap.BitmapReferenceCounter
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.DrawableDecoderService
 import coil.fetch.AssetUriFetcher
@@ -26,9 +25,7 @@ import coil.memory.DelegateService
 import coil.memory.MemoryCacheService
 import coil.memory.RealMemoryCache
 import coil.memory.RequestService
-import coil.memory.StrongMemoryCache
 import coil.memory.TargetDelegate
-import coil.memory.WeakMemoryCache
 import coil.request.BaseTargetDisposable
 import coil.request.DefaultRequestOptions
 import coil.request.Disposable
@@ -42,6 +39,7 @@ import coil.request.ViewTargetDisposable
 import coil.size.Size
 import coil.target.ViewTarget
 import coil.util.Emoji
+import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.SystemCallbacks
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
@@ -67,26 +65,23 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.coroutineContext
 
 internal class RealImageLoader(
-    context: Context,
+    val context: Context,
     override val defaults: DefaultRequestOptions,
     override val bitmapPool: BitmapPool,
-    private val referenceCounter: BitmapReferenceCounter,
-    private val strongMemoryCache: StrongMemoryCache,
-    private val weakMemoryCache: WeakMemoryCache,
-    callFactory: Call.Factory,
-    private val eventListenerFactory: EventListener.Factory,
-    componentRegistry: ComponentRegistry,
-    addLastModifiedToFileCacheKey: Boolean,
-    private val launchInterceptorChainOnMainThread: Boolean,
+    override val memoryCache: RealMemoryCache,
+    val callFactory: Call.Factory,
+    val eventListenerFactory: EventListener.Factory,
+    val componentRegistry: ComponentRegistry,
+    val options: ImageLoaderOptions,
     val logger: Logger?
 ) : ImageLoader {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate +
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) })
-    private val delegateService = DelegateService(this, referenceCounter, logger)
-    private val memoryCacheService = MemoryCacheService(referenceCounter, strongMemoryCache, weakMemoryCache)
+    private val delegateService = DelegateService(this, memoryCache.referenceCounter, logger)
+    private val memoryCacheService = MemoryCacheService(memoryCache.referenceCounter,
+        memoryCache.strongMemoryCache, memoryCache.weakMemoryCache)
     private val requestService = RequestService(logger)
-    override val memoryCache = RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
     private val systemCallbacks = SystemCallbacks(this, context)
     private val registry = componentRegistry.newBuilder()
@@ -98,7 +93,7 @@ internal class RealImageLoader(
         // Fetchers
         .add(HttpUriFetcher(callFactory))
         .add(HttpUrlFetcher(callFactory))
-        .add(FileFetcher(addLastModifiedToFileCacheKey))
+        .add(FileFetcher(options.addLastModifiedToFileCacheKey))
         .add(AssetUriFetcher(context))
         .add(ContentUriFetcher(context))
         .add(ResourceUriFetcher(context, drawableDecoder))
@@ -107,8 +102,9 @@ internal class RealImageLoader(
         // Decoders
         .add(BitmapFactoryDecoder(context))
         .build()
-    private val interceptors = registry.interceptors + EngineInterceptor(registry, bitmapPool, referenceCounter,
-        strongMemoryCache, memoryCacheService, requestService, systemCallbacks, drawableDecoder, logger)
+    private val interceptors = registry.interceptors + EngineInterceptor(registry, bitmapPool,
+        memoryCache.referenceCounter, memoryCache.strongMemoryCache, memoryCacheService, requestService,
+        systemCallbacks, drawableDecoder, logger)
     private val isShutdown = AtomicBoolean(false)
 
     override fun enqueue(request: ImageRequest): Disposable {
@@ -171,7 +167,7 @@ internal class RealImageLoader(
                 eventListener.onStart(request)
                 request.listener?.onStart(request)
             } finally {
-                referenceCounter.decrement(cached)
+                memoryCache.referenceCounter.decrement(cached)
             }
 
             // Resolve the size.
@@ -205,8 +201,8 @@ internal class RealImageLoader(
 
     /** Called by [SystemCallbacks.onTrimMemory]. */
     fun onTrimMemory(level: Int) {
-        strongMemoryCache.trimMemory(level)
-        weakMemoryCache.trimMemory(level)
+        memoryCache.strongMemoryCache.trimMemory(level)
+        memoryCache.weakMemoryCache.trimMemory(level)
         bitmapPool.trimMemory(level)
     }
 
@@ -216,10 +212,11 @@ internal class RealImageLoader(
         // Order is important.
         scope.cancel()
         systemCallbacks.shutdown()
-        strongMemoryCache.clearMemory()
-        weakMemoryCache.clearMemory()
+        memoryCache.clear()
         bitmapPool.clear()
     }
+
+    override fun newBuilder() = ImageLoader.Builder(this)
 
     private suspend inline fun executeChain(
         request: ImageRequest,
@@ -229,7 +226,7 @@ internal class RealImageLoader(
         eventListener: EventListener
     ): ImageResult {
         val chain = RealInterceptorChain(request, type, interceptors, 0, request, size, cached, eventListener)
-        return if (launchInterceptorChainOnMainThread) {
+        return if (options.launchInterceptorChainOnMainThread) {
             chain.proceed(request)
         } else {
             withContext(request.dispatcher) {
@@ -253,7 +250,7 @@ internal class RealImageLoader(
             eventListener.onSuccess(request, metadata)
             request.listener?.onSuccess(request, metadata)
         } finally {
-            referenceCounter.decrement(result.drawable)
+            memoryCache.referenceCounter.decrement(result.drawable)
         }
     }
 
