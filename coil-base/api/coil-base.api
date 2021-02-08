@@ -76,6 +76,7 @@ public abstract interface class coil/ImageLoader {
 	public abstract fun getBitmapPool ()Lcoil/bitmap/BitmapPool;
 	public abstract fun getDefaults ()Lcoil/request/DefaultRequestOptions;
 	public abstract fun getMemoryCache ()Lcoil/memory/MemoryCache;
+	public abstract fun newBuilder ()Lcoil/ImageLoader$Builder;
 	public abstract fun shutdown ()V
 }
 
@@ -105,6 +106,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun fallback (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoader$Builder;
 	public final fun launchInterceptorChainOnMainThread (Z)Lcoil/ImageLoader$Builder;
 	public final fun logger (Lcoil/util/Logger;)Lcoil/ImageLoader$Builder;
+	public final fun memoryCache (Lcoil/memory/MemoryCache;)Lcoil/ImageLoader$Builder;
 	public final fun memoryCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
 	public final fun networkCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
 	public final fun okHttpClient (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoader$Builder;
