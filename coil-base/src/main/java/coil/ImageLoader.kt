@@ -123,7 +123,7 @@ public interface ImageLoader {
         private var bitmapPoolingEnabled: Boolean
         private var trackWeakReferences: Boolean
 
-        constructor(context: Context) {
+        public constructor(context: Context) {
             applicationContext = context.applicationContext
             defaults = DefaultRequestOptions.INSTANCE
             callFactory = null
@@ -338,7 +338,7 @@ public interface ImageLoader {
          *
          * Default: true
          */
-        fun trackWeakReferences(enable: Boolean) = apply {
+        public fun trackWeakReferences(enable: Boolean): Builder = apply {
             this.trackWeakReferences = enable
             this.memoryCache = null
         }
