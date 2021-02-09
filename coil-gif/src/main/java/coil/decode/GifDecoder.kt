@@ -68,6 +68,6 @@ class GifDecoder : Decoder {
 
     companion object {
         const val REPEAT_COUNT_KEY = "coil#repeat_count"
-        const val ANIMATED_TRANSFORMATION = "coil#animated_transformation"
+        const val ANIMATED_TRANSFORMATION_KEY = "coil#animated_transformation"
     }
 }

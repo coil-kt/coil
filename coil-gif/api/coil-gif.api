@@ -1,5 +1,5 @@
 public final class coil/decode/GifDecoder : coil/decode/Decoder {
-	public static final field ANIMATED_TRANSFORMATION Ljava/lang/String;
+	public static final field ANIMATED_TRANSFORMATION_KEY Ljava/lang/String;
 	public static final field Companion Lcoil/decode/GifDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> ()V
@@ -11,7 +11,7 @@ public final class coil/decode/GifDecoder$Companion {
 }
 
 public final class coil/decode/ImageDecoderDecoder : coil/decode/Decoder {
-	public static final field ANIMATED_TRANSFORMATION Ljava/lang/String;
+	public static final field ANIMATED_TRANSFORMATION_KEY Ljava/lang/String;
 	public static final field Companion Lcoil/decode/ImageDecoderDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> ()V
@@ -86,7 +86,7 @@ public final class coil/request/Gifs {
 }
 
 public abstract interface class coil/transform/AnimatedTransformation {
-	public abstract fun transform (Landroid/graphics/Canvas;Lcoil/size/Size;)Lcoil/transform/AnimatedTransformation$PixelFormat;
+	public abstract fun transform (Landroid/graphics/Canvas;)Lcoil/transform/AnimatedTransformation$PixelFormat;
 }
 
 public final class coil/transform/AnimatedTransformation$PixelFormat : java/lang/Enum {

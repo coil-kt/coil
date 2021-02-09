@@ -8,11 +8,10 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.os.Build.VERSION.SDK_INT
-import coil.size.Size
 import coil.transform.AnimatedTransformation
 
 class RoundedCornerTransformation : AnimatedTransformation {
-    override fun transform(canvas: Canvas, size: Size): AnimatedTransformation.PixelFormat {
+    override fun transform(canvas: Canvas): AnimatedTransformation.PixelFormat {
         val path = Path()
         path.fillType = Path.FillType.INVERSE_EVEN_ODD
         val width = canvas.width

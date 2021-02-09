@@ -64,7 +64,7 @@ class ImageDecoderDecoder : Decoder {
                 // Setup post processor for transformation after decoding
                 options.parameters.animatedTransformation()?.let { animatedTransformation ->
                     setPostProcessor { canvas ->
-                        animatedTransformation.transform(canvas, size).opacity
+                        animatedTransformation.transform(canvas).opacity
                     }
                 }
 
@@ -130,6 +130,6 @@ class ImageDecoderDecoder : Decoder {
 
     companion object {
         const val REPEAT_COUNT_KEY = GifDecoder.REPEAT_COUNT_KEY
-        const val ANIMATED_TRANSFORMATION = GifDecoder.ANIMATED_TRANSFORMATION
+        const val ANIMATED_TRANSFORMATION_KEY = GifDecoder.ANIMATED_TRANSFORMATION_KEY
     }
 }

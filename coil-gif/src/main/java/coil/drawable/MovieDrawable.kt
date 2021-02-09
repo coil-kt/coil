@@ -20,7 +20,6 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.bitmap.BitmapPool
 import coil.decode.DecodeUtils
 import coil.decode.ImageDecoderDecoder
-import coil.size.PixelSize
 import coil.size.Scale
 import coil.transform.AnimatedTransformation
 
@@ -39,8 +38,6 @@ class MovieDrawable @JvmOverloads constructor(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
-
-    private val size = PixelSize(movie.width(), movie.height())
 
     private var currentBounds: Rect? = null
     private var softwareCanvas: Canvas? = null
@@ -96,7 +93,7 @@ class MovieDrawable @JvmOverloads constructor(
         }
 
         // Apply transformation on frame
-        animatedTransformation?.transform(softwareCanvas, size)
+        animatedTransformation?.transform(softwareCanvas)
 
         // Draw onto the input canvas (may or may not be hardware).
         canvas.withSave {

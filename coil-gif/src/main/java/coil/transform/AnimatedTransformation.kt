@@ -1,7 +1,6 @@
 package coil.transform
 
 import android.graphics.Canvas
-import coil.size.Size
 import android.graphics.PixelFormat as AndroidPixelFormat
 
 /**
@@ -14,10 +13,12 @@ interface AnimatedTransformation {
      *
      * Note: Do not allocate objects in this method as it will be invoked for each frame of the animation.
      *
+     * @param canvas [Canvas] on which transformation to be applied.
+     *
      * @return Opacity of the result after drawing.
      * @see AndroidPixelFormat
      */
-    fun transform(canvas: Canvas, size: Size): PixelFormat
+    fun transform(canvas: Canvas): PixelFormat
 
     /**
      * Opacity of the result after drawing.
