@@ -13,6 +13,7 @@ import coil.RealImageLoader
 import coil.bitmap.BitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
 import coil.memory.MemoryCache
+import coil.memory.RealMemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
 import coil.request.DefaultRequestOptions
@@ -40,7 +41,7 @@ internal class SystemCallbacksTest {
             Runtime.getRuntime().gc()
 
             // Keep allocating bitmaps until either the image loader is freed or we run out of memory.
-            bitmaps += createBitmap(500, 500, Bitmap.Config.ARGB_8888)
+            bitmaps += createBitmap(500, 500)
         }
         bitmaps.clear()
 
@@ -56,18 +57,16 @@ internal class SystemCallbacksTest {
         val weakMemoryCache = RealWeakMemoryCache(null)
         val referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         val strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        val memoryCache = RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter, bitmapPool)
         val imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
             bitmapPool = bitmapPool,
-            referenceCounter = referenceCounter,
-            strongMemoryCache = strongMemoryCache,
-            weakMemoryCache = weakMemoryCache,
+            memoryCache = memoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             componentRegistry = ComponentRegistry(),
-            addLastModifiedToFileCacheKey = true,
-            launchInterceptorChainOnMainThread = true,
+            options = ImageLoaderOptions(),
             logger = null
         )
         val systemCallbacks = SystemCallbacks(imageLoader, context)

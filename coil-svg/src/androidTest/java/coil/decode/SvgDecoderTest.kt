@@ -13,6 +13,7 @@ import okio.buffer
 import okio.source
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -36,6 +37,14 @@ internal class SvgDecoderTest {
 
         source = context.assets.open("coil_logo_250.png").source().buffer()
         assertFalse(decoder.handles(source, "image/png"))
+    }
+
+    @Test
+    fun doesNotExhaustSource() {
+        val source = context.assets.open("document.xml").source().buffer()
+        assertFalse(decoder.handles(source, null))
+        assertFalse(source.exhausted())
+        assertEquals(8192, source.buffer.size) // should buffer exactly 1 segment
     }
 
     @Test

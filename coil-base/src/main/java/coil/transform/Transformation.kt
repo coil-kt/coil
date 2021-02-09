@@ -21,12 +21,13 @@ public interface Transformation {
     /**
      * Return a unique key for this transformation.
      *
-     * The key should contain any params that are part of this transformation (e.g. size, scale, color, radius, etc.).
+     * The key is added to the image request's memory cache key and should contain any params that are part of this
+     * transformation (e.g. size, scale, color, radius, etc.).
      */
     public fun key(): String
 
     /**
-     * Apply the transformation to [input].
+     * Apply the transformation to [input] and return the transformed [Bitmap].
      *
      * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
      * @param input The input [Bitmap] to transform. Its config will always be [Bitmap.Config.ARGB_8888] or [Bitmap.Config.RGBA_F16].

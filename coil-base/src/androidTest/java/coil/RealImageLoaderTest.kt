@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.widget.ImageView
+import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
@@ -24,6 +25,7 @@ import coil.decode.Decoder
 import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.memory.MemoryCache
+import coil.memory.RealMemoryCache
 import coil.memory.RealWeakMemoryCache
 import coil.memory.StrongMemoryCache
 import coil.request.CachePolicy
@@ -35,6 +37,7 @@ import coil.request.SuccessResult
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Size
+import coil.util.ImageLoaderOptions
 import coil.util.TestActivity
 import coil.util.Utils
 import coil.util.activity
@@ -65,6 +68,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 internal class RealImageLoaderTest {
@@ -85,18 +89,16 @@ internal class RealImageLoaderTest {
         val weakMemoryCache = RealWeakMemoryCache(null)
         val referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
         strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
+        val memoryCache = RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter, bitmapPool)
         imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
             bitmapPool = bitmapPool,
-            referenceCounter = referenceCounter,
-            strongMemoryCache = strongMemoryCache,
-            weakMemoryCache = weakMemoryCache,
+            memoryCache = memoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             componentRegistry = ComponentRegistry(),
-            addLastModifiedToFileCacheKey = true,
-            launchInterceptorChainOnMainThread = true,
+            options = ImageLoaderOptions(),
             logger = null
         )
         activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
@@ -425,6 +427,37 @@ internal class RealImageLoaderTest {
 
         // isSuccessful should be synchronously set to true.
         assertTrue(isSuccessful)
+    }
+
+    @Test
+    fun newBuilderSharesMemoryCache() {
+        val key = MemoryCache.Key("fake_key")
+        val imageLoader1 = ImageLoader(context)
+        val imageLoader2 = imageLoader1.newBuilder().build()
+
+        assertSame(imageLoader1.memoryCache, imageLoader2.memoryCache)
+        assertNull(imageLoader1.memoryCache[key])
+        assertNull(imageLoader2.memoryCache[key])
+
+        val bitmap = createBitmap(100, 100)
+        imageLoader1.memoryCache[key] = bitmap
+
+        assertSame(bitmap, imageLoader2.memoryCache[key])
+    }
+
+    @Test
+    fun newBuilderSharesBitmapPool() {
+        val imageLoader1 = ImageLoader.Builder(context).bitmapPoolPercentage(0.5).build()
+        val imageLoader2 = imageLoader1.newBuilder().build()
+
+        assertSame(imageLoader1.bitmapPool, imageLoader2.bitmapPool)
+        assertNull(imageLoader1.bitmapPool.getOrNull(100, 100, Bitmap.Config.ARGB_8888))
+        assertNull(imageLoader2.bitmapPool.getOrNull(100, 100, Bitmap.Config.ARGB_8888))
+
+        val bitmap = createBitmap(100, 100)
+        imageLoader1.bitmapPool.put(bitmap)
+
+        assertSame(bitmap, imageLoader2.bitmapPool.getOrNull(100, 100, Bitmap.Config.ARGB_8888))
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {

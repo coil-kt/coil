@@ -1,13 +1,15 @@
 package coil.memory
 
 import android.graphics.Bitmap
+import coil.bitmap.BitmapPool
 import coil.bitmap.BitmapReferenceCounter
 import coil.memory.MemoryCache.Key
 
 internal class RealMemoryCache(
-    private val strongMemoryCache: StrongMemoryCache,
-    private val weakMemoryCache: WeakMemoryCache,
-    private val referenceCounter: BitmapReferenceCounter
+    val strongMemoryCache: StrongMemoryCache,
+    val weakMemoryCache: WeakMemoryCache,
+    val referenceCounter: BitmapReferenceCounter,
+    val bitmapPool: BitmapPool
 ) : MemoryCache {
 
     override val size get() = strongMemoryCache.size

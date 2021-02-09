@@ -36,7 +36,7 @@ internal class RealBitmapPoolTest {
         val bitmap = createBitmap()
         pool.put(bitmap)
 
-        assertEquals(bitmap, pool.get(100, 100, Bitmap.Config.ARGB_8888))
+        assertEquals(bitmap, pool.getOrNull(100, 100, Bitmap.Config.ARGB_8888))
     }
 
     @Test
