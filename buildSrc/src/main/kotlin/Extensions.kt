@@ -14,6 +14,7 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
+import java.util.Locale
 import kotlin.math.pow
 
 val Project.minSdk: Int
@@ -141,6 +142,11 @@ fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}): BaseA
         }
         block()
     }
+}
+
+fun String.isStableVersion(): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { toUpperCase(Locale.ROOT).contains(it) }
+    return stableKeyword || Regex("^[0-9,.v-]+(-r)?$").matches(this)
 }
 
 inline infix fun <T> Property<T>.by(value: T) = set(value)

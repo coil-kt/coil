@@ -1,6 +1,8 @@
 import coil.by
 import coil.groupId
+import coil.isStableVersion
 import coil.versionName
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -24,10 +26,12 @@ buildscript {
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.4.0")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:9.4.1")
+        classpath("com.github.ben-manes:gradle-versions-plugin:0.36.0")
     }
 }
 
 apply(plugin = "binary-compatibility-validator")
+apply(plugin = "com.github.ben-manes.versions")
 
 extensions.configure<ApiValidationExtension> {
     ignoredProjects = mutableSetOf("coil-sample", "coil-test")
@@ -48,6 +52,12 @@ allprojects {
     extensions.configure<KtlintExtension>("ktlint") {
         version by "0.40.0"
         disabledRules by setOf("indent", "max-line-length")
+    }
+
+    tasks.withType<DependencyUpdatesTask> {
+        rejectVersionIf {
+            candidate.version.isStableVersion().not()
+        }
     }
 
     tasks.withType<KotlinCompile>().configureEach {
