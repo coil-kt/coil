@@ -26,19 +26,12 @@ fun ImageRequest.Builder.repeatCount(repeatCount: Int): ImageRequest.Builder {
 /** Get the number of times to repeat the animation if the result is an animated [Drawable]. */
 fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY) as Int?
 
-/**
- * Set the transformation for GIFs, animated WebPs, and animated HEIFs.
- *
- * @see [MovieDrawable.setAnimatedTransformation]
- * @see [coil.decode.ImageDecoderDecoder.decode]
- */
+/** Set the [AnimatedTransformation] that will be applied to the result if it is an animated [Drawable]. */
 fun ImageRequest.Builder.animatedTransformation(animatedTransformation: AnimatedTransformation): ImageRequest.Builder {
     return setParameter(ANIMATED_TRANSFORMATION_KEY, animatedTransformation)
 }
 
-/**
- * Get the [AnimatedTransformation] applied on GIFs, animated WebPs, and animated HEIFs.
- */
+/** Get the [AnimatedTransformation] applied to the result if it is an animated [Drawable]. */
 fun Parameters.animatedTransformation(): AnimatedTransformation? {
     return value(ANIMATED_TRANSFORMATION_KEY) as AnimatedTransformation?
 }

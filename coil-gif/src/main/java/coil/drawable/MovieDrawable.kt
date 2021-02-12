@@ -127,19 +127,13 @@ class MovieDrawable @JvmOverloads constructor(
     /** Get the number of times the animation will repeat. */
     fun getRepeatCount(): Int = repeatCount
 
-    /**
-     * Set the transformation to be applied on each frame.
-     */
+    /** Set the [AnimatedTransformation] to apply when drawing. */
     fun setAnimatedTransformation(animatedTransformation: AnimatedTransformation?) {
         this.animatedTransformation = animatedTransformation
     }
 
-    /**
-     * Get the applied transformation.
-     */
-    fun getAnimatedTransformation(): AnimatedTransformation? {
-        return animatedTransformation
-    }
+    /** Get the [AnimatedTransformation] that is applied when drawing. */
+    fun getAnimatedTransformation(): AnimatedTransformation? = animatedTransformation
 
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }

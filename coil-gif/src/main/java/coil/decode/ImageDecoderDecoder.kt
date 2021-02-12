@@ -16,11 +16,11 @@ import coil.request.animatedTransformation
 import coil.request.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
+import java.io.File
+import java.nio.ByteBuffer
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
-import java.io.File
-import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
 /**
@@ -60,14 +60,6 @@ class ImageDecoderDecoder : Decoder {
             }
 
             val baseDrawable = decoderSource.decodeDrawable { info, _ ->
-
-                // Setup post processor for transformation after decoding
-                options.parameters.animatedTransformation()?.let { animatedTransformation ->
-                    setPostProcessor { canvas ->
-                        animatedTransformation.transform(canvas).opacity
-                    }
-                }
-
                 // It's safe to delete the temp file here.
                 tempFile?.delete()
 
@@ -108,6 +100,15 @@ class ImageDecoderDecoder : Decoder {
                 }
 
                 isUnpremultipliedRequired = !options.premultipliedAlpha
+
+                val animatedTransformation = options.parameters.animatedTransformation()
+                if (animatedTransformation != null) {
+                    setPostProcessor { canvas ->
+                        animatedTransformation.transform(canvas).opacity
+                    }
+                } else {
+                    postProcessor = null
+                }
             }
 
             val drawable = if (baseDrawable is AnimatedImageDrawable) {

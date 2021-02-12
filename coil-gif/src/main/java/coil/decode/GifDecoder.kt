@@ -20,9 +20,7 @@ import okio.buffer
  */
 class GifDecoder : Decoder {
 
-    override fun handles(source: BufferedSource, mimeType: String?): Boolean {
-        return DecodeUtils.isGif(source)
-    }
+    override fun handles(source: BufferedSource, mimeType: String?) = DecodeUtils.isGif(source)
 
     override suspend fun decode(
         pool: BitmapPool,
@@ -30,19 +28,18 @@ class GifDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
-        // Movie requires an InputStream to resettable on API 18 and below.
-        // Read the data as a ByteArray to work around this.
         val bufferedSource = interruptibleSource.buffer()
-        val movie = if (SDK_INT <= 18) {
-            bufferedSource.use {
-                val byteArray = it.readByteArray()
-                checkNotNull(Movie.decodeByteArray(byteArray, 0, byteArray.size))
+        val movie: Movie? = bufferedSource.use {
+            if (SDK_INT >= 19) {
+                Movie.decodeStream(it.inputStream())
+            } else {
+                // Movie requires an InputStream to resettable on API 18 and below.
+                // Read the data as a ByteArray to work around this.
+                it.readByteArray().let { bytes -> Movie.decodeByteArray(bytes, 0, bytes.size) }
             }
-        } else {
-            bufferedSource.use { checkNotNull(Movie.decodeStream(it.inputStream())) }
         }
 
-        check(movie.width() > 0 && movie.height() > 0) { "Failed to decode GIF." }
+        check(movie != null && movie.width() > 0 && movie.height() > 0) { "Failed to decode GIF." }
 
         val drawable = MovieDrawable(
             movie = movie,
