@@ -21,6 +21,7 @@ import coil.bitmap.BitmapPool
 import coil.decode.DecodeUtils
 import coil.decode.ImageDecoderDecoder
 import coil.size.Scale
+import coil.transform.AnimatedTransformation
 
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
@@ -53,6 +54,8 @@ class MovieDrawable @JvmOverloads constructor(
 
     private var repeatCount = REPEAT_INFINITE
     private var loopIteration = 0
+
+    private var animatedTransformation: AnimatedTransformation? = null
 
     init {
         require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
@@ -89,6 +92,9 @@ class MovieDrawable @JvmOverloads constructor(
             movie.draw(this, 0f, 0f, paint)
         }
 
+        // Apply transformation on frame
+        animatedTransformation?.transform(softwareCanvas)
+
         // Draw onto the input canvas (may or may not be hardware).
         canvas.withSave {
             translate(hardwareDx, hardwareDy)
@@ -120,6 +126,20 @@ class MovieDrawable @JvmOverloads constructor(
 
     /** Get the number of times the animation will repeat. */
     fun getRepeatCount(): Int = repeatCount
+
+    /**
+     * Set the transformation to be applied on each frame.
+     */
+    fun setAnimatedTransformation(animatedTransformation: AnimatedTransformation?) {
+        this.animatedTransformation = animatedTransformation
+    }
+
+    /**
+     * Get the applied transformation.
+     */
+    fun getAnimatedTransformation(): AnimatedTransformation? {
+        return animatedTransformation
+    }
 
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }

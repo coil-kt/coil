@@ -7,6 +7,7 @@ import android.graphics.Movie
 import android.os.Build.VERSION.SDK_INT
 import coil.bitmap.BitmapPool
 import coil.drawable.MovieDrawable
+import coil.request.animatedTransformation
 import coil.request.repeatCount
 import coil.size.Size
 import okio.BufferedSource
@@ -56,6 +57,9 @@ class GifDecoder : Decoder {
 
         drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
 
+        // Set the animated transformation to be applied on each frame.
+        drawable.setAnimatedTransformation(options.parameters.animatedTransformation())
+
         DecodeResult(
             drawable = drawable,
             isSampled = false
@@ -64,5 +68,6 @@ class GifDecoder : Decoder {
 
     companion object {
         const val REPEAT_COUNT_KEY = "coil#repeat_count"
+        const val ANIMATED_TRANSFORMATION_KEY = "coil#animated_transformation"
     }
 }
