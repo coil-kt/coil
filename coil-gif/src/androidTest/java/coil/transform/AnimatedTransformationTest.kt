@@ -15,11 +15,11 @@ import coil.request.SuccessResult
 import coil.request.animatedTransformation
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
-import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class AnimatedTransformationTest {
 
