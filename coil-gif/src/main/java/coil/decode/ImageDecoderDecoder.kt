@@ -17,12 +17,12 @@ import coil.request.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.toPostProcessor
-import java.io.File
-import java.nio.ByteBuffer
-import kotlin.math.roundToInt
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
+import java.io.File
+import java.nio.ByteBuffer
+import kotlin.math.roundToInt
 
 /**
  * A [Decoder] that uses [ImageDecoder] to decode GIFs, animated WebPs, and animated HEIFs.
