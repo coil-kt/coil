@@ -23,14 +23,14 @@ import kotlin.test.assertTrue
 class AnimatedTransformationTest {
 
     private lateinit var context: Context
-    private lateinit var transformation: RoundedCornerTransformation
+    private lateinit var transformation: RoundedCornersTransformation
     private lateinit var imageLoader: ImageLoader
     private lateinit var imageRequestBuilder: ImageRequest.Builder
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        transformation = RoundedCornerTransformation()
+        transformation = RoundedCornersTransformation()
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .memoryCachePolicy(CachePolicy.DISABLED)

@@ -86,16 +86,14 @@ public final class coil/request/Gifs {
 }
 
 public abstract interface class coil/transform/AnimatedTransformation {
-	public abstract fun transform (Landroid/graphics/Canvas;)Lcoil/transform/AnimatedTransformation$PixelFormat;
+	public abstract fun transform (Landroid/graphics/Canvas;)Lcoil/transform/PixelOpacity;
 }
 
-public final class coil/transform/AnimatedTransformation$PixelFormat : java/lang/Enum {
-	public static final field OPAQUE Lcoil/transform/AnimatedTransformation$PixelFormat;
-	public static final field TRANSLUCENT Lcoil/transform/AnimatedTransformation$PixelFormat;
-	public static final field TRANSPARENT Lcoil/transform/AnimatedTransformation$PixelFormat;
-	public static final field UNKNOWN Lcoil/transform/AnimatedTransformation$PixelFormat;
-	public final fun getOpacity ()I
-	public static fun valueOf (Ljava/lang/String;)Lcoil/transform/AnimatedTransformation$PixelFormat;
-	public static fun values ()[Lcoil/transform/AnimatedTransformation$PixelFormat;
+public final class coil/transform/PixelOpacity : java/lang/Enum {
+	public static final field OPAQUE Lcoil/transform/PixelOpacity;
+	public static final field TRANSLUCENT Lcoil/transform/PixelOpacity;
+	public static final field UNKNOWN Lcoil/transform/PixelOpacity;
+	public static fun valueOf (Ljava/lang/String;)Lcoil/transform/PixelOpacity;
+	public static fun values ()[Lcoil/transform/PixelOpacity;
 }
 
