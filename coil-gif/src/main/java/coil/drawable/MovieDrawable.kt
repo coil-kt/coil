@@ -23,7 +23,7 @@ import coil.decode.ImageDecoderDecoder
 import coil.size.Scale
 import coil.transform.AnimatedTransformation
 import coil.transform.PixelOpacity
-import coil.transform.PixelOpacity.OPAQUE
+import coil.transform.PixelOpacity.TRANSLUCENT
 
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
@@ -58,7 +58,7 @@ class MovieDrawable @JvmOverloads constructor(
     private var loopIteration = 0
 
     private var animatedTransformation: AnimatedTransformation? = null
-    private var opacity: PixelOpacity? = null
+    private var pixelOpacity: PixelOpacity? = null
 
     init {
         require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
@@ -96,7 +96,7 @@ class MovieDrawable @JvmOverloads constructor(
         }
 
         // Apply the animated transformation.
-        opacity = animatedTransformation?.transform(softwareCanvas)
+        pixelOpacity = animatedTransformation?.transform(softwareCanvas)
 
         // Draw onto the input canvas (may or may not be hardware).
         canvas.withSave {
@@ -144,7 +144,7 @@ class MovieDrawable @JvmOverloads constructor(
     }
 
     override fun getOpacity(): Int {
-        return if (paint.alpha == 255 && opacity == OPAQUE && movie.isOpaque) {
+        return if (paint.alpha == 255 && pixelOpacity != TRANSLUCENT && movie.isOpaque) {
             PixelFormat.OPAQUE
         } else {
             PixelFormat.TRANSLUCENT
