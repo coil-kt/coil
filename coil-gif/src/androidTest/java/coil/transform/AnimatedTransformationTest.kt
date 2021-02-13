@@ -11,6 +11,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import coil.request.SuccessResult
 import coil.request.animatedTransformation
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
@@ -56,7 +57,8 @@ class AnimatedTransformationTest {
             imageLoader.execute(imageRequest)
         }
         val expected = context.decodeBitmapAsset("animated_gif_rounded.png")
-        assertTrue(actual.drawable!!.toBitmap().isSimilarTo(expected))
+        assertTrue(actual is SuccessResult)
+        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
     }
 
     @Test
@@ -71,7 +73,8 @@ class AnimatedTransformationTest {
             imageLoader.execute(imageRequest)
         }
         val expected = context.decodeBitmapAsset("animated_heif_rounded.png")
-        assertTrue(actual.drawable!!.toBitmap().isSimilarTo(expected))
+        assertTrue(actual is SuccessResult)
+        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
     }
 
     @Test
@@ -86,6 +89,7 @@ class AnimatedTransformationTest {
             imageLoader.execute(imageRequest)
         }
         val expected = context.decodeBitmapAsset("animated_webp_rounded.png")
-        assertTrue(actual.drawable!!.toBitmap().isSimilarTo(expected))
+        assertTrue(actual is SuccessResult)
+        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
     }
 }
