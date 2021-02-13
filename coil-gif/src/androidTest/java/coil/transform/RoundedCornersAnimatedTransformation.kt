@@ -9,7 +9,7 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.os.Build.VERSION.SDK_INT
 
-class RoundedCornersTransformation : AnimatedTransformation {
+class RoundedCornersAnimatedTransformation : AnimatedTransformation {
 
     private val paint = Paint().apply {
         isAntiAlias = true

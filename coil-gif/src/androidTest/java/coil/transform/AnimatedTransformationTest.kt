@@ -15,23 +15,23 @@ import coil.request.SuccessResult
 import coil.request.animatedTransformation
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
+import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertTrue
 
 class AnimatedTransformationTest {
 
     private lateinit var context: Context
-    private lateinit var transformation: RoundedCornersTransformation
+    private lateinit var transformation: RoundedCornersAnimatedTransformation
     private lateinit var imageLoader: ImageLoader
     private lateinit var imageRequestBuilder: ImageRequest.Builder
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        transformation = RoundedCornersTransformation()
+        transformation = RoundedCornersAnimatedTransformation()
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .memoryCachePolicy(CachePolicy.DISABLED)
