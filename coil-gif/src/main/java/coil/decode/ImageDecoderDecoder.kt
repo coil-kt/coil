@@ -16,6 +16,7 @@ import coil.request.animatedTransformation
 import coil.request.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
+import coil.util.asPostProcessor
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
@@ -60,14 +61,6 @@ class ImageDecoderDecoder : Decoder {
             }
 
             val baseDrawable = decoderSource.decodeDrawable { info, _ ->
-
-                // Setup post processor for transformation after decoding
-                options.parameters.animatedTransformation()?.let { animatedTransformation ->
-                    setPostProcessor { canvas ->
-                        animatedTransformation.transform(canvas).opacity
-                    }
-                }
-
                 // It's safe to delete the temp file here.
                 tempFile?.delete()
 
@@ -108,6 +101,8 @@ class ImageDecoderDecoder : Decoder {
                 }
 
                 isUnpremultipliedRequired = !options.premultipliedAlpha
+
+                postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
             }
 
             val drawable = if (baseDrawable is AnimatedImageDrawable) {

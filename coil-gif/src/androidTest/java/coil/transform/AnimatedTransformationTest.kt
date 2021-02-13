@@ -11,8 +11,8 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import coil.request.SuccessResult
 import coil.request.animatedTransformation
-import coil.util.RoundedCornerTransformation
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
@@ -24,14 +24,14 @@ import kotlin.test.assertTrue
 class AnimatedTransformationTest {
 
     private lateinit var context: Context
-    private lateinit var transformation: RoundedCornerTransformation
+    private lateinit var transformation: RoundedCornersAnimatedTransformation
     private lateinit var imageLoader: ImageLoader
     private lateinit var imageRequestBuilder: ImageRequest.Builder
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        transformation = RoundedCornerTransformation()
+        transformation = RoundedCornersAnimatedTransformation()
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .memoryCachePolicy(CachePolicy.DISABLED)
@@ -57,12 +57,14 @@ class AnimatedTransformationTest {
             imageLoader.execute(imageRequest)
         }
         val expected = context.decodeBitmapAsset("animated_gif_rounded.png")
-        assertTrue(actual.drawable?.toBitmap()?.isSimilarTo(expected) ?: false)
+        assertTrue(actual is SuccessResult)
+        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
     }
 
     @Test
     fun heifTransformationTest() {
         assumeTrue(SDK_INT >= 28)
+
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
                 .decoder(ImageDecoderDecoder())
@@ -71,12 +73,14 @@ class AnimatedTransformationTest {
             imageLoader.execute(imageRequest)
         }
         val expected = context.decodeBitmapAsset("animated_heif_rounded.png")
-        assertTrue(actual.drawable?.toBitmap()?.isSimilarTo(expected) ?: false)
+        assertTrue(actual is SuccessResult)
+        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
     }
 
     @Test
     fun webpTransformationTest() {
         assumeTrue(SDK_INT >= 28)
+
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
                 .decoder(ImageDecoderDecoder())
@@ -85,6 +89,7 @@ class AnimatedTransformationTest {
             imageLoader.execute(imageRequest)
         }
         val expected = context.decodeBitmapAsset("animated_webp_rounded.png")
-        assertTrue(actual.drawable?.toBitmap()?.isSimilarTo(expected) ?: false)
+        assertTrue(actual is SuccessResult)
+        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
     }
 }

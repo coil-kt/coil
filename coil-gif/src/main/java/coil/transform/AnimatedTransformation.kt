@@ -1,32 +1,19 @@
 package coil.transform
 
 import android.graphics.Canvas
-import android.graphics.PixelFormat as AndroidPixelFormat
 
 /**
- * An interface for applying transformation on GIFs, animated WebPs, and animated HEIFs.
+ * An interface for making transformations to an animated image's pixel data.
  */
-interface AnimatedTransformation {
+fun interface AnimatedTransformation {
 
     /**
-     * Apply transformation on [canvas]
+     * Apply the transformation to the [canvas].
      *
-     * Note: Do not allocate objects in this method as it will be invoked for each frame of the animation.
+     * NOTE: Avoid allocating objects in this method as it will be invoked on each frame of the animation.
      *
-     * @param canvas [Canvas] on which transformation to be applied.
-     *
-     * @return Opacity of the result after drawing.
-     * @see AndroidPixelFormat
+     * @param canvas The [Canvas] to draw on.
+     * @return The opacity of the image after drawing.
      */
-    fun transform(canvas: Canvas): PixelFormat
-
-    /**
-     * Opacity of the result after drawing.
-     */
-    enum class PixelFormat(val opacity: Int) {
-        UNKNOWN(AndroidPixelFormat.UNKNOWN),
-        TRANSLUCENT(AndroidPixelFormat.TRANSLUCENT),
-        OPAQUE(AndroidPixelFormat.OPAQUE),
-        TRANSPARENT(AndroidPixelFormat.TRANSPARENT)
-    }
+    fun transform(canvas: Canvas): PixelOpacity
 }
