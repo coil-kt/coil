@@ -10,7 +10,7 @@ fun interface AnimatedTransformation {
     /**
      * Apply the transformation to the [canvas].
      *
-     * Note: Avoid allocating objects in this method as it will be invoked on each frame of the animation.
+     * NOTE: Avoid allocating objects in this method as it will be invoked on each frame of the animation.
      *
      * @param canvas The [Canvas] to draw on.
      * @return The opacity of the image after drawing.
