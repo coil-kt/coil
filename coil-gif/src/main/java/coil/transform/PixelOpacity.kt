@@ -10,7 +10,7 @@ enum class PixelOpacity {
      *
      * Return this unless you add transparent pixels to the image or remove all transparent pixels in the image.
      */
-    UNKNOWN,
+    UNCHANGED,
 
     /**
      * Indicates that the [AnimatedTransformation] added transparent pixels to the image.

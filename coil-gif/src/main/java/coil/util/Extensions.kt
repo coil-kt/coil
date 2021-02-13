@@ -13,7 +13,7 @@ internal fun AnimatedTransformation.toPostProcessor() = PostProcessor { canvas -
 
 internal val PixelOpacity.flag: Int
     get() = when (this) {
-        PixelOpacity.UNKNOWN -> PixelFormat.UNKNOWN
+        PixelOpacity.UNCHANGED -> PixelFormat.UNKNOWN
         PixelOpacity.TRANSLUCENT -> PixelFormat.TRANSLUCENT
         PixelOpacity.OPAQUE -> PixelFormat.OPAQUE
     }
