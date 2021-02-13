@@ -22,6 +22,8 @@ import coil.decode.DecodeUtils
 import coil.decode.ImageDecoderDecoder
 import coil.size.Scale
 import coil.transform.AnimatedTransformation
+import coil.transform.PixelOpacity
+import coil.transform.PixelOpacity.TRANSLUCENT
 
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
@@ -56,6 +58,7 @@ class MovieDrawable @JvmOverloads constructor(
     private var loopIteration = 0
 
     private var animatedTransformation: AnimatedTransformation? = null
+    private var pixelOpacity: PixelOpacity? = null
 
     init {
         require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
@@ -92,8 +95,8 @@ class MovieDrawable @JvmOverloads constructor(
             movie.draw(this, 0f, 0f, paint)
         }
 
-        // Apply transformation on frame
-        animatedTransformation?.transform(softwareCanvas)
+        // Apply the animated transformation.
+        pixelOpacity = animatedTransformation?.transform(softwareCanvas)
 
         // Draw onto the input canvas (may or may not be hardware).
         canvas.withSave {
@@ -127,19 +130,13 @@ class MovieDrawable @JvmOverloads constructor(
     /** Get the number of times the animation will repeat. */
     fun getRepeatCount(): Int = repeatCount
 
-    /**
-     * Set the transformation to be applied on each frame.
-     */
+    /** Set the [AnimatedTransformation] to apply when drawing. */
     fun setAnimatedTransformation(animatedTransformation: AnimatedTransformation?) {
         this.animatedTransformation = animatedTransformation
     }
 
-    /**
-     * Get the applied transformation.
-     */
-    fun getAnimatedTransformation(): AnimatedTransformation? {
-        return animatedTransformation
-    }
+    /** Get the [AnimatedTransformation] that is applied when drawing. */
+    fun getAnimatedTransformation(): AnimatedTransformation? = animatedTransformation
 
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }
@@ -147,7 +144,7 @@ class MovieDrawable @JvmOverloads constructor(
     }
 
     override fun getOpacity(): Int {
-        return if (paint.alpha == 255 && movie.isOpaque) {
+        return if (paint.alpha == 255 && pixelOpacity != TRANSLUCENT && movie.isOpaque) {
             PixelFormat.OPAQUE
         } else {
             PixelFormat.TRANSLUCENT
