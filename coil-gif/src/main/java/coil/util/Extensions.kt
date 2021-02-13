@@ -9,7 +9,7 @@ import coil.transform.AnimatedTransformation
 import coil.transform.PixelOpacity
 
 @RequiresApi(28)
-internal fun AnimatedTransformation.toPostProcessor() = PostProcessor { canvas -> transform(canvas).flag }
+internal fun AnimatedTransformation.asPostProcessor() = PostProcessor { canvas -> transform(canvas).flag }
 
 internal val PixelOpacity.flag: Int
     get() = when (this) {

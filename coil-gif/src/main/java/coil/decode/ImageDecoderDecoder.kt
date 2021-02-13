@@ -16,7 +16,7 @@ import coil.request.animatedTransformation
 import coil.request.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
-import coil.util.toPostProcessor
+import coil.util.asPostProcessor
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
@@ -102,7 +102,7 @@ class ImageDecoderDecoder : Decoder {
 
                 isUnpremultipliedRequired = !options.premultipliedAlpha
 
-                postProcessor = options.parameters.animatedTransformation()?.toPostProcessor()
+                postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
             }
 
             val drawable = if (baseDrawable is AnimatedImageDrawable) {
