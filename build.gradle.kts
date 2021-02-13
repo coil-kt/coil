@@ -23,7 +23,7 @@ buildscript {
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.13.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.4.0")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.4.1")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:10.0.0")
     }
 }
 
@@ -46,7 +46,6 @@ allprojects {
     version = project.versionName
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.40.0"
         disabledRules by setOf("indent", "max-line-length")
     }
 
