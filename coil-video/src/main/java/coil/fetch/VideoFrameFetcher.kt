@@ -25,7 +25,10 @@ import coil.request.videoFrameOption
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.math.roundToInt
 
 /**
@@ -83,10 +86,11 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
         data: T,
         size: Size,
         options: Options
-    ): FetchResult {
+    ): FetchResult = suspendCancellableCoroutine { continuation ->
         val retriever = MediaMetadataRetriever()
 
         try {
+            continuation.invokeOnCancellation { retriever.release() }
             retriever.setDataSource(data)
 
             val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
@@ -151,11 +155,14 @@ abstract class VideoFrameFetcher<T : Any>(private val context: Context) : Fetche
                 true
             }
 
-            return DrawableResult(
+            val result = DrawableResult(
                 drawable = bitmap.toDrawable(context.resources),
                 isSampled = isSampled,
                 dataSource = DataSource.DISK
             )
+            continuation.resume(result)
+        } catch (throwable: Throwable) {
+            continuation.resumeWithException(throwable)
         } finally {
             retriever.release()
         }
