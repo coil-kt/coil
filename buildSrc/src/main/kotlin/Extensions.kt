@@ -9,11 +9,13 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import kotlin.math.pow
 
 val Project.minSdk: Int
@@ -67,6 +69,8 @@ private fun DependencyHandler.androidTestImplementation(dependencyNotation: Any)
     return add("androidTestImplementation", dependencyNotation)
 }
 
+private val javaVersion = JavaVersion.VERSION_1_8
+
 fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
     testImplementation(project(":coil-test"))
 
@@ -113,8 +117,19 @@ private fun Project.setupBaseModule(): BaseExtension {
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+            sourceCompatibility = javaVersion
+            targetCompatibility = javaVersion
+        }
+        (this as ExtensionAware).extensions.getByName<KotlinJvmOptions>("kotlinOptions").run {
+            jvmTarget = javaVersion.toString()
+            useIR = true
+            allWarningsAsErrors = true
+            val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
+            if (project.name != "coil-test") {
+                arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
+                arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
+            }
+            freeCompilerArgs = arguments
         }
     }
 }
