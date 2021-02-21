@@ -113,8 +113,8 @@ class ImageDecoderDecoder : Decoder {
                 baseDrawable.repeatCount = options.parameters.repeatCount() ?: AnimatedImageDrawable.REPEAT_INFINITE
 
                 // Set the start and end animation callbacks if any one is supplied through the request.
-                if (options.parameters.animationStartCallback() != null
-                    || options.parameters.animationEndCallback() != null) {
+                if (options.parameters.animationStartCallback() != null ||
+                    options.parameters.animationEndCallback() != null) {
                     baseDrawable.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                         override fun onAnimationStart(drawable: Drawable?) {
                             super.onAnimationStart(drawable)

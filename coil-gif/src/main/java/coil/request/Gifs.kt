@@ -5,9 +5,9 @@ package coil.request
 
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
-import coil.decode.GifDecoder.Companion.ANIMATION_START_CALLBACK_KEY
 import coil.decode.GifDecoder.Companion.ANIMATED_TRANSFORMATION_KEY
 import coil.decode.GifDecoder.Companion.ANIMATION_END_CALLBACK_KEY
+import coil.decode.GifDecoder.Companion.ANIMATION_START_CALLBACK_KEY
 import coil.decode.GifDecoder.Companion.REPEAT_COUNT_KEY
 import coil.drawable.MovieDrawable
 import coil.transform.AnimatedTransformation
