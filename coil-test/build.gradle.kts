@@ -16,6 +16,7 @@ dependencies {
     implementation(Library.KOTLINX_COROUTINES_ANDROID)
     compileOnly(Library.KOTLINX_COROUTINES_TEST)
 
+    implementation(Library.ANDROIDX_APPCOMPAT)
     implementation(Library.ANDROIDX_CORE)
     implementation(Library.ANDROIDX_LIFECYCLE_COMMON)
 
