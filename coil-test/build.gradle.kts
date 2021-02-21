@@ -25,6 +25,9 @@ dependencies {
 
     implementation(Library.OKIO)
 
+    implementation(Library.ANDROIDX_TEST_CORE)
+    implementation(Library.ANDROIDX_TEST_JUNIT)
+
     implementation(Library.JUNIT)
 
     testImplementation(Library.JUNIT)
