@@ -1,5 +1,7 @@
 public final class coil/decode/GifDecoder : coil/decode/Decoder {
 	public static final field ANIMATED_TRANSFORMATION_KEY Ljava/lang/String;
+	public static final field ANIMATION_END_CALLBACK_KEY Ljava/lang/String;
+	public static final field ANIMATION_START_CALLBACK_KEY Ljava/lang/String;
 	public static final field Companion Lcoil/decode/GifDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> ()V
@@ -12,6 +14,8 @@ public final class coil/decode/GifDecoder$Companion {
 
 public final class coil/decode/ImageDecoderDecoder : coil/decode/Decoder {
 	public static final field ANIMATED_TRANSFORMATION_KEY Ljava/lang/String;
+	public static final field ANIMATION_END_CALLBACK_KEY Ljava/lang/String;
+	public static final field ANIMATION_START_CALLBACK_KEY Ljava/lang/String;
 	public static final field Companion Lcoil/decode/ImageDecoderDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> ()V
@@ -81,6 +85,10 @@ public final class coil/drawable/ScaleDrawable : android/graphics/drawable/Drawa
 public final class coil/request/Gifs {
 	public static final fun animatedTransformation (Lcoil/request/ImageRequest$Builder;Lcoil/transform/AnimatedTransformation;)Lcoil/request/ImageRequest$Builder;
 	public static final fun animatedTransformation (Lcoil/request/Parameters;)Lcoil/transform/AnimatedTransformation;
+	public static final fun animationEndCallback (Lcoil/request/Parameters;)Lkotlin/jvm/functions/Function0;
+	public static final fun animationStartCallback (Lcoil/request/Parameters;)Lkotlin/jvm/functions/Function0;
+	public static final fun onAnimationEnd (Lcoil/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil/request/ImageRequest$Builder;
+	public static final fun onAnimationStart (Lcoil/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil/request/ImageRequest$Builder;
 	public static final fun repeatCount (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
 	public static final fun repeatCount (Lcoil/request/Parameters;)Ljava/lang/Integer;
 }
