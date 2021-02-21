@@ -4,7 +4,9 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedImageDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -13,6 +15,8 @@ import androidx.core.util.component2
 import coil.bitmap.BitmapPool
 import coil.drawable.ScaleDrawable
 import coil.request.animatedTransformation
+import coil.request.animationEndCallback
+import coil.request.animationStartCallback
 import coil.request.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
@@ -108,6 +112,22 @@ class ImageDecoderDecoder : Decoder {
             val drawable = if (baseDrawable is AnimatedImageDrawable) {
                 baseDrawable.repeatCount = options.parameters.repeatCount() ?: AnimatedImageDrawable.REPEAT_INFINITE
 
+                // Set the start and end animation callbacks if any one is supplied through the request.
+                if (options.parameters.animationStartCallback() != null
+                    || options.parameters.animationEndCallback() != null) {
+                    baseDrawable.registerAnimationCallback(object : Animatable2.AnimationCallback() {
+                        override fun onAnimationStart(drawable: Drawable?) {
+                            super.onAnimationStart(drawable)
+                            options.parameters.animationStartCallback()?.invoke()
+                        }
+
+                        override fun onAnimationEnd(drawable: Drawable?) {
+                            super.onAnimationEnd(drawable)
+                            options.parameters.animationEndCallback()?.invoke()
+                        }
+                    })
+                }
+
                 // Wrap AnimatedImageDrawable in a ScaleDrawable so it always scales to fill its bounds.
                 ScaleDrawable(baseDrawable, options.scale)
             } else {
@@ -126,5 +146,7 @@ class ImageDecoderDecoder : Decoder {
     companion object {
         const val REPEAT_COUNT_KEY = GifDecoder.REPEAT_COUNT_KEY
         const val ANIMATED_TRANSFORMATION_KEY = GifDecoder.ANIMATED_TRANSFORMATION_KEY
+        const val ANIMATION_START_CALLBACK_KEY = GifDecoder.ANIMATION_START_CALLBACK_KEY
+        const val ANIMATION_END_CALLBACK_KEY = GifDecoder.ANIMATION_END_CALLBACK_KEY
     }
 }

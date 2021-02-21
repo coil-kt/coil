@@ -4,10 +4,14 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.Movie
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.bitmap.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.request.animatedTransformation
+import coil.request.animationEndCallback
+import coil.request.animationStartCallback
 import coil.request.repeatCount
 import coil.size.Size
 import okio.BufferedSource
@@ -54,6 +58,21 @@ class GifDecoder : Decoder {
 
         drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
 
+        // Set the start and end animation callbacks if any one is supplied through the request.
+        if (options.parameters.animationStartCallback() != null || options.parameters.animationEndCallback() != null) {
+            drawable.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                override fun onAnimationStart(drawable: Drawable?) {
+                    super.onAnimationStart(drawable)
+                    options.parameters.animationStartCallback()?.invoke()
+                }
+
+                override fun onAnimationEnd(drawable: Drawable?) {
+                    super.onAnimationEnd(drawable)
+                    options.parameters.animationEndCallback()?.invoke()
+                }
+            })
+        }
+
         // Set the animated transformation to be applied on each frame.
         drawable.setAnimatedTransformation(options.parameters.animatedTransformation())
 
@@ -66,5 +85,7 @@ class GifDecoder : Decoder {
     companion object {
         const val REPEAT_COUNT_KEY = "coil#repeat_count"
         const val ANIMATED_TRANSFORMATION_KEY = "coil#animated_transformation"
+        const val ANIMATION_START_CALLBACK_KEY = "coil#aimation_start_callback"
+        const val ANIMATION_END_CALLBACK_KEY = "coil#aimation_end_callback"
     }
 }
