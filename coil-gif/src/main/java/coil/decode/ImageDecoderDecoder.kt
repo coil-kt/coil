@@ -117,12 +117,10 @@ class ImageDecoderDecoder : Decoder {
                     options.parameters.animationEndCallback() != null) {
                     baseDrawable.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                         override fun onAnimationStart(drawable: Drawable?) {
-                            super.onAnimationStart(drawable)
                             options.parameters.animationStartCallback()?.invoke()
                         }
 
                         override fun onAnimationEnd(drawable: Drawable?) {
-                            super.onAnimationEnd(drawable)
                             options.parameters.animationEndCallback()?.invoke()
                         }
                     })

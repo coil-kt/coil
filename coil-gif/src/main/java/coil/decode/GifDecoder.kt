@@ -62,12 +62,10 @@ class GifDecoder : Decoder {
         if (options.parameters.animationStartCallback() != null || options.parameters.animationEndCallback() != null) {
             drawable.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                 override fun onAnimationStart(drawable: Drawable?) {
-                    super.onAnimationStart(drawable)
                     options.parameters.animationStartCallback()?.invoke()
                 }
 
                 override fun onAnimationEnd(drawable: Drawable?) {
-                    super.onAnimationEnd(drawable)
                     options.parameters.animationEndCallback()?.invoke()
                 }
             })

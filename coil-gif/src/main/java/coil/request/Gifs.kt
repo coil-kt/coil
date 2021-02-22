@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "UNCHECKED_CAST")
 @file:JvmName("Gifs")
 
 package coil.request
@@ -44,7 +44,6 @@ fun ImageRequest.Builder.onAnimationStart(callback: (() -> Unit)?): ImageRequest
 }
 
 /** Get the callback to be invoked at the start of the animation if the result is an animated [Drawable]. */
-@Suppress("UNCHECKED_CAST")
 fun Parameters.animationStartCallback(): (() -> Unit)? {
     return value(ANIMATION_START_CALLBACK_KEY) as (() -> Unit)?
 }
@@ -55,7 +54,6 @@ fun ImageRequest.Builder.onAnimationEnd(callback: (() -> Unit)?): ImageRequest.B
 }
 
 /** Get the callback to be invoked at the end of the animation if the result is an animated [Drawable]. */
-@Suppress("UNCHECKED_CAST")
 fun Parameters.animationEndCallback(): (() -> Unit)? {
     return value(ANIMATION_END_CALLBACK_KEY) as (() -> Unit)?
 }
