@@ -9,10 +9,6 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
 
     <application android:usesCleartextTraffic="true">
-        <activity
-            android:name="coil.util.TestActivity"
-            android:theme="@style/Theme.TestActivity"/>
-
         <provider
             android:name="coil.util.AssetContentProvider"
             android:authorities="coil"
