@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="coil.test"/>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="coil.test">
+
+    <application>
+        <activity
+            android:name="coil.util.TestActivity"
+            android:theme="@style/Theme.TestActivity"/>
+    </application>
+</manifest>

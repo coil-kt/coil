@@ -20,6 +20,8 @@ dependencies {
     implementation(Library.ANDROIDX_CORE)
     implementation(Library.ANDROIDX_LIFECYCLE_COMMON)
 
+    implementation(Library.MATERIAL)
+
     implementation(Library.OKHTTP)
     implementation(Library.OKHTTP_MOCK_WEB_SERVER)
 
