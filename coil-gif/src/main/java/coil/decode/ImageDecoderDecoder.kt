@@ -21,6 +21,8 @@ import coil.request.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.asPostProcessor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.buffer
 import okio.sink
@@ -47,74 +49,78 @@ class ImageDecoderDecoder : Decoder {
         source: BufferedSource,
         size: Size,
         options: Options
-    ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
-        var tempFile: File? = null
+    ): DecodeResult {
+        var isSampled = false
+        val baseDrawable = withInterruptibleSource(source) { interruptibleSource ->
+            var tempFile: File? = null
+            try {
+                val bufferedSource = interruptibleSource.buffer()
+                val decoderSource = if (SDK_INT >= 30) {
+                    // Buffer the source into memory.
+                    ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
+                } else {
+                    // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
+                    tempFile = File.createTempFile("tmp", null, null)
+                    bufferedSource.use { tempFile.sink().use(it::readAll) }
+                    ImageDecoder.createSource(tempFile)
+                }
 
-        try {
-            var isSampled = false
+                return@withInterruptibleSource decoderSource.decodeDrawable { info, _ ->
+                    // It's safe to delete the temp file here.
+                    tempFile?.delete()
 
-            val bufferedSource = interruptibleSource.buffer()
-            val decoderSource = if (SDK_INT >= 30) {
-                // Buffer the source into memory.
-                ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
-            } else {
-                // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
-                tempFile = File.createTempFile("tmp", null, null)
-                bufferedSource.use { tempFile.sink().use(it::readAll) }
-                ImageDecoder.createSource(tempFile)
-            }
+                    if (size is PixelSize) {
+                        val (srcWidth, srcHeight) = info.size
+                        val multiplier = DecodeUtils.computeSizeMultiplier(
+                            srcWidth = srcWidth,
+                            srcHeight = srcHeight,
+                            dstWidth = size.width,
+                            dstHeight = size.height,
+                            scale = options.scale
+                        )
 
-            val baseDrawable = decoderSource.decodeDrawable { info, _ ->
-                // It's safe to delete the temp file here.
-                tempFile?.delete()
-
-                if (size is PixelSize) {
-                    val (srcWidth, srcHeight) = info.size
-                    val multiplier = DecodeUtils.computeSizeMultiplier(
-                        srcWidth = srcWidth,
-                        srcHeight = srcHeight,
-                        dstWidth = size.width,
-                        dstHeight = size.height,
-                        scale = options.scale
-                    )
-
-                    // Set the target size if the image is larger than the requested dimensions
-                    // or the request requires exact dimensions.
-                    isSampled = multiplier < 1
-                    if (isSampled || !options.allowInexactSize) {
-                        val targetWidth = (multiplier * srcWidth).roundToInt()
-                        val targetHeight = (multiplier * srcHeight).roundToInt()
-                        setTargetSize(targetWidth, targetHeight)
+                        // Set the target size if the image is larger than the requested dimensions
+                        // or the request requires exact dimensions.
+                        isSampled = multiplier < 1
+                        if (isSampled || !options.allowInexactSize) {
+                            val targetWidth = (multiplier * srcWidth).roundToInt()
+                            val targetHeight = (multiplier * srcHeight).roundToInt()
+                            setTargetSize(targetWidth, targetHeight)
+                        }
                     }
+
+                    allocator = if (options.config == Bitmap.Config.HARDWARE) {
+                        ImageDecoder.ALLOCATOR_HARDWARE
+                    } else {
+                        ImageDecoder.ALLOCATOR_SOFTWARE
+                    }
+
+                    memorySizePolicy = if (options.allowRgb565) {
+                        ImageDecoder.MEMORY_POLICY_LOW_RAM
+                    } else {
+                        ImageDecoder.MEMORY_POLICY_DEFAULT
+                    }
+
+                    if (options.colorSpace != null) {
+                        setTargetColorSpace(options.colorSpace)
+                    }
+
+                    isUnpremultipliedRequired = !options.premultipliedAlpha
+
+                    postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
                 }
-
-                allocator = if (options.config == Bitmap.Config.HARDWARE) {
-                    ImageDecoder.ALLOCATOR_HARDWARE
-                } else {
-                    ImageDecoder.ALLOCATOR_SOFTWARE
-                }
-
-                memorySizePolicy = if (options.allowRgb565) {
-                    ImageDecoder.MEMORY_POLICY_LOW_RAM
-                } else {
-                    ImageDecoder.MEMORY_POLICY_DEFAULT
-                }
-
-                if (options.colorSpace != null) {
-                    setTargetColorSpace(options.colorSpace)
-                }
-
-                isUnpremultipliedRequired = !options.premultipliedAlpha
-
-                postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
+            } finally {
+                tempFile?.delete()
             }
+        }
 
-            val drawable = if (baseDrawable is AnimatedImageDrawable) {
-                baseDrawable.repeatCount = options.parameters.repeatCount() ?: AnimatedImageDrawable.REPEAT_INFINITE
+        val drawable = if (baseDrawable is AnimatedImageDrawable) {
+            baseDrawable.repeatCount = options.parameters.repeatCount() ?: AnimatedImageDrawable.REPEAT_INFINITE
 
-                // Set the start and end animation callbacks if any one is supplied through the request.
-                if (options.parameters.animationStartCallback() != null ||
-                    options.parameters.animationEndCallback() != null) {
+            // Set the start and end animation callbacks if any one is supplied through the request.
+            if (options.parameters.animationStartCallback() != null ||
+                options.parameters.animationEndCallback() != null) {
+                withContext(Dispatchers.Main.immediate) {
                     baseDrawable.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                         override fun onAnimationStart(drawable: Drawable?) {
                             options.parameters.animationStartCallback()?.invoke()
@@ -125,20 +131,18 @@ class ImageDecoderDecoder : Decoder {
                         }
                     })
                 }
-
-                // Wrap AnimatedImageDrawable in a ScaleDrawable so it always scales to fill its bounds.
-                ScaleDrawable(baseDrawable, options.scale)
-            } else {
-                baseDrawable
             }
 
-            DecodeResult(
-                drawable = drawable,
-                isSampled = isSampled
-            )
-        } finally {
-            tempFile?.delete()
+            // Wrap AnimatedImageDrawable in a ScaleDrawable so it always scales to fill its bounds.
+            ScaleDrawable(baseDrawable, options.scale)
+        } else {
+            baseDrawable
         }
+
+        return DecodeResult(
+            drawable = drawable,
+            isSampled = isSampled
+        )
     }
 
     companion object {
