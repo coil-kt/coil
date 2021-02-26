@@ -17,7 +17,8 @@ import coil.request.repeatCount
 import coil.util.TestActivity
 import coil.util.activity
 import coil.util.runBlockingTest
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -51,8 +52,8 @@ class AnimationCallbacksTest {
     @Test
     fun callbacksTest() = runBlockingTest {
         val imageView = activityRule.scenario.activity.imageView
-        var isStartCalled = false
-        var isEndCalled = false
+        var isStartCalled = MutableStateFlow(false)
+        var isEndCalled = MutableStateFlow(false)
         val decoder = if (Build.VERSION.SDK_INT >= 28) {
             ImageDecoderDecoder()
         } else {
@@ -62,18 +63,17 @@ class AnimationCallbacksTest {
         val imageRequest = ImageRequest.Builder(context)
             .repeatCount(0)
             .onAnimationStart {
-                isStartCalled = true
+                isStartCalled.value = true
             }
             .onAnimationEnd {
-                isEndCalled = true
+                isEndCalled.value = true
             }
             .target(imageView)
             .decoder(decoder)
             .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.gif")
             .build()
         imageLoader.enqueue(imageRequest)
-        delay(5000)
-        assertTrue(isStartCalled)
-        assertTrue(isEndCalled)
+        assertTrue(isStartCalled.first { it })
+        assertTrue(isEndCalled.first { it })
     }
 }
