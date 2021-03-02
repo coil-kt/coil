@@ -37,7 +37,7 @@ object Library {
 
     // TEST
 
-    const val JUNIT = "junit:junit:4.13.1"
+    const val JUNIT = "junit:junit:4.13.2"
 
     const val KOTLINX_COROUTINES_TEST = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$COROUTINES_VERSION"
 
