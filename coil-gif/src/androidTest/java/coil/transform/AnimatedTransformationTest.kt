@@ -46,7 +46,7 @@ class AnimatedTransformationTest {
     fun gifTransformationTest() {
         val actual = runBlocking {
             val decoder = if (SDK_INT >= 28) {
-                ImageDecoderDecoder()
+                ImageDecoderDecoder(context)
             } else {
                 GifDecoder()
             }
@@ -67,7 +67,7 @@ class AnimatedTransformationTest {
 
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
-                .decoder(ImageDecoderDecoder())
+                .decoder(ImageDecoderDecoder(context))
                 .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.heif")
                 .build()
             imageLoader.execute(imageRequest)
@@ -83,7 +83,7 @@ class AnimatedTransformationTest {
 
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
-                .decoder(ImageDecoderDecoder())
+                .decoder(ImageDecoderDecoder(context))
                 .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.webp")
                 .build()
             imageLoader.execute(imageRequest)
