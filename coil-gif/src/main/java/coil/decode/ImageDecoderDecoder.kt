@@ -135,7 +135,7 @@ class ImageDecoderDecoder : Decoder {
             val onStart = options.parameters.animationStartCallback()
             val onEnd = options.parameters.animationEndCallback()
             if (onStart != null || onEnd != null) {
-                // Animation callbacks must be set on the main thread for AnimatedImageDrawable.
+                // Animation callbacks must be set on the main thread.
                 withContext(Dispatchers.Main.immediate) {
                     baseDrawable.registerAnimationCallback(animatable2CallbackOf(onStart, onEnd))
                 }
