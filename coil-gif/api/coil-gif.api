@@ -19,6 +19,7 @@ public final class coil/decode/ImageDecoderDecoder : coil/decode/Decoder {
 	public static final field Companion Lcoil/decode/ImageDecoderDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> ()V
+	public fun <init> (Landroid/content/Context;)V
 	public fun decode (Lcoil/bitmap/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
 }
