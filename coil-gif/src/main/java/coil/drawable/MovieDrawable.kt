@@ -22,8 +22,8 @@ import coil.decode.DecodeUtils
 import coil.decode.ImageDecoderDecoder
 import coil.size.Scale
 import coil.transform.AnimatedTransformation
-import coil.transform.PixelOpacity
-import coil.transform.PixelOpacity.TRANSLUCENT
+import coil.transform.PixelOpacity.OPAQUE
+import coil.transform.PixelOpacity.UNCHANGED
 
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
@@ -56,9 +56,8 @@ class MovieDrawable @JvmOverloads constructor(
 
     private var repeatCount = REPEAT_INFINITE
     private var loopIteration = 0
-
     private var animatedTransformation: AnimatedTransformation? = null
-    private var pixelOpacity: PixelOpacity? = null
+    private var pixelOpacity = UNCHANGED
 
     init {
         require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
@@ -96,7 +95,9 @@ class MovieDrawable @JvmOverloads constructor(
         }
 
         // Apply the animated transformation.
-        pixelOpacity = animatedTransformation?.transform(softwareCanvas)
+        animatedTransformation?.let { animatedTransformation ->
+            pixelOpacity = animatedTransformation.transform(softwareCanvas)
+        }
 
         // Draw onto the input canvas (may or may not be hardware).
         canvas.withSave {
@@ -135,7 +136,7 @@ class MovieDrawable @JvmOverloads constructor(
         this.animatedTransformation = animatedTransformation
     }
 
-    /** Get the [AnimatedTransformation] that is applied when drawing. */
+    /** Get the [AnimatedTransformation]. */
     fun getAnimatedTransformation(): AnimatedTransformation? = animatedTransformation
 
     override fun setAlpha(alpha: Int) {
@@ -144,7 +145,7 @@ class MovieDrawable @JvmOverloads constructor(
     }
 
     override fun getOpacity(): Int {
-        return if (paint.alpha == 255 && pixelOpacity != TRANSLUCENT && movie.isOpaque) {
+        return if (paint.alpha == 255 && (pixelOpacity == OPAQUE || (pixelOpacity == UNCHANGED && movie.isOpaque))) {
             PixelFormat.OPAQUE
         } else {
             PixelFormat.TRANSLUCENT

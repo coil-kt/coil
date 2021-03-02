@@ -4,9 +4,7 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedImageDrawable
-import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -20,6 +18,7 @@ import coil.request.animationStartCallback
 import coil.request.repeatCount
 import coil.size.PixelSize
 import coil.size.Size
+import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -65,7 +64,7 @@ class ImageDecoderDecoder : Decoder {
                     ImageDecoder.createSource(tempFile)
                 }
 
-                return@withInterruptibleSource decoderSource.decodeDrawable { info, _ ->
+                decoderSource.decodeDrawable { info, _ ->
                     // It's safe to delete the temp file here.
                     tempFile?.delete()
 
@@ -118,18 +117,12 @@ class ImageDecoderDecoder : Decoder {
             baseDrawable.repeatCount = options.parameters.repeatCount() ?: AnimatedImageDrawable.REPEAT_INFINITE
 
             // Set the start and end animation callbacks if any one is supplied through the request.
-            if (options.parameters.animationStartCallback() != null ||
-                options.parameters.animationEndCallback() != null) {
+            val onStart = options.parameters.animationStartCallback()
+            val onEnd = options.parameters.animationEndCallback()
+            if (onStart != null || onEnd != null) {
+                // Animation callbacks must be set on the main thread for AnimatedImageDrawable.
                 withContext(Dispatchers.Main.immediate) {
-                    baseDrawable.registerAnimationCallback(object : Animatable2.AnimationCallback() {
-                        override fun onAnimationStart(drawable: Drawable?) {
-                            options.parameters.animationStartCallback()?.invoke()
-                        }
-
-                        override fun onAnimationEnd(drawable: Drawable?) {
-                            options.parameters.animationEndCallback()?.invoke()
-                        }
-                    })
+                    baseDrawable.registerAnimationCallback(animatable2CallbackOf(onStart, onEnd))
                 }
             }
 

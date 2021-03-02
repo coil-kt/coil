@@ -4,9 +4,7 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.Movie
-import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.bitmap.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.request.animatedTransformation
@@ -14,6 +12,7 @@ import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
 import coil.size.Size
+import coil.util.animatable2CompatCallbackOf
 import okio.BufferedSource
 import okio.buffer
 
@@ -59,16 +58,10 @@ class GifDecoder : Decoder {
         drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
 
         // Set the start and end animation callbacks if any one is supplied through the request.
-        if (options.parameters.animationStartCallback() != null || options.parameters.animationEndCallback() != null) {
-            drawable.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-                override fun onAnimationStart(drawable: Drawable?) {
-                    options.parameters.animationStartCallback()?.invoke()
-                }
-
-                override fun onAnimationEnd(drawable: Drawable?) {
-                    options.parameters.animationEndCallback()?.invoke()
-                }
-            })
+        val onStart = options.parameters.animationStartCallback()
+        val onEnd = options.parameters.animationEndCallback()
+        if (onStart != null || onEnd != null) {
+            drawable.registerAnimationCallback(animatable2CompatCallbackOf(onStart, onEnd))
         }
 
         // Set the animated transformation to be applied on each frame.
