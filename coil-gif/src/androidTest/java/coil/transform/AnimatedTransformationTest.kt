@@ -67,7 +67,7 @@ class AnimatedTransformationTest {
 
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
-                .decoder(ImageDecoderDecoder())
+                .decoder(ImageDecoderDecoder(context))
                 .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.heif")
                 .build()
             imageLoader.execute(imageRequest)
@@ -83,7 +83,7 @@ class AnimatedTransformationTest {
 
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
-                .decoder(ImageDecoderDecoder())
+                .decoder(ImageDecoderDecoder(context))
                 .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.webp")
                 .build()
             imageLoader.execute(imageRequest)
