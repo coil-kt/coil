@@ -31,7 +31,7 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
 
                 // Decoders
                 if (SDK_INT >= 28) {
-                    add(ImageDecoderDecoder())
+                    add(ImageDecoderDecoder(this@Application))
                 } else {
                     add(GifDecoder())
                 }

@@ -2,6 +2,7 @@
 
 package coil.decode
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
@@ -37,6 +38,20 @@ import kotlin.math.roundToInt
 @RequiresApi(28)
 class ImageDecoderDecoder : Decoder {
 
+    @Deprecated(
+        message = "Migrate to the constructor that accepts a Context.",
+        replaceWith = ReplaceWith("ImageDecoderDecoder(context)")
+    )
+    constructor() {
+        this.context = null
+    }
+
+    constructor(context: Context) {
+        this.context = context
+    }
+
+    private val context: Context?
+
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) ||
             DecodeUtils.isAnimatedWebP(source) ||
@@ -59,7 +74,7 @@ class ImageDecoderDecoder : Decoder {
                     ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
                 } else {
                     // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
-                    tempFile = File.createTempFile("tmp", null, null)
+                    tempFile = File.createTempFile("tmp", null, context?.cacheDir?.apply { mkdirs() })
                     bufferedSource.use { tempFile.sink().use(it::readAll) }
                     ImageDecoder.createSource(tempFile)
                 }
@@ -120,7 +135,7 @@ class ImageDecoderDecoder : Decoder {
             val onStart = options.parameters.animationStartCallback()
             val onEnd = options.parameters.animationEndCallback()
             if (onStart != null || onEnd != null) {
-                // Animation callbacks must be set on the main thread for AnimatedImageDrawable.
+                // Animation callbacks must be set on the main thread.
                 withContext(Dispatchers.Main.immediate) {
                     baseDrawable.registerAnimationCallback(animatable2CallbackOf(onStart, onEnd))
                 }
