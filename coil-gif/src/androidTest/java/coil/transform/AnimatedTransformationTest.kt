@@ -46,7 +46,7 @@ class AnimatedTransformationTest {
     fun gifTransformationTest() {
         val actual = runBlocking {
             val decoder = if (SDK_INT >= 28) {
-                ImageDecoderDecoder()
+                ImageDecoderDecoder(context)
             } else {
                 GifDecoder()
             }
