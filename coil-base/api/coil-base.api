@@ -347,6 +347,22 @@ public final class coil/memory/MemoryCache$Key$Companion {
 	public final fun create (Ljava/lang/String;)Lcoil/memory/MemoryCache$Key;
 }
 
+public final class coil/memory/MemoryCache$Key$Complex$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcoil/memory/MemoryCache$Key$Complex;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcoil/memory/MemoryCache$Key$Complex;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class coil/memory/MemoryCache$Key$Simple$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcoil/memory/MemoryCache$Key$Simple;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcoil/memory/MemoryCache$Key$Simple;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
 public final class coil/network/HttpException : java/lang/RuntimeException {
 	public fun <init> (Lokhttp3/Response;)V
 	public final fun getResponse ()Lokhttp3/Response;
@@ -660,7 +676,7 @@ public final class coil/size/OriginalSize : coil/size/Size {
 	public fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
-public class coil/size/OriginalSize$Creator : android/os/Parcelable$Creator {
+public final class coil/size/OriginalSize$Creator : android/os/Parcelable$Creator {
 	public fun <init> ()V
 	public final fun createFromParcel (Landroid/os/Parcel;)Lcoil/size/OriginalSize;
 	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
@@ -684,7 +700,7 @@ public final class coil/size/PixelSize : coil/size/Size {
 	public fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
-public class coil/size/PixelSize$Creator : android/os/Parcelable$Creator {
+public final class coil/size/PixelSize$Creator : android/os/Parcelable$Creator {
 	public fun <init> ()V
 	public final fun createFromParcel (Landroid/os/Parcel;)Lcoil/size/PixelSize;
 	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
