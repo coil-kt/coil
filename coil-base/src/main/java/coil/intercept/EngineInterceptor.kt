@@ -336,7 +336,7 @@ internal class EngineInterceptor(
 
     /** Apply any [Transformation]s and return an updated [DrawableResult]. */
     @VisibleForTesting
-    internal suspend inline fun applyTransformations(
+    suspend inline fun applyTransformations(
         result: DrawableResult,
         request: ImageRequest,
         size: Size,
