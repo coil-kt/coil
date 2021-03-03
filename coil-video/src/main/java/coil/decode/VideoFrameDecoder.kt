@@ -31,15 +31,18 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
         options: Options
     ): DecodeResult {
         val tempFile = File.createTempFile("tmp", null, context.cacheDir.apply { mkdirs() })
-        source.use { tempFile.sink().use(it::readAll) }
-
-        val retriever = MediaMetadataRetriever()
         try {
-            retriever.setDataSource(tempFile.path)
-            return delegate.decode(pool, retriever, size, options)
+            source.use { tempFile.sink().use(it::readAll) }
+
+            val retriever = MediaMetadataRetriever()
+            try {
+                retriever.setDataSource(tempFile.path)
+                return delegate.decode(pool, retriever, size, options)
+            } finally {
+                retriever.release()
+            }
         } finally {
             tempFile.delete()
-            retriever.release()
         }
     }
 
