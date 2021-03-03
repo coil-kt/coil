@@ -30,7 +30,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
         size: Size,
         options: Options
     ): DecodeResult {
-        val tempFile = File.createTempFile("tmp", null, context.cacheDir)
+        val tempFile = File.createTempFile("tmp", null, context.cacheDir.apply { mkdirs() })
         source.use { tempFile.sink().use(it::readAll) }
 
         val retriever = MediaMetadataRetriever()
