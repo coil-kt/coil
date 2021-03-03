@@ -9,8 +9,8 @@ import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.media.MediaMetadataRetriever.OPTION_NEXT_SYNC
 import android.media.MediaMetadataRetriever.OPTION_PREVIOUS_SYNC
 import coil.decode.VideoFrameDecoder
-import coil.decode.VideoFrameDecoderDelegate.Companion.VIDEO_FRAME_MICROS_KEY
-import coil.decode.VideoFrameDecoderDelegate.Companion.VIDEO_FRAME_OPTION_KEY
+import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
+import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_OPTION_KEY
 import coil.fetch.VideoFrameFetcher
 
 /**

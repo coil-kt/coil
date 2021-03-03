@@ -44,7 +44,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
     }
 
     companion object {
-        const val VIDEO_FRAME_MICROS_KEY = VideoFrameDecoderDelegate.VIDEO_FRAME_MICROS_KEY
-        const val VIDEO_FRAME_OPTION_KEY = VideoFrameDecoderDelegate.VIDEO_FRAME_OPTION_KEY
+        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
+        const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
     }
 }

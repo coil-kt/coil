@@ -1,3 +1,15 @@
+public final class coil/decode/VideoFrameDecoder : coil/decode/Decoder {
+	public static final field Companion Lcoil/decode/VideoFrameDecoder$Companion;
+	public static final field VIDEO_FRAME_MICROS_KEY Ljava/lang/String;
+	public static final field VIDEO_FRAME_OPTION_KEY Ljava/lang/String;
+	public fun <init> (Landroid/content/Context;)V
+	public fun decode (Lcoil/bitmap/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
+}
+
+public final class coil/decode/VideoFrameDecoder$Companion {
+}
+
 public abstract class coil/fetch/VideoFrameFetcher : coil/fetch/Fetcher {
 	public static final field Companion Lcoil/fetch/VideoFrameFetcher$Companion;
 	public static final field VIDEO_FRAME_MICROS_KEY Ljava/lang/String;

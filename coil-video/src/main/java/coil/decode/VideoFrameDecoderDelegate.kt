@@ -154,9 +154,4 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
         return options.allowInexactSize || size is OriginalSize ||
             size == DecodeUtils.computePixelSize(bitmap.width, bitmap.height, size, options.scale)
     }
-
-    companion object {
-        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
-        const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
-    }
 }

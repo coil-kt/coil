@@ -9,6 +9,7 @@ import android.net.Uri
 import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
+import coil.decode.VideoFrameDecoder
 import coil.decode.VideoFrameDecoderDelegate
 import coil.size.Size
 import java.io.File
@@ -86,7 +87,7 @@ abstract class VideoFrameFetcher<T : Any>(context: Context) : Fetcher<T> {
 
         internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
-        const val VIDEO_FRAME_MICROS_KEY = VideoFrameDecoderDelegate.VIDEO_FRAME_MICROS_KEY
-        const val VIDEO_FRAME_OPTION_KEY = VideoFrameDecoderDelegate.VIDEO_FRAME_OPTION_KEY
+        const val VIDEO_FRAME_MICROS_KEY = VideoFrameDecoder.VIDEO_FRAME_MICROS_KEY
+        const val VIDEO_FRAME_OPTION_KEY = VideoFrameDecoder.VIDEO_FRAME_OPTION_KEY
     }
 }
