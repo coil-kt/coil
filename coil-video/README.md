@@ -18,7 +18,7 @@ val imageLoader = ImageLoader.Builder(context)
     .build()
 ```
 
-`VideoFrameFileFetcher` and `VideoFrameUriFetcher` are the optimal ways to decode video frames from `File`s and non-network `Uri`s and will be used automatically for those data types. `VideoFrameDecoder` handles all data types, but creates a temporary file on disk to decode the source.
+`VideoFrameDecoder` handles all data sources, but creates a temporary file on disk to decode the source. `VideoFrameFileFetcher` and `VideoFrameUriFetcher` don't create a temporary file, but only work for `File`s and local `Uri`s respectively. Registering all 3 components ensures that `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are automatically used when appropriate and `VideoFrameDecoder` is used as a fallback.
 
 To specify the time code of the frame to extract from a video, use `videoFrameMillis` or `videoFrameMicros`:
 
