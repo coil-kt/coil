@@ -10,6 +10,7 @@ import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
+import coil.decode.VideoFrameDecoder
 import coil.fetch.VideoFrameFileFetcher
 import coil.fetch.VideoFrameUriFetcher
 import coil.util.DebugLogger
@@ -25,17 +26,20 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
             .availableMemoryPercentage(0.25) // Use 25% of the application's available memory.
             .crossfade(true) // Show a short crossfade when loading images from network or disk.
             .componentRegistry {
-                // Fetchers
-                add(VideoFrameFileFetcher(this@Application))
-                add(VideoFrameUriFetcher(this@Application))
-
-                // Decoders
+                // GIFs
                 if (SDK_INT >= 28) {
                     add(ImageDecoderDecoder(this@Application))
                 } else {
                     add(GifDecoder())
                 }
+
+                // SVGs
                 add(SvgDecoder(this@Application))
+
+                // Video frames
+                add(VideoFrameFileFetcher(this@Application))
+                add(VideoFrameUriFetcher(this@Application))
+                add(VideoFrameDecoder(this@Application))
             }
             .okHttpClient {
                 // Create a disk cache with "unlimited" size. Don't do this in production.

@@ -6,19 +6,19 @@ To add video frame support, import the extension library:
 implementation("io.coil-kt:coil-video:1.1.1")
 ```
 
-And add the two fetchers to your component registry when constructing your `ImageLoader`:
+And add the two fetchers and the decoder to your component registry when constructing your `ImageLoader`:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
     .componentRegistry {
-         add(VideoFrameFileFetcher())
-         add(VideoFrameUriFetcher())
+        add(VideoFrameFileFetcher())
+        add(VideoFrameUriFetcher())
+        add(VideoFrameDecoder())
     }
     .build()
 ```
 
-!!! Note
-    Video frame decoding is only supported for `File`s and `Uri`s (`content` and `file` schemes only).
+`VideoFrameDecoder` handles all data sources, but creates a temporary file on disk to decode the source. `VideoFrameFileFetcher` and `VideoFrameUriFetcher` don't create a temporary file, but only work for `File`s and local `Uri`s respectively. Registering all 3 components ensures that `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are automatically used when appropriate and `VideoFrameDecoder` is used as a fallback.
 
 To specify the time code of the frame to extract from a video, use `videoFrameMillis` or `videoFrameMicros`:
 
