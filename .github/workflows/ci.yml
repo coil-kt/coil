@@ -18,7 +18,7 @@ jobs:
             - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
-                  key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+                  key: gradle-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Check style
               run: ./gradlew ktlintCheck
@@ -41,7 +41,7 @@ jobs:
             - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
-                  key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+                  key: gradle-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Unit tests
               run: ./gradlew testDebugUnitTest
@@ -66,7 +66,7 @@ jobs:
             - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
-                  key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+                  key: gradle-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
@@ -90,7 +90,7 @@ jobs:
             - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
-                  key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+                  key: gradle-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Deploy Snapshot
               env:
