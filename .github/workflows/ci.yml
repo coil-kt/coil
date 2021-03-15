@@ -79,8 +79,6 @@ jobs:
         name: Deploy snapshot
         runs-on: ubuntu-latest
         timeout-minutes: 10
-        if: github.ref == 'refs/heads/master'
-        needs: [check, unit-tests, instrumentation-tests]
         steps:
             - uses: actions/checkout@v2
             - uses: gradle/wrapper-validation-action@v1
@@ -96,4 +94,4 @@ jobs:
               env:
                   SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
                   SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-              run: ./upload_archives.sh
+              run: ./publish_remote.sh
