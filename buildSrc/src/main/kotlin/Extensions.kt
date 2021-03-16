@@ -9,11 +9,13 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import kotlin.math.pow
 
 val Project.minSdk: Int
@@ -41,6 +43,8 @@ val Project.versionCode: Int
             // 1.2.3 -> 102030
             (unit * 10.0.pow(2 * index + 1)).toInt()
         }
+
+private val javaVersion = JavaVersion.VERSION_1_8
 
 private fun Project.intProperty(name: String): Int {
     return (property(name) as String).toInt()
@@ -104,6 +108,11 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
     androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
 }
 
+inline fun BaseExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
+    (this as ExtensionAware).extensions.getByName<KotlinJvmOptions>("kotlinOptions").block()
+}
+
+@Suppress("SpellCheckingInspection")
 private fun Project.setupBaseModule(): BaseExtension {
     return extensions.getByName<BaseExtension>("android").apply {
         compileSdkVersion(project.compileSdk)
@@ -113,8 +122,20 @@ private fun Project.setupBaseModule(): BaseExtension {
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+            sourceCompatibility = javaVersion
+            targetCompatibility = javaVersion
+        }
+        kotlinOptions {
+            jvmTarget = javaVersion.toString()
+            allWarningsAsErrors = true
+            useIR = true
+
+            val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
+            if (project.name != "coil-test") {
+                arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
+                arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
+            }
+            freeCompilerArgs = arguments
         }
     }
 }
