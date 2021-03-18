@@ -33,13 +33,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-
-        // https://github.com/Kotlin/dokka/issues/41
-        jcenter {
-            content {
-                includeModule("org.jetbrains.dokka", "dokka-fatjar")
-            }
-        }
     }
 
     group = project.groupId
