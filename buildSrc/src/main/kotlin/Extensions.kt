@@ -11,7 +11,6 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
 import kotlin.math.pow
@@ -104,8 +103,8 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
     androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
 }
 
-private fun Project.setupBaseModule(): BaseExtension {
-    return extensions.getByName<BaseExtension>("android").apply {
+private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinline block: T.() -> Unit = {}) {
+    extensions.configure<BaseExtension>("android") {
         compileSdkVersion(project.compileSdk)
         defaultConfig {
             minSdkVersion(project.minSdk)
@@ -116,11 +115,12 @@ private fun Project.setupBaseModule(): BaseExtension {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
         }
+        (this as T).block()
     }
 }
 
-fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}): LibraryExtension {
-    return (setupBaseModule() as LibraryExtension).apply {
+fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}) {
+    setupBaseModule<LibraryExtension> {
         libraryVariants.all {
             generateBuildConfigProvider?.configure { enabled = false }
         }
@@ -131,8 +131,8 @@ fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}): Library
     }
 }
 
-fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}): BaseAppModuleExtension {
-    return (setupBaseModule() as BaseAppModuleExtension).apply {
+fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}) {
+    setupBaseModule<BaseAppModuleExtension> {
         defaultConfig {
             versionCode = project.versionCode
             versionName = project.versionName
