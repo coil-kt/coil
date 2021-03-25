@@ -60,7 +60,8 @@ class CrossfadeTransition(
                     scale = (target.view as? ImageView)?.scale ?: Scale.FILL,
                     durationMillis = durationMillis,
                     fadeStart = result !is SuccessResult || !result.metadata.isPlaceholderMemoryCacheKeyPresent,
-                    preferExactIntrinsicSize = preferExactIntrinsicSize
+                    preferExactIntrinsicSize = preferExactIntrinsicSize,
+                    scalingEnabled = true
                 )
                 outerCrossfade = crossfade
                 crossfade.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
