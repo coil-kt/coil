@@ -14,7 +14,6 @@ buildscript {
         google()
         mavenCentral()
         gradlePluginPortal()
-        jcenter()
     }
     dependencies {
         classpath(rootProject.extra["androidPlugin"].toString())
@@ -36,7 +35,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
+
+        // https://github.com/Kotlin/dokka/issues/41
+        jcenter {
+            content {
+                includeModule("org.jetbrains.dokka", "dokka-fatjar")
+            }
+        }
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
@@ -54,6 +59,15 @@ allprojects {
             exceptionFormat = TestExceptionFormat.FULL
             events = setOf(TestLogEvent.SKIPPED, TestLogEvent.PASSED, TestLogEvent.FAILED)
             showStandardStreams = true
+        }
+    }
+
+    // https://issuetracker.google.com/issues/179291081
+    configurations.configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.trove4j" && requested.name == "trove4j" && requested.version == "20160824") {
+                useTarget("org.jetbrains.intellij.deps:trove4j:1.0.20181211")
+            }
         }
     }
 

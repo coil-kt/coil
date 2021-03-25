@@ -112,9 +112,8 @@ inline fun BaseExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
     (this as ExtensionAware).extensions.getByName<KotlinJvmOptions>("kotlinOptions").block()
 }
 
-@Suppress("SpellCheckingInspection")
-private fun Project.setupBaseModule(): BaseExtension {
-    return extensions.getByName<BaseExtension>("android").apply {
+private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinline block: T.() -> Unit = {}) {
+    extensions.configure<BaseExtension>("android") {
         compileSdkVersion(project.compileSdk)
         defaultConfig {
             minSdkVersion(project.minSdk)
@@ -137,11 +136,12 @@ private fun Project.setupBaseModule(): BaseExtension {
             }
             freeCompilerArgs = arguments
         }
+        (this as T).block()
     }
 }
 
-fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}): LibraryExtension {
-    return (setupBaseModule() as LibraryExtension).apply {
+fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}) {
+    setupBaseModule<LibraryExtension> {
         libraryVariants.all {
             generateBuildConfigProvider?.configure { enabled = false }
         }
@@ -152,8 +152,8 @@ fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}): Library
     }
 }
 
-fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}): BaseAppModuleExtension {
-    return (setupBaseModule() as BaseAppModuleExtension).apply {
+fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}) {
+    setupBaseModule<BaseAppModuleExtension> {
         defaultConfig {
             versionCode = project.versionCode
             versionName = project.versionName
