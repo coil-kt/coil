@@ -12,7 +12,6 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
@@ -108,8 +107,8 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
     androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
 }
 
-inline fun BaseExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
-    (this as ExtensionAware).extensions.getByName<KotlinJvmOptions>("kotlinOptions").block()
+inline fun BaseExtension.kotlinOptions(crossinline block: KotlinJvmOptions.() -> Unit) {
+    (this as ExtensionAware).extensions.configure<KotlinJvmOptions>("kotlinOptions") { block() }
 }
 
 private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinline block: T.() -> Unit = {}) {
