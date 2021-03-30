@@ -2,19 +2,13 @@
 
 package coil
 
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.project
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import kotlin.math.pow
 
 val Project.minSdk: Int
@@ -42,8 +36,6 @@ val Project.versionCode: Int
             // 1.2.3 -> 102030
             (unit * 10.0.pow(2 * index + 1)).toInt()
         }
-
-private val javaVersion = JavaVersion.VERSION_1_8
 
 private fun Project.intProperty(name: String): Int {
     return (property(name) as String).toInt()
@@ -105,62 +97,6 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeT
     androidTestImplementation(Library.ANDROIDX_TEST_RUNNER)
 
     androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
-}
-
-inline fun BaseExtension.kotlinOptions(crossinline block: KotlinJvmOptions.() -> Unit) {
-    (this as ExtensionAware).extensions.configure<KotlinJvmOptions>("kotlinOptions") { block() }
-}
-
-private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinline block: T.() -> Unit = {}) {
-    extensions.configure<BaseExtension>("android") {
-        compileSdkVersion(project.compileSdk)
-        defaultConfig {
-            minSdkVersion(project.minSdk)
-            targetSdkVersion(project.targetSdk)
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-        compileOptions {
-            sourceCompatibility = javaVersion
-            targetCompatibility = javaVersion
-        }
-        kotlinOptions {
-            jvmTarget = javaVersion.toString()
-            allWarningsAsErrors = true
-            useIR = true
-
-            val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
-            if (project.name != "coil-test") {
-                arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
-                arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
-            }
-            freeCompilerArgs = arguments
-        }
-        (this as T).block()
-    }
-}
-
-fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}) {
-    setupBaseModule<LibraryExtension> {
-        libraryVariants.all {
-            generateBuildConfigProvider?.configure { enabled = false }
-        }
-        testOptions {
-            unitTests.isIncludeAndroidResources = true
-        }
-        block()
-    }
-}
-
-fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}) {
-    setupBaseModule<BaseAppModuleExtension> {
-        defaultConfig {
-            versionCode = project.versionCode
-            versionName = project.versionName
-            resConfigs("en")
-            vectorDrawables.useSupportLibrary = true
-        }
-        block()
-    }
 }
 
 inline infix fun <T> Property<T>.by(value: T) = set(value)
