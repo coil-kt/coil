@@ -2,8 +2,6 @@ import coil.by
 import coil.groupId
 import coil.versionName
 import kotlinx.validation.ApiValidationExtension
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
@@ -44,22 +42,14 @@ allprojects {
         }
     }
 
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-
     group = project.groupId
     version = project.versionName
+
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     extensions.configure<KtlintExtension>("ktlint") {
         version by "0.40.0"
         disabledRules by setOf("indent", "max-line-length")
-    }
-
-    tasks.withType<Test>().configureEach {
-        testLogging {
-            exceptionFormat = TestExceptionFormat.FULL
-            events = setOf(TestLogEvent.SKIPPED, TestLogEvent.PASSED, TestLogEvent.FAILED)
-            showStandardStreams = true
-        }
     }
 
     // https://issuetracker.google.com/issues/179291081
