@@ -4,6 +4,8 @@ Transformations allow you to modify the pixel data of an image before the `Drawa
 
 By default, Coil comes packaged with 4 transformations: [blur](../api/coil-base/coil.transform/-blur-transformation/), [circle crop](../api/coil-base/coil.transform/-circle-crop-transformation/), and [grayscale](../api/coil-base/coil.transform/-grayscale-transformation/), and [rounded corners](../api/coil-base/coil.transform/-rounded-corners-transformation/).
 
+Transformations only modify the pixel data for static images. Adding a transformation to an `ImageRequest` that produces an animated image will convert it to a static image so the transformation can be applied. To transform the pixel data of each frame of an animated image, see [AnimatedTransformation](../api/coil-gif/coil.transform/-animated-transformation/).
+
 See the [API doc](../api/coil-base/coil.transform/-transformation/) for more information.
 
 !!! Note
