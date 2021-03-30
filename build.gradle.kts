@@ -5,7 +5,6 @@ import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
@@ -53,21 +52,6 @@ allprojects {
     extensions.configure<KtlintExtension>("ktlint") {
         version by "0.40.0"
         disabledRules by setOf("indent", "max-line-length")
-    }
-
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            allWarningsAsErrors = true
-            useIR = true
-
-            val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
-            if (project.name != "coil-test") {
-                arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
-                arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
-            }
-            freeCompilerArgs = arguments
-        }
     }
 
     tasks.withType<Test>().configureEach {
