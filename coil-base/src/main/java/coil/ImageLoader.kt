@@ -147,8 +147,8 @@ interface ImageLoader {
             options = imageLoader.options
             logger = imageLoader.logger
             memoryCache = imageLoader.memoryCache
-            availableMemoryPercentage = 0.0
-            bitmapPoolPercentage = 0.0
+            availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
+            bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
             bitmapPoolingEnabled = true
             trackWeakReferences = true
         }
