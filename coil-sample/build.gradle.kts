@@ -1,6 +1,5 @@
 import coil.Library
 import coil.setupAppModule
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.application")
@@ -31,8 +30,6 @@ dependencies {
     implementation(project(":coil-gif"))
     implementation(project(":coil-svg"))
     implementation(project(":coil-video"))
-
-    implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
 
     implementation(Library.ANDROIDX_ACTIVITY)
     implementation(Library.ANDROIDX_APPCOMPAT)
