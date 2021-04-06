@@ -30,21 +30,10 @@ extensions.configure<ApiValidationExtension> {
 }
 
 allprojects {
-    repositories {
-        google()
-        mavenCentral()
-
-        // https://github.com/Kotlin/dokka/issues/41
-        jcenter {
-            content {
-                includeModule("org.jetbrains.dokka", "dokka-fatjar")
-            }
-        }
-    }
-
     group = project.groupId
     version = project.versionName
 
+    apply(from = "${rootDir.path}/buildSrc/extra.gradle.kts")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     extensions.configure<KtlintExtension>("ktlint") {
@@ -78,11 +67,13 @@ allprojects {
                 }
                 externalDocumentationLink {
                     url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-                    packageListUrl = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list")
+                    packageListUrl =
+                        URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list")
                 }
                 externalDocumentationLink {
                     url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                    packageListUrl = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list")
+                    packageListUrl =
+                        URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list")
                 }
                 externalDocumentationLink {
                     url = URL("https://square.github.io/okhttp/3.x/okhttp/")

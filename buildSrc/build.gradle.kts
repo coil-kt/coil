@@ -2,11 +2,6 @@ plugins {
     `kotlin-dsl`
 }
 
-repositories {
-    google()
-    mavenCentral()
-}
-
 apply(from = "extra.gradle.kts")
 
 dependencies {
