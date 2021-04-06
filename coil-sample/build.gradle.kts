@@ -11,15 +11,6 @@ setupAppModule {
     defaultConfig {
         applicationId = "coil.sample"
         minSdkVersion(16)
-        multiDexEnabled = true
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles("shrinker-rules.pro", "shrinker-rules-android.pro")
-            signingConfig = signingConfigs.getByName("debug")
-        }
     }
     buildFeatures {
         viewBinding = true
@@ -39,7 +30,6 @@ dependencies {
     implementation(Library.ANDROIDX_CONSTRAINT_LAYOUT)
     implementation(Library.ANDROIDX_CORE)
     implementation(Library.ANDROIDX_LIFECYCLE_VIEW_MODEL)
-    implementation(Library.ANDROIDX_MULTIDEX)
     implementation(Library.ANDROIDX_RECYCLER_VIEW)
 
     implementation(Library.MATERIAL)
