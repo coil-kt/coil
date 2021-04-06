@@ -10,7 +10,6 @@ buildscript {
     apply(from = "buildSrc/extra.gradle.kts")
     repositories {
         google()
-        mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
