@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.Px
@@ -133,7 +134,7 @@ internal class RealBitmapPool(
     private fun normalize(bitmap: Bitmap) {
         bitmap.density = Bitmap.DENSITY_NONE
         bitmap.setHasAlpha(true)
-        if (SDK_INT >= 19) bitmap.isPremultiplied = true
+        if (SDK_INT >= Build.VERSION_CODES.KITKAT) bitmap.isPremultiplied = true
     }
 
     @Synchronized
@@ -171,7 +172,7 @@ internal class RealBitmapPool(
             add(Bitmap.Config.RGB_565)
             add(Bitmap.Config.ARGB_4444)
             add(Bitmap.Config.ARGB_8888)
-            if (SDK_INT >= 26) add(Bitmap.Config.RGBA_F16)
+            if (SDK_INT >= Build.VERSION_CODES.O) add(Bitmap.Config.RGBA_F16)
         }
     }
 }

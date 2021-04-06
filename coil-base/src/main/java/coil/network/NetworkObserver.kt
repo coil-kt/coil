@@ -10,6 +10,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.MainThread
@@ -40,7 +41,7 @@ internal interface NetworkObserver {
             }
 
             return try {
-                if (SDK_INT >= 21) {
+                if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     NetworkObserverApi21(connectivityManager, listener)
                 } else {
                     NetworkObserverApi14(context, connectivityManager, listener)
@@ -73,7 +74,7 @@ private object EmptyNetworkObserver : NetworkObserver {
     override fun shutdown() {}
 }
 
-@RequiresApi(21)
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("MissingPermission")
 private class NetworkObserverApi21(
     private val connectivityManager: ConnectivityManager,

@@ -1,5 +1,6 @@
 package coil.sample
 
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import okhttp3.ConnectionSpec
@@ -31,10 +32,10 @@ private val CONNECTION_SPEC_TLS_1_2_ONLY = run {
  *
  * This enables TLS 1.2 support on API 16+.
  */
-@RequiresApi(16)
+@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
 fun OkHttpClient.Builder.forceTls12(): OkHttpClient.Builder {
     // TLS 1.2 is enabled by default on API 21 and above.
-    if (SDK_INT >= 21) return this
+    if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) return this
 
     try {
         val sslContext = SSLContext.getInstance(TLS_1_2)
@@ -65,7 +66,7 @@ private fun getDefaultTrustManager(): X509TrustManager? {
 }
 
 /** A SocketFactory that forces TLS v1.2. */
-@RequiresApi(16)
+@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
 private class Tls12SocketFactory(private val delegate: SSLSocketFactory) : SSLSocketFactory() {
 
     override fun getDefaultCipherSuites(): Array<String> = delegate.defaultCipherSuites

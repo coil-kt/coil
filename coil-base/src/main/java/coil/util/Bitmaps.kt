@@ -6,6 +6,7 @@ package coil.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toDrawable
 
@@ -15,7 +16,7 @@ internal val Bitmap.Config?.bytesPerPixel: Int
         this == Bitmap.Config.ALPHA_8 -> 1
         this == Bitmap.Config.RGB_565 -> 2
         this == Bitmap.Config.ARGB_4444 -> 2
-        SDK_INT >= 26 && this == Bitmap.Config.RGBA_F16 -> 8
+        SDK_INT >= Build.VERSION_CODES.O && this == Bitmap.Config.RGBA_F16 -> 8
         else -> 4
     }
 
@@ -28,7 +29,7 @@ internal val Bitmap.allocationByteCountCompat: Int
         check(!isRecycled) { "Cannot obtain size for recycled bitmap: $this [$width x $height] + $config" }
 
         return try {
-            if (SDK_INT >= 19) {
+            if (SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 allocationByteCount
             } else {
                 rowBytes * height
@@ -39,7 +40,7 @@ internal val Bitmap.allocationByteCountCompat: Int
     }
 
 internal val Bitmap.Config.isHardware: Boolean
-    get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
+    get() = SDK_INT >= Build.VERSION_CODES.O && this == Bitmap.Config.HARDWARE
 
 /** Guard against null bitmap configs. */
 internal val Bitmap.safeConfig: Bitmap.Config

@@ -5,6 +5,7 @@ package coil.transform
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Paint
+import android.os.Build
 import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
@@ -23,7 +24,7 @@ import coil.util.safeConfig
  * @param sampling The sampling multiplier used to scale the image. Values > 1
  *  will downscale the image. Values between 0 and 1 will upscale the image.
  */
-@RequiresApi(18)
+@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class BlurTransformation @JvmOverloads constructor(
     private val context: Context,
     private val radius: Float = DEFAULT_RADIUS,

@@ -3,6 +3,7 @@ package coil.fetch
 import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
@@ -39,7 +40,7 @@ class VideoFrameFetcherTest {
     @Test
     fun noSetFrameTime() {
         // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
-        assumeTrue(SDK_INT >= 23)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.M)
 
         val result = runBlocking {
             fetcher.fetch(
@@ -62,7 +63,7 @@ class VideoFrameFetcherTest {
     @Test
     fun specificFrameTime() {
         // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
-        assumeTrue(SDK_INT >= 23)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.M)
 
         val result = runBlocking {
             fetcher.fetch(
@@ -90,7 +91,7 @@ class VideoFrameFetcherTest {
     @Test
     fun rotation() {
         // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
-        assumeTrue(SDK_INT >= 23)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.M)
 
         val result = runBlocking {
             fetcher.fetch(

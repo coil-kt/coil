@@ -4,6 +4,7 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.Movie
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import coil.bitmap.BitmapPool
 import coil.drawable.MovieDrawable
@@ -33,7 +34,7 @@ class GifDecoder : Decoder {
     ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
         val bufferedSource = interruptibleSource.buffer()
         val movie: Movie? = bufferedSource.use {
-            if (SDK_INT >= 19) {
+            if (SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Movie.decodeStream(it.inputStream())
             } else {
                 // Movie requires an InputStream to resettable on API 18 and below.
@@ -49,7 +50,7 @@ class GifDecoder : Decoder {
             pool = pool,
             config = when {
                 movie.isOpaque && options.allowRgb565 -> Bitmap.Config.RGB_565
-                SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+                SDK_INT >= Build.VERSION_CODES.O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
                 else -> options.config
             },
             scale = options.scale

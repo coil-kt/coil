@@ -9,6 +9,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.withSave
 import coil.decode.DecodeUtils
@@ -42,7 +43,7 @@ class ScaleDrawable @JvmOverloads constructor(
         }
     }
 
-    @RequiresApi(19)
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun getAlpha() = child.alpha
 
     override fun setAlpha(alpha: Int) {
@@ -52,10 +53,10 @@ class ScaleDrawable @JvmOverloads constructor(
     @Suppress("DEPRECATION")
     override fun getOpacity() = child.opacity
 
-    @RequiresApi(21)
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun getColorFilter() = child.colorFilter
 
-    @RequiresApi(21)
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun setColorFilter(colorFilter: ColorFilter?) {
         child.colorFilter = colorFilter
     }
@@ -100,16 +101,16 @@ class ScaleDrawable @JvmOverloads constructor(
 
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
 
-    @RequiresApi(21)
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun setTint(tintColor: Int) = child.setTint(tintColor)
 
-    @RequiresApi(21)
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun setTintList(tint: ColorStateList?) = child.setTintList(tint)
 
-    @RequiresApi(21)
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun setTintMode(tintMode: PorterDuff.Mode?) = child.setTintMode(tintMode)
 
-    @RequiresApi(29)
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun setTintBlendMode(blendMode: BlendMode?) = child.setTintBlendMode(blendMode)
 
     override fun isRunning() = child is Animatable && child.isRunning

@@ -5,7 +5,7 @@
         <item name="colorPrimaryDark">#121212</item>
         <item name="colorAccent">#121212</item>
 
-        <item name="android:statusBarColor" tools:targetApi="21">#00000000</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">#00000000</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.v16"/>

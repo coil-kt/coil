@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.ColorSpace
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER
@@ -327,7 +328,7 @@ class ImageRequest private constructor(
             listener = null
             memoryCacheKey = null
             placeholderMemoryCacheKey = null
-            if (SDK_INT >= 26) colorSpace = null
+            if (SDK_INT >= Build.VERSION_CODES.O) colorSpace = null
             fetcher = null
             decoder = null
             transformations = emptyList()
@@ -366,7 +367,7 @@ class ImageRequest private constructor(
             listener = request.listener
             memoryCacheKey = request.memoryCacheKey
             placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
-            if (SDK_INT >= 26) colorSpace = request.colorSpace
+            if (SDK_INT >= Build.VERSION_CODES.O) colorSpace = request.colorSpace
             fetcher = request.fetcher
             decoder = request.decoder
             transformations = request.transformations
@@ -489,7 +490,7 @@ class ImageRequest private constructor(
          *
          * This is not guaranteed and a different color space may be used in some situations.
          */
-        @RequiresApi(26)
+        @RequiresApi(Build.VERSION_CODES.O)
         fun colorSpace(colorSpace: ColorSpace) = apply {
             this.colorSpace = colorSpace
         }

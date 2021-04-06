@@ -8,6 +8,7 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.drawable.toDrawable
@@ -38,7 +39,7 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
         var srcHeight = 0
         val destSize = when (size) {
             is PixelSize -> {
-                val rotation = if (SDK_INT >= 17) retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0 else 0
+                val rotation = if (SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0 else 0
                 if (rotation == 90 || rotation == 270) {
                     srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
                     srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
@@ -69,7 +70,7 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
             is OriginalSize -> OriginalSize
         }
 
-        val rawBitmap: Bitmap? = if (SDK_INT >= 27 && destSize is PixelSize) {
+        val rawBitmap: Bitmap? = if (SDK_INT >= Build.VERSION_CODES.O_MR1 && destSize is PixelSize) {
             retriever.getScaledFrameAtTime(frameMicros, option, destSize.width, destSize.height)
         } else {
             retriever.getFrameAtTime(frameMicros, option)?.also {
@@ -132,7 +133,7 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
             }
         }
         val safeConfig = when {
-            SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+            SDK_INT >= Build.VERSION_CODES.O && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
             else -> options.config
         }
 
@@ -147,7 +148,7 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
     }
 
     private fun isConfigValid(bitmap: Bitmap, options: Options): Boolean {
-        return SDK_INT < 26 || bitmap.config != Bitmap.Config.HARDWARE || options.config == Bitmap.Config.HARDWARE
+        return SDK_INT < Build.VERSION_CODES.O || bitmap.config != Bitmap.Config.HARDWARE || options.config == Bitmap.Config.HARDWARE
     }
 
     private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {

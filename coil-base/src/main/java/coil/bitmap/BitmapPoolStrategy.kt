@@ -1,6 +1,7 @@
 package coil.bitmap
 
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.Px
 import androidx.annotation.RequiresApi
@@ -16,7 +17,7 @@ internal interface BitmapPoolStrategy {
     companion object {
         operator fun invoke(): BitmapPoolStrategy {
             return when {
-                SDK_INT >= 19 -> SizeStrategy()
+                SDK_INT >= Build.VERSION_CODES.KITKAT -> SizeStrategy()
                 else -> AttributeStrategy()
             }
         }
@@ -40,7 +41,7 @@ internal interface BitmapPoolStrategy {
 
 /** A strategy that requires a [Bitmap]'s size to be greater than or equal to the requested size. */
 @VisibleForTesting
-@RequiresApi(19)
+@RequiresApi(Build.VERSION_CODES.KITKAT)
 internal class SizeStrategy : BitmapPoolStrategy {
 
     private val entries = LinkedMultimap<Int, Bitmap>()

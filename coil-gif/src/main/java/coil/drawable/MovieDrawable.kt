@@ -13,6 +13,7 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.SystemClock
 import androidx.core.graphics.withSave
@@ -60,7 +61,7 @@ class MovieDrawable @JvmOverloads constructor(
     private var pixelOpacity = UNCHANGED
 
     init {
-        require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
+        require(SDK_INT < Build.VERSION_CODES.O || config != Bitmap.Config.HARDWARE) { "Bitmap config must not be hardware." }
     }
 
     override fun draw(canvas: Canvas) {

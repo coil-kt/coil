@@ -3,6 +3,7 @@ package coil.fetch
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
@@ -74,7 +75,7 @@ class ResourceUriFetcherTest {
     @Test
     fun externalPackageRasterDrawable() {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable-xhdpi
-        val resource = if (SDK_INT >= 23) "msg_bubble_incoming" else "ic_power_system"
+        val resource = if (SDK_INT >= Build.VERSION_CODES.M) "msg_bubble_incoming" else "ic_power_system"
         val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/$resource".toUri()
         val uri = ResourceUriMapper(context).map(rawUri)
 
@@ -92,7 +93,7 @@ class ResourceUriFetcherTest {
     @Test
     fun externalPackageVectorDrawable() {
         // com.android.settings/drawable/ic_cancel was added in API 23.
-        assumeTrue(SDK_INT >= 23)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.M)
 
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/ic_cancel.xml
         val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/ic_cancel".toUri()

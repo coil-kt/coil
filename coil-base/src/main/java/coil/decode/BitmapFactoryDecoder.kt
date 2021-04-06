@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
 import androidx.exifinterface.media.ExifInterface
@@ -74,16 +75,16 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
         inPreferredConfig = computeConfig(options, isFlipped, rotationDegrees)
 
-        if (SDK_INT >= 26 && options.colorSpace != null) {
+        if (SDK_INT >= Build.VERSION_CODES.O && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
         }
 
-        if (SDK_INT >= 19) {
+        if (SDK_INT >= Build.VERSION_CODES.KITKAT) {
             inPremultiplied = options.premultipliedAlpha
         }
 
         // Create immutable bitmaps on API 24 and above.
-        inMutable = SDK_INT < 24
+        inMutable = SDK_INT < Build.VERSION_CODES.N
         inScaled = false
 
         when {
@@ -138,7 +139,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                             pool.getDirty(outWidth, outHeight, inPreferredConfig)
                         }
                         // We can only re-use bitmaps that don't match the image's source dimensions on API 19 and above.
-                        SDK_INT >= 19 -> {
+                        SDK_INT >= Build.VERSION_CODES.KITKAT -> {
                             // Request a slightly larger bitmap than necessary as the output bitmap's dimensions
                             // may not match the requested dimensions exactly. This is due to intricacies in Android's
                             // downsampling algorithm across different API levels.
@@ -166,7 +167,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         try {
             outBitmap = safeBufferedSource.use {
                 // outMimeType is null for unsupported formats as well as on older devices with incomplete WebP support.
-                if (SDK_INT < 19 && outMimeType == null) {
+                if (SDK_INT < Build.VERSION_CODES.KITKAT && outMimeType == null) {
                     val bytes = it.readByteArray()
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size, this)
                 } else {
@@ -221,7 +222,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
 
         // High color depth images must be decoded as either RGBA_F16 or HARDWARE.
-        if (SDK_INT >= 26 && outConfig == Bitmap.Config.RGBA_F16 && config != Bitmap.Config.HARDWARE) {
+        if (SDK_INT >= Build.VERSION_CODES.O && outConfig == Bitmap.Config.RGBA_F16 && config != Bitmap.Config.HARDWARE) {
             config = Bitmap.Config.RGBA_F16
         }
 

@@ -6,12 +6,13 @@ import android.graphics.PixelFormat
 import android.graphics.PostProcessor
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.Drawable
+import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.transform.AnimatedTransformation
 import coil.transform.PixelOpacity
 
-@RequiresApi(28)
+@RequiresApi(Build.VERSION_CODES.P)
 internal fun AnimatedTransformation.asPostProcessor() = PostProcessor { canvas -> transform(canvas).flag }
 
 internal val PixelOpacity.flag: Int
@@ -21,7 +22,7 @@ internal val PixelOpacity.flag: Int
         PixelOpacity.OPAQUE -> PixelFormat.OPAQUE
     }
 
-@RequiresApi(23)
+@RequiresApi(Build.VERSION_CODES.M)
 internal fun animatable2CallbackOf(
     onStart: (() -> Unit)?,
     onEnd: (() -> Unit)?

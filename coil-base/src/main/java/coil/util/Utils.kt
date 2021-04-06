@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.StatFs
 import androidx.annotation.Px
@@ -28,7 +29,7 @@ internal object Utils {
     const val REQUEST_TYPE_EXECUTE = 1
 
     /** Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without transformations. */
-    val DEFAULT_BITMAP_CONFIG get() = if (SDK_INT >= 26) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
+    val DEFAULT_BITMAP_CONFIG get() = if (SDK_INT >= Build.VERSION_CODES.O) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
 
     /** Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config]. */
     fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
@@ -74,9 +75,9 @@ internal object Utils {
     fun getDefaultBitmapPoolPercentage(): Double {
         return when {
             // Prefer immutable bitmaps (which cannot be pooled) on API 24 and greater.
-            SDK_INT >= 24 -> 0.0
+            SDK_INT >= Build.VERSION_CODES.N -> 0.0
             // Bitmap pooling is most effective on APIs 19 to 23.
-            SDK_INT >= 19 -> 0.5
+            SDK_INT >= Build.VERSION_CODES.KITKAT -> 0.5
             // The requirements for bitmap reuse are strict below API 19.
             else -> 0.25
         }

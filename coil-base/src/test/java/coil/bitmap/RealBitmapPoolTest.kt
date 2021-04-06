@@ -7,6 +7,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import coil.util.DEFAULT_BITMAP_SIZE
 import coil.util.createBitmap
@@ -156,7 +157,7 @@ class RealBitmapPoolTest {
 
     @Test
     fun `real - getting a hardware bitmap throws`() {
-        assumeTrue(SDK_INT >= 26)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.O)
 
         val bitmap = createBitmap(config = Bitmap.Config.HARDWARE)
 
@@ -168,7 +169,7 @@ class RealBitmapPoolTest {
 
     @Test
     fun `empty - getting a hardware bitmap throws`() {
-        assumeTrue(SDK_INT >= 26)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.O)
 
         val pool = EmptyBitmapPool()
         val bitmap = createBitmap(config = Bitmap.Config.HARDWARE)

@@ -4,6 +4,7 @@ package coil.sample
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
 import android.view.View
@@ -54,7 +55,7 @@ fun <T> DiffUtil.ItemCallback<T>.asConfig(): AsyncDifferConfig<T> {
 
 @Suppress("DEPRECATION")
 fun Window.setDecorFitsSystemWindowsCompat(decorFitsSystemWindows: Boolean) {
-    if (SDK_INT >= 30) {
+    if (SDK_INT >= Build.VERSION_CODES.R) {
         setDecorFitsSystemWindows(decorFitsSystemWindows)
     } else {
         decorView.apply {
@@ -68,6 +69,6 @@ fun Window.setDecorFitsSystemWindowsCompat(decorFitsSystemWindows: Boolean) {
 }
 
 val WindowInsets.systemWindowInsetTopCompat: Int
-    @RequiresApi(21) @Suppress("DEPRECATION") get() {
-        return if (SDK_INT >= 30) getInsets(WindowInsets.Type.systemBars()).top else systemWindowInsetTop
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP) @Suppress("DEPRECATION") get() {
+        return if (SDK_INT >= Build.VERSION_CODES.R) getInsets(WindowInsets.Type.systemBars()).top else systemWindowInsetTop
     }

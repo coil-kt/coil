@@ -17,8 +17,8 @@ internal sealed class HardwareBitmapService {
 
     companion object {
         operator fun invoke() = when {
-            SDK_INT < 26 || IS_BLOCKED -> ImmutableHardwareBitmapService(false)
-            SDK_INT == 26 || SDK_INT == 27 -> LimitedFileDescriptorHardwareBitmapService
+            SDK_INT < Build.VERSION_CODES.O || IS_BLOCKED -> ImmutableHardwareBitmapService(false)
+            SDK_INT == Build.VERSION_CODES.O || SDK_INT == Build.VERSION_CODES.O_MR1 -> LimitedFileDescriptorHardwareBitmapService
             else -> ImmutableHardwareBitmapService(true)
         }
     }

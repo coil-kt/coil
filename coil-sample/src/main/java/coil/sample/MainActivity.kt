@@ -1,5 +1,6 @@
 package coil.sample
 
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.Menu
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        if (SDK_INT >= 29) {
+        if (SDK_INT >= Build.VERSION_CODES.Q) {
             window.setDecorFitsSystemWindowsCompat(false)
             binding.toolbar.setOnApplyWindowInsetsListener { view, insets ->
                 view.updatePadding(top = insets.systemWindowInsetTopCompat)

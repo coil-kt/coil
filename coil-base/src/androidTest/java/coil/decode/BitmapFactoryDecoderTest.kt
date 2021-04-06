@@ -3,6 +3,7 @@ package coil.decode
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
@@ -105,7 +106,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun heicExifMetadata() {
         // HEIC files are not supported before API 30.
-        assumeTrue(SDK_INT >= 30)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.R)
 
         // Ensure this completes and doesn't end up in an infinite loop.
         val normal = context.decodeBitmapAsset("exif/basic.heic")
@@ -183,7 +184,7 @@ class BitmapFactoryDecoderTest {
             )
         )
         assertEquals(PixelSize(400, 200), result.size)
-        if (SDK_INT >= 19) {
+        if (SDK_INT >= Build.VERSION_CODES.KITKAT) {
             assertTrue(result.isPremultiplied)
         }
     }
@@ -200,7 +201,7 @@ class BitmapFactoryDecoderTest {
             )
         )
         assertEquals(PixelSize(400, 200), result.size)
-        if (SDK_INT >= 19) {
+        if (SDK_INT >= Build.VERSION_CODES.KITKAT) {
             assertFalse(result.isPremultiplied)
         }
     }
@@ -223,7 +224,7 @@ class BitmapFactoryDecoderTest {
         assertEquals(PixelSize(1080, 1350), result.size)
 
         // BitmapFactoryDecoder creates immutable bitmaps instead of using pooled bitmaps on API 24+.
-        if (SDK_INT >= 24) {
+        if (SDK_INT >= Build.VERSION_CODES.N) {
             assertNotSame(pooledBitmap, result)
             assertFalse(result.isMutable)
         } else {
@@ -251,11 +252,11 @@ class BitmapFactoryDecoderTest {
 
         // BitmapFactoryDecoder creates immutable bitmaps instead of using pooled bitmaps on API 24+.
         when {
-            SDK_INT >= 24 -> {
+            SDK_INT >= Build.VERSION_CODES.N -> {
                 assertNotSame(pooledBitmap, result)
                 assertFalse(result.isMutable)
             }
-            SDK_INT >= 19 -> {
+            SDK_INT >= Build.VERSION_CODES.KITKAT -> {
                 assertSame(pooledBitmap, result)
                 assertTrue(result.isMutable)
             }
@@ -275,7 +276,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun png_16bit() {
         // The emulator runs out of memory on pre-23.
-        assumeTrue(SDK_INT >= 23)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.M)
 
         val (drawable, isSampled) = decode("16_bit.png", PixelSize(250, 250))
 
@@ -283,14 +284,14 @@ class BitmapFactoryDecoderTest {
         assertTrue(drawable is BitmapDrawable)
         assertEquals(PixelSize(250, 250), drawable.bitmap.size)
 
-        val expectedConfig = if (SDK_INT >= 26) Bitmap.Config.RGBA_F16 else Bitmap.Config.ARGB_8888
+        val expectedConfig = if (SDK_INT >= Build.VERSION_CODES.O) Bitmap.Config.RGBA_F16 else Bitmap.Config.ARGB_8888
         assertEquals(expectedConfig, drawable.bitmap.config)
     }
 
     @Test
     fun largeJpeg() {
         // The emulator runs out of memory on pre-19.
-        assumeTrue(SDK_INT >= 19)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.KITKAT)
 
         decodeBitmap("large.jpg", PixelSize(1080, 1920))
     }
@@ -299,7 +300,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun largePng() {
         // The emulator runs out of memory on pre-19.
-        assumeTrue(SDK_INT >= 19)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.KITKAT)
 
         // Ensure that this doesn't cause an OOM exception - particularly on API 23 and below.
         decodeBitmap("large.png", PixelSize(1080, 1920))
@@ -308,7 +309,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun largeWebP() {
         // The emulator runs out of memory on pre-19.
-        assumeTrue(SDK_INT >= 19)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.KITKAT)
 
         decodeBitmap("large.webp", PixelSize(1080, 1920))
     }
@@ -316,7 +317,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun largeHeic() {
         // HEIC files are not supported before API 30.
-        assumeTrue(SDK_INT >= 30)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.R)
 
         decodeBitmap("large.heic", PixelSize(1080, 1920))
     }

@@ -3,6 +3,7 @@ package coil.transform
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
 import androidx.test.core.app.ApplicationProvider
@@ -45,7 +46,7 @@ class AnimatedTransformationTest {
     @Test
     fun gifTransformationTest() {
         val actual = runBlocking {
-            val decoder = if (SDK_INT >= 28) {
+            val decoder = if (SDK_INT >= Build.VERSION_CODES.P) {
                 ImageDecoderDecoder(context)
             } else {
                 GifDecoder()
@@ -63,7 +64,7 @@ class AnimatedTransformationTest {
 
     @Test
     fun heifTransformationTest() {
-        assumeTrue(SDK_INT >= 28)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.P)
 
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder
@@ -79,7 +80,7 @@ class AnimatedTransformationTest {
 
     @Test
     fun webpTransformationTest() {
-        assumeTrue(SDK_INT >= 28)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.P)
 
         val actual = runBlocking {
             val imageRequest = imageRequestBuilder

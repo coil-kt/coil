@@ -7,6 +7,7 @@ import android.graphics.Path
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 
 class RoundedCornersAnimatedTransformation : AnimatedTransformation {
@@ -23,7 +24,7 @@ class RoundedCornersAnimatedTransformation : AnimatedTransformation {
     override fun transform(canvas: Canvas): PixelOpacity {
         val width = canvas.width.toFloat()
         val height = canvas.height.toFloat()
-        if (SDK_INT >= 21) {
+        if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             path.addRoundRect(0f, 0f, width, height, 20f, 20f, Path.Direction.CW)
         } else {
             path.addRoundRect(RectF(0f, 0f, width, height), 20f, 20f, Path.Direction.CW)

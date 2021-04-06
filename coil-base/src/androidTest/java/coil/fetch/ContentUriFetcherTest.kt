@@ -7,6 +7,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.provider.ContactsContract
 import android.provider.ContactsContract.AUTHORITY
@@ -54,7 +55,7 @@ class ContentUriFetcherTest {
     @Test
     fun contactsThumbnail() {
         // This test is flaky on API 30.
-        assumeTrue(SDK_INT <= 30)
+        assumeTrue(SDK_INT <= Build.VERSION_CODES.R)
 
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$CONTENT_DIRECTORY".toUri()
 
@@ -66,7 +67,7 @@ class ContentUriFetcherTest {
     @Test
     fun contactsDisplayPhoto() {
         // This test is flaky on API 30.
-        assumeTrue(SDK_INT <= 30)
+        assumeTrue(SDK_INT <= Build.VERSION_CODES.R)
 
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$DISPLAY_PHOTO".toUri()
 

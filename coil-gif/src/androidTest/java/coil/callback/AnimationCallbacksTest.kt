@@ -2,6 +2,7 @@ package coil.callback
 
 import android.content.ContentResolver
 import android.content.Context
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
@@ -54,7 +55,7 @@ class AnimationCallbacksTest {
         val imageView = activityRule.scenario.activity.imageView
         val isStartCalled = MutableStateFlow(false)
         val isEndCalled = MutableStateFlow(false)
-        val decoder = if (SDK_INT >= 28) {
+        val decoder = if (SDK_INT >= Build.VERSION_CODES.P) {
             ImageDecoderDecoder(context)
         } else {
             GifDecoder()

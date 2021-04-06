@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -35,7 +36,7 @@ import kotlin.math.roundToInt
  *
  * NOTE: Animated HEIF files are only supported on API 30 and above.
  */
-@RequiresApi(28)
+@RequiresApi(Build.VERSION_CODES.P)
 class ImageDecoderDecoder : Decoder {
 
     @Deprecated(
@@ -55,7 +56,7 @@ class ImageDecoderDecoder : Decoder {
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) ||
             DecodeUtils.isAnimatedWebP(source) ||
-            (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
+            (SDK_INT >= Build.VERSION_CODES.R && DecodeUtils.isAnimatedHeif(source))
     }
 
     override suspend fun decode(
@@ -69,7 +70,7 @@ class ImageDecoderDecoder : Decoder {
             var tempFile: File? = null
             try {
                 val bufferedSource = interruptibleSource.buffer()
-                val decoderSource = if (SDK_INT >= 30) {
+                val decoderSource = if (SDK_INT >= Build.VERSION_CODES.R) {
                     // Buffer the source into memory.
                     ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
                 } else {

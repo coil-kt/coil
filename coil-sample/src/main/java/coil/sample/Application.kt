@@ -2,6 +2,7 @@
 
 package coil.sample
 
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.multidex.MultiDexApplication
@@ -27,7 +28,7 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
             .crossfade(true) // Show a short crossfade when loading images from network or disk.
             .componentRegistry {
                 // GIFs
-                if (SDK_INT >= 28) {
+                if (SDK_INT >= Build.VERSION_CODES.P) {
                     add(ImageDecoderDecoder(this@Application))
                 } else {
                     add(GifDecoder())

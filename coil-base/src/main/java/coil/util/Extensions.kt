@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
 import android.os.StatFs
@@ -43,15 +44,15 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 
 internal inline val ActivityManager.isLowRamDeviceCompat: Boolean
-    get() = SDK_INT < 19 || isLowRamDevice
+    get() = SDK_INT < Build.VERSION_CODES.KITKAT || isLowRamDevice
 
 @Suppress("DEPRECATION")
 internal inline val StatFs.blockCountCompat: Long
-    get() = if (SDK_INT >= 18) blockCountLong else blockCount.toLong()
+    get() = if (SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) blockCountLong else blockCount.toLong()
 
 @Suppress("DEPRECATION")
 internal inline val StatFs.blockSizeCompat: Long
-    get() = if (SDK_INT >= 18) blockSizeLong else blockSize.toLong()
+    get() = if (SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) blockSizeLong else blockSize.toLong()
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {
@@ -89,7 +90,7 @@ internal val Drawable.height: Int
     get() = (this as? BitmapDrawable)?.bitmap?.height ?: intrinsicHeight
 
 internal val Drawable.isVector: Boolean
-    get() = (this is VectorDrawableCompat) || (SDK_INT > 21 && this is VectorDrawable)
+    get() = (this is VectorDrawableCompat) || (SDK_INT > Build.VERSION_CODES.LOLLIPOP && this is VectorDrawable)
 
 internal fun Closeable.closeQuietly() {
     try {

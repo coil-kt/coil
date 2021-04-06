@@ -1,6 +1,7 @@
 package coil.bitmap
 
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.Px
 import androidx.core.graphics.createBitmap
@@ -29,7 +30,7 @@ class FakeBitmapPool : BitmapPool {
     }
 
     override fun getDirtyOrNull(@Px width: Int, @Px height: Int, config: Bitmap.Config): Bitmap? {
-        require(SDK_INT < 26 || config != Bitmap.Config.HARDWARE)
+        require(SDK_INT < Build.VERSION_CODES.O || config != Bitmap.Config.HARDWARE)
 
         gets += Get(width, height, config)
 

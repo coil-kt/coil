@@ -1,6 +1,7 @@
 package coil.memory
 
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.WorkerThread
 import coil.decode.Options
@@ -97,7 +98,7 @@ internal class RequestService(private val logger: Logger?) {
 
     companion object {
         /** An allowlist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
-        @JvmField val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
+        @JvmField val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= Build.VERSION_CODES.O) {
             arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
         } else {
             arrayOf(Bitmap.Config.ARGB_8888)

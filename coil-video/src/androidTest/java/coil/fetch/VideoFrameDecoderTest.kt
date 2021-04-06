@@ -2,6 +2,7 @@ package coil.fetch
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
 import coil.bitmap.BitmapPool
@@ -36,7 +37,7 @@ class VideoFrameDecoderTest {
     @Test
     fun basic() {
         // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
-        assumeTrue(SDK_INT >= 23)
+        assumeTrue(SDK_INT >= Build.VERSION_CODES.M)
 
         val result = runBlocking {
             decoder.decode(

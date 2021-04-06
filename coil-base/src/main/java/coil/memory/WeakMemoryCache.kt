@@ -4,6 +4,7 @@ import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.VisibleForTesting
@@ -169,7 +170,7 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
                 }
             } else {
                 // Iterate over the list of values and delete individual entries that have been collected.
-                if (SDK_INT >= 24) {
+                if (SDK_INT >= Build.VERSION_CODES.N) {
                     list.removeIf { it.bitmap.get() == null }
                 } else {
                     list.removeIfIndices { it.bitmap.get() == null }
