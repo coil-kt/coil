@@ -260,13 +260,12 @@ internal class EngineInterceptor(
 
     /** Allow pooling the successful drawable's bitmap. */
     private fun validateDrawable(drawable: Drawable) {
-        val bitmap = (drawable as? BitmapDrawable)?.bitmap
-        if (bitmap != null) {
+        (drawable as? BitmapDrawable)?.bitmap?.let {
             // Mark this bitmap as valid for pooling (if it has not already been made invalid).
-            referenceCounter.setValid(bitmap, true)
+            referenceCounter.setValid(it, true)
 
             // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
-            referenceCounter.increment(bitmap)
+            referenceCounter.increment(it)
         }
     }
 
