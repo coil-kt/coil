@@ -26,7 +26,6 @@ import coil.transform.PixelOpacity.OPAQUE
 import coil.transform.PixelOpacity.UNCHANGED
 import coil.util.forEachIndices
 import coil.util.isHardware
-import coil.util.scale
 
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
@@ -77,7 +76,8 @@ class MovieDrawable @JvmOverloads constructor(
         if (animatedTransformationPicture != null) {
             updateBounds(canvas.bounds, isSoftwareScalingEnabled = true)
             canvas.withSave {
-                scale(1 / softwareScale)
+                val scale = 1 / softwareScale
+                scale(scale, scale)
                 drawFrame(canvas)
             }
         } else {

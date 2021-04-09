@@ -1,10 +1,8 @@
 @file:JvmName("-GifExtensions")
-@file:Suppress("NOTHING_TO_INLINE")
 
 package coil.util
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.PixelFormat
 import android.graphics.PostProcessor
 import android.graphics.drawable.Animatable2
@@ -58,5 +56,3 @@ internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
 
 internal val Bitmap.Config.isHardware: Boolean
     get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
-
-internal inline fun Canvas.scale(scale: Float) = scale(scale, scale)
