@@ -63,6 +63,7 @@ class MovieDrawable @JvmOverloads constructor(
     private var animatedTransformation: AnimatedTransformation? = null
     private var animatedTransformationPicture: Picture? = null
     private var pixelOpacity = UNCHANGED
+    private var isSoftwareScalingEnabled = false
 
     init {
         require(!config.isHardware) { "Bitmap config must not be hardware." }
@@ -72,16 +73,16 @@ class MovieDrawable @JvmOverloads constructor(
         // Compute the current frame time.
         val invalidate = updateFrameTime()
 
-        // Update the scaling values and draw the current frame.
-        if (animatedTransformationPicture != null) {
-            updateBounds(canvas.bounds, isSoftwareScalingEnabled = true)
+        // Update the scaling properties and draw the current frame.
+        if (isSoftwareScalingEnabled) {
+            updateBounds(canvas.bounds)
             canvas.withSave {
                 val scale = 1 / softwareScale
                 scale(scale, scale)
                 drawFrame(canvas)
             }
         } else {
-            updateBounds(bounds, isSoftwareScalingEnabled = false)
+            updateBounds(bounds)
             drawFrame(canvas)
         }
 
@@ -172,10 +173,12 @@ class MovieDrawable @JvmOverloads constructor(
             pixelOpacity = animatedTransformation.transform(canvas)
             picture.endRecording()
             animatedTransformationPicture = picture
+            isSoftwareScalingEnabled = true
         } else {
             // If width/height are not positive, we're unable to draw the movie.
             animatedTransformationPicture = null
             pixelOpacity = UNCHANGED
+            isSoftwareScalingEnabled = false
         }
 
         // Re-render the drawable.
@@ -202,7 +205,7 @@ class MovieDrawable @JvmOverloads constructor(
         paint.colorFilter = colorFilter
     }
 
-    private fun updateBounds(bounds: Rect, isSoftwareScalingEnabled: Boolean) {
+    private fun updateBounds(bounds: Rect) {
         if (currentBounds == bounds) return
         currentBounds.set(bounds)
 
