@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorFilter
-import android.graphics.Matrix
 import android.graphics.Movie
 import android.graphics.Paint
 import android.graphics.Picture
@@ -27,6 +26,7 @@ import coil.transform.PixelOpacity.OPAQUE
 import coil.transform.PixelOpacity.UNCHANGED
 import coil.util.forEachIndices
 import coil.util.isHardware
+import coil.util.scale
 
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
@@ -45,6 +45,7 @@ class MovieDrawable @JvmOverloads constructor(
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
 
     private val currentBounds = Rect()
+    private val tempCanvasBounds = Rect()
     private var softwareCanvas: Canvas? = null
     private var softwareBitmap: Bitmap? = null
 
@@ -64,15 +65,39 @@ class MovieDrawable @JvmOverloads constructor(
     private var animatedTransformationPicture: Picture? = null
     private var pixelOpacity = UNCHANGED
 
-    private val tempMatrix = Matrix()
-    private val tempCanvasBounds = Rect()
-
     init {
         require(!config.isHardware) { "Bitmap config must not be hardware." }
     }
 
     override fun draw(canvas: Canvas) {
         // Compute the current frame time.
+        val invalidate = updateFrameTime()
+
+        // Update the scaling values and draw the current frame.
+        if (animatedTransformationPicture != null) {
+            updateBounds(canvas.bounds, isSoftwareScalingEnabled = true)
+            canvas.withSave {
+                scale(1 / softwareScale)
+                drawFrame(canvas)
+            }
+        } else {
+            updateBounds(bounds, isSoftwareScalingEnabled = false)
+            drawFrame(canvas)
+        }
+
+        // Request a new draw pass for the next frame if necessary.
+        if (isRunning && invalidate) {
+            invalidateSelf()
+        } else {
+            stop()
+        }
+    }
+
+    /**
+     * Compute the current frame time and update [movie].
+     * Return true if there are subsequent frames to be rendered.
+     */
+    private fun updateFrameTime(): Boolean {
         val invalidate: Boolean
         val time: Int
         val duration = movie.duration()
@@ -89,50 +114,30 @@ class MovieDrawable @JvmOverloads constructor(
             time = if (invalidate) elapsedTime - loopIteration * duration else duration
         }
         movie.setTime(time)
+        return invalidate
+    }
 
-        val transformation = animatedTransformationPicture
-        try {
-            // Clear the current matrix and ensure the drawable's bounds are up to date.
-            if (transformation != null) {
-                canvas.getMatrix(tempMatrix)
-                canvas.setMatrix(null)
-                updateBounds(canvas.bounds, true)
-            } else {
-                updateBounds(bounds, false)
-            }
+    /** Draw the current [movie] frame on the [canvas]. */
+    private fun drawFrame(canvas: Canvas) {
+        val softwareCanvas = softwareCanvas
+        val softwareBitmap = softwareBitmap
+        if (softwareCanvas == null || softwareBitmap == null) return
 
-            val softwareCanvas = softwareCanvas
-            val softwareBitmap = softwareBitmap
-            if (softwareCanvas == null || softwareBitmap == null) return
+        // Clear the software canvas.
+        softwareCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
-            // Clear the software canvas.
-            softwareCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-
-            // Draw onto a software canvas first.
-            softwareCanvas.withSave {
-                scale(softwareScale, softwareScale)
-                movie.draw(this, 0f, 0f, paint)
-                transformation?.draw(this)
-            }
-
-            // Draw onto the input canvas (may or may not be hardware).
-            canvas.withSave {
-                translate(hardwareDx, hardwareDy)
-                scale(hardwareScale, hardwareScale)
-                drawBitmap(softwareBitmap, 0f, 0f, paint)
-            }
-        } finally {
-            // Restore the matrix.
-            if (transformation == null) {
-                canvas.setMatrix(tempMatrix)
-            }
+        // Draw onto a software canvas first.
+        softwareCanvas.withSave {
+            scale(softwareScale, softwareScale)
+            movie.draw(this, 0f, 0f, paint)
+            animatedTransformationPicture?.draw(this)
         }
 
-        // Request a new draw pass (for the next frame) if necessary.
-        if (isRunning && invalidate) {
-            invalidateSelf()
-        } else {
-            stop()
+        // Draw onto the input canvas (may or may not be hardware).
+        canvas.withSave {
+            translate(hardwareDx, hardwareDy)
+            scale(hardwareScale, hardwareScale)
+            drawBitmap(softwareBitmap, 0f, 0f, paint)
         }
     }
 
@@ -197,7 +202,7 @@ class MovieDrawable @JvmOverloads constructor(
         paint.colorFilter = colorFilter
     }
 
-    private fun updateBounds(bounds: Rect, softwareScalingEnabled: Boolean) {
+    private fun updateBounds(bounds: Rect, isSoftwareScalingEnabled: Boolean) {
         if (currentBounds == bounds) return
         currentBounds.set(bounds)
 
@@ -211,7 +216,7 @@ class MovieDrawable @JvmOverloads constructor(
 
         softwareScale = DecodeUtils
             .computeSizeMultiplier(movieWidth, movieHeight, boundsWidth, boundsHeight, scale)
-            .run { if (softwareScalingEnabled) this else coerceAtMost(1.0) }
+            .run { if (isSoftwareScalingEnabled) this else coerceAtMost(1.0) }
             .toFloat()
         val bitmapWidth = (softwareScale * movieWidth).toInt()
         val bitmapHeight = (softwareScale * movieHeight).toInt()
@@ -221,11 +226,17 @@ class MovieDrawable @JvmOverloads constructor(
         softwareBitmap = bitmap
         softwareCanvas = Canvas(bitmap)
 
-        hardwareScale = DecodeUtils
-            .computeSizeMultiplier(bitmapWidth, bitmapHeight, boundsWidth, boundsHeight, scale)
-            .toFloat()
-        hardwareDx = bounds.left + (boundsWidth - hardwareScale * bitmapWidth) / 2
-        hardwareDy = bounds.top + (boundsHeight - hardwareScale * bitmapHeight) / 2
+        if (isSoftwareScalingEnabled) {
+            hardwareScale = 1f
+            hardwareDx = 0f
+            hardwareDy = 0f
+        } else {
+            hardwareScale = DecodeUtils
+                .computeSizeMultiplier(bitmapWidth, bitmapHeight, boundsWidth, boundsHeight, scale)
+                .toFloat()
+            hardwareDx = bounds.left + (boundsWidth - hardwareScale * bitmapWidth) / 2
+            hardwareDy = bounds.top + (boundsHeight - hardwareScale * bitmapHeight) / 2
+        }
     }
 
     override fun getIntrinsicWidth() = movie.width()
