@@ -52,15 +52,6 @@ allprojects {
         disabledRules by setOf("indent", "max-line-length")
     }
 
-    // https://issuetracker.google.com/issues/179291081
-    configurations.configureEach {
-        resolutionStrategy.eachDependency {
-            if (requested.group == "org.jetbrains.trove4j" && requested.name == "trove4j" && requested.version == "20160824") {
-                useTarget("org.jetbrains.intellij.deps:trove4j:1.0.20181211")
-            }
-        }
-    }
-
     // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our dokka configuration.
     afterEvaluate {
         tasks.withType<DokkaTask>().configureEach {
