@@ -13,6 +13,7 @@ import coil.request.animationStartCallback
 import coil.request.repeatCount
 import coil.size.Size
 import coil.util.animatable2CompatCallbackOf
+import coil.util.isHardware
 import okio.BufferedSource
 import okio.buffer
 
@@ -49,7 +50,7 @@ class GifDecoder : Decoder {
             pool = pool,
             config = when {
                 movie.isOpaque && options.allowRgb565 -> Bitmap.Config.RGB_565
-                SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+                options.config.isHardware -> Bitmap.Config.ARGB_8888
                 else -> options.config
             },
             scale = options.scale

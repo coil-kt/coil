@@ -6,6 +6,7 @@ package coil.request
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
+import coil.annotation.ExperimentalCoilApi
 import coil.decode.GifDecoder.Companion.ANIMATED_TRANSFORMATION_KEY
 import coil.decode.GifDecoder.Companion.ANIMATION_END_CALLBACK_KEY
 import coil.decode.GifDecoder.Companion.ANIMATION_START_CALLBACK_KEY
@@ -39,6 +40,7 @@ fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY) as Int?
  * @see MovieDrawable.setAnimatedTransformation
  * @see ImageDecoder.setPostProcessor
  */
+@ExperimentalCoilApi
 fun ImageRequest.Builder.animatedTransformation(animatedTransformation: AnimatedTransformation): ImageRequest.Builder {
     return setParameter(ANIMATED_TRANSFORMATION_KEY, animatedTransformation)
 }
@@ -46,6 +48,7 @@ fun ImageRequest.Builder.animatedTransformation(animatedTransformation: Animated
 /**
  * Get the [AnimatedTransformation] that will be applied to the result if it is an animated [Drawable].
  */
+@ExperimentalCoilApi
 fun Parameters.animatedTransformation(): AnimatedTransformation? {
     return value(ANIMATED_TRANSFORMATION_KEY) as AnimatedTransformation?
 }
