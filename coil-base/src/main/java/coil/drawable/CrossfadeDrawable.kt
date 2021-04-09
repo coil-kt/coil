@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
+import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DecodeUtils
 import coil.size.Scale
@@ -67,7 +68,7 @@ class CrossfadeDrawable(
         if (state == STATE_START) {
             start?.apply {
                 alpha = maxAlpha
-                draw(canvas)
+                canvas.withSave { draw(canvas) }
             }
             return
         }
@@ -75,7 +76,7 @@ class CrossfadeDrawable(
         if (state == STATE_DONE) {
             end?.apply {
                 alpha = maxAlpha
-                draw(canvas)
+                canvas.withSave { draw(canvas) }
             }
             return
         }
@@ -89,14 +90,14 @@ class CrossfadeDrawable(
         if (!isDone) {
             start?.apply {
                 alpha = startAlpha
-                draw(canvas)
+                canvas.withSave { draw(canvas) }
             }
         }
 
         // Draw the end drawable.
         end?.apply {
             alpha = endAlpha
-            draw(canvas)
+            canvas.withSave { draw(canvas) }
         }
 
         if (isDone) {
