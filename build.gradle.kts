@@ -52,6 +52,20 @@ allprojects {
         disabledRules by setOf("indent", "max-line-length")
     }
 
+    // https://github.com/JLLeitschuh/ktlint-gradle/issues/458
+    @Suppress("UnstableApiUsage")
+    configurations.named("ktlint").configure {
+        resolutionStrategy {
+            dependencySubstitution {
+                substitute(module("com.pinterest:ktlint")).with(variant(module("com.pinterest:ktlint:0.41.0")) {
+                    attributes {
+                        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.EXTERNAL))
+                    }
+                })
+            }
+        }
+    }
+
     // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our dokka configuration.
     afterEvaluate {
         tasks.withType<DokkaTask>().configureEach {
