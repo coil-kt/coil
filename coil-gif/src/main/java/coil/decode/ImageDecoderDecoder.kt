@@ -3,7 +3,6 @@
 package coil.decode
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Build.VERSION.SDK_INT
@@ -21,6 +20,7 @@ import coil.size.PixelSize
 import coil.size.Size
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
+import coil.util.isHardware
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
@@ -103,7 +103,7 @@ class ImageDecoderDecoder : Decoder {
                         }
                     }
 
-                    allocator = if (options.config == Bitmap.Config.HARDWARE) {
+                    allocator = if (options.config.isHardware) {
                         ImageDecoder.ALLOCATOR_HARDWARE
                     } else {
                         ImageDecoder.ALLOCATOR_SOFTWARE
