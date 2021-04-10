@@ -1,8 +1,11 @@
 package coil.transform
 
+import coil.annotation.ExperimentalCoilApi
+
 /**
  * Represents the opacity of an image's pixels after applying an [AnimatedTransformation].
  */
+@ExperimentalCoilApi
 enum class PixelOpacity {
 
     /**

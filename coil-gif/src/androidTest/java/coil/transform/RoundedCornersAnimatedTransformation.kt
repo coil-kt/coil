@@ -11,16 +11,15 @@ import android.os.Build.VERSION.SDK_INT
 
 class RoundedCornersAnimatedTransformation : AnimatedTransformation {
 
-    private val paint = Paint().apply {
-        isAntiAlias = true
-        color = Color.TRANSPARENT
-        xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC)
-    }
-    private val path = Path().apply {
-        fillType = Path.FillType.INVERSE_EVEN_ODD
-    }
-
     override fun transform(canvas: Canvas): PixelOpacity {
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply {
+            color = Color.TRANSPARENT
+            xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC)
+        }
+        val path = Path().apply {
+            fillType = Path.FillType.INVERSE_EVEN_ODD
+        }
+
         val width = canvas.width.toFloat()
         val height = canvas.height.toFloat()
         if (SDK_INT >= 21) {
