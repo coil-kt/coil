@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.2.0] - April 12, 2021
+
+- **Important**: Use an SVG's view bounds to calculate its aspect ratio in `SvgDecoder`. ([#688](https://github.com/coil-kt/coil/pull/688))
+  - Previously, `SvgDecoder` used an SVG's `width`/`height` elements to determine its aspect ratio, however this doesn't correctly follow the SVG specification.
+  - To revert to the old behaviour set `useViewBoundsAsIntrinsicSize = false` when constructing your `SvgDecoder`.
+- **New**: Add `VideoFrameDecoder` to support decoding video frames from any source. ([#689](https://github.com/coil-kt/coil/pull/689))
+- **New**: Support automatic SVG detection using the source's contents instead of just the MIME type. ([#654](https://github.com/coil-kt/coil/pull/654))
+- **New**: Support sharing resources using `ImageLoader.newBuilder()`. ([#653](https://github.com/coil-kt/coil/pull/653))
+  - Importantly, this enables sharing memory caches between `ImageLoader` instances.
+- **New**: Add support for animated image transformations using `AnimatedTransformation`. ([#659](https://github.com/coil-kt/coil/pull/659))
+- **New**: Add support for start/end callbacks for animated drawables. ([#676](https://github.com/coil-kt/coil/pull/676))
+
+---
+
+- Fix parsing EXIF data for HEIF/HEIC files. ([#664](https://github.com/coil-kt/coil/pull/664))
+- Fix not using the `EmptyBitmapPool` implementation if bitmap pooling is disabled. ([#638](https://github.com/coil-kt/coil/pull/638))
+  - Without this fix bitmap pooling was still disabled properly, however it used a more heavyweight `BitmapPool` implementation.
+- Fix case where `MovieDrawable.getOpacity` would incorrectly return transparent. ([#682](https://github.com/coil-kt/coil/pull/682))
+- Guard against the default temporary directory not existing. ([#683](https://github.com/coil-kt/coil/pull/683))
+
+---
+
+- Build using the JVM IR backend. ([#670](https://github.com/coil-kt/coil/pull/670))
+- Update Kotlin (1.4.32).
+- Update Coroutines (1.4.3).
+- Update OkHttp (3.12.13).
+- Update `androidx.lifecycle:lifecycle-common-java8` to 2.3.1.
+
 ## [1.1.1] - January 11, 2021
 
 - Fix a case where `ViewSizeResolver.size` could throw an `IllegalStateException` due to resuming a coroutine more than once.
