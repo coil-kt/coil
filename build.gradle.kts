@@ -33,6 +33,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven("https://kotlin.bintray.com/kotlinx") // https://github.com/Kotlin/kotlinx.html/issues/173
     }
 
     group = project.groupId
