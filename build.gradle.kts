@@ -87,7 +87,7 @@ allprojects {
                 }
                 externalDocumentationLink {
                     url by URL("https://square.github.io/okio/2.x/okio/")
-                    packageListUrl by URL("file://$rootDir/package-list-okio")
+                    packageListUrl by URL("https://square.github.io/okio/2.x/okio/package-list")
                 }
 
                 // Include the coil-base documentation link for extension artifacts.
