@@ -87,6 +87,8 @@ val fakeImageLoader = object : ImageLoader {
     }
 
     override fun shutdown() {}
+    
+    override fun newBuilder() = ImageLoader.Builder(context)
 }
 ```
 
