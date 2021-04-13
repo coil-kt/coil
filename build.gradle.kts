@@ -2,6 +2,7 @@ import coil.by
 import coil.groupId
 import coil.versionName
 import kotlinx.validation.ApiValidationExtension
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
@@ -61,43 +62,32 @@ allprojects {
     }
 
     tasks.withType<DokkaTask>().configureEach {
-        dokkaSourceSets {
-            configureEach {
-                jdkVersion by 8
-                reportUndocumented by false
-                skipDeprecated by true
-                skipEmptyPackages by true
-                outputDirectory by file("$rootDir/docs/api")
+        dokkaSourceSets.configureEach {
+            jdkVersion by 8
+            reportUndocumented by false
+            skipDeprecated by true
+            skipEmptyPackages by true
+            outputDirectory by file("$rootDir/docs/api")
 
-                externalDocumentationLink {
-                    url by URL("https://developer.android.com/reference/")
-                    packageListUrl by URL("https://developer.android.com/reference/androidx/package-list")
-                }
-                externalDocumentationLink {
-                    url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-                    packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list")
-                }
-                externalDocumentationLink {
-                    url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                    packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list")
-                }
-                externalDocumentationLink {
-                    url by URL("https://square.github.io/okhttp/3.x/okhttp/")
-                    packageListUrl by URL("https://square.github.io/okhttp/3.x/okhttp/package-list")
-                }
-                externalDocumentationLink {
-                    url by URL("https://square.github.io/okio/2.x/okio/")
-                    packageListUrl by URL("https://square.github.io/okio/2.x/okio/package-list")
-                }
-
-                // Include the coil-base documentation link for extension artifacts.
-                if (project.name != "coil-base") {
-                    externalDocumentationLink {
-                        url by URL("https://coil-kt.github.io/coil/api/coil-base/")
-                        packageListUrl by URL("file://$rootDir/package-list-coil-base")
-                    }
-                }
+            externalDocumentationLink {
+                url by URL("https://developer.android.com/reference/")
+            }
+            externalDocumentationLink {
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
+            }
+            externalDocumentationLink {
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+            }
+            externalDocumentationLink {
+                url by URL("https://square.github.io/okhttp/3.x/okhttp/")
+            }
+            externalDocumentationLink {
+                url by URL("https://square.github.io/okio/2.x/okio/")
             }
         }
+    }
+
+    tasks.withType<DokkaMultiModuleTask>().configureEach {
+        outputDirectory by file("$rootDir/docs/api")
     }
 }
