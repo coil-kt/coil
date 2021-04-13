@@ -49,7 +49,7 @@ However, if you'd prefer a singleton the `io.coil-kt:coil` artifact provides a s
 For instance, you could inject a fake `ImageLoader` implementation which always returns the same `Drawable` synchronously:
 
 ```kotlin
-fun createFakeImageLoader(context: Context) = object : ImageLoader {
+Context.fakeImageLoader: ImageLoader = object : ImageLoader {
 
     private val drawable = ColorDrawable(Color.BLACK)
 
@@ -88,7 +88,7 @@ fun createFakeImageLoader(context: Context) = object : ImageLoader {
 
     override fun shutdown() {}
     
-    override fun newBuilder() = ImageLoader.Builder(context)
+    override fun newBuilder() = ImageLoader.Builder(this@fakeImageLoader)
 }
 ```
 
