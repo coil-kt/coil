@@ -28,7 +28,7 @@ theme:
 # Customization
 extra:
   social:
-    - type: 'github'
+    - icon: 'fontawesome/brands/github'
       link: 'https://github.com/coil-kt/coil'
 
 # Navigation
@@ -78,3 +78,5 @@ plugins:
   - search
   - minify:
       minify_html: true
+
+# Built with https://github.com/squidfunk/mkdocs-material v7.1.1
