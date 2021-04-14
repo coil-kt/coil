@@ -3,9 +3,7 @@ import coil.groupId
 import coil.versionName
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
-import java.net.URL
 
 buildscript {
     apply(from = "buildSrc/extra.gradle.kts")
@@ -28,6 +26,38 @@ apply(plugin = "binary-compatibility-validator")
 
 extensions.configure<ApiValidationExtension> {
     ignoredProjects = mutableSetOf("coil-sample", "coil-test")
+}
+
+apply(plugin = "org.jetbrains.dokka")
+
+tasks.withType<DokkaMultiModuleTask>().configureEach {
+    outputDirectory by file("$rootDir/docs/api")
+}
+
+tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
+    dokkaSourceSets.configureEach {
+        jdkVersion by 8
+        reportUndocumented by false
+        skipDeprecated by true
+        skipEmptyPackages by true
+        outputDirectory by file("$rootDir/docs/api")
+
+        externalDocumentationLink {
+            url by java.net.URL("https://developer.android.com/reference/")
+        }
+        externalDocumentationLink {
+            url by java.net.URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
+        }
+        externalDocumentationLink {
+            url by java.net.URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+        }
+        externalDocumentationLink {
+            url by java.net.URL("https://square.github.io/okhttp/3.x/okhttp/")
+        }
+        externalDocumentationLink {
+            url by java.net.URL("https://square.github.io/okio/2.x/okio/")
+        }
+    }
 }
 
 allprojects {
@@ -59,35 +89,5 @@ allprojects {
                 })
             }
         }
-    }
-
-    tasks.withType<DokkaTask>().configureEach {
-        dokkaSourceSets.configureEach {
-            jdkVersion by 8
-            reportUndocumented by false
-            skipDeprecated by true
-            skipEmptyPackages by true
-            outputDirectory by file("$rootDir/docs/api")
-
-            externalDocumentationLink {
-                url by URL("https://developer.android.com/reference/")
-            }
-            externalDocumentationLink {
-                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-            }
-            externalDocumentationLink {
-                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-            }
-            externalDocumentationLink {
-                url by URL("https://square.github.io/okhttp/3.x/okhttp/")
-            }
-            externalDocumentationLink {
-                url by URL("https://square.github.io/okio/2.x/okio/")
-            }
-        }
-    }
-
-    tasks.withType<DokkaMultiModuleTask>().configureEach {
-        outputDirectory by file("$rootDir/docs/api")
     }
 }

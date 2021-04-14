@@ -9,7 +9,6 @@ plugins {
     id("com.vanniktech.maven.publish")
     id("kotlin-android")
     id("kotlin-parcelize")
-    id("org.jetbrains.dokka")
 }
 
 setupLibraryModule()
