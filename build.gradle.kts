@@ -5,6 +5,7 @@ import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
+import java.net.URL
 
 buildscript {
     apply(from = "buildSrc/extra.gradle.kts")
@@ -44,19 +45,19 @@ tasks.withType<DokkaTask>().configureEach {
         outputDirectory by file("$rootDir/docs/api")
 
         externalDocumentationLink {
-            url by java.net.URL("https://developer.android.com/reference/")
+            url by URL("https://developer.android.com/reference/")
         }
         externalDocumentationLink {
-            url by java.net.URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
+            url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
         }
         externalDocumentationLink {
-            url by java.net.URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+            url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
         }
         externalDocumentationLink {
-            url by java.net.URL("https://square.github.io/okhttp/3.x/okhttp/")
+            url by URL("https://square.github.io/okhttp/3.x/okhttp/")
         }
         externalDocumentationLink {
-            url by java.net.URL("https://square.github.io/okio/2.x/okio/")
+            url by URL("https://square.github.io/okio/2.x/okio/")
         }
     }
 }
