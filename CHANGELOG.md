@@ -94,7 +94,7 @@ Changes since `1.0.0-rc3`:
 - **Important**: Launch the Interceptor chain on the main thread by default. ([#513](https://github.com/coil-kt/coil/pull/513))
     - This largely restores the behaviour from `0.11.0` and below where the memory cache would be checked synchronously on the main thread.
     - To revert to using the same behaviour as `0.12.0` where the memory cache is checked on `ImageRequest.dispatcher`, set `ImageLoader.Builder.launchInterceptorChainOnMainThread(false)`.
-    - See [`launchInterceptorChainOnMainThread`](https://coil-kt.github.io/coil/api/coil-base/coil/-image-loader/-builder/launch-interceptor-chain-on-main-thread/) for more information.
+    - See [`launchInterceptorChainOnMainThread`](https://coil-kt.github.io/coil/api/coil-base/coil-base/coil/-image-loader/-builder/launch-interceptor-chain-on-main-thread/) for more information.
 
 ---
 
