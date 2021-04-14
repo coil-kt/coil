@@ -3,6 +3,7 @@ import coil.groupId
 import coil.versionName
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 
 buildscript {
@@ -34,7 +35,7 @@ tasks.withType<DokkaMultiModuleTask>().configureEach {
     outputDirectory by file("$rootDir/docs/api")
 }
 
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
+tasks.withType<DokkaTask>().configureEach {
     dokkaSourceSets.configureEach {
         jdkVersion by 8
         reportUndocumented by false
