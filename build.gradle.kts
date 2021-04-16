@@ -4,6 +4,7 @@ import coil.versionName
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
@@ -73,7 +74,7 @@ allprojects {
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension>("ktlint") {
+    extensions.configure<KtlintExtension>("ktlint") {
         version by "0.41.0"
         disabledRules by setOf("indent", "max-line-length")
     }
