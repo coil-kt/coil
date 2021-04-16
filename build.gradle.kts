@@ -4,7 +4,6 @@ import coil.versionName
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
@@ -74,8 +73,19 @@ allprojects {
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.40.0"
+    extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension>("ktlint") {
+        version by "0.41.0"
         disabledRules by setOf("indent", "max-line-length")
+    }
+
+    // https://github.com/JLLeitschuh/ktlint-gradle/issues/458
+    configurations.named("ktlint").configure {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("com.pinterest:ktlint")).with(variant(module("com.pinterest:ktlint:0.41.0")) {
+                attributes {
+                    attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named<Bundling>(Bundling.EXTERNAL))
+                }
+            })
+        }
     }
 }
