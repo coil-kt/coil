@@ -54,7 +54,7 @@ tasks.withType<DokkaTask>().configureEach {
             url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
         }
         externalDocumentationLink {
-            url by URL("https://square.github.io/okhttp/3.x/okhttp/")
+            url by URL("https://square.github.io/okhttp/4.x/okhttp/")
         }
         externalDocumentationLink {
             url by URL("https://square.github.io/okio/2.x/okio/")
