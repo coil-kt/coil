@@ -31,4 +31,6 @@ dependencies {
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+
+    dokkaHtmlPartialPlugin(rootProject.extra["dokkaAndroidPlugin"].toString())
 }

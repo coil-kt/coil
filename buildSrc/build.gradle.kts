@@ -7,7 +7,7 @@ repositories {
     mavenCentral()
 }
 
-apply(from = "extra.gradle.kts")
+apply(from = "plugins.gradle.kts")
 
 dependencies {
     implementation(rootProject.extra["androidPlugin"].toString())
