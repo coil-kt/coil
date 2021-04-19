@@ -57,11 +57,12 @@ allprojects {
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
             jdkVersion by 8
-            reportUndocumented by false
             skipDeprecated by true
-            skipEmptyPackages by true
             outputDirectory by file("$rootDir/docs/api")
 
+            externalDocumentationLink {
+                url = URL("https://developer.android.com/reference/")
+            }
             externalDocumentationLink {
                 url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
             }
