@@ -37,29 +37,6 @@ tasks.withType<DokkaMultiModuleTask>().configureEach {
     removeChildTasks(listOf(project(":coil-sample"), project(":coil-test")))
 }
 
-tasks.withType<DokkaTaskPartial>().configureEach {
-    dokkaSourceSets.configureEach {
-        jdkVersion by 8
-        reportUndocumented by false
-        skipDeprecated by true
-        skipEmptyPackages by true
-        outputDirectory by file("$rootDir/docs/api")
-
-        externalDocumentationLink {
-            url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-        }
-        externalDocumentationLink {
-            url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-        }
-        externalDocumentationLink {
-            url by URL("https://square.github.io/okhttp/4.x/okhttp/")
-        }
-        externalDocumentationLink {
-            url by URL("https://square.github.io/okio/2.x/okio/")
-        }
-    }
-}
-
 allprojects {
     repositories {
         google()
@@ -75,5 +52,28 @@ allprojects {
     extensions.configure<KtlintExtension>("ktlint") {
         version by "0.40.0"
         disabledRules by setOf("indent", "max-line-length")
+    }
+
+    tasks.withType<DokkaTaskPartial>().configureEach {
+        dokkaSourceSets.configureEach {
+            jdkVersion by 8
+            reportUndocumented by false
+            skipDeprecated by true
+            skipEmptyPackages by true
+            outputDirectory by file("$rootDir/docs/api")
+
+            externalDocumentationLink {
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
+            }
+            externalDocumentationLink {
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+            }
+            externalDocumentationLink {
+                url by URL("https://square.github.io/okhttp/4.x/okhttp/")
+            }
+            externalDocumentationLink {
+                url by URL("https://square.github.io/okio/2.x/okio/")
+            }
+        }
     }
 }
