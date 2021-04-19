@@ -30,38 +30,6 @@ extensions.configure<ApiValidationExtension> {
     ignoredProjects = mutableSetOf("coil-sample", "coil-test")
 }
 
-apply(plugin = "org.jetbrains.dokka")
-
-tasks.withType<DokkaMultiModuleTask>().configureEach {
-    outputDirectory by file("$rootDir/docs/api")
-}
-
-tasks.withType<DokkaTask>().configureEach {
-    dokkaSourceSets.configureEach {
-        jdkVersion by 8
-        reportUndocumented by false
-        skipDeprecated by true
-        skipEmptyPackages by true
-        outputDirectory by file("$rootDir/docs/api")
-
-        externalDocumentationLink {
-            url by URL("https://developer.android.com/reference/")
-        }
-        externalDocumentationLink {
-            url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-        }
-        externalDocumentationLink {
-            url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-        }
-        externalDocumentationLink {
-            url by URL("https://square.github.io/okhttp/4.x/okhttp/")
-        }
-        externalDocumentationLink {
-            url by URL("https://square.github.io/okio/2.x/okio/")
-        }
-    }
-}
-
 allprojects {
     repositories {
         google()
@@ -75,18 +43,40 @@ allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.41.0"
+        version by "0.40.0"
         disabledRules by setOf("indent", "max-line-length")
     }
 
-    // https://github.com/JLLeitschuh/ktlint-gradle/issues/458
-    configurations.named("ktlint").configure {
-        resolutionStrategy.dependencySubstitution {
-            substitute(module("com.pinterest:ktlint")).with(variant(module("com.pinterest:ktlint:0.41.0")) {
-                attributes {
-                    attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named<Bundling>(Bundling.EXTERNAL))
-                }
-            })
+    apply(plugin = "org.jetbrains.dokka")
+
+    tasks.withType<DokkaMultiModuleTask>().configureEach {
+        outputDirectory by file("$rootDir/docs/api")
+    }
+
+    tasks.withType<DokkaTask>().configureEach {
+        dokkaSourceSets.configureEach {
+            jdkVersion by 8
+            reportUndocumented by false
+            skipDeprecated by true
+            skipEmptyPackages by true
+            outputDirectory by file("$rootDir/docs/api")
+
+            externalDocumentationLink {
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
+                packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list")
+            }
+            externalDocumentationLink {
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+                packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list")
+            }
+            externalDocumentationLink {
+                url by URL("https://square.github.io/okhttp/4.x/okhttp/")
+                packageListUrl by URL("https://square.github.io/okhttp/4.x/okhttp/package-list")
+            }
+            externalDocumentationLink {
+                url by URL("https://square.github.io/okio/2.x/okio/")
+                packageListUrl by URL("https://square.github.io/okio/2.x/okio/package-list")
+            }
         }
     }
 }
