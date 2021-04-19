@@ -61,7 +61,7 @@ allprojects {
             outputDirectory by file("$rootDir/docs/api")
 
             externalDocumentationLink {
-                url = URL("https://developer.android.com/reference/")
+                url by URL("https://developer.android.com/reference/")
             }
             externalDocumentationLink {
                 url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
