@@ -1,9 +1,10 @@
+
 import coil.by
 import coil.groupId
 import coil.versionName
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
@@ -53,7 +54,7 @@ allprojects {
         outputDirectory by file("$rootDir/docs/api")
     }
 
-    tasks.withType<DokkaTask>().configureEach {
+    tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
             jdkVersion by 8
             reportUndocumented by false
@@ -63,19 +64,15 @@ allprojects {
 
             externalDocumentationLink {
                 url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-                packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list")
             }
             externalDocumentationLink {
                 url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list")
             }
             externalDocumentationLink {
                 url by URL("https://square.github.io/okhttp/4.x/okhttp/")
-                packageListUrl by URL("https://square.github.io/okhttp/4.x/okhttp/package-list")
             }
             externalDocumentationLink {
                 url by URL("https://square.github.io/okio/2.x/okio/")
-                packageListUrl by URL("https://square.github.io/okio/2.x/okio/package-list")
             }
         }
     }
