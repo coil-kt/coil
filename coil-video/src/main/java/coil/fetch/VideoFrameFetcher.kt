@@ -38,7 +38,9 @@ class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri
 
     override fun handles(data: Uri): Boolean {
         val fileName = data.lastPathSegment
-        return fileName != null && SUPPORTED_FILE_EXTENSIONS.any { fileName.endsWith(it, true) }
+        return fileName != null &&
+            data.scheme !in UNSUPPORTED_SCHEMES &&
+            SUPPORTED_FILE_EXTENSIONS.any { fileName.endsWith(it, true) }
     }
 
     override fun MediaMetadataRetriever.setDataSource(data: Uri) {
@@ -84,6 +86,8 @@ abstract class VideoFrameFetcher<T : Any>(context: Context) : Fetcher<T> {
     companion object {
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
         @JvmField internal val SUPPORTED_FILE_EXTENSIONS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
+
+        @JvmField internal val UNSUPPORTED_SCHEMES = arrayOf("http", "https")
 
         internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
