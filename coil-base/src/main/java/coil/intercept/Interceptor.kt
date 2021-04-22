@@ -13,7 +13,7 @@ import coil.size.Size
  * See [ImageLoader.Builder.launchInterceptorChainOnMainThread] for more information.
  */
 @ExperimentalCoilApi
-interface Interceptor {
+fun interface Interceptor {
 
     suspend fun intercept(chain: Chain): ImageResult
 
