@@ -2,12 +2,13 @@ import coil.by
 import coil.groupId
 import coil.versionName
 import kotlinx.validation.ApiValidationExtension
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
-    apply(from = "buildSrc/extra.gradle.kts")
+    apply(from = "buildSrc/plugins.gradle.kts")
     repositories {
         google()
         mavenCentral()
@@ -16,10 +17,10 @@ buildscript {
     dependencies {
         classpath(rootProject.extra["androidPlugin"].toString())
         classpath(rootProject.extra["kotlinPlugin"].toString())
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.14.2")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
-        classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.5.0")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:10.0.0")
+        classpath(rootProject.extra["mavenPublishPlugin"].toString())
+        classpath(rootProject.extra["dokkaPlugin"].toString())
+        classpath(rootProject.extra["binaryCompatibilityPlugin"].toString())
+        classpath(rootProject.extra["ktlintPlugin"].toString())
     }
 }
 
@@ -29,17 +30,18 @@ extensions.configure<ApiValidationExtension> {
     ignoredProjects = mutableSetOf("coil-sample", "coil-test")
 }
 
+apply(plugin = "org.jetbrains.dokka")
+
+tasks.withType<DokkaMultiModuleTask>().configureEach {
+    outputDirectory by file("$rootDir/docs/api")
+    removeChildTasks(listOf(project(":coil-sample"), project(":coil-test")))
+}
+
 allprojects {
     repositories {
         google()
         mavenCentral()
-
-        // https://github.com/Kotlin/dokka/issues/41
-        jcenter {
-            content {
-                includeModule("org.jetbrains.dokka", "dokka-fatjar")
-            }
-        }
+        maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") // https://github.com/Kotlin/kotlinx.html/issues/173
     }
 
     group = project.groupId
@@ -48,63 +50,29 @@ allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.41.0"
+        version by "0.40.0"
         disabledRules by setOf("indent", "max-line-length")
     }
 
-    // https://github.com/JLLeitschuh/ktlint-gradle/issues/458
-    @Suppress("UnstableApiUsage")
-    configurations.named("ktlint").configure {
-        resolutionStrategy {
-            dependencySubstitution {
-                substitute(module("com.pinterest:ktlint")).with(variant(module("com.pinterest:ktlint:0.41.0")) {
-                    attributes {
-                        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.EXTERNAL))
-                    }
-                })
+    tasks.withType<DokkaTaskPartial>().configureEach {
+        dokkaSourceSets.configureEach {
+            jdkVersion by 8
+            skipDeprecated by true
+
+            externalDocumentationLink {
+                url by URL("https://developer.android.com/reference/")
             }
-        }
-    }
-
-    // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our dokka configuration.
-    afterEvaluate {
-        tasks.withType<DokkaTask>().configureEach {
-            configuration {
-                jdkVersion = 8
-                reportUndocumented = false
-                skipDeprecated = true
-                skipEmptyPackages = true
-                outputDirectory = "$rootDir/docs/api"
-                outputFormat = "gfm"
-
-                externalDocumentationLink {
-                    url = URL("https://developer.android.com/reference/")
-                    packageListUrl = URL("https://developer.android.com/reference/androidx/package-list")
-                }
-                externalDocumentationLink {
-                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
-                    packageListUrl = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/package-list")
-                }
-                externalDocumentationLink {
-                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                    packageListUrl = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/package-list")
-                }
-                externalDocumentationLink {
-                    url = URL("https://square.github.io/okhttp/3.x/okhttp/")
-                    packageListUrl = URL("https://square.github.io/okhttp/3.x/okhttp/package-list")
-                }
-                externalDocumentationLink {
-                    url = URL("https://square.github.io/okio/2.x/okio/")
-                    packageListUrl = URL("file://$rootDir/package-list-okio")
-                }
-
-                // Include the coil-base documentation link for extension artifacts.
-                if (project.name != "coil-base") {
-                    externalDocumentationLink {
-                        url = URL("https://coil-kt.github.io/coil/api/coil-base/")
-                        packageListUrl = URL("file://$rootDir/package-list-coil-base")
-                    }
-                }
+            externalDocumentationLink {
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-android/")
+            }
+            externalDocumentationLink {
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+            }
+            externalDocumentationLink {
+                url by URL("https://square.github.io/okhttp/4.x/okhttp/")
+            }
+            externalDocumentationLink {
+                url by URL("https://square.github.io/okio/2.x/okio/")
             }
         }
     }
