@@ -58,7 +58,6 @@ allprojects {
         dokkaSourceSets.configureEach {
             jdkVersion by 8
             skipDeprecated by true
-            outputDirectory by file("$rootDir/docs/api")
 
             externalDocumentationLink {
                 url by URL("https://developer.android.com/reference/")
