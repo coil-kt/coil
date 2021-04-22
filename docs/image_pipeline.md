@@ -2,7 +2,7 @@
 
 Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, TIFF, etc.)
 
-Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of four main parts: [Interceptors](../api/coil-base/coil-base/coil.interceptor/-interceptor/), [Mappers](../api/coil-base/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil-base/coil.decode/-decoder).
+Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of four main parts: [Interceptors](../api/coil-base/coil-base/coil.intercept/-interceptor), [Mappers](../api/coil-base/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil-base/coil.decode/-decoder).
 
 Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-base/coil-base/coil/-component-registry):
 

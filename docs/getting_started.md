@@ -62,7 +62,7 @@ val imageLoader = ImageLoader.Builder(context)
 
 Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
 
-It's recommended, though not required, to call [`shutdown`](../api/coil-base/coil-base/coil/-image-loader/shutdown/) when you've finished using an image loader. Calling `shutdown` preemptively frees its memory and cleans up any observers. If you only create and use a single `ImageLoader`, you do not need to shut it down as it will be freed when your app is killed.
+It's recommended, though not required, to call [`shutdown`](../api/coil-base/coil-base/coil/-image-loader/shutdown.html) when you've finished using an image loader. Calling `shutdown` preemptively frees its memory and cleans up any observers. If you only create and use a single `ImageLoader`, you do not need to shut it down as it will be freed when your app is killed.
 
 ## Image Requests
 
@@ -139,7 +139,7 @@ Setting the singleton `ImageLoader` is optional. If you don't set one, Coil will
 If you're using the `io.coil-kt:coil-base` artifact, you should create your own `ImageLoader` instance(s) and inject them throughout your app with dependency injection. [Read more about dependency injection here](../image_loaders/#singleton-vs-dependency-injection).
 
 !!! Note
-    If you set a custom `OkHttpClient`, you must set a `cache` implementation or the `ImageLoader` will have no disk cache. A default Coil cache instance can be created using [`CoilUtils.createDefaultCache`](../api/coil-base/coil-base/coil.util/-coil-utils/create-default-cache/).
+    If you set a custom `OkHttpClient`, you must set a `cache` implementation or the `ImageLoader` will have no disk cache. A default Coil cache instance can be created using [`CoilUtils.createDefaultCache`](../api/coil-base/coil-base/coil.util/-coil-utils/create-default-cache.html).
 
 ## ImageView Extension Functions
 
@@ -170,7 +170,7 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-See the docs [here](../api/coil-singleton/coil/) and [here](../api/coil-base/coil-base/coil/) for more information.
+See the docs [here](../api/coil-singleton/coil-singleton/coil/) for more information.
 
 ## Supported Data Types
 
@@ -214,7 +214,7 @@ imageLoader.enqueue(request)
 - `request.lifecycle` reaches the `DESTROYED` state.
 - `request.target` is a `ViewTarget` and its `View` is detached.
 
-Additionally, `ImageLoader.enqueue` returns a [Disposable](../api/coil-base/coil-base/coil.request/-disposable), which can be used to dispose the request (which cancels it and frees its associated resources):
+Additionally, `ImageLoader.enqueue` returns a [Disposable](../api/coil-base/coil-base/coil.request/-disposable/), which can be used to dispose the request (which cancels it and frees its associated resources):
 
 ```kotlin
 val disposable = imageView.load("https://www.example.com/image.jpg")
