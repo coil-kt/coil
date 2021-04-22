@@ -17,6 +17,8 @@ import kotlin.coroutines.resume
  * Wraps [source] to support thread interruption while inside [block].
  *
  * Consumers **should not** read [source] inside [block]. Instead, read from the [Source] provided to [block].
+ *
+ * @hide
  */
 @InternalCoilApi
 suspend inline fun <T> withInterruptibleSource(

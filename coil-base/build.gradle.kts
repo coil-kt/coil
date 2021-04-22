@@ -9,7 +9,6 @@ plugins {
     id("com.vanniktech.maven.publish")
     id("kotlin-android")
     id("kotlin-parcelize")
-    id("org.jetbrains.dokka")
 }
 
 setupLibraryModule()
@@ -32,4 +31,6 @@ dependencies {
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+
+    dokkaHtmlPartialPlugin(rootProject.extra["dokkaAndroidPlugin"].toString())
 }

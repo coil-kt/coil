@@ -30,4 +30,4 @@ imageView.load(File("/path/to/video.mp4")) {
 
 If a frame time isn't specified, the first frame of the video is decoded.
 
-The `ImageLoader` will automatically detect any videos and extract their frames if the request's filename/URI ends with a [valid video extension](https://developer.android.com/guide/topics/media/media-formats#video-formats). If it does not, you can [set the `Fetcher` explicitly](../api/coil-base/coil.request/-image-request/-builder/fetcher/) for the request.
+The `ImageLoader` will automatically detect any videos and extract their frames if the request's filename/URI ends with a [valid video extension](https://developer.android.com/guide/topics/media/media-formats#video-formats). If it does not, you can [set the `Fetcher` explicitly](../api/coil-base/coil-base/coil.request/-image-request/-builder/fetcher.html) for the request.

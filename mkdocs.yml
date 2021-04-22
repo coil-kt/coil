@@ -4,6 +4,7 @@ site_description: 'An image loading library for Android backed by Kotlin Corouti
 site_author: '2021 Coil Contributors'
 site_url: 'https://coil-kt.github.io/coil/'
 remote_branch: gh-pages
+edit_uri: ""
 
 # Repository
 repo_name: 'Coil'
@@ -48,12 +49,7 @@ nav:
   - 'Video Frames': videos.md
   - 'Recipes': recipes.md
   - 'FAQ': faq.md
-  - 'API':
-    - 'coil': api/coil-singleton/index.md
-    - 'coil-base': api/coil-base/index.md
-    - 'coil-gif': api/coil-gif/index.md
-    - 'coil-svg': api/coil-svg/index.md
-    - 'coil-video': api/coil-video/index.md
+  - 'API ⏏': api/index.html
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md
