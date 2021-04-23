@@ -37,6 +37,18 @@ class VideoFrameFetcherTest {
     }
 
     @Test
+    fun uriFetcherHandlesContentScheme() {
+        val uri = "content://test/scheme/BigBuckBunny.mp4".toUri()
+        assertTrue(fetcher.handles(uri))
+    }
+
+    @Test
+    fun uriFetcherDoesNotHandleHttpScheme() {
+        val uri = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4".toUri()
+        assertFalse(fetcher.handles(uri))
+    }
+
+    @Test
     fun noSetFrameTime() {
         // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
