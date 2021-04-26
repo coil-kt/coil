@@ -55,7 +55,6 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
                 arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
                 arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
             }
-            arguments += "-Xuse-ir" // https://youtrack.jetbrains.com/issue/KT-45836
             freeCompilerArgs = arguments
         }
         testOptions {
