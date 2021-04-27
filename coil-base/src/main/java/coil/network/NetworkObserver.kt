@@ -32,7 +32,16 @@ internal interface NetworkObserver {
         private const val TAG = "NetworkObserver"
 
         /** Create a new [NetworkObserver] instance. */
-        operator fun invoke(context: Context, listener: Listener, logger: Logger?): NetworkObserver {
+        operator fun invoke(
+            context: Context,
+            isEnabled: Boolean,
+            listener: Listener,
+            logger: Logger?
+        ): NetworkObserver {
+            if (!isEnabled) {
+                return EmptyNetworkObserver
+            }
+
             val connectivityManager: ConnectivityManager? = context.getSystemService()
             if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
                 logger?.log(TAG, Log.WARN) { "Unable to register network observer." }

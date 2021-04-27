@@ -33,7 +33,7 @@ class SystemCallbacksTest {
 
     @Test
     fun imageLoaderIsFreedWithoutShutdown() {
-        val systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context)
+        val systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context, true)
 
         val bitmaps = mutableListOf<Bitmap>()
         while (systemCallbacks.imageLoader.get() != null) {
@@ -69,7 +69,7 @@ class SystemCallbacksTest {
             options = ImageLoaderOptions(),
             logger = null
         )
-        val systemCallbacks = SystemCallbacks(imageLoader, context)
+        val systemCallbacks = SystemCallbacks(imageLoader, context, true)
 
         strongMemoryCache.set(
             key = MemoryCache.Key("1"),
