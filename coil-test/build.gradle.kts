@@ -12,7 +12,7 @@ setupLibraryModule()
 dependencies {
     compileOnly(project(":coil-base"))
 
-    implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
+    implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
     implementation(Library.KOTLINX_COROUTINES_ANDROID)
     compileOnly(Library.KOTLINX_COROUTINES_TEST)
 

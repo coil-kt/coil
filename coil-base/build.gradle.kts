@@ -14,7 +14,7 @@ plugins {
 setupLibraryModule()
 
 dependencies {
-    api(kotlin("stdlib", KotlinCompilerVersion.VERSION))
+    api(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
     api(Library.KOTLINX_COROUTINES_ANDROID)
 
     implementation(Library.ANDROIDX_ANNOTATION)

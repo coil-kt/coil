@@ -32,7 +32,7 @@ dependencies {
     implementation(project(":coil-svg"))
     implementation(project(":coil-video"))
 
-    implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
+    implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
 
     implementation(Library.ANDROIDX_ACTIVITY)
     implementation(Library.ANDROIDX_APPCOMPAT)
