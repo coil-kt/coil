@@ -10,7 +10,6 @@ import coil.decode.DataSource
 import coil.decode.Options
 import coil.decode.VideoFrameDecoder
 import coil.decode.VideoFrameDecoderDelegate
-import coil.size.Size
 import java.io.File
 
 /**
@@ -62,15 +61,11 @@ abstract class VideoFrameFetcher<T : Any>(context: Context) : Fetcher<T> {
 
     protected abstract fun MediaMetadataRetriever.setDataSource(data: T)
 
-    override suspend fun fetch(
-        data: T,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(data: T, options: Options): FetchResult {
         val retriever = MediaMetadataRetriever()
         try {
             retriever.setDataSource(data)
-            val (drawable, isSampled) = delegate.decode(retriever, size, options)
+            val (drawable, isSampled) = delegate.decode(retriever, options)
             return DrawableResult(
                 drawable = drawable,
                 isSampled = isSampled,
@@ -84,11 +79,8 @@ abstract class VideoFrameFetcher<T : Any>(context: Context) : Fetcher<T> {
     companion object {
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
         @JvmField internal val SUPPORTED_FILE_EXTENSIONS = arrayOf(".3gp", ".mkv", ".mp4", ".ts", ".webm")
-
         @JvmField internal val UNSUPPORTED_SCHEMES = arrayOf("http", "https")
-
         internal const val ASSET_FILE_PATH_ROOT = "android_asset"
-
         const val VIDEO_FRAME_MICROS_KEY = VideoFrameDecoder.VIDEO_FRAME_MICROS_KEY
         const val VIDEO_FRAME_OPTION_KEY = VideoFrameDecoder.VIDEO_FRAME_OPTION_KEY
     }

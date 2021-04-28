@@ -3,7 +3,6 @@ package coil.fetch
 import android.webkit.MimeTypeMap
 import coil.decode.DataSource
 import coil.decode.Options
-import coil.size.Size
 import okio.buffer
 import okio.source
 import java.io.File
@@ -14,11 +13,7 @@ internal class FileFetcher(private val addLastModifiedToFileCacheKey: Boolean) :
         return if (addLastModifiedToFileCacheKey) "${data.path}:${data.lastModified()}" else data.path
     }
 
-    override suspend fun fetch(
-        data: File,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(data: File, options: Options): FetchResult {
         return SourceResult(
             source = data.source().buffer(),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(data.extension),

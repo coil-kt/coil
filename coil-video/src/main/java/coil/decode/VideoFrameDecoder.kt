@@ -4,7 +4,6 @@ package coil.decode
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import coil.size.Size
 import okio.BufferedSource
 import okio.sink
 import java.io.File
@@ -23,11 +22,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
         return mimeType != null && mimeType.startsWith("video/")
     }
 
-    override suspend fun decode(
-        source: BufferedSource,
-        size: Size,
-        options: Options
-    ): DecodeResult {
+    override suspend fun decode(source: BufferedSource, options: Options): DecodeResult {
         val tempFile = File.createTempFile("tmp", null, context.cacheDir.apply { mkdirs() })
         try {
             // Read the source into a temporary file.
@@ -36,7 +31,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
             val retriever = MediaMetadataRetriever()
             try {
                 retriever.setDataSource(tempFile.path)
-                return delegate.decode(retriever, size, options)
+                return delegate.decode(retriever, options)
             } finally {
                 retriever.release()
             }

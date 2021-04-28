@@ -1,7 +1,6 @@
 package coil.decode
 
 import android.graphics.drawable.Drawable
-import coil.size.Size
 import okio.BufferedSource
 
 /**
@@ -31,12 +30,7 @@ interface Decoder {
      * NOTE: Implementations are responsible for closing [source] when finished with it.
      *
      * @param source The [BufferedSource] to read from.
-     * @param size The requested dimensions for the image.
      * @param options A set of configuration options for this request.
      */
-    suspend fun decode(
-        source: BufferedSource,
-        size: Size,
-        options: Options
-    ): DecodeResult
+    suspend fun decode(source: BufferedSource, options: Options): DecodeResult
 }

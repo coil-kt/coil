@@ -51,6 +51,7 @@ internal class RequestService(private val logger: Logger?) {
             context = request.context,
             config = config,
             colorSpace = request.colorSpace,
+            size = size,
             scale = request.scale,
             allowInexactSize = request.allowInexactSize,
             allowRgb565 = allowRgb565,

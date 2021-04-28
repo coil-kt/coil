@@ -246,7 +246,7 @@ internal class EngineInterceptor(
         val options = requestService.options(request, size, systemCallbacks.isOnline)
 
         eventListener.fetchStart(request, fetcher, options)
-        val fetchResult = fetcher.fetch(data, size, options)
+        val fetchResult = fetcher.fetch(data, options)
         eventListener.fetchEnd(request, fetcher, options, fetchResult)
 
         val baseResult = when (fetchResult) {
@@ -269,7 +269,7 @@ internal class EngineInterceptor(
 
                     // Decode the stream.
                     eventListener.decodeStart(request, decoder, options)
-                    val decodeResult = decoder.decode(fetchResult.source, size, options)
+                    val decodeResult = decoder.decode(fetchResult.source, options)
                     eventListener.decodeEnd(request, decoder, options, decodeResult)
                     decodeResult
                 } catch (throwable: Throwable) {

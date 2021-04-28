@@ -23,11 +23,7 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-    fun decode(
-        retriever: MediaMetadataRetriever,
-        size: Size,
-        options: Options
-    ): DecodeResult {
+    fun decode(retriever: MediaMetadataRetriever, options: Options): DecodeResult {
         val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
         val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
@@ -35,7 +31,7 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
         // for the source's aspect ratio and the target's size.
         var srcWidth = 0
         var srcHeight = 0
-        val destSize = when (size) {
+        val destSize = when (val size = options.size) {
             is PixelSize -> {
                 val rotation = retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
                 if (rotation == 90 || rotation == 270) {

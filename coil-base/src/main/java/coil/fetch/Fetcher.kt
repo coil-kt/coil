@@ -5,7 +5,6 @@ package coil.fetch
 import android.graphics.drawable.Drawable
 import coil.decode.Options
 import coil.memory.MemoryCache
-import coil.size.Size
 import okio.BufferedSource
 
 /**
@@ -37,12 +36,7 @@ interface Fetcher<T : Any> {
      * Load the [data] into memory. Perform any necessary fetching operations.
      *
      * @param data The data to load.
-     * @param size The requested dimensions for the image.
      * @param options A set of configuration options for this request.
      */
-    suspend fun fetch(
-        data: T,
-        size: Size,
-        options: Options
-    ): FetchResult
+    suspend fun fetch(data: T, options: Options): FetchResult
 }

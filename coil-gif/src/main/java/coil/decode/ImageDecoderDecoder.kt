@@ -16,7 +16,6 @@ import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
 import coil.size.PixelSize
-import coil.size.Size
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
 import coil.util.isHardware
@@ -43,11 +42,7 @@ class ImageDecoderDecoder(private val context: Context) : Decoder {
             (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
     }
 
-    override suspend fun decode(
-        source: BufferedSource,
-        size: Size,
-        options: Options
-    ): DecodeResult {
+    override suspend fun decode(source: BufferedSource, options: Options): DecodeResult {
         var isSampled = false
         val baseDrawable = withInterruptibleSource(source) { interruptibleSource ->
             var tempFile: File? = null
@@ -67,6 +62,7 @@ class ImageDecoderDecoder(private val context: Context) : Decoder {
                     // It's safe to delete the temp file here.
                     tempFile?.delete()
 
+                    val size = options.size
                     if (size is PixelSize) {
                         val (srcWidth, srcHeight) = info.size
                         val multiplier = DecodeUtils.computeSizeMultiplier(

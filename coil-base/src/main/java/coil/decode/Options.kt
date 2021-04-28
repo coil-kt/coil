@@ -8,7 +8,9 @@ import android.graphics.ColorSpace
 import coil.fetch.Fetcher
 import coil.request.CachePolicy
 import coil.request.Parameters
+import coil.size.OriginalSize
 import coil.size.Scale
+import coil.size.Size
 import coil.util.EMPTY_HEADERS
 import coil.util.NULL_COLOR_SPACE
 import okhttp3.Headers
@@ -22,6 +24,7 @@ import okhttp3.Headers
  * @param config The requested config for any [Bitmap]s.
  * @param colorSpace The preferred color space for any [Bitmap]s.
  *  If null, components should typically default to [ColorSpace.Rgb].
+ * @param size The requested output size for the image request.
  * @param scale The scaling algorithm for how to fit the source image's dimensions into the target's dimensions.
  * @param allowInexactSize True if the output image does not need to fit/fill the target's dimensions exactly. For instance,
  *  if true [BitmapFactoryDecoder] will not decode an image at a larger size than its source dimensions as an optimization.
@@ -40,6 +43,7 @@ class Options(
     val context: Context,
     val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
     val colorSpace: ColorSpace? = NULL_COLOR_SPACE,
+    val size: Size = OriginalSize,
     val scale: Scale = Scale.FIT,
     val allowInexactSize: Boolean = false,
     val allowRgb565: Boolean = false,
@@ -55,6 +59,7 @@ class Options(
         context: Context = this.context,
         config: Bitmap.Config = this.config,
         colorSpace: ColorSpace? = this.colorSpace,
+        size: Size = this.size,
         scale: Scale = this.scale,
         allowInexactSize: Boolean = this.allowInexactSize,
         allowRgb565: Boolean = this.allowRgb565,
@@ -64,7 +69,7 @@ class Options(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
-    ) = Options(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
+    ) = Options(context, config, colorSpace, size, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
         headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {

@@ -9,7 +9,6 @@ import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
-import coil.size.Size
 import coil.util.animatable2CompatCallbackOf
 import coil.util.isHardware
 import okio.BufferedSource
@@ -26,7 +25,6 @@ class GifDecoder : Decoder {
 
     override suspend fun decode(
         source: BufferedSource,
-        size: Size,
         options: Options
     ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
         val bufferedSource = interruptibleSource.buffer()

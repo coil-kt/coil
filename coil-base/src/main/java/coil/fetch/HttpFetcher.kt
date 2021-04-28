@@ -8,7 +8,6 @@ import coil.decode.DataSource
 import coil.decode.Options
 import coil.map.Mapper
 import coil.network.HttpException
-import coil.size.Size
 import coil.util.await
 import coil.util.getMimeTypeFromUrl
 import kotlinx.coroutines.CoroutineDispatcher
@@ -46,11 +45,7 @@ internal abstract class HttpFetcher<T : Any>(private val callFactory: Call.Facto
     abstract fun T.toHttpUrl(): HttpUrl
 
     @OptIn(ExperimentalStdlibApi::class)
-    override suspend fun fetch(
-        data: T,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(data: T, options: Options): FetchResult {
         val url = data.toHttpUrl()
         val request = Request.Builder().url(url).headers(options.headers)
 

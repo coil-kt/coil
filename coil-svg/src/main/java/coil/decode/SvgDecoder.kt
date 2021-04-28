@@ -10,7 +10,6 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil.size.OriginalSize
 import coil.size.PixelSize
-import coil.size.Size
 import coil.util.indexOf
 import coil.util.toSoftware
 import com.caverock.androidsvg.SVG
@@ -41,7 +40,6 @@ class SvgDecoder @JvmOverloads constructor(
 
     override suspend fun decode(
         source: BufferedSource,
-        size: Size,
         options: Options
     ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
         val svg = interruptibleSource.buffer().use { SVG.getFromInputStream(it.inputStream()) }
@@ -51,7 +49,7 @@ class SvgDecoder @JvmOverloads constructor(
         val bitmapWidth: Int
         val bitmapHeight: Int
         val viewBox: RectF? = svg.documentViewBox
-        when (size) {
+        when (val size = options.size) {
             is PixelSize -> {
                 if (useViewBoundsAsIntrinsicSize && viewBox != null) {
                     svgWidth = viewBox.width()

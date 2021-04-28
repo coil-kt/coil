@@ -6,7 +6,6 @@ import android.net.Uri
 import android.webkit.MimeTypeMap
 import coil.decode.DataSource
 import coil.decode.Options
-import coil.size.Size
 import coil.util.firstPathSegment
 import coil.util.getMimeTypeFromUrl
 import okio.buffer
@@ -20,11 +19,7 @@ internal class AssetUriFetcher(private val context: Context) : Fetcher<Uri> {
 
     override fun key(data: Uri) = data.toString()
 
-    override suspend fun fetch(
-        data: Uri,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(data: Uri, options: Options): FetchResult {
         val path = data.pathSegments.drop(1).joinToString("/")
 
         return SourceResult(

@@ -8,7 +8,6 @@ import android.provider.ContactsContract.Contacts
 import androidx.annotation.VisibleForTesting
 import coil.decode.DataSource
 import coil.decode.Options
-import coil.size.Size
 import okio.buffer
 import okio.source
 import java.io.InputStream
@@ -19,11 +18,7 @@ internal class ContentUriFetcher(private val context: Context) : Fetcher<Uri> {
 
     override fun key(data: Uri) = data.toString()
 
-    override suspend fun fetch(
-        data: Uri,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(data: Uri, options: Options): FetchResult {
         val inputStream = if (isContactPhotoUri(data)) {
             // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
             val stream: InputStream? = context.contentResolver.openAssetFileDescriptor(data, "r")?.createInputStream()

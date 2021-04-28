@@ -8,7 +8,6 @@ import android.webkit.MimeTypeMap
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.Options
-import coil.size.Size
 import coil.util.getDrawableCompat
 import coil.util.getMimeTypeFromUrl
 import coil.util.getXmlDrawableCompat
@@ -27,11 +26,7 @@ internal class ResourceUriFetcher(
 
     override fun key(data: Uri) = "$data-${context.resources.configuration.nightMode}"
 
-    override suspend fun fetch(
-        data: Uri,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(data: Uri, options: Options): FetchResult {
         // Expected format: android.resource://example.package.name/12345678
         val packageName = data.authority?.takeIf { it.isNotBlank() } ?: throwInvalidUriException(data)
         val resId = data.pathSegments.lastOrNull()?.toIntOrNull() ?: throwInvalidUriException(data)
@@ -56,7 +51,7 @@ internal class ResourceUriFetcher(
                     drawableDecoder.convert(
                         drawable = drawable,
                         config = options.config,
-                        size = size,
+                        size = options.size,
                         scale = options.scale,
                         allowInexactSize = options.allowInexactSize
                     ).toDrawable(context)

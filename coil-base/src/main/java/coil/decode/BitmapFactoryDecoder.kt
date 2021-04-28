@@ -11,7 +11,6 @@ import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.exifinterface.media.ExifInterface
 import coil.size.PixelSize
-import coil.size.Size
 import coil.util.toDrawable
 import coil.util.toSoftware
 import okio.Buffer
@@ -31,15 +30,13 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
     override suspend fun decode(
         source: BufferedSource,
-        size: Size,
         options: Options
     ) = withInterruptibleSource(source) { interruptibleSource ->
-        decodeInterruptible(interruptibleSource, size, options)
+        decodeInterruptible(interruptibleSource, options)
     }
 
     private fun decodeInterruptible(
         source: Source,
-        size: Size,
         options: Options
     ): DecodeResult = BitmapFactory.Options().run {
         val safeSource = ExceptionCatchingSource(source)
@@ -87,13 +84,13 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 inScaled = false
                 inBitmap = null
             }
-            size !is PixelSize -> {
+            options.size !is PixelSize -> {
                 // This occurs if size is OriginalSize.
                 inSampleSize = 1
                 inScaled = false
             }
             else -> {
-                val (width, height) = size
+                val (width, height) = options.size
                 inSampleSize = DecodeUtils.calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
 
                 // Calculate the image's density scaling multiple.
