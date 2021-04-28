@@ -9,8 +9,8 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.util.isMainThread
 import coil.util.requestManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -86,7 +86,7 @@ internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
         currentRequestJob = null
 
         pendingClear?.cancel()
-        pendingClear = GlobalScope.launch(Dispatchers.Main.immediate) { setCurrentRequest(null) }
+        pendingClear = CoroutineScope(Dispatchers.Main.immediate).launch { setCurrentRequest(null) }
     }
 
     @MainThread

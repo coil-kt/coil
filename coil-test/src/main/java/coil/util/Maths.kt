@@ -40,7 +40,7 @@ fun crossCorrelation(x: IntArray, y: IntArray): Double {
 fun IntArray.variance(): Double {
     if (isEmpty()) return Double.NaN
     val average = average()
-    return sumByDouble { (it - average).pow(2) } / count()
+    return sumOf { (it - average).pow(2) } / count()
 }
 
 /**

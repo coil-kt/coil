@@ -9,13 +9,11 @@ import coil.bitmap.FakeBitmapPool
 import coil.bitmap.RealBitmapReferenceCounter
 import coil.decode.DataSource
 import coil.request.ErrorResult
-import coil.request.ImageResult
 import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
 import coil.target.FakeTarget
 import coil.target.ImageViewTarget
 import coil.transition.Transition
-import coil.transition.TransitionTarget
 import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.createBitmap
@@ -239,13 +237,6 @@ class TargetDelegateTest {
             executeQueuedMainThreadTasks()
             assertFalse(isRunning)
             assertTrue(initialBitmap in pool.bitmaps)
-        }
-    }
-
-    @Suppress("TestFunctionName")
-    private inline fun Transition(crossinline block: suspend (TransitionTarget, ImageResult) -> Unit): Transition {
-        return object : Transition {
-            override suspend fun transition(target: TransitionTarget, result: ImageResult) = block(target, result)
         }
     }
 }
