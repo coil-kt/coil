@@ -24,7 +24,7 @@ import kotlin.coroutines.resume
  * @param preferExactIntrinsicSize See [CrossfadeDrawable.preferExactIntrinsicSize].
  */
 @ExperimentalCoilApi
-class CrossfadeTransition(
+class CrossfadeTransition @JvmOverloads constructor(
     val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
     val preferExactIntrinsicSize: Boolean = false
 ) : Transition {
@@ -88,10 +88,4 @@ class CrossfadeTransition(
     override fun hashCode() = durationMillis.hashCode()
 
     override fun toString() = "CrossfadeTransition(durationMillis=$durationMillis)"
-
-    @SinceKotlin("999.9") // Kept for binary compatibility.
-    constructor() : this()
-
-    @SinceKotlin("999.9") // Kept for binary compatibility.
-    constructor(durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION) : this(durationMillis)
 }

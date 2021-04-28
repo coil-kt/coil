@@ -35,21 +35,7 @@ import kotlin.math.roundToInt
  * NOTE: Animated HEIF files are only supported on API 30 and above.
  */
 @RequiresApi(28)
-class ImageDecoderDecoder : Decoder {
-
-    @Deprecated(
-        message = "Migrate to the constructor that accepts a Context.",
-        replaceWith = ReplaceWith("ImageDecoderDecoder(context)")
-    )
-    constructor() {
-        this.context = null
-    }
-
-    constructor(context: Context) {
-        this.context = context
-    }
-
-    private val context: Context?
+class ImageDecoderDecoder(private val context: Context) : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) ||
@@ -72,7 +58,7 @@ class ImageDecoderDecoder : Decoder {
                     ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
                 } else {
                     // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
-                    tempFile = File.createTempFile("tmp", null, context?.cacheDir?.apply { mkdirs() })
+                    tempFile = File.createTempFile("tmp", null, context.cacheDir.apply { mkdirs() })
                     bufferedSource.use { tempFile.sink().use(it::readAll) }
                     ImageDecoder.createSource(tempFile)
                 }

@@ -37,7 +37,7 @@ import kotlin.math.roundToInt
  *  [start] **or** [end] return -1 for that dimension. This is useful for views that require an exact intrinsic
  *  size to scale the drawable.
  */
-class CrossfadeDrawable(
+class CrossfadeDrawable @JvmOverloads constructor(
     start: Drawable?,
     end: Drawable?,
     val scale: Scale = Scale.FIT,
@@ -273,16 +273,6 @@ class CrossfadeDrawable(
         start = null
         callbacks.forEachIndices { it.onAnimationEnd(this) }
     }
-
-    @JvmOverloads
-    @SinceKotlin("999.9") // Kept for binary compatibility.
-    constructor(
-        start: Drawable?,
-        end: Drawable?,
-        scale: Scale = Scale.FIT,
-        durationMillis: Int = DEFAULT_DURATION,
-        fadeStart: Boolean = true
-    ) : this(start, end, scale, durationMillis, fadeStart)
 
     companion object {
         private const val STATE_START = 0
