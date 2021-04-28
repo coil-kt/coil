@@ -19,7 +19,7 @@ If you need [transformations](transformations.md) that aren't part of the base C
 
 ## Java 8
 
-Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support). To enable this feature add the following to your Gradle build script:
+Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support). To enable this add the following to your Gradle build script:
 
 Gradle (`.gradle`):
 
