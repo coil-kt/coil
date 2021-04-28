@@ -2,7 +2,7 @@ public final class coil/decode/SvgDecoder : coil/decode/Decoder {
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;Z)V
 	public synthetic fun <init> (Landroid/content/Context;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun decode (Lcoil/bitmap/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun decode (Lokio/BufferedSource;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
 }
 

@@ -5,7 +5,7 @@ public final class coil/decode/GifDecoder : coil/decode/Decoder {
 	public static final field Companion Lcoil/decode/GifDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
 	public fun <init> ()V
-	public fun decode (Lcoil/bitmap/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun decode (Lokio/BufferedSource;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
 }
 
@@ -18,9 +18,8 @@ public final class coil/decode/ImageDecoderDecoder : coil/decode/Decoder {
 	public static final field ANIMATION_START_CALLBACK_KEY Ljava/lang/String;
 	public static final field Companion Lcoil/decode/ImageDecoderDecoder$Companion;
 	public static final field REPEAT_COUNT_KEY Ljava/lang/String;
-	public fun <init> ()V
 	public fun <init> (Landroid/content/Context;)V
-	public fun decode (Lcoil/bitmap/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun decode (Lokio/BufferedSource;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
 }
 
@@ -31,10 +30,9 @@ public final class coil/drawable/MovieDrawable : android/graphics/drawable/Drawa
 	public static final field Companion Lcoil/drawable/MovieDrawable$Companion;
 	public static final field REPEAT_INFINITE I
 	public fun <init> (Landroid/graphics/Movie;)V
-	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmap/BitmapPool;)V
-	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap$Config;)V
-	public fun <init> (Landroid/graphics/Movie;Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap$Config;Lcoil/size/Scale;)V
-	public synthetic fun <init> (Landroid/graphics/Movie;Lcoil/bitmap/BitmapPool;Landroid/graphics/Bitmap$Config;Lcoil/size/Scale;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/graphics/Movie;Landroid/graphics/Bitmap$Config;)V
+	public fun <init> (Landroid/graphics/Movie;Landroid/graphics/Bitmap$Config;Lcoil/size/Scale;)V
+	public synthetic fun <init> (Landroid/graphics/Movie;Landroid/graphics/Bitmap$Config;Lcoil/size/Scale;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun clearAnimationCallbacks ()V
 	public fun draw (Landroid/graphics/Canvas;)V
 	public final fun getAnimatedTransformation ()Lcoil/transform/AnimatedTransformation;
