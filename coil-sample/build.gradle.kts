@@ -10,7 +10,6 @@ plugins {
 setupAppModule {
     defaultConfig {
         applicationId = "coil.sample"
-        minSdkVersion(16)
         multiDexEnabled = true
     }
     buildTypes {

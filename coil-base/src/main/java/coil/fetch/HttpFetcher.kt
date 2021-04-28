@@ -17,6 +17,7 @@ import kotlinx.coroutines.MainCoroutineDispatcher
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 import okhttp3.ResponseBody
 import kotlin.coroutines.coroutineContext
@@ -27,7 +28,7 @@ internal class HttpUriFetcher(callFactory: Call.Factory) : HttpFetcher<Uri>(call
 
     override fun key(data: Uri) = data.toString()
 
-    override fun Uri.toHttpUrl(): HttpUrl = HttpUrl.get(toString())
+    override fun Uri.toHttpUrl(): HttpUrl = toString().toHttpUrl()
 }
 
 internal class HttpUrlFetcher(callFactory: Call.Factory) : HttpFetcher<HttpUrl>(callFactory) {
@@ -86,15 +87,15 @@ internal abstract class HttpFetcher<T : Any>(private val callFactory: Call.Facto
         }
 
         if (!response.isSuccessful) {
-            response.body()?.close()
+            response.body?.close()
             throw HttpException(response)
         }
-        val body = checkNotNull(response.body()) { "Null response body!" }
+        val body = checkNotNull(response.body) { "Null response body!" }
 
         return SourceResult(
             source = body.source(),
             mimeType = getMimeType(url, body),
-            dataSource = if (response.cacheResponse() != null) DataSource.DISK else DataSource.NETWORK
+            dataSource = if (response.cacheResponse != null) DataSource.DISK else DataSource.NETWORK
         )
     }
 

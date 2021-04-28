@@ -10,4 +10,4 @@ import okhttp3.Response
  *
  * @see HttpFetcher
  */
-class HttpException(val response: Response) : RuntimeException("HTTP ${response.code()}: ${response.message()}")
+class HttpException(val response: Response) : RuntimeException("HTTP ${response.code}: ${response.message}")

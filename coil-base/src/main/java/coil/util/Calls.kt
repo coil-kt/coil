@@ -30,7 +30,7 @@ internal class ContinuationCallback(
     }
 
     override fun onFailure(call: Call, e: IOException) {
-        if (!call.isCanceled) {
+        if (!call.isCanceled()) {
             continuation.resumeWithException(e)
         }
     }

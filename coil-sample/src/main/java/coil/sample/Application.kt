@@ -57,7 +57,6 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
                 OkHttpClient.Builder()
                     .cache(cache)
                     .dispatcher(dispatcher)
-                    .forceTls12() // The Unsplash API requires TLS 1.2, which isn't enabled by default before API 21.
                     .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
             }
