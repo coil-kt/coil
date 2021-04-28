@@ -90,7 +90,7 @@ class EventListenerTest {
             imageLoader.testEnqueue {
                 data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
                 transformations(object : Transformation {
-                    override fun key() = "test_transformation"
+                    override val key = "test_transformation"
 
                     override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
                         transformationIsCalled = true

@@ -492,11 +492,11 @@ class EngineInterceptorTest {
     private fun createFakeTransformations(): List<Transformation> {
         return listOf(
             object : Transformation {
-                override fun key() = "key1"
+                override val key = "key1"
                 override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = fail()
             },
             object : Transformation {
-                override fun key() = "key2"
+                override val key = "key2"
                 override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = fail()
             }
         )

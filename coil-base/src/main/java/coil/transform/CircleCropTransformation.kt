@@ -17,7 +17,7 @@ import kotlin.math.min
  */
 class CircleCropTransformation : Transformation {
 
-    override fun key(): String = CircleCropTransformation::class.java.name
+    override val key get() = "$javaClass"
 
     override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
