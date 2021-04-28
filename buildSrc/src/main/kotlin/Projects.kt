@@ -50,7 +50,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
             jvmTarget = "1.8"
             allWarningsAsErrors = true
 
-            val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
+            val arguments = mutableListOf("-progressive", "-Xjvm-default=all", "-Xopt-in=kotlin.RequiresOptIn")
             if (project.name != "coil-test") {
                 arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
                 arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
