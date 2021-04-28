@@ -5,9 +5,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleObserver
 import coil.EventListener
 import coil.ImageLoader
-import coil.bitmap.BitmapReferenceCounter
 import coil.request.ImageRequest
-import coil.target.PoolableViewTarget
 import coil.target.Target
 import coil.target.ViewTarget
 import coil.util.Logger
@@ -20,7 +18,6 @@ import kotlinx.coroutines.Job
 /** [DelegateService] wraps [Target]s to support [Bitmap] pooling and [ImageRequest]s to manage their lifecycle. */
 internal class DelegateService(
     private val imageLoader: ImageLoader,
-    private val referenceCounter: BitmapReferenceCounter,
     private val logger: Logger?
 ) {
 
@@ -33,13 +30,12 @@ internal class DelegateService(
     ): TargetDelegate {
         return when (type) {
             REQUEST_TYPE_EXECUTE -> when (target) {
-                null -> InvalidatableEmptyTargetDelegate(referenceCounter)
-                else -> InvalidatableTargetDelegate(target, referenceCounter, eventListener, logger)
+                null -> EmptyTargetDelegate
+                else -> InvalidatableTargetDelegate(target, eventListener, logger)
             }
             REQUEST_TYPE_ENQUEUE -> when (target) {
                 null -> EmptyTargetDelegate
-                is PoolableViewTarget<*> -> PoolableTargetDelegate(target, referenceCounter, eventListener, logger)
-                else -> InvalidatableTargetDelegate(target, referenceCounter, eventListener, logger)
+                else -> InvalidatableTargetDelegate(target, eventListener, logger)
             }
             else -> error("Invalid type.")
         }

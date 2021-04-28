@@ -1,7 +1,6 @@
 package coil.fetch
 
 import android.webkit.MimeTypeMap
-import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.size.Size
@@ -16,7 +15,6 @@ internal class FileFetcher(private val addLastModifiedToFileCacheKey: Boolean) :
     }
 
     override suspend fun fetch(
-        pool: BitmapPool,
         data: File,
         size: Size,
         options: Options

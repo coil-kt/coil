@@ -10,7 +10,7 @@ import coil.transition.TransitionTarget
 /** A [Target] that handles setting images on an [ImageView]. */
 open class ImageViewTarget(
     override val view: ImageView
-) : PoolableViewTarget<ImageView>, TransitionTarget, DefaultLifecycleObserver {
+) : ViewTarget<ImageView>, TransitionTarget, DefaultLifecycleObserver {
 
     private var isStarted = false
 
@@ -21,8 +21,6 @@ open class ImageViewTarget(
     override fun onError(error: Drawable?) = setDrawable(error)
 
     override fun onSuccess(result: Drawable) = setDrawable(result)
-
-    override fun onClear() = setDrawable(null)
 
     override fun onStart(owner: LifecycleOwner) {
         isStarted = true

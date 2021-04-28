@@ -7,7 +7,7 @@ import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import androidx.core.graphics.applyCanvas
-import coil.bitmap.BitmapPool
+import androidx.core.graphics.createBitmap
 import coil.size.Size
 import coil.util.safeConfig
 import kotlin.math.min
@@ -17,19 +17,20 @@ import kotlin.math.min
  */
 class CircleCropTransformation : Transformation {
 
-    override val key get() = "$javaClass"
+    override val key: String = javaClass.name
 
-    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
+    override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
         val minSize = min(input.width, input.height)
         val radius = minSize / 2f
-        val output = pool.get(minSize, minSize, input.safeConfig)
+        val output = createBitmap(minSize, minSize, input.safeConfig)
         output.applyCanvas {
             drawCircle(radius, radius, radius, paint)
             paint.xfermode = XFERMODE
             drawBitmap(input, radius - input.width / 2f, radius - input.height / 2f, paint)
         }
+        input.recycle()
 
         return output
     }

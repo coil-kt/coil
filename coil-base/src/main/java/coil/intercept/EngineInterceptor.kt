@@ -1,14 +1,11 @@
 package coil.intercept
 
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import coil.ComponentRegistry
 import coil.EventListener
-import coil.bitmap.BitmapPool
-import coil.bitmap.BitmapReferenceCounter
 import coil.decode.DataSource
 import coil.decode.DecodeUtils
 import coil.decode.DrawableDecoderService
@@ -43,7 +40,6 @@ import coil.util.mapData
 import coil.util.requireDecoder
 import coil.util.requireFetcher
 import coil.util.safeConfig
-import coil.util.setValid
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
@@ -54,8 +50,6 @@ import kotlin.math.abs
 /** The last interceptor in the chain which executes the [ImageRequest]. */
 internal class EngineInterceptor(
     private val registry: ComponentRegistry,
-    private val bitmapPool: BitmapPool,
-    private val referenceCounter: BitmapReferenceCounter,
     private val strongMemoryCache: StrongMemoryCache,
     private val memoryCacheService: MemoryCacheService,
     private val requestService: RequestService,
@@ -106,18 +100,9 @@ internal class EngineInterceptor(
 
             // Fetch, decode, transform, and cache the image on a background dispatcher.
             return withContext(request.dispatcher) {
-                // Mark the input data as ineligible for pooling (if necessary).
-                invalidateData(request.data)
-
-                // Decrement the value from the memory cache if it was not used.
-                if (value != null) referenceCounter.decrement(value.bitmap)
-
                 // Fetch and decode the image.
                 val (drawable, isSampled, dataSource) =
                     execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
-
-                // Mark the drawable's bitmap as eligible for pooling.
-                validateDrawable(drawable)
 
                 // Cache the result in the memory cache.
                 val isCached = writeToMemoryCache(request, memoryCacheKey, drawable, isSampled)
@@ -249,27 +234,6 @@ internal class EngineInterceptor(
         return true
     }
 
-    /** Prevent pooling the input data's bitmap. */
-    @Suppress("USELESS_CAST")
-    private fun invalidateData(data: Any) {
-        when (data) {
-            is BitmapDrawable -> referenceCounter.setValid(data.bitmap as Bitmap?, false)
-            is Bitmap -> referenceCounter.setValid(data, false)
-        }
-    }
-
-    /** Allow pooling the successful drawable's bitmap. */
-    private fun validateDrawable(drawable: Drawable) {
-        val bitmap = (drawable as? BitmapDrawable)?.bitmap
-        if (bitmap != null) {
-            // Mark this bitmap as valid for pooling (if it has not already been made invalid).
-            referenceCounter.setValid(bitmap, true)
-
-            // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
-            referenceCounter.increment(bitmap)
-        }
-    }
-
     /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
     private suspend inline fun execute(
         data: Any,
@@ -282,7 +246,7 @@ internal class EngineInterceptor(
         val options = requestService.options(request, size, systemCallbacks.isOnline)
 
         eventListener.fetchStart(request, fetcher, options)
-        val fetchResult = fetcher.fetch(bitmapPool, data, size, options)
+        val fetchResult = fetcher.fetch(data, size, options)
         eventListener.fetchEnd(request, fetcher, options, fetchResult)
 
         val baseResult = when (fetchResult) {
@@ -305,7 +269,7 @@ internal class EngineInterceptor(
 
                     // Decode the stream.
                     eventListener.decodeStart(request, decoder, options)
-                    val decodeResult = decoder.decode(bitmapPool, fetchResult.source, size, options)
+                    val decodeResult = decoder.decode(fetchResult.source, size, options)
                     eventListener.decodeEnd(request, decoder, options, decodeResult)
                     decodeResult
                 } catch (throwable: Throwable) {
@@ -365,7 +329,7 @@ internal class EngineInterceptor(
         }
         eventListener.transformStart(request, input)
         val output = transformations.foldIndices(input) { bitmap, transformation ->
-            transformation.transform(bitmapPool, bitmap, size).also { coroutineContext.ensureActive() }
+            transformation.transform(bitmap, size).also { coroutineContext.ensureActive() }
         }
         eventListener.transformEnd(request, output)
         return result.copy(drawable = output.toDrawable(request.context))

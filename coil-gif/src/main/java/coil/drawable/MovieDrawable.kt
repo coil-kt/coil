@@ -15,9 +15,9 @@ import android.graphics.Rect
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil.bitmap.BitmapPool
 import coil.decode.DecodeUtils
 import coil.decode.ImageDecoderDecoder
 import coil.size.Scale
@@ -34,7 +34,6 @@ import coil.util.isHardware
  */
 class MovieDrawable @JvmOverloads constructor(
     private val movie: Movie,
-    private val pool: BitmapPool = BitmapPool(0),
     val config: Bitmap.Config = Bitmap.Config.ARGB_8888,
     val scale: Scale = Scale.FIT
 ) : Drawable(), Animatable2Compat {
@@ -224,8 +223,8 @@ class MovieDrawable @JvmOverloads constructor(
         val bitmapWidth = (softwareScale * movieWidth).toInt()
         val bitmapHeight = (softwareScale * movieHeight).toInt()
 
-        val bitmap = pool.get(bitmapWidth, bitmapHeight, config)
-        softwareBitmap?.let(pool::put)
+        val bitmap = createBitmap(bitmapWidth, bitmapHeight, config)
+        softwareBitmap?.recycle()
         softwareBitmap = bitmap
         softwareCanvas = Canvas(bitmap)
 

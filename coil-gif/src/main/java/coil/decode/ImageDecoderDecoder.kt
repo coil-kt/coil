@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
 import androidx.core.util.component2
-import coil.bitmap.BitmapPool
 import coil.drawable.ScaleDrawable
 import coil.request.animatedTransformation
 import coil.request.animationEndCallback
@@ -59,7 +58,6 @@ class ImageDecoderDecoder : Decoder {
     }
 
     override suspend fun decode(
-        pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options

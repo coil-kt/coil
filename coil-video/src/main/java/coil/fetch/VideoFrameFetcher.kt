@@ -6,7 +6,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.decode.VideoFrameDecoder
@@ -64,7 +63,6 @@ abstract class VideoFrameFetcher<T : Any>(context: Context) : Fetcher<T> {
     protected abstract fun MediaMetadataRetriever.setDataSource(data: T)
 
     override suspend fun fetch(
-        pool: BitmapPool,
         data: T,
         size: Size,
         options: Options
@@ -72,7 +70,7 @@ abstract class VideoFrameFetcher<T : Any>(context: Context) : Fetcher<T> {
         val retriever = MediaMetadataRetriever()
         try {
             retriever.setDataSource(data)
-            val (drawable, isSampled) = delegate.decode(pool, retriever, size, options)
+            val (drawable, isSampled) = delegate.decode(retriever, size, options)
             return DrawableResult(
                 drawable = drawable,
                 isSampled = isSampled,

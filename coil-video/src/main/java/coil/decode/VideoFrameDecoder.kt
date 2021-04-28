@@ -4,7 +4,6 @@ package coil.decode
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import coil.bitmap.BitmapPool
 import coil.size.Size
 import okio.BufferedSource
 import okio.sink
@@ -25,7 +24,6 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
     }
 
     override suspend fun decode(
-        pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options
@@ -38,7 +36,7 @@ class VideoFrameDecoder(private val context: Context) : Decoder {
             val retriever = MediaMetadataRetriever()
             try {
                 retriever.setDataSource(tempFile.path)
-                return delegate.decode(pool, retriever, size, options)
+                return delegate.decode(retriever, size, options)
             } finally {
                 retriever.release()
             }

@@ -9,7 +9,7 @@ import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import androidx.core.graphics.component3
 import androidx.core.graphics.component4
-import coil.bitmap.BitmapPool
+import androidx.core.graphics.createBitmap
 import coil.size.OriginalSize
 import coil.size.Scale
 import coil.size.Size
@@ -17,7 +17,7 @@ import coil.util.height
 import coil.util.toSoftware
 import coil.util.width
 
-internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
+internal class DrawableDecoderService {
 
     /**
      * Convert the provided [Drawable] into a [Bitmap].
@@ -48,7 +48,7 @@ internal class DrawableDecoderService(private val bitmapPool: BitmapPool) {
         val srcHeight = drawable.height.let { if (it > 0) it else DEFAULT_SIZE }
         val (width, height) = DecodeUtils.computePixelSize(srcWidth, srcHeight, size, scale)
 
-        val bitmap = bitmapPool.get(width, height, config.toSoftware())
+        val bitmap = createBitmap(width, height, config.toSoftware())
         drawable.apply {
             val (oldLeft, oldTop, oldRight, oldBottom) = drawable.bounds
             setBounds(0, 0, width, height)

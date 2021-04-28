@@ -1,7 +1,6 @@
 package coil.fetch
 
 import android.graphics.Bitmap
-import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.size.Size
@@ -12,7 +11,6 @@ internal class BitmapFetcher : Fetcher<Bitmap> {
     override fun key(data: Bitmap): String? = null
 
     override suspend fun fetch(
-        pool: BitmapPool,
         data: Bitmap,
         size: Size,
         options: Options

@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.NetworkOnMainThreadException
 import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
-import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.map.Mapper
@@ -48,7 +47,6 @@ internal abstract class HttpFetcher<T : Any>(private val callFactory: Call.Facto
 
     @OptIn(ExperimentalStdlibApi::class)
     override suspend fun fetch(
-        pool: BitmapPool,
         data: T,
         size: Size,
         options: Options

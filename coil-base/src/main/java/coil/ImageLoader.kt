@@ -8,11 +8,6 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
-import coil.bitmap.BitmapPool
-import coil.bitmap.EmptyBitmapPool
-import coil.bitmap.EmptyBitmapReferenceCounter
-import coil.bitmap.RealBitmapPool
-import coil.bitmap.RealBitmapReferenceCounter
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.intercept.Interceptor
@@ -30,7 +25,6 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
-import coil.target.PoolableViewTarget
 import coil.target.ViewTarget
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
@@ -66,11 +60,6 @@ interface ImageLoader {
      * An in-memory cache of recently loaded images.
      */
     val memoryCache: MemoryCache
-
-    /**
-     * An object pool of reusable [Bitmap]s.
-     */
-    val bitmapPool: BitmapPool
 
     /**
      * Enqueue the [request] to be executed asynchronously.
@@ -119,8 +108,6 @@ interface ImageLoader {
         private var logger: Logger?
         private var memoryCache: RealMemoryCache?
         private var availableMemoryPercentage: Double
-        private var bitmapPoolPercentage: Double
-        private var bitmapPoolingEnabled: Boolean
         private var trackWeakReferences: Boolean
 
         constructor(context: Context) {
@@ -133,8 +120,6 @@ interface ImageLoader {
             logger = null
             memoryCache = null
             availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
-            bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
-            bitmapPoolingEnabled = true
             trackWeakReferences = true
         }
 
@@ -148,8 +133,6 @@ interface ImageLoader {
             logger = imageLoader.logger
             memoryCache = imageLoader.memoryCache
             availableMemoryPercentage = Utils.getDefaultAvailableMemoryPercentage(applicationContext)
-            bitmapPoolPercentage = Utils.getDefaultBitmapPoolPercentage()
-            bitmapPoolingEnabled = true
             trackWeakReferences = true
         }
 
@@ -218,9 +201,9 @@ interface ImageLoader {
         }
 
         /**
-         * Set the [MemoryCache]. This also sets the [BitmapPool] to the instance used by this [MemoryCache].
+         * Set the [MemoryCache].
          *
-         * This is useful for sharing [MemoryCache] and [BitmapPool] instances between [ImageLoader]s.
+         * This is useful for sharing [MemoryCache] instances between [ImageLoader]s.
          *
          * NOTE: Custom memory cache implementations are currently not supported.
          */
@@ -241,24 +224,6 @@ interface ImageLoader {
         fun availableMemoryPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
             require(percent in 0.0..1.0) { "Percent must be in the range [0.0, 1.0]." }
             this.availableMemoryPercentage = percent
-            this.memoryCache = null
-        }
-
-        /**
-         * Set the percentage of memory allocated to this [ImageLoader] to allocate to bitmap pooling.
-         *
-         * i.e. Setting [availableMemoryPercentage] to 0.25 and [bitmapPoolPercentage] to 0.5 allows this ImageLoader
-         * to use 25% of the app's total memory and splits that memory 50/50 between the bitmap pool and memory cache.
-         *
-         * Setting this to 0 disables bitmap pooling.
-         *
-         * Setting this value discards the shared memory cache set in [memoryCache].
-         *
-         * Default: [Utils.getDefaultBitmapPoolPercentage]
-         */
-        fun bitmapPoolPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
-            require(percent in 0.0..1.0) { "Percent must be in the range [0.0, 1.0]." }
-            this.bitmapPoolPercentage = percent
             this.memoryCache = null
         }
 
@@ -308,24 +273,6 @@ interface ImageLoader {
          */
         fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
             this.options = this.options.copy(addLastModifiedToFileCacheKey = enable)
-        }
-
-        /**
-         * Enables counting references to bitmaps so they can be automatically reused by a [BitmapPool]
-         * when their reference count reaches zero.
-         *
-         * Only certain requests are eligible for bitmap pooling. See [PoolableViewTarget] for more information.
-         *
-         * If this is disabled, no bitmaps will be added to this [ImageLoader]'s [BitmapPool] automatically and
-         * the [BitmapPool] will not be allocated any memory (this overrides [bitmapPoolPercentage]).
-         *
-         * Setting this value discards the shared memory cache set in [memoryCache].
-         *
-         * Default: true
-         */
-        fun bitmapPoolingEnabled(enable: Boolean) = apply {
-            this.bitmapPoolingEnabled = enable
-            this.memoryCache = null
         }
 
         /**
@@ -505,12 +452,10 @@ interface ImageLoader {
          * Create a new [ImageLoader] instance.
          */
         fun build(): ImageLoader {
-            val memoryCache = memoryCache ?: buildDefaultMemoryCache()
             return RealImageLoader(
                 context = applicationContext,
                 defaults = defaults,
-                bitmapPool = memoryCache.bitmapPool,
-                memoryCache = memoryCache,
+                memoryCache = memoryCache ?: buildDefaultMemoryCache(),
                 callFactory = callFactory ?: buildDefaultCallFactory(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
@@ -526,28 +471,15 @@ interface ImageLoader {
         }
 
         private fun buildDefaultMemoryCache(): RealMemoryCache {
-            val availableMemorySize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
-            val bitmapPoolPercentage = if (bitmapPoolingEnabled) bitmapPoolPercentage else 0.0
-            val bitmapPoolSize = (bitmapPoolPercentage * availableMemorySize).toInt()
-            val memoryCacheSize = (availableMemorySize - bitmapPoolSize).toInt()
+            val memoryCacheSize = Utils.calculateAvailableMemorySize(applicationContext, availableMemoryPercentage)
 
-            val bitmapPool = if (bitmapPoolSize == 0) {
-                EmptyBitmapPool()
-            } else {
-                RealBitmapPool(bitmapPoolSize, logger = logger)
-            }
             val weakMemoryCache = if (trackWeakReferences) {
                 RealWeakMemoryCache(logger)
             } else {
                 EmptyWeakMemoryCache
             }
-            val referenceCounter = if (bitmapPoolingEnabled) {
-                RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, logger)
-            } else {
-                EmptyBitmapReferenceCounter
-            }
-            val strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, memoryCacheSize, logger)
-            return RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter, bitmapPool)
+            val strongMemoryCache = StrongMemoryCache(weakMemoryCache, memoryCacheSize, logger)
+            return RealMemoryCache(strongMemoryCache, weakMemoryCache)
         }
     }
 

@@ -1,8 +1,6 @@
 package coil.decode
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import coil.bitmap.BitmapPool
 import coil.size.Size
 import okio.BufferedSource
 
@@ -32,13 +30,11 @@ interface Decoder {
      *
      * NOTE: Implementations are responsible for closing [source] when finished with it.
      *
-     * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
      * @param source The [BufferedSource] to read from.
      * @param size The requested dimensions for the image.
      * @param options A set of configuration options for this request.
      */
     suspend fun decode(
-        pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options

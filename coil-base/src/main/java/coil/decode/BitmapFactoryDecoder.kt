@@ -8,8 +8,8 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import androidx.exifinterface.media.ExifInterface
-import coil.bitmap.BitmapPool
 import coil.size.PixelSize
 import coil.size.Size
 import coil.util.toDrawable
@@ -20,7 +20,6 @@ import okio.ForwardingSource
 import okio.Source
 import okio.buffer
 import java.io.InputStream
-import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 /** The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource]. */
@@ -31,16 +30,14 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
     override fun handles(source: BufferedSource, mimeType: String?) = true
 
     override suspend fun decode(
-        pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options
     ) = withInterruptibleSource(source) { interruptibleSource ->
-        decodeInterruptible(pool, interruptibleSource, size, options)
+        decodeInterruptible(interruptibleSource, size, options)
     }
 
     private fun decodeInterruptible(
-        pool: BitmapPool,
         source: Source,
         size: Size,
         options: Options
@@ -94,10 +91,6 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 // This occurs if size is OriginalSize.
                 inSampleSize = 1
                 inScaled = false
-
-                if (inMutable) {
-                    inBitmap = pool.getDirty(outWidth, outHeight, inPreferredConfig)
-                }
             }
             else -> {
                 val (width, height) = size
@@ -127,58 +120,21 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                         inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
                     }
                 }
-
-                if (inMutable) {
-                    inBitmap = when {
-                        // If we're not scaling the image, use the image's source dimensions.
-                        inSampleSize == 1 && !inScaled -> {
-                            pool.getDirty(outWidth, outHeight, inPreferredConfig)
-                        }
-                        // We can only re-use bitmaps that don't match the image's source dimensions on API 19 and above.
-                        SDK_INT >= 19 -> {
-                            // Request a slightly larger bitmap than necessary as the output bitmap's dimensions
-                            // may not match the requested dimensions exactly. This is due to intricacies in Android's
-                            // downsampling algorithm across different API levels.
-                            val sampledOutWidth = outWidth / inSampleSize.toDouble()
-                            val sampledOutHeight = outHeight / inSampleSize.toDouble()
-                            pool.getDirty(
-                                width = ceil(scale * sampledOutWidth + 0.5).toInt(),
-                                height = ceil(scale * sampledOutHeight + 0.5).toInt(),
-                                config = inPreferredConfig
-                            )
-                        }
-                        // Else, let BitmapFactory allocate the bitmap internally.
-                        else -> null
-                    }
-                }
             }
         }
-
-        // Keep a reference to the input bitmap so it can be returned to
-        // the pool if the decode doesn't complete successfully.
-        val inBitmap: Bitmap? = inBitmap
 
         // Decode the bitmap.
-        var outBitmap: Bitmap? = null
-        try {
-            outBitmap = safeBufferedSource.use {
-                BitmapFactory.decodeStream(it.inputStream(), null, this)
-            }
-            safeSource.exception?.let { throw it }
-        } catch (throwable: Throwable) {
-            inBitmap?.let(pool::put)
-            if (outBitmap !== inBitmap) {
-                outBitmap?.let(pool::put)
-            }
-            throw throwable
+        val outBitmap: Bitmap? = safeBufferedSource.use {
+            BitmapFactory.decodeStream(it.inputStream(), null, this)
         }
+        safeSource.exception?.let { throw it }
 
         // Apply any EXIF transformations.
         checkNotNull(outBitmap) {
             "BitmapFactory returned a null Bitmap. Often this means BitmapFactory could not decode the image data " +
                 "read from the input source (e.g. network or disk) as it's not encoded as a valid image format."
         }
-        val bitmap = applyExifTransformations(pool, outBitmap, inPreferredConfig, isFlipped, rotationDegrees)
+        val bitmap = applyExifTransformations(outBitmap, inPreferredConfig, isFlipped, rotationDegrees)
         bitmap.density = Bitmap.DENSITY_NONE
 
         DecodeResult(
@@ -221,7 +177,6 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
     /** NOTE: This method assumes [config] is not [Bitmap.Config.HARDWARE] if the image has to be transformed. */
     private fun applyExifTransformations(
-        pool: BitmapPool,
         inBitmap: Bitmap,
         config: Bitmap.Config,
         isFlipped: Boolean,
@@ -250,15 +205,15 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
 
         val outBitmap = if (rotationDegrees == 90 || rotationDegrees == 270) {
-            pool.get(inBitmap.height, inBitmap.width, config)
+            createBitmap(inBitmap.height, inBitmap.width, config)
         } else {
-            pool.get(inBitmap.width, inBitmap.height, config)
+            createBitmap(inBitmap.width, inBitmap.height, config)
         }
 
         outBitmap.applyCanvas {
             drawBitmap(inBitmap, matrix, paint)
         }
-        pool.put(inBitmap)
+        inBitmap.recycle()
         return outBitmap
     }
 

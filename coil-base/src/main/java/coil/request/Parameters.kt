@@ -1,4 +1,4 @@
-@file:JvmName("ParametersKt")
+@file:JvmName("-Parameters")
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil.request

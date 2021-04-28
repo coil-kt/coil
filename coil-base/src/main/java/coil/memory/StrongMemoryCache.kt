@@ -7,7 +7,6 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
-import coil.bitmap.BitmapReferenceCounter
 import coil.memory.MemoryCache.Key
 import coil.memory.RealMemoryCache.Value
 import coil.util.Logger
@@ -20,12 +19,11 @@ internal interface StrongMemoryCache {
     companion object {
         operator fun invoke(
             weakMemoryCache: WeakMemoryCache,
-            referenceCounter: BitmapReferenceCounter,
             maxSize: Int,
             logger: Logger?
         ): StrongMemoryCache {
             return when {
-                maxSize > 0 -> RealStrongMemoryCache(weakMemoryCache, referenceCounter, maxSize, logger)
+                maxSize > 0 -> RealStrongMemoryCache(weakMemoryCache, maxSize, logger)
                 weakMemoryCache is RealWeakMemoryCache -> ForwardingStrongMemoryCache(weakMemoryCache)
                 else -> EmptyStrongMemoryCache
             }
@@ -97,7 +95,6 @@ private class ForwardingStrongMemoryCache(
 /** A [StrongMemoryCache] implementation backed by an [LruCache]. */
 private class RealStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache,
-    private val referenceCounter: BitmapReferenceCounter,
     maxSize: Int,
     private val logger: Logger?
 ) : StrongMemoryCache {
@@ -109,11 +106,7 @@ private class RealStrongMemoryCache(
             oldValue: InternalValue,
             newValue: InternalValue?
         ) {
-            val isPooled = referenceCounter.decrement(oldValue.bitmap)
-            if (!isPooled) {
-                // Add the bitmap to the WeakMemoryCache if it wasn't just added to the BitmapPool.
-                weakMemoryCache.set(key, oldValue.bitmap, oldValue.isSampled, oldValue.size)
-            }
+            weakMemoryCache.set(key, oldValue.bitmap, oldValue.isSampled, oldValue.size)
         }
 
         override fun sizeOf(key: Key, value: InternalValue) = value.size
@@ -139,8 +132,6 @@ private class RealStrongMemoryCache(
             }
             return
         }
-
-        referenceCounter.increment(bitmap)
         cache.put(key, InternalValue(bitmap, isSampled, size))
     }
 

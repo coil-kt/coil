@@ -10,8 +10,8 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
-import coil.bitmap.BitmapPool
 import coil.request.videoFrameMicros
 import coil.request.videoFrameOption
 import coil.size.OriginalSize
@@ -24,7 +24,6 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     fun decode(
-        pool: BitmapPool,
         retriever: MediaMetadataRetriever,
         size: Size,
         options: Options
@@ -82,7 +81,7 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
         checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
-        val bitmap = normalizeBitmap(pool, rawBitmap, destSize, options)
+        val bitmap = normalizeBitmap(rawBitmap, destSize, options)
 
         val isSampled = if (srcWidth > 0 && srcHeight > 0) {
             DecodeUtils.computeSizeMultiplier(srcWidth, srcHeight, bitmap.width, bitmap.height, options.scale) < 1.0
@@ -99,7 +98,6 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
 
     /** Return [inBitmap] or a copy of [inBitmap] that is valid for the input [options] and [size]. */
     private fun normalizeBitmap(
-        pool: BitmapPool,
         inBitmap: Bitmap,
         size: Size,
         options: Options
@@ -136,12 +134,12 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
             else -> options.config
         }
 
-        val outBitmap = pool.get(dstWidth, dstHeight, safeConfig)
+        val outBitmap = createBitmap(dstWidth, dstHeight, safeConfig)
         outBitmap.applyCanvas {
             scale(scale, scale)
             drawBitmap(inBitmap, 0f, 0f, paint)
         }
-        pool.put(inBitmap)
+        inBitmap.recycle()
 
         return outBitmap
     }

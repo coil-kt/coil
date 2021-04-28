@@ -6,8 +6,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
-import coil.bitmap.BitmapPool
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
@@ -40,7 +40,6 @@ class SvgDecoder @JvmOverloads constructor(
     }
 
     override suspend fun decode(
-        pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options
@@ -102,7 +101,7 @@ class SvgDecoder @JvmOverloads constructor(
         svg.setDocumentWidth("100%")
         svg.setDocumentHeight("100%")
 
-        val bitmap = pool.get(bitmapWidth, bitmapHeight, options.config.toSoftware())
+        val bitmap = createBitmap(bitmapWidth, bitmapHeight, options.config.toSoftware())
         svg.renderToCanvas(Canvas(bitmap))
 
         DecodeResult(

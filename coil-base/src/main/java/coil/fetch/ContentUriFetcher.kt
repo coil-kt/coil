@@ -6,7 +6,6 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Contacts
 import androidx.annotation.VisibleForTesting
-import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.Options
 import coil.size.Size
@@ -21,7 +20,6 @@ internal class ContentUriFetcher(private val context: Context) : Fetcher<Uri> {
     override fun key(data: Uri) = data.toString()
 
     override suspend fun fetch(
-        pool: BitmapPool,
         data: Uri,
         size: Size,
         options: Options

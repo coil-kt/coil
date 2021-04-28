@@ -4,7 +4,6 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.Movie
-import coil.bitmap.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.request.animatedTransformation
 import coil.request.animationEndCallback
@@ -26,7 +25,6 @@ class GifDecoder : Decoder {
     override fun handles(source: BufferedSource, mimeType: String?) = DecodeUtils.isGif(source)
 
     override suspend fun decode(
-        pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options
@@ -38,7 +36,6 @@ class GifDecoder : Decoder {
 
         val drawable = MovieDrawable(
             movie = movie,
-            pool = pool,
             config = when {
                 movie.isOpaque && options.allowRgb565 -> Bitmap.Config.RGB_565
                 options.config.isHardware -> Bitmap.Config.ARGB_8888

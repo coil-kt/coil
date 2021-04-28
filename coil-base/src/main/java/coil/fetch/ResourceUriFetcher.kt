@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.TypedValue
 import android.webkit.MimeTypeMap
-import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.Options
@@ -29,7 +28,6 @@ internal class ResourceUriFetcher(
     override fun key(data: Uri) = "$data-${context.resources.configuration.nightMode}"
 
     override suspend fun fetch(
-        pool: BitmapPool,
         data: Uri,
         size: Size,
         options: Options

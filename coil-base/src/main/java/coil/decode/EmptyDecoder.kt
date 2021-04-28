@@ -2,7 +2,6 @@ package coil.decode
 
 import android.graphics.drawable.ColorDrawable
 import coil.ComponentRegistry
-import coil.bitmap.BitmapPool
 import coil.size.Size
 import okio.BufferedSource
 import okio.blackholeSink
@@ -21,7 +20,6 @@ internal object EmptyDecoder : Decoder {
     override fun handles(source: BufferedSource, mimeType: String?) = false
 
     override suspend fun decode(
-        pool: BitmapPool,
         source: BufferedSource,
         size: Size,
         options: Options

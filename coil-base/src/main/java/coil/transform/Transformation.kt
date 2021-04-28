@@ -2,7 +2,6 @@ package coil.transform
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import coil.bitmap.BitmapPool
 import coil.decode.DecodeResult
 import coil.fetch.DrawableResult
 import coil.request.ImageRequest
@@ -29,10 +28,9 @@ interface Transformation {
     /**
      * Apply the transformation to [input] and return the transformed [Bitmap].
      *
-     * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
      * @param input The input [Bitmap] to transform. Its config will always be [Bitmap.Config.ARGB_8888] or [Bitmap.Config.RGBA_F16].
      * @param size The size of the image request.
      * @return The transformed [Bitmap].
      */
-    suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap
+    suspend fun transform(input: Bitmap, size: Size): Bitmap
 }

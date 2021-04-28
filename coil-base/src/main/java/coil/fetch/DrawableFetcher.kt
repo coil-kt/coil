@@ -1,7 +1,6 @@
 package coil.fetch
 
 import android.graphics.drawable.Drawable
-import coil.bitmap.BitmapPool
 import coil.decode.DataSource
 import coil.decode.DrawableDecoderService
 import coil.decode.Options
@@ -14,7 +13,6 @@ internal class DrawableFetcher(private val drawableDecoder: DrawableDecoderServi
     override fun key(data: Drawable): String? = null
 
     override suspend fun fetch(
-        pool: BitmapPool,
         data: Drawable,
         size: Size,
         options: Options

@@ -51,7 +51,7 @@ internal object Utils {
     }
 
     /** Modified from Picasso. */
-    fun calculateAvailableMemorySize(context: Context, percentage: Double): Long {
+    fun calculateAvailableMemorySize(context: Context, percentage: Double): Int {
         val memoryClassMegabytes = try {
             val activityManager: ActivityManager = context.requireSystemService()
             val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
@@ -59,7 +59,7 @@ internal object Utils {
         } catch (_: Exception) {
             DEFAULT_MEMORY_CLASS_MEGABYTES
         }
-        return (percentage * memoryClassMegabytes * 1024 * 1024).toLong()
+        return (percentage * memoryClassMegabytes * 1024 * 1024).toInt()
     }
 
     fun getDefaultAvailableMemoryPercentage(context: Context): Double {
@@ -68,17 +68,6 @@ internal object Utils {
             if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
         } catch (_: Exception) {
             STANDARD_MULTIPLIER
-        }
-    }
-
-    fun getDefaultBitmapPoolPercentage(): Double {
-        return when {
-            // Prefer immutable bitmaps (which cannot be pooled) on API 24 and greater.
-            SDK_INT >= 24 -> 0.0
-            // Bitmap pooling is most effective on APIs 19 to 23.
-            SDK_INT >= 19 -> 0.5
-            // The requirements for bitmap reuse are strict below API 19.
-            else -> 0.25
         }
     }
 }
