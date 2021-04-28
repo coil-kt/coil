@@ -25,11 +25,6 @@ inline fun <reified V : View> ViewGroup.inflate(@LayoutRes layoutRes: Int, attac
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot) as V
 }
 
-inline fun <reified R : Any> Array<*>.findInstance(): R? {
-    for (element in this) if (element is R) return element
-    return null
-}
-
 inline val AndroidViewModel.context: Context
     get() = getApplication()
 

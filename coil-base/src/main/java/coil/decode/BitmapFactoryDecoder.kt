@@ -73,17 +73,14 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         val srcHeight = if (isSwapped) outWidth else outHeight
 
         inPreferredConfig = computeConfig(options, isFlipped, rotationDegrees)
+        inPremultiplied = options.premultipliedAlpha
 
         if (SDK_INT >= 26 && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
         }
 
-        if (SDK_INT >= 19) {
-            inPremultiplied = options.premultipliedAlpha
-        }
-
-        // Create immutable bitmaps on API 24 and above.
-        inMutable = SDK_INT < 24
+        // Always create immutable bitmaps as they have performance benefits.
+        inMutable = false
         inScaled = false
 
         when {
@@ -165,13 +162,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         var outBitmap: Bitmap? = null
         try {
             outBitmap = safeBufferedSource.use {
-                // outMimeType is null for unsupported formats as well as on older devices with incomplete WebP support.
-                if (SDK_INT < 19 && outMimeType == null) {
-                    val bytes = it.readByteArray()
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, this)
-                } else {
-                    BitmapFactory.decodeStream(it.inputStream(), null, this)
-                }
+                BitmapFactory.decodeStream(it.inputStream(), null, this)
             }
             safeSource.exception?.let { throw it }
         } catch (throwable: Throwable) {

@@ -4,7 +4,6 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.Movie
-import android.os.Build.VERSION.SDK_INT
 import coil.bitmap.BitmapPool
 import coil.drawable.MovieDrawable
 import coil.request.animatedTransformation
@@ -33,15 +32,7 @@ class GifDecoder : Decoder {
         options: Options
     ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
         val bufferedSource = interruptibleSource.buffer()
-        val movie: Movie? = bufferedSource.use {
-            if (SDK_INT >= 19) {
-                Movie.decodeStream(it.inputStream())
-            } else {
-                // Movie requires an InputStream to resettable on API 18 and below.
-                // Read the data as a ByteArray to work around this.
-                it.readByteArray().let { bytes -> Movie.decodeByteArray(bytes, 0, bytes.size) }
-            }
-        }
+        val movie: Movie? = bufferedSource.use { Movie.decodeStream(it.inputStream()) }
 
         check(movie != null && movie.width() > 0 && movie.height() > 0) { "Failed to decode GIF." }
 

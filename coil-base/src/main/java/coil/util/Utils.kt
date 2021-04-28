@@ -43,7 +43,7 @@ internal object Utils {
     fun calculateDiskCacheSize(cacheDirectory: File): Long {
         return try {
             val cacheDir = StatFs(cacheDirectory.absolutePath)
-            val size = DISK_CACHE_PERCENTAGE * cacheDir.blockCountCompat * cacheDir.blockSizeCompat
+            val size = DISK_CACHE_PERCENTAGE * cacheDir.blockCountLong * cacheDir.blockSizeLong
             return size.toLong().coerceIn(MIN_DISK_CACHE_SIZE_BYTES, MAX_DISK_CACHE_SIZE_BYTES)
         } catch (_: Exception) {
             MIN_DISK_CACHE_SIZE_BYTES
@@ -65,7 +65,7 @@ internal object Utils {
     fun getDefaultAvailableMemoryPercentage(context: Context): Double {
         return try {
             val activityManager: ActivityManager = context.requireSystemService()
-            if (activityManager.isLowRamDeviceCompat) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
+            if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
         } catch (_: Exception) {
             STANDARD_MULTIPLIER
         }

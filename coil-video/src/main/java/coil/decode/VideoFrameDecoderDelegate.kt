@@ -38,7 +38,7 @@ internal class VideoFrameDecoderDelegate(private val context: Context) {
         var srcHeight = 0
         val destSize = when (size) {
             is PixelSize -> {
-                val rotation = if (SDK_INT >= 17) retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0 else 0
+                val rotation = retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
                 if (rotation == 90 || rotation == 270) {
                     srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
                     srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0

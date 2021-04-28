@@ -3,7 +3,6 @@
 
 package coil.util
 
-import android.app.ActivityManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
@@ -13,7 +12,6 @@ import android.graphics.drawable.VectorDrawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
-import android.os.StatFs
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
@@ -41,17 +39,6 @@ import okhttp3.Headers
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
-
-internal inline val ActivityManager.isLowRamDeviceCompat: Boolean
-    get() = SDK_INT < 19 || isLowRamDevice
-
-@Suppress("DEPRECATION")
-internal inline val StatFs.blockCountCompat: Long
-    get() = if (SDK_INT >= 18) blockCountLong else blockCount.toLong()
-
-@Suppress("DEPRECATION")
-internal inline val StatFs.blockSizeCompat: Long
-    get() = if (SDK_INT >= 18) blockSizeLong else blockSize.toLong()
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {

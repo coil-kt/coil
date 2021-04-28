@@ -2,15 +2,11 @@ package coil.network
 
 import android.Manifest.permission.ACCESS_NETWORK_STATE
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
@@ -40,11 +36,7 @@ internal interface NetworkObserver {
             }
 
             return try {
-                if (SDK_INT >= 21) {
-                    NetworkObserverApi21(connectivityManager, listener)
-                } else {
-                    NetworkObserverApi14(context, connectivityManager, listener)
-                }
+                RealNetworkObserver(connectivityManager, listener)
             } catch (e: Exception) {
                 logger?.log(TAG, RuntimeException("Failed to register network observer.", e))
                 EmptyNetworkObserver
@@ -75,7 +67,7 @@ private object EmptyNetworkObserver : NetworkObserver {
 
 @RequiresApi(21)
 @SuppressLint("MissingPermission")
-private class NetworkObserverApi21(
+private class RealNetworkObserver(
     private val connectivityManager: ConnectivityManager,
     private val listener: Listener
 ) : NetworkObserver {
@@ -114,33 +106,5 @@ private class NetworkObserverApi21(
     private fun Network.isOnline(): Boolean {
         val capabilities: NetworkCapabilities? = connectivityManager.getNetworkCapabilities(this)
         return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
-}
-
-@Suppress("DEPRECATION")
-@SuppressLint("MissingPermission")
-private class NetworkObserverApi14(
-    private val context: Context,
-    private val connectivityManager: ConnectivityManager,
-    listener: Listener
-) : NetworkObserver {
-
-    private val connectionReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent?) {
-            if (intent?.action == ConnectivityManager.CONNECTIVITY_ACTION) {
-                listener.onConnectivityChange(isOnline)
-            }
-        }
-    }
-
-    override val isOnline: Boolean
-        get() = connectivityManager.activeNetworkInfo?.isConnectedOrConnecting == true
-
-    init {
-        context.registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-    }
-
-    override fun shutdown() {
-        context.unregisterReceiver(connectionReceiver)
     }
 }

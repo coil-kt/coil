@@ -21,10 +21,10 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import okhttp3.Cache
 import okhttp3.Call
-import okhttp3.HttpUrl
-import okhttp3.MediaType
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
@@ -103,24 +103,24 @@ class HttpFetcherTest {
         // https://android.googlesource.com/platform/frameworks/base/+/61ae88e/core/java/android/webkit/MimeTypeMap.java#407
         Shadows.shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("svg", "image/svg+xml")
 
-        val url1 = HttpUrl.get("https://www.example.com/image.jpg")
-        val body1 = ResponseBody.create(MediaType.get("image/svg+xml"), byteArrayOf())
+        val url1 = "https://www.example.com/image.jpg".toHttpUrl()
+        val body1 = "".toResponseBody("image/svg+xml".toMediaType())
         assertEquals("image/svg+xml", fetcher.getMimeType(url1, body1))
 
-        val url2 = HttpUrl.get("https://www.example.com/image.svg")
-        val body2 = ResponseBody.create(null, byteArrayOf())
+        val url2 = "https://www.example.com/image.svg".toHttpUrl()
+        val body2 = "".toResponseBody(null)
         assertEquals("image/svg+xml", fetcher.getMimeType(url2, body2))
 
-        val url3 = HttpUrl.get("https://www.example.com/image")
-        val body3 = ResponseBody.create(MediaType.get("image/svg+xml;charset=utf-8"), byteArrayOf())
+        val url3 = "https://www.example.com/image".toHttpUrl()
+        val body3 = "".toResponseBody("image/svg+xml;charset=utf-8".toMediaType())
         assertEquals("image/svg+xml", fetcher.getMimeType(url3, body3))
 
-        val url4 = HttpUrl.get("https://www.example.com/image.svg")
-        val body4 = ResponseBody.create(MediaType.get("text/plain"), byteArrayOf())
+        val url4 = "https://www.example.com/image.svg".toHttpUrl()
+        val body4 = "".toResponseBody("text/plain".toMediaType())
         assertEquals("image/svg+xml", fetcher.getMimeType(url4, body4))
 
-        val url5 = HttpUrl.get("https://www.example.com/image")
-        val body5 = ResponseBody.create(null, byteArrayOf())
+        val url5 = "https://www.example.com/image".toHttpUrl()
+        val body5 = "".toResponseBody(null)
         assertNull(fetcher.getMimeType(url5, body5))
     }
 

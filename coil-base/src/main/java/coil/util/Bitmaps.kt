@@ -28,11 +28,7 @@ internal val Bitmap.allocationByteCountCompat: Int
         check(!isRecycled) { "Cannot obtain size for recycled bitmap: $this [$width x $height] + $config" }
 
         return try {
-            if (SDK_INT >= 19) {
-                allocationByteCount
-            } else {
-                rowBytes * height
-            }
+            allocationByteCount
         } catch (_: Exception) {
             Utils.calculateAllocationByteCount(width, height, config)
         }
