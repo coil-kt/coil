@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.1] - April 27, 2021
+
+- Fix `VideoFrameUriFetcher` attempting to handle http/https URIs. ([#734](https://github.com/coil-kt/coil/pull/734)
+
 ## [1.2.0] - April 12, 2021
 
 - **Important**: Use an SVG's view bounds to calculate its aspect ratio in `SvgDecoder`. ([#688](https://github.com/coil-kt/coil/pull/688))
