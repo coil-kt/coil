@@ -17,7 +17,6 @@ import okhttp3.Headers
 
 /**
  * A set of configuration options for fetching and decoding an image.
- *
  * [Fetcher]s and [Decoder]s should respect these options as best as possible.
  *
  * @param context The [Context] used to execute this request.
@@ -78,6 +77,7 @@ class Options(
             context == other.context &&
             config == other.config &&
             colorSpace == other.colorSpace &&
+            size == other.size &&
             scale == other.scale &&
             allowInexactSize == other.allowInexactSize &&
             allowRgb565 == other.allowRgb565 &&
@@ -93,6 +93,7 @@ class Options(
         var result = context.hashCode()
         result = 31 * result + config.hashCode()
         result = 31 * result + (colorSpace?.hashCode() ?: 0)
+        result = 31 * result + size.hashCode()
         result = 31 * result + scale.hashCode()
         result = 31 * result + allowInexactSize.hashCode()
         result = 31 * result + allowRgb565.hashCode()
@@ -106,7 +107,7 @@ class Options(
     }
 
     override fun toString(): String {
-        return "Options(context=$context, config=$config, colorSpace=$colorSpace, scale=$scale, " +
+        return "Options(context=$context, config=$config, colorSpace=$colorSpace, size=$size, scale=$scale, " +
             "allowInexactSize=$allowInexactSize, allowRgb565=$allowRgb565, premultipliedAlpha=$premultipliedAlpha, " +
             "headers=$headers, parameters=$parameters, memoryCachePolicy=$memoryCachePolicy, " +
             "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
