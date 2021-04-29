@@ -1,7 +1,6 @@
 package coil.intercept
 
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
@@ -12,7 +11,6 @@ import coil.size.Size
  * NOTE: The interceptor chain is launched from the main thread by default.
  * See [ImageLoader.Builder.launchInterceptorChainOnMainThread] for more information.
  */
-@ExperimentalCoilApi
 fun interface Interceptor {
 
     suspend fun intercept(chain: Chain): ImageResult
