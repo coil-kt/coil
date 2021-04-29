@@ -9,7 +9,6 @@ import coil.EventListener
 import coil.decode.DataSource
 import coil.decode.DecodeUtils
 import coil.decode.DrawableDecoderService
-import coil.decode.EmptyDecoder
 import coil.decode.Options
 import coil.fetch.DrawableResult
 import coil.fetch.Fetcher
@@ -29,7 +28,6 @@ import coil.size.Size
 import coil.transform.Transformation
 import coil.util.Logger
 import coil.util.SystemCallbacks
-import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.allowInexactSize
 import coil.util.closeQuietly
 import coil.util.fetcher
@@ -255,19 +253,8 @@ internal class EngineInterceptor(
                     // Check if we're cancelled.
                     coroutineContext.ensureActive()
 
-                    // Find the relevant decoder.
-                    val isDiskOnlyPreload = type == REQUEST_TYPE_ENQUEUE &&
-                        request.target == null &&
-                        !request.memoryCachePolicy.writeEnabled
-                    val decoder = if (isDiskOnlyPreload) {
-                        // Skip decoding the result if we are preloading the data and writing to the memory cache is
-                        // disabled. Instead, we exhaust the source and return an empty result.
-                        EmptyDecoder()
-                    } else {
-                        request.decoder ?: registry.requireDecoder(request.data, fetchResult.source, fetchResult.mimeType)
-                    }
-
                     // Decode the stream.
+                    val decoder = request.decoder ?: registry.requireDecoder(request.data, fetchResult.source, fetchResult.mimeType)
                     eventListener.decodeStart(request, decoder, options)
                     val decodeResult = decoder.decode(fetchResult.source, options)
                     eventListener.decodeEnd(request, decoder, options, decodeResult)
