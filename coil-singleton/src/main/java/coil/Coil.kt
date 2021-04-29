@@ -5,12 +5,13 @@ package coil
 import android.app.Application
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import coil.request.Disposable
-import coil.request.ImageRequest
-import coil.request.ImageResult
+import coil.Coil.setImageLoader
 
 /**
  * A class that holds the singleton [ImageLoader] instance.
+ *
+ * - To get the singleton [ImageLoader] use [Context.imageLoader].
+ * - To set the singleton [ImageLoader] use [setImageLoader] or see [ImageLoaderFactory].
  */
 object Coil {
 
@@ -18,34 +19,8 @@ object Coil {
     private var imageLoaderFactory: ImageLoaderFactory? = null
 
     /**
-     * Get the singleton [ImageLoader]. Creates a new instance if none has been set.
-     */
-    @JvmStatic
-    fun imageLoader(context: Context): ImageLoader = imageLoader ?: newImageLoader(context)
-
-    /**
-     * Convenience function to get the singleton [ImageLoader] and enqueue the [request].
-     *
-     * @see ImageLoader.enqueue
-     */
-    @JvmStatic
-    inline fun enqueue(request: ImageRequest): Disposable {
-        return imageLoader(request.context).enqueue(request)
-    }
-
-    /**
-     * Convenience function to get the singleton [ImageLoader] and execute the [request].
-     *
-     * @see ImageLoader.execute
-     */
-    @JvmStatic
-    suspend inline fun execute(request: ImageRequest): ImageResult {
-        return imageLoader(request.context).execute(request)
-    }
-
-    /**
-     * Set the singleton [ImageLoader]. Prefer using `setImageLoader(ImageLoaderFactory)`
-     * to create the [ImageLoader] lazily.
+     * Set the singleton [ImageLoader].
+     * Prefer using `setImageLoader(ImageLoaderFactory)` to create the [ImageLoader] lazily.
      */
     @JvmStatic
     @Synchronized
@@ -66,6 +41,9 @@ object Coil {
         imageLoaderFactory = factory
         imageLoader = null
     }
+
+    /** Get the singleton [ImageLoader]. Use [Context.imageLoader] for a public API. */
+    internal fun imageLoader(context: Context) = imageLoader ?: newImageLoader(context)
 
     /** Create and set the new singleton [ImageLoader]. */
     @Synchronized

@@ -6,7 +6,7 @@ package coil
 import android.content.Context
 
 /**
- * Get the singleton [ImageLoader]. This is an alias for [Coil.imageLoader].
+ * Get the singleton [ImageLoader].
  */
-inline val Context.imageLoader: ImageLoader
+val Context.imageLoader: ImageLoader
     @JvmName("imageLoader") get() = Coil.imageLoader(this)
