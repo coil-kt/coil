@@ -10,14 +10,11 @@ import okio.blackholeSink
  */
 internal class EmptyDecoder : Decoder {
 
-    private val result = DecodeResult(ColorDrawable(), false)
-    private val sink = blackholeSink()
-
     /** Hardcode this to false to prevent accidental use. */
     override fun handles(source: BufferedSource, mimeType: String?) = false
 
     override suspend fun decode(source: BufferedSource, options: Options): DecodeResult {
-        source.use { it.readAll(sink) }
-        return result
+        source.use { it.readAll(blackholeSink()) }
+        return DecodeResult(ColorDrawable(), false)
     }
 }

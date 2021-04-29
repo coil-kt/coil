@@ -58,8 +58,6 @@ internal class EngineInterceptor(
     private val logger: Logger?
 ) : Interceptor {
 
-    private val emptyDecoder = EmptyDecoder()
-
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         try {
             // This interceptor uses some internal APIs.
@@ -264,7 +262,7 @@ internal class EngineInterceptor(
                     val decoder = if (isDiskOnlyPreload) {
                         // Skip decoding the result if we are preloading the data and writing to the memory cache is
                         // disabled. Instead, we exhaust the source and return an empty result.
-                        emptyDecoder
+                        EmptyDecoder()
                     } else {
                         request.decoder ?: registry.requireDecoder(request.data, fetchResult.source, fetchResult.mimeType)
                     }
