@@ -8,7 +8,7 @@ import okio.blackholeSink
  * A [Decoder] that exhausts the source and returns a hardcoded, empty result.
  * This will be used automatically for disk-only preload requests.
  */
-internal object EmptyDecoder : Decoder {
+internal class EmptyDecoder : Decoder {
 
     private val result = DecodeResult(ColorDrawable(), false)
     private val sink = blackholeSink()

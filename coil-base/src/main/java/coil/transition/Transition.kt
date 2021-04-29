@@ -31,6 +31,6 @@ fun interface Transition {
     suspend fun transition(target: TransitionTarget, result: ImageResult)
 
     companion object {
-        @JvmField val NONE: Transition = NoneTransition
+        @JvmField val NONE: Transition = NoneTransition()
     }
 }

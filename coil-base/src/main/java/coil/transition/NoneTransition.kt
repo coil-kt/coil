@@ -9,7 +9,7 @@ import coil.request.SuccessResult
  * A transition that applies the [ImageResult] on the [TransitionTarget] without animating.
  */
 @ExperimentalCoilApi
-internal object NoneTransition : Transition {
+internal class NoneTransition : Transition {
 
     override suspend fun transition(target: TransitionTarget, result: ImageResult) {
         when (result) {
