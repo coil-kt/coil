@@ -476,7 +476,7 @@ interface ImageLoader {
             val weakMemoryCache = if (trackWeakReferences) {
                 RealWeakMemoryCache(logger)
             } else {
-                EmptyWeakMemoryCache
+                EmptyWeakMemoryCache()
             }
             val strongMemoryCache = StrongMemoryCache(weakMemoryCache, memoryCacheSize, logger)
             return RealMemoryCache(strongMemoryCache, weakMemoryCache)

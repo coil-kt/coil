@@ -25,7 +25,7 @@ internal interface StrongMemoryCache {
             return when {
                 maxSize > 0 -> RealStrongMemoryCache(weakMemoryCache, maxSize, logger)
                 weakMemoryCache is RealWeakMemoryCache -> ForwardingStrongMemoryCache(weakMemoryCache)
-                else -> EmptyStrongMemoryCache
+                else -> EmptyStrongMemoryCache()
             }
         }
     }
@@ -53,7 +53,7 @@ internal interface StrongMemoryCache {
 }
 
 /** A [StrongMemoryCache] implementation that caches nothing. */
-private object EmptyStrongMemoryCache : StrongMemoryCache {
+private class EmptyStrongMemoryCache : StrongMemoryCache {
 
     override val size get() = 0
 

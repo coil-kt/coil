@@ -44,7 +44,7 @@ internal interface WeakMemoryCache {
 }
 
 /** A [WeakMemoryCache] implementation that holds no references. */
-internal object EmptyWeakMemoryCache : WeakMemoryCache {
+internal class EmptyWeakMemoryCache : WeakMemoryCache {
 
     override fun get(key: Key): Value? = null
 
