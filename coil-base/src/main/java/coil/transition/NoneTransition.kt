@@ -1,6 +1,5 @@
 package coil.transition
 
-import coil.annotation.ExperimentalCoilApi
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
@@ -8,7 +7,6 @@ import coil.request.SuccessResult
 /**
  * A transition that applies the [ImageResult] on the [TransitionTarget] without animating.
  */
-@ExperimentalCoilApi
 internal class NoneTransition : Transition {
 
     override suspend fun transition(target: TransitionTarget, result: ImageResult) {
@@ -17,6 +15,4 @@ internal class NoneTransition : Transition {
             is ErrorResult -> target.onError(result.drawable)
         }
     }
-
-    override fun toString() = "coil.transition.NoneTransition"
 }

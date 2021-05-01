@@ -166,7 +166,7 @@ internal inline operator fun MemoryCache.Key.Companion.invoke(
 ): MemoryCache.Key {
     return MemoryCache.Key.Complex(
         base = base,
-        transformations = transformations.mapIndices { it.key },
+        transformations = transformations.mapIndices { it.cacheKey },
         size = size,
         parameters = parameters.cacheKeys()
     )

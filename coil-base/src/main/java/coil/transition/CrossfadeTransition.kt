@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
@@ -23,7 +22,6 @@ import kotlin.coroutines.resume
  * @param durationMillis The duration of the animation in milliseconds.
  * @param preferExactIntrinsicSize See [CrossfadeDrawable.preferExactIntrinsicSize].
  */
-@ExperimentalCoilApi
 class CrossfadeTransition @JvmOverloads constructor(
     val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
     val preferExactIntrinsicSize: Boolean = false
@@ -34,22 +32,6 @@ class CrossfadeTransition @JvmOverloads constructor(
     }
 
     override suspend fun transition(target: TransitionTarget, result: ImageResult) {
-        // Don't animate if the request was fulfilled by the memory cache.
-        if (result is SuccessResult && result.metadata.dataSource == DataSource.MEMORY_CACHE) {
-            target.onSuccess(result.drawable)
-            return
-        }
-
-        // Don't animate if the view is not visible as CrossfadeDrawable.onDraw
-        // won't be called until the view becomes visible.
-        if (!target.view.isVisible) {
-            when (result) {
-                is SuccessResult -> target.onSuccess(result.drawable)
-                is ErrorResult -> target.onError(result.drawable)
-            }
-            return
-        }
-
         // Animate the drawable and suspend until the animation completes.
         var outerCrossfade: CrossfadeDrawable? = null
         try {
@@ -88,4 +70,29 @@ class CrossfadeTransition @JvmOverloads constructor(
     override fun hashCode() = durationMillis.hashCode()
 
     override fun toString() = "CrossfadeTransition(durationMillis=$durationMillis)"
+
+    class Factory @JvmOverloads constructor(
+        private val transition: CrossfadeTransition = CrossfadeTransition()
+    ) : Transition.Factory {
+
+        override fun create(target: TransitionTarget, result: ImageResult): Transition {
+            // Only animate successful requests.
+            if (result !is SuccessResult) {
+                return Transition.NONE
+            }
+
+            // Don't animate if the request was fulfilled by the memory cache.
+            if (result.metadata.dataSource == DataSource.MEMORY_CACHE) {
+                return Transition.NONE
+            }
+
+            // Don't animate if the view is not visible as 'CrossfadeDrawable.onDraw'
+            // won't be called until the view becomes visible.
+            if (!target.view.isVisible) {
+                return Transition.NONE
+            }
+
+            return transition
+        }
+    }
 }

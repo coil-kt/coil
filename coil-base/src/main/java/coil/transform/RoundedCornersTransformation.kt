@@ -43,7 +43,7 @@ class RoundedCornersTransformation(
         require(topLeft >= 0 && topRight >= 0 && bottomLeft >= 0 && bottomRight >= 0) { "All radii must be >= 0." }
     }
 
-    override val key = "${javaClass.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
+    override val cacheKey = "${javaClass.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -106,7 +106,10 @@ class RoundedCornersTransformation(
     }
 
     override fun toString(): String {
-        return "RoundedCornersTransformation(topLeft=$topLeft, topRight=$topRight, " +
-            "bottomLeft=$bottomLeft, bottomRight=$bottomRight)"
+        return "RoundedCornersTransformation(" +
+            "topLeft=$topLeft, " +
+            "topRight=$topRight, " +
+            "bottomLeft=$bottomLeft, " +
+            "bottomRight=$bottomRight)"
     }
 }

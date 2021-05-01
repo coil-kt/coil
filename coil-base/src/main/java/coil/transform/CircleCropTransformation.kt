@@ -17,7 +17,7 @@ import kotlin.math.min
  */
 class CircleCropTransformation : Transformation {
 
-    override val key: String = javaClass.name
+    override val cacheKey: String = javaClass.name
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -27,7 +27,7 @@ class CircleCropTransformation : Transformation {
         val output = createBitmap(minSize, minSize, input.safeConfig)
         output.applyCanvas {
             drawCircle(radius, radius, radius, paint)
-            paint.xfermode = XFERMODE
+            paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
             drawBitmap(input, radius - input.width / 2f, radius - input.height / 2f, paint)
         }
         input.recycle()
@@ -40,8 +40,4 @@ class CircleCropTransformation : Transformation {
     override fun hashCode() = javaClass.hashCode()
 
     override fun toString() = "CircleCropTransformation()"
-
-    private companion object {
-        val XFERMODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-    }
 }

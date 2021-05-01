@@ -225,7 +225,7 @@ class DisposableTest {
 
         private val isOpen = MutableStateFlow(false)
 
-        override val key = "$javaClass"
+        override val cacheKey = "$javaClass"
 
         override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
             // Suspend until the gate is open.
