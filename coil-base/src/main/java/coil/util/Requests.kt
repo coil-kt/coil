@@ -36,7 +36,7 @@ internal fun <T : Any> ImageRequest.fetcher(data: T): Fetcher<T>? {
     return fetcher as Fetcher<T>
 }
 
-/** Return true if the request does not require the output image's size to match the requested dimensions exactly. */
+/** Return 'true' if the request does not require the output image's size to match the requested dimensions exactly. */
 internal val ImageRequest.allowInexactSize: Boolean
     get() = when (precision) {
         Precision.EXACT -> false

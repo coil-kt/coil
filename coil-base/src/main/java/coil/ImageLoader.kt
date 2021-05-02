@@ -295,7 +295,7 @@ interface ImageLoader {
          *
          * If true, the [Interceptor] chain will be launched from [MainCoroutineDispatcher.immediate]. This allows
          * the [ImageLoader] to check its memory cache and return a cached value synchronously if the request is
-         * started from the main thread. However, [Mapper.map] and [Fetcher.key] operations will be executed on the
+         * started from the main thread. However, [Mapper.map] and [Fetcher.cacheKey] operations will be executed on the
          * main thread as well, which has a performance cost.
          *
          * If false, the [Interceptor] chain will be launched from the request's [ImageRequest.dispatcher].

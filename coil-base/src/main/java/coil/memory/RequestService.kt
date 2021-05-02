@@ -64,7 +64,7 @@ internal class RequestService(private val logger: Logger?) {
         )
     }
 
-    /** Return true if [requestedConfig] is a valid (i.e. can be returned to its [Target]) config for [request]. */
+    /** Return 'true' if [requestedConfig] is a valid (i.e. can be returned to its [Target]) config for [request]. */
     fun isConfigValidForHardware(request: ImageRequest, requestedConfig: Bitmap.Config): Boolean {
         // Short circuit if the requested bitmap config is software.
         if (!requestedConfig.isHardware) return true
@@ -80,7 +80,7 @@ internal class RequestService(private val logger: Logger?) {
     }
 
     /**
-     * Return true if [request]'s requested bitmap config is valid (i.e. can be returned to its [Target]).
+     * Return 'true' if [request]'s requested bitmap config is valid (i.e. can be returned to its [Target]).
      *
      * This check is similar to [isConfigValidForHardware] except this method also checks
      * that we are able to allocate a new hardware bitmap.
@@ -91,7 +91,7 @@ internal class RequestService(private val logger: Logger?) {
             hardwareBitmapService.allowHardware(size, logger)
     }
 
-    /** Return true if [ImageRequest.bitmapConfig] is valid given its [Transformation]s. */
+    /** Return 'true' if [ImageRequest.bitmapConfig] is valid given its [Transformation]s. */
     private fun isConfigValidForTransformations(request: ImageRequest): Boolean {
         return request.transformations.isEmpty() || request.bitmapConfig in VALID_TRANSFORMATION_CONFIGS
     }

@@ -27,7 +27,7 @@ class Parameters private constructor(
     /** Returns the entry associated with [key] or null if [key] has no mapping. */
     fun entry(key: String): Entry? = map[key]
 
-    /** Returns true if this object has no parameters. */
+    /** Returns 'true' if this object has no parameters. */
     fun isEmpty(): Boolean = map.isEmpty()
 
     /** Returns a map of keys to values. */

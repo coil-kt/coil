@@ -140,7 +140,7 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         )
     }
 
-    /** Return true if we should read the image's EXIF data. */
+    /** Return 'true' if we should read the image's EXIF data. */
     private fun shouldReadExifData(mimeType: String?): Boolean {
         return mimeType != null && mimeType in SUPPORTED_EXIF_MIME_TYPES
     }

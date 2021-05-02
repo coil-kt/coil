@@ -71,7 +71,7 @@ class HttpFetcherTest {
         val fetcher = HttpUrlFetcher(callFactory)
         val url = server.url("/normal.jpg")
         assertTrue(fetcher.handles(url))
-        assertEquals(url.toString(), fetcher.key(url))
+        assertEquals(url.toString(), fetcher.cacheKey(url))
 
         val result = runBlocking {
             fetcher.fetch(pool, url, PixelSize(100, 100), Options(context))
@@ -86,7 +86,7 @@ class HttpFetcherTest {
         val fetcher = HttpUriFetcher(callFactory)
         val uri = server.url("/normal.jpg").toString().toUri()
         assertTrue(fetcher.handles(uri))
-        assertEquals(uri.toString(), fetcher.key(uri))
+        assertEquals(uri.toString(), fetcher.cacheKey(uri))
 
         val result = runBlocking {
             fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))

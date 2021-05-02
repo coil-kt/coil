@@ -48,10 +48,10 @@ class FileFetcherTest {
         val file = context.copyAssetToFile("normal.jpg")
 
         file.setLastModified(1234L)
-        val firstKey = fetcher.key(file)
+        val firstKey = fetcher.cacheKey(file)
 
         file.setLastModified(4321L)
-        val secondKey = fetcher.key(file)
+        val secondKey = fetcher.cacheKey(file)
 
         assertNotEquals(secondKey, firstKey)
     }
@@ -62,10 +62,10 @@ class FileFetcherTest {
         val file = context.copyAssetToFile("normal.jpg")
 
         file.setLastModified(1234L)
-        val firstKey = fetcher.key(file)
+        val firstKey = fetcher.cacheKey(file)
 
         file.setLastModified(4321L)
-        val secondKey = fetcher.key(file)
+        val secondKey = fetcher.cacheKey(file)
 
         assertEquals(secondKey, firstKey)
     }

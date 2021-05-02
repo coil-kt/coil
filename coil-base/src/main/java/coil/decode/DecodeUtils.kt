@@ -31,19 +31,19 @@ object DecodeUtils {
     private val HEIF_HEADER_HEVC = "hevc".encodeUtf8()
     private val HEIF_HEADER_HEVX = "hevx".encodeUtf8()
 
-    /** Return true if the [source] contains a GIF image. The [source] is not consumed. */
+    /** Return 'true' if the [source] contains a GIF image. The [source] is not consumed. */
     @JvmStatic
     fun isGif(source: BufferedSource): Boolean {
         return source.rangeEquals(0, GIF_HEADER_89A) || source.rangeEquals(0, GIF_HEADER_87A)
     }
 
-    /** Return true if the [source] contains a WebP image. The [source] is not consumed. */
+    /** Return 'true' if the [source] contains a WebP image. The [source] is not consumed. */
     @JvmStatic
     fun isWebP(source: BufferedSource): Boolean {
         return source.rangeEquals(0, WEBP_HEADER_RIFF) && source.rangeEquals(8, WEBP_HEADER_WEBP)
     }
 
-    /** Return true if the [source] contains an animated WebP image. The [source] is not consumed. */
+    /** Return 'true' if the [source] contains an animated WebP image. The [source] is not consumed. */
     @JvmStatic
     fun isAnimatedWebP(source: BufferedSource): Boolean {
         return isWebP(source) &&
@@ -52,13 +52,13 @@ object DecodeUtils {
             (source.buffer[16] and 0b00000010) > 0
     }
 
-    /** Return true if the [source] contains an HEIF image. The [source] is not consumed. */
+    /** Return 'true' if the [source] contains an HEIF image. The [source] is not consumed. */
     @JvmStatic
     fun isHeif(source: BufferedSource): Boolean {
         return source.rangeEquals(4, HEIF_HEADER_FTYP)
     }
 
-    /** Return true if the [source] contains an animated HEIF image sequence. The [source] is not consumed. */
+    /** Return 'true' if the [source] contains an animated HEIF image sequence. The [source] is not consumed. */
     @JvmStatic
     fun isAnimatedHeif(source: BufferedSource): Boolean {
         return isHeif(source) &&

@@ -22,7 +22,7 @@ internal sealed class HardwareBitmapService {
         }
     }
 
-    /** Return true if we can currently use [Bitmap.Config.HARDWARE]. */
+    /** Return 'true' if we can currently use [Bitmap.Config.HARDWARE]. */
     abstract fun allowHardware(size: Size, logger: Logger?): Boolean
 }
 

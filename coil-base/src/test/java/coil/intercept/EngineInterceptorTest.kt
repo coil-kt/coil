@@ -512,7 +512,7 @@ class EngineInterceptorTest {
 
     private fun createFakeFetcher(key: String? = "base_key"): Fetcher<Any> {
         return object : Fetcher<Any> {
-            override fun key(data: Any) = key
+            override fun cacheKey(data: Any) = key
 
             override suspend fun fetch(
                 pool: BitmapPool,

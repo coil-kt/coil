@@ -9,7 +9,7 @@ import coil.util.toDrawable
 
 internal class DrawableFetcher(private val drawableDecoder: DrawableDecoderService) : Fetcher<Drawable> {
 
-    override fun key(data: Drawable): String? = null
+    override fun cacheKey(data: Drawable): String? = null
 
     override suspend fun fetch(data: Drawable, options: Options): FetchResult {
         val isVector = data.isVector

@@ -7,9 +7,6 @@ import coil.size.Size
 
 /**
  * Observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine.
- *
- * NOTE: The interceptor chain is launched from the main thread by default.
- * See [ImageLoader.Builder.launchInterceptorChainOnMainThread] for more information.
  */
 fun interface Interceptor {
 

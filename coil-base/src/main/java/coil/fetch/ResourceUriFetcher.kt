@@ -24,7 +24,7 @@ internal class ResourceUriFetcher(
 
     override fun handles(data: Uri) = data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE
 
-    override fun key(data: Uri) = "$data-${context.resources.configuration.nightMode}"
+    override fun cacheKey(data: Uri) = "$data-${context.resources.configuration.nightMode}"
 
     override suspend fun fetch(data: Uri, options: Options): FetchResult {
         // Expected format: android.resource://example.package.name/12345678

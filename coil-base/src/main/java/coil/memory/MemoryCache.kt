@@ -29,7 +29,7 @@ interface MemoryCache {
     /**
      * Remove the [Bitmap] referenced by [key].
      *
-     * @return True if [key] was present in the cache. Else, return false.
+     * @return 'true' if [key] was present in the cache. Else, return false.
      */
     fun remove(key: Key): Boolean
 

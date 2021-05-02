@@ -17,7 +17,7 @@ import java.io.File
  */
 class VideoFrameFileFetcher(context: Context) : VideoFrameFetcher<File>(context) {
 
-    override fun key(data: File) = "${data.path}:${data.lastModified()}"
+    override fun cacheKey(data: File) = "${data.path}:${data.lastModified()}"
 
     override fun handles(data: File): Boolean {
         val fileName = data.name
@@ -32,7 +32,7 @@ class VideoFrameFileFetcher(context: Context) : VideoFrameFetcher<File>(context)
  */
 class VideoFrameUriFetcher(private val context: Context) : VideoFrameFetcher<Uri>(context) {
 
-    override fun key(data: Uri) = data.toString()
+    override fun cacheKey(data: Uri) = data.toString()
 
     override fun handles(data: Uri): Boolean {
         val fileName = data.lastPathSegment

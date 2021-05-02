@@ -1,7 +1,6 @@
 package coil.util
 
 import android.graphics.Bitmap
-import androidx.collection.forEach
 import coil.bitmap.RealBitmapReferenceCounter
 import coil.memory.RealWeakMemoryCache
 
@@ -10,7 +9,7 @@ internal fun RealBitmapReferenceCounter.count(bitmap: Bitmap): Int {
     return values[bitmap.identityHashCode]?.takeIf { it.bitmap.get() === bitmap }?.count ?: 0
 }
 
-/** Return true if [bitmap]'s reference count is valid. */
+/** Return 'true' if [bitmap]'s reference count is valid. */
 internal fun RealBitmapReferenceCounter.isValid(bitmap: Bitmap): Boolean {
     return values[bitmap.identityHashCode]?.takeIf { it.bitmap.get() === bitmap }?.isValid == true
 }

@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package coil.map
 
 import coil.fetch.Fetcher
@@ -9,11 +7,10 @@ import coil.fetch.Fetcher
  *
  * Use this to map custom data types to a type that can be handled by a [Fetcher].
  */
-interface Mapper<T : Any, V : Any> {
+fun interface Mapper<T : Any, V : Any> {
 
-    /** Return true if this can convert [data]. */
-    fun handles(data: T): Boolean = true
-
-    /** Convert [data] into [V]. */
-    fun map(data: T): V
+    /**
+     * Convert [data] into [V]. Return 'null' if this mapper is not applicable for [data].
+     */
+    fun map(data: T): V?
 }

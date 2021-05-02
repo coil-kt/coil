@@ -7,7 +7,7 @@ import coil.util.toDrawable
 
 internal class BitmapFetcher : Fetcher<Bitmap> {
 
-    override fun key(data: Bitmap): String? = null
+    override fun cacheKey(data: Bitmap): String? = null
 
     override suspend fun fetch(data: Bitmap, options: Options): FetchResult {
         return DrawableResult(

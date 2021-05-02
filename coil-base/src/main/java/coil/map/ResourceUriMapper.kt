@@ -12,13 +12,9 @@ import androidx.core.net.toUri
  */
 internal class ResourceUriMapper(private val context: Context) : Mapper<Uri, Uri> {
 
-    override fun handles(data: Uri): Boolean {
-        return data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE &&
-            !data.authority.isNullOrBlank() &&
-            data.pathSegments.count() == 2
-    }
+    override fun map(data: Uri): Uri? {
+        if (!isApplicable(data)) return null
 
-    override fun map(data: Uri): Uri {
         val packageName = data.authority.orEmpty()
         val resources = context.packageManager.getResourcesForApplication(packageName)
         val (type, name) = data.pathSegments
@@ -26,5 +22,11 @@ internal class ResourceUriMapper(private val context: Context) : Mapper<Uri, Uri
         check(id != 0) { "Invalid ${ContentResolver.SCHEME_ANDROID_RESOURCE} URI: $data" }
 
         return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/$id".toUri()
+    }
+
+    private fun isApplicable(data: Uri): Boolean {
+        return data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE &&
+            !data.authority.isNullOrBlank() &&
+            data.pathSegments.count() == 2
     }
 }

@@ -16,7 +16,7 @@ internal class ContentUriFetcher(private val context: Context) : Fetcher<Uri> {
 
     override fun handles(data: Uri) = data.scheme == ContentResolver.SCHEME_CONTENT
 
-    override fun key(data: Uri) = data.toString()
+    override fun cacheKey(data: Uri) = data.toString()
 
     override suspend fun fetch(data: Uri, options: Options): FetchResult {
         val inputStream = if (isContactPhotoUri(data)) {

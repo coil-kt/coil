@@ -9,7 +9,7 @@ import java.io.File
 
 internal class FileFetcher(private val addLastModifiedToFileCacheKey: Boolean) : Fetcher<File> {
 
-    override fun key(data: File): String {
+    override fun cacheKey(data: File): String {
         return if (addLastModifiedToFileCacheKey) "${data.path}:${data.lastModified()}" else data.path
     }
 

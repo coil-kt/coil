@@ -95,7 +95,7 @@ class MovieDrawable @JvmOverloads constructor(
 
     /**
      * Compute the current frame time and update [movie].
-     * Return true if there are subsequent frames to be rendered.
+     * Return 'true' if there are subsequent frames to be rendered.
      */
     private fun updateFrameTime(): Boolean {
         val invalidate: Boolean

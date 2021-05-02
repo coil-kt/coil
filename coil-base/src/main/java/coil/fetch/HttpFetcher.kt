@@ -24,14 +24,14 @@ internal class HttpUriFetcher(callFactory: Call.Factory) : HttpFetcher<Uri>(call
 
     override fun handles(data: Uri) = data.scheme == "http" || data.scheme == "https"
 
-    override fun key(data: Uri) = data.toString()
+    override fun cacheKey(data: Uri) = data.toString()
 
     override fun Uri.toHttpUrl(): HttpUrl = toString().toHttpUrl()
 }
 
 internal class HttpUrlFetcher(callFactory: Call.Factory) : HttpFetcher<HttpUrl>(callFactory) {
 
-    override fun key(data: HttpUrl) = data.toString()
+    override fun cacheKey(data: HttpUrl) = data.toString()
 
     override fun HttpUrl.toHttpUrl(): HttpUrl = this
 }

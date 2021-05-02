@@ -13,7 +13,7 @@ import java.util.UUID
 interface Disposable {
 
     /**
-     * Returns true if the request is complete or cancelling.
+     * Returns 'true' if the request is complete or cancelling.
      */
     val isDisposed: Boolean
 
