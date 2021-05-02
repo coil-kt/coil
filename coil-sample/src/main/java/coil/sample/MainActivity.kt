@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         if (SDK_INT >= 29) {
             window.setDecorFitsSystemWindowsCompat(false)
             binding.toolbar.setOnApplyWindowInsetsListener { view, insets ->
-                view.updatePadding(top = insets.systemWindowInsetTopCompat)
+                view.updatePadding(top = insets.toCompat().getInsets(WindowInsetsCompat.Type.systemBars()).top)
                 insets
             }
         }
