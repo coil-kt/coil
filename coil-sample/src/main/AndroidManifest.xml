@@ -13,7 +13,7 @@
         tools:ignore="ScopedStorage"/>
 
     <application
-        android:name=".Application"
+        android:name=".CoilApplication"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"

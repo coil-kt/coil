@@ -2,9 +2,9 @@
 
 package coil.sample
 
+import android.app.Application
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
-import androidx.multidex.MultiDexApplication
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
@@ -19,7 +19,7 @@ import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.io.File
 
-class Application : MultiDexApplication(), ImageLoaderFactory {
+class CoilApplication : Application(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
@@ -28,18 +28,18 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
             .componentRegistry {
                 // GIFs
                 if (SDK_INT >= 28) {
-                    add(ImageDecoderDecoder(this@Application))
+                    add(ImageDecoderDecoder(this@CoilApplication))
                 } else {
                     add(GifDecoder())
                 }
 
                 // SVGs
-                add(SvgDecoder(this@Application))
+                add(SvgDecoder(this@CoilApplication))
 
                 // Video frames
-                add(VideoFrameFileFetcher(this@Application))
-                add(VideoFrameUriFetcher(this@Application))
-                add(VideoFrameDecoder(this@Application))
+                add(VideoFrameFileFetcher(this@CoilApplication))
+                add(VideoFrameUriFetcher(this@CoilApplication))
+                add(VideoFrameDecoder(this@CoilApplication))
             }
             .okHttpClient {
                 // Create a disk cache with "unlimited" size. Don't do this in production.
