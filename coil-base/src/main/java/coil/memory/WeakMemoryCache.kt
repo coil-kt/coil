@@ -62,8 +62,11 @@ internal object EmptyWeakMemoryCache : WeakMemoryCache {
 /** A [WeakMemoryCache] implementation backed by a [HashMap]. */
 internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCache {
 
-    @VisibleForTesting internal val cache = hashMapOf<Key, ArrayList<WeakValue>>()
-    @VisibleForTesting internal var operationsSinceCleanUp = 0
+    @VisibleForTesting
+    internal val cache = hashMapOf<Key, ArrayList<WeakValue>>()
+
+    @VisibleForTesting
+    internal var operationsSinceCleanUp = 0
 
     @Synchronized
     override fun get(key: Key): Value? {
@@ -139,8 +142,8 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
     }
 
     private fun recycleCachedBitmaps() {
-        cache.values.forEach { cacheValues ->
-            cacheValues.forEach { weakValue ->
+        for (value in cache.values) {
+            for (weakValue in value) {
                 weakValue.bitmap.get()?.recycle()
             }
         }
@@ -193,15 +196,15 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
 
     @VisibleForTesting
     internal class WeakValue(
-        val identityHashCode: Int,
-        val bitmap: WeakReference<Bitmap>,
-        val isSampled: Boolean,
-        val size: Int
+            val identityHashCode: Int,
+            val bitmap: WeakReference<Bitmap>,
+            val isSampled: Boolean,
+            val size: Int
     )
 
     private class StrongValue(
-        override val bitmap: Bitmap,
-        override val isSampled: Boolean
+            override val bitmap: Bitmap,
+            override val isSampled: Boolean
     ) : Value
 
     companion object {
