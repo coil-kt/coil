@@ -134,7 +134,16 @@ internal class RealWeakMemoryCache(private val logger: Logger?) : WeakMemoryCach
     override fun clearMemory() {
         logger?.log(TAG, Log.VERBOSE) { "clearMemory" }
         operationsSinceCleanUp = 0
+        recycleCachedBitmaps()
         cache.clear()
+    }
+
+    private fun recycleCachedBitmaps() {
+        cache.values.forEach { cacheValues ->
+            cacheValues.forEach { weakValue ->
+                weakValue.bitmap.get()?.recycle()
+            }
+        }
     }
 
     /** @see ComponentCallbacks2.onTrimMemory */
