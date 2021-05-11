@@ -184,6 +184,22 @@ The base data types that are supported by all `ImageLoader` instances are:
 * Drawable
 * Bitmap
 
+## Supported Image Formats
+
+All `ImageLoader`s support the following non-animated file types:
+
+* BMP
+* JPEG
+* PNG
+* WebP
+* HEIF (Android 8.0+)
+
+Additionally, Coil has extension libraries for the following file types:
+
+* `coil-gif`: GIF, animated WebP (Android 9.0+), animated HEIF (Android 11.0+)
+* `coil-svg`: SVG
+* `coil-video`: Static video frames from any [video codec supported by Android](https://developer.android.com/guide/topics/media/media-formats#video-codecs)
+
 ## Preloading
 
 To preload an image into memory, enqueue or execute an `ImageRequest` without a `Target`:
