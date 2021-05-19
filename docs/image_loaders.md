@@ -51,8 +51,6 @@ For instance, you could inject a fake `ImageLoader` implementation which always 
 ```kotlin
 val fakeImageLoader = object : ImageLoader {
 
-    private val drawable = ColorDrawable(Color.BLACK)
-
     private val disposable = object : Disposable {
         override val isDisposed get() = true
         override fun dispose() {}
@@ -68,14 +66,14 @@ val fakeImageLoader = object : ImageLoader {
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Always call onStart before onSuccess.
-        request.target?.onStart(drawable)
-        request.target?.onSuccess(drawable)
+        request.target?.onStart(placeholder = ColorDrawable(Color.BLACK))
+        request.target?.onSuccess(result = ColorDrawable(Color.BLACK))
         return disposable
     }
 
     override suspend fun execute(request: ImageRequest): ImageResult {
         return SuccessResult(
-            drawable = drawable,
+            drawable = ColorDrawable(Color.BLACK),
             request = request,
             metadata = ImageResult.Metadata(
                 memoryCacheKey = MemoryCache.Key(""),
