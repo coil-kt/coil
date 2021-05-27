@@ -85,13 +85,8 @@ internal class EngineInterceptor(
             val memoryCacheKey = request.memoryCacheKey ?: computeMemoryCacheKey(request, mappedData, fetcher, size)
             val value = if (request.memoryCachePolicy.readEnabled) memoryCacheService[memoryCacheKey] else null
 
-            // Ignore the cached bitmap if it is hardware-backed and the request disallows hardware bitmaps.
-            val cachedDrawable = value?.bitmap
-                ?.takeIf { requestService.isConfigValidForHardware(request, it.safeConfig) }
-                ?.toDrawable(context)
-
             // Short circuit if the cached bitmap is valid.
-            if (cachedDrawable != null && isCachedValueValid(memoryCacheKey, value, request, size)) {
+            if (value != null && isCachedValueValid(memoryCacheKey, value, request, size)) {
                 return SuccessResult(
                     drawable = value.bitmap.toDrawable(context),
                     request = request,
