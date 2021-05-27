@@ -459,14 +459,14 @@ interface ImageLoader {
          * Set the default fallback drawable to use if [ImageRequest.data] is null.
          */
         fun fallback(@DrawableRes drawableResId: Int) = apply {
-            this.defaults = this.defaults.copy(error = applicationContext.getDrawableCompat(drawableResId))
+            this.defaults = this.defaults.copy(fallback = applicationContext.getDrawableCompat(drawableResId))
         }
 
         /**
          * Set the default fallback drawable to use if [ImageRequest.data] is null.
          */
         fun fallback(drawable: Drawable?) = apply {
-            this.defaults = this.defaults.copy(error = drawable)
+            this.defaults = this.defaults.copy(fallback = drawable)
         }
 
         /**
