@@ -2,7 +2,7 @@ name: CI
 on:
     push:
         branches:
-            - master
+            - main
     pull_request:
 jobs:
     check:
@@ -79,7 +79,7 @@ jobs:
         name: Deploy snapshot
         runs-on: ubuntu-latest
         timeout-minutes: 10
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         needs: [check, unit-tests, instrumentation-tests]
         steps:
             - uses: actions/checkout@v2
