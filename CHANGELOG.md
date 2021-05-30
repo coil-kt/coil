@@ -266,9 +266,9 @@ Changes since `1.0.0-rc3`:
 
 - Add a new artifact, **`io.coil-kt:coil-video`**, to decode specific frames from a video file. [Read more here](https://coil-kt.github.io/coil/videos/).
 
-- Add a new [EventListener](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt) API for tracking metrics.
+- Add a new [EventListener](https://github.com/coil-kt/coil/blob/main/coil-base/src/main/java/coil/EventListener.kt) API for tracking metrics.
 
-- Add [ImageLoaderFactory](https://github.com/coil-kt/coil/blob/master/coil-singleton/src/main/java/coil/ImageLoaderFactory.kt) which can be implemented by your `Application` to simplify singleton initialization.
+- Add [ImageLoaderFactory](https://github.com/coil-kt/coil/blob/main/coil-singleton/src/main/java/coil/ImageLoaderFactory.kt) which can be implemented by your `Application` to simplify singleton initialization.
 
 ---
 
@@ -291,8 +291,8 @@ Changes since `1.0.0-rc3`:
 
 - **New**: Add `WeakMemoryCache` implementation. ([#295](https://github.com/coil-kt/coil/pull/295))
 - **New**: Add `coil-video` to support decoding video frames. ([#122](https://github.com/coil-kt/coil/pull/122))
-- **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/EventListener.kt). ([#314](https://github.com/coil-kt/coil/pull/314))
-- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/master/coil-singleton/src/main/java/coil/ImageLoaderFactory.kt). ([#311](https://github.com/coil-kt/coil/pull/311))
+- **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/main/coil-base/src/main/java/coil/EventListener.kt). ([#314](https://github.com/coil-kt/coil/pull/314))
+- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/main/coil-singleton/src/main/java/coil/ImageLoaderFactory.kt). ([#311](https://github.com/coil-kt/coil/pull/311))
 - **New**: Support animated HEIF image sequences on Android 11. ([#297](https://github.com/coil-kt/coil/pull/297))
 - **New**: Improve Java compatibility. ([#262](https://github.com/coil-kt/coil/pull/262))
 - **New**: Support setting a default `CachePolicy`. ([#307](https://github.com/coil-kt/coil/pull/307))
@@ -402,7 +402,7 @@ Changes since `1.0.0-rc3`:
 - **New**: Support for custom transitions. [See here for more info](https://coil-kt.github.io/coil/transitions/). Transitions are marked as experimental as the API is incubating.
 - **New**: Add `RequestDisposable.await` to support suspending while a `LoadRequest` is in progress.
 - **New**: Support setting a `fallback` drawable when request data is null.
-- **New**: Add `Precision`. This makes the size of the output `Drawable` exact while enabling scaling optimizations for targets that support scaling (e.g. `ImageViewTarget`). See [its documentation](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/size/Precision.kt) for more information.
+- **New**: Add `Precision`. This makes the size of the output `Drawable` exact while enabling scaling optimizations for targets that support scaling (e.g. `ImageViewTarget`). See [its documentation](https://github.com/coil-kt/coil/blob/main/coil-base/src/main/java/coil/size/Precision.kt) for more information.
 - **New**: Add `RequestBuilder.aliasKeys` to support matching multiple cache keys.
 
 ---
@@ -410,7 +410,7 @@ Changes since `1.0.0-rc3`:
 - Fix: Make RequestDisposable thread safe.
 - Fix: `RoundedCornersTransformation` now crops to the size of the target then rounds the corners.
 - Fix: `CircleCropTransformation` now crops from the center.
-- Fix: Add several devices to the [hardware bitmap blacklist](https://github.com/coil-kt/coil/blob/master/coil-base/src/main/java/coil/memory/HardwareBitmapService.kt).
+- Fix: Add several devices to the [hardware bitmap blacklist](https://github.com/coil-kt/coil/blob/main/coil-base/src/main/java/coil/memory/HardwareBitmapService.kt).
 - Fix: Preserve aspect ratio when converting a Drawable to a Bitmap.
 - Fix: Fix possible memory cache miss with `Scale.FIT`.
 - Fix: Ensure Parameters iteration order is deterministic.
