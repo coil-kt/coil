@@ -5,5 +5,5 @@ rootProject.extra.apply {
     set("dokkaPlugin", "org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
     set("dokkaAndroidPlugin", "org.jetbrains.dokka:android-documentation-plugin:1.4.32")
     set("binaryCompatibilityPlugin", "org.jetbrains.kotlinx:binary-compatibility-validator:0.5.0")
-    set("ktlintPlugin", "org.jlleitschuh.gradle:ktlint-gradle:10.0.0")
+    set("ktlintPlugin", "org.jlleitschuh.gradle:ktlint-gradle:10.1.0")
 }
