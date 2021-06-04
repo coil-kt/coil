@@ -66,13 +66,13 @@ internal class ResourceUriFetcher(
                     drawable
                 },
                 isSampled = isVector,
-                dataSource = DataSource.MEMORY
+                dataSource = DataSource.DISK
             )
         } else {
             SourceResult(
                 source = resources.openRawResource(resId).source().buffer(),
                 mimeType = mimeType,
-                dataSource = DataSource.MEMORY
+                dataSource = DataSource.DISK
             )
         }
     }
