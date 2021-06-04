@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.2] - June 4, 2021
+
+- Fix race condition while converting a drawable with shared state to a bitmap. ([#771](https://github.com/coil-kt/coil/pull/771))
+- Fix `ImageLoader.Builder.fallback` setting the `error` drawable instead of the `fallback` drawable.
+- Fix incorrect data source returned by `ResourceUriFetcher`. ([#770](https://github.com/coil-kt/coil/pull/770))
+- Fix log check for no available file descriptors on API 26 and 27.
+- Fix incorrect version check for platform vector drawable support. ([#751](https://github.com/coil-kt/coil/pull/751))
+- Update Kotlin (1.5.10).
+- Update Coroutines (1.5.0).
+- Update `androidx.appcompat:appcompat-resources` to 1.3.0.
+- Update `androidx.core:core-ktx` to 1.5.0.
+
 ## [1.2.1] - April 27, 2021
 
 - Fix `VideoFrameUriFetcher` attempting to handle http/https URIs. ([#734](https://github.com/coil-kt/coil/pull/734)
