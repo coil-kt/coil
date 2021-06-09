@@ -1,6 +1,7 @@
 package coil.intercept
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Animatable
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -26,6 +27,7 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
+import coil.request.get
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
@@ -353,10 +355,17 @@ internal class EngineInterceptor(
                 drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
             }
         } else {
-            logger?.log(TAG, Log.INFO) {
-                "Converting drawable of type ${result.drawable::class.java.canonicalName} to apply transformations: $transformations"
+            if (options.allowConversionToBitmap) {
+                logger?.log(TAG, Log.INFO) {
+                    "Converting drawable of type ${result.drawable::class.java.canonicalName} to apply transformations: $transformations"
+                }
+                drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
+            } else {
+                logger?.log(TAG, Log.INFO) {
+                    "AllowConversionToBitmap=false, skipping transformations for type ${result.drawable::class.java.canonicalName}"
+                }
+                return result
             }
-            drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
         }
         eventListener.transformStart(request, input)
         val output = transformations.foldIndices(input) { bitmap, transformation ->
