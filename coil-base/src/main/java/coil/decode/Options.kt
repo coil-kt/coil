@@ -132,6 +132,25 @@ class Options(
         diskCachePolicy = diskCachePolicy, networkCachePolicy = networkCachePolicy)
 
     @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        context: Context,
+        config: Bitmap.Config,
+        colorSpace: ColorSpace?,
+        scale: Scale,
+        allowInexactSize: Boolean,
+        allowRgb565: Boolean,
+        premultipliedAlpha: Boolean,
+        headers: Headers,
+        parameters: Parameters,
+        memoryCachePolicy: CachePolicy,
+        diskCachePolicy: CachePolicy,
+        networkCachePolicy: CachePolicy
+    ) : this(context = context, config = config, colorSpace = colorSpace, scale = scale,
+        allowInexactSize = allowInexactSize, allowRgb565 = allowRgb565, premultipliedAlpha = premultipliedAlpha,
+        headers = headers, parameters = parameters, memoryCachePolicy = memoryCachePolicy,
+        diskCachePolicy = diskCachePolicy, networkCachePolicy = networkCachePolicy)
+
+    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
     fun copy(
         context: Context = this.context,
         config: Bitmap.Config = this.config,
