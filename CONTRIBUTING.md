@@ -12,4 +12,6 @@ If you would like to contribute code you can do so through GitHub by forking the
 
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible. Please also make sure your code passes all tests by running `./test.sh`.
 
+If you are making an API change, run `./gradlew apiDump` and include any changed files in your pull request.
+
 *Modified from OkHttp's [Contributing](https://square.github.io/okhttp/contributing/) section.*
