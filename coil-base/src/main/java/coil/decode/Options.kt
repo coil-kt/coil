@@ -146,4 +146,22 @@ class Options(
         networkCachePolicy: CachePolicy = this.networkCachePolicy
     ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
         allowConversionToBitmap, headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+
+
+    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    fun copy(
+        context: Context = this.context,
+        config: Bitmap.Config = this.config,
+        colorSpace: ColorSpace? = this.colorSpace,
+        scale: Scale = this.scale,
+        allowInexactSize: Boolean = this.allowInexactSize,
+        allowRgb565: Boolean = this.allowRgb565,
+        premultipliedAlpha: Boolean = this.premultipliedAlpha,
+        headers: Headers = this.headers,
+        parameters: Parameters = this.parameters,
+        memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+        diskCachePolicy: CachePolicy = this.diskCachePolicy,
+        networkCachePolicy: CachePolicy = this.networkCachePolicy
+    ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
+        allowConversionToBitmap, headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 }
