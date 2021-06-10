@@ -39,16 +39,19 @@ class AnimatedAndNormalTransformationTest {
         context = ApplicationProvider.getApplicationContext()
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
+            .componentRegistry {
+                val gifDecoder = if (VERSION.SDK_INT >= 28) {
+                    ImageDecoderDecoder(context)
+                } else {
+                    GifDecoder()
+                }
+                add(gifDecoder)
+            }
             .memoryCachePolicy(CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
             .build()
-        val decoder = if (VERSION.SDK_INT >= 28) {
-            ImageDecoderDecoder(context)
-        } else {
-            GifDecoder()
-        }
+
         imageRequestBuilder = ImageRequest.Builder(context)
-            .decoder(decoder)
             .bitmapConfig(Bitmap.Config.ARGB_8888)
             .transformations(CircleCropTransformation())
             .animatedTransformation(AnimatedCircleTransformation())
