@@ -30,6 +30,8 @@ import okhttp3.Headers
  * @param premultipliedAlpha True if the color (RGB) channels of the decoded image should be pre-multiplied by the
  *  alpha channel. The default behavior is to enable pre-multiplication but in some environments it can be necessary
  *  to disable this feature to leave the source pixels unmodified.
+ * @param allowConversionToBitmap True if animated result images will be converted to a Bitmap in order to run
+ *  any requested transformations.
  * @param headers The header fields to use for any network requests.
  * @param parameters A map of custom parameters. These are used to pass custom data to a component.
  * @param memoryCachePolicy Determines if this request is allowed to read/write from/to memory.
@@ -44,6 +46,7 @@ class Options(
     val allowInexactSize: Boolean = false,
     val allowRgb565: Boolean = false,
     val premultipliedAlpha: Boolean = true,
+    val allowConversionToBitmap: Boolean = true,
     val headers: Headers = EMPTY_HEADERS,
     val parameters: Parameters = Parameters.EMPTY,
     val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
@@ -59,13 +62,14 @@ class Options(
         allowInexactSize: Boolean = this.allowInexactSize,
         allowRgb565: Boolean = this.allowRgb565,
         premultipliedAlpha: Boolean = this.premultipliedAlpha,
+        allowConversionToBitmap: Boolean = this.allowConversionToBitmap,
         headers: Headers = this.headers,
         parameters: Parameters = this.parameters,
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
     ) = Options(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
-        headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+        allowConversionToBitmap, headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -77,6 +81,7 @@ class Options(
             allowInexactSize == other.allowInexactSize &&
             allowRgb565 == other.allowRgb565 &&
             premultipliedAlpha == other.premultipliedAlpha &&
+            allowConversionToBitmap == other.allowConversionToBitmap &&
             headers == other.headers &&
             parameters == other.parameters &&
             memoryCachePolicy == other.memoryCachePolicy &&
@@ -92,6 +97,7 @@ class Options(
         result = 31 * result + allowInexactSize.hashCode()
         result = 31 * result + allowRgb565.hashCode()
         result = 31 * result + premultipliedAlpha.hashCode()
+        result = 31 * result + allowConversionToBitmap.hashCode()
         result = 31 * result + headers.hashCode()
         result = 31 * result + parameters.hashCode()
         result = 31 * result + memoryCachePolicy.hashCode()
@@ -103,8 +109,9 @@ class Options(
     override fun toString(): String {
         return "Options(context=$context, config=$config, colorSpace=$colorSpace, scale=$scale, " +
             "allowInexactSize=$allowInexactSize, allowRgb565=$allowRgb565, premultipliedAlpha=$premultipliedAlpha, " +
-            "headers=$headers, parameters=$parameters, memoryCachePolicy=$memoryCachePolicy, " +
-            "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy)"
+            "allowConversionToBitmap=$allowConversionToBitmap, headers=$headers, parameters=$parameters, " +
+            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
+            "networkCachePolicy=$networkCachePolicy)"
     }
 
     @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
@@ -125,6 +132,25 @@ class Options(
         diskCachePolicy = diskCachePolicy, networkCachePolicy = networkCachePolicy)
 
     @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        context: Context,
+        config: Bitmap.Config,
+        colorSpace: ColorSpace?,
+        scale: Scale,
+        allowInexactSize: Boolean,
+        allowRgb565: Boolean,
+        premultipliedAlpha: Boolean,
+        headers: Headers,
+        parameters: Parameters,
+        memoryCachePolicy: CachePolicy,
+        diskCachePolicy: CachePolicy,
+        networkCachePolicy: CachePolicy
+    ) : this(context = context, config = config, colorSpace = colorSpace, scale = scale,
+        allowInexactSize = allowInexactSize, allowRgb565 = allowRgb565, premultipliedAlpha = premultipliedAlpha,
+        headers = headers, parameters = parameters, memoryCachePolicy = memoryCachePolicy,
+        diskCachePolicy = diskCachePolicy, networkCachePolicy = networkCachePolicy)
+
+    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
     fun copy(
         context: Context = this.context,
         config: Bitmap.Config = this.config,
@@ -137,6 +163,23 @@ class Options(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy
-    ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha, headers, parameters,
-        memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+    ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
+        allowConversionToBitmap, headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
+
+    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    fun copy(
+        context: Context = this.context,
+        config: Bitmap.Config = this.config,
+        colorSpace: ColorSpace? = this.colorSpace,
+        scale: Scale = this.scale,
+        allowInexactSize: Boolean = this.allowInexactSize,
+        allowRgb565: Boolean = this.allowRgb565,
+        premultipliedAlpha: Boolean = this.premultipliedAlpha,
+        headers: Headers = this.headers,
+        parameters: Parameters = this.parameters,
+        memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+        diskCachePolicy: CachePolicy = this.diskCachePolicy,
+        networkCachePolicy: CachePolicy = this.networkCachePolicy
+    ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
+        allowConversionToBitmap, headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 }
