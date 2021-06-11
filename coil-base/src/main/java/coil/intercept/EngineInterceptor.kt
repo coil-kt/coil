@@ -1,7 +1,6 @@
 package coil.intercept
 
 import android.graphics.Bitmap
-import android.graphics.drawable.Animatable
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -27,7 +26,6 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
-import coil.request.get
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size

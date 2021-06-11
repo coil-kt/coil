@@ -166,7 +166,6 @@ class Options(
     ) = copy(context, config, colorSpace, scale, allowInexactSize, allowRgb565, premultipliedAlpha,
         allowConversionToBitmap, headers, parameters, memoryCachePolicy, diskCachePolicy, networkCachePolicy)
 
-
     @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
     fun copy(
         context: Context = this.context,
