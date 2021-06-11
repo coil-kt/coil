@@ -10,6 +10,7 @@ import android.graphics.Path
 import android.graphics.Path.Direction
 import android.graphics.PorterDuff.Mode.SRC
 import android.graphics.PorterDuffXfermode
+import android.graphics.RectF
 import android.graphics.drawable.Animatable
 import android.os.Build.VERSION
 import androidx.core.graphics.drawable.toBitmap
@@ -93,7 +94,8 @@ class AnimatedAndNormalTransformationTest {
             val width = canvas.width
             val height = canvas.height
             val radius = width / 2f
-            path.addRoundRect(0f, 0f, width.toFloat(), height.toFloat(), radius, radius, Direction.CW)
+            val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
+            path.addRoundRect(rect, radius, radius, Direction.CW)
             val paint = Paint()
             paint.isAntiAlias = true
             paint.color = Color.TRANSPARENT
