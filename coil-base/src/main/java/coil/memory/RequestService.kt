@@ -55,6 +55,7 @@ internal class RequestService(private val logger: Logger?) {
             allowInexactSize = request.allowInexactSize,
             allowRgb565 = allowRgb565,
             premultipliedAlpha = request.premultipliedAlpha,
+            allowConversionToBitmap = request.allowConversionToBitmap,
             headers = request.headers,
             parameters = request.parameters,
             memoryCachePolicy = request.memoryCachePolicy,

@@ -121,6 +121,9 @@ class ImageRequest private constructor(
     /** @see Builder.premultipliedAlpha */
     val premultipliedAlpha: Boolean,
 
+    /** @see Builder.allowConversionToBitmap */
+    val allowConversionToBitmap: Boolean,
+
     /** @see Builder.memoryCachePolicy */
     val memoryCachePolicy: CachePolicy,
 
@@ -181,6 +184,7 @@ class ImageRequest private constructor(
             allowHardware == other.allowHardware &&
             allowRgb565 == other.allowRgb565 &&
             premultipliedAlpha == other.premultipliedAlpha &&
+            allowConversionToBitmap == other.allowConversionToBitmap &&
             memoryCachePolicy == other.memoryCachePolicy &&
             diskCachePolicy == other.diskCachePolicy &&
             networkCachePolicy == other.networkCachePolicy &&
@@ -217,6 +221,7 @@ class ImageRequest private constructor(
         result = 31 * result + allowHardware.hashCode()
         result = 31 * result + allowRgb565.hashCode()
         result = 31 * result + premultipliedAlpha.hashCode()
+        result = 31 * result + allowConversionToBitmap.hashCode()
         result = 31 * result + memoryCachePolicy.hashCode()
         result = 31 * result + diskCachePolicy.hashCode()
         result = 31 * result + networkCachePolicy.hashCode()
@@ -238,11 +243,11 @@ class ImageRequest private constructor(
             "headers=$headers, parameters=$parameters, lifecycle=$lifecycle, sizeResolver=$sizeResolver, " +
             "scale=$scale, dispatcher=$dispatcher, transition=$transition, precision=$precision, " +
             "bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
-            "premultipliedAlpha=$premultipliedAlpha, memoryCachePolicy=$memoryCachePolicy, " +
-            "diskCachePolicy=$diskCachePolicy, networkCachePolicy=$networkCachePolicy, " +
-            "placeholderResId=$placeholderResId, placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, " +
-            "errorDrawable=$errorDrawable, fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable, " +
-            "defined=$defined, defaults=$defaults)"
+            "premultipliedAlpha=$premultipliedAlpha, allowConversionToBitmap=$allowConversionToBitmap, " +
+            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
+            "networkCachePolicy=$networkCachePolicy, placeholderResId=$placeholderResId, " +
+            "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
+            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable, defined=$defined, defaults=$defaults)"
     }
 
     /**
@@ -304,6 +309,7 @@ class ImageRequest private constructor(
         private var allowHardware: Boolean?
         private var allowRgb565: Boolean?
         private var premultipliedAlpha: Boolean
+        private var allowConversionToBitmap: Boolean
         private var memoryCachePolicy: CachePolicy?
         private var diskCachePolicy: CachePolicy?
         private var networkCachePolicy: CachePolicy?
@@ -343,6 +349,7 @@ class ImageRequest private constructor(
             allowHardware = null
             allowRgb565 = null
             premultipliedAlpha = true
+            allowConversionToBitmap = true
             memoryCachePolicy = null
             diskCachePolicy = null
             networkCachePolicy = null
@@ -382,6 +389,7 @@ class ImageRequest private constructor(
             allowHardware = request.defined.allowHardware
             allowRgb565 = request.defined.allowRgb565
             premultipliedAlpha = request.premultipliedAlpha
+            allowConversionToBitmap = request.allowConversionToBitmap
             memoryCachePolicy = request.defined.memoryCachePolicy
             diskCachePolicy = request.defined.diskCachePolicy
             networkCachePolicy = request.defined.networkCachePolicy
@@ -589,6 +597,14 @@ class ImageRequest private constructor(
          */
         fun premultipliedAlpha(enable: Boolean) = apply {
             this.premultipliedAlpha = enable
+        }
+
+        /**
+         * Enable/disable conversion to Bitmap in order to run any requested transformations.  Use this to disable
+         * static transformations in order to have animatedTransformations run on the unmodified result.
+         */
+        fun allowConversionToBitmap(allow: Boolean) = apply {
+            this.allowConversionToBitmap = allow
         }
 
         /**
@@ -834,6 +850,7 @@ class ImageRequest private constructor(
                 allowHardware = allowHardware ?: defaults.allowHardware,
                 allowRgb565 = allowRgb565 ?: defaults.allowRgb565,
                 premultipliedAlpha = premultipliedAlpha,
+                allowConversionToBitmap = allowConversionToBitmap,
                 memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,
                 diskCachePolicy = diskCachePolicy ?: defaults.diskCachePolicy,
                 networkCachePolicy = networkCachePolicy ?: defaults.networkCachePolicy,
