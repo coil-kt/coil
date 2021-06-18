@@ -27,7 +27,7 @@ fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}) {
         defaultConfig {
             versionCode = project.versionCode
             versionName = project.versionName
-            resConfigs("en")
+            resourceConfigurations += "en"
             vectorDrawables.useSupportLibrary = true
         }
         block()
@@ -38,8 +38,8 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
     extensions.configure<BaseExtension>("android") {
         compileSdkVersion(project.compileSdk)
         defaultConfig {
-            minSdkVersion(project.minSdk)
-            targetSdkVersion(project.targetSdk)
+            minSdk = project.minSdk
+            targetSdk = project.targetSdk
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
         compileOptions {
