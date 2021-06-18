@@ -579,7 +579,7 @@ class ImageRequest private constructor(
         /**
          * Allow converting the result drawable to a bitmap to apply any [transformations].
          *
-         * If false, and the result drawable is not a [BitmapDrawable] any [transformations] will be ignored.
+         * If false and the result drawable is not a [BitmapDrawable] any [transformations] will be ignored.
          */
         fun allowConversionToBitmap(enable: Boolean) = apply {
             this.allowConversionToBitmap = enable
