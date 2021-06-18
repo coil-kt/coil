@@ -15,7 +15,7 @@ jobs:
             - uses: actions/setup-java@v2
               with:
                   distribution: 'adopt'
-                  java-version: 11
+                  java-version: 16
             - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
