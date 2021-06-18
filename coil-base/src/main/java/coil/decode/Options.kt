@@ -5,6 +5,7 @@ package coil.decode
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
+import android.os.Build.VERSION.SDK_INT
 import coil.fetch.Fetcher
 import coil.request.CachePolicy
 import coil.request.Parameters
@@ -76,7 +77,7 @@ class Options(
         return other is Options &&
             context == other.context &&
             config == other.config &&
-            colorSpace == other.colorSpace &&
+            (SDK_INT < 26 || colorSpace == other.colorSpace) &&
             scale == other.scale &&
             allowInexactSize == other.allowInexactSize &&
             allowRgb565 == other.allowRgb565 &&

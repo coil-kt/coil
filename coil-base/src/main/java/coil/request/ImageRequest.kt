@@ -168,7 +168,7 @@ class ImageRequest private constructor(
             listener == other.listener &&
             memoryCacheKey == other.memoryCacheKey &&
             placeholderMemoryCacheKey == other.placeholderMemoryCacheKey &&
-            colorSpace == other.colorSpace &&
+            (SDK_INT < 26 || colorSpace == other.colorSpace) &&
             fetcher == other.fetcher &&
             decoder == other.decoder &&
             transformations == other.transformations &&
