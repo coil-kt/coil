@@ -5,6 +5,7 @@ package coil.request
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
@@ -112,6 +113,9 @@ class ImageRequest private constructor(
     /** @see Builder.bitmapConfig */
     val bitmapConfig: Bitmap.Config,
 
+    /** @see Builder.allowConversionToBitmap */
+    val allowConversionToBitmap: Boolean,
+
     /** @see Builder.allowHardware */
     val allowHardware: Boolean,
 
@@ -120,9 +124,6 @@ class ImageRequest private constructor(
 
     /** @see Builder.premultipliedAlpha */
     val premultipliedAlpha: Boolean,
-
-    /** @see Builder.allowConversionToBitmap */
-    val allowConversionToBitmap: Boolean,
 
     /** @see Builder.memoryCachePolicy */
     val memoryCachePolicy: CachePolicy,
@@ -181,10 +182,10 @@ class ImageRequest private constructor(
             transition == other.transition &&
             precision == other.precision &&
             bitmapConfig == other.bitmapConfig &&
+            allowConversionToBitmap == other.allowConversionToBitmap &&
             allowHardware == other.allowHardware &&
             allowRgb565 == other.allowRgb565 &&
             premultipliedAlpha == other.premultipliedAlpha &&
-            allowConversionToBitmap == other.allowConversionToBitmap &&
             memoryCachePolicy == other.memoryCachePolicy &&
             diskCachePolicy == other.diskCachePolicy &&
             networkCachePolicy == other.networkCachePolicy &&
@@ -218,10 +219,10 @@ class ImageRequest private constructor(
         result = 31 * result + transition.hashCode()
         result = 31 * result + precision.hashCode()
         result = 31 * result + bitmapConfig.hashCode()
+        result = 31 * result + allowConversionToBitmap.hashCode()
         result = 31 * result + allowHardware.hashCode()
         result = 31 * result + allowRgb565.hashCode()
         result = 31 * result + premultipliedAlpha.hashCode()
-        result = 31 * result + allowConversionToBitmap.hashCode()
         result = 31 * result + memoryCachePolicy.hashCode()
         result = 31 * result + diskCachePolicy.hashCode()
         result = 31 * result + networkCachePolicy.hashCode()
@@ -242,8 +243,8 @@ class ImageRequest private constructor(
             "colorSpace=$colorSpace, fetcher=$fetcher, decoder=$decoder, transformations=$transformations, " +
             "headers=$headers, parameters=$parameters, lifecycle=$lifecycle, sizeResolver=$sizeResolver, " +
             "scale=$scale, dispatcher=$dispatcher, transition=$transition, precision=$precision, " +
-            "bitmapConfig=$bitmapConfig, allowHardware=$allowHardware, allowRgb565=$allowRgb565, " +
-            "premultipliedAlpha=$premultipliedAlpha, allowConversionToBitmap=$allowConversionToBitmap, " +
+            "bitmapConfig=$bitmapConfig, allowConversionToBitmap=$allowConversionToBitmap, " +
+            "allowHardware=$allowHardware, allowRgb565=$allowRgb565, premultipliedAlpha=$premultipliedAlpha, " +
             "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
             "networkCachePolicy=$networkCachePolicy, placeholderResId=$placeholderResId, " +
             "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
@@ -576,6 +577,15 @@ class ImageRequest private constructor(
         }
 
         /**
+         * Allow converting the result drawable to a bitmap to apply any [transformations].
+         *
+         * If false and the result drawable is not a [BitmapDrawable] any [transformations] will be ignored.
+         */
+        fun allowConversionToBitmap(enable: Boolean) = apply {
+            this.allowConversionToBitmap = enable
+        }
+
+        /**
          * @see ImageLoader.Builder.allowHardware
          */
         fun allowHardware(enable: Boolean) = apply {
@@ -597,14 +607,6 @@ class ImageRequest private constructor(
          */
         fun premultipliedAlpha(enable: Boolean) = apply {
             this.premultipliedAlpha = enable
-        }
-
-        /**
-         * Enable/disable conversion to Bitmap in order to run any requested transformations.  Use this to disable
-         * static transformations in order to have animatedTransformations run on the unmodified result.
-         */
-        fun allowConversionToBitmap(allow: Boolean) = apply {
-            this.allowConversionToBitmap = allow
         }
 
         /**

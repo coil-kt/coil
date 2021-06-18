@@ -353,14 +353,14 @@ internal class EngineInterceptor(
                 drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
             }
         } else {
-            if (options.allowConversionToBitmap) {
+            if (request.allowConversionToBitmap) {
                 logger?.log(TAG, Log.INFO) {
                     "Converting drawable of type ${result.drawable::class.java.canonicalName} to apply transformations: $transformations"
                 }
                 drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
             } else {
                 logger?.log(TAG, Log.INFO) {
-                    "AllowConversionToBitmap=false, skipping transformations for type ${result.drawable::class.java.canonicalName}"
+                    "allowConversionToBitmap=false, skipping transformations for type ${result.drawable::class.java.canonicalName}"
                 }
                 return result
             }
