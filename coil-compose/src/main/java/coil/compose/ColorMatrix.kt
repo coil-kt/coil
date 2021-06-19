@@ -3,7 +3,7 @@ package coil.compose
 import androidx.compose.ui.graphics.ColorMatrix
 
 /**
- * Ideally we'd use setToSaturation, however we can't since it
+ * Ideally we'd use [ColorMatrix.setToSaturation], however we can't since it
  * resets the matrix before applying the values.
  */
 internal fun ColorMatrix.updateSaturation(saturation: Float) {
