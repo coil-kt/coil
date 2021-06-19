@@ -24,7 +24,7 @@ setupLibraryModule {
 }
 
 dependencies {
-    api(project(":coil-base"))
+    api(project(":coil-singleton"))
 
     implementation(Library.ANDROIDX_CORE)
     implementation(Library.COMPOSE_FOUNDATION)
