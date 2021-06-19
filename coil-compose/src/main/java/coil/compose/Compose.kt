@@ -1,8 +1,6 @@
 package coil.compose
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,32 +19,21 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
 val LocalImageLoader = staticCompositionLocalOf<ImageLoader?> { null }
 
-object CoilPainterDefaults {
-
-    @Composable
-    fun defaultImageLoader(): ImageLoader {
-        return LocalImageLoader.current ?: LocalContext.current.imageLoader
-    }
-}
-
 @Composable
-fun rememberCoilPainter(
-    request: Any?,
-    imageLoader: ImageLoader = CoilPainterDefaults.defaultImageLoader(),
+fun rememberImagePainter(
+    request: ImageRequest,
+    imageLoader: ImageLoader = LocalImageLoader.current ?: LocalContext.current.imageLoader,
     shouldRefetchOnSizeChange: ShouldRefetchOnSizeChange = ShouldRefetchOnSizeChange { _, _ -> false },
     requestBuilder: (ImageRequest.Builder.(size: IntSize) -> ImageRequest.Builder)? = null,
-    fadeIn: Boolean = false,
-    fadeInDurationMs: Int = LoadPainterDefaults.FadeInTransitionDuration,
-    @DrawableRes previewPlaceholder: Int = 0,
-): LoadPainter<Any> {
-    // Remember and update a CoilLoader
+): LoadPainter {
+    checkData(request.data)
+
     val context = LocalContext.current
     val coilLoader = remember {
         CoilLoader(context, imageLoader, requestBuilder)
@@ -57,11 +44,8 @@ fun rememberCoilPainter(
     }
     return rememberLoadPainter(
         loader = coilLoader,
-        request = checkData(request),
+        request = request,
         shouldRefetchOnSizeChange = shouldRefetchOnSizeChange,
-        fadeIn = fadeIn,
-        fadeInDurationMs = fadeInDurationMs,
-        previewPlaceholder = previewPlaceholder,
     )
 }
 
@@ -69,13 +53,12 @@ internal class CoilLoader(
     context: Context,
     imageLoader: ImageLoader,
     requestBuilder: (ImageRequest.Builder.(size: IntSize) -> ImageRequest.Builder)?,
-) : Loader<Any> {
+) : Loader {
     var context by mutableStateOf(context)
     var imageLoader by mutableStateOf(imageLoader)
     var requestBuilder by mutableStateOf(requestBuilder)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun load(request: Any, size: IntSize): Flow<ImageLoadState> = channelFlow {
+    override fun load(request: ImageRequest, size: IntSize): Flow<ImageLoadState> = channelFlow {
         val baseRequest = when (request) {
             // If we've been given an ImageRequest instance, use it...
             is ImageRequest -> request.newBuilder()
@@ -145,32 +128,15 @@ private fun ImageResult.toResult(request: Any): ImageLoadState = when (this) {
     }
 }
 
-private fun checkData(data: Any?): Any? {
-    when (data) {
-        is Drawable -> {
-            throw IllegalArgumentException(
-                "Unsupported type: Drawable." +
-                    " If you wish to load a drawable, pass in the resource ID."
-            )
-        }
-        is ImageBitmap -> {
-            throw IllegalArgumentException(
-                "Unsupported type: ImageBitmap." +
-                    " If you wish to display this ImageBitmap, use androidx.compose.foundation.Image()"
-            )
-        }
-        is ImageVector -> {
-            throw IllegalArgumentException(
-                "Unsupported type: ImageVector." +
-                    " If you wish to display this ImageVector, use androidx.compose.foundation.Image()"
-            )
-        }
-        is Painter -> {
-            throw IllegalArgumentException(
-                "Unsupported type: Painter." +
-                    " If you wish to draw this Painter, use androidx.compose.foundation.Image()"
-            )
-        }
-    }
-    return data
+private fun checkData(data: Any?) = when (data) {
+    is ImageBitmap -> unsupportedData("ImageBitmap")
+    is ImageVector -> unsupportedData("ImageVector")
+    is Painter -> unsupportedData("Painter")
+    else -> data
+}
+
+private fun unsupportedData(name: String): Nothing {
+    val message = "Unsupported type: $name. " +
+        "If you wish to display this ImageVector, use androidx.compose.foundation.Image."
+    throw IllegalArgumentException(message)
 }

@@ -24,6 +24,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntSize
 import coil.decode.DataSource
+import coil.request.ImageRequest
+import coil.transition.CrossfadeTransition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -42,11 +44,9 @@ import kotlin.math.roundToInt
  *
  * Ideally this interface would be a functional interface, but Kotlin doesn't currently support
  * suspending functional interfaces.
- *
- * @param R The data or input parameter type.
  */
 @Stable
-fun interface Loader<R> {
+internal fun interface Loader {
     /**
      * Execute the 'load' with the given parameters.
      *
@@ -54,45 +54,17 @@ fun interface Loader<R> {
      * @param size The size of the canvas, which allows loaders to load an optimally sized result.
      * @return The resulting [ImageLoadState].
      */
-    fun load(request: R, size: IntSize): Flow<ImageLoadState>
+    fun load(request: ImageRequest, size: IntSize): Flow<ImageLoadState>
 }
 
-/**
- * Object which holds default values for [rememberLoadPainter].
- */
-object LoadPainterDefaults {
-    /**
-     * Default duration in milliseconds for the fade-in animation.
-     */
-    const val FadeInTransitionDuration: Int = 1000
-}
-
-/**
- * A generic image loading painter, which provides the [Loader] interface for image loading
- * libraries to implement. Apps shouldn't generally use this function, instead preferring one
- * of the extension libraries which build upon this, such as the Coil and Glide libraries.
- *
- * @param loader The [Loader] to use to fetch [request].
- * @param request Updated value for [LoadPainter.request].
- * @param shouldRefetchOnSizeChange Updated value for [LoadPainter.shouldRefetchOnSizeChange].
- * @param fadeIn Whether to run a fade-in animation when images are successfully loaded.
- * Default: `false`.
- * @param fadeInDurationMs Duration for the fade animation in milliseconds when [fadeIn] is enabled.
- * @param previewPlaceholder Drawable resource ID which will be displayed when this function is
- * ran in preview mode.
- */
 @Composable
-fun <R> rememberLoadPainter(
-    loader: Loader<R>,
-    request: R?,
+internal fun rememberLoadPainter(
+    loader: Loader,
+    request: ImageRequest,
     shouldRefetchOnSizeChange: ShouldRefetchOnSizeChange,
-    fadeIn: Boolean = false,
-    fadeInDurationMs: Int = LoadPainterDefaults.FadeInTransitionDuration,
-    @DrawableRes previewPlaceholder: Int = 0,
-): LoadPainter<R> {
-    val coroutineScope = rememberCoroutineScope()
-
+): LoadPainter {
     // Our LoadPainter. This invokes the loader as appropriate to display the result.
+    val coroutineScope = rememberCoroutineScope()
     val painter = remember(loader, coroutineScope) {
         LoadPainter(loader, coroutineScope)
     }
@@ -104,11 +76,12 @@ fun <R> rememberLoadPainter(
     animateFadeInColorFilter(
         painter = painter,
         enabled = { result ->
-            // We run the fade in animation if the result is loaded from disk/network.
-            // This allows us to approximate only running the animation on 'first load'
-            fadeIn && result is ImageLoadState.Success && result.source != DataSource.MEMORY
+            // We run the fade in animation if the result is not loaded from the memory cache.
+            request.transition is CrossfadeTransition &&
+                result is ImageLoadState.Success &&
+                result.source != DataSource.MEMORY_CACHE
         },
-        durationMs = fadeInDurationMs,
+        durationMillis = (request.transition as? CrossfadeTransition)?.durationMillis ?: 0,
     )
 
     // Our result painter, created from the ImageState with some composition lifecycle
@@ -138,10 +111,11 @@ fun interface ShouldRefetchOnSizeChange {
  *
  * Instances can be created and remembered via the [rememberLoadPainter] function.
  */
-class LoadPainter<R> internal constructor(
-    private val loader: Loader<R>,
+class LoadPainter internal constructor(
+    private val loader: Loader,
     private val coroutineScope: CoroutineScope,
 ) : Painter(), RememberObserver {
+
     private val paint by lazy(LazyThreadSafetyMode.NONE) { Paint() }
 
     internal var painter by mutableStateOf<Painter>(EmptyPainter)
@@ -153,18 +127,21 @@ class LoadPainter<R> internal constructor(
     /**
      * The current request object.
      */
-    var request by mutableStateOf<R?>(null)
+    var request by mutableStateOf<ImageRequest?>(null)
+        internal set
 
     /**
      * The root view size.
      */
-    internal var rootViewSize by mutableStateOf(IntSize(0, 0))
+    var rootViewSize by mutableStateOf(IntSize(0, 0))
+        internal set
 
     /**
      * Lambda which will be invoked when the size changes, allowing
      * optional re-fetching of the image.
      */
     var shouldRefetchOnSizeChange by mutableStateOf(ShouldRefetchOnSizeChange { _, _ -> false })
+        internal set
 
     /**
      * The current [ImageLoadState].
@@ -274,7 +251,7 @@ class LoadPainter<R> internal constructor(
      * The function which executes the requests, and update [loadState] as appropriate with the
      * result.
      */
-    private suspend fun execute(request: R?, size: IntSize?) {
+    private suspend fun execute(request: ImageRequest?, size: IntSize?) {
         if (request == null || size == null) {
             // If we don't have a request, set our state to Empty and return
             loadState = ImageLoadState.Empty
@@ -339,8 +316,8 @@ class LoadPainter<R> internal constructor(
  */
 @SuppressLint("ComposableNaming")
 @Composable
-private fun <R> updatePainter(
-    loadPainter: LoadPainter<R>,
+private fun updatePainter(
+    loadPainter: LoadPainter,
     @DrawableRes previewPlaceholder: Int = 0,
 ) {
     loadPainter.painter = if (LocalInspectionMode.current && previewPlaceholder != 0) {
@@ -356,15 +333,15 @@ private fun <R> updatePainter(
 
 @SuppressLint("ComposableNaming")
 @Composable
-private fun <R> animateFadeInColorFilter(
-    painter: LoadPainter<R>,
+private fun animateFadeInColorFilter(
+    painter: LoadPainter,
     enabled: (ImageLoadState) -> Boolean,
-    durationMs: Int,
+    durationMillis: Int,
 ) {
     val state = painter.loadState
     painter.transitionColorFilter = if (enabled(state)) {
         val colorMatrix = remember { ColorMatrix() }
-        val fadeInTransition = updateFadeInTransition(state, durationMs)
+        val fadeInTransition = updateFadeInTransition(state, durationMillis)
 
         if (!fadeInTransition.isFinished) {
             colorMatrix.apply {
@@ -373,13 +350,9 @@ private fun <R> animateFadeInColorFilter(
                 updateSaturation(fadeInTransition.saturation)
             }.let { ColorFilter.colorMatrix(it) }
         } else {
-            // If the fade-in isn't running, reset the color matrix
-            null
+            null // If the fade-in isn't running, reset the color matrix
         }
-    } else null // If the fade in is not enabled, we don't use a fade in transition
-}
-
-internal object EmptyPainter : Painter() {
-    override val intrinsicSize: Size get() = Size.Unspecified
-    override fun DrawScope.onDraw() {}
+    } else {
+        null // If the fade in is not enabled, we don't use a fade in transition
+    }
 }

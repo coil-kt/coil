@@ -27,11 +27,10 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.withSave
 import androidx.compose.ui.unit.LayoutDirection
+import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.math.roundToInt
 
-private val MAIN_HANDLER by lazy(LazyThreadSafetyMode.NONE) {
-    Handler(Looper.getMainLooper())
-}
+private val MAIN_HANDLER by lazy(NONE) { Handler(Looper.getMainLooper()) }
 
 /**
  * A [Painter] which draws an Android [Drawable] and supports [Animatable] drawables.
@@ -39,32 +38,49 @@ private val MAIN_HANDLER by lazy(LazyThreadSafetyMode.NONE) {
  *
  * Instances are usually retrieved from [rememberDrawablePainter].
  */
-class DrawablePainter(
+internal class DrawablePainter(
     private val drawable: Drawable
 ) : Painter(), RememberObserver {
 
     private var invalidateTick by mutableStateOf(0)
 
-    private val callback: Drawable.Callback by lazy {
-        object : Drawable.Callback {
-            override fun invalidateDrawable(who: Drawable) {
-                // Update the tick so that we get re-drawn.
-                invalidateTick++
-            }
+    private val callback = object : Drawable.Callback {
 
-            override fun scheduleDrawable(who: Drawable, what: Runnable, time: Long) {
-                MAIN_HANDLER.postAtTime(what, time)
-            }
+        override fun invalidateDrawable(who: Drawable) {
+            // Update the tick so that we get re-drawn.
+            invalidateTick++
+        }
 
-            override fun unscheduleDrawable(who: Drawable, what: Runnable) {
-                MAIN_HANDLER.removeCallbacks(what)
-            }
+        override fun scheduleDrawable(who: Drawable, what: Runnable, time: Long) {
+            MAIN_HANDLER.postAtTime(what, time)
+        }
+
+        override fun unscheduleDrawable(who: Drawable, what: Runnable) {
+            MAIN_HANDLER.removeCallbacks(what)
         }
     }
 
     init {
-        // Update the drawable's bounds to match the intrinsic size
+        // Update the drawable's bounds to match the intrinsic size.
         drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+    }
+
+    override val intrinsicSize: Size
+        get() = Size(
+            width = drawable.intrinsicWidth.toFloat(),
+            height = drawable.intrinsicHeight.toFloat()
+        )
+
+    override fun DrawScope.onDraw() = drawIntoCanvas { canvas ->
+        // Reading this ensures that we invalidate when invalidateDrawable() is called.
+        invalidateTick
+
+        // Update the drawable's bounds.
+        drawable.setBounds(0, 0, size.width.roundToInt(), size.height.roundToInt())
+
+        canvas.withSave {
+            drawable.draw(canvas.nativeCanvas)
+        }
     }
 
     override fun onRemembered() {
@@ -102,24 +118,14 @@ class DrawablePainter(
         }
         return false
     }
+}
 
-    override val intrinsicSize: Size
-        get() = Size(
-            width = drawable.intrinsicWidth.toFloat(),
-            height = drawable.intrinsicHeight.toFloat()
-        )
-
-    override fun DrawScope.onDraw() = drawIntoCanvas { canvas ->
-        // Reading this ensures that we invalidate when invalidateDrawable() is called.
-        invalidateTick
-
-        // Update the drawable's bounds.
-        drawable.setBounds(0, 0, size.width.roundToInt(), size.height.roundToInt())
-
-        canvas.withSave {
-            drawable.draw(canvas.nativeCanvas)
-        }
-    }
+/**
+ * A [Painter] that draws nothing and has no intrinsic size.
+ */
+internal object EmptyPainter : Painter() {
+    override val intrinsicSize: Size get() = Size.Unspecified
+    override fun DrawScope.onDraw() {}
 }
 
 /**

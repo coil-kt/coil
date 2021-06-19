@@ -48,13 +48,6 @@ sealed class ImageLoadState {
     ) : ImageLoadState()
 }
 
-/**
- * Returns true if this state represents the final state for the current request.
- */
-fun ImageLoadState.isFinalState(): Boolean {
-    return this is ImageLoadState.Success || this is ImageLoadState.Error
-}
-
 internal inline val ImageLoadState.painter: Painter?
     get() = when (this) {
         is ImageLoadState.Success -> result
