@@ -6,14 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import coil.ImageLoader
-import coil.imageLoader
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -23,16 +21,31 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
-val LocalImageLoader = staticCompositionLocalOf<ImageLoader?> { null }
+@Composable
+fun rememberImagePainter(
+    data: Any?,
+    imageLoader: ImageLoader = LocalImageLoader.current,
+    reloadOnSizeChange: (size: IntSize) -> Boolean = { false },
+    builder: ImageRequest.Builder.() -> Unit = {}
+): ImagePainter {
+    val context = LocalContext.current
+    val request = remember(context, data, builder) {
+        ImageRequest.Builder(context)
+            .data(data)
+            .apply(builder)
+            .build()
+    }
+    return rememberImagePainter(request, imageLoader, reloadOnSizeChange)
+}
 
 @Composable
 fun rememberImagePainter(
     request: ImageRequest,
-    imageLoader: ImageLoader = LocalImageLoader.current ?: LocalContext.current.imageLoader,
+    imageLoader: ImageLoader = LocalImageLoader.current,
+    reloadOnSizeChange: (size: IntSize) -> Boolean = { false },
 ): ImagePainter {
     checkData(request.data)
 
-    val context = LocalContext.current
     val coilLoader = remember {
         CoilLoader(context, imageLoader, requestBuilder)
     }.apply {
