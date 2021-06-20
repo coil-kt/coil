@@ -8,11 +8,9 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -30,22 +28,31 @@ import androidx.compose.ui.unit.LayoutDirection
 import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.math.roundToInt
 
-private val MAIN_HANDLER by lazy(NONE) { Handler(Looper.getMainLooper()) }
+/**
+ * Convert this [Drawable] into a [Painter] using Compose primitives if possible.
+ */
+internal fun Drawable.toPainter(): Painter {
+    return when (this) {
+        is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap())
+        is ColorDrawable -> ColorPainter(Color(color))
+        // Since the DrawablePainter will be remembered and it implements RememberObserver, it
+        // will receive the necessary events.
+        else -> DrawablePainter(mutate())
+    }
+}
 
 /**
  * A [Painter] which draws an Android [Drawable] and supports [Animatable] drawables.
- * Instances should be remembered to be able to start and stop [Animatable] animations.
  *
- * Instances are usually retrieved from [rememberDrawablePainter].
+ * Instances should be remembered to be able to start and stop [Animatable] animations.
  */
-internal class DrawablePainter(
+private class DrawablePainter(
     private val drawable: Drawable
 ) : Painter(), RememberObserver {
 
     private var invalidateTick by mutableStateOf(0)
 
     private val callback = object : Drawable.Callback {
-
         override fun invalidateDrawable(who: Drawable) {
             // Update the tick so that we get re-drawn.
             invalidateTick++
@@ -89,13 +96,13 @@ internal class DrawablePainter(
         if (drawable is Animatable) drawable.start()
     }
 
-    override fun onAbandoned() = onForgotten()
-
     override fun onForgotten() {
         if (drawable is Animatable) drawable.stop()
         drawable.setVisible(false, false)
         drawable.callback = null
     }
+
+    override fun onAbandoned() = onForgotten()
 
     override fun applyAlpha(alpha: Float): Boolean {
         drawable.alpha = (alpha * 255).roundToInt().coerceIn(0, 255)
@@ -120,31 +127,4 @@ internal class DrawablePainter(
     }
 }
 
-/**
- * A [Painter] that draws nothing and has no intrinsic size.
- */
-internal object EmptyPainter : Painter() {
-    override val intrinsicSize: Size get() = Size.Unspecified
-    override fun DrawScope.onDraw() {}
-}
-
-/**
- * Remembers [Drawable] wrapped up as a [Painter]. This function attempts to un-wrap the
- * drawable contents and use Compose primitives where possible.
- *
- * If the provided [drawable] is `null`, an empty no-op painter is returned.
- *
- * This function tries to dispatch lifecycle events to [drawable] as much as possible from
- * within Compose.
- */
-@Composable
-internal fun rememberDrawablePainter(drawable: Drawable?): Painter = remember(drawable) {
-    when (drawable) {
-        null -> EmptyPainter
-        is BitmapDrawable -> BitmapPainter(drawable.bitmap.asImageBitmap())
-        is ColorDrawable -> ColorPainter(Color(drawable.color))
-        // Since the DrawablePainter will be remembered and it implements RememberObserver, it
-        // will receive the necessary events.
-        else -> DrawablePainter(drawable.mutate())
-    }
-}
+private val MAIN_HANDLER by lazy(NONE) { Handler(Looper.getMainLooper()) }

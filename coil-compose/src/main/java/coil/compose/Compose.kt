@@ -29,9 +29,7 @@ val LocalImageLoader = staticCompositionLocalOf<ImageLoader?> { null }
 fun rememberImagePainter(
     request: ImageRequest,
     imageLoader: ImageLoader = LocalImageLoader.current ?: LocalContext.current.imageLoader,
-    shouldRefetchOnSizeChange: ShouldRefetchOnSizeChange = ShouldRefetchOnSizeChange { _, _ -> false },
-    requestBuilder: (ImageRequest.Builder.(size: IntSize) -> ImageRequest.Builder)? = null,
-): LoadPainter {
+): ImagePainter {
     checkData(request.data)
 
     val context = LocalContext.current
@@ -54,6 +52,7 @@ internal class CoilLoader(
     imageLoader: ImageLoader,
     requestBuilder: (ImageRequest.Builder.(size: IntSize) -> ImageRequest.Builder)?,
 ) : Loader {
+
     var context by mutableStateOf(context)
     var imageLoader by mutableStateOf(imageLoader)
     var requestBuilder by mutableStateOf(requestBuilder)
@@ -114,14 +113,14 @@ internal class CoilLoader(
 private fun ImageResult.toResult(request: Any): ImageLoadState = when (this) {
     is SuccessResult -> {
         ImageLoadState.Success(
-            result = DrawablePainter(drawable),
+            result = drawable.toPainter(),
             request = request,
             source = metadata.dataSource
         )
     }
     is ErrorResult -> {
         ImageLoadState.Error(
-            result = drawable?.let(::DrawablePainter),
+            result = drawable?.toPainter(),
             request = request,
             throwable = throwable
         )
@@ -136,7 +135,7 @@ private fun checkData(data: Any?) = when (data) {
 }
 
 private fun unsupportedData(name: String): Nothing {
-    val message = "Unsupported type: $name. " +
-        "If you wish to display this ImageVector, use androidx.compose.foundation.Image."
-    throw IllegalArgumentException(message)
+    throw IllegalArgumentException(
+        "Unsupported type: $name. If you wish to display this $name, use androidx.compose.foundation.Image."
+    )
 }

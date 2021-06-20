@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.withSaveLayer
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -57,17 +58,28 @@ internal fun interface Loader {
     fun load(request: ImageRequest, size: IntSize): Flow<ImageLoadState>
 }
 
+/**
+ * Interface that allows apps to control whether a request is re-run once the size changes.
+ */
+fun interface ShouldRefetchOnSizeChange {
+    /**
+     * Return `true` if the request should be re-run if the [size] has changed.
+     *
+     * @param currentState The current request state.
+     * @param size The new size.
+     */
+    operator fun invoke(currentState: ImageLoadState, size: IntSize): Boolean
+}
+
 @Composable
 internal fun rememberLoadPainter(
     loader: Loader,
     request: ImageRequest,
     shouldRefetchOnSizeChange: ShouldRefetchOnSizeChange,
-): LoadPainter {
+): ImagePainter {
     // Our LoadPainter. This invokes the loader as appropriate to display the result.
-    val coroutineScope = rememberCoroutineScope()
-    val painter = remember(loader, coroutineScope) {
-        LoadPainter(loader, coroutineScope)
-    }
+    val scope = rememberCoroutineScope()
+    val painter = remember(loader, scope) { ImagePainter(loader, scope) }
     painter.request = request
     painter.shouldRefetchOnSizeChange = shouldRefetchOnSizeChange
     painter.rootViewSize = LocalView.current.let { IntSize(it.width, it.height) }
@@ -92,36 +104,21 @@ internal fun rememberLoadPainter(
 }
 
 /**
- * Interface that allows apps to control whether a request is re-run once the size changes.
- */
-fun interface ShouldRefetchOnSizeChange {
-    /**
-     * Return `true` if the request should be re-run if the [size] has changed.
-     *
-     * @param currentState The current request state.
-     * @param size The new size.
-     */
-    operator fun invoke(currentState: ImageLoadState, size: IntSize): Boolean
-}
-
-/**
  * A generic image loading painter, which provides the [Loader] interface for image loading
  * libraries to implement. Apps shouldn't generally use this function, instead preferring one
  * of the extension libraries which build upon this, such as the Coil and Glide libraries.
  *
  * Instances can be created and remembered via the [rememberLoadPainter] function.
  */
-class LoadPainter internal constructor(
+class ImagePainter internal constructor(
     private val loader: Loader,
     private val coroutineScope: CoroutineScope,
 ) : Painter(), RememberObserver {
 
-    private val paint by lazy(LazyThreadSafetyMode.NONE) { Paint() }
+    private val paint = Paint()
 
     internal var painter by mutableStateOf<Painter>(EmptyPainter)
     internal var transitionColorFilter by mutableStateOf<ColorFilter?>(null)
-
-    // CoroutineScope for the current request
     private var requestCoroutineScope: CoroutineScope? = null
 
     /**
@@ -149,16 +146,15 @@ class LoadPainter internal constructor(
     var loadState: ImageLoadState by mutableStateOf(ImageLoadState.Empty)
         private set
 
-    private var alpha: Float by mutableStateOf(1f)
-    private var colorFilter: ColorFilter? by mutableStateOf(null)
-
     /**
      * Our size to use when performing the image load request.
      */
     private var requestSize by mutableStateOf<IntSize?>(null)
 
-    override val intrinsicSize: Size
-        get() = painter.intrinsicSize
+    private var alpha: Float by mutableStateOf(1f)
+    private var colorFilter: ColorFilter? by mutableStateOf(null)
+
+    override val intrinsicSize get() = painter.intrinsicSize
 
     override fun applyAlpha(alpha: Float): Boolean {
         this.alpha = alpha
@@ -174,18 +170,19 @@ class LoadPainter internal constructor(
         // Update the request size, based on the provided canvas size
         updateRequestSize(canvasSize = size)
 
+        val colorFilter = colorFilter
         val transitionColorFilter = transitionColorFilter
         if (colorFilter != null && transitionColorFilter != null) {
             // If we have a transition color filter, and a specified color filter we need to
             // draw the content in a layer for both to apply.
-            // See https://github.com/google/accompanist/issues/262
+            // https://github.com/google/accompanist/issues/262
             drawIntoCanvas { canvas ->
                 paint.colorFilter = transitionColorFilter
-                canvas.saveLayer(bounds = size.toRect(), paint = paint)
-                with(painter) {
-                    draw(size, alpha, colorFilter)
+                canvas.withSaveLayer(bounds = size.toRect(), paint = paint) {
+                    with(painter) {
+                        draw(size, alpha, colorFilter)
+                    }
                 }
-                canvas.restore()
             }
         } else {
             // Otherwise we just draw the content directly, using the filter
@@ -294,14 +291,14 @@ class LoadPainter internal constructor(
             width = when {
                 // If we have a canvas width, use it...
                 canvasSize.width >= 0.5f -> canvasSize.width.roundToInt()
-                // Otherwise we fall-back to the root view size as an upper bound
+                // Otherwise we fall-back to the root view size as an upper bound.
                 rootViewSize.width > 0 -> rootViewSize.width
                 else -> -1
             },
             height = when {
                 // If we have a canvas height, use it...
                 canvasSize.height >= 0.5f -> canvasSize.height.roundToInt()
-                // Otherwise we fall-back to the root view size as an upper bound
+                // Otherwise we fall-back to the root view size as an upper bound.
                 rootViewSize.height > 0 -> rootViewSize.height
                 else -> -1
             },
@@ -317,24 +314,24 @@ class LoadPainter internal constructor(
 @SuppressLint("ComposableNaming")
 @Composable
 private fun updatePainter(
-    loadPainter: LoadPainter,
+    imagePainter: ImagePainter,
     @DrawableRes previewPlaceholder: Int = 0,
 ) {
-    loadPainter.painter = if (LocalInspectionMode.current && previewPlaceholder != 0) {
+    imagePainter.painter = if (LocalInspectionMode.current && previewPlaceholder != 0) {
         // If we're in inspection mode (preview) and we have a preview placeholder, just draw
         // that using an Image and return
         painterResource(previewPlaceholder)
     } else {
         // This may look like a useless remember, but this allows any Painters instances
         // to receive remember events (if it implements RememberObserver). Do not remove.
-        remember(loadPainter.loadState) { loadPainter.loadState.painter } ?: EmptyPainter
+        remember(imagePainter.loadState) { imagePainter.loadState.painter } ?: EmptyPainter
     }
 }
 
 @SuppressLint("ComposableNaming")
 @Composable
 private fun animateFadeInColorFilter(
-    painter: LoadPainter,
+    painter: ImagePainter,
     enabled: (ImageLoadState) -> Boolean,
     durationMillis: Int,
 ) {
@@ -355,4 +352,10 @@ private fun animateFadeInColorFilter(
     } else {
         null // If the fade in is not enabled, we don't use a fade in transition
     }
+}
+
+/** A [Painter] that draws nothing and has no intrinsic size. */
+private object EmptyPainter : Painter() {
+    override val intrinsicSize: Size get() = Size.Unspecified
+    override fun DrawScope.onDraw() {}
 }

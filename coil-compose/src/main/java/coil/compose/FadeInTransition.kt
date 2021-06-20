@@ -12,9 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
-private const val STATE_LOADED = 0
-private const val STATE_EMPTY = 1
-
 @Composable
 internal fun updateFadeInTransition(key: Any, durationMillis: Int): FadeInTransition {
     // Create our transition state, which allow us to control the state and target states.
@@ -69,3 +66,6 @@ internal class FadeInTransition(
     val saturation by saturation
     var isFinished by mutableStateOf(false)
 }
+
+private const val STATE_LOADED = 0
+private const val STATE_EMPTY = 1

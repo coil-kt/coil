@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import coil.decode.DataSource
 
 /**
- * Represents the state of a [LoadPainter].
+ * Represents the state of a [ImagePainter].
  */
 sealed class ImageLoadState {
 
