@@ -44,13 +44,21 @@ class ImageDecoderDecoder : Decoder {
     )
     constructor() {
         this.context = null
+        this.frameDelayRewriter = FrameDelayRewriter(false)
     }
 
     constructor(context: Context) {
         this.context = context
+        this.frameDelayRewriter = FrameDelayRewriter(false)
+    }
+
+    constructor(context: Context, enforceMinimumFrameDelay: Boolean) {
+        this.context = context
+        this.frameDelayRewriter = FrameDelayRewriter(enforceMinimumFrameDelay)
     }
 
     private val context: Context?
+    private val frameDelayRewriter: FrameDelayRewriter
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) ||
@@ -68,7 +76,7 @@ class ImageDecoderDecoder : Decoder {
         val baseDrawable = withInterruptibleSource(source) { interruptibleSource ->
             var tempFile: File? = null
             try {
-                val bufferedSource = interruptibleSource.buffer()
+                val bufferedSource = frameDelayRewriter.rewriteFrameDelay(interruptibleSource.buffer())
                 val decoderSource = if (SDK_INT >= 30) {
                     // Buffer the source into memory.
                     ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
