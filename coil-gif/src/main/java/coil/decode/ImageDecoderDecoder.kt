@@ -34,31 +34,27 @@ import kotlin.math.roundToInt
  * A [Decoder] that uses [ImageDecoder] to decode GIFs, animated WebPs, and animated HEIFs.
  *
  * NOTE: Animated HEIF files are only supported on API 30 and above.
+ *
+ * @param context An Android context.
+ * @param enforceMinimumFrameDelay If true, rewrite a GIF's frame delay to a default value if
+ *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
  */
 @RequiresApi(28)
-class ImageDecoderDecoder : Decoder {
+class ImageDecoderDecoder private constructor(
+    // Reverse parameter order to avoid platform declaration clash.
+    private val enforceMinimumFrameDelay: Boolean,
+    private val context: Context?
+) : Decoder {
 
     @Deprecated(
         message = "Migrate to the constructor that accepts a Context.",
         replaceWith = ReplaceWith("ImageDecoderDecoder(context)")
     )
-    constructor() {
-        this.context = null
-        this.frameDelayRewriter = FrameDelayRewriter(false)
-    }
+    constructor() : this(false, null)
 
-    constructor(context: Context) {
-        this.context = context
-        this.frameDelayRewriter = FrameDelayRewriter(false)
-    }
+    constructor(context: Context) : this(false, context)
 
-    constructor(context: Context, enforceMinimumFrameDelay: Boolean) {
-        this.context = context
-        this.frameDelayRewriter = FrameDelayRewriter(enforceMinimumFrameDelay)
-    }
-
-    private val context: Context?
-    private val frameDelayRewriter: FrameDelayRewriter
+    constructor(context: Context, enforceMinimumFrameDelay: Boolean) : this(enforceMinimumFrameDelay, context)
 
     override fun handles(source: BufferedSource, mimeType: String?): Boolean {
         return DecodeUtils.isGif(source) ||
@@ -76,7 +72,12 @@ class ImageDecoderDecoder : Decoder {
         val baseDrawable = withInterruptibleSource(source) { interruptibleSource ->
             var tempFile: File? = null
             try {
-                val bufferedSource = frameDelayRewriter.rewriteFrameDelay(interruptibleSource.buffer())
+                val bufferedInterruptibleSource = interruptibleSource.buffer()
+                val bufferedSource = if (enforceMinimumFrameDelay && DecodeUtils.isGif(bufferedInterruptibleSource)) {
+                    FrameDelayRewritingSource(bufferedInterruptibleSource).buffer()
+                } else {
+                    bufferedInterruptibleSource
+                }
                 val decoderSource = if (SDK_INT >= 30) {
                     // Buffer the source into memory.
                     ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
