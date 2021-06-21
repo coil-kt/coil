@@ -30,7 +30,7 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
                 if (SDK_INT >= 28) {
                     add(ImageDecoderDecoder(this@Application, enforceMinimumFrameDelay = true))
                 } else {
-                    add(GifDecoder(enforceMinimumFrameDelay = false))
+                    add(GifDecoder(enforceMinimumFrameDelay = true))
                 }
 
                 // SVGs

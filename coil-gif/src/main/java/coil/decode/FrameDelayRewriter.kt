@@ -13,43 +13,38 @@ internal class FrameDelayRewriter(private val isEnabled: Boolean) {
         if (!isEnabled) return source
 
         source.use {
-            val buffer = Buffer()
-            var index = 0L
-
             // Search through the buffer and rewrite any frame delays below the threshold.
+            val buffer = Buffer()
             while (true) {
-                val frameDelayStartMarkerIndex = source.indexOf(FRAME_DELAY_START_MARKER, index)
-                if (frameDelayStartMarkerIndex == -1L) break
+                val index = source.indexOf(FRAME_DELAY_START_MARKER)
+                if (index == -1L) break
 
                 // Read up until the end of the frame delay start marker.
-                index = frameDelayStartMarkerIndex + FRAME_DELAY_START_MARKER.size
-                source.read(buffer, index - buffer.size)
+                source.read(buffer, index + FRAME_DELAY_START_MARKER.size)
 
-                // Check that the frame delay end marker is present, else this is a false positive.
-                if (!source.request(5) || source.buffer[4].toInt() != 0) continue
+                // Check for the end of the graphics control extension block.
+                if (!source.request(1)) continue
+                val size = source.buffer[0].toLong()
+                if (size < 4 || !source.request(size) || source.buffer[size - 1] != 0.toByte()) continue
 
                 // Rewrite the frame delay if it is below the threshold.
                 if (source.buffer[2].toInt() < MINIMUM_FRAME_DELAY) {
                     buffer.writeByte(source.buffer[0].toInt())
-                    buffer.writeByte(0)
+                    buffer.writeByte(source.buffer[1].toInt())
                     buffer.writeByte(DEFAULT_FRAME_DELAY)
-                    source.skip(3)
-                    index += 3
+                    buffer.writeByte(0)
+                    source.skip(4)
                 }
             }
-
-            // Write the rest of the source and return the buffer.
-            return buffer.apply { source.readAll(this) }
+            source.readAll(buffer) // Read anything left in the source.
+            return buffer
         }
     }
 
     private companion object {
-        // The Graphics Control Extension block is guaranteed to match the following hexadecimal sequence:
-        // 00 21 F9 04 XX FD FD XX 00
-        // - FD is the frame delay value
-        // - XX matches any byte value
-        // https://www.matthewflickinger.com/lab/whatsinagif/images/graphic_control_ext.gif
-        private val FRAME_DELAY_START_MARKER = "0021F904".decodeHex()
+        // https://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
+        // See: "Graphics Control Extension"
+        private val FRAME_DELAY_START_MARKER = "0021F9".decodeHex()
         private const val MINIMUM_FRAME_DELAY = 2
         private const val DEFAULT_FRAME_DELAY = 10
     }
