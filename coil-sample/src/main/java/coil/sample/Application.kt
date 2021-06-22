@@ -28,9 +28,9 @@ class Application : MultiDexApplication(), ImageLoaderFactory {
             .componentRegistry {
                 // GIFs
                 if (SDK_INT >= 28) {
-                    add(ImageDecoderDecoder(this@Application))
+                    add(ImageDecoderDecoder(this@Application, enforceMinimumFrameDelay = true))
                 } else {
-                    add(GifDecoder())
+                    add(GifDecoder(enforceMinimumFrameDelay = true))
                 }
 
                 // SVGs

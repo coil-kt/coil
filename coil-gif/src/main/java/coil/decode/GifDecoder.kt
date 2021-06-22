@@ -21,8 +21,13 @@ import okio.buffer
  * A [Decoder] that uses [Movie] to decode GIFs.
  *
  * NOTE: Prefer using [ImageDecoderDecoder] on API 28 and above.
+ *
+ * @param enforceMinimumFrameDelay If true, rewrite a GIF's frame delay to a default value if
+ *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
  */
-class GifDecoder : Decoder {
+class GifDecoder @JvmOverloads constructor(
+    private val enforceMinimumFrameDelay: Boolean = false
+) : Decoder {
 
     override fun handles(source: BufferedSource, mimeType: String?) = DecodeUtils.isGif(source)
 
@@ -32,7 +37,11 @@ class GifDecoder : Decoder {
         size: Size,
         options: Options
     ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
-        val bufferedSource = interruptibleSource.buffer()
+        val bufferedSource = if (enforceMinimumFrameDelay) {
+            FrameDelayRewritingSource(interruptibleSource).buffer()
+        } else {
+            interruptibleSource.buffer()
+        }
         val movie: Movie? = bufferedSource.use {
             if (SDK_INT >= 19) {
                 Movie.decodeStream(it.inputStream())
