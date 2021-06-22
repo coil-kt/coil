@@ -18,8 +18,8 @@ internal class FrameDelayRewritingSource(delegate: Source) : ForwardingSource(de
     private val buffer = Buffer()
 
     override fun read(sink: Buffer, byteCount: Long): Long {
-        // Read an exact number of segments to reduce array copying.
-        super.read(buffer, ((byteCount / SEGMENT_SIZE_BYTES) + 1) * SEGMENT_SIZE_BYTES)
+        // Ensure our buffer has enough bytes to satisfy this read.
+        request(byteCount)
 
         // Short circuit if there are no bytes in the buffer.
         if (buffer.size == 0L) {
@@ -33,20 +33,17 @@ internal class FrameDelayRewritingSource(delegate: Source) : ForwardingSource(de
             if (index == -1L) break
 
             // Write up until the end of the frame delay start marker.
-            bytesWritten += write(sink, index + FRAME_DELAY_START_MARKER.size)
+            bytesWritten += write(sink, index + FRAME_DELAY_START_MARKER_SIZE)
 
             // Check for the end of the graphics control extension block.
-            if (!request(1)) continue
-            val size = buffer[0].toLong()
-            if (size < 4 || !request(size) || buffer[size - 1] != 0.toByte()) continue
+            if (!request(5) || buffer[4] != 0.toByte()) continue
 
             // Rewrite the frame delay if it is below the threshold.
-            if (buffer[2].toInt() < MINIMUM_FRAME_DELAY) {
+            if (buffer[1].toInt() < MINIMUM_FRAME_DELAY) {
                 sink.writeByte(buffer[0].toInt())
-                sink.writeByte(buffer[1].toInt())
                 sink.writeByte(DEFAULT_FRAME_DELAY)
                 sink.writeByte(0)
-                buffer.skip(4)
+                buffer.skip(3)
             }
         }
 
@@ -80,9 +77,9 @@ internal class FrameDelayRewritingSource(delegate: Source) : ForwardingSource(de
     private companion object {
         // https://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
         // See: "Graphics Control Extension"
-        private val FRAME_DELAY_START_MARKER = "0021F9".decodeHex()
+        private val FRAME_DELAY_START_MARKER = "0021F904".decodeHex()
+        private const val FRAME_DELAY_START_MARKER_SIZE = 4
         private const val MINIMUM_FRAME_DELAY = 2
         private const val DEFAULT_FRAME_DELAY = 10
-        private const val SEGMENT_SIZE_BYTES = 8192
     }
 }
