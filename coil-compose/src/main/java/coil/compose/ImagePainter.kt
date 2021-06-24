@@ -189,7 +189,7 @@ class ImagePainter internal constructor(
     }
 
     private suspend fun execute(request: ImageRequest, size: IntSize) {
-        if (size == IntSize.Zero) {
+        if (request.defined.sizeResolver == null && size == IntSize.Zero) {
             state = State.Empty(request)
             return
         }
@@ -269,7 +269,7 @@ class ImagePainter internal constructor(
 }
 
 /**
- * Interface that allows apps to control whether a request is re-run once the size changes.
+ * Interface that allows apps to control whether an image request is re-run once the size changes.
  * Return `true` if the request should be re-run if the size has changed.
  */
 typealias SizeChangeCallback = (state: ImagePainter.State, size: IntSize) -> Boolean
