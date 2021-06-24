@@ -50,7 +50,7 @@ jobs:
 
     instrumentation-tests:
         name: Instrumentation tests
-        runs-on: macOS-latest
+        runs-on: macOS-11 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
         timeout-minutes: 60
         strategy:
             fail-fast: true
