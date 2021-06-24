@@ -7,7 +7,7 @@ import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.core.net.toUri
 
-internal class ResourceIntMapper(private val context: Context) : Mapper<@DrawableRes Int, Uri> {
+internal class ResourceIntMapper(private val context: Context) : Mapper<Int, Uri> {
 
     override fun handles(@DrawableRes data: Int) = try {
         context.resources.getResourceEntryName(data) != null
