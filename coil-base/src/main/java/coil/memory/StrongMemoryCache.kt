@@ -124,7 +124,7 @@ private class RealStrongMemoryCache(
     override val maxSize get() = cache.maxSize()
 
     @Synchronized
-    override fun get(key: Key) = cache.get(key)
+    override fun get(key: Key): Value? = cache.get(key)
 
     @Synchronized
     override fun set(key: Key, bitmap: Bitmap, isSampled: Boolean) {
