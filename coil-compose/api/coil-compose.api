@@ -1,0 +1,101 @@
+public final class coil/compose/ImageLoaderProvidableCompositionLocal {
+	public static final synthetic fun box-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)Lcoil/compose/ImageLoaderProvidableCompositionLocal;
+	public static synthetic fun constructor-impl$default (Landroidx/compose/runtime/ProvidableCompositionLocal;ILkotlin/jvm/internal/DefaultConstructorMarker;)Landroidx/compose/runtime/ProvidableCompositionLocal;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Landroidx/compose/runtime/ProvidableCompositionLocal;Landroidx/compose/runtime/ProvidableCompositionLocal;)Z
+	public static final fun getCurrent (Landroidx/compose/runtime/ProvidableCompositionLocal;Landroidx/compose/runtime/Composer;I)Lcoil/ImageLoader;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)I
+	public static final fun provides-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;Lcoil/ImageLoader;)Landroidx/compose/runtime/ProvidedValue;
+	public static final fun providesDefault-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;Lcoil/ImageLoader;)Landroidx/compose/runtime/ProvidedValue;
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class coil/compose/ImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
+	public static final field $stable I
+	public final fun getImageLoader ()Lcoil/ImageLoader;
+	public fun getIntrinsicSize-NH-jbRc ()J
+	public final fun getRequest ()Lcoil/request/ImageRequest;
+	public final fun getState ()Lcoil/compose/ImagePainter$State;
+	public fun onAbandoned ()V
+	public fun onForgotten ()V
+	public fun onRemembered ()V
+}
+
+public abstract class coil/compose/ImagePainter$State {
+	public static final field $stable I
+	public abstract fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public abstract fun getRequest ()Lcoil/request/ImageRequest;
+}
+
+public final class coil/compose/ImagePainter$State$Empty : coil/compose/ImagePainter$State {
+	public static final field $stable I
+	public fun <init> (Lcoil/request/ImageRequest;)V
+	public final fun component1 ()Lcoil/request/ImageRequest;
+	public final fun copy (Lcoil/request/ImageRequest;)Lcoil/compose/ImagePainter$State$Empty;
+	public static synthetic fun copy$default (Lcoil/compose/ImagePainter$State$Empty;Lcoil/request/ImageRequest;ILjava/lang/Object;)Lcoil/compose/ImagePainter$State$Empty;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public fun getRequest ()Lcoil/request/ImageRequest;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/compose/ImagePainter$State$Error : coil/compose/ImagePainter$State {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)V
+	public final fun component1 ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun component2 ()Lcoil/request/ImageRequest;
+	public final fun component3 ()Ljava/lang/Throwable;
+	public final fun copy (Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;Ljava/lang/Throwable;)Lcoil/compose/ImagePainter$State$Error;
+	public static synthetic fun copy$default (Lcoil/compose/ImagePainter$State$Error;Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;Ljava/lang/Throwable;ILjava/lang/Object;)Lcoil/compose/ImagePainter$State$Error;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public fun getRequest ()Lcoil/request/ImageRequest;
+	public final fun getThrowable ()Ljava/lang/Throwable;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/compose/ImagePainter$State$Loading : coil/compose/ImagePainter$State {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;)V
+	public final fun component1 ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun component2 ()Lcoil/request/ImageRequest;
+	public final fun copy (Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;)Lcoil/compose/ImagePainter$State$Loading;
+	public static synthetic fun copy$default (Lcoil/compose/ImagePainter$State$Loading;Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;ILjava/lang/Object;)Lcoil/compose/ImagePainter$State$Loading;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public fun getRequest ()Lcoil/request/ImageRequest;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/compose/ImagePainter$State$Success : coil/compose/ImagePainter$State {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)V
+	public final fun component1 ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun component2 ()Lcoil/request/ImageRequest;
+	public final fun component3 ()Lcoil/request/ImageResult$Metadata;
+	public final fun copy (Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;)Lcoil/compose/ImagePainter$State$Success;
+	public static synthetic fun copy$default (Lcoil/compose/ImagePainter$State$Success;Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ImageRequest;Lcoil/request/ImageResult$Metadata;ILjava/lang/Object;)Lcoil/compose/ImagePainter$State$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMetadata ()Lcoil/request/ImageResult$Metadata;
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public fun getRequest ()Lcoil/request/ImageRequest;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/compose/ImagePainterKt {
+	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;ILkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
+}
+
+public final class coil/compose/LocalImageLoaderKt {
+	public static final fun getLocalImageLoader ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+

@@ -77,8 +77,8 @@ fun rememberImagePainter(
     painter.rootViewSize = LocalView.current.run { IntSize(width, height) }
     painter.onSizeChange = onSizeChange
 
-    animateFadeInTransition(painter, fadeInMillis)
     updatePainter(painter, request)
+    animateFadeInTransition(painter, fadeInMillis)
 
     return painter
 }
@@ -307,27 +307,27 @@ private fun updatePainter(painter: ImagePainter, request: ImageRequest) {
 
 @Composable
 private fun animateFadeInTransition(painter: ImagePainter, durationMillis: Int) {
+    // Short circuit if the fade in is not enabled.
     if (durationMillis <= 0) {
         painter.transitionColorFilter = null
         return
     }
 
-    // If the fade in is not enabled, we don't use a fade in transition.
+    // Short circuit if the result is not successful or is from the memory cache.
     val state = painter.state
     if (state !is ImagePainter.State.Success || state.metadata.dataSource == DataSource.MEMORY_CACHE) {
         painter.transitionColorFilter = null
         return
     }
 
-    val colorMatrix = remember { ColorMatrix() }
+    // Short circuit if the fade-in isn't running.
     val fadeInTransition = updateFadeInTransition(state, durationMillis)
-
-    // If the fade-in isn't running, reset the color matrix.
     if (fadeInTransition.isFinished) {
         painter.transitionColorFilter = null
         return
     }
 
+    val colorMatrix = remember { ColorMatrix() }
     colorMatrix.apply {
         updateAlpha(fadeInTransition.alpha)
         updateBrightness(fadeInTransition.brightness)
