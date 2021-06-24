@@ -35,8 +35,6 @@ internal fun Drawable.toPainter(): Painter {
     return when (this) {
         is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap())
         is ColorDrawable -> ColorPainter(Color(color))
-        // Since the DrawablePainter will be remembered and it implements RememberObserver, it
-        // will receive the necessary events.
         else -> DrawablePainter(mutate())
     }
 }

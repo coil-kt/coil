@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package coil.compose
 
 import androidx.compose.runtime.Composable
@@ -9,20 +11,15 @@ import coil.imageLoader
 
 val LocalImageLoader = ImageLoaderProvidableCompositionLocal()
 
-@Suppress("CompositionLocalNaming", "NOTHING_TO_INLINE", "unused")
 @JvmInline
 value class ImageLoaderProvidableCompositionLocal internal constructor(
-    @PublishedApi internal val delegate: ProvidableCompositionLocal<ImageLoader?> = staticCompositionLocalOf { null }
+    private val delegate: ProvidableCompositionLocal<ImageLoader?> = staticCompositionLocalOf { null }
 ) {
 
-    inline val current: ImageLoader
+    val current: ImageLoader
         @Composable get() = delegate.current ?: LocalContext.current.imageLoader
 
-    inline infix fun provides(value: ImageLoader) = delegate provides value
+    infix fun provides(value: ImageLoader) = delegate provides value
 
-    inline infix fun providesDefault(value: ImageLoader) = delegate providesDefault value
-
-    inline fun clear() {
-        delegate provides null
-    }
+    infix fun providesDefault(value: ImageLoader) = delegate providesDefault value
 }
