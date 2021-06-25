@@ -50,7 +50,7 @@ jobs:
 
     instrumentation-tests:
         name: Instrumentation tests
-        runs-on: macOS-10.15
+        runs-on: macOS-latest
         timeout-minutes: 60
         strategy:
             fail-fast: true
@@ -75,8 +75,8 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
-                  arch: x86_64
-                  emulator-build: 6110076 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
+                  arch: x86
+                  emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
                   script: ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
