@@ -76,6 +76,7 @@ jobs:
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: x86
+                  emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
                   script: ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
