@@ -75,7 +75,7 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
-                  arch: x86
+                  arch: x86_64
                   emulator-build: 6110076 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
                   script: ./gradlew connectedDebugAndroidTest
 
