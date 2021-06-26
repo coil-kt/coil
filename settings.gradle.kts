@@ -1,9 +1,10 @@
 // Public modules
 include(
     "coil-base",
-    "coil-gif",
-    "coil-compose",
     "coil-singleton",
+    "coil-compose-base",
+    "coil-compose-singleton",
+    "coil-gif",
     "coil-svg",
     "coil-video",
 )

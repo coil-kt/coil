@@ -1,19 +1,3 @@
-public final class coil/compose/ImageLoaderProvidableCompositionLocal {
-	public static final synthetic fun box-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)Lcoil/compose/ImageLoaderProvidableCompositionLocal;
-	public static synthetic fun constructor-impl$default (Landroidx/compose/runtime/ProvidableCompositionLocal;ILkotlin/jvm/internal/DefaultConstructorMarker;)Landroidx/compose/runtime/ProvidableCompositionLocal;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Landroidx/compose/runtime/ProvidableCompositionLocal;Landroidx/compose/runtime/ProvidableCompositionLocal;)Z
-	public static final fun getCurrent (Landroidx/compose/runtime/ProvidableCompositionLocal;Landroidx/compose/runtime/Composer;I)Lcoil/ImageLoader;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)I
-	public static final fun provides-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;Lcoil/ImageLoader;)Landroidx/compose/runtime/ProvidedValue;
-	public static final fun providesDefault-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;Lcoil/ImageLoader;)Landroidx/compose/runtime/ProvidedValue;
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Landroidx/compose/runtime/ProvidableCompositionLocal;
-}
-
 public final class coil/compose/ImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
 	public static final field $stable I
 	public final fun getImageLoader ()Lcoil/ImageLoader;
@@ -93,9 +77,5 @@ public final class coil/compose/ImagePainter$State$Success : coil/compose/ImageP
 public final class coil/compose/ImagePainterKt {
 	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;ILkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
-}
-
-public final class coil/compose/LocalImageLoaderKt {
-	public static final fun getLocalImageLoader ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 

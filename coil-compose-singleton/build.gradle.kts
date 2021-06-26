@@ -25,9 +25,11 @@ setupLibraryModule {
 
 dependencies {
     api(project(":coil-singleton"))
+    api(project(":coil-compose-base"))
 
     implementation(Library.ANDROIDX_CORE)
-    implementation(Library.COMPOSE_FOUNDATION)
+
+    api(Library.COMPOSE_FOUNDATION)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)

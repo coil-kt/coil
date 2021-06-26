@@ -54,6 +54,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
             if (project.name != "coil-test") {
                 arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
                 arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
+                arguments.addAll(listOf("-P", "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"))
             }
             freeCompilerArgs = arguments
         }

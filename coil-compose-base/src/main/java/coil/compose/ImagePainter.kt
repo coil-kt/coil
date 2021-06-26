@@ -1,7 +1,6 @@
-@file:Suppress("ComposableNaming", "unused")
-
 package coil.compose
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.getValue
@@ -41,10 +40,21 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+/**
+ * Return an [ImagePainter] that will execute an [ImageRequest] using [imageLoader].
+ *
+ * @param data The [ImageRequest.data] to execute.
+ * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param onSizeChange Called if the canvas' size changes.
+ *  It can be used to control whether to restart the request when the size changes.
+ * @param fadeInMillis The duration of the fade in animation to run when the request
+ *  completes successfully. Setting this to 0 disables the animation.
+ * @param builder An optional lambda to configure the request.
+ */
 @Composable
 fun rememberImagePainter(
     data: Any?,
-    imageLoader: ImageLoader = LocalImageLoader.current,
+    imageLoader: ImageLoader,
     onSizeChange: SizeChangeCallback = { _, _ -> false },
     fadeInMillis: Int = 0,
     builder: ImageRequest.Builder.() -> Unit = {},
@@ -59,10 +69,20 @@ fun rememberImagePainter(
     return rememberImagePainter(request, imageLoader, onSizeChange, fadeInMillis)
 }
 
+/**
+ * Return an [ImagePainter] that will execute the [request] using [imageLoader].
+ *
+ * @param request The [ImageRequest] to execute.
+ * @param imageLoader The [ImageLoader] that will be used to execute [request].
+ * @param onSizeChange Called if the canvas' size changes.
+ *  It can be used to control whether to restart the request when the size changes.
+ * @param fadeInMillis The duration of the fade in animation to run when the request
+ *  completes successfully. Setting this to 0 disables the animation.
+ */
 @Composable
 fun rememberImagePainter(
     request: ImageRequest,
-    imageLoader: ImageLoader = LocalImageLoader.current,
+    imageLoader: ImageLoader,
     onSizeChange: SizeChangeCallback = { _, _ -> false },
     fadeInMillis: Int = 0,
 ): ImagePainter {
@@ -78,7 +98,7 @@ fun rememberImagePainter(
     painter.onSizeChange = onSizeChange
 
     updatePainter(painter, request)
-    animateFadeInTransition(painter, fadeInMillis)
+    updateFadeInTransition(painter, fadeInMillis)
 
     return painter
 }
@@ -238,28 +258,36 @@ class ImagePainter internal constructor(
         }
     }
 
+    /** The current state of the [ImageRequest] */
     sealed class State {
 
+        /** The current painter being drawn by [ImagePainter]. */
         abstract val painter: Painter?
+
+        /** */
         abstract val request: ImageRequest
 
+        /** The request has not been started. */
         data class Empty(
             override val request: ImageRequest
         ) : State() {
             override val painter: Painter? get() = null
         }
 
+        /** The request is in-progress. */
         data class Loading(
             override val painter: Painter?,
             override val request: ImageRequest
         ) : State()
 
+        /** The request was successful. */
         data class Success(
             override val painter: Painter,
             override val request: ImageRequest,
             val metadata: ImageResult.Metadata
         ) : State()
 
+        /** The request failed due to [throwable]. */
         data class Error(
             override val painter: Painter?,
             override val request: ImageRequest,
@@ -274,39 +302,31 @@ class ImagePainter internal constructor(
  */
 typealias SizeChangeCallback = (state: ImagePainter.State, size: IntSize) -> Boolean
 
-private fun requireSupportedData(data: Any?) = when (data) {
-    is ImageBitmap -> unsupportedData("ImageBitmap")
-    is ImageVector -> unsupportedData("ImageVector")
-    is Painter -> unsupportedData("Painter")
-    else -> data
-}
-
-private fun unsupportedData(name: String): Nothing {
-    throw IllegalArgumentException(
-        "Unsupported type: $name. If you wish to display this $name, use androidx.compose.foundation.Image."
-    )
-}
-
 /**
- * Allows us observe the current result [Painter] as state. This function allows us to
- * minimize the amount of composition needed such that this function only needs to be restarted
- * when the `ImagePainter.state` changes.
+ * Allows us to observe the current [ImagePainter.painter]. This function allows us to
+ * minimize the amount of recomposition needed such that this function only needs to be restarted
+ * when the [ImagePainter.state] changes.
  */
+@SuppressLint("ComposableNaming")
 @Composable
 private fun updatePainter(painter: ImagePainter, request: ImageRequest) {
     painter.painter = if (LocalInspectionMode.current) {
         // If we're in inspection mode (preview) and we have a placeholder, just draw
         // that without executing an image request.
-        request.placeholder?.toPainter() ?: EmptyPainter
+        request.placeholder?.toPainter()
     } else {
         // This may look like a useless remember, but this allows any Painter instances
         // to receive remember events (if it implements RememberObserver). Do not remove.
-        remember(painter.state) { painter.state.painter } ?: EmptyPainter
-    }
+        remember(painter.state) { painter.state.painter }
+    } ?: EmptyPainter
 }
 
+/**
+ *
+ */
+@SuppressLint("ComposableNaming")
 @Composable
-private fun animateFadeInTransition(painter: ImagePainter, durationMillis: Int) {
+private fun updateFadeInTransition(painter: ImagePainter, durationMillis: Int) {
     // Short circuit if the fade in is not enabled.
     if (durationMillis <= 0) {
         painter.transitionColorFilter = null
@@ -334,6 +354,19 @@ private fun animateFadeInTransition(painter: ImagePainter, durationMillis: Int) 
         updateSaturation(fadeInTransition.saturation)
     }
     painter.transitionColorFilter = ColorFilter.colorMatrix(colorMatrix)
+}
+
+private fun requireSupportedData(data: Any?) = when (data) {
+    is ImageBitmap -> unsupportedData("ImageBitmap")
+    is ImageVector -> unsupportedData("ImageVector")
+    is Painter -> unsupportedData("Painter")
+    else -> data
+}
+
+private fun unsupportedData(name: String): Nothing {
+    throw IllegalArgumentException(
+        "Unsupported type: $name. If you wish to display this $name, use androidx.compose.foundation.Image."
+    )
 }
 
 /** A [Painter] that draws nothing and has no intrinsic size. */
