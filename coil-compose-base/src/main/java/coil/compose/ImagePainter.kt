@@ -239,32 +239,11 @@ class ImagePainter internal constructor(
         state = imageLoader.execute(newRequest).toState(request)
     }
 
-    private fun ImageResult.toState(request: ImageRequest): State {
-        return when (this) {
-            is SuccessResult -> {
-                State.Success(
-                    painter = drawable.toPainter(),
-                    request = request,
-                    metadata = metadata
-                )
-            }
-            is ErrorResult -> {
-                State.Error(
-                    painter = drawable?.toPainter(),
-                    request = request,
-                    throwable = throwable
-                )
-            }
-        }
-    }
-
-    /** The current state of the [ImageRequest] */
     sealed class State {
 
         /** The current painter being drawn by [ImagePainter]. */
         abstract val painter: Painter?
 
-        /** */
         abstract val request: ImageRequest
 
         /** The request has not been started. */
@@ -341,12 +320,13 @@ private fun updateFadeInTransition(painter: ImagePainter, durationMillis: Int) {
     }
 
     // Short circuit if the fade-in isn't running.
-    val fadeInTransition = updateFadeInTransition(state, durationMillis)
+    val fadeInTransition = rememberFadeInTransition(state, durationMillis)
     if (fadeInTransition.isFinished) {
         painter.transitionColorFilter = null
         return
     }
 
+    // Update the current color filter.
     val colorMatrix = remember { ColorMatrix() }
     colorMatrix.apply {
         updateAlpha(fadeInTransition.alpha)
@@ -366,6 +346,19 @@ private fun requireSupportedData(data: Any?) = when (data) {
 private fun unsupportedData(name: String): Nothing {
     throw IllegalArgumentException(
         "Unsupported type: $name. If you wish to display this $name, use androidx.compose.foundation.Image."
+    )
+}
+
+private fun ImageResult.toState(request: ImageRequest) = when (this) {
+    is SuccessResult -> ImagePainter.State.Success(
+        painter = drawable.toPainter(),
+        request = request,
+        metadata = metadata
+    )
+    is ErrorResult -> ImagePainter.State.Error(
+        painter = drawable?.toPainter(),
+        request = request,
+        throwable = throwable
     )
 }
 

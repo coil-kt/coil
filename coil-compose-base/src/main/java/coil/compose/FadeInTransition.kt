@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 @Composable
-internal fun updateFadeInTransition(key: Any, durationMillis: Int): FadeInTransition {
+internal fun rememberFadeInTransition(key: Any, durationMillis: Int): FadeInTransition {
     // Create our transition state, which allow us to control the state and target states.
     val transitionState = remember(key) {
         MutableTransitionState(STATE_EMPTY).apply {
@@ -50,9 +50,7 @@ internal fun updateFadeInTransition(key: Any, durationMillis: Int): FadeInTransi
 
     return remember(transition) {
         FadeInTransition(alpha, brightness, saturation)
-    }.apply {
-        isFinished = transitionState.currentState == STATE_LOADED
-    }
+    }.apply { isFinished = transitionState.currentState == STATE_LOADED }
 }
 
 @Stable
