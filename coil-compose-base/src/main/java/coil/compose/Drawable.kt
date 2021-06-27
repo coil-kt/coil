@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -44,6 +45,7 @@ internal fun Drawable.toPainter(): Painter {
  *
  * Instances should be remembered to be able to start and stop [Animatable] animations.
  */
+@Stable
 private class DrawablePainter(
     private val drawable: Drawable
 ) : Painter(), RememberObserver {

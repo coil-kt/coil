@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "NOTHING_TO_INLINE")
 
 package coil.compose
 
@@ -8,6 +8,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
+import coil.compose.ImagePainter.ExecuteCallback
 import coil.imageLoader
 import coil.request.ImageRequest
 
@@ -15,35 +16,29 @@ import coil.request.ImageRequest
  * Return an [ImagePainter] that will execute an [ImageRequest] using [LocalImageLoader].
  *
  * @param data The [ImageRequest.data] to execute.
- * @param onSizeChange Called if the canvas' size changes.
- *  It can be used to control whether to restart the request when the size changes.
- * @param fadeInMillis The duration of the fade in animation to run when the request
- *  completes successfully. Setting this to 0 disables the animation.
+ * @param onExecute Called directly before an image request will be executed by [imageLoader].
+ *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  * @param builder An optional lambda to configure the request.
  */
 @Composable
-fun rememberImagePainter(
+inline fun rememberImagePainter(
     data: Any?,
-    onSizeChange: SizeChangeCallback = { _, _ -> false },
-    fadeInMillis: Int = 0,
+    onExecute: ExecuteCallback = ExecuteCallback.Default,
     builder: ImageRequest.Builder.() -> Unit = {},
-): ImagePainter = rememberImagePainter(data, LocalImageLoader.current, onSizeChange, fadeInMillis, builder)
+): ImagePainter = rememberImagePainter(data, LocalImageLoader.current, onExecute, builder)
 
 /**
  * Return an [ImagePainter] that will execute the [request] using [LocalImageLoader].
  *
  * @param request The [ImageRequest] to execute.
- * @param onSizeChange Called if the canvas' size changes.
- *  It can be used to control whether to restart the request when the size changes.
- * @param fadeInMillis The duration of the fade in animation to run when the request
- *  completes successfully. Setting this to 0 disables the animation.
+ * @param onExecute Called directly before an image request will be executed by [imageLoader].
+ *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  */
 @Composable
-fun rememberImagePainter(
+inline fun rememberImagePainter(
     request: ImageRequest,
-    onSizeChange: SizeChangeCallback = { _, _ -> false },
-    fadeInMillis: Int = 0,
-): ImagePainter = rememberImagePainter(request, LocalImageLoader.current, onSizeChange, fadeInMillis)
+    onExecute: ExecuteCallback = ExecuteCallback.Default,
+): ImagePainter = rememberImagePainter(request, LocalImageLoader.current, onExecute)
 
 /**
  * A pseudo-[CompositionLocal] that returns the current [ImageLoader] for the composition.

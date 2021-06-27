@@ -16,7 +16,7 @@ public final class coil/compose/ImageLoaderProvidableCompositionLocal {
 
 public final class coil/compose/LocalImageLoaderKt {
 	public static final fun getLocalImageLoader ()Landroidx/compose/runtime/ProvidableCompositionLocal;
-	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lkotlin/jvm/functions/Function2;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
-	public static final fun rememberImagePainter (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;ILkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
+	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/compose/ImagePainter$ExecuteCallback;Landroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/compose/ImagePainter$ExecuteCallback;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
 }
 

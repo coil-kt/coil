@@ -3,6 +3,7 @@ package coil.compose
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,8 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.IntSize
 import coil.ImageLoader
+import coil.compose.ImagePainter.ExecuteCallback
+import coil.compose.ImagePainter.State
 import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -35,7 +38,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -45,28 +49,22 @@ import kotlin.math.roundToInt
  *
  * @param data The [ImageRequest.data] to execute.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
- * @param onSizeChange Called if the canvas' size changes.
- *  It can be used to control whether to restart the request when the size changes.
- * @param fadeInMillis The duration of the fade in animation to run when the request
- *  completes successfully. Setting this to 0 disables the animation.
+ * @param onExecute Called directly before an image request will be executed by [imageLoader].
+ *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  * @param builder An optional lambda to configure the request.
  */
 @Composable
-fun rememberImagePainter(
+inline fun rememberImagePainter(
     data: Any?,
     imageLoader: ImageLoader,
-    onSizeChange: SizeChangeCallback = { _, _ -> false },
-    fadeInMillis: Int = 0,
+    onExecute: ExecuteCallback = ExecuteCallback.Default,
     builder: ImageRequest.Builder.() -> Unit = {},
 ): ImagePainter {
-    val context = LocalContext.current
-    val request = remember(context, data, builder) {
-        ImageRequest.Builder(context)
-            .data(data)
-            .apply(builder)
-            .build()
-    }
-    return rememberImagePainter(request, imageLoader, onSizeChange, fadeInMillis)
+    val request = ImageRequest.Builder(LocalContext.current)
+        .data(data)
+        .apply(builder)
+        .build()
+    return rememberImagePainter(request, imageLoader, onExecute)
 }
 
 /**
@@ -74,37 +72,38 @@ fun rememberImagePainter(
  *
  * @param request The [ImageRequest] to execute.
  * @param imageLoader The [ImageLoader] that will be used to execute [request].
- * @param onSizeChange Called if the canvas' size changes.
- *  It can be used to control whether to restart the request when the size changes.
- * @param fadeInMillis The duration of the fade in animation to run when the request
- *  completes successfully. Setting this to 0 disables the animation.
+ * @param onExecute Called directly before an image request will be executed by [imageLoader].
+ *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  */
 @Composable
 fun rememberImagePainter(
     request: ImageRequest,
     imageLoader: ImageLoader,
-    onSizeChange: SizeChangeCallback = { _, _ -> false },
-    fadeInMillis: Int = 0,
+    onExecute: ExecuteCallback = ExecuteCallback.Default,
 ): ImagePainter {
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
-    require(fadeInMillis >= 0) { "fadeInMillis must be >= 0."}
 
-    val scope = rememberCoroutineScope { SupervisorJob() + Dispatchers.Main.immediate }
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val painter = remember(scope) { ImagePainter(scope, request, imageLoader) }
     painter.request = request
     painter.imageLoader = imageLoader
+    painter.onExecute = onExecute
     painter.rootViewSize = LocalView.current.run { IntSize(width, height) }
-    painter.onSizeChange = onSizeChange
 
     updatePainter(painter, request)
-    updateFadeInTransition(painter, fadeInMillis)
+    updateFadeInTransition(painter, 0)
 
     return painter
 }
 
+/**
+ * A [Painter] that asynchronously executes [ImageRequest]s and draws the result.
+ * Instances can only be created with [rememberImagePainter].
+ */
+@Stable
 class ImagePainter internal constructor(
-    private val scope: CoroutineScope,
+    private val parentScope: CoroutineScope,
     request: ImageRequest,
     imageLoader: ImageLoader
 ) : Painter(), RememberObserver {
@@ -112,6 +111,7 @@ class ImagePainter internal constructor(
     private var lazyPaint: Paint? = null
     private val paint: Paint get() = lazyPaint ?: Paint().also { lazyPaint = it }
 
+    private var scope: CoroutineScope? = null
     private var requestJob: Job? = null
     private var requestSize: IntSize by mutableStateOf(IntSize.Zero)
 
@@ -120,11 +120,11 @@ class ImagePainter internal constructor(
 
     internal var painter: Painter by mutableStateOf(EmptyPainter)
     internal var transitionColorFilter: ColorFilter? by mutableStateOf(null)
-    internal var rootViewSize: IntSize by mutableStateOf(IntSize.Zero)
-    internal var onSizeChange: SizeChangeCallback by mutableStateOf({ _, _ -> false })
+    internal var onExecute = ExecuteCallback.Default
+    internal var rootViewSize = IntSize.Zero
 
     /** The current [ImagePainter.State]. */
-    var state: State by mutableStateOf(State.Empty(request))
+    var state: State by mutableStateOf(State.Empty)
         private set
 
     /** The current [ImageRequest]. */
@@ -162,7 +162,7 @@ class ImagePainter internal constructor(
                 ) { drawPainter() }
             }
         } else {
-            // Else we just draw the content directly using the filter.
+            // Else we just draw the content as usual.
             drawPainter()
         }
     }
@@ -172,17 +172,42 @@ class ImagePainter internal constructor(
     }
 
     override fun onRemembered() {
-        requestJob?.cancel()
-        requestJob = scope.launch {
+        scope?.cancel()
+        val context = parentScope.coroutineContext
+        val scope = CoroutineScope(context + SupervisorJob(context[Job])).also { scope = it }
+
+        // Observe the current request + request size and launch new requests as necessary.
+        scope.launch {
+            var snapshot: Snapshot? = null
             combine(
                 snapshotFlow { request },
                 snapshotFlow { requestSize },
-                transform = { request, size -> request to size }
-            ).collectLatest { (request, size) -> execute(request, size) }
+                transform = ::Pair
+            ).collect { (request, size) ->
+                val previous = snapshot
+                val current = Snapshot(state, request, size)
+                snapshot = current
+
+                // Skip the size check if the size has been set explicitly.
+                if (request.defined.sizeResolver != null) {
+                    execute(previous, current)
+                    return@collect
+                }
+
+                // Short circuit if the requested size is 0.
+                if (size == IntSize.Zero) {
+                    state = State.Empty
+                    return@collect
+                }
+
+                execute(previous, current)
+            }
         }
     }
 
     override fun onForgotten() {
+        scope?.cancel()
+        scope = null
         requestJob?.cancel()
         requestJob = null
     }
@@ -195,91 +220,93 @@ class ImagePainter internal constructor(
                 // If we have a canvas width, use it...
                 canvasSize.width >= 0.5f -> canvasSize.width.roundToInt()
                 // Otherwise we fall-back to the root view size as an upper bound.
-                rootViewSize.width > 0 -> rootViewSize.width
-                else -> -1
+                else -> rootViewSize.width.coerceAtLeast(0)
             },
             height = when {
                 // If we have a canvas height, use it...
                 canvasSize.height >= 0.5f -> canvasSize.height.roundToInt()
                 // Otherwise we fall-back to the root view size as an upper bound.
-                rootViewSize.height > 0 -> rootViewSize.height
-                else -> -1
+                else -> rootViewSize.height.coerceAtLeast(0)
             }
         )
     }
 
-    private suspend fun execute(request: ImageRequest, size: IntSize) {
-        if (request.defined.sizeResolver == null && size == IntSize.Zero) {
-            state = State.Empty(request)
-            return
-        }
+    private fun execute(previous: Snapshot?, current: Snapshot) {
+        val scope = scope ?: return // Shouldn't happen.
+        if (!onExecute(previous, current)) return
 
-        if (state !is State.Empty && request == state.request && !onSizeChange(state, size)) {
-            return
-        }
+        // Launch a new image request.
+        requestJob?.cancel()
+        requestJob = scope.launch {
+            val request = current.request
+            val newRequest = request.newBuilder()
+                .target(
+                    onStart = { placeholder ->
+                        state = State.Loading(painter = placeholder?.toPainter())
+                    }
+                )
+                .apply {
+                    // Set the size if it hasn't already been set and it's valid.
+                    val size = current.size
+                    if (request.defined.sizeResolver == null && size.width > 0 && size.height > 0) {
+                        size(size.width, size.height)
+                    }
 
-        val newRequest = request.newBuilder()
-            .target(
-                onStart = { placeholder ->
-                    state = State.Loading(
-                        painter = placeholder?.toPainter(),
-                        request = request
-                    )
+                    // Use inexact precision unless exact precision has been set explicitly.
+                    if (request.defined.precision != Precision.EXACT) {
+                        precision(Precision.INEXACT)
+                    }
                 }
-            )
-            .apply {
-                if (request.defined.sizeResolver == null && size.width > 0 && size.height > 0) {
-                    size(size.width, size.height)
-                }
-                if (request.defined.precision.let { it == null || it == Precision.AUTOMATIC }) {
-                    precision(Precision.INEXACT)
-                }
-            }
-            .build()
-        state = imageLoader.execute(newRequest).toState(request)
+                .build()
+            state = imageLoader.execute(newRequest).toState()
+        }
     }
+
+    fun interface ExecuteCallback {
+
+        operator fun invoke(previous: Snapshot?, current: Snapshot): Boolean
+
+        companion object {
+            @JvmField val Default = ExecuteCallback { previous, current ->
+                current.state == State.Empty || previous?.request != current.request
+            }
+        }
+    }
+
+    data class Snapshot(
+        val state: State,
+        val request: ImageRequest,
+        val size: IntSize,
+    )
 
     sealed class State {
 
         /** The current painter being drawn by [ImagePainter]. */
         abstract val painter: Painter?
 
-        abstract val request: ImageRequest
-
         /** The request has not been started. */
-        data class Empty(
-            override val request: ImageRequest
-        ) : State() {
+        object Empty : State() {
             override val painter: Painter? get() = null
         }
 
         /** The request is in-progress. */
         data class Loading(
             override val painter: Painter?,
-            override val request: ImageRequest
         ) : State()
 
         /** The request was successful. */
         data class Success(
             override val painter: Painter,
-            override val request: ImageRequest,
-            val metadata: ImageResult.Metadata
+            val metadata: ImageResult.Metadata,
         ) : State()
 
         /** The request failed due to [throwable]. */
         data class Error(
             override val painter: Painter?,
-            override val request: ImageRequest,
-            val throwable: Throwable
+            val throwable: Throwable,
         ) : State()
     }
 }
-
-/**
- * Interface that allows apps to control whether an image request is re-run once the size changes.
- * Return `true` if the request should be re-run if the size has changed.
- */
-typealias SizeChangeCallback = (state: ImagePainter.State, size: IntSize) -> Boolean
 
 /**
  * Allows us to observe the current [ImagePainter.painter]. This function allows us to
@@ -300,9 +327,6 @@ private fun updatePainter(painter: ImagePainter, request: ImageRequest) {
     } ?: EmptyPainter
 }
 
-/**
- *
- */
 @SuppressLint("ComposableNaming")
 @Composable
 private fun updateFadeInTransition(painter: ImagePainter, durationMillis: Int) {
@@ -314,7 +338,7 @@ private fun updateFadeInTransition(painter: ImagePainter, durationMillis: Int) {
 
     // Short circuit if the result is not successful or is from the memory cache.
     val state = painter.state
-    if (state !is ImagePainter.State.Success || state.metadata.dataSource == DataSource.MEMORY_CACHE) {
+    if (state !is State.Success || state.metadata.dataSource == DataSource.MEMORY_CACHE) {
         painter.transitionColorFilter = null
         return
     }
@@ -349,15 +373,13 @@ private fun unsupportedData(name: String): Nothing {
     )
 }
 
-private fun ImageResult.toState(request: ImageRequest) = when (this) {
-    is SuccessResult -> ImagePainter.State.Success(
+private fun ImageResult.toState() = when (this) {
+    is SuccessResult -> State.Success(
         painter = drawable.toPainter(),
-        request = request,
         metadata = metadata
     )
-    is ErrorResult -> ImagePainter.State.Error(
+    is ErrorResult -> State.Error(
         painter = drawable?.toPainter(),
-        request = request,
         throwable = throwable
     )
 }
