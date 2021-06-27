@@ -200,6 +200,7 @@ class ImagePainter internal constructor(
                     return@collect
                 }
 
+                // Execute the image request.
                 execute(previous, current)
             }
         }
@@ -235,7 +236,7 @@ class ImagePainter internal constructor(
         val scope = scope ?: return // Shouldn't happen.
         if (!onExecute(previous, current)) return
 
-        // Launch a new image request.
+        // Execute the image request.
         requestJob?.cancel()
         requestJob = scope.launch {
             val request = current.request
