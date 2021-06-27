@@ -1,3 +1,9 @@
+public final class coil/compose/FadeInTransition {
+	public static final fun fadeIn (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
+	public static final fun fadeIn (Lcoil/request/ImageRequest$Builder;Z)Lcoil/request/ImageRequest$Builder;
+	public static final fun fadeInMillis (Lcoil/request/Parameters;)Ljava/lang/Integer;
+}
+
 public final class coil/compose/ImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
 	public final fun getImageLoader ()Lcoil/ImageLoader;
 	public fun getIntrinsicSize-NH-jbRc ()J

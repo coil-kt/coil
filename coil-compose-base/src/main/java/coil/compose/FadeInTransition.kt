@@ -1,3 +1,6 @@
+@file:JvmName("FadeInTransition")
+@file:Suppress("unused")
+
 package coil.compose
 
 import androidx.compose.animation.core.MutableTransitionState
@@ -11,6 +14,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import coil.request.ImageRequest
+import coil.request.Parameters
+
+/**
+ * Enable/disable the fade in animation when an image request completes successfully.
+ *
+ * NOTE: This option only works for requests executed using [rememberImagePainter].
+ *
+ * Default: 0
+ */
+fun ImageRequest.Builder.fadeIn(enable: Boolean) = fadeIn(if (enable) FADE_IN_MILLIS_DEFAULT_ENABLED else 0)
+
+/**
+ * Set the duration of the fade in animation when an image request completes successfully.
+ *
+ * NOTE: This option only works for requests executed using [rememberImagePainter].
+ *
+ * Default: 0
+ */
+fun ImageRequest.Builder.fadeIn(durationMillis: Int): ImageRequest.Builder {
+    require(durationMillis > 0) { "durationMillis must be > 0." }
+    return setParameter(FADE_IN_MILLIS_KEY, durationMillis, cacheKey = null)
+}
+
+/**
+ * Get the duration of the fade in animation.
+ */
+fun Parameters.fadeInMillis(): Int? = value(FADE_IN_MILLIS_KEY) as Int?
+
+private const val FADE_IN_MILLIS_KEY = "coil#fade_in_millis"
+private const val FADE_IN_MILLIS_DEFAULT_ENABLED = 100
 
 @Composable
 internal fun rememberFadeInTransition(key: Any, durationMillis: Int): FadeInTransition {
