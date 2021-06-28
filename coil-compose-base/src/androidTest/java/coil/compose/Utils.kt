@@ -18,6 +18,6 @@ fun resourceUri(id: Int): Uri {
 
 fun ImageBitmap.assertIsSimilarTo(@IdRes resId: Int) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val expected = context.getDrawable(resId)!!.toBitmap()
-    assertTrue(asAndroidBitmap().isSimilarTo(expected))
+    val expected = context.getDrawable(resId)!!.toBitmap(width, height)
+    assertTrue(asAndroidBitmap().isSimilarTo(expected, threshold = 0.95))
 }

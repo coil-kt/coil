@@ -35,4 +35,6 @@ dependencies {
 
     androidTestImplementation(Library.COMPOSE_UI_TEST_JUNIT)
     androidTestImplementation(Library.COMPOSE_UI_TEST_MANIFEST)
+
+    androidTestImplementation(Library.MATERIAL)
 }

@@ -179,27 +179,30 @@ class ImagePainter internal constructor(
         // Observe the current request + request size and launch new requests as necessary.
         scope.launch {
             var snapshot: Snapshot? = null
-            combine(snapshotFlow { request }, snapshotFlow { requestSize }, ::Pair)
-                .collect { (request, size) ->
-                    val previous = snapshot
-                    val current = Snapshot(state, request, size)
-                    snapshot = current
+            combine(
+                snapshotFlow { request },
+                snapshotFlow { requestSize },
+                transform = ::Pair
+            ).collect { (request, size) ->
+                val previous = snapshot
+                val current = Snapshot(state, request, size)
+                snapshot = current
 
-                    // Skip the size check if the size has been set explicitly.
-                    if (request.defined.sizeResolver != null) {
-                        execute(previous, current)
-                        return@collect
-                    }
-
-                    // Short circuit if the requested size is 0.
-                    if (size == IntSize.Zero) {
-                        state = State.Empty
-                        return@collect
-                    }
-
-                    // Execute the image request.
+                // Skip the size check if the size has been set explicitly.
+                if (request.defined.sizeResolver != null) {
                     execute(previous, current)
+                    return@collect
                 }
+
+                // Short circuit if the requested size is 0.
+                if (size == IntSize.Zero) {
+                    state = State.Empty
+                    return@collect
+                }
+
+                // Execute the image request.
+                execute(previous, current)
+            }
         }
     }
 
