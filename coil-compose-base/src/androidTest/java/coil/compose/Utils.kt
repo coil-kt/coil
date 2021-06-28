@@ -25,5 +25,5 @@ fun ImageBitmap.assertPixels(expected: Color, tolerance: Float = 0.001f) {
 }
 
 private fun rangeOf(value: Float, tolerance: Float): ClosedFloatingPointRange<Float> {
-    return value - tolerance .. value + tolerance
+    return (value - tolerance)..(value + tolerance)
 }

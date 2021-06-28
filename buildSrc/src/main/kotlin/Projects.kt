@@ -57,6 +57,10 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
             }
             freeCompilerArgs = arguments
         }
+        packagingOptions {
+            resources.pickFirsts += "META-INF/AL2.0"
+            resources.pickFirsts += "META-INF/LGPL2.1"
+        }
         testOptions {
             unitTests.all { test ->
                 test.testLogging {
