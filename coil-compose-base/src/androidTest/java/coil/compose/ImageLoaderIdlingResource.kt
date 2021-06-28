@@ -10,6 +10,7 @@ class ImageLoaderIdlingResource : EventListener, IdlingResource {
     private val ongoingRequests = mutableSetOf<ImageRequest>()
 
     var finishedRequests = 0
+        private set
 
     override val isIdleNow: Boolean
         get() = ongoingRequests.isEmpty()

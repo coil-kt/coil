@@ -1,6 +1,6 @@
 package coil.compose
 
-import android.app.Application
+import android.content.Context
 import android.graphics.drawable.ShapeDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.activity.ComponentActivity
@@ -63,16 +63,17 @@ class ImagePainterTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    private lateinit var context: Context
     private lateinit var server: MockWebServer
     private lateinit var requestTracker: ImageLoaderIdlingResource
     private lateinit var imageLoader: ImageLoader
 
     @Before
     fun before() {
+        context = composeTestRule.activity.applicationContext
         server = ImageMockWebServer()
         requestTracker = ImageLoaderIdlingResource()
-        val application = composeTestRule.activity.applicationContext as Application
-        imageLoader = ImageLoader.Builder(application)
+        imageLoader = ImageLoader.Builder(context)
             .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .eventListener(requestTracker)
@@ -89,6 +90,9 @@ class ImagePainterTest {
 
     @Test
     fun basicLoad_http() {
+        // captureToImage is SDK_INT >= 26.
+        assumeTrue(SDK_INT >= 26)
+
         composeTestRule.setContent {
             Image(
                 painter = rememberImagePainter(server.url("/image")),
@@ -105,6 +109,8 @@ class ImagePainterTest {
             .assertIsDisplayed()
             .assertWidthIsEqualTo(128.dp)
             .assertHeightIsEqualTo(128.dp)
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
     }
 
     @Test
@@ -114,7 +120,7 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(R.drawable.red_rectangle),
+                painter = rememberImagePainter(R.drawable.sample),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp, 128.dp)
@@ -129,7 +135,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertPixels(Color.Red)
+            .assertIsSimilarTo(R.drawable.sample)
     }
 
     @Test
@@ -139,7 +145,7 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(resourceUri(R.drawable.red_rectangle)),
+                painter = rememberImagePainter(resourceUri(R.drawable.sample)),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp, 128.dp)
@@ -154,7 +160,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertPixels(Color.Red)
+            .assertIsSimilarTo(R.drawable.sample)
     }
 
     @Test
@@ -192,7 +198,7 @@ class ImagePainterTest {
         // captureToImage is SDK_INT >= 26.
         assumeTrue(SDK_INT >= 26)
 
-        var data by mutableStateOf(server.url("/red"))
+        var data by mutableStateOf(server.url("/sample"))
 
         composeTestRule.setContent {
             Image(
@@ -212,7 +218,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertPixels(Color.Red)
+            .assertIsSimilarTo(R.drawable.sample)
 
         // Now switch the data URI to the blue drawable
         data = server.url("/blue")
@@ -223,7 +229,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertPixels(Color.Blue)
+            .assertIsSimilarTo(R.drawable.sample)
     }
 
     @Test
@@ -234,7 +240,7 @@ class ImagePainterTest {
             var size by mutableStateOf(128.dp)
 
             composeTestRule.setContent {
-                val painter = rememberImagePainter(server.url("/red"))
+                val painter = rememberImagePainter(server.url("/sample"))
 
                 Image(
                     painter = painter,
@@ -337,7 +343,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertPixels(Color.Red)
+            .assertIsSimilarTo(R.drawable.red_rectangle)
     }
 
     @Test
@@ -365,9 +371,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            // We're probably scaling a bitmap up in size, so increase the tolerance to 5%
-            // to not fail due to small scaling artifacts.
-            .assertPixels(Color.Red, tolerance = 0.05f)
+            .assertIsSimilarTo(R.drawable.red_rectangle)
     }
 
     @Test

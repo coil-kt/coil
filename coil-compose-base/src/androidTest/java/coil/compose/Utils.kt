@@ -2,11 +2,13 @@ package coil.compose
 
 import android.content.ContentResolver
 import android.net.Uri
-import androidx.compose.ui.graphics.Color
+import androidx.annotation.IdRes
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
+import coil.util.isSimilarTo
 import kotlin.test.assertTrue
 
 fun resourceUri(id: Int): Uri {
@@ -14,16 +16,8 @@ fun resourceUri(id: Int): Uri {
     return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/$id".toUri()
 }
 
-fun ImageBitmap.assertPixels(expected: Color, tolerance: Float = 0.001f) {
-    toPixelMap().buffer.forEach { pixel ->
-        val color = Color(pixel)
-        assertTrue(color.red in rangeOf(expected.red, tolerance))
-        assertTrue(color.green in rangeOf(expected.green, tolerance))
-        assertTrue(color.blue in rangeOf(expected.blue, tolerance))
-        assertTrue(color.alpha in rangeOf(expected.blue, tolerance))
-    }
-}
-
-private fun rangeOf(value: Float, tolerance: Float): ClosedFloatingPointRange<Float> {
-    return (value - tolerance)..(value + tolerance)
+fun ImageBitmap.assertIsSimilarTo(@IdRes resId: Int) {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val expected = context.getDrawable(resId)!!.toBitmap()
+    assertTrue(asAndroidBitmap().isSimilarTo(expected))
 }
