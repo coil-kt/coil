@@ -1,5 +1,6 @@
 package coil.compose
 
+import android.app.Application
 import android.graphics.drawable.ShapeDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.activity.ComponentActivity
@@ -67,10 +68,11 @@ class ImagePainterTest {
     private lateinit var imageLoader: ImageLoader
 
     @Before
-    fun setup() {
+    fun before() {
         server = ImageMockWebServer()
         requestTracker = ImageLoaderIdlingResource()
-        imageLoader = ImageLoader.Builder(composeTestRule.activity.applicationContext)
+        val application = composeTestRule.activity.applicationContext as Application
+        imageLoader = ImageLoader.Builder(application)
             .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .eventListener(requestTracker)
@@ -80,7 +82,7 @@ class ImagePainterTest {
     }
 
     @After
-    fun teardown() {
+    fun after() {
         composeTestRule.unregisterIdlingResource(requestTracker)
         server.shutdown()
     }
