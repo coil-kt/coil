@@ -39,7 +39,8 @@ class ContentUriFetcherTest {
     private lateinit var fetcher: ContentUriFetcher
     private lateinit var pool: BitmapPool
 
-    @get:Rule val grantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_CONTACTS, WRITE_CONTACTS)
+    @get:Rule
+    val grantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_CONTACTS, WRITE_CONTACTS)
 
     // Re-use the same contact across all tests. Must be created lazily.
     private val contactId by lazy(::createFakeContact)
