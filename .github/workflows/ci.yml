@@ -39,7 +39,7 @@ jobs:
             - uses: actions/setup-java@v2
               with:
                   distribution: 'adopt'
-                  java-version: 11
+                  java-version: 16
             - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
@@ -62,7 +62,7 @@ jobs:
             - uses: actions/setup-java@v2
               with:
                   distribution: 'adopt'
-                  java-version: 11
+                  java-version: 16
 
             # Restore the cache.
             # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
@@ -90,7 +90,7 @@ jobs:
             - uses: actions/setup-java@v2
               with:
                   distribution: 'adopt'
-                  java-version: 11
+                  java-version: 16
             - uses: actions/cache@v2
               with:
                   path: ~/.gradle/caches
