@@ -83,8 +83,8 @@ jobs:
               with:
                   api-level: ${{ matrix.api-level }}
                   disable-animations: false
-                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   force-avd-creation: false
+                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   script: echo "Generated AVD snapshot for caching."
 
             - name: Instrumentation tests
@@ -92,8 +92,9 @@ jobs:
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: x86
-                  emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+                  disable-animations: true
                   force-avd-creation: false
+                  emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   script: ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
