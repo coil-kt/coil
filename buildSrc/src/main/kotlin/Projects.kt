@@ -66,6 +66,12 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
                 }
             }
         }
+        packagingOptions.resources.excludes += setOf(
+            "META-INF/licenses/**",
+            "META-INF/AL2.0",
+            "META-INF/LGPL2.1",
+            "META-INF/*kotlin_module"
+        )
         (this as T).block()
     }
 }
