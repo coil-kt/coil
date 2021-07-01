@@ -92,6 +92,7 @@ fun rememberImagePainter(
     painter.request = request
     painter.imageLoader = imageLoader
     painter.onExecute = onExecute
+    painter.isPreview = LocalInspectionMode.current
     painter.rootViewSize = LocalView.current.run { IntSize(width, height) }
 
     updatePainter(painter, request)
@@ -124,6 +125,7 @@ class ImagePainter internal constructor(
     internal var painter: Painter by mutableStateOf(EmptyPainter)
     internal var transitionColorFilter: ColorFilter? by mutableStateOf(null)
     internal var onExecute = ExecuteCallback.Default
+    internal var isPreview = false
     internal var rootViewSize = IntSize.Zero
 
     /** The current [ImagePainter.State]. */
@@ -175,6 +177,7 @@ class ImagePainter internal constructor(
     }
 
     override fun onRemembered() {
+        if (isPreview) return
         scope?.cancel()
         val context = parentScope.coroutineContext
         val scope = CoroutineScope(context + SupervisorJob(context[Job])).also { scope = it }

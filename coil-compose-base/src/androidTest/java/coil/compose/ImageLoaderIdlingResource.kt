@@ -9,6 +9,9 @@ class ImageLoaderIdlingResource : EventListener, IdlingResource {
 
     private val ongoingRequests = mutableSetOf<ImageRequest>()
 
+    var startedRequests = 0
+        private set
+
     var finishedRequests = 0
         private set
 
@@ -17,6 +20,7 @@ class ImageLoaderIdlingResource : EventListener, IdlingResource {
 
     override fun onStart(request: ImageRequest) {
         ongoingRequests += request
+        startedRequests++
     }
 
     override fun onCancel(request: ImageRequest) {

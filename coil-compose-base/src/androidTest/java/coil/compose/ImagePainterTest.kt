@@ -47,6 +47,7 @@ import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -349,7 +350,7 @@ class ImagePainterTest {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 Image(
                     painter = rememberImagePainter(
-                        data = "blah",
+                        data = server.url("/image"),
                         builder = { placeholder(R.drawable.red_rectangle) }
                     ),
                     contentDescription = null,
@@ -360,6 +361,11 @@ class ImagePainterTest {
             }
         }
 
+        // Assert that we never started the request.
+        composeTestRule.waitForIdle()
+        assertEquals(0, requestTracker.startedRequests)
+
+        // Assert that the placeholder is showing.
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
             .assertHeightIsEqualTo(128.dp)
