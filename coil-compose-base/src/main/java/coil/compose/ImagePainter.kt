@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.IntSize
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter.ExecuteCallback
 import coil.compose.ImagePainter.State
 import coil.decode.DataSource
@@ -263,6 +264,11 @@ class ImagePainter internal constructor(
         }
     }
 
+    /**
+     * Invoked immediately before the [ImagePainter] executes a new image request.
+     * Return 'true' to proceed with the request. Return 'false' to skip executing the request.
+     */
+    @ExperimentalCoilApi
     fun interface ExecuteCallback {
 
         operator fun invoke(previous: Snapshot?, current: Snapshot): Boolean
@@ -274,6 +280,10 @@ class ImagePainter internal constructor(
         }
     }
 
+    /**
+     * A snapshot of the [ImagePainter]'s public properties.
+     */
+    @ExperimentalCoilApi
     data class Snapshot(
         val state: State,
         val request: ImageRequest,
