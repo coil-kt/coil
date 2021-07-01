@@ -47,6 +47,7 @@ import kotlin.math.roundToInt
 
 /**
  * Return an [ImagePainter] that will execute an [ImageRequest] using [imageLoader].
+ * Use [ImageRequest.Builder.fadeIn] to configure the fade in animation duration.
  *
  * @param data The [ImageRequest.data] to execute.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
@@ -70,6 +71,7 @@ inline fun rememberImagePainter(
 
 /**
  * Return an [ImagePainter] that will execute the [request] using [imageLoader].
+ * Use [ImageRequest.Builder.fadeIn] to configure the fade in animation duration.
  *
  * @param request The [ImageRequest] to execute.
  * @param imageLoader The [ImageLoader] that will be used to execute [request].
