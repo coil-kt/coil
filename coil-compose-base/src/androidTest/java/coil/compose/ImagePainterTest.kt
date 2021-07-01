@@ -26,13 +26,13 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
-import androidx.test.filters.LargeTest
 import coil.EventListener
 import coil.ImageLoader
+import coil.compose.ImagePainter.State
 import coil.compose.base.test.R
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import coil.request.ImageResult
+import coil.request.ImageResult.Metadata
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -47,13 +47,9 @@ import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-@LargeTest
-@RunWith(JUnit4::class)
 @OptIn(ExperimentalCoroutinesApi::class)
 class ImagePainterTest {
 
@@ -163,9 +159,9 @@ class ImagePainterTest {
     fun basicLoad_customImageLoader() {
         var requestCompleted by mutableStateOf(false)
 
-        // Build a custom ImageLoader with an EventListener
+        // Build a custom ImageLoader with an EventListener.
         val eventListener = object : EventListener {
-            override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {
+            override fun onSuccess(request: ImageRequest, metadata: Metadata) {
                 requestCompleted = true
             }
         }
@@ -185,7 +181,7 @@ class ImagePainterTest {
         }
 
         composeTestRule.waitForIdle()
-        // Wait for the event listener to run
+        // Wait for the event listener to run.
         composeTestRule.waitUntil(10_000) { requestCompleted }
     }
 
@@ -234,7 +230,7 @@ class ImagePainterTest {
     fun basicLoad_changeSize() {
         val scope = TestCoroutineScope()
         scope.launch {
-            val states = Channel<ImagePainter.State>()
+            val states = Channel<State>()
             var size by mutableStateOf(128.dp)
 
             composeTestRule.setContent {
@@ -250,24 +246,24 @@ class ImagePainterTest {
 
                 LaunchedEffect(painter) {
                     snapshotFlow { painter.state }
-                        .filter { it is ImagePainter.State.Success || it is ImagePainter.State.Error }
+                        .filter { it is State.Success || it is State.Error }
                         .onCompletion { states.cancel() }
                         .collect(states::send)
                 }
             }
 
-            // Await the first load
+            // Await the first load.
             assertNotNull(states.receive())
 
-            // Now change the size
+            // Now change the size.
             size = 256.dp
             composeTestRule.awaitIdle()
 
-            // Await any potential subsequent load (which shouldn't come)
+            // Await any potential subsequent load (which shouldn't come).
             val result = withTimeoutOrNull(3_000) { states.receive() }
             assertNull(result)
 
-            // Close the signal channel
+            // Close the signal channel.
             states.close()
         }
         scope.cleanupTestCoroutines()
@@ -335,7 +331,7 @@ class ImagePainterTest {
 
         waitForRequestComplete()
 
-        // Assert that the error drawable was drawn
+        // Assert that the error drawable was drawn.
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
             .assertHeightIsEqualTo(128.dp)
@@ -386,7 +382,7 @@ class ImagePainterTest {
 
         waitForRequestComplete()
 
-        // Assert that the layout is in the tree and has the correct size
+        // Assert that the layout is in the tree and has the correct size.
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
             .assertWidthIsEqualTo(128.dp)
@@ -398,7 +394,7 @@ class ImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberImagePainter(
-                    painterResource(android.R.drawable.ic_delete),
+                    painterResource(R.drawable.sample),
                 ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
