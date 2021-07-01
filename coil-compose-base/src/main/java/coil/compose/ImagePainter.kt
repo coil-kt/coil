@@ -49,7 +49,7 @@ import kotlin.math.roundToInt
  *
  * @param data The [ImageRequest.data] to execute.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
- * @param onExecute Called directly before the [ImagePainter] launches an image request.
+ * @param onExecute Called immediately before the [ImagePainter] launches an image request.
  *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  * @param builder An optional lambda to configure the request.
  */
@@ -72,7 +72,7 @@ inline fun rememberImagePainter(
  *
  * @param request The [ImageRequest] to execute.
  * @param imageLoader The [ImageLoader] that will be used to execute [request].
- * @param onExecute Called directly before the [ImagePainter] launches an image request.
+ * @param onExecute Called immediately before the [ImagePainter] launches an image request.
  *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  */
 @Composable

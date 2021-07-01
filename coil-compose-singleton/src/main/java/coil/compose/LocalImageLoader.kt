@@ -16,7 +16,7 @@ import coil.request.ImageRequest
  * Return an [ImagePainter] that will execute an [ImageRequest] using [LocalImageLoader].
  *
  * @param data The [ImageRequest.data] to execute.
- * @param onExecute Called directly before the [ImagePainter] launches an image request.
+ * @param onExecute Called immediately before the [ImagePainter] launches an image request.
  *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  * @param builder An optional lambda to configure the request.
  */
@@ -31,7 +31,7 @@ inline fun rememberImagePainter(
  * Return an [ImagePainter] that will execute the [request] using [LocalImageLoader].
  *
  * @param request The [ImageRequest] to execute.
- * @param onExecute Called directly before the [ImagePainter] launches an image request.
+ * @param onExecute Called immediately before the [ImagePainter] launches an image request.
  *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  */
 @Composable
