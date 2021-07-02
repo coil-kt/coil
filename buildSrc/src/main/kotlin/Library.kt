@@ -3,6 +3,7 @@
 package coil
 
 object Library {
+    private const val ANDROIDX_TEST_VERSION = "1.4.0"
 
     // CORE
 
@@ -26,7 +27,7 @@ object Library {
     const val ANDROIDX_LIFECYCLE_RUNTIME = "androidx.lifecycle:lifecycle-runtime:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
 
-    const val MATERIAL = "com.google.android.material:material:1.3.0"
+    const val MATERIAL = "com.google.android.material:material:1.4.0"
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
@@ -41,12 +42,12 @@ object Library {
 
     const val KOTLINX_COROUTINES_TEST = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$COROUTINES_VERSION"
 
-    const val ANDROIDX_TEST_CORE = "androidx.test:core-ktx:1.3.0"
-    const val ANDROIDX_TEST_JUNIT = "androidx.test.ext:junit-ktx:1.1.2"
-    const val ANDROIDX_TEST_RULES = "androidx.test:rules:1.3.0"
-    const val ANDROIDX_TEST_RUNNER = "androidx.test:runner:1.3.0"
+    const val ANDROIDX_TEST_CORE = "androidx.test:core-ktx:$ANDROIDX_TEST_VERSION"
+    const val ANDROIDX_TEST_JUNIT = "androidx.test.ext:junit-ktx:1.1.3"
+    const val ANDROIDX_TEST_RULES = "androidx.test:rules:$ANDROIDX_TEST_VERSION"
+    const val ANDROIDX_TEST_RUNNER = "androidx.test:runner:$ANDROIDX_TEST_VERSION"
 
     const val OKHTTP_MOCK_WEB_SERVER = "com.squareup.okhttp3:mockwebserver:$OKHTTP_VERSION"
 
-    const val ROBOLECTRIC = "org.robolectric:robolectric:4.5.1"
+    const val ROBOLECTRIC = "org.robolectric:robolectric:4.6"
 }
