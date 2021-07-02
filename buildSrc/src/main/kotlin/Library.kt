@@ -3,7 +3,6 @@
 package coil
 
 object Library {
-    private const val ANDROIDX_TEST_VERSION = "1.4.0"
 
     // CORE
 
@@ -42,6 +41,7 @@ object Library {
 
     const val KOTLINX_COROUTINES_TEST = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$COROUTINES_VERSION"
 
+    private const val ANDROIDX_TEST_VERSION = "1.4.0"
     const val ANDROIDX_TEST_CORE = "androidx.test:core-ktx:$ANDROIDX_TEST_VERSION"
     const val ANDROIDX_TEST_JUNIT = "androidx.test.ext:junit-ktx:1.1.3"
     const val ANDROIDX_TEST_RULES = "androidx.test:rules:$ANDROIDX_TEST_VERSION"
