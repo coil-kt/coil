@@ -49,5 +49,5 @@ object Library {
 
     const val OKHTTP_MOCK_WEB_SERVER = "com.squareup.okhttp3:mockwebserver:$OKHTTP_VERSION"
 
-    const val ROBOLECTRIC = "org.robolectric:robolectric:4.5.1"
+    const val ROBOLECTRIC = "org.robolectric:robolectric:4.6"
 }
