@@ -295,6 +295,10 @@ class ImagePainter internal constructor(
         val size: IntSize,
     )
 
+    /**
+     * The current state of the [ImagePainter].
+     */
+    @ExperimentalCoilApi
     sealed class State {
 
         /** The current painter being drawn by [ImagePainter]. */

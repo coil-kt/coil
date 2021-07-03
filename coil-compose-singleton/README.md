@@ -21,7 +21,7 @@ Image(
     painter = rememberImagePainter(
         data = "https://www.example.com/image.jpg"
         builder = {
-            fadeIn(true)
+            transformation(CircleCropTransformation())
             allowHardware(false)
         }
     ),
@@ -29,6 +29,39 @@ Image(
     modifier = Modifier.size(128.dp)
 )
 ```
+
+## Transitions
+
+Importantly, existing transition functions including `ImageRequest.Builder.crossfade` and `ImageRequest.Builder.transition` **will not work** with `rememberImagePainter` as they're built to work with `View`s. That said, the integration adds support for a fade in animation when the image request completes successfully. To enable it set it in `builder`:
+
+```kotlin
+Image(
+    painter = rememberImagePainter(
+        data = "https://www.example.com/image.jpg"
+        builder = { fadeIn(true) }
+    ),
+    contentDescription = null,
+    modifier = Modifier.size(128.dp)
+)
+```
+
+It's also possible to create custom transitions by observing the `ImagePainter`'s state:
+
+```kotlin
+val painter = rememberImagePainter("https://www.example.com/image.jpg")
+
+if (painter.state.let { it is ImagePainter.State.Success && it.metadata.dataSource != DataSource.MEMORY_CACHE }) {
+    // Perform the transition animation.
+}
+
+Image(
+    painter = painter,
+    contentDescription = null,
+    modifier = Modifier.size(128.dp)
+)
+```
+
+## LocalImageLoader
 
 The integration also adds a pseudo-[`CompositionLocal`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/CompositionLocal) for getting/setting the `ImageLoader` for a composable.
 
