@@ -1,4 +1,4 @@
-public final class coil/compose/FadeInTransition {
+public final class coil/compose/FadeInTransitionKt {
 	public static final fun fadeIn (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
 	public static final fun fadeIn (Lcoil/request/ImageRequest$Builder;Z)Lcoil/request/ImageRequest$Builder;
 	public static final fun fadeInMillis (Lcoil/request/Parameters;)Ljava/lang/Integer;

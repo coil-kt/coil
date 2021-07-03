@@ -1,4 +1,3 @@
-@file:JvmName("FadeInTransition")
 @file:Suppress("unused")
 
 package coil.compose
