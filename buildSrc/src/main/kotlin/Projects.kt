@@ -70,6 +70,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
                 }
             }
         }
+        packagingOptions.resources.pickFirsts += "META-INF/*kotlin_module"
         (this as T).block()
     }
 }
