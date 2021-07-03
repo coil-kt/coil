@@ -60,6 +60,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
         packagingOptions {
             resources.pickFirsts += "META-INF/AL2.0"
             resources.pickFirsts += "META-INF/LGPL2.1"
+            resources.pickFirsts += "META-INF/*kotlin_module"
         }
         testOptions {
             unitTests.all { test ->
@@ -70,7 +71,6 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
                 }
             }
         }
-        packagingOptions.resources.pickFirsts += "META-INF/*kotlin_module"
         (this as T).block()
     }
 }
