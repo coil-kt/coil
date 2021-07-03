@@ -34,7 +34,7 @@ fun ImageRequest.Builder.fadeIn(enable: Boolean) = fadeIn(if (enable) FADE_IN_MI
  * Default: 0
  */
 fun ImageRequest.Builder.fadeIn(durationMillis: Int): ImageRequest.Builder {
-    require(durationMillis > 0) { "durationMillis must be > 0." }
+    require(durationMillis >= 0) { "durationMillis must be >= 0." }
     return setParameter(FADE_IN_MILLIS_KEY, durationMillis, cacheKey = null)
 }
 
