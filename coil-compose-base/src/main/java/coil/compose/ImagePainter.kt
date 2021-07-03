@@ -286,7 +286,7 @@ class ImagePainter internal constructor(
     }
 
     /**
-     * A snapshot of the [ImagePainter]'s public properties.
+     * A snapshot of the [ImagePainter]'s properties.
      */
     @ExperimentalCoilApi
     data class Snapshot(
