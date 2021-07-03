@@ -45,7 +45,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assume.assumeTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -289,17 +288,19 @@ class ImagePainterTest {
             .assertIsDisplayed()
     }
 
-    @Ignore("DrawScope.onDraw isn't called. Figure out the best way to handle this.")
     @Test
-    fun lazycolumn_nosize() {
+    fun lazycolumn() {
         composeTestRule.setContent {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier
+                    .size(240.dp, 200.dp)
+            ) {
                 item {
                     Image(
                         painter = rememberImagePainter(server.url("/image")),
                         contentDescription = null,
                         modifier = Modifier
-                            .fillParentMaxWidth()
+                            .fillParentMaxHeight()
                             .testTag(Image),
                     )
                 }
@@ -310,7 +311,7 @@ class ImagePainterTest {
 
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsAtLeast(1.dp)
-            .assertHeightIsAtLeast(1.dp)
+            .assertHeightIsEqualTo(200.dp)
             .assertIsDisplayed()
     }
 
