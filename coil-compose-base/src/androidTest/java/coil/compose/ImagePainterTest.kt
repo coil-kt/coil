@@ -232,7 +232,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.blue_rectangle)
+            .assertIsSimilarTo(R.drawable.blue_rectangle, threshold = 0.85)
     }
 
     @Test
