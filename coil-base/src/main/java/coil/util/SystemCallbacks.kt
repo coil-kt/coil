@@ -21,11 +21,12 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 internal class SystemCallbacks(
     imageLoader: RealImageLoader,
-    private val context: Context
+    private val context: Context,
+    isNetworkObserverEnabled: Boolean
 ) : ComponentCallbacks2, NetworkObserver.Listener {
 
     @VisibleForTesting internal val imageLoader = WeakReference(imageLoader)
-    private val networkObserver = NetworkObserver(context, this, imageLoader.logger)
+    private val networkObserver = NetworkObserver(context, isNetworkObserverEnabled, this, imageLoader.logger)
 
     @Volatile private var _isOnline = networkObserver.isOnline
     private val _isShutdown = AtomicBoolean(false)

@@ -329,6 +329,20 @@ interface ImageLoader {
         }
 
         /**
+         * Enables short circuiting network requests if the device is offline.
+         *
+         * If true, reading from the network will automatically be disabled if the device is offline.
+         * If a cached response is unavailable the request will fail with a '504 Unsatisfiable Request' response.
+         *
+         * If false, the image loader will attempt a network request even if the device is offline.
+         *
+         * Default: true
+         */
+        fun networkObserverEnabled(enable: Boolean) = apply {
+            this.options = this.options.copy(networkObserverEnabled = enable)
+        }
+
+        /**
          * Enables weak reference tracking of loaded images.
          *
          * This allows the image loader to hold weak references to loaded images.
