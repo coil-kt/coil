@@ -83,7 +83,7 @@ internal class RealImageLoader(
         memoryCache.strongMemoryCache, memoryCache.weakMemoryCache)
     private val requestService = RequestService(logger)
     private val drawableDecoder = DrawableDecoderService(bitmapPool)
-    private val systemCallbacks = SystemCallbacks(this, context)
+    private val systemCallbacks = SystemCallbacks(this, context, options.networkObserverEnabled)
     private val registry = componentRegistry.newBuilder()
         // Mappers
         .add(StringMapper())

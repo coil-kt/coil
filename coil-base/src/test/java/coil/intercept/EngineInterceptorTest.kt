@@ -70,7 +70,7 @@ class EngineInterceptorTest {
             strongMemoryCache = strongMemoryCache,
             memoryCacheService = MemoryCacheService(referenceCounter, strongMemoryCache, weakMemoryCache),
             requestService = RequestService(null),
-            systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context),
+            systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context, true),
             drawableDecoder = DrawableDecoderService(bitmapPool),
             logger = null
         )

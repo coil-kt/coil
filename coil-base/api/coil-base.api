@@ -109,6 +109,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun memoryCache (Lcoil/memory/MemoryCache;)Lcoil/ImageLoader$Builder;
 	public final fun memoryCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
 	public final fun networkCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
+	public final fun networkObserverEnabled (Z)Lcoil/ImageLoader$Builder;
 	public final fun okHttpClient (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoader$Builder;
 	public final fun okHttpClient (Lokhttp3/OkHttpClient;)Lcoil/ImageLoader$Builder;
 	public final fun placeholder (I)Lcoil/ImageLoader$Builder;
