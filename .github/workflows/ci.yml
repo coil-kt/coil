@@ -51,11 +51,11 @@ jobs:
     instrumentation-tests:
         name: Instrumentation tests
         runs-on: macOS-latest
-        timeout-minutes: 20
+        timeout-minutes: 30
         strategy:
             fail-fast: true
             matrix:
-                api-level: [21, 25, 29]
+                api-level: [15, 19, 21, 25, 29]
         steps:
             - uses: actions/checkout@v2
             - uses: gradle/wrapper-validation-action@v1
