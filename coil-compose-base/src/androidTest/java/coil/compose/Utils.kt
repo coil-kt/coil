@@ -14,8 +14,7 @@ import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.decode.DecodeUtils
 import coil.size.Scale
-import coil.util.isSimilarTo
-import kotlin.test.assertTrue
+import coil.util.assertIsSimilarTo
 
 fun resourceUri(id: Int): Uri {
     val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName
@@ -25,7 +24,7 @@ fun resourceUri(id: Int): Uri {
 fun ImageBitmap.assertIsSimilarTo(@IdRes resId: Int) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val expected = context.getDrawable(resId)!!.toBitmap().fitCenter(width, height)
-    assertTrue(asAndroidBitmap().isSimilarTo(expected, threshold = 0.9))
+    asAndroidBitmap().assertIsSimilarTo(expected, threshold = 0.9)
 }
 
 private fun Bitmap.fitCenter(width: Int, height: Int): Bitmap {

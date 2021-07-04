@@ -49,3 +49,10 @@ fun Bitmap.isSimilarTo(other: Bitmap, @FloatRange(from = -1.0, to = 1.0) thresho
         crossCorrelation(xGreen, yGreen) >= threshold &&
         crossCorrelation(xBlue, yBlue) >= threshold
 }
+
+/**
+ * Assert that [this] and [other] are visually similar using [isSimilarTo].
+ */
+fun Bitmap.assertIsSimilarTo(other: Bitmap, @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99) {
+    check(isSimilarTo(other, threshold)) { "$this is not visually similar to $other." }
+}
