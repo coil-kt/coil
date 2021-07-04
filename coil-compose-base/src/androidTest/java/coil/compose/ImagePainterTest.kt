@@ -69,6 +69,7 @@ class ImagePainterTest {
         imageLoader = ImageLoader.Builder(context)
             .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
+            .networkObserverEnabled(false)
             .eventListener(requestTracker)
             .build()
         composeTestRule.registerIdlingResource(requestTracker)
@@ -159,14 +160,18 @@ class ImagePainterTest {
     @Test
     fun basicLoad_customImageLoader() {
         var requestCompleted by mutableStateOf(false)
+        var requestThrowable: Throwable? = null
 
         // Build a custom ImageLoader with an EventListener.
         val eventListener = object : EventListener {
             override fun onSuccess(request: ImageRequest, metadata: Metadata) {
                 requestCompleted = true
             }
+            override fun onError(request: ImageRequest, throwable: Throwable) {
+                requestThrowable = throwable
+            }
         }
-        val imageLoader = ImageLoader.Builder(composeTestRule.activity)
+        val imageLoader = imageLoader.newBuilder()
             .eventListener(eventListener)
             .build()
 
@@ -183,7 +188,10 @@ class ImagePainterTest {
 
         composeTestRule.waitForIdle()
         // Wait for the event listener to run.
-        composeTestRule.waitUntil(10_000) { requestCompleted }
+        composeTestRule.waitUntil(10_000) {
+            requestThrowable?.let { throw it }
+            requestCompleted
+        }
     }
 
     @Test
