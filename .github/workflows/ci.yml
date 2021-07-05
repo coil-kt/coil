@@ -55,7 +55,7 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                api-level: [21, 25, 29]
+                api-level: [15, 19, 21, 25, 29]
         steps:
             - uses: actions/checkout@v2
             - uses: gradle/wrapper-validation-action@v1
@@ -95,7 +95,7 @@ jobs:
                   disable-animations: true
                   force-avd-creation: false
                   emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                  script: ./gradlew connectedDebugAndroidTest
+                  script: ./run_instrumentation_tests_on_ci.sh
 
     deploy-snapshot:
         name: Deploy snapshot
