@@ -1,5 +1,6 @@
 #!/bin/bash
-if [ $1 >= 21 ] then
+if [ "$1" -ge 21 ]
+then
     # Run all instrumentation test.
     ./gradlew connectedDebugAndroidTest
 else
