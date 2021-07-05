@@ -44,6 +44,7 @@ nav:
   - 'Transitions': transitions.md
   - 'Extending the Image Pipeline': image_pipeline.md
   - 'Java Compatibility': java_compatibility.md
+  - 'Jetpack Compose': compose.md
   - 'GIFs': gifs.md
   - 'SVGs': svgs.md
   - 'Video Frames': videos.md

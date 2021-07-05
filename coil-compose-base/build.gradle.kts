@@ -11,14 +11,30 @@ plugins {
     id("com.vanniktech.maven.publish")
 }
 
-setupLibraryModule()
+setupLibraryModule {
+    defaultConfig {
+        minSdk = 21
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Library.COMPOSE_VERSION
+    }
+}
 
 dependencies {
     api(project(":coil-base"))
 
     implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_VECTOR_DRAWABLE_ANIMATED)
+
+    api(Library.COMPOSE_FOUNDATION)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+
+    androidTestImplementation(Library.COMPOSE_UI_TEST_JUNIT)
+    androidTestImplementation(Library.COMPOSE_UI_TEST_MANIFEST)
+
+    androidTestImplementation(Library.MATERIAL)
 }
