@@ -20,7 +20,7 @@ jobs:
                   path: |
                       ~/.gradle/caches
                       ~/.gradle/wrapper
-                  key: gradle-check-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
+                  key: gradle-unit-tests-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Check Gradle wrapper
               uses: gradle/wrapper-validation-action@v1
