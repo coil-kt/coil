@@ -15,13 +15,13 @@ jobs:
               with:
                   distribution: 'adopt'
                   java-version: 11
-            - run: mv ~/.gradle ~/.invalid
+            - run: mv ~/.gradle ~/.invalid || true
             - uses: actions/cache@v2
               with:
                   path: |
                       ~/.gradle/caches
                       ~/.gradle/wrapper
-                  key: ${{ runner.os }}-gradle-unit-tests-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
+                  key: asdf-${{ runner.os }}-gradle-unit-tests-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Check Gradle wrapper
               uses: gradle/wrapper-validation-action@v1
@@ -51,13 +51,13 @@ jobs:
               with:
                   distribution: 'adopt'
                   java-version: 11
-            - run: mv ~/.gradle ~/.invalid
+            - run: mv ~/.gradle ~/.invalid || true
             - uses: actions/cache@v2
               with:
                   path: |
                       ~/.gradle/caches
                       ~/.gradle/wrapper
-                  key: ${{ runner.os }}-gradle-instrumentation-tests-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
+                  key: asdf-${{ runner.os }}-gradle-instrumentation-tests-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - uses: actions/cache@v2
               id: avd-cache
