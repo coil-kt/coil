@@ -17,9 +17,9 @@ import coil.decode.DecodeUtils
 import coil.size.Scale
 import coil.util.assertIsSimilarTo
 
-fun resourceUri(id: Int): Uri {
+fun resourceUri(@IdRes resId: Int): Uri {
     val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName
-    return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/$id".toUri()
+    return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/$resId".toUri()
 }
 
 fun ImageBitmap.assertIsSimilarTo(
