@@ -5,4 +5,4 @@ if [ $1 >= 21 ] then
 else
     # Do not run 'coil-compose-base' tests since it requires minSdk >= 21.
     ./gradlew coil-base:connectedDebugAndroidTest coil-gif:connectedDebugAndroidTest coil-svg:connectedDebugAndroidTest coil-video:connectedDebugAndroidTest
-end
+fi
