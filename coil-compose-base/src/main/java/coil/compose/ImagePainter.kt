@@ -35,6 +35,7 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
+import coil.size.Scale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -257,6 +258,12 @@ class ImagePainter internal constructor(
                     val size = current.size
                     if (request.defined.sizeResolver == null && size.width > 0 && size.height > 0) {
                         size(size.width, size.height)
+                    }
+
+                    // Fill the request size unless size is set explicitly.
+                    // We do this since it's not possible to auto-detect the scale type like with `ImageView`s.
+                    if (request.defined.scale == null) {
+                        scale(Scale.FILL)
                     }
 
                     // Use inexact precision unless exact precision has been set explicitly.
