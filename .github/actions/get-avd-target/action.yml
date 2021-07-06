@@ -10,5 +10,5 @@ runs:
     using: "composite"
     steps:
         - id: get-avd-target
-          run: echo "::set-output name=target::$(if [ ${{ inputs.api-level }} -ge 30 ]; then echo playstore; else echo default; fi)"
+          run: echo "::set-output name=target::$(if [ ${{ inputs.api-level }} -ge 30 ]; then echo google_apis; else echo default; fi)"
           shell: bash
