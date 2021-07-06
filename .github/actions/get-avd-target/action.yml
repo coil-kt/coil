@@ -5,6 +5,7 @@ inputs:
         required: true
 outputs:
     target:
+        description: "The AVD target"
         value: ${{ steps.get-avd-target.outputs.target }}
 runs:
     using: "composite"
