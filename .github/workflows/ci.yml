@@ -78,6 +78,13 @@ jobs:
                       ~/.gradle/wrapper
                   key: ${{ runner.os }}-gradle-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
+            # API 30+ emulators only have Google API system images.
+            - name: Get AVD target
+              uses: ./.github/actions/get-avd-target
+              id: avd-target
+              with:
+                  api-level: ${{ matrix.api-level }}
+
             # Retrieve the cached emulator snapshot.
             - uses: actions/cache@v2
               id: avd-cache
@@ -85,14 +92,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: ${{ runner.os }}-avd-${{ matrix.api-level }}
-
-            # API 30+ emulators only have Google API system images.
-            - name: Get AVD target
-              uses: ./.github/actions/get-avd-target
-              id: avd-target
-              with:
-                  api-level: ${{ matrix.api-level }}
+                  key: avd-${{ matrix.api-level }}-${{ steps.avd-target.outputs.target }}
 
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
