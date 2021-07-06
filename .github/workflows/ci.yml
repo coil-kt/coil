@@ -87,23 +87,23 @@ jobs:
                       ~/.android/adb*
                   key: avd-snapshot-${{ matrix.api-level }}
 
+            # API 30+ emulators only have Google API system images.
+            - uses: get-avd-target
+              id: avd-target
+              with:
+                  api-level: ${{ matrix.api-level }}
+
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
               if: steps.avd-cache.outputs.cache-hit != 'true'
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
+                  target: steps.avd-target.outputs.target
                   disable-animations: false
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   script: echo "Generated AVD snapshot."
-
-
-            # API 30+ emulators only have Google API system images.
-            - uses: get-avd-target
-              id: avd-target
-              with:
-                  api-level: ${{ matrix.api-level }}
 
             - name: Instrumentation tests
               timeout-minutes: 15
