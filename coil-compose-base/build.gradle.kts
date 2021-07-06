@@ -1,6 +1,7 @@
 import coil.Library
 import coil.addAndroidTestDependencies
 import coil.addTestDependencies
+import coil.setupCompose
 import coil.setupLibraryModule
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
@@ -12,15 +13,7 @@ plugins {
 }
 
 setupLibraryModule {
-    defaultConfig {
-        minSdk = 21
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Library.COMPOSE_VERSION
-    }
+    setupCompose()
 }
 
 dependencies {

@@ -1,5 +1,6 @@
 package coil
 
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
@@ -17,6 +18,18 @@ fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}) {
             unitTests.isIncludeAndroidResources = true
         }
         block()
+    }
+}
+
+fun CommonExtension<*, *, *, *>.setupCompose() {
+    defaultConfig {
+        minSdk = 21
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Library.COMPOSE_VERSION
     }
 }
 

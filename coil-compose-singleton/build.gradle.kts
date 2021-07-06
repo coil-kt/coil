@@ -1,4 +1,5 @@
 import coil.Library
+import coil.setupCompose
 import coil.setupLibraryModule
 
 plugins {
@@ -9,15 +10,7 @@ plugins {
 }
 
 setupLibraryModule {
-    defaultConfig {
-        minSdk = 21
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Library.COMPOSE_VERSION
-    }
+    setupCompose()
 }
 
 dependencies {
