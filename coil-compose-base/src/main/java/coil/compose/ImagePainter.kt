@@ -11,16 +11,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.withSaveLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
@@ -29,7 +24,6 @@ import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter.ExecuteCallback
 import coil.compose.ImagePainter.State
-import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -48,7 +42,6 @@ import kotlin.math.roundToInt
 
 /**
  * Return an [ImagePainter] that will execute an [ImageRequest] using [imageLoader].
- * Use [ImageRequest.Builder.fadeIn] to configure the fade in animation duration.
  *
  * @param data The [ImageRequest.data] to execute.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
@@ -64,15 +57,14 @@ inline fun rememberImagePainter(
     builder: ImageRequest.Builder.() -> Unit = {},
 ): ImagePainter {
     val request = ImageRequest.Builder(LocalContext.current)
-        .data(data)
         .apply(builder)
+        .data(data)
         .build()
     return rememberImagePainter(request, imageLoader, onExecute)
 }
 
 /**
  * Return an [ImagePainter] that will execute the [request] using [imageLoader].
- * Use [ImageRequest.Builder.fadeIn] to configure the fade in animation duration.
  *
  * @param request The [ImageRequest] to execute.
  * @param imageLoader The [ImageLoader] that will be used to execute [request].
@@ -97,7 +89,6 @@ fun rememberImagePainter(
     painter.rootViewSize = LocalView.current.run { IntSize(width, height) }
 
     updatePainter(painter, request)
-    updateFadeInTransition(painter, request.parameters.fadeInMillis() ?: 0)
 
     return painter
 }
@@ -113,9 +104,6 @@ class ImagePainter internal constructor(
     imageLoader: ImageLoader
 ) : Painter(), RememberObserver {
 
-    private var lazyPaint: Paint? = null
-    private val paint: Paint get() = lazyPaint ?: Paint().also { lazyPaint = it }
-
     private var scope: CoroutineScope? = null
     private var requestJob: Job? = null
     private var requestSize: IntSize by mutableStateOf(IntSize.Zero)
@@ -124,7 +112,6 @@ class ImagePainter internal constructor(
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     internal var painter: Painter by mutableStateOf(EmptyPainter)
-    internal var transitionColorFilter: ColorFilter? by mutableStateOf(null)
     internal var onExecute = ExecuteCallback.Default
     internal var isPreview = false
     internal var rootViewSize = IntSize.Zero
@@ -157,24 +144,8 @@ class ImagePainter internal constructor(
         // Update the request size based on the canvas size.
         updateRequestSize(canvasSize = size)
 
-        if (colorFilter != null && transitionColorFilter != null) {
-            // If we have a transition color filter and a specified color filter we need to
-            // draw the content in a layer for both to apply.
-            // https://github.com/google/accompanist/issues/262
-            drawIntoCanvas { canvas ->
-                canvas.withSaveLayer(
-                    bounds = size.toRect(),
-                    paint = paint.apply { colorFilter = transitionColorFilter }
-                ) { drawPainter() }
-            }
-        } else {
-            // Else we just draw the content as usual.
-            drawPainter()
-        }
-    }
-
-    private fun DrawScope.drawPainter() = with(painter) {
-        draw(size, alpha, colorFilter ?: transitionColorFilter)
+        // Draw the current painter.
+        with(painter) { draw(size, alpha, colorFilter) }
     }
 
     override fun onRemembered() {
@@ -352,39 +323,6 @@ private fun updatePainter(painter: ImagePainter, request: ImageRequest) {
         // to receive remember events (if it implements RememberObserver). Do not remove.
         remember(painter.state) { painter.state.painter }
     } ?: EmptyPainter
-}
-
-@SuppressLint("ComposableNaming")
-@Composable
-private fun updateFadeInTransition(painter: ImagePainter, durationMillis: Int) {
-    // Short circuit if the fade in is not enabled.
-    if (durationMillis <= 0) {
-        painter.transitionColorFilter = null
-        return
-    }
-
-    // Short circuit if the result is not successful or is from the memory cache.
-    val state = painter.state
-    if (state !is State.Success || state.metadata.dataSource == DataSource.MEMORY_CACHE) {
-        painter.transitionColorFilter = null
-        return
-    }
-
-    // Short circuit if the fade-in isn't running.
-    val fadeInTransition = rememberFadeInTransition(state, durationMillis)
-    if (fadeInTransition.isFinished) {
-        painter.transitionColorFilter = null
-        return
-    }
-
-    // Update the current color filter.
-    val colorMatrix = remember { ColorMatrix() }
-    colorMatrix.apply {
-        updateAlpha(fadeInTransition.alpha)
-        updateBrightness(fadeInTransition.brightness)
-        updateSaturation(fadeInTransition.saturation)
-    }
-    painter.transitionColorFilter = ColorFilter.colorMatrix(colorMatrix)
 }
 
 private fun requireSupportedData(data: Any?) = when (data) {
