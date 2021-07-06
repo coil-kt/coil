@@ -63,7 +63,7 @@ jobs:
             fail-fast: true
             matrix:
                 # API 21 is flaky and times out.
-                api-level: [15, 19, 22, 26, 29]
+                api-level: [16, 19, 22, 26, 30]
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-java@v2
@@ -85,7 +85,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: avd-${{ matrix.api-level }}
+                  key: avd-google-${{ matrix.api-level }}
 
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
@@ -95,6 +95,7 @@ jobs:
                   api-level: ${{ matrix.api-level }}
                   disable-animations: false
                   force-avd-creation: false
+                  target: google_apis
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   script: echo "Generated AVD snapshot."
 
@@ -103,9 +104,9 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
-                  arch: x86
                   disable-animations: true
                   force-avd-creation: false
+                  target: google_apis
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
                   script: ./ci_run_instrumentation_tests.sh ${{ matrix.api-level }}
 
