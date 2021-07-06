@@ -5,21 +5,26 @@ on:
             - main
     pull_request:
 jobs:
-    check:
-        name: Check
+    checks:
+        name: Checks
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
             - uses: actions/checkout@v2
-            - uses: gradle/wrapper-validation-action@v1
             - uses: actions/setup-java@v2
               with:
                   distribution: 'adopt'
                   java-version: 11
+            - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v2
               with:
-                  path: ~/.gradle/caches
-                  key: gradle-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
+
+            - name: Check Gradle wrapper
+              uses: gradle/wrapper-validation-action@v1
 
             - name: Check style
               run: ./gradlew ktlintCheck
@@ -35,15 +40,17 @@ jobs:
         timeout-minutes: 10
         steps:
             - uses: actions/checkout@v2
-            - uses: gradle/wrapper-validation-action@v1
             - uses: actions/setup-java@v2
               with:
                   distribution: 'adopt'
                   java-version: 11
+            - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v2
               with:
-                  path: ~/.gradle/caches
-                  key: gradle-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Unit tests
               run: ./gradlew testDebugUnitTest
@@ -55,65 +62,79 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                api-level: [15, 19, 21, 25, 29]
+                # API 21 is flaky and times out.
+                api-level: [16, 19, 22, 26, 30]
         steps:
             - uses: actions/checkout@v2
-            - uses: gradle/wrapper-validation-action@v1
             - uses: actions/setup-java@v2
               with:
                   distribution: 'adopt'
                   java-version: 11
+            - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v2
               with:
-                  path: ~/.gradle/caches
-                  key: gradle-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
-            - name: Cache AVD snapshot
-              uses: actions/cache@v2
+            # Retrieve the cached emulator snapshot.
+            - uses: actions/cache@v2
               id: avd-cache
               with:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: avd-${{ matrix.api-level }}
+                  key: ${{ runner.os }}-avd-${{ matrix.api-level }}
 
+            # API 30+ emulators only have Google API system images.
+            - name: Get AVD target
+              uses: ./.github/actions/get-avd-target
+              id: avd-target
+              with:
+                  api-level: ${{ matrix.api-level }}
+
+            # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
               if: steps.avd-cache.outputs.cache-hit != 'true'
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
+                  target: ${{ steps.avd-target.outputs.target }}
                   disable-animations: false
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                  script: echo "Generated AVD snapshot for caching."
+                  script: echo "Generated AVD snapshot."
 
             - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
-                  arch: x86
+                  target: ${{ steps.avd-target.outputs.target }}
                   disable-animations: true
                   force-avd-creation: false
-                  emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                  script: ./run_instrumentation_tests_on_ci.sh ${{ matrix.api-level }}
+                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+                  script: ./ci_run_instrumentation_tests.sh ${{ matrix.api-level }}
 
     deploy-snapshot:
         name: Deploy snapshot
         runs-on: ubuntu-latest
         timeout-minutes: 10
         if: github.ref == 'refs/heads/main'
-        needs: [check, unit-tests, instrumentation-tests]
+        needs: [checks, unit-tests, instrumentation-tests]
         steps:
             - uses: actions/checkout@v2
-            - uses: gradle/wrapper-validation-action@v1
             - uses: actions/setup-java@v2
               with:
                   distribution: 'adopt'
                   java-version: 11
+            - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v2
               with:
-                  path: ~/.gradle/caches
-                  key: gradle-${{ runner.os }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
             - name: Deploy Snapshot
               env:
