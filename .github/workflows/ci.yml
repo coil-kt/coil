@@ -35,7 +35,7 @@ jobs:
               run: ./gradlew apiCheck
 
     unit-tests:
-        name: Unit Tests
+        name: Unit tests
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
