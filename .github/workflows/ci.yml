@@ -104,7 +104,7 @@ jobs:
                   disable-animations: true
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-                  script: ./.github/ci_run_instrumentation_tests.sh ${{ matrix.api-level }}
+                  script: ./ci_run_instrumentation_tests.sh ${{ matrix.api-level }}
 
     deploy-snapshot:
         name: Deploy snapshot
