@@ -62,6 +62,7 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
+                # API 21 is flaky and times out.
                 api-level: [15, 19, 22, 26, 29]
         steps:
             - uses: actions/checkout@v2
