@@ -98,26 +98,19 @@ jobs:
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   script: echo "Generated AVD snapshot."
 
-            - name: Instrumentation tests (< API 30)
-              if: ${{ matrix.api-level }} < 30
-              timeout-minutes: 15
-              uses: reactivecircus/android-emulator-runner@v2
-              with:
-                  api-level: ${{ matrix.api-level }}
-                  target: default
-                  disable-animations: true
-                  force-avd-creation: false
-                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-                  script: ./ci_run_instrumentation_tests.sh ${{ matrix.api-level }}
 
             # API 30+ emulators only have Google API system images.
-            - name: Instrumentation tests (>= API 30)
-              if: ${{ matrix.api-level }} >= 30
+            - uses: get-avd-target
+              id: avd-target
+              with:
+                  api-level: ${{ matrix.api-level }}
+
+            - name: Instrumentation tests
               timeout-minutes: 15
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
-                  target: google_apis
+                  target: steps.avd-target.outputs.target
                   disable-animations: true
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
