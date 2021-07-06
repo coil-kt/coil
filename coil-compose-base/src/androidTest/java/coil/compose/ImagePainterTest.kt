@@ -219,7 +219,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.8)
 
         // Now switch the data URI to the blue drawable
         data = server.url("/blue")
