@@ -85,7 +85,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: avd-snapshot-${{ matrix.api-level }}
+                  key: avd-cache-${{ matrix.api-level }}
 
             # API 30+ emulators only have Google API system images.
             - name: Get AVD target
@@ -107,7 +107,7 @@ jobs:
                   script: echo "Generated AVD snapshot."
 
             - name: Instrumentation tests
-              timeout-minutes: 15
+              timeout-minutes: 20
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
