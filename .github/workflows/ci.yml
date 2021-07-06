@@ -51,7 +51,7 @@ jobs:
     instrumentation-tests:
         name: Instrumentation tests
         runs-on: macOS-latest
-        timeout-minutes: 20
+        timeout-minutes: 30
         strategy:
             fail-fast: true
             matrix:
@@ -75,7 +75,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: avd-${{ matrix.api-level }}-7425822
+                  key: avd-${{ matrix.api-level }}
 
             - name: Create AVD snapshot
               if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -84,7 +84,6 @@ jobs:
                   api-level: ${{ matrix.api-level }}
                   disable-animations: false
                   force-avd-creation: false
-                  emulator-build: 7425822
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   script: echo "Generated AVD snapshot for caching."
 
@@ -95,9 +94,8 @@ jobs:
                   arch: x86
                   disable-animations: true
                   force-avd-creation: false
-                  emulator-build: 7425822
                   emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                  script: ./gradlew connectedDebugAndroidTest
+                  script: ./run_instrumentation_tests_on_ci.sh ${{ matrix.api-level }}
 
     deploy-snapshot:
         name: Deploy snapshot

@@ -7,6 +7,7 @@
 sed -e '/full documentation here/ { N; d; }' < README.md > docs/index.md
 cp CONTRIBUTING.md docs/contributing.md
 cp CHANGELOG.md docs/changelog.md
+cp coil-compose-singleton/README.md docs/compose.md
 cp coil-gif/README.md docs/gifs.md
 cp coil-svg/README.md docs/svgs.md
 cp coil-video/README.md docs/videos.md

@@ -1,1 +1,16 @@
-include(":coil-base", ":coil-gif", ":coil-sample", ":coil-singleton", ":coil-svg", "coil-test", "coil-video")
+// Public modules
+include(
+    "coil-base",
+    "coil-singleton",
+    "coil-compose-base",
+    "coil-compose-singleton",
+    "coil-gif",
+    "coil-svg",
+    "coil-video",
+)
+
+// Private modules
+include(
+    "coil-sample",
+    "coil-test",
+)
