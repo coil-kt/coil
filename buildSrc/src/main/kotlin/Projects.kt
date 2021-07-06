@@ -22,12 +22,8 @@ fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}) {
 }
 
 fun CommonExtension<*, *, *, *>.setupCompose() {
-    defaultConfig {
-        minSdk = 21
-    }
-    buildFeatures {
-        compose = true
-    }
+    defaultConfig.minSdk = 21
+    buildFeatures.compose = true
     composeOptions {
         kotlinCompilerExtensionVersion = Library.COMPOSE_VERSION
     }
@@ -58,7 +54,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
             targetCompatibility = JavaVersion.VERSION_1_8
         }
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = JavaVersion.VERSION_1_8.toString()
             allWarningsAsErrors = true
 
             val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
