@@ -5,10 +5,10 @@ inputs:
         required: true
 outputs:
     target:
-        value: ${{ steps.get-avd-target.outputs.random-id }}
+        value: ${{ steps.get-avd-target.outputs.target }}
 runs:
     using: "composite"
     steps:
         - id: get-avd-target
-          run: echo "::set-output name=target::default"
+          run: echo "::set-output name=target::$(if [ ${{ inputs.api-level }} -ge 30 ]; then echo google_apis; else echo default; fi)"
           shell: bash
