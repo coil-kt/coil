@@ -85,7 +85,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: avd-temp-${{ matrix.api-level }}
+                  key: avd-${{ matrix.api-level }}
 
             # API 30+ emulators only have Google API system images.
             - name: Get AVD target
