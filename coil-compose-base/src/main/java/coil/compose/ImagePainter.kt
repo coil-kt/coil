@@ -228,19 +228,19 @@ class ImagePainter internal constructor(
                     }
                 )
                 .apply {
-                    // Set the size if it hasn't already been set and it's valid.
-                    val size = current.size
+                    // Set the size unless it has been set explicitly.
                     if (request.defined.sizeResolver == null) {
+                        val size = current.size
                         size(size.width, size.height)
                     }
 
-                    // Fill the request size unless size is set explicitly.
+                    // Set the scale to fill unless it has been set explicitly.
                     // We do this since it's not possible to auto-detect the scale type like with `ImageView`s.
                     if (request.defined.scale == null) {
                         scale(Scale.FILL)
                     }
 
-                    // Use inexact precision unless exact precision has been set explicitly.
+                    // Set inexact precision unless exact precision has been set explicitly.
                     if (request.defined.precision != Precision.EXACT) {
                         precision(Precision.INEXACT)
                     }
