@@ -24,12 +24,14 @@ import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter.ExecuteCallback
 import coil.compose.ImagePainter.State
+import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
 import coil.size.Scale
+import coil.transition.CrossfadeTransition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -81,16 +83,14 @@ fun rememberImagePainter(
     require(request.target == null) { "request.target must be null." }
 
     val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
-    val painter = remember(scope) { ImagePainter(scope, request, imageLoader) }
-    painter.request = request
-    painter.imageLoader = imageLoader
-    painter.onExecute = onExecute
-    painter.isPreview = LocalInspectionMode.current
-    painter.rootViewSize = LocalView.current.run { IntSize(width, height) }
-
-    updatePainter(painter, request)
-
-    return painter
+    val imagePainter = remember(scope) { ImagePainter(scope, request, imageLoader) }
+    imagePainter.request = request
+    imagePainter.imageLoader = imageLoader
+    imagePainter.onExecute = onExecute
+    imagePainter.isPreview = LocalInspectionMode.current
+    imagePainter.rootViewSize = LocalView.current.run { IntSize(width, height) }
+    updatePainter(imagePainter, request, imageLoader)
+    return imagePainter
 }
 
 /**
@@ -130,6 +130,14 @@ class ImagePainter internal constructor(
 
     override val intrinsicSize get() = painter.intrinsicSize
 
+    override fun DrawScope.onDraw() {
+        // Update the request size based on the canvas size.
+        updateRequestSize(canvasSize = size)
+
+        // Draw the current painter.
+        with(painter) { draw(size, alpha, colorFilter) }
+    }
+
     override fun applyAlpha(alpha: Float): Boolean {
         this.alpha = alpha
         return true
@@ -138,14 +146,6 @@ class ImagePainter internal constructor(
     override fun applyColorFilter(colorFilter: ColorFilter?): Boolean {
         this.colorFilter = colorFilter
         return true
-    }
-
-    override fun DrawScope.onDraw() {
-        // Update the request size based on the canvas size.
-        updateRequestSize(canvasSize = size)
-
-        // Draw the current painter.
-        with(painter) { draw(size, alpha, colorFilter) }
     }
 
     override fun onRemembered() {
@@ -313,16 +313,45 @@ class ImagePainter internal constructor(
  */
 @SuppressLint("ComposableNaming")
 @Composable
-private fun updatePainter(painter: ImagePainter, request: ImageRequest) {
-    painter.painter = if (LocalInspectionMode.current) {
-        // If we're in inspection mode (preview) and we have a placeholder, just draw
-        // that without executing an image request.
-        request.placeholder?.toPainter()
-    } else {
-        // This may look like a useless remember, but this allows any Painter instances
-        // to receive remember events (if it implements RememberObserver). Do not remove.
-        remember(painter.state) { painter.state.painter }
-    } ?: EmptyPainter
+private fun updatePainter(imagePainter: ImagePainter, request: ImageRequest, imageLoader: ImageLoader) {
+    // If we're in inspection mode (preview) and we have a placeholder, just draw
+    // that without executing an image request.
+    if (LocalInspectionMode.current) {
+        imagePainter.painter = request.placeholder?.toPainter() ?: EmptyPainter
+        return
+    }
+
+    // This may look like a useless remember, but this allows any Painter instances
+    // to receive remember events (if it implements RememberObserver). Do not remove.
+    val state = imagePainter.state
+    val painter = remember(state) { state.painter }
+
+    // Short circuit if the crossfade transition isn't set.
+    val transition = request.defined.transition ?: imageLoader.defaults.transition
+    val crossfadeMillis = (transition as? CrossfadeTransition)?.durationMillis ?: 0
+    if (crossfadeMillis <= 0) {
+        imagePainter.painter = painter ?: EmptyPainter
+        return
+    }
+
+    // Keep track of the most recent loading painter to crossfade from it.
+    val loading = remember { ValueHolder<Painter>() }
+    if (state is State.Loading) loading.value = state.painter
+
+    // Short circuit if the request isn't successful or if it's returned by the memory cache.
+    if (state !is State.Success || state.metadata.dataSource == DataSource.MEMORY_CACHE) {
+        imagePainter.painter = painter ?: EmptyPainter
+        return
+    }
+
+    // Set the crossfade painter.
+    imagePainter.painter = rememberCrossfadePainter(
+        key = state,
+        start = loading.value,
+        end = painter,
+        durationMillis = crossfadeMillis,
+        fadeStart = !state.metadata.isPlaceholderMemoryCacheKeyPresent
+    )
 }
 
 private fun requireSupportedData(data: Any?) = when (data) {
@@ -348,6 +377,9 @@ private fun ImageResult.toState() = when (this) {
         throwable = throwable
     )
 }
+
+/** A simple mutable value holder. */
+private class ValueHolder<T>(var value: T? = null)
 
 /** A [Painter] that draws nothing and has no intrinsic size. */
 private object EmptyPainter : Painter() {
