@@ -152,6 +152,7 @@ class ImagePainter internal constructor(
     override fun onRemembered() {
         if (isPreview) return
 
+        // Create a new scope to observe state and execute requests while we're remembered.
         scope?.cancel()
         val context = parentScope.coroutineContext
         val scope = CoroutineScope(context + SupervisorJob(context[Job])).also { scope = it }
@@ -168,14 +169,8 @@ class ImagePainter internal constructor(
                 val current = Snapshot(state, request, size)
                 snapshot = current
 
-                // Skip the size check if the size has been set explicitly.
-                if (request.defined.sizeResolver != null) {
-                    execute(previous, current)
-                    return@collect
-                }
-
-                // Short circuit if the requested size is 0.
-                if (size == Size.Zero) {
+                // Short circuit if the size hasn't been set explicitly and the canvas size is zero.
+                if (request.defined.sizeResolver == null && size == Size.Zero) {
                     state = State.Empty
                     return@collect
                 }
@@ -195,13 +190,12 @@ class ImagePainter internal constructor(
 
     override fun onAbandoned() = onForgotten()
 
-    private fun execute(previous: Snapshot?, current: Snapshot) {
-        val scope = scope ?: return // Shouldn't happen.
+    private fun CoroutineScope.execute(previous: Snapshot?, current: Snapshot) {
         if (!onExecute(previous, current)) return
 
         // Execute the image request.
         requestJob?.cancel()
-        requestJob = scope.launch {
+        requestJob = launch {
             val request = current.request
             val newRequest = request.newBuilder()
                 .target(
