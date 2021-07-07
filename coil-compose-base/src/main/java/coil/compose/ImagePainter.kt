@@ -197,38 +197,40 @@ class ImagePainter internal constructor(
         // Execute the image request.
         requestJob?.cancel()
         requestJob = launch {
-            val request = current.request
-            val newRequest = request.newBuilder()
-                .target(
-                    onStart = { placeholder ->
-                        state = State.Loading(painter = placeholder?.toPainter())
-                    }
-                )
-                .apply {
-                    // Set the size unless it has been set explicitly.
-                    if (request.defined.sizeResolver == null) {
-                        val size = current.size
-                        if (size.isSpecified) {
-                            size(size.width.roundToInt(), size.height.roundToInt())
-                        } else {
-                            size(OriginalSize)
-                        }
-                    }
+            state = imageLoader.execute(updateRequest(current.request, current.size)).toState()
+        }
+    }
 
-                    // Set the scale to fill unless it has been set explicitly.
-                    // We do this since it's not possible to auto-detect the scale type like with `ImageView`s.
-                    if (request.defined.scale == null) {
-                        scale(Scale.FILL)
-                    }
-
-                    // Set inexact precision unless exact precision has been set explicitly.
-                    if (request.defined.precision != Precision.EXACT) {
-                        precision(Precision.INEXACT)
+    /** Update the [request] to work with [ImagePainter]. */
+    private fun updateRequest(request: ImageRequest, size: Size): ImageRequest {
+        return request.newBuilder()
+            .target(
+                onStart = { placeholder ->
+                    state = State.Loading(painter = placeholder?.toPainter())
+                }
+            )
+            .apply {
+                // Set the size unless it has been set explicitly.
+                if (request.defined.sizeResolver == null) {
+                    if (size.isSpecified) {
+                        size(size.width.roundToInt(), size.height.roundToInt())
+                    } else {
+                        size(OriginalSize)
                     }
                 }
-                .build()
-            state = imageLoader.execute(newRequest).toState()
-        }
+
+                // Set the scale to fill unless it has been set explicitly.
+                // We do this since it's not possible to auto-detect the scale type like with `ImageView`s.
+                if (request.defined.scale == null) {
+                    scale(Scale.FILL)
+                }
+
+                // Set inexact precision unless exact precision has been set explicitly.
+                if (request.defined.precision != Precision.EXACT) {
+                    precision(Precision.INEXACT)
+                }
+            }
+            .build()
     }
 
     /**
