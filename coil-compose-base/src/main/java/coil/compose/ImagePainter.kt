@@ -230,7 +230,7 @@ class ImagePainter internal constructor(
                 .apply {
                     // Set the size if it hasn't already been set and it's valid.
                     val size = current.size
-                    if (request.defined.sizeResolver == null && size.width > 0 && size.height > 0) {
+                    if (request.defined.sizeResolver == null) {
                         size(size.width, size.height)
                     }
 
