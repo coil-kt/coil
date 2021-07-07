@@ -32,7 +32,7 @@ Image(
 
 ## Transitions
 
-Coil's `Transition` class does not work with Jetpack Compose. That said, only `crossfade` and `CrossfadeTransition` will still work due to internal support:
+The [`Transition`](transitions.md) interface does not work with `rememberImagePainter` as it requires a `View` reference. That said, `CrossfadeTransition` does work with `rememberImagePainter` due to special internal support. You can enable the transition using `ImageRequest.Builder.crossfade`:
 
 ```kotlin
 Image(
