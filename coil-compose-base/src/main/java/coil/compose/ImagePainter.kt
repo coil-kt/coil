@@ -105,7 +105,7 @@ class ImagePainter internal constructor(
     imageLoader: ImageLoader
 ) : Painter(), RememberObserver {
 
-    private var scope: CoroutineScope? = null
+    private var rememberScope: CoroutineScope? = null
     private var requestJob: Job? = null
     private var requestSize: Size by mutableStateOf(Size.Zero)
 
@@ -153,9 +153,10 @@ class ImagePainter internal constructor(
         if (isPreview) return
 
         // Create a new scope to observe state and execute requests while we're remembered.
-        scope?.cancel()
+        rememberScope?.cancel()
         val context = parentScope.coroutineContext
-        val scope = CoroutineScope(context + SupervisorJob(context[Job])).also { scope = it }
+        val scope = CoroutineScope(context + SupervisorJob(context[Job]))
+        rememberScope = scope
 
         // Observe the current request + request size and launch new requests as necessary.
         scope.launch {
@@ -182,8 +183,8 @@ class ImagePainter internal constructor(
     }
 
     override fun onForgotten() {
-        scope?.cancel()
-        scope = null
+        rememberScope?.cancel()
+        rememberScope = null
         requestJob?.cancel()
         requestJob = null
     }
