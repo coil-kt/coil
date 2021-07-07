@@ -334,8 +334,7 @@ private fun updatePainter(
 
     // Short circuit if the crossfade transition isn't set.
     val transition = request.defined.transition ?: imageLoader.defaults.transition
-    val crossfadeMillis = (transition as? CrossfadeTransition)?.durationMillis ?: 0
-    if (crossfadeMillis <= 0) {
+    if (transition !is CrossfadeTransition) {
         imagePainter.painter = painter
         return
     }
@@ -355,7 +354,7 @@ private fun updatePainter(
         key = state,
         start = loading.value,
         end = painter,
-        durationMillis = crossfadeMillis,
+        durationMillis = transition.durationMillis,
         fadeStart = !state.metadata.isPlaceholderMemoryCacheKeyPresent
     )
 }
