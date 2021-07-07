@@ -53,17 +53,18 @@ private class CrossfadePainter(
         }
 
         // Initialize startTimeMillis the first time we're drawn.
+        val uptimeMillis = SystemClock.uptimeMillis()
         if (startTimeMillis == -1L) {
-            startTimeMillis = SystemClock.uptimeMillis()
+            startTimeMillis = uptimeMillis
         }
 
-        val percent = (SystemClock.uptimeMillis() - startTimeMillis) / durationMillis.toFloat()
+        val percent = (uptimeMillis - startTimeMillis) / durationMillis.toFloat()
         val endAlpha = percent.coerceIn(0f, 1f) * maxAlpha
         val startAlpha = if (fadeStart) maxAlpha - endAlpha else maxAlpha
         isDone = percent >= 1.0
 
-        drawPainter(start, startAlpha)
-        drawPainter(end, endAlpha)
+        if (percent < 1) drawPainter(start, startAlpha)
+        if (percent > 0) drawPainter(end, endAlpha)
 
         if (isDone) {
             start = null
