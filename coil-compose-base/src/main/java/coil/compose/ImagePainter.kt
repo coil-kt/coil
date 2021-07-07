@@ -151,6 +151,7 @@ class ImagePainter internal constructor(
 
     override fun onRemembered() {
         if (isPreview) return
+
         scope?.cancel()
         val context = parentScope.coroutineContext
         val scope = CoroutineScope(context + SupervisorJob(context[Job])).also { scope = it }
