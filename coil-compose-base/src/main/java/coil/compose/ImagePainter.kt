@@ -378,11 +378,11 @@ private fun ImageResult.toState() = when (this) {
     )
 }
 
-/** A simple mutable value holder. */
-private class ValueHolder<T>(var value: T? = null)
-
 /** A [Painter] that draws nothing and has no intrinsic size. */
 private object EmptyPainter : Painter() {
     override val intrinsicSize: Size get() = Size.Unspecified
     override fun DrawScope.onDraw() {}
 }
+
+/** A simple mutable value holder. */
+private class ValueHolder<T>(var value: T? = null)
