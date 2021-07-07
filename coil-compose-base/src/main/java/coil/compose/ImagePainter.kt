@@ -325,7 +325,7 @@ private fun updatePainter(
     }
 
     // Keep track of the most recent loading painter to crossfade from it.
-    val loading = remember { ValueHolder<Painter?>(null) }
+    val loading = remember(request) { ValueHolder<Painter?>(null) }
     if (state is State.Loading) loading.value = state.painter
 
     // Short circuit if the request isn't successful or if it's returned by the memory cache.
