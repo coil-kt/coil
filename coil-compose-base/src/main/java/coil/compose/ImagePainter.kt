@@ -1,3 +1,5 @@
+@file:SuppressLint("ComposableNaming")
+
 package coil.compose
 
 import android.annotation.SuppressLint
@@ -311,12 +313,15 @@ class ImagePainter internal constructor(
  * minimize the amount of recomposition needed such that this function only needs to be restarted
  * when the [ImagePainter.state] changes.
  */
-@SuppressLint("ComposableNaming")
 @Composable
-private fun updatePainter(imagePainter: ImagePainter, request: ImageRequest, imageLoader: ImageLoader) {
+private fun updatePainter(
+    imagePainter: ImagePainter,
+    request: ImageRequest,
+    imageLoader: ImageLoader
+) {
     // If we're in inspection mode (preview) and we have a placeholder, just draw
     // that without executing an image request.
-    if (LocalInspectionMode.current) {
+    if (imagePainter.isPreview) {
         imagePainter.painter = request.placeholder?.toPainter() ?: EmptyPainter
         return
     }
@@ -335,7 +340,7 @@ private fun updatePainter(imagePainter: ImagePainter, request: ImageRequest, ima
     }
 
     // Keep track of the most recent loading painter to crossfade from it.
-    val loading = remember { ValueHolder<Painter>() }
+    val loading = remember { ValueHolder<Painter?>(null) }
     if (state is State.Loading) loading.value = state.painter
 
     // Short circuit if the request isn't successful or if it's returned by the memory cache.
@@ -384,5 +389,5 @@ private object EmptyPainter : Painter() {
     override fun DrawScope.onDraw() {}
 }
 
-/** A simple mutable value holder. */
-private class ValueHolder<T>(var value: T? = null)
+/** A simple mutable value holder that avoids recomposition. */
+private class ValueHolder<T>(@JvmField var value: T)
