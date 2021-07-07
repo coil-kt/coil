@@ -10,7 +10,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name="coil.compose.TestActivity"
-            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"/>
+            android:name="androidx.activity.ComponentActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 </manifest>

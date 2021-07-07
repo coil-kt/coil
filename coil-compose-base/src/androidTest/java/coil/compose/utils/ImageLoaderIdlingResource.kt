@@ -1,4 +1,4 @@
-package coil.compose
+package coil.compose.utils
 
 import androidx.compose.ui.test.IdlingResource
 import coil.EventListener

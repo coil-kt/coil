@@ -1,6 +1,7 @@
 package coil.compose
 
 import android.os.Build.VERSION.SDK_INT
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,10 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.compose.ImagePainter.State
 import coil.compose.base.test.R
+import coil.compose.utils.ImageLoaderIdlingResource
+import coil.compose.utils.ImageMockWebServer
+import coil.compose.utils.assertIsSimilarTo
+import coil.compose.utils.resourceUri
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.ImageResult.Metadata
@@ -55,7 +60,7 @@ import kotlin.test.assertNull
 class ImagePainterTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<TestActivity>()
+    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     private lateinit var server: MockWebServer
     private lateinit var requestTracker: ImageLoaderIdlingResource
@@ -213,7 +218,7 @@ class ImagePainterTest {
 
         waitForRequestComplete(requestNumber = 1)
 
-        // Assert that the content is completely Red
+        // Assert that the content is completely red.
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
             .assertHeightIsEqualTo(128.dp)
@@ -221,12 +226,12 @@ class ImagePainterTest {
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample, threshold = 0.8)
 
-        // Now switch the data URI to the blue drawable
+        // Now switch the data URI to the blue drawable.
         data = server.url("/blue")
 
         waitForRequestComplete(requestNumber = 2)
 
-        // Assert that the content is completely blue
+        // Assert that the content is completely blue.
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
             .assertHeightIsEqualTo(128.dp)
