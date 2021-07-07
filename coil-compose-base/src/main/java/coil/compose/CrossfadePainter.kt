@@ -99,7 +99,6 @@ private class CrossfadePainter(
     }
 
     private fun DrawScope.drawPainter(painter: Painter?, alpha: Float) {
-        painter ?: return
-        with(painter) { draw(size, alpha, colorFilter) }
+        painter?.apply { draw(size, alpha, colorFilter) }
     }
 }

@@ -113,7 +113,7 @@ class ImagePainter internal constructor(
     private var alpha: Float by mutableStateOf(1f)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
-    internal var painter: Painter by mutableStateOf(EmptyPainter)
+    internal var painter: Painter? by mutableStateOf(null)
     internal var onExecute = ExecuteCallback.Default
     internal var isPreview = false
     internal var rootViewSize = IntSize.Zero
@@ -130,14 +130,15 @@ class ImagePainter internal constructor(
     var imageLoader: ImageLoader by mutableStateOf(imageLoader)
         internal set
 
-    override val intrinsicSize get() = painter.intrinsicSize
+    override val intrinsicSize: Size
+        get() = painter?.intrinsicSize ?: Size.Unspecified
 
     override fun DrawScope.onDraw() {
         // Update the request size based on the canvas size.
         updateRequestSize(canvasSize = size)
 
         // Draw the current painter.
-        with(painter) { draw(size, alpha, colorFilter) }
+        painter?.apply { draw(size, alpha, colorFilter) }
     }
 
     override fun applyAlpha(alpha: Float): Boolean {
@@ -322,7 +323,7 @@ private fun updatePainter(
     // If we're in inspection mode (preview) and we have a placeholder, just draw
     // that without executing an image request.
     if (imagePainter.isPreview) {
-        imagePainter.painter = request.placeholder?.toPainter() ?: EmptyPainter
+        imagePainter.painter = request.placeholder?.toPainter()
         return
     }
 
@@ -335,7 +336,7 @@ private fun updatePainter(
     val transition = request.defined.transition ?: imageLoader.defaults.transition
     val crossfadeMillis = (transition as? CrossfadeTransition)?.durationMillis ?: 0
     if (crossfadeMillis <= 0) {
-        imagePainter.painter = painter ?: EmptyPainter
+        imagePainter.painter = painter
         return
     }
 
@@ -345,7 +346,7 @@ private fun updatePainter(
 
     // Short circuit if the request isn't successful or if it's returned by the memory cache.
     if (state !is State.Success || state.metadata.dataSource == DataSource.MEMORY_CACHE) {
-        imagePainter.painter = painter ?: EmptyPainter
+        imagePainter.painter = painter
         return
     }
 
@@ -381,12 +382,6 @@ private fun ImageResult.toState() = when (this) {
         painter = drawable?.toPainter(),
         throwable = throwable
     )
-}
-
-/** A [Painter] that draws nothing and has no intrinsic size. */
-private object EmptyPainter : Painter() {
-    override val intrinsicSize: Size get() = Size.Unspecified
-    override fun DrawScope.onDraw() {}
 }
 
 /** A simple mutable value holder that avoids recomposition. */
