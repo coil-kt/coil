@@ -132,7 +132,7 @@ class ImagePainter internal constructor(
         get() = painter?.intrinsicSize ?: Size.Unspecified
 
     override fun DrawScope.onDraw() {
-        // Update the request size based on the canvas size.
+        // Set the request size to the canvas size.
         requestSize = size
 
         // Draw the current painter.
