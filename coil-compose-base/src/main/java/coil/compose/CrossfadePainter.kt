@@ -44,7 +44,7 @@ private class CrossfadePainter(
     private var maxAlpha: Float by mutableStateOf(1f)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
-    override val intrinsicSize = computeIntrinsicSize()
+    override val intrinsicSize get() = computeIntrinsicSize()
 
     override fun DrawScope.onDraw() {
         if (isDone) {
@@ -88,13 +88,21 @@ private class CrossfadePainter(
         val startSize = start?.intrinsicSize ?: Size.Unspecified
         val endSize = end?.intrinsicSize ?: Size.Unspecified
 
-        return if (startSize == Size.Unspecified && endSize == Size.Unspecified) {
-            Size.Unspecified
+        return if (startSize != Size.Unspecified) {
+            if (endSize != Size.Unspecified) {
+                Size(
+                    width = max(startSize.width, endSize.width),
+                    height = max(startSize.height, endSize.height),
+                )
+            } else {
+                startSize
+            }
         } else {
-            Size(
-                width = max(startSize.width, endSize.width),
-                height = max(startSize.height, endSize.height),
-            )
+            if (endSize != Size.Unspecified) {
+                endSize
+            } else {
+                Size.Unspecified
+            }
         }
     }
 
