@@ -63,8 +63,8 @@ private class CrossfadePainter(
         val startAlpha = if (fadeStart) maxAlpha - endAlpha else maxAlpha
         isDone = percent >= 1.0
 
-        if (percent < 1) drawPainter(start, startAlpha)
-        if (percent > 0) drawPainter(end, endAlpha)
+        if (startAlpha > 0) drawPainter(start, startAlpha)
+        if (endAlpha > 0) drawPainter(end, endAlpha)
 
         if (isDone) {
             start = null
