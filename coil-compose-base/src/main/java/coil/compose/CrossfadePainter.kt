@@ -38,7 +38,7 @@ private class CrossfadePainter(
 ) : Painter() {
 
     private var invalidateTick by mutableStateOf(0)
-    private var startTimeMillis = 0L
+    private var startTimeMillis = -1L
     private var isDone = false
 
     private var maxAlpha: Float by mutableStateOf(1f)
@@ -53,7 +53,7 @@ private class CrossfadePainter(
         }
 
         // Initialize startTimeMillis the first time we're drawn.
-        if (startTimeMillis == 0L) {
+        if (startTimeMillis == -1L) {
             startTimeMillis = SystemClock.uptimeMillis()
         }
 
