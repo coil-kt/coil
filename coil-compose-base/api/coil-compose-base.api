@@ -22,12 +22,12 @@ public final class coil/compose/ImagePainter$Snapshot {
 	public synthetic fun <init> (Lcoil/compose/ImagePainter$State;Lcoil/request/ImageRequest;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcoil/compose/ImagePainter$State;
 	public final fun component2 ()Lcoil/request/ImageRequest;
-	public final fun component3-YbymL2g ()J
-	public final fun copy-H0pRuoY (Lcoil/compose/ImagePainter$State;Lcoil/request/ImageRequest;J)Lcoil/compose/ImagePainter$Snapshot;
-	public static synthetic fun copy-H0pRuoY$default (Lcoil/compose/ImagePainter$Snapshot;Lcoil/compose/ImagePainter$State;Lcoil/request/ImageRequest;JILjava/lang/Object;)Lcoil/compose/ImagePainter$Snapshot;
+	public final fun component3-NH-jbRc ()J
+	public final fun copy-cSwnlzA (Lcoil/compose/ImagePainter$State;Lcoil/request/ImageRequest;J)Lcoil/compose/ImagePainter$Snapshot;
+	public static synthetic fun copy-cSwnlzA$default (Lcoil/compose/ImagePainter$Snapshot;Lcoil/compose/ImagePainter$State;Lcoil/request/ImageRequest;JILjava/lang/Object;)Lcoil/compose/ImagePainter$Snapshot;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getRequest ()Lcoil/request/ImageRequest;
-	public final fun getSize-YbymL2g ()J
+	public final fun getSize-NH-jbRc ()J
 	public final fun getState ()Lcoil/compose/ImagePainter$State;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;

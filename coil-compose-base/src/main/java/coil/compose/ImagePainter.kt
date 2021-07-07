@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -20,8 +21,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.IntSize
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter.ExecuteCallback
@@ -31,6 +30,7 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
+import coil.size.OriginalSize
 import coil.size.Precision
 import coil.size.Scale
 import coil.transition.CrossfadeTransition
@@ -90,7 +90,6 @@ fun rememberImagePainter(
     imagePainter.imageLoader = imageLoader
     imagePainter.onExecute = onExecute
     imagePainter.isPreview = LocalInspectionMode.current
-    imagePainter.rootViewSize = LocalView.current.run { IntSize(width, height) }
     updatePainter(imagePainter, request, imageLoader)
     return imagePainter
 }
@@ -108,7 +107,7 @@ class ImagePainter internal constructor(
 
     private var scope: CoroutineScope? = null
     private var requestJob: Job? = null
-    private var requestSize: IntSize by mutableStateOf(IntSize.Zero)
+    private var requestSize: Size by mutableStateOf(Size.Zero)
 
     private var alpha: Float by mutableStateOf(1f)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
@@ -116,7 +115,6 @@ class ImagePainter internal constructor(
     internal var painter: Painter? by mutableStateOf(null)
     internal var onExecute = ExecuteCallback.Default
     internal var isPreview = false
-    internal var rootViewSize = IntSize.Zero
 
     /** The current [ImagePainter.State]. */
     var state: State by mutableStateOf(State.Empty)
@@ -135,7 +133,7 @@ class ImagePainter internal constructor(
 
     override fun DrawScope.onDraw() {
         // Update the request size based on the canvas size.
-        updateRequestSize(canvasSize = size)
+        requestSize = size
 
         // Draw the current painter.
         painter?.apply { draw(size, alpha, colorFilter) }
@@ -176,7 +174,7 @@ class ImagePainter internal constructor(
                 }
 
                 // Short circuit if the requested size is 0.
-                if (size == IntSize.Zero) {
+                if (size == Size.Zero) {
                     state = State.Empty
                     return@collect
                 }
@@ -196,23 +194,6 @@ class ImagePainter internal constructor(
 
     override fun onAbandoned() = onForgotten()
 
-    private fun updateRequestSize(canvasSize: Size) {
-        requestSize = IntSize(
-            width = when {
-                // If we have a canvas width, use it...
-                canvasSize.width >= 0.5f -> canvasSize.width.roundToInt()
-                // Otherwise we fall-back to the root view size as an upper bound.
-                else -> rootViewSize.width.coerceAtLeast(0)
-            },
-            height = when {
-                // If we have a canvas height, use it...
-                canvasSize.height >= 0.5f -> canvasSize.height.roundToInt()
-                // Otherwise we fall-back to the root view size as an upper bound.
-                else -> rootViewSize.height.coerceAtLeast(0)
-            }
-        )
-    }
-
     private fun execute(previous: Snapshot?, current: Snapshot) {
         val scope = scope ?: return // Shouldn't happen.
         if (!onExecute(previous, current)) return
@@ -231,7 +212,11 @@ class ImagePainter internal constructor(
                     // Set the size unless it has been set explicitly.
                     if (request.defined.sizeResolver == null) {
                         val size = current.size
-                        size(size.width, size.height)
+                        if (size.isSpecified) {
+                            size(size.width.roundToInt(), size.height.roundToInt())
+                        } else {
+                            size(OriginalSize)
+                        }
                     }
 
                     // Set the scale to fill unless it has been set explicitly.
@@ -273,7 +258,7 @@ class ImagePainter internal constructor(
     data class Snapshot(
         val state: State,
         val request: ImageRequest,
-        val size: IntSize,
+        val size: Size,
     )
 
     /**
