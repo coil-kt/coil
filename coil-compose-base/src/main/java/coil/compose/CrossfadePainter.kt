@@ -48,7 +48,7 @@ private class CrossfadePainter(
 
     override fun DrawScope.onDraw() {
         if (isDone) {
-            drawPainter(start, maxAlpha)
+            drawPainter(end, maxAlpha)
             return
         }
 
