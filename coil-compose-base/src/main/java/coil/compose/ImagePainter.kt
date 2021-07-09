@@ -170,8 +170,9 @@ class ImagePainter internal constructor(
                 val current = Snapshot(state, request, size)
                 snapshot = current
 
-                // Short circuit if the size hasn't been set explicitly and the canvas size is empty (zero).
-                if (request.defined.sizeResolver == null && size.isEmpty()) {
+                // Short circuit if the size hasn't been set explicitly and the canvas size is positive.
+                if (request.defined.sizeResolver == null &&
+                        size.isSpecified && (size.width <= 0.5f || size.height <= 0.5f)) {
                     state = State.Empty
                     return@collect
                 }
