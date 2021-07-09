@@ -14,9 +14,8 @@ import coil.request.ImageRequest
 
 /**
  * Return an [ImagePainter] that will execute an [ImageRequest] using [LocalImageLoader].
- * Use [ImageRequest.Builder.fadeIn] to configure the fade in animation duration.
  *
- * @param data The [ImageRequest.data] to execute.
+ * @param data The [ImageRequest.data] to load.
  * @param onExecute Called immediately before the [ImagePainter] launches an image request.
  *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  * @param builder An optional lambda to configure the request.
@@ -30,7 +29,6 @@ inline fun rememberImagePainter(
 
 /**
  * Return an [ImagePainter] that will execute the [request] using [LocalImageLoader].
- * Use [ImageRequest.Builder.fadeIn] to configure the fade in animation duration.
  *
  * @param request The [ImageRequest] to execute.
  * @param onExecute Called immediately before the [ImagePainter] launches an image request.

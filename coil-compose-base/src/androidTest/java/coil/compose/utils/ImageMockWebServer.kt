@@ -1,4 +1,4 @@
-package coil.compose
+package coil.compose.utils
 
 import androidx.annotation.RawRes
 import androidx.test.platform.app.InstrumentationRegistry

@@ -32,13 +32,13 @@ Image(
 
 ## Transitions
 
-Importantly, existing transition functions including `ImageRequest.Builder.crossfade` and `ImageRequest.Builder.transition` **will not work** with `rememberImagePainter` as they're built to work with `View`s. That said, the integration adds support for a fade in animation when the image request completes successfully. To enable it set it in `builder`:
+The [`Transition`](transitions.md) interface does not work with `rememberImagePainter` as it requires a `View` reference. That said, `CrossfadeTransition` does work with `rememberImagePainter` due to special internal support. You can enable the transition using `ImageRequest.Builder.crossfade`:
 
 ```kotlin
 Image(
     painter = rememberImagePainter(
         data = "https://www.example.com/image.jpg"
-        builder = { fadeIn(true) }
+        builder = { crossfade(true) }
     ),
     contentDescription = null,
     modifier = Modifier.size(128.dp)
@@ -50,7 +50,8 @@ It's also possible to create custom transitions by observing the `ImagePainter`'
 ```kotlin
 val painter = rememberImagePainter("https://www.example.com/image.jpg")
 
-if (painter.state.let { it is ImagePainter.State.Success && it.metadata.dataSource != DataSource.MEMORY_CACHE }) {
+val state = painter.state
+if (state is ImagePainter.State.Success && state.metadata.dataSource != DataSource.MEMORY_CACHE }) {
     // Perform the transition animation.
 }
 
