@@ -448,6 +448,37 @@ class ImagePainterTest {
         }
     }
 
+    @Test
+    fun crossfade() {
+        // captureToImage is SDK_INT >= 26.
+        assumeTrue(SDK_INT >= 26)
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberImagePainter(
+                    data = server.url("/image"),
+                    builder = {
+                        placeholder(R.drawable.red_rectangle)
+                        crossfade(true)
+                    }
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(128.dp)
+                    .testTag(Image),
+            )
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertWidthIsEqualTo(128.dp)
+            .assertHeightIsEqualTo(128.dp)
+            .assertIsDisplayed()
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
     @Composable
     private inline fun rememberImagePainter(
         data: Any,

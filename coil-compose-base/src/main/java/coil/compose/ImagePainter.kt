@@ -61,8 +61,8 @@ inline fun rememberImagePainter(
     builder: ImageRequest.Builder.() -> Unit = {},
 ): ImagePainter {
     val request = ImageRequest.Builder(LocalContext.current)
-        .apply(builder)
         .data(data)
+        .apply(builder)
         .build()
     return rememberImagePainter(request, imageLoader, onExecute)
 }
@@ -170,8 +170,8 @@ class ImagePainter internal constructor(
                 val current = Snapshot(state, request, size)
                 snapshot = current
 
-                // Short circuit if the size hasn't been set explicitly and the canvas size is zero.
-                if (request.defined.sizeResolver == null && size == Size.Zero) {
+                // Short circuit if the size hasn't been set explicitly and the canvas size is empty (zero).
+                if (request.defined.sizeResolver == null && size.isEmpty()) {
                     state = State.Empty
                     return@collect
                 }
@@ -337,6 +337,8 @@ private fun updatePainter(
         key = state,
         start = loading.value,
         end = painter,
+        // Fallback to fit to match the default image content scale.
+        scale = request.defined.scale ?: Scale.FIT,
         durationMillis = transition.durationMillis,
         fadeStart = !state.metadata.isPlaceholderMemoryCacheKeyPresent
     )
