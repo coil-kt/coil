@@ -6,7 +6,7 @@ To add support for [Jetpack Compose](https://developer.android.com/jetpack/compo
 implementation("io.coil-kt:coil-compose:1.3.0")
 ```
 
-To load an image in Jetpack Compose, use the `rememberImagePainter` function:
+Then use the `rememberImagePainter` function to create an `ImagePainter`:
 
 ```kotlin
 // Basic usage
@@ -32,13 +32,15 @@ Image(
 
 ## Transitions
 
-The [`Transition`](transitions.md) interface does not work with `rememberImagePainter` as it requires a `View` reference. That said, `CrossfadeTransition` does work with `rememberImagePainter` due to special internal support. You can enable the transition using `ImageRequest.Builder.crossfade`:
+Custom [`Transition`](transitions.md)s do not work with `rememberImagePainter` as they requires a `View` reference. Only `CrossfadeTransition` works with `rememberImagePainter` due to special internal support. You can enable the crossfade transition using `ImageRequest.Builder.crossfade`:
 
 ```kotlin
 Image(
     painter = rememberImagePainter(
         data = "https://www.example.com/image.jpg"
-        builder = { crossfade(true) }
+        builder = {
+            crossfade(true)
+        }
     ),
     contentDescription = null,
     modifier = Modifier.size(128.dp)
@@ -66,7 +68,7 @@ Image(
 
 The integration also adds a pseudo-[`CompositionLocal`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/CompositionLocal) for getting/setting the `ImageLoader` for a composable.
 
-Most apps will only use it to get the singleton `ImageLoader`, but this enables setting local `ImageLoader` instances (for a specific screen, for example) if necessary.
+Most apps will only use `LocalImageLoader` to get the singleton `ImageLoader`, but it also enables setting local `ImageLoader` instances (for a specific screen, for example) if necessary.
 
 ```kotlin
 // Get

@@ -107,7 +107,7 @@ class ImagePainter internal constructor(
 
     private var rememberScope: CoroutineScope? = null
     private var requestJob: Job? = null
-    private var requestSize: Size by mutableStateOf(Size.Zero)
+    private var drawSize: Size by mutableStateOf(Size.Zero)
 
     private var alpha: Float by mutableStateOf(1f)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
@@ -132,8 +132,8 @@ class ImagePainter internal constructor(
         get() = painter?.intrinsicSize ?: Size.Unspecified
 
     override fun DrawScope.onDraw() {
-        // Set the request size to the canvas size.
-        requestSize = size
+        // Update the draw scope's current size.
+        drawSize = size
 
         // Draw the current painter.
         painter?.apply { draw(size, alpha, colorFilter) }
@@ -163,14 +163,14 @@ class ImagePainter internal constructor(
             var snapshot: Snapshot? = null
             combine(
                 snapshotFlow { request },
-                snapshotFlow { requestSize },
+                snapshotFlow { drawSize },
                 transform = ::Pair
             ).collect { (request, size) ->
                 val previous = snapshot
                 val current = Snapshot(state, request, size)
                 snapshot = current
 
-                // Short circuit if the size hasn't been set explicitly and the canvas size is positive.
+                // Short circuit if the size hasn't been set explicitly and the draw size is positive.
                 if (request.defined.sizeResolver == null &&
                         size.isSpecified && (size.width <= 0.5f || size.height <= 0.5f)) {
                     state = State.Empty
@@ -244,6 +244,10 @@ class ImagePainter internal constructor(
         operator fun invoke(previous: Snapshot?, current: Snapshot): Boolean
 
         companion object {
+            /**
+             * Proceeds with the request if the painter is empty or the request has changed.
+             * This **does not** proceed with the request if only the draw size has changed.
+             */
             @JvmField val Default = ExecuteCallback { previous, current ->
                 current.state == State.Empty || previous?.request != current.request
             }
@@ -338,7 +342,7 @@ private fun updatePainter(
         key = state,
         start = loading.value,
         end = painter,
-        // Fallback to fit to match the default image content scale.
+        // Fall back to Scale.FIT to match the default image content scale.
         scale = request.defined.scale ?: Scale.FIT,
         durationMillis = transition.durationMillis,
         fadeStart = !state.metadata.isPlaceholderMemoryCacheKeyPresent
