@@ -1,4 +1,4 @@
-package coil.compose
+package coil.compose.utils
 
 import android.content.ContentResolver
 import android.graphics.Bitmap
