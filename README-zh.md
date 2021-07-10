@@ -16,7 +16,7 @@ Coil 名字的由来：取 **Co**routine **I**mage **L**oader 首字母得来。
 Coil 可以在 `mavenCentral()` 下载
 
 ```kotlin
-implementation("io.coil-kt:coil:1.2.2")
+implementation("io.coil-kt:coil:1.3.0")
 ```
 
 ## 快速上手

@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0] - July 10, 2021
+
+- **New**: Add support for [Jetpack Compose](https://developer.android.com/jetpack/compose). It's based on [Accompanist](https://github.com/google/accompanist/)'s Coil integration, but has a number of changes. Check out [the docs](https://coil-kt.github.io/coil/compose/) for more info.
+- Add `allowConversionToBitmap` to enable/disable the automatic bitmap conversion for `Transformation`s. ([#775](https://github.com/coil-kt/coil/pull/775))
+- Add `enforceMinimumFrameDelay` to `ImageDecoderDecoder` and `GifDecoder` to enable rewriting a GIF's frame delay if it's below a threshold. ([#783](https://github.com/coil-kt/coil/pull/783))
+    - This is disabled by default, but will be enabled by default in a future release.
+- Add support for enabling/disabling an `ImageLoader`'s internal network observer. ([#741](https://github.com/coil-kt/coil/pull/741))
+- Fix the density of bitmaps decoded by `BitmapFactoryDecoder`. ([#776](https://github.com/coil-kt/coil/pull/776))
+- Fix Licensee not finding Coil's licence url. ([#774](https://github.com/coil-kt/coil/pull/774))
+- Update `androidx.core:core-ktx` to 1.6.0.
+
 ## [1.2.2] - June 4, 2021
 
 - Fix race condition while converting a drawable with shared state to a bitmap. ([#771](https://github.com/coil-kt/coil/pull/771))
