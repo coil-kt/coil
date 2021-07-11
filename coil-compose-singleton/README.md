@@ -32,55 +32,6 @@ Image(
 
 `ImagePainter` manages the asynchronous image request and handles drawing the placeholder/success/error drawables.
 
-## Migrating from Accompanist
-
-Coil's Jetpack Compose integration is based on [Accompanist](https://github.com/google/accompanist)'s Coil integration, but has the following changes:
-
-- `rememberCoilPainter` is renamed to `rememberImagePainter` and its arguments changed:
-    - `shouldRefetchOnSizeChange` is replaced with `onExecute`, which has more control over if image requests are executed or skipped.
-    - `requestBuilder` is renamed to `builder`.
-    - `fadeIn` and `fadeInDurationMs` are removed. Migrate to `ImageRequest.Builder.crossfade` (see [Transitions](#Transitions).
-    - `previewPlaceholder` is removed. `ImageRequest.placeholder` is now automatically used if inspection mode is enabled.
-- `LoadPainter` is renamed to `ImagePainter`.
-    - `ImagePainter` no longer falls back to executing an image request with the root view's size if `onDraw` is not called. This is most likely to be noticeable if you use `ImagePainter` in a `LazyColumn` and the `Image`'s size isn't constrained.
-- `Loader` and `rememberLoadPainter` are removed.
-- `LocalImageLoader.current` is not-null and returns the singleton `ImageLoader` by default.
-- `DrawablePainter` and `rememberDrawablePainter` are now private.
-
-Here's an example call site migration:
-
-```kotlin
-// Accompanist
-Image(
-    painter = rememberCoilPainter(
-        request = "https://www.example.com/image.jpg",
-        requestBuilder = {
-            allowHardware(false)
-        },
-        shouldRefetchOnSizeChange = ShouldRefetchOnSizeChange { _, _ -> true }
-        fadeIn = true,
-        previewPlaceholder = R.drawable.placeholder
-    ),
-    contentDescription = null,
-    modifier = Modifier.size(128.dp)
-)
-
-// Coil
-Image(
-    painter = rememberImagePainter(
-        data = "https://www.example.com/image.jpg",
-        onExecute = ExecuteCallback { _, _ -> true }
-        builder = {
-            allowHardware(false)
-            crossfade(true)
-            placeholder(R.drawable.placeholder)
-        }
-    ),
-    contentDescription = null,
-    modifier = Modifier.size(128.dp)
-)
-```
-
 ## Transitions
 
 You can enable the built in crossfade transition using `ImageRequest.Builder.crossfade`:
@@ -137,3 +88,52 @@ CompositionLocalProvider(LocalImageLoader provides ImageLoader(context)) {
 
 !!! Note
     There's also the `coil-compose-base` artifact which is a subset of `coil-compose`. It does not include `LocalImageLoader` and the singleton `ImageLoader`.
+
+## Migrating from Accompanist
+
+Coil's Jetpack Compose integration is based on [Accompanist](https://github.com/google/accompanist)'s Coil integration, but has the following changes:
+
+- `rememberCoilPainter` is renamed to `rememberImagePainter` and its arguments changed:
+    - `shouldRefetchOnSizeChange` is replaced with `onExecute`, which has more control over if image requests are executed or skipped.
+    - `requestBuilder` is renamed to `builder`.
+    - `fadeIn` and `fadeInDurationMs` are removed. Migrate to `ImageRequest.Builder.crossfade` (see [Transitions](#Transitions).
+    - `previewPlaceholder` is removed. `ImageRequest.placeholder` is now automatically used if inspection mode is enabled.
+- `LoadPainter` is renamed to `ImagePainter`.
+    - `ImagePainter` no longer falls back to executing an image request with the root view's size if `onDraw` is not called. This is most likely to be noticeable if you use `ImagePainter` in a `LazyColumn` and the `Image`'s size isn't constrained.
+- `Loader` and `rememberLoadPainter` are removed.
+- `LocalImageLoader.current` is not-null and returns the singleton `ImageLoader` by default.
+- `DrawablePainter` and `rememberDrawablePainter` are now private.
+
+Here's an example call site migration:
+
+```kotlin
+// Accompanist
+Image(
+    painter = rememberCoilPainter(
+        request = "https://www.example.com/image.jpg",
+        requestBuilder = {
+            allowHardware(false)
+        },
+        shouldRefetchOnSizeChange = ShouldRefetchOnSizeChange { _, _ -> true }
+        fadeIn = true,
+        previewPlaceholder = R.drawable.placeholder
+    ),
+    contentDescription = null,
+    modifier = Modifier.size(128.dp)
+)
+
+// Coil
+Image(
+    painter = rememberImagePainter(
+        data = "https://www.example.com/image.jpg",
+        onExecute = ExecuteCallback { _, _ -> true }
+        builder = {
+            allowHardware(false)
+            crossfade(true)
+            placeholder(R.drawable.placeholder)
+        }
+    ),
+    contentDescription = null,
+    modifier = Modifier.size(128.dp)
+)
+```
