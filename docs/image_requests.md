@@ -18,4 +18,4 @@ Once you've created a request pass it to an `ImageLoader` to enqueue/execute it:
 imageLoader.enqueue(request)
 ```
 
-See the [API documentation](../api/coil-base/coil-base/coil.request/-image-request/) for more information.
+See the [API documentation](../api/coil-base/coil.request/-image-request/) for more information.
