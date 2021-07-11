@@ -34,7 +34,7 @@ Image(
 
 ## Migrating from Accompanist
 
-Coil's Jetpack Compose integration is based on [Accompanist](https://github.com/google/accompanist)'s Coil integration with a number of changes:
+Coil's Jetpack Compose integration is based on [Accompanist](https://github.com/google/accompanist)'s Coil integration, but has the following changes:
 
 - `rememberCoilPainter` is renamed to `rememberImagePainter` and its arguments changed:
     - `shouldRefetchOnSizeChange` is replaced with `onExecute`, which has more control over if image requests are executed or skipped.
@@ -46,6 +46,38 @@ Coil's Jetpack Compose integration is based on [Accompanist](https://github.com/
 - `Loader` and `rememberLoadPainter` are removed.
 - `LocalImageLoader.current` is not-null and returns the singleton `ImageLoader` by default.
 - `DrawablePainter` and `rememberDrawablePainter` are now private.
+
+Here's an example call site migration:
+
+```kotlin
+// Accompanist
+Image(
+    painter = rememberCoilPainter(
+        request = "https://www.example.com/image.jpg",
+        requestBuilder = {
+            allowHardware(false)
+        },
+        fadeIn = true,
+        previewPlaceholder = R.drawable.placeholder
+    ),
+    contentDescription = null,
+    modifier = Modifier.size(128.dp)
+)
+
+// Coil
+Image(
+    painter = rememberImagePainter(
+        data = "https://www.example.com/image.jpg",
+        builder = {
+            allowHardware(false)
+            crossfade(true)
+            placeholder(R.drawable.placeholder)
+        }
+    ),
+    contentDescription = null,
+    modifier = Modifier.size(128.dp)
+)
+```
 
 ## Transitions
 
