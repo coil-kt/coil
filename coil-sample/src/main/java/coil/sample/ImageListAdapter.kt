@@ -1,6 +1,7 @@
 package coil.sample
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +42,7 @@ class ImageListAdapter(
 
             load(item.uri) {
                 placeholder(ColorDrawable(item.color))
+                error(ColorDrawable(Color.RED))
                 parameters(item.parameters)
             }
 
