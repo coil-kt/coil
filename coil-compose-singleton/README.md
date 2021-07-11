@@ -114,7 +114,7 @@ Image(
         requestBuilder = {
             allowHardware(false)
         },
-        shouldRefetchOnSizeChange = ShouldRefetchOnSizeChange { _, _ -> true }
+        shouldRefetchOnSizeChange = ShouldRefetchOnSizeChange { _, _ -> true },
         fadeIn = true,
         previewPlaceholder = R.drawable.placeholder
     ),
@@ -126,7 +126,7 @@ Image(
 Image(
     painter = rememberImagePainter(
         data = "https://www.example.com/image.jpg",
-        onExecute = ExecuteCallback { _, _ -> true }
+        onExecute = ExecuteCallback { _, _ -> true },
         builder = {
             allowHardware(false)
             crossfade(true)
