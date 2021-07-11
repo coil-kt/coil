@@ -107,7 +107,7 @@ Coil's Jetpack Compose integration is based on [Accompanist](https://github.com/
 Here's an example call site migration:
 
 ```kotlin
-// Accompanist
+// accompanist-coil
 Image(
     painter = rememberCoilPainter(
         request = "https://www.example.com/image.jpg",
@@ -122,7 +122,7 @@ Image(
     modifier = Modifier.size(128.dp)
 )
 
-// Coil
+// coil-compose
 Image(
     painter = rememberImagePainter(
         data = "https://www.example.com/image.jpg",
