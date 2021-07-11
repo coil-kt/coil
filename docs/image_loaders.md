@@ -11,7 +11,7 @@ val imageLoader = ImageLoader.Builder(context)
 
 Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
 
-It's recommended, though not required, to call [`shutdown`](../api/coil-base/coil-base/coil/-image-loader/shutdown.html) when you've finished using an image loader. This preemptively frees its memory and cleans up any observers. If you only create and use one `ImageLoader`, you do not need to shut it down as it will be freed when your app is killed.
+It's recommended, though not required, to call [`shutdown`](../api/coil-base/coil/-image-loader/shutdown.html) when you've finished using an image loader. This preemptively frees its memory and cleans up any observers. If you only create and use one `ImageLoader`, you do not need to shut it down as it will be freed when your app is killed.
 
 ## Caching
 
@@ -19,7 +19,7 @@ Each `ImageLoader` keeps a memory cache of recently decoded `Bitmap`s as well as
 
 `ImageLoader`s rely on an `OkHttpClient` to handle disk caching. **By default, every `ImageLoader` is already set up for disk caching** and will set a max cache size of between 10-250MB depending on the remaining space on the user's device.
 
-However, if you set a custom `OkHttpClient`, you'll need to add the disk cache yourself. To get a `Cache` instance that's optimized for Coil, you can use [`CoilUtils.createDefaultCache`](../api/coil-base/coil-base/coil.util/-coil-utils/create-default-cache.html). Optionally, you can create your own `Cache` instance with a different size + location. Here's an example:
+However, if you set a custom `OkHttpClient`, you'll need to add the disk cache yourself. To get a `Cache` instance that's optimized for Coil, you can use [`CoilUtils.createDefaultCache`](../api/coil-base/coil.util/-coil-utils/create-default-cache.html). Optionally, you can create your own `Cache` instance with a different size + location. Here's an example:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)

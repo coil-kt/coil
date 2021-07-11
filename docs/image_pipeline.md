@@ -2,9 +2,9 @@
 
 Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats#image-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, TIFF, etc.)
 
-Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of four main parts: [Interceptors](../api/coil-base/coil-base/coil.intercept/-interceptor), [Mappers](../api/coil-base/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil-base/coil.decode/-decoder).
+Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of four main parts: [Interceptors](../api/coil-base/coil.intercept/-interceptor), [Mappers](../api/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
 
-Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-base/coil-base/coil/-component-registry):
+Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-base/coil/-component-registry):
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
@@ -43,7 +43,7 @@ class CustomCacheInterceptor(
 
 Interceptors are an advanced feature that let you wrap an `ImageLoader`'s image pipeline with custom logic. Their design is heavily based on [OkHttp's `Interceptor` interface](https://square.github.io/okhttp/interceptors/#interceptors).
 
-See [Interceptor](../api/coil-base/coil-base/coil.intercept/-interceptor) for more information.
+See [Interceptor](../api/coil-base/coil.intercept/-interceptor) for more information.
 
 ## Mappers
 
@@ -76,19 +76,19 @@ val request = ImageRequest.Builder(context)
 imageLoader.enqueue(request)
 ```
 
-See [Mapper](../api/coil-base/coil-base/coil.map/-mapper) for more information.
+See [Mapper](../api/coil-base/coil.map/-mapper) for more information.
 
 ## Fetchers
 
 Fetchers translate data into either a `BufferedSource` or a `Drawable`.
 
-See [Fetcher](../api/coil-base/coil-base/coil.fetch/-fetcher) for more information.
+See [Fetcher](../api/coil-base/coil.fetch/-fetcher) for more information.
 
 ## Decoders
 
 Decoders read a `BufferedSource` as input and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
 
-See [Decoder](../api/coil-base/coil-base/coil.decode/-decoder) for more information.
+See [Decoder](../api/coil-base/coil.decode/-decoder) for more information.
 
 !!! Note
     Decoders are responsible for closing the `BufferedSource` when finished. This allows custom decoders to return a `Drawable` while still reading the source. This can be useful to support file types such as [progressive JPEG](https://www.liquidweb.com/kb/what-is-a-progressive-jpeg/) where there is incremental information to show.

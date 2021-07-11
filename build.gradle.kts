@@ -65,9 +65,6 @@ allprojects {
                 url by URL("https://kotlin.github.io/kotlinx.coroutines/")
             }
             externalDocumentationLink {
-                url by URL("https://kotlin.github.io/kotlinx.coroutines/")
-            }
-            externalDocumentationLink {
                 url by URL("https://square.github.io/okhttp/3.x/okhttp/")
             }
             externalDocumentationLink {

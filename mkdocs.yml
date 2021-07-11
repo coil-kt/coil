@@ -76,4 +76,4 @@ plugins:
   - minify:
       minify_html: true
 
-# Built with https://github.com/squidfunk/mkdocs-material v7.1.1
+# Built with https://github.com/squidfunk/mkdocs-material v7.1.10

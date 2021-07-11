@@ -19,7 +19,7 @@ Image(
 // Advanced
 Image(
     painter = rememberImagePainter(
-        data = "https://www.example.com/image.jpg"
+        data = "https://www.example.com/image.jpg",
         builder = {
             transformation(CircleCropTransformation())
             allowHardware(false)
@@ -39,7 +39,7 @@ You can enable the built in crossfade transition using `ImageRequest.Builder.cro
 ```kotlin
 Image(
     painter = rememberImagePainter(
-        data = "https://www.example.com/image.jpg"
+        data = "https://www.example.com/image.jpg",
         builder = {
             crossfade(true)
         }
