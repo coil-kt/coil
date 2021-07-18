@@ -21,8 +21,7 @@ Image(
     painter = rememberImagePainter(
         data = "https://www.example.com/image.jpg",
         builder = {
-            transformation(CircleCropTransformation())
-            allowHardware(false)
+            transformations(CircleCropTransformation())
         }
     ),
     contentDescription = null,
@@ -112,7 +111,7 @@ Image(
     painter = rememberCoilPainter(
         request = "https://www.example.com/image.jpg",
         requestBuilder = {
-            allowHardware(false)
+            transformations(CircleCropTransformation())
         },
         shouldRefetchOnSizeChange = ShouldRefetchOnSizeChange { _, _ -> true },
         fadeIn = true,
@@ -128,9 +127,9 @@ Image(
         data = "https://www.example.com/image.jpg",
         onExecute = ExecuteCallback { _, _ -> true },
         builder = {
-            allowHardware(false)
             crossfade(true)
             placeholder(R.drawable.placeholder)
+            transformations(CircleCropTransformation())
         }
     ),
     contentDescription = null,
