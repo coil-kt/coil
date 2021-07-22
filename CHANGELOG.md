@@ -8,6 +8,7 @@
     - You'll need to add `-Xjvm-default=all` to your build file as well. See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to add it.
 - **Important**: `CoilUtils.createDefaultCache` has been replaced by `OkHttpClient.Builder.imageLoaderDiskCache`. The new method is **necessary** to add support for returning the disk cache's `File` in `SuccessResult.file`.
 - **Important**: `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
+- `ImageRequest`'s default `Scale` is now `Scale.FIT`. This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
 - `BitmapPool` and `PoolableViewTarget` have been removed from the library. Bitmap pooling was removed because:
     - It's most effective on <= API 23 and has become less effective with each new Android release.
     - Removing bitmap pooling allows Coil to use immutable bitmaps, which have performance benefits.
