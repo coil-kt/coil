@@ -63,7 +63,7 @@ jobs:
             fail-fast: true
             matrix:
                 # API 21 is flaky and times out.
-                api-level: [16, 19, 22, 26, 30]
+                api-level: [22, 26, 30]
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-java@v2
@@ -114,7 +114,7 @@ jobs:
                   disable-animations: true
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-                  script: ./ci_run_instrumentation_tests.sh ${{ matrix.api-level }}
+                  script: ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
         name: Deploy snapshot

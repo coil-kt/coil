@@ -7,12 +7,11 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
+import coil.ImageLoader
 import coil.base.test.R
-import coil.bitmap.BitmapPool
-import coil.decode.DrawableDecoderService
-import coil.decode.Options
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
+import coil.request.Options
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.util.getDrawableCompat
@@ -24,46 +23,41 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ResourceUriFetcherTest {
 
     private lateinit var context: Context
-    private lateinit var pool: BitmapPool
-    private lateinit var drawableDecoder: DrawableDecoderService
-    private lateinit var fetcher: ResourceUriFetcher
+    private lateinit var fetcherFactory: ResourceUriFetcher.Factory
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        pool = BitmapPool(0)
-        drawableDecoder = DrawableDecoderService(pool)
-        fetcher = ResourceUriFetcher(context, drawableDecoder)
+        fetcherFactory = ResourceUriFetcher.Factory()
     }
 
     @Test
     fun rasterDrawable() {
         val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
-
-        assertTrue(fetcher.handles(uri))
+        val options = Options(context, size = PixelSize(100, 100))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
+            fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
         }
 
         assertTrue(result is SourceResult)
         assertEquals("image/jpeg", result.mimeType)
-        assertFalse(result.source.exhausted())
+        assertFalse(result.source.source().exhausted())
     }
 
     @Test
     fun vectorDrawable() {
         val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
-
-        assertTrue(fetcher.handles(uri))
+        val options = Options(context, size = PixelSize(100, 100))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
+            fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
         }
 
         assertTrue(result is DrawableResult)
@@ -76,17 +70,16 @@ class ResourceUriFetcherTest {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable-xhdpi
         val resource = if (SDK_INT >= 23) "msg_bubble_incoming" else "ic_power_system"
         val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/$resource".toUri()
-        val uri = ResourceUriMapper(context).map(rawUri)
-
-        assertTrue(fetcher.handles(uri))
+        val options = Options(context, size = PixelSize(100, 100))
+        val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
+            fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
         }
 
         assertTrue(result is SourceResult)
         assertEquals("image/png", result.mimeType)
-        assertFalse(result.source.exhausted())
+        assertFalse(result.source.source().exhausted())
     }
 
     @Test
@@ -96,12 +89,11 @@ class ResourceUriFetcherTest {
 
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/ic_cancel.xml
         val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/ic_cancel".toUri()
-        val uri = ResourceUriMapper(context).map(rawUri)
-
-        assertTrue(fetcher.handles(uri))
+        val options = Options(context, size = PixelSize(100, 100))
+        val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
 
         val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
+            fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
         }
 
         assertTrue(result is DrawableResult)
@@ -112,9 +104,11 @@ class ResourceUriFetcherTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/469 */
     @Test
     fun colorAttributeIsApplied() = withTestActivity { activity ->
+        val imageLoader = ImageLoader(context) // Intentionally use the application context.
+        val options = Options(context = activity, size = OriginalSize)
         val result = runBlocking {
-            val uri = ResourceIntMapper(context).map(R.drawable.ic_tinted_vector)
-            fetcher.fetch(pool, uri, OriginalSize, Options(activity))
+            val uri = assertNotNull(ResourceIntMapper().map(R.drawable.ic_tinted_vector, options))
+            fetcherFactory.create(uri, options, imageLoader)?.fetch()
         }
         val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
         val actual = (result as DrawableResult).drawable.toBitmap()

@@ -9,7 +9,6 @@ import androidx.test.core.app.ApplicationProvider
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
-import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
 import coil.util.createRequest
 import coil.util.createTestMainDispatcher
@@ -34,13 +33,13 @@ class CrossfadeTransitionTest {
 
     private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher
-    private lateinit var transition: CrossfadeTransition
+    private lateinit var transitionFactory: CrossfadeTransition.Factory
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
-        transition = CrossfadeTransition()
+        transitionFactory = CrossfadeTransition.Factory()
     }
 
     @After
@@ -54,26 +53,24 @@ class CrossfadeTransitionTest {
         var onSuccessCalled = false
 
         runBlocking {
-            transition.transition(
+            transitionFactory.create(
                 target = createTransitionTarget(
                     onSuccess = { result ->
                         assertFalse(onSuccessCalled)
                         onSuccessCalled = true
-
                         assertEquals(drawable, result)
                     }
                 ),
                 result = SuccessResult(
                     drawable = drawable,
                     request = createRequest(context),
-                    metadata = Metadata(
-                        memoryCacheKey = null,
-                        isSampled = false,
-                        dataSource = DataSource.MEMORY_CACHE,
-                        isPlaceholderMemoryCacheKeyPresent = false
-                    )
+                    dataSource = DataSource.MEMORY_CACHE,
+                    memoryCacheKey = null,
+                    placeholderMemoryCacheKey = null,
+                    file = null,
+                    isSampled = false
                 )
-            )
+            ).transition()
         }
 
         assertTrue(onSuccessCalled)
@@ -85,7 +82,7 @@ class CrossfadeTransitionTest {
         var onSuccessCalled = false
 
         runBlocking {
-            transition.transition(
+            transitionFactory.create(
                 target = createTransitionTarget(
                     onSuccess = { result ->
                         assertFalse(onSuccessCalled)
@@ -100,14 +97,13 @@ class CrossfadeTransitionTest {
                 result = SuccessResult(
                     drawable = drawable,
                     request = createRequest(context),
-                    metadata = Metadata(
-                        memoryCacheKey = null,
-                        isSampled = false,
-                        dataSource = DataSource.DISK,
-                        isPlaceholderMemoryCacheKeyPresent = false
-                    )
+                    dataSource = DataSource.DISK,
+                    memoryCacheKey = null,
+                    placeholderMemoryCacheKey = null,
+                    file = null,
+                    isSampled = false
                 )
-            )
+            ).transition()
         }
 
         assertTrue(onSuccessCalled)
@@ -122,7 +118,7 @@ class CrossfadeTransitionTest {
         var onSuccessCalled = false
 
         runBlocking {
-            transition.transition(
+            transitionFactory.create(
                 target = createTransitionTarget(
                     imageView = imageView,
                     onSuccess = { result ->
@@ -135,14 +131,13 @@ class CrossfadeTransitionTest {
                 result = SuccessResult(
                     drawable = drawable,
                     request = createRequest(context),
-                    metadata = Metadata(
-                        memoryCacheKey = null,
-                        isSampled = false,
-                        dataSource = DataSource.NETWORK,
-                        isPlaceholderMemoryCacheKeyPresent = false
-                    )
+                    dataSource = DataSource.NETWORK,
+                    memoryCacheKey = null,
+                    placeholderMemoryCacheKey = null,
+                    file = null,
+                    isSampled = false
                 )
-            )
+            ).transition()
         }
     }
 
@@ -152,16 +147,12 @@ class CrossfadeTransitionTest {
         var onSuccessCalled = false
 
         runBlocking {
-            transition.transition(
+            transitionFactory.create(
                 target = createTransitionTarget(
                     onError = { error ->
                         assertFalse(onSuccessCalled)
+                        assertTrue(error !is CrossfadeDrawable)
                         onSuccessCalled = true
-
-                        assertTrue(error is CrossfadeDrawable)
-
-                        // Stop the animation early to simulate the end of the animation.
-                        error.stop()
                     }
                 ),
                 result = ErrorResult(
@@ -169,7 +160,7 @@ class CrossfadeTransitionTest {
                     request = createRequest(context),
                     throwable = Throwable()
                 )
-            )
+            ).transition()
         }
 
         assertTrue(onSuccessCalled)

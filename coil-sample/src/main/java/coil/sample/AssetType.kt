@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package coil.sample
 
 enum class AssetType(val fileName: String) {

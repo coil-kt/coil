@@ -80,10 +80,8 @@ fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
     testImplementation(Library.ROBOLECTRIC)
 }
 
-fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String, includeTestProject: Boolean = true) {
-    if (includeTestProject) {
-        androidTestImplementation(project(":coil-test"))
-    }
+fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String) {
+    androidTestImplementation(project(":coil-test"))
 
     androidTestImplementation(Library.JUNIT)
     androidTestImplementation(kotlin("test-junit", kotlinVersion))

@@ -9,6 +9,4 @@ internal class RealSizeResolver(private val size: Size) : SizeResolver {
     }
 
     override fun hashCode() = size.hashCode()
-
-    override fun toString() = "RealSizeResolver(size=$size)"
 }

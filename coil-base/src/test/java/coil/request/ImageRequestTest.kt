@@ -49,7 +49,7 @@ class ImageRequestTest {
             .crossfade(false)
             .build()
 
-        assertEquals(Transition.NONE, request.transition)
+        assertEquals(Transition.Factory.NONE, request.transitionFactory)
 
         imageLoader.shutdown()
     }
@@ -134,8 +134,8 @@ class ImageRequestTest {
     @Test
     fun `defaults fill unset values`() {
         val defaults = DefaultRequestOptions(
-            dispatcher = Dispatchers.Unconfined,
-            transition = CrossfadeTransition(),
+            decoderDispatcher = Dispatchers.Unconfined,
+            transitionFactory = CrossfadeTransition.Factory(),
             precision = Precision.EXACT
         )
         val imageView = ImageView(context)
@@ -145,8 +145,8 @@ class ImageRequestTest {
             .defaults(defaults)
             .build()
 
-        assertSame(defaults.dispatcher, request.dispatcher)
-        assertSame(defaults.transition, request.transition)
+        assertSame(defaults.decoderDispatcher, request.decoderDispatcher)
+        assertSame(defaults.transitionFactory, request.transitionFactory)
         assertSame(defaults.precision, request.precision)
     }
 

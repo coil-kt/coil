@@ -40,3 +40,10 @@ internal suspend fun Lifecycle.observeStarted() {
         observer?.let(::removeObserver)
     }
 }
+
+/** Remove and re-add the observer to ensure all its lifecycle callbacks are invoked. */
+@MainThread
+internal fun Lifecycle.removeAndAddObserver(observer: LifecycleObserver) {
+    removeObserver(observer)
+    addObserver(observer)
+}

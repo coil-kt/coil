@@ -286,13 +286,13 @@ class ImagePainter internal constructor(
         /** The request was successful. */
         data class Success(
             override val painter: Painter,
-            val metadata: ImageResult.Metadata,
+            val result: SuccessResult,
         ) : State()
 
-        /** The request failed due to [throwable]. */
+        /** The request failed due to [ErrorResult.throwable]. */
         data class Error(
             override val painter: Painter?,
-            val throwable: Throwable,
+            val result: ErrorResult,
         ) : State()
     }
 }
@@ -321,8 +321,8 @@ private fun updatePainter(
     val painter = remember(state) { state.painter }
 
     // Short circuit if the crossfade transition isn't set.
-    val transition = request.defined.transition ?: imageLoader.defaults.transition
-    if (transition !is CrossfadeTransition) {
+    val transition = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
+    if (transition !is CrossfadeTransition.Factory) {
         imagePainter.painter = painter
         return
     }
@@ -332,7 +332,7 @@ private fun updatePainter(
     if (state is State.Loading) loading.value = state.painter
 
     // Short circuit if the request isn't successful or if it's returned by the memory cache.
-    if (state !is State.Success || state.metadata.dataSource == DataSource.MEMORY_CACHE) {
+    if (state !is State.Success || state.result.dataSource == DataSource.MEMORY_CACHE) {
         imagePainter.painter = painter
         return
     }
@@ -345,7 +345,7 @@ private fun updatePainter(
         // Fall back to Scale.FIT to match the default image content scale.
         scale = request.defined.scale ?: Scale.FIT,
         durationMillis = transition.durationMillis,
-        fadeStart = !state.metadata.isPlaceholderMemoryCacheKeyPresent
+        fadeStart = state.result.placeholderMemoryCacheKey == null
     )
 }
 
@@ -365,11 +365,11 @@ private fun unsupportedData(name: String): Nothing {
 private fun ImageResult.toState() = when (this) {
     is SuccessResult -> State.Success(
         painter = drawable.toPainter(),
-        metadata = metadata
+        result = this
     )
     is ErrorResult -> State.Error(
         painter = drawable?.toPainter(),
-        throwable = throwable
+        result = this
     )
 }
 

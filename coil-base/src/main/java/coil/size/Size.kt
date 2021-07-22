@@ -23,7 +23,7 @@ object OriginalSize : Size() {
 @Parcelize
 data class PixelSize(
     @Px val width: Int,
-    @Px val height: Int
+    @Px val height: Int,
 ) : Size() {
 
     init {

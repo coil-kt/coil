@@ -1,6 +1,6 @@
 package coil.transform
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
@@ -9,7 +9,6 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
-import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.request.animatedTransformation
@@ -24,35 +23,27 @@ import kotlin.test.assertTrue
 class AnimatedTransformationTest {
 
     private lateinit var context: Context
-    private lateinit var transformation: RoundedCornersAnimatedTransformation
     private lateinit var imageLoader: ImageLoader
-    private lateinit var imageRequestBuilder: ImageRequest.Builder
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        transformation = RoundedCornersAnimatedTransformation()
-        imageLoader = ImageLoader.Builder(context)
-            .crossfade(false)
-            .memoryCachePolicy(CachePolicy.DISABLED)
-            .diskCachePolicy(CachePolicy.DISABLED)
-            .build()
-        imageRequestBuilder = ImageRequest.Builder(context)
-            .bitmapConfig(Bitmap.Config.ARGB_8888)
-            .animatedTransformation(transformation)
+        imageLoader = ImageLoader(context)
     }
 
     @Test
     fun gifTransformationTest() {
         val actual = runBlocking {
-            val decoder = if (SDK_INT >= 28) {
-                ImageDecoderDecoder(context)
+            val decoderFactory = if (SDK_INT >= 28) {
+                ImageDecoderDecoder.Factory()
             } else {
-                GifDecoder()
+                GifDecoder.Factory()
             }
-            val imageRequest = imageRequestBuilder
-                .decoder(decoder)
-                .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.gif")
+            val imageRequest = ImageRequest.Builder(context)
+                .data("$SCHEME_FILE:///android_asset/animated.gif")
+                .animatedTransformation(RoundedCornersAnimatedTransformation())
+                .bitmapConfig(Bitmap.Config.ARGB_8888)
+                .decoderFactory(decoderFactory)
                 .build()
             imageLoader.execute(imageRequest)
         }
@@ -63,12 +54,15 @@ class AnimatedTransformationTest {
 
     @Test
     fun heifTransformationTest() {
+        // Animated HEIF is only support on API 28+.
         assumeTrue(SDK_INT >= 28)
 
         val actual = runBlocking {
-            val imageRequest = imageRequestBuilder
-                .decoder(ImageDecoderDecoder(context))
-                .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.heif")
+            val imageRequest = ImageRequest.Builder(context)
+                .data("$SCHEME_FILE:///android_asset/animated.heif")
+                .animatedTransformation(RoundedCornersAnimatedTransformation())
+                .bitmapConfig(Bitmap.Config.ARGB_8888)
+                .decoderFactory(ImageDecoderDecoder.Factory())
                 .build()
             imageLoader.execute(imageRequest)
         }
@@ -78,13 +72,16 @@ class AnimatedTransformationTest {
     }
 
     @Test
-    fun webpTransformationTest() {
+    fun animatedWebpTransformationTest() {
+        // Animated WebP is only support on API 28+.
         assumeTrue(SDK_INT >= 28)
 
         val actual = runBlocking {
-            val imageRequest = imageRequestBuilder
-                .decoder(ImageDecoderDecoder(context))
-                .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.webp")
+            val imageRequest = ImageRequest.Builder(context)
+                .data("$SCHEME_FILE:///android_asset/animated.webp")
+                .animatedTransformation(RoundedCornersAnimatedTransformation())
+                .bitmapConfig(Bitmap.Config.ARGB_8888)
+                .decoderFactory(ImageDecoderDecoder.Factory())
                 .build()
             imageLoader.execute(imageRequest)
         }

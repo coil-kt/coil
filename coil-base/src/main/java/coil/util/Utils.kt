@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import android.os.StatFs
 import androidx.annotation.Px
+import coil.transform.Transformation
 import java.io.File
 
 /** Private utility methods for Coil. */
@@ -27,15 +28,22 @@ internal object Utils {
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
 
+    /** An allowlist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
+    @JvmField val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
+        arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
+    } else {
+        arrayOf(Bitmap.Config.ARGB_8888)
+    }
+
     /** Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without transformations. */
-    val DEFAULT_BITMAP_CONFIG get() = if (SDK_INT >= 26) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
+    @JvmField val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
 
     /** Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config]. */
     fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
         return width * height * config.bytesPerPixel
     }
 
-    fun getDefaultCacheDirectory(context: Context): File {
+    fun getDefaultDiskCacheDirectory(context: Context): File {
         return File(context.cacheDir, CACHE_DIRECTORY_NAME).apply { mkdirs() }
     }
 
@@ -43,7 +51,7 @@ internal object Utils {
     fun calculateDiskCacheSize(cacheDirectory: File): Long {
         return try {
             val cacheDir = StatFs(cacheDirectory.absolutePath)
-            val size = DISK_CACHE_PERCENTAGE * cacheDir.blockCountCompat * cacheDir.blockSizeCompat
+            val size = DISK_CACHE_PERCENTAGE * cacheDir.blockCountLong * cacheDir.blockSizeLong
             return size.toLong().coerceIn(MIN_DISK_CACHE_SIZE_BYTES, MAX_DISK_CACHE_SIZE_BYTES)
         } catch (_: Exception) {
             MIN_DISK_CACHE_SIZE_BYTES
@@ -51,7 +59,7 @@ internal object Utils {
     }
 
     /** Modified from Picasso. */
-    fun calculateAvailableMemorySize(context: Context, percentage: Double): Long {
+    fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
         val memoryClassMegabytes = try {
             val activityManager: ActivityManager = context.requireSystemService()
             val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
@@ -59,26 +67,15 @@ internal object Utils {
         } catch (_: Exception) {
             DEFAULT_MEMORY_CLASS_MEGABYTES
         }
-        return (percentage * memoryClassMegabytes * 1024 * 1024).toLong()
+        return (percent * memoryClassMegabytes * 1024 * 1024).toInt()
     }
 
-    fun getDefaultAvailableMemoryPercentage(context: Context): Double {
+    fun getDefaultMemoryCacheSizePercent(context: Context): Double {
         return try {
             val activityManager: ActivityManager = context.requireSystemService()
-            if (activityManager.isLowRamDeviceCompat) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
+            if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
         } catch (_: Exception) {
             STANDARD_MULTIPLIER
-        }
-    }
-
-    fun getDefaultBitmapPoolPercentage(): Double {
-        return when {
-            // Prefer immutable bitmaps (which cannot be pooled) on API 24 and greater.
-            SDK_INT >= 24 -> 0.0
-            // Bitmap pooling is most effective on APIs 19 to 23.
-            SDK_INT >= 19 -> 0.5
-            // The requirements for bitmap reuse are strict below API 19.
-            else -> 0.25
         }
     }
 }

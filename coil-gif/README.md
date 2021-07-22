@@ -12,11 +12,11 @@ And add the decoders to your component registry when constructing your `ImageLoa
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
-    .componentRegistry {
+    .components {
         if (SDK_INT >= 28) {
-            add(ImageDecoderDecoder(context))
+            add(ImageDecoderDecoder.Factory())
         } else {
-            add(GifDecoder())
+            add(GifDecoder.Factory())
         }
     }
     .build()

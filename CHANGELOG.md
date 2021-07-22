@@ -1,5 +1,37 @@
 # Changelog
 
+## [2.0.0-alpha01] - July 24, 2021
+
+- **Important**: The minimum supported API is now 21.
+- **Important**: Build with `-Xjvm-default=all`.
+    - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
+    - You'll need to add `-Xjvm-default=all` to your build file as well. See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to add it.
+- **Important**: `CoilUtils.createDefaultCache` has been replaced by `OkHttpClient.Builder.imageLoaderDiskCache`. The new method is **necessary** to add support for returning the disk cache's `File` in `SuccessResult.file`.
+- `BitmapPool` and `PoolableViewTarget` have been removed from the library. Bitmap pooling was removed because:
+    - It's most effective on <= API 23 and has become less effective with each new Android release.
+    - Removing bitmap pooling allows Coil to use immutable bitmaps, which have performance benefits.
+    - There's runtime overhead to manage the bitmap pool.
+    - Bitmap pooling creates design restrictions on Coil's API (to track if a bitmap is eligible for pooling). Removing bitmap pooling allows Coil to expose the result `Drawable` in more places (e.g. `Listener`, `Disposable`). Additionally, this means Coil doesn't have to clear `ImageView`s, which has [problems](https://github.com/coil-kt/coil/issues/650).
+- Significant changes to the image pipeline classes:
+    - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
+    - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
+    - Adds `ImageSource`, which allows `Decoder`s to decode `File`s directly if necessary.
+- `MemoryCache` has been refactored to be more flexible. Also, it can now be created without an `ImageLoader`.
+- Disable generating runtime not-null assertions.
+    - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. If you use Kotlin, there is essentially no change.
+    - This change allows the library size to be smaller.
+- `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
+- Add `GenericViewTarget`, which handles common `ViewTarget` logic.
+- Adds support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
+- Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. By default, this is 4 which improves UI performance.
+- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library.
+- `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
+- `Transformation.key` is replaced with `Transformation.cacheKey`.
+- `ImageRequest.Listener` returns `SuccessResult`/`ErrorResult` in `onSuccess` and `onError` respectively.
+- Add `ByteBuffer`s to the default supported data types.
+- Remove `toString` implementations from several classes.
+- Update OkHttp to 4.9.1.
+
 ## [1.3.0] - July 10, 2021
 
 - **New**: Add support for [Jetpack Compose](https://developer.android.com/jetpack/compose). It's based on [Accompanist](https://github.com/google/accompanist/)'s Coil integration, but has a number of changes. Check out [the docs](https://coil-kt.github.io/coil/compose/) for more info.

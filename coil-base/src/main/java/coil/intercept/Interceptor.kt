@@ -1,18 +1,13 @@
 package coil.intercept
 
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
 
 /**
  * Observe, transform, short circuit, or retry requests to an [ImageLoader]'s image engine.
- *
- * NOTE: The interceptor chain is launched from the main thread by default.
- * See [ImageLoader.Builder.launchInterceptorChainOnMainThread] for more information.
  */
-@ExperimentalCoilApi
 fun interface Interceptor {
 
     suspend fun intercept(chain: Chain): ImageResult

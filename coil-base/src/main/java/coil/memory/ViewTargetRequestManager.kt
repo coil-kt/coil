@@ -1,126 +1,96 @@
 package coil.memory
 
-import android.graphics.Bitmap
 import android.view.View
-import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
-import androidx.collection.SimpleArrayMap
 import coil.request.ImageRequest
 import coil.request.ImageResult
+import coil.request.ViewTargetDisposable
+import coil.util.getCompletedOrNull
 import coil.util.isMainThread
 import coil.util.requestManager
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 /**
- * Ensures that at most one [ImageRequest] can be attached to a given [View] at one time.
+ * Ensures that at most one executed [ImageRequest] can be attached to a given [View] at one time.
  *
  * @see requestManager
  */
-internal class ViewTargetRequestManager : View.OnAttachStateChangeListener {
+internal class ViewTargetRequestManager(private val view: View) : View.OnAttachStateChangeListener {
 
-    // Only accessed from the main thread. The request delegate for the most recently dispatched request.
-    private var currentRequest: ViewTargetRequestDelegate? = null
-
-    // Metadata about the current request (that may have not been dispatched yet).
-    @Volatile var currentRequestId: UUID? = null
-        private set
-    @Volatile var currentRequestJob: Job? = null
-        private set
-
-    // Metadata of the successful request attached to this view.
-    @Volatile var metadata: ImageResult.Metadata? = null
+    // The disposable for the current request attached to this view.
+    private var currentDisposable: ViewTargetDisposable? = null
 
     // A pending operation that is posting to the main thread to clear the current request.
-    @Volatile private var pendingClear: Job? = null
+    private var pendingClear: Job? = null
 
     // Only accessed from the main thread.
+    private var currentRequest: ViewTargetRequestDelegate? = null
     private var isRestart = false
-    private var skipAttach = true
 
-    // Only accessed from the main thread. Temporary storage for bitmap pooling.
-    private val bitmaps = SimpleArrayMap<Any, Bitmap>()
-
-    /** Associate [bitmap] with [tag] and cache it on this view. Return the previous bitmap associated with [tag]. */
-    @MainThread
-    fun put(tag: Any, bitmap: Bitmap?): Bitmap? {
-        return if (bitmap != null) {
-            bitmaps.put(tag, bitmap)
-        } else {
-            bitmaps.remove(tag)
-        }
+    /** Return 'true' if [disposable] is not attached to this view. */
+    @Synchronized
+    fun isDisposed(disposable: ViewTargetDisposable): Boolean {
+        return disposable !== currentDisposable
     }
 
-    /** Attach [request] to this view and dispose the old request. */
-    @MainThread
-    fun setCurrentRequest(request: ViewTargetRequestDelegate?) {
-        // Don't cancel the pending clear if this is a restarted request.
-        if (isRestart) {
+    /** Create and return a new disposable unless this is a restarted request. */
+    @Synchronized
+    fun getDisposable(job: Deferred<ImageResult>): ViewTargetDisposable {
+        // If this is a restarted request, update the current disposable and return it.
+        val disposable = currentDisposable
+        if (disposable != null && isMainThread() && isRestart) {
             isRestart = false
-        } else {
-            pendingClear?.cancel()
-            pendingClear = null
+            disposable.job = job
+            return disposable
         }
 
+        // Cancel any pending clears since they were for the previous request.
+        pendingClear?.cancel()
+        pendingClear = null
+
+        // Create a new disposable as this is a new request.
+        return ViewTargetDisposable(view, job).also { currentDisposable = it }
+    }
+
+    /** Cancel any in progress work and detach [currentRequest] from this view. */
+    @Synchronized
+    @OptIn(DelicateCoroutinesApi::class)
+    fun dispose() {
+        pendingClear?.cancel()
+        pendingClear = GlobalScope.launch(Dispatchers.Main.immediate) { setRequest(null) }
+        currentDisposable = null
+    }
+
+    /** Return the completed value of the latest job if it has completed. Else, return 'null'. */
+    @Synchronized
+    fun getResult(): ImageResult? {
+        return currentDisposable?.job?.getCompletedOrNull()
+    }
+
+    /** Attach [request] to this view and cancel the old request. */
+    @MainThread
+    fun setRequest(request: ViewTargetRequestDelegate?) {
         currentRequest?.dispose()
         currentRequest = request
-        skipAttach = true
-    }
-
-    /** Set the current [job] attached to this view and assign it an ID. */
-    @AnyThread
-    fun setCurrentRequestJob(job: Job): UUID {
-        val requestId = newRequestId()
-        currentRequestId = requestId
-        currentRequestJob = job
-        return requestId
-    }
-
-    /** Detach the current request from this view. */
-    @AnyThread
-    fun clearCurrentRequest() {
-        currentRequestId = null
-        currentRequestJob = null
-
-        pendingClear?.cancel()
-        pendingClear = CoroutineScope(Dispatchers.Main.immediate).launch { setCurrentRequest(null) }
     }
 
     @MainThread
     override fun onViewAttachedToWindow(v: View) {
-        if (skipAttach) {
-            skipAttach = false
-            return
-        }
+        val request = currentRequest ?: return
 
-        currentRequest?.let { request ->
-            // As this is called from the main thread, isRestart will
-            // be cleared synchronously as part of request.restart().
-            isRestart = true
-            request.restart()
-        }
+        // As this is called from the main thread, isRestart will
+        // be cleared synchronously as part of request.restart().
+        isRestart = true
+        request.restart()
     }
 
     @MainThread
     override fun onViewDetachedFromWindow(v: View) {
-        skipAttach = false
         currentRequest?.dispose()
-    }
-
-    /** Return an ID to use for the next request attached to this manager. */
-    @AnyThread
-    private fun newRequestId(): UUID {
-        // Return the current request ID if this is a restarted request.
-        // Restarted requests are always launched from the main thread.
-        val requestId = currentRequestId
-        if (requestId != null && isRestart && isMainThread()) {
-            return requestId
-        }
-
-        // Generate a new request ID.
-        return UUID.randomUUID()
     }
 }

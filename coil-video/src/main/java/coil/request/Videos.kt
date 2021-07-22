@@ -8,18 +8,13 @@ import android.media.MediaMetadataRetriever.OPTION_CLOSEST
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.media.MediaMetadataRetriever.OPTION_NEXT_SYNC
 import android.media.MediaMetadataRetriever.OPTION_PREVIOUS_SYNC
-import coil.decode.VideoFrameDecoder
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_OPTION_KEY
-import coil.fetch.VideoFrameFetcher
 
 /**
  * Set the time **in milliseconds** of the frame to extract from a video.
  *
  * Default: 0
- *
- * @see VideoFrameDecoder
- * @see VideoFrameFetcher
  */
 fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long): ImageRequest.Builder {
     return videoFrameMicros(1000 * frameMillis)
@@ -29,9 +24,6 @@ fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long): ImageRequest.Build
  * Set the time **in microseconds** of the frame to extract from a video.
  *
  * Default: 0
- *
- * @see VideoFrameDecoder
- * @see VideoFrameFetcher
  */
 fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Builder {
     require(frameMicros >= 0) { "frameMicros must be >= 0." }
@@ -46,8 +38,6 @@ fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Build
  * Default: [OPTION_CLOSEST_SYNC]
  *
  * @see MediaMetadataRetriever
- * @see VideoFrameDecoder
- * @see VideoFrameFetcher
  */
 fun ImageRequest.Builder.videoFrameOption(option: Int): ImageRequest.Builder {
     require(option == OPTION_PREVIOUS_SYNC ||
@@ -59,14 +49,10 @@ fun ImageRequest.Builder.videoFrameOption(option: Int): ImageRequest.Builder {
 
 /**
  * Get the time **in microseconds** of the frame to extract from a video.
- *
- * @see VideoFrameFetcher
  */
 fun Parameters.videoFrameMicros(): Long? = value(VIDEO_FRAME_MICROS_KEY) as Long?
 
 /**
  * Get the option for how to decode the video frame.
- *
- * @see VideoFrameFetcher
  */
 fun Parameters.videoFrameOption(): Int? = value(VIDEO_FRAME_OPTION_KEY) as Int?

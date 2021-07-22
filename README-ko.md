@@ -51,7 +51,7 @@ imageView.load("https://www.example.com/image.jpg") {
 ## 요구사항
 
 - AndroidX
-- Min SDK 14+
+- Min SDK 21+
 - [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
 
 ## R8 / Proguard

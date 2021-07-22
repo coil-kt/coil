@@ -1,12 +1,9 @@
-@file:Suppress("NEWER_VERSION_IN_SINCE_KOTLIN", "unused")
-
 package coil.transition
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
@@ -23,8 +20,9 @@ import kotlin.coroutines.resume
  * @param durationMillis The duration of the animation in milliseconds.
  * @param preferExactIntrinsicSize See [CrossfadeDrawable.preferExactIntrinsicSize].
  */
-@ExperimentalCoilApi
-class CrossfadeTransition(
+class CrossfadeTransition @JvmOverloads constructor(
+    private val target: TransitionTarget,
+    private val result: ImageResult,
     val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
     val preferExactIntrinsicSize: Boolean = false
 ) : Transition {
@@ -33,23 +31,7 @@ class CrossfadeTransition(
         require(durationMillis > 0) { "durationMillis must be > 0." }
     }
 
-    override suspend fun transition(target: TransitionTarget, result: ImageResult) {
-        // Don't animate if the request was fulfilled by the memory cache.
-        if (result is SuccessResult && result.metadata.dataSource == DataSource.MEMORY_CACHE) {
-            target.onSuccess(result.drawable)
-            return
-        }
-
-        // Don't animate if the view is not visible as CrossfadeDrawable.onDraw
-        // won't be called until the view becomes visible.
-        if (!target.view.isVisible) {
-            when (result) {
-                is SuccessResult -> target.onSuccess(result.drawable)
-                is ErrorResult -> target.onError(result.drawable)
-            }
-            return
-        }
-
+    override suspend fun transition() {
         // Animate the drawable and suspend until the animation completes.
         var outerCrossfade: CrossfadeDrawable? = null
         try {
@@ -59,7 +41,7 @@ class CrossfadeTransition(
                     end = result.drawable,
                     scale = (target.view as? ImageView)?.scale ?: Scale.FILL,
                     durationMillis = durationMillis,
-                    fadeStart = result !is SuccessResult || !result.metadata.isPlaceholderMemoryCacheKeyPresent,
+                    fadeStart = (result as? SuccessResult)?.placeholderMemoryCacheKey == null,
                     preferExactIntrinsicSize = preferExactIntrinsicSize
                 )
                 outerCrossfade = crossfade
@@ -81,17 +63,46 @@ class CrossfadeTransition(
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        return (this === other) || (other is CrossfadeTransition && durationMillis == other.durationMillis)
+    class Factory @JvmOverloads constructor(
+        val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
+        val preferExactIntrinsicSize: Boolean = false
+    ) : Transition.Factory {
+
+        init {
+            require(durationMillis > 0) { "durationMillis must be > 0." }
+        }
+
+        override fun create(target: TransitionTarget, result: ImageResult): Transition {
+            // Only animate successful requests.
+            if (result !is SuccessResult) {
+                return Transition.Factory.NONE.create(target, result)
+            }
+
+            // Don't animate if the request was fulfilled by the memory cache.
+            if (result.dataSource == DataSource.MEMORY_CACHE) {
+                return Transition.Factory.NONE.create(target, result)
+            }
+
+            // Don't animate if the view is not visible as 'CrossfadeDrawable.onDraw'
+            // won't be called until the view becomes visible.
+            if (!target.view.isVisible) {
+                return Transition.Factory.NONE.create(target, result)
+            }
+
+            return CrossfadeTransition(target, result, durationMillis, preferExactIntrinsicSize)
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Factory &&
+                durationMillis == other.durationMillis &&
+                preferExactIntrinsicSize == other.preferExactIntrinsicSize
+        }
+
+        override fun hashCode(): Int {
+            var result = durationMillis
+            result = 31 * result + preferExactIntrinsicSize.hashCode()
+            return result
+        }
     }
-
-    override fun hashCode() = durationMillis.hashCode()
-
-    override fun toString() = "CrossfadeTransition(durationMillis=$durationMillis)"
-
-    @SinceKotlin("999.9") // Kept for binary compatibility.
-    constructor() : this()
-
-    @SinceKotlin("999.9") // Kept for binary compatibility.
-    constructor(durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION) : this(durationMillis)
 }

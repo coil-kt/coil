@@ -1,20 +1,20 @@
-@file:Suppress("DEPRECATION", "unused")
+@file:Suppress("DEPRECATION")
 
 package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.Movie
-import android.os.Build.VERSION.SDK_INT
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
 import coil.drawable.MovieDrawable
+import coil.fetch.SourceResult
+import coil.request.Options
 import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
-import coil.size.Size
 import coil.util.animatable2CompatCallbackOf
 import coil.util.isHardware
-import okio.BufferedSource
+import kotlinx.coroutines.runInterruptible
 import okio.buffer
 
 /**
@@ -26,37 +26,23 @@ import okio.buffer
  *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
  */
 class GifDecoder @JvmOverloads constructor(
-    private val enforceMinimumFrameDelay: Boolean = false
+    private val source: ImageSource,
+    private val options: Options,
+    private val enforceMinimumFrameDelay: Boolean = true
 ) : Decoder {
 
-    override fun handles(source: BufferedSource, mimeType: String?) = DecodeUtils.isGif(source)
-
-    override suspend fun decode(
-        pool: BitmapPool,
-        source: BufferedSource,
-        size: Size,
-        options: Options
-    ): DecodeResult = withInterruptibleSource(source) { interruptibleSource ->
+    override suspend fun decode() = runInterruptible {
         val bufferedSource = if (enforceMinimumFrameDelay) {
-            FrameDelayRewritingSource(interruptibleSource).buffer()
+            FrameDelayRewritingSource(source.source()).buffer()
         } else {
-            interruptibleSource.buffer()
+            source.source()
         }
-        val movie: Movie? = bufferedSource.use {
-            if (SDK_INT >= 19) {
-                Movie.decodeStream(it.inputStream())
-            } else {
-                // Movie requires an InputStream to resettable on API 18 and below.
-                // Read the data as a ByteArray to work around this.
-                it.readByteArray().let { bytes -> Movie.decodeByteArray(bytes, 0, bytes.size) }
-            }
-        }
+        val movie: Movie? = bufferedSource.use { Movie.decodeStream(it.inputStream()) }
 
         check(movie != null && movie.width() > 0 && movie.height() > 0) { "Failed to decode GIF." }
 
         val drawable = MovieDrawable(
             movie = movie,
-            pool = pool,
             config = when {
                 movie.isOpaque && options.allowRgb565 -> Bitmap.Config.RGB_565
                 options.config.isHardware -> Bitmap.Config.ARGB_8888
@@ -81,6 +67,20 @@ class GifDecoder @JvmOverloads constructor(
             drawable = drawable,
             isSampled = false
         )
+    }
+
+    class Factory @JvmOverloads constructor(
+        private val enforceMinimumFrameDelay: Boolean = true
+    ) : Decoder.Factory {
+
+        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
+            if (!DecodeUtils.isGif(result.source.source())) return null
+            return GifDecoder(result.source, options, enforceMinimumFrameDelay)
+        }
+
+        override fun equals(other: Any?) = other is Factory
+
+        override fun hashCode() = javaClass.hashCode()
     }
 
     companion object {

@@ -1,8 +1,18 @@
 public final class coil/decode/SvgDecoder : coil/decode/Decoder {
-	public fun <init> (Landroid/content/Context;)V
-	public fun <init> (Landroid/content/Context;Z)V
-	public synthetic fun <init> (Landroid/content/Context;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun decode (Lcoil/bitmap/BitmapPool;Lokio/BufferedSource;Lcoil/size/Size;Lcoil/decode/Options;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun handles (Lokio/BufferedSource;Ljava/lang/String;)Z
+	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;)V
+	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Z)V
+	public synthetic fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getUseViewBoundsAsIntrinsicSize ()Z
+}
+
+public final class coil/decode/SvgDecoder$Factory : coil/decode/Decoder$Factory {
+	public fun <init> ()V
+	public fun <init> (Z)V
+	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun create (Lcoil/fetch/SourceResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUseViewBoundsAsIntrinsicSize ()Z
+	public fun hashCode ()I
 }
 

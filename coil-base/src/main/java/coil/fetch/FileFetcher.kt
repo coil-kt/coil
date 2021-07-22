@@ -1,30 +1,26 @@
 package coil.fetch
 
 import android.webkit.MimeTypeMap
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
 import coil.decode.DataSource
-import coil.decode.Options
-import coil.size.Size
-import okio.buffer
-import okio.source
+import coil.decode.ImageSource
+import coil.request.Options
 import java.io.File
 
-internal class FileFetcher(private val addLastModifiedToFileCacheKey: Boolean) : Fetcher<File> {
+internal class FileFetcher(private val data: File) : Fetcher {
 
-    override fun key(data: File): String {
-        return if (addLastModifiedToFileCacheKey) "${data.path}:${data.lastModified()}" else data.path
-    }
-
-    override suspend fun fetch(
-        pool: BitmapPool,
-        data: File,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(): FetchResult {
         return SourceResult(
-            source = data.source().buffer(),
+            source = ImageSource(file = data),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(data.extension),
             dataSource = DataSource.DISK
         )
+    }
+
+    class Factory : Fetcher.Factory<File> {
+
+        override fun create(data: File, options: Options, imageLoader: ImageLoader): Fetcher {
+            return FileFetcher(data)
+        }
     }
 }

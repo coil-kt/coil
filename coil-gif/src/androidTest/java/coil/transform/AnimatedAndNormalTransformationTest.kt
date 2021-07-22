@@ -12,7 +12,7 @@ import android.graphics.PorterDuff.Mode.SRC
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.graphics.drawable.Animatable
-import android.os.Build.VERSION
+import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
@@ -31,6 +31,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AnimatedAndNormalTransformationTest {
+
     private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader
     private lateinit var imageRequestBuilder: ImageRequest.Builder
@@ -40,18 +41,16 @@ class AnimatedAndNormalTransformationTest {
         context = ApplicationProvider.getApplicationContext()
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
-            .componentRegistry {
-                val gifDecoder = if (VERSION.SDK_INT >= 28) {
-                    ImageDecoderDecoder(context)
+            .components {
+                if (SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
                 } else {
-                    GifDecoder()
+                    add(GifDecoder.Factory())
                 }
-                add(gifDecoder)
             }
             .memoryCachePolicy(CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
             .build()
-
         imageRequestBuilder = ImageRequest.Builder(context)
             .bitmapConfig(Bitmap.Config.ARGB_8888)
             .transformations(CircleCropTransformation())

@@ -13,6 +13,11 @@ fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}) {
         libraryVariants.all {
             generateBuildConfigProvider?.configure { enabled = false }
         }
+        packagingOptions {
+            // https://github.com/Kotlin/kotlinx.coroutines/issues/2023
+            resources.pickFirsts += "META-INF/AL2.0"
+            resources.pickFirsts += "META-INF/LGPL2.1"
+        }
         testOptions {
             unitTests.isIncludeAndroidResources = true
         }
@@ -48,10 +53,20 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
             jvmTarget = "1.8"
             allWarningsAsErrors = true
 
-            val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
+            val arguments = mutableListOf(
+                // https://kotlinlang.org/docs/compiler-reference.html#progressive
+                "-progressive",
+                // Generate native Java 8 default interface methods.
+                "-Xjvm-default=all",
+                // Generate smaller bytecode by not generating runtime not-null assertions.
+                "-Xno-call-assertions",
+                "-Xno-param-assertions",
+                "-Xno-receiver-assertions",
+                // https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-requires-opt-in/#requiresoptin
+                "-Xopt-in=kotlin.RequiresOptIn"
+            )
             if (project.name != "coil-test") {
                 arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
-                arguments += "-Xopt-in=coil.annotation.InternalCoilApi"
             }
             freeCompilerArgs = arguments
         }

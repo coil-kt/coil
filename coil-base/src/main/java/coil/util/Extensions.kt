@@ -3,17 +3,14 @@
 
 package coil.util
 
-import android.app.ActivityManager
+import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.graphics.ColorSpace
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
 import android.net.Uri
-import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
-import android.os.StatFs
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
@@ -21,37 +18,26 @@ import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
 import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
-import androidx.core.view.ViewCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import coil.ComponentRegistry
 import coil.base.R
-import coil.bitmap.BitmapReferenceCounter
 import coil.decode.DataSource
+import coil.decode.Decoder
+import coil.fetch.Fetcher
 import coil.memory.MemoryCache
-import coil.memory.TargetDelegate
 import coil.memory.ViewTargetRequestManager
-import coil.request.ImageResult
+import coil.request.DefaultRequestOptions
 import coil.request.Parameters
 import coil.size.Scale
-import coil.size.Size
-import coil.target.ViewTarget
-import coil.transform.Transformation
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import okhttp3.Call
 import okhttp3.Headers
 import java.io.Closeable
-import java.util.concurrent.atomic.AtomicInteger
+import java.io.File
 import kotlin.coroutines.CoroutineContext
-
-internal inline val ActivityManager.isLowRamDeviceCompat: Boolean
-    get() = SDK_INT < 19 || isLowRamDevice
-
-@Suppress("DEPRECATION")
-internal inline val StatFs.blockCountCompat: Long
-    get() = if (SDK_INT >= 18) blockCountLong else blockCount.toLong()
-
-@Suppress("DEPRECATION")
-internal inline val StatFs.blockSizeCompat: Long
-    get() = if (SDK_INT >= 18) blockSizeLong else blockSize.toLong()
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {
@@ -62,7 +48,7 @@ internal val View.requestManager: ViewTargetRequestManager
                 (getTag(R.id.coil_request_manager) as? ViewTargetRequestManager)
                     ?.let { return@synchronized it }
 
-                ViewTargetRequestManager().apply {
+                ViewTargetRequestManager(this).apply {
                     addOnAttachStateChangeListener(this)
                     setTag(R.id.coil_request_manager, this)
                 }
@@ -70,9 +56,6 @@ internal val View.requestManager: ViewTargetRequestManager
         }
         return manager
     }
-
-internal inline val View.isAttachedToWindowCompat: Boolean
-    get() = ViewCompat.isAttachedToWindow(this)
 
 internal val DataSource.emoji: String
     get() = when (this) {
@@ -89,7 +72,7 @@ internal val Drawable.height: Int
     get() = (this as? BitmapDrawable)?.bitmap?.height ?: intrinsicHeight
 
 internal val Drawable.isVector: Boolean
-    get() = (this is VectorDrawableCompat) || (SDK_INT >= 21 && this is VectorDrawable)
+    get() = this is VectorDrawable || this is VectorDrawableCompat
 
 internal fun Closeable.closeQuietly() {
     try {
@@ -135,8 +118,13 @@ internal val Uri.firstPathSegment: String?
 internal val Configuration.nightMode: Int
     get() = uiMode and Configuration.UI_MODE_NIGHT_MASK
 
+internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
+
 /** Required for compatibility with API 25 and below. */
 internal val NULL_COLOR_SPACE: ColorSpace? = null
+
+/** Tracks 'okio.Segment.SIZE' which is private. */
+internal const val SEGMENT_SIZE = 8192L
 
 internal val EMPTY_HEADERS = Headers.Builder().build()
 
@@ -149,52 +137,31 @@ internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
 
-internal inline fun AtomicInteger.loop(action: (Int) -> Unit) {
-    while (true) action(get())
-}
-
 internal inline val CoroutineContext.job: Job get() = get(Job)!!
 
-internal var TargetDelegate.metadata: ImageResult.Metadata?
-    get() = (target as? ViewTarget<*>)?.view?.requestManager?.metadata
-    set(value) {
-        (target as? ViewTarget<*>)?.view?.requestManager?.metadata = value
+@OptIn(ExperimentalStdlibApi::class)
+internal inline val CoroutineContext.dispatcher: CoroutineDispatcher get() = get(CoroutineDispatcher)!!
+
+@OptIn(ExperimentalCoroutinesApi::class)
+internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
+    return try {
+        getCompleted()
+    } catch (_: Throwable) {
+        null
     }
-
-internal inline operator fun MemoryCache.Key.Companion.invoke(
-    base: String,
-    parameters: Parameters
-): MemoryCache.Key {
-    return MemoryCache.Key.Complex(
-        base = base,
-        transformations = emptyList(),
-        size = null,
-        parameters = parameters.cacheKeys()
-    )
 }
 
-internal inline operator fun MemoryCache.Key.Companion.invoke(
-    base: String,
-    transformations: List<Transformation>,
-    size: Size,
-    parameters: Parameters
-): MemoryCache.Key {
-    return MemoryCache.Key.Complex(
-        base = base,
-        transformations = transformations.mapIndices { it.key() },
-        size = size,
-        parameters = parameters.cacheKeys()
-    )
-}
+internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 
-internal inline fun BitmapReferenceCounter.decrement(bitmap: Bitmap?) {
-    if (bitmap != null) decrement(bitmap)
-}
+/** https://github.com/coil-kt/coil/issues/675 */
+internal val Context.safeCacheDir: File get() = cacheDir.apply { mkdirs() }
 
-internal inline fun BitmapReferenceCounter.decrement(drawable: Drawable?) {
-    if (drawable != null && drawable is BitmapDrawable) drawable.bitmap?.let(::decrement)
-}
+@Suppress("UNCHECKED_CAST")
+internal inline fun ComponentRegistry.Builder.addFirst(
+    pair: Pair<Fetcher.Factory<*>, Class<*>>?
+) = if (pair == null) this else addFirst(pair.first as Fetcher.Factory<Any>, pair.second as Class<Any>)
 
-internal inline fun BitmapReferenceCounter.setValid(bitmap: Bitmap?, isValid: Boolean) {
-    if (bitmap != null) setValid(bitmap, isValid)
-}
+internal inline fun ComponentRegistry.Builder.addFirst(factory: Decoder.Factory?) =
+    if (factory == null) this else addFirst(factory)
+
+internal fun unsupported(): Nothing = error("Unsupported")

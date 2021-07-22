@@ -1,39 +1,28 @@
 package coil.fetch
 
 import android.content.ContentResolver
-import android.content.Context
 import android.net.Uri
 import android.util.TypedValue
 import android.webkit.MimeTypeMap
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
 import coil.decode.DataSource
-import coil.decode.DrawableDecoderService
-import coil.decode.Options
-import coil.size.Size
+import coil.decode.ImageSource
+import coil.request.Options
+import coil.util.DrawableUtils
 import coil.util.getDrawableCompat
 import coil.util.getMimeTypeFromUrl
 import coil.util.getXmlDrawableCompat
 import coil.util.isVector
-import coil.util.nightMode
 import coil.util.toDrawable
 import okio.buffer
 import okio.source
 
 internal class ResourceUriFetcher(
-    private val context: Context,
-    private val drawableDecoder: DrawableDecoderService
-) : Fetcher<Uri> {
+    private val data: Uri,
+    private val options: Options
+) : Fetcher {
 
-    override fun handles(data: Uri) = data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE
-
-    override fun key(data: Uri) = "$data-${context.resources.configuration.nightMode}"
-
-    override suspend fun fetch(
-        pool: BitmapPool,
-        data: Uri,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(): FetchResult {
         // Expected format: android.resource://example.package.name/12345678
         val packageName = data.authority?.takeIf { it.isNotBlank() } ?: throwInvalidUriException(data)
         val resId = data.pathSegments.lastOrNull()?.toIntOrNull() ?: throwInvalidUriException(data)
@@ -55,10 +44,10 @@ internal class ResourceUriFetcher(
             val isVector = drawable.isVector
             DrawableResult(
                 drawable = if (isVector) {
-                    drawableDecoder.convert(
+                    DrawableUtils.convertToBitmap(
                         drawable = drawable,
                         config = options.config,
-                        size = size,
+                        size = options.size,
                         scale = options.scale,
                         allowInexactSize = options.allowInexactSize
                     ).toDrawable(context)
@@ -70,7 +59,10 @@ internal class ResourceUriFetcher(
             )
         } else {
             SourceResult(
-                source = resources.openRawResource(resId).source().buffer(),
+                source = ImageSource(
+                    source = resources.openRawResource(resId).source().buffer(),
+                    context = context
+                ),
                 mimeType = mimeType,
                 dataSource = DataSource.DISK
             )
@@ -79,6 +71,18 @@ internal class ResourceUriFetcher(
 
     private fun throwInvalidUriException(data: Uri): Nothing {
         throw IllegalStateException("Invalid ${ContentResolver.SCHEME_ANDROID_RESOURCE} URI: $data")
+    }
+
+    class Factory : Fetcher.Factory<Uri> {
+
+        override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
+            if (!isApplicable(data)) return null
+            return ResourceUriFetcher(data, options)
+        }
+
+        private fun isApplicable(data: Uri): Boolean {
+            return data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE
+        }
     }
 
     companion object {

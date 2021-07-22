@@ -6,25 +6,24 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
-import coil.ComponentRegistry
 import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
-import coil.bitmap.BitmapPool
-import coil.bitmap.RealBitmapReferenceCounter
 import coil.decode.DataSource
-import coil.decode.DrawableDecoderService
-import coil.decode.Options
-import coil.fetch.DrawableResult
-import coil.fetch.Fetcher
+import coil.intercept.EngineInterceptor.Companion.EXTRA_IS_SAMPLED
+import coil.intercept.EngineInterceptor.Companion.MEMORY_CACHE_KEY_HEIGHT
+import coil.intercept.EngineInterceptor.Companion.MEMORY_CACHE_KEY_TRANSFORMATIONS
+import coil.intercept.EngineInterceptor.Companion.MEMORY_CACHE_KEY_WIDTH
+import coil.intercept.EngineInterceptor.Companion.TRANSFORMATIONS_DELIMITER
+import coil.intercept.EngineInterceptor.ExecuteResult
+import coil.key.Keyer
 import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCacheService
-import coil.memory.RealMemoryCache
-import coil.memory.RealWeakMemoryCache
+import coil.memory.MemoryCache.Value
 import coil.memory.RequestService
-import coil.memory.StrongMemoryCache
 import coil.request.ImageRequest
+import coil.request.Options
 import coil.request.Parameters
+import coil.size
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
@@ -35,8 +34,6 @@ import coil.transform.Transformation
 import coil.util.SystemCallbacks
 import coil.util.createBitmap
 import coil.util.createRequest
-import coil.util.invoke
-import coil.util.size
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -50,39 +47,23 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalStdlibApi::class)
 class EngineInterceptorTest {
 
     private lateinit var context: Context
-    private lateinit var strongMemoryCache: StrongMemoryCache
-    private lateinit var interceptor: EngineInterceptor
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        val bitmapPool = BitmapPool(Int.MAX_VALUE)
-        val weakMemoryCache = RealWeakMemoryCache(null)
-        val referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
-        interceptor = EngineInterceptor(
-            registry = ComponentRegistry(),
-            bitmapPool = bitmapPool,
-            referenceCounter = referenceCounter,
-            strongMemoryCache = strongMemoryCache,
-            memoryCacheService = MemoryCacheService(referenceCounter, strongMemoryCache, weakMemoryCache),
-            requestService = RequestService(null),
-            systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context, true),
-            drawableDecoder = DrawableDecoderService(bitmapPool),
-            logger = null
-        )
     }
 
     @Test
     fun `computeMemoryCacheKey - null key`() {
+        val interceptor = newInterceptor(key = null)
         val request = createRequest(context)
-        val fetcher = createFakeFetcher(key = null)
-        val size = OriginalSize
+        val options = Options(context, size = OriginalSize)
         val key = runBlocking {
-            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
+            interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
 
         assertNull(key)
@@ -90,65 +71,67 @@ class EngineInterceptorTest {
 
     @Test
     fun `computeMemoryCacheKey - simple key`() {
+        val interceptor = newInterceptor()
         val request = createRequest(context)
-        val fetcher = createFakeFetcher()
-        val size = OriginalSize
-        val result = runBlocking {
-            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
+        val options = Options(context, size = OriginalSize)
+        val actual = runBlocking {
+            interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
 
-        assertEquals(Key("base_key", Parameters.EMPTY), result)
+        assertEquals(newMemoryCacheKey(), actual)
     }
 
     @Test
     fun `computeMemoryCacheKey - params only`() {
+        val interceptor = newInterceptor()
         val parameters = createFakeParameters()
         val request = createRequest(context) {
             parameters(parameters)
         }
-        val fetcher = createFakeFetcher()
-        val size = OriginalSize
-        val result = runBlocking {
-            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
+        val options = Options(context, size = OriginalSize)
+        val actual = runBlocking {
+            interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
 
-        assertEquals(Key("base_key", parameters), result)
+        assertEquals(newMemoryCacheKey(parameters = parameters), actual)
     }
 
     @Test
     fun `computeMemoryCacheKey - transformations only`() {
+        val interceptor = newInterceptor()
         val transformations = createFakeTransformations()
         val request = createRequest(context) {
             transformations(transformations)
         }
-        val fetcher = createFakeFetcher()
         val size = PixelSize(123, 332)
-        val result = runBlocking {
-            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
+        val options = Options(context, size = size)
+        val actual = runBlocking {
+            interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
 
-        assertEquals(Key("base_key", transformations, size, Parameters.EMPTY), result)
+        assertEquals(newMemoryCacheKey(transformations = transformations, size = size), actual)
     }
 
     @Test
     fun `computeMemoryCacheKey - complex key`() {
+        val interceptor = newInterceptor(key = TEST_KEY)
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
         val request = createRequest(context) {
             parameters(parameters)
             transformations(transformations)
         }
-        val fetcher = createFakeFetcher()
-        val size = OriginalSize
-        val result = runBlocking {
-            interceptor.computeMemoryCacheKey(request, Unit, fetcher, size)
+        val options = Options(context, size = OriginalSize)
+        val actual = runBlocking {
+            interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
 
-        assertEquals(Key("base_key", transformations, size, parameters), result)
+        assertEquals(newMemoryCacheKey(transformations = transformations, parameters = parameters), actual)
     }
 
     @Test
     fun `isCachedValueValid - fill`() {
+        val interceptor = newInterceptor()
         val request = createRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
@@ -195,6 +178,7 @@ class EngineInterceptorTest {
 
     @Test
     fun `isCachedValueValid - fit`() {
+        val interceptor = newInterceptor()
         val request = createRequest(context) {
             size(100, 100)
             precision(Precision.INEXACT)
@@ -241,6 +225,7 @@ class EngineInterceptorTest {
 
     @Test
     fun `isCachedValueValid - small not sampled cached drawable is valid`() {
+        val interceptor = newInterceptor()
         val cached = createBitmap()
         val isValid = interceptor.isCachedValueValid(
             cached = cached,
@@ -256,6 +241,7 @@ class EngineInterceptorTest {
 
     @Test
     fun `isCachedValueValid - allowHardware=false prevents using cached hardware bitmap`() {
+        val interceptor = newInterceptor()
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config)
             return interceptor.isCachedValueValid(
@@ -277,6 +263,7 @@ class EngineInterceptorTest {
 
     @Test
     fun `isCachedValueValid - exact precision`() {
+        val interceptor = newInterceptor()
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
             isSampled = true,
@@ -353,6 +340,7 @@ class EngineInterceptorTest {
 
     @Test
     fun `isCachedValueValid - one pixel off`() {
+        val interceptor = newInterceptor()
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 244, height = 600),
             isSampled = true,
@@ -393,13 +381,16 @@ class EngineInterceptorTest {
 
     @Test
     fun `isCachedValueValid - transformation that reduces size of output bitmap`() {
-        val transformations = listOf(CircleCropTransformation())
-        val cachedSize = PixelSize(1000, 500) // The size of the previous request.
-        val key = Key("key", transformations, cachedSize, Parameters.EMPTY)
-        val value = object : RealMemoryCache.Value {
-            override val bitmap = createBitmap(width = 200, height = 200) // The small cached bitmap.
-            override val isSampled = true
-        }
+        val interceptor = newInterceptor()
+        val key = newMemoryCacheKey(
+            key = "key",
+            transformations = listOf(CircleCropTransformation()),
+            size = PixelSize(1000, 500) // The size of the previous request.
+        )
+        val value = Value(
+            bitmap = createBitmap(width = 200, height = 200), // The small cached bitmap.
+            extras = mapOf(EXTRA_IS_SAMPLED to true)
+        )
         val request = createRequest(context)
 
         assertTrue(interceptor.isCachedValueValid(
@@ -436,29 +427,23 @@ class EngineInterceptorTest {
         isSampled: Boolean,
         request: ImageRequest,
         size: Size
-    ): Boolean {
-        val key = Key("key")
-        val value = object : RealMemoryCache.Value {
-            override val bitmap = cached
-            override val isSampled = isSampled
-        }
-        return isCachedValueValid(key, value, request, size)
-    }
+    ) = isCachedValueValid(Key("key"), Value(cached, mapOf(EXTRA_IS_SAMPLED to isSampled)), request, size)
 
     @Test
     fun `applyTransformations - transformations convert drawable to bitmap`() {
+        val interceptor = newInterceptor()
         val drawable = ColorDrawable(Color.BLACK)
         val size = PixelSize(100, 100)
         val result = runBlocking {
-            interceptor.applyTransformations(
-                result = DrawableResult(
+            interceptor.transform(
+                result = ExecuteResult(
                     drawable = drawable,
                     isSampled = false,
-                    dataSource = DataSource.MEMORY
+                    dataSource = DataSource.MEMORY,
+                    file = null
                 ),
                 request = createRequest(context) { transformations(CircleCropTransformation()) },
-                size = size,
-                options = Options(context),
+                options = Options(context, size = size),
                 eventListener = EventListener.NONE
             )
         }
@@ -470,18 +455,18 @@ class EngineInterceptorTest {
 
     @Test
     fun `applyTransformations - empty transformations does not convert drawable to bitmap`() {
+        val interceptor = newInterceptor()
         val drawable = ColorDrawable(Color.BLACK)
-        val size = PixelSize(100, 100)
         val result = runBlocking {
-            interceptor.applyTransformations(
-                result = DrawableResult(
+            interceptor.transform(
+                result = ExecuteResult(
                     drawable = drawable,
                     isSampled = false,
-                    dataSource = DataSource.MEMORY
+                    dataSource = DataSource.MEMORY,
+                    file = null
                 ),
                 request = createRequest(context) { transformations(emptyList()) },
-                size = size,
-                options = Options(context),
+                options = Options(context, size = PixelSize(100, 100)),
                 eventListener = EventListener.NONE
             )
         }
@@ -492,12 +477,12 @@ class EngineInterceptorTest {
     private fun createFakeTransformations(): List<Transformation> {
         return listOf(
             object : Transformation {
-                override fun key() = "key1"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = fail()
+                override val cacheKey = "key1"
+                override suspend fun transform(input: Bitmap, size: Size) = fail()
             },
             object : Transformation {
-                override fun key() = "key2"
-                override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) = fail()
+                override val cacheKey = "key2"
+                override suspend fun transform(input: Bitmap, size: Size) = fail()
             }
         )
     }
@@ -510,16 +495,43 @@ class EngineInterceptorTest {
             .build()
     }
 
-    private fun createFakeFetcher(key: String? = "base_key"): Fetcher<Any> {
-        return object : Fetcher<Any> {
-            override fun key(data: Any) = key
+    private fun newInterceptor(key: String? = TEST_KEY): EngineInterceptor {
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                add(Keyer { _: Any, _ -> key })
+            }
+            .build()
+        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader, context, true)
+        return EngineInterceptor(
+            imageLoader = imageLoader,
+            requestService = RequestService(imageLoader, systemCallbacks, null),
+            logger = null
+        )
+    }
 
-            override suspend fun fetch(
-                pool: BitmapPool,
-                data: Any,
-                size: Size,
-                options: Options
-            ) = fail()
+    private fun newMemoryCacheKey(
+        key: String = TEST_KEY,
+        transformations: List<Transformation> = emptyList(),
+        size: Size = OriginalSize,
+        parameters: Parameters = Parameters.EMPTY
+    ): Key {
+        val extras = buildMap<String, String> {
+            if (transformations.isNotEmpty()) {
+                val transformationString = transformations.joinToString(separator = "") {
+                    it.cacheKey + TRANSFORMATIONS_DELIMITER
+                }
+                put(MEMORY_CACHE_KEY_TRANSFORMATIONS, transformationString)
+            }
+            if (size is PixelSize) {
+                put(MEMORY_CACHE_KEY_WIDTH, size.width.toString())
+                put(MEMORY_CACHE_KEY_HEIGHT, size.height.toString())
+            }
+            putAll(parameters.cacheKeys())
         }
+        return Key(key, extras)
+    }
+
+    companion object {
+        private const val TEST_KEY = "test_key"
     }
 }

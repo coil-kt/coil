@@ -13,7 +13,7 @@ import android.graphics.RectF
 import android.graphics.Shader
 import androidx.annotation.Px
 import androidx.core.graphics.applyCanvas
-import coil.bitmap.BitmapPool
+import androidx.core.graphics.createBitmap
 import coil.decode.DecodeUtils
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -43,9 +43,9 @@ class RoundedCornersTransformation(
         require(topLeft >= 0 && topRight >= 0 && bottomLeft >= 0 && bottomRight >= 0) { "All radii must be >= 0." }
     }
 
-    override fun key() = "${RoundedCornersTransformation::class.java.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
+    override val cacheKey = "${javaClass.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
 
-    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
+    override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
         val outputWidth: Int
@@ -68,7 +68,7 @@ class RoundedCornersTransformation(
             }
         }
 
-        val output = pool.get(outputWidth, outputHeight, input.safeConfig)
+        val output = createBitmap(outputWidth, outputHeight, input.safeConfig)
         output.applyCanvas {
             drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
@@ -102,10 +102,5 @@ class RoundedCornersTransformation(
         result = 31 * result + bottomLeft.hashCode()
         result = 31 * result + bottomRight.hashCode()
         return result
-    }
-
-    override fun toString(): String {
-        return "RoundedCornersTransformation(topLeft=$topLeft, topRight=$topRight, " +
-            "bottomLeft=$bottomLeft, bottomRight=$bottomRight)"
     }
 }

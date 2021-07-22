@@ -1,4 +1,4 @@
-@file:Suppress("unused", "UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST", "unused")
 @file:JvmName("Gifs")
 
 package coil.request

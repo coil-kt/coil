@@ -1,8 +1,5 @@
-@file:Suppress("unused")
-
 package coil.decode
 
-import android.content.Context
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Build.VERSION.SDK_INT
@@ -10,23 +7,23 @@ import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
 import androidx.core.util.component2
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
 import coil.drawable.ScaleDrawable
+import coil.fetch.SourceResult
+import coil.request.Options
 import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
 import coil.size.PixelSize
-import coil.size.Size
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
 import coil.util.isHardware
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.buffer
-import okio.sink
-import java.io.File
 import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
@@ -35,63 +32,34 @@ import kotlin.math.roundToInt
  *
  * NOTE: Animated HEIF files are only supported on API 30 and above.
  *
- * @param context An Android context.
  * @param enforceMinimumFrameDelay If true, rewrite a GIF's frame delay to a default value if
  *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
  */
 @RequiresApi(28)
-class ImageDecoderDecoder private constructor(
-    // Reverse parameter order to avoid platform declaration clash.
-    private val enforceMinimumFrameDelay: Boolean,
-    private val context: Context?
+class ImageDecoderDecoder @JvmOverloads constructor(
+    private val source: ImageSource,
+    private val options: Options,
+    private val enforceMinimumFrameDelay: Boolean = true
 ) : Decoder {
 
-    @Deprecated(
-        message = "Migrate to the constructor that accepts a Context.",
-        replaceWith = ReplaceWith("ImageDecoderDecoder(context)")
-    )
-    constructor() : this(false, null)
-
-    constructor(context: Context) : this(false, context)
-
-    constructor(context: Context, enforceMinimumFrameDelay: Boolean) : this(enforceMinimumFrameDelay, context)
-
-    override fun handles(source: BufferedSource, mimeType: String?): Boolean {
-        return DecodeUtils.isGif(source) ||
-            DecodeUtils.isAnimatedWebP(source) ||
-            (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
-    }
-
-    override suspend fun decode(
-        pool: BitmapPool,
-        source: BufferedSource,
-        size: Size,
-        options: Options
-    ): DecodeResult {
+    override suspend fun decode(): DecodeResult {
         var isSampled = false
-        val baseDrawable = withInterruptibleSource(source) { interruptibleSource ->
-            var tempFile: File? = null
-            try {
-                val bufferedInterruptibleSource = interruptibleSource.buffer()
-                val bufferedSource = if (enforceMinimumFrameDelay && DecodeUtils.isGif(bufferedInterruptibleSource)) {
-                    FrameDelayRewritingSource(bufferedInterruptibleSource).buffer()
-                } else {
-                    bufferedInterruptibleSource
-                }
-                val decoderSource = if (SDK_INT >= 30) {
-                    // Buffer the source into memory.
-                    ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.use { it.readByteArray() }))
-                } else {
-                    // Work around https://issuetracker.google.com/issues/139371066 by copying the source to a temp file.
-                    tempFile = File.createTempFile("tmp", null, context?.cacheDir?.apply { mkdirs() })
-                    bufferedSource.use { tempFile.sink().use(it::readAll) }
-                    ImageDecoder.createSource(tempFile)
+        val baseDrawable = runInterruptible {
+            val imageSource = if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
+                ImageSource(FrameDelayRewritingSource(source.source()).buffer(), options.context)
+            } else {
+                source
+            }
+            imageSource.use {
+                val file = imageSource.fileOrNull()
+                val decoderSource = when {
+                    file != null -> ImageDecoder.createSource(file)
+                    SDK_INT < 30 -> ImageDecoder.createSource(imageSource.file()) // https://issuetracker.google.com/issues/139371066
+                    else -> ImageDecoder.createSource(ByteBuffer.wrap(imageSource.source().readByteArray()))
                 }
 
                 decoderSource.decodeDrawable { info, _ ->
-                    // It's safe to delete the temp file here.
-                    tempFile?.delete()
-
+                    val size = options.size
                     if (size is PixelSize) {
                         val (srcWidth, srcHeight) = info.size
                         val multiplier = DecodeUtils.computeSizeMultiplier(
@@ -132,8 +100,6 @@ class ImageDecoderDecoder private constructor(
 
                     postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
                 }
-            } finally {
-                tempFile?.delete()
             }
         }
 
@@ -162,10 +128,24 @@ class ImageDecoderDecoder private constructor(
         )
     }
 
-    companion object {
-        const val REPEAT_COUNT_KEY = GifDecoder.REPEAT_COUNT_KEY
-        const val ANIMATED_TRANSFORMATION_KEY = GifDecoder.ANIMATED_TRANSFORMATION_KEY
-        const val ANIMATION_START_CALLBACK_KEY = GifDecoder.ANIMATION_START_CALLBACK_KEY
-        const val ANIMATION_END_CALLBACK_KEY = GifDecoder.ANIMATION_END_CALLBACK_KEY
+    @RequiresApi(28)
+    class Factory @JvmOverloads constructor(
+        private val enforceMinimumFrameDelay: Boolean = true
+    ) : Decoder.Factory {
+
+        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
+            if (!isApplicable(result.source.source())) return null
+            return ImageDecoderDecoder(result.source, options, enforceMinimumFrameDelay)
+        }
+
+        private fun isApplicable(source: BufferedSource): Boolean {
+            return DecodeUtils.isGif(source) ||
+                DecodeUtils.isAnimatedWebP(source) ||
+                (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
+        }
+
+        override fun equals(other: Any?) = other is Factory
+
+        override fun hashCode() = javaClass.hashCode()
     }
 }

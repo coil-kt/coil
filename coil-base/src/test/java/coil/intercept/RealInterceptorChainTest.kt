@@ -15,7 +15,6 @@ import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
 import coil.transform.CircleCropTransformation
-import coil.util.Utils.REQUEST_TYPE_ENQUEUE
 import coil.util.createRequest
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -142,12 +141,11 @@ class RealInterceptorChainTest {
     private fun testChain(request: ImageRequest, interceptors: List<Interceptor>): ImageResult {
         val chain = RealInterceptorChain(
             initialRequest = request,
-            requestType = REQUEST_TYPE_ENQUEUE,
             interceptors = interceptors + FakeInterceptor(),
             index = 0,
             request = request,
             size = PixelSize(100, 100),
-            cached = null,
+            placeholderMemoryCacheKey = null,
             eventListener = EventListener.NONE
         )
         return runBlocking { chain.proceed(request) }

@@ -4,10 +4,13 @@ import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
+import coil.ImageLoader
+import coil.RealImageLoader
 import coil.memory.RequestService
 import coil.size.Precision
 import coil.size.ViewSizeResolver
 import coil.target.ViewTarget
+import coil.util.SystemCallbacks
 import coil.util.allowInexactSize
 import coil.util.createRequest
 import org.junit.Before
@@ -26,7 +29,9 @@ class RequestServiceTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        service = RequestService(null)
+        val imageLoader = ImageLoader(context) as RealImageLoader
+        val systemCallbacks = SystemCallbacks(imageLoader, context, true)
+        service = RequestService(imageLoader, systemCallbacks, null)
     }
 
     @Test
@@ -83,17 +88,9 @@ class RequestServiceTest {
     }
 
     @Test
-    fun `allowInexactSize - DisplaySizeResolver explicit`() {
-        val request = createRequest(context) {
-            target { /* Empty. */ }
-        }
-        assertTrue(request.allowInexactSize)
-    }
-
-    @Test
-    fun `allowInexactSize - NullSizeResolver`() {
+    fun `allowInexactSize - OriginalSize`() {
         val request = createRequest(context)
-        assertTrue(request.allowInexactSize)
+        assertFalse(request.allowInexactSize)
     }
 
     @Test

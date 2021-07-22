@@ -9,5 +9,5 @@ data class Image(
     @ColorInt val color: Int,
     @Px val width: Int,
     @Px val height: Int,
-    val parameters: Parameters = Parameters.EMPTY
+    val parameters: Parameters = Parameters.EMPTY,
 )

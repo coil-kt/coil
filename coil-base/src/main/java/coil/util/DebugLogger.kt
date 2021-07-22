@@ -15,7 +15,7 @@ import java.io.StringWriter
  */
 class DebugLogger @JvmOverloads constructor(level: Int = Log.DEBUG) : Logger {
 
-    override var level: Int = level
+    override var level = level
         set(value) {
             assertValidLevel(value)
             field = value

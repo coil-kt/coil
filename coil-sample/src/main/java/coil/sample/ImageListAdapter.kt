@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.metadata
+import coil.request.CachePolicy
+import coil.request.SuccessResult
+import coil.result
 import coil.sample.ImageListAdapter.ViewHolder
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -23,7 +25,7 @@ class ImageListAdapter(
 
     private val maxColumnWidth = 320.dp(context)
     private val displayWidth = context.getDisplaySize().width
-    val numColumns = ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(3)
+    val numColumns = ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(5)
     private val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,16 +46,17 @@ class ImageListAdapter(
                 placeholder(ColorDrawable(item.color))
                 error(ColorDrawable(Color.RED))
                 parameters(item.parameters)
+                memoryCachePolicy(CachePolicy.WRITE_ONLY)
             }
 
             setOnClickListener {
-                setScreen(Screen.Detail(item, metadata?.memoryCacheKey))
+                setScreen(Screen.Detail(item, (result as? SuccessResult)?.memoryCacheKey))
             }
         }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val image = itemView as ImageView
+        val image get() = itemView as ImageView
     }
 
     private object Callback : DiffUtil.ItemCallback<Image>() {

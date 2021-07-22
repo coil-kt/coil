@@ -36,8 +36,9 @@ import coil.compose.utils.ImageMockWebServer
 import coil.compose.utils.assertIsSimilarTo
 import coil.compose.utils.resourceUri
 import coil.request.CachePolicy
+import coil.request.ErrorResult
 import coil.request.ImageRequest
-import coil.request.ImageResult.Metadata
+import coil.request.SuccessResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -169,11 +170,11 @@ class ImagePainterTest {
 
         // Build a custom ImageLoader with an EventListener.
         val eventListener = object : EventListener {
-            override fun onSuccess(request: ImageRequest, metadata: Metadata) {
+            override fun onSuccess(request: ImageRequest, result: SuccessResult) {
                 requestCompleted = true
             }
-            override fun onError(request: ImageRequest, throwable: Throwable) {
-                requestThrowable = throwable
+            override fun onError(request: ImageRequest, result: ErrorResult) {
+                requestThrowable = result.throwable
             }
         }
         val imageLoader = imageLoader.newBuilder()

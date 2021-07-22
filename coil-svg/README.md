@@ -10,8 +10,8 @@ And add the decoder to your component registry when constructing your `ImageLoad
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
-    .componentRegistry {
-        add(SvgDecoder(context))
+    .components {
+        add(SvgDecoder.Factory())
     }
     .build()
 ```

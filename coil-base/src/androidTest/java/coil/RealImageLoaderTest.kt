@@ -1,5 +1,3 @@
-@file:Suppress("SameParameterValue")
-
 package coil
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
@@ -17,18 +15,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.base.test.R
-import coil.bitmap.BitmapPool
-import coil.bitmap.RealBitmapReferenceCounter
-import coil.decode.BitmapFactoryDecoder
-import coil.decode.DecodeResult
-import coil.decode.Decoder
-import coil.decode.Options
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.memory.MemoryCache
-import coil.memory.RealMemoryCache
-import coil.memory.RealWeakMemoryCache
-import coil.memory.StrongMemoryCache
-import coil.request.CachePolicy
 import coil.request.DefaultRequestOptions
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -36,24 +24,19 @@ import coil.request.NullRequestDataException
 import coil.request.SuccessResult
 import coil.size.PixelSize
 import coil.size.Precision
-import coil.size.Size
 import coil.util.ImageLoaderOptions
 import coil.util.TestActivity
-import coil.util.Utils
 import coil.util.activity
 import coil.util.createMockWebServer
 import coil.util.decodeBitmapAsset
 import coil.util.getDrawableCompat
 import coil.util.runBlockingTest
-import coil.util.size
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
-import okio.BufferedSource
 import okio.buffer
 import okio.sink
 import okio.source
@@ -75,7 +58,7 @@ class RealImageLoaderTest {
 
     private lateinit var context: Context
     private lateinit var server: MockWebServer
-    private lateinit var strongMemoryCache: StrongMemoryCache
+    private lateinit var memoryCache: MemoryCache
     private lateinit var imageLoader: RealImageLoader
 
     @get:Rule
@@ -85,15 +68,10 @@ class RealImageLoaderTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
-        val bitmapPool = BitmapPool(Int.MAX_VALUE)
-        val weakMemoryCache = RealWeakMemoryCache(null)
-        val referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
-        val memoryCache = RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter, bitmapPool)
+        memoryCache = MemoryCache.Builder(context).maxSizeBytes(Int.MAX_VALUE).build()
         imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
-            bitmapPool = bitmapPool,
             memoryCache = memoryCache,
             callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
@@ -229,94 +207,6 @@ class RealImageLoaderTest {
     }
 
     @Test
-    fun memoryCacheDisabled_preloadDoesNotDecode() {
-        val imageLoader = ImageLoader.Builder(context)
-            .componentRegistry {
-                add(object : Decoder {
-                    override fun handles(source: BufferedSource, mimeType: String?) = true
-
-                    override suspend fun decode(
-                        pool: BitmapPool,
-                        source: BufferedSource,
-                        size: Size,
-                        options: Options
-                    ) = throw IllegalStateException("Decode should not be called.")
-                })
-            }
-            .build()
-
-        val url = server.url(IMAGE_NAME)
-        val cacheFolder = Utils.getDefaultCacheDirectory(context).apply {
-            deleteRecursively()
-            mkdirs()
-        }
-
-        assertTrue(cacheFolder.listFiles().isNullOrEmpty())
-
-        runBlocking {
-            suspendCancellableCoroutine<Unit> { continuation ->
-                val request = ImageRequest.Builder(context)
-                    .data(url)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .listener(
-                        onSuccess = { _, _ -> continuation.resume(Unit) },
-                        onError = { _, throwable -> continuation.resumeWithException(throwable) },
-                        onCancel = { continuation.resumeWithException(CancellationException()) }
-                    )
-                    .build()
-                imageLoader.enqueue(request)
-            }
-        }
-
-        val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
-        assertNotNull(cacheFile, "Did not find the image file in the disk cache.")
-    }
-
-    @Test
-    fun memoryCacheDisabled_getDoesDecode() {
-        var numDecodes = 0
-        val imageLoader = ImageLoader.Builder(context)
-            .componentRegistry {
-                add(object : Decoder {
-                    private val delegate = BitmapFactoryDecoder(context)
-
-                    override fun handles(source: BufferedSource, mimeType: String?) = true
-
-                    override suspend fun decode(
-                        pool: BitmapPool,
-                        source: BufferedSource,
-                        size: Size,
-                        options: Options
-                    ): DecodeResult {
-                        numDecodes++
-                        return delegate.decode(pool, source, size, options)
-                    }
-                })
-            }
-            .build()
-
-        val url = server.url(IMAGE_NAME)
-        val cacheFolder = Utils.getDefaultCacheDirectory(context).apply {
-            deleteRecursively()
-            mkdirs()
-        }
-
-        assertTrue(cacheFolder.listFiles().isNullOrEmpty())
-
-        runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(url)
-                .memoryCachePolicy(CachePolicy.DISABLED)
-                .build()
-            imageLoader.execute(request)
-        }
-
-        val cacheFile = cacheFolder.listFiles().orEmpty().find { it.name.contains(Cache.key(url)) && it.length() == IMAGE_SIZE }
-        assertNotNull(cacheFile, "Did not find the image file in the disk cache.")
-        assertEquals(1, numDecodes)
-    }
-
-    @Test
     fun nullRequestDataShowsFallbackDrawable() {
         val error = ColorDrawable(Color.BLUE)
         val fallback = ColorDrawable(Color.BLACK)
@@ -342,11 +232,11 @@ class RealImageLoaderTest {
                         onStart = { throw IllegalStateException() },
                         onSuccess = { _, _ -> throw IllegalStateException() },
                         onCancel = { throw IllegalStateException() },
-                        onError = { _, throwable ->
-                            if (hasCalledTargetOnError && throwable is NullRequestDataException) {
+                        onError = { _, result ->
+                            if (hasCalledTargetOnError && result.throwable is NullRequestDataException) {
                                 continuation.resume(Unit)
                             } else {
-                                continuation.resumeWithException(throwable)
+                                continuation.resumeWithException(result.throwable)
                             }
                         }
                     )
@@ -369,7 +259,7 @@ class RealImageLoaderTest {
         assertTrue(result is SuccessResult)
         val bitmap = (result.drawable as BitmapDrawable).bitmap
         assertNotNull(bitmap)
-        assertEquals(bitmap, imageLoader.memoryCache[result.metadata.memoryCacheKey!!])
+        assertEquals(bitmap, imageLoader.memoryCache[result.memoryCacheKey!!]?.bitmap)
     }
 
     @Test
@@ -400,7 +290,7 @@ class RealImageLoaderTest {
                     )
                     .listener(
                         onSuccess = { _, _ -> continuation.resume(Unit) },
-                        onError = { _, throwable -> continuation.resumeWithException(throwable) },
+                        onError = { _, result -> continuation.resumeWithException(result.throwable) },
                         onCancel = { continuation.cancel() }
                     )
                     .build()
@@ -440,24 +330,9 @@ class RealImageLoaderTest {
         assertNull(imageLoader2.memoryCache[key])
 
         val bitmap = createBitmap(100, 100)
-        imageLoader1.memoryCache[key] = bitmap
+        imageLoader1.memoryCache[key] = MemoryCache.Value(bitmap)
 
-        assertSame(bitmap, imageLoader2.memoryCache[key])
-    }
-
-    @Test
-    fun newBuilderSharesBitmapPool() {
-        val imageLoader1 = ImageLoader.Builder(context).bitmapPoolPercentage(0.5).build()
-        val imageLoader2 = imageLoader1.newBuilder().build()
-
-        assertSame(imageLoader1.bitmapPool, imageLoader2.bitmapPool)
-        assertNull(imageLoader1.bitmapPool.getOrNull(100, 100, Bitmap.Config.ARGB_8888))
-        assertNull(imageLoader2.bitmapPool.getOrNull(100, 100, Bitmap.Config.ARGB_8888))
-
-        val bitmap = createBitmap(100, 100)
-        imageLoader1.bitmapPool.put(bitmap)
-
-        assertSame(bitmap, imageLoader2.bitmapPool.getOrNull(100, 100, Bitmap.Config.ARGB_8888))
+        assertSame(bitmap, imageLoader2.memoryCache[key]?.bitmap)
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
@@ -474,7 +349,7 @@ class RealImageLoaderTest {
                     .size(100, 100)
                     .listener(
                         onSuccess = { _, _ -> continuation.resume(Unit) },
-                        onError = { _, throwable -> continuation.resumeWithException(throwable) },
+                        onError = { _, result -> continuation.resumeWithException(result.throwable) },
                         onCancel = { continuation.resumeWithException(CancellationException()) }
                     )
                     .build()
@@ -514,14 +389,14 @@ class RealImageLoaderTest {
         return file
     }
 
+    @Suppress("SameParameterValue")
     private fun decodeAssetAndAddToMemoryCache(key: MemoryCache.Key, fileName: String): Bitmap {
         val bitmap = context.decodeBitmapAsset(fileName)
-        strongMemoryCache.set(key, bitmap, false)
+        memoryCache[key] = MemoryCache.Value(bitmap)
         return bitmap
     }
 
     companion object {
         private const val IMAGE_NAME = "normal.jpg"
-        private const val IMAGE_SIZE = 443291L
     }
 }

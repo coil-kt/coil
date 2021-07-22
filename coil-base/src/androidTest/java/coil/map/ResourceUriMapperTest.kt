@@ -5,10 +5,12 @@ import android.content.Context
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
+import coil.request.Options
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ResourceUriMapperTest {
@@ -19,17 +21,14 @@ class ResourceUriMapperTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        mapper = ResourceUriMapper(context)
+        mapper = ResourceUriMapper()
     }
 
     @Test
     fun resourceNameUri() {
         val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/normal".toUri()
         val expected = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
-
-        assertTrue(mapper.handles(uri))
-
-        val actual = mapper.map(uri)
+        val actual = mapper.map(uri, Options(context))
 
         assertEquals(expected, actual)
     }
@@ -39,11 +38,9 @@ class ResourceUriMapperTest {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable-xhdpi/ic_power_system.png
         val packageName = "com.android.settings"
         val input = "$SCHEME_ANDROID_RESOURCE://$packageName/drawable/ic_power_system".toUri()
+        val output = mapper.map(input, Options(context))
 
-        assertTrue(mapper.handles(input))
-
-        val output = mapper.map(input)
-
+        assertNotNull(output)
         assertEquals(SCHEME_ANDROID_RESOURCE, output.scheme)
         assertEquals(packageName, output.authority)
         assertTrue(output.pathSegments[0].toInt() > 0)
@@ -53,6 +50,6 @@ class ResourceUriMapperTest {
     fun resourceIntUri() {
         val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
 
-        assertFalse(mapper.handles(uri))
+        assertNull(mapper.map(uri, Options(context)))
     }
 }

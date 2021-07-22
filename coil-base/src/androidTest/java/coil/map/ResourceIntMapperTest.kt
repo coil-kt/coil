@@ -5,10 +5,11 @@ import android.content.Context
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
+import coil.request.Options
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
 class ResourceIntMapperTest {
 
@@ -18,14 +19,14 @@ class ResourceIntMapperTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        mapper = ResourceIntMapper(context)
+        mapper = ResourceIntMapper()
     }
 
     @Test
     fun resourceInt() {
         val resId = R.drawable.normal
         val expected = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/$resId".toUri()
-        val actual = mapper.map(resId)
+        val actual = mapper.map(resId, Options(context))
 
         assertEquals(expected, actual)
     }
@@ -34,6 +35,6 @@ class ResourceIntMapperTest {
     fun invalidResourceInt() {
         val resId = 0
 
-        assertFalse(mapper.handles(resId))
+        assertNull(mapper.map(resId, Options(context)))
     }
 }
