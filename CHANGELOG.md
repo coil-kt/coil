@@ -7,6 +7,7 @@
     - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
     - You'll need to add `-Xjvm-default=all` to your build file as well. See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to add it.
 - **Important**: `CoilUtils.createDefaultCache` has been replaced by `OkHttpClient.Builder.imageLoaderDiskCache`. The new method is **necessary** to add support for returning the disk cache's `File` in `SuccessResult.file`.
+- **Important**: `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
 - `BitmapPool` and `PoolableViewTarget` have been removed from the library. Bitmap pooling was removed because:
     - It's most effective on <= API 23 and has become less effective with each new Android release.
     - Removing bitmap pooling allows Coil to use immutable bitmaps, which have performance benefits.
