@@ -39,7 +39,7 @@ class CrossfadeTransition @JvmOverloads constructor(
                 val crossfade = CrossfadeDrawable(
                     start = target.drawable,
                     end = result.drawable,
-                    scale = (target.view as? ImageView)?.scale ?: Scale.FILL,
+                    scale = (target.view as? ImageView)?.scale ?: Scale.FIT,
                     durationMillis = durationMillis,
                     fadeStart = (result as? SuccessResult)?.placeholderMemoryCacheKey == null,
                     preferExactIntrinsicSize = preferExactIntrinsicSize
