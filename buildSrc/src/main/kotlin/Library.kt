@@ -9,9 +9,6 @@ object Library {
     private const val COROUTINES_VERSION = "1.5.0"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
-    private const val APPCOMPAT_VERSION = "1.3.1"
-    const val ANDROIDX_APPCOMPAT = "androidx.appcompat:appcompat:$APPCOMPAT_VERSION"
-    const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:$APPCOMPAT_VERSION"
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.2.4"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.2.0"
     const val ANDROIDX_COLLECTION = "androidx.collection:collection-ktx:1.1.0"
@@ -21,6 +18,10 @@ object Library {
     const val ANDROIDX_MULTIDEX = "androidx.multidex:multidex:2.0.1"
     const val ANDROIDX_RECYCLER_VIEW = "androidx.recyclerview:recyclerview:1.2.1"
     const val ANDROIDX_VECTOR_DRAWABLE_ANIMATED = "androidx.vectordrawable:vectordrawable-animated:1.1.0"
+
+    private const val APPCOMPAT_VERSION = "1.3.1"
+    const val ANDROIDX_APPCOMPAT = "androidx.appcompat:appcompat:$APPCOMPAT_VERSION"
+    const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:$APPCOMPAT_VERSION"
 
     private const val LIFECYCLE_VERSION = "2.3.1"
     const val ANDROIDX_LIFECYCLE_COMMON = "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
