@@ -100,23 +100,19 @@ internal class HttpUrlFetcher(
      * Create a new [ImageSource] to be decoded.
      */
     private fun newImageSource(response: Response, source: BufferedSource): ImageSource {
-        val inexhaustibleSource = response.inexhaustibleSource // Set by 'InexhaustibleSourceInterceptor'.
-        val resultFile = response.cacheFile // Set by 'DiskCacheInterceptor'.
-        val sourceFile = resultFile?.let { it.takeIf(File::exists) ?: it.tmp().takeIf(File::exists) }
+        // Set by 'DiskCacheInterceptor'.
+        val resultFile = response.cacheFile
+        val sourceFile = resultFile
+            ?.let { it.takeIf(File::exists) ?: it.tmp().takeIf(File::exists) }
+            ?: return source.toImageSource()
 
-        // Buffer the source into memory if we don't have the necessary cache information.
-        if (inexhaustibleSource == null || sourceFile == null) {
-            return ImageSource(
-                source = source.use { Buffer().apply { writeAll(it) } },
-                context = options.context
-            )
-        }
-
-        // Read the source into the disk cache if it isn't already cached.
-        if (response.cacheResponse != null) {
+        // Read the source into the disk cache if we're reading from the network.
+        if (response.networkResponse != null) {
+            // Set by 'InexhaustibleSourceInterceptor'.
+            val inexhaustibleSource = response.inexhaustibleSource ?: return source.toImageSource()
             try {
-                // Prevent the source from being exhausted to prevent OkHttp's 'CacheInterceptor' from
-                // automatically closing the cache body, which would make it eligible for eviction.
+                // Prevent the source from being exhausted to stop OkHttp's 'CacheInterceptor' from
+                // automatically closing the cache body, which would make the cache file eligible for eviction.
                 // This way we ensure that the cache file won't be evicted until 'ImageSource.close' is called.
                 inexhaustibleSource.isEnabled = true
                 readAll(source)
@@ -171,6 +167,16 @@ internal class HttpUrlFetcher(
      * 'DiskLruCache' writes to the temporary file and renames it to remove the suffix when it's closed.
      */
     private fun File.tmp() = File("$path.tmp")
+
+    /**
+     * Buffer the source into memory.
+     */
+    private fun BufferedSource.toImageSource(): ImageSource {
+        return ImageSource(
+            source = use { Buffer().apply { writeAll(it) } },
+            context = options.context
+        )
+    }
 
     class Factory(private val callFactory: Call.Factory) : Fetcher.Factory<Any> {
 

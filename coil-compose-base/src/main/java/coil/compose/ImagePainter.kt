@@ -342,8 +342,7 @@ private fun updatePainter(
         key = state,
         start = loading.value,
         end = painter,
-        // Fall back to Scale.FIT to match the default image content scale.
-        scale = request.defined.scale ?: Scale.FIT,
+        scale = request.scale,
         durationMillis = transition.durationMillis,
         fadeStart = state.result.placeholderMemoryCacheKey == null
     )

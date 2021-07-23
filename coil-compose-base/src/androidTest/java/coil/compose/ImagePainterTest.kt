@@ -71,8 +71,7 @@ class ImagePainterTest {
     fun before() {
         server = ImageMockWebServer()
         requestTracker = ImageLoaderIdlingResource()
-        val context = composeTestRule.activity.applicationContext
-        imageLoader = ImageLoader.Builder(context)
+        imageLoader = ImageLoader.Builder(composeTestRule.activity)
             .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .networkObserverEnabled(false)
