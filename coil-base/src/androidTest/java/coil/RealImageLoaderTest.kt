@@ -171,7 +171,7 @@ class RealImageLoaderTest {
     fun assetUri() {
         val data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
         testEnqueue(data, PixelSize(75, 100))
-        testExecute(data, PixelSize(100, 133))
+        testExecute(data, PixelSize(75, 100))
     }
 
     @Test
@@ -362,7 +362,7 @@ class RealImageLoaderTest {
         assertEquals(expectedSize, drawable.bitmap.size)
     }
 
-    private fun testExecute(data: Any, expectedSize: PixelSize = PixelSize(100, 125)) {
+    private fun testExecute(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
         val result = runBlocking {
             val request = ImageRequest.Builder(context)
                 .data(data)
