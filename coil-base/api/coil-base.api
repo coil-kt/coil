@@ -674,27 +674,21 @@ public final class coil/request/SuccessResult : coil/request/ImageResult {
 }
 
 public final class coil/size/OriginalSize : coil/size/Size {
-	public static final field CREATOR Landroid/os/Parcelable$Creator;
 	public static final field INSTANCE Lcoil/size/OriginalSize;
-	public fun describeContents ()I
 	public fun toString ()Ljava/lang/String;
-	public fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
 public final class coil/size/PixelSize : coil/size/Size {
-	public static final field CREATOR Landroid/os/Parcelable$Creator;
 	public fun <init> (II)V
 	public final fun component1 ()I
 	public final fun component2 ()I
 	public final fun copy (II)Lcoil/size/PixelSize;
 	public static synthetic fun copy$default (Lcoil/size/PixelSize;IIILjava/lang/Object;)Lcoil/size/PixelSize;
-	public fun describeContents ()I
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getHeight ()I
 	public final fun getWidth ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
 public final class coil/size/Precision : java/lang/Enum {
@@ -712,7 +706,7 @@ public final class coil/size/Scale : java/lang/Enum {
 	public static fun values ()[Lcoil/size/Scale;
 }
 
-public abstract class coil/size/Size : android/os/Parcelable {
+public abstract class coil/size/Size {
 }
 
 public abstract interface class coil/size/SizeResolver {
