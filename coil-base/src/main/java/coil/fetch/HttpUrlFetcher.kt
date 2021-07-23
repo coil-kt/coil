@@ -106,7 +106,7 @@ internal class HttpUrlFetcher(
             ?.let { it.takeIf(File::exists) ?: it.tmp().takeIf(File::exists) }
             ?: return source.toImageSource()
 
-        // Read the source into the disk cache if we're reading from the network.
+        // Read through the source completely if we're reading from the network.
         if (response.networkResponse != null) {
             // Set by 'InexhaustibleSourceInterceptor'.
             val inexhaustibleSource = response.inexhaustibleSource ?: return source.toImageSource()
