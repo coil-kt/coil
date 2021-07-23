@@ -19,7 +19,7 @@ import coil.util.forEachIndices
  */
 class ComponentRegistry private constructor(
     val interceptors: List<Interceptor>,
-    val mappers: List<Pair<Mapper<out Any, *>, Class<out Any>>>,
+    val mappers: List<Pair<Mapper<out Any, out Any>, Class<out Any>>>,
     val keyers: List<Pair<Keyer<out Any>, Class<out Any>>>,
     val fetcherFactories: List<Pair<Fetcher.Factory<out Any>, Class<out Any>>>,
     val decoderFactories: List<Decoder.Factory>
