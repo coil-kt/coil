@@ -34,7 +34,7 @@ object CoilUtils {
      * Get the [File] for a [url] in [diskCache].
      *
      * NOTE: This function **does not** imply that the returned [File] exists. Callers should
-     * always check [File.exists] before using. Additionally, if the file does exist it can be
+     * always check [File.exists] before using it. Additionally, if the file does exist it can be
      * deleted at any moment (especially if new entries are actively being added to [diskCache]).
      */
     @JvmStatic
