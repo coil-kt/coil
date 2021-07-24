@@ -68,7 +68,8 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
             if (project.name != "coil-test") {
                 arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
             }
-            freeCompilerArgs = arguments
+            // https://youtrack.jetbrains.com/issue/KT-41985
+            freeCompilerArgs += arguments
         }
         packagingOptions {
             resources.pickFirsts += "META-INF/AL2.0"
