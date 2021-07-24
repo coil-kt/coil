@@ -156,12 +156,12 @@ internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(:
 /** https://github.com/coil-kt/coil/issues/675 */
 internal val Context.safeCacheDir: File get() = cacheDir.apply { mkdirs() }
 
-@Suppress("UNCHECKED_CAST")
-internal inline fun ComponentRegistry.Builder.addFirst(
-    pair: Pair<Fetcher.Factory<*>, Class<*>>?
-) = if (pair == null) this else addFirst(pair.first as Fetcher.Factory<Any>, pair.second as Class<Any>)
+internal inline fun ComponentRegistry.Builder.addFirst(pair: Pair<Fetcher.Factory<*>, Class<*>>?) = apply {
+    if (pair != null) fetcherFactories.add(0, pair)
+}
 
-internal inline fun ComponentRegistry.Builder.addFirst(factory: Decoder.Factory?) =
-    if (factory == null) this else addFirst(factory)
+internal inline fun ComponentRegistry.Builder.addFirst(factory: Decoder.Factory?) = apply {
+    if (factory != null) decoderFactories.add(factory)
+}
 
 internal fun unsupported(): Nothing = error("Unsupported")

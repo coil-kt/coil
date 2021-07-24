@@ -25,11 +25,6 @@ public final class coil/ComponentRegistry$Builder {
 	public final fun add (Lcoil/intercept/Interceptor;)Lcoil/ComponentRegistry$Builder;
 	public final fun add (Lcoil/key/Keyer;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
 	public final fun add (Lcoil/map/Mapper;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
-	public final fun addFirst (Lcoil/decode/Decoder$Factory;)Lcoil/ComponentRegistry$Builder;
-	public final fun addFirst (Lcoil/fetch/Fetcher$Factory;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
-	public final fun addFirst (Lcoil/intercept/Interceptor;)Lcoil/ComponentRegistry$Builder;
-	public final fun addFirst (Lcoil/key/Keyer;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
-	public final fun addFirst (Lcoil/map/Mapper;Ljava/lang/Class;)Lcoil/ComponentRegistry$Builder;
 	public final fun build ()Lcoil/ComponentRegistry;
 }
 
