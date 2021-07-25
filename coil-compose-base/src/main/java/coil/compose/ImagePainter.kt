@@ -61,8 +61,8 @@ inline fun rememberImagePainter(
     builder: ImageRequest.Builder.() -> Unit = {},
 ): ImagePainter {
     val request = ImageRequest.Builder(LocalContext.current)
-        .data(data)
         .apply(builder)
+        .data(data)
         .build()
     return rememberImagePainter(request, imageLoader, onExecute)
 }
