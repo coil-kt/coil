@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.1] - July 28, 2021
+
+- Update Jetpack Compose to `1.0.0`. Huge congrats to the Compose team on the [stable release](https://android-developers.googleblog.com/2021/07/jetpack-compose-announcement.html)!
+- Update `androidx.appcompat:appcompat-resources` to `1.3.1`.
+
 ## [1.3.0] - July 10, 2021
 
 - **New**: Add support for [Jetpack Compose](https://developer.android.com/jetpack/compose). It's based on [Accompanist](https://github.com/google/accompanist/)'s Coil integration, but has a number of changes. Check out [the docs](https://coil-kt.github.io/coil/compose/) for more info.
