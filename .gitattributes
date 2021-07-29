@@ -2,4 +2,9 @@
 
 *.bat text eol=crlf
 *.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.so binary
 *.mp4 filter=lfs diff=lfs merge=lfs -text
