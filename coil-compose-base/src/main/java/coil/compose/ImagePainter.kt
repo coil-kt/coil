@@ -34,6 +34,7 @@ import coil.size.OriginalSize
 import coil.size.Precision
 import coil.size.Scale
 import coil.transition.CrossfadeTransition
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -84,7 +85,7 @@ fun rememberImagePainter(
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
 
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate + EMPTY_COROUTINE_EXCEPTION_HANDLER }
     val imagePainter = remember(scope) { ImagePainter(scope, request, imageLoader) }
     imagePainter.request = request
     imagePainter.imageLoader = imageLoader
@@ -374,3 +375,6 @@ private fun ImageResult.toState() = when (this) {
 
 /** A simple mutable value holder that avoids recomposition. */
 private class ValueHolder<T>(@JvmField var value: T)
+
+/** An exception handler that ignores any uncaught exceptions. */
+private val EMPTY_COROUTINE_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, _ -> }
