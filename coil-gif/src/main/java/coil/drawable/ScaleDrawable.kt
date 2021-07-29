@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
  */
 class ScaleDrawable @JvmOverloads constructor(
     val child: Drawable,
-    private val scale: Scale = Scale.FIT
+    val scale: Scale = Scale.FIT
 ) : Drawable(), Drawable.Callback, Animatable {
 
     private var childDx = 0f
