@@ -105,7 +105,6 @@ class CrossfadeDrawable @JvmOverloads constructor(
         }
     }
 
-    @RequiresApi(19)
     override fun getAlpha() = maxAlpha
 
     override fun setAlpha(alpha: Int) {
@@ -134,7 +133,6 @@ class CrossfadeDrawable @JvmOverloads constructor(
         }
     }
 
-    @RequiresApi(21)
     override fun getColorFilter(): ColorFilter? = when (state) {
         STATE_START -> start?.colorFilter
         STATE_RUNNING -> end?.colorFilter ?: start?.colorFilter
@@ -142,7 +140,6 @@ class CrossfadeDrawable @JvmOverloads constructor(
         else -> null
     }
 
-    @RequiresApi(21)
     override fun setColorFilter(colorFilter: ColorFilter?) {
         start?.colorFilter = colorFilter
         end?.colorFilter = colorFilter
@@ -175,19 +172,16 @@ class CrossfadeDrawable @JvmOverloads constructor(
 
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
 
-    @RequiresApi(21)
     override fun setTint(tintColor: Int) {
         start?.setTint(tintColor)
         end?.setTint(tintColor)
     }
 
-    @RequiresApi(21)
     override fun setTintList(tint: ColorStateList?) {
         start?.setTintList(tint)
         end?.setTintList(tint)
     }
 
-    @RequiresApi(21)
     override fun setTintMode(tintMode: PorterDuff.Mode?) {
         start?.setTintMode(tintMode)
         end?.setTintMode(tintMode)
