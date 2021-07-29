@@ -1,12 +1,11 @@
 # Changelog
 
-## [2.0.0-alpha01] - July 24, 2021
+## [2.0.0-alpha01] - XXX, 2021
 
 - **Important**: The minimum supported API is now 21.
 - **Important**: Build with `-Xjvm-default=all`.
     - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
     - You'll need to add `-Xjvm-default=all` to your build file as well. See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to add it.
-- **Important**: `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
 - **Important**: `CoilUtils.createDefaultCache` has been replaced by `OkHttpClient.Builder.imageLoaderDiskCache`.
 - **Important**: `ImageRequest`'s default `Scale` is now `Scale.FIT`
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
@@ -23,6 +22,7 @@
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. If you use Kotlin, there is essentially no change.
     - This change allows the library size to be smaller.
+- `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
 - Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. By default, this is 4 which improves UI performance.
 - Adds support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
 - `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
