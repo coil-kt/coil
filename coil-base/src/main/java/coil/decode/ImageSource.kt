@@ -135,6 +135,10 @@ internal class SourceImageSource(
     private var source: BufferedSource? = source
     private var file: File? = null
 
+    init {
+        require(cacheDirectory.isDirectory) { "cacheDirectory must be a directory." }
+    }
+
     @Synchronized
     override fun source(): BufferedSource {
         assertNotClosed()
