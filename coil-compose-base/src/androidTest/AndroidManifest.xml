@@ -9,6 +9,7 @@
         android:name="coil.compose.TestApplication"
         android:usesCleartextTraffic="true">
 
+        <!--suppress AndroidDomInspection -->
         <activity
             android:name="androidx.activity.ComponentActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
