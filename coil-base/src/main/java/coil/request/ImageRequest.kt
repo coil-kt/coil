@@ -155,7 +155,7 @@ class ImageRequest private constructor(
     val defined: DefinedRequestOptions,
 
     /** The defaults used to fill unset values. */
-    val defaults: DefaultRequestOptions
+    val defaults: DefaultRequestOptions,
 ) {
 
     /** @see Builder.placeholder */
