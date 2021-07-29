@@ -1,1 +1,5 @@
+* text eol=lf
+
+*.bat text eol=crlf
+*.jar binary
 *.mp4 filter=lfs diff=lfs merge=lfs -text
