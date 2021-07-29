@@ -7,7 +7,7 @@ object Library {
     private const val COROUTINES_VERSION = "1.5.0"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
-    const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.2.4"
+    const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.3.0"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.2.0"
     const val ANDROIDX_COLLECTION = "androidx.collection:collection-ktx:1.1.0"
     const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:2.0.4"
