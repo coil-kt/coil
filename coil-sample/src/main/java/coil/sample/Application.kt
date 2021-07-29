@@ -38,7 +38,7 @@ class Application : Application(), ImageLoaderFactory {
             .crossfade(true) // Show a short crossfade when loading images from network or disk.
             .memoryCache(
                 MemoryCache.Builder(this)
-                    .maxSizePercent(0.25) // Use 25% of the application's available memory.
+                    .maxSizePercent(0.25) // Use 25% of the application's memory quota.
                     .build()
             )
             .okHttpClient {
