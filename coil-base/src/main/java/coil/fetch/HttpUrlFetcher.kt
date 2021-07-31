@@ -132,7 +132,7 @@ internal class HttpUrlFetcher(
 
     /**
      * Read the [source] until it is empty.
-     * This is different from [BufferedSource.readAll] as it stops reading when [Source.read] returns 0 or -1.
+     * This is different from [BufferedSource.readAll] as it stops reading when [Source.read] returns 0.
      */
     private fun readAll(source: BufferedSource) {
         val buffer = source.buffer

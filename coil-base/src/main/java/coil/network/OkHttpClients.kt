@@ -98,7 +98,7 @@ private class InexhaustibleSourceInterceptor : Interceptor {
 }
 
 /**
- * Wraps [delegate] to prevent returning -1 from [Source.read] if [isEnabled] is `true`.
+ * Wraps [delegate] so it returns 0 instead of -1 from [Source.read] if [isEnabled] is `true`.
  */
 internal class InexhaustibleSource(delegate: Source) : ForwardingSource(delegate) {
 
