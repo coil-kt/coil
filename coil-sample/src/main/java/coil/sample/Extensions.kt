@@ -21,9 +21,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlin.random.Random
 
-inline fun <reified V : View> ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): V {
-    return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot) as V
-}
+inline fun <reified V : View> ViewGroup.inflate(
+    @LayoutRes layoutRes: Int,
+    attachToRoot: Boolean = false
+): V = LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot) as V
 
 inline val AndroidViewModel.context: Context
     get() = getApplication()

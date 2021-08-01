@@ -21,7 +21,8 @@ fun interface Fetcher {
     fun interface Factory<T : Any> {
 
         /**
-         * Return a [Fetcher] that can fetch [data] or 'null' if this factory cannot create a fetcher for the data.
+         * Return a [Fetcher] that can fetch [data] or 'null' if this factory cannot create a
+         * fetcher for the data.
          *
          * @param data The data to fetch.
          * @param options A set of configuration options for this request.

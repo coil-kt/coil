@@ -41,7 +41,8 @@ class Options(
     val size: Size = OriginalSize,
 
     /**
-     * The scaling algorithm for how to fit the source image's dimensions into the target's dimensions.
+     * The scaling algorithm for how to fit the source image's dimensions into the target's
+     * dimensions.
      */
     val scale: Scale = Scale.FIT,
 
@@ -60,9 +61,9 @@ class Options(
     val allowRgb565: Boolean = false,
 
     /**
-     * 'true' if the color (RGB) channels of the decoded image should be pre-multiplied by the alpha channel.
-     * The default behavior is to enable pre-multiplication but in some environments it can be necessary to
-     * disable this feature to leave the source pixels unmodified.
+     * 'true' if the color (RGB) channels of the decoded image should be pre-multiplied by the
+     * alpha channel. The default behavior is to enable pre-multiplication but in some environments
+     * it can be necessary to disable this feature to leave the source pixels unmodified.
      */
     val premultipliedAlpha: Boolean = true,
 

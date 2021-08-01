@@ -10,7 +10,9 @@ import coil.size.Precision
 import coil.size.ViewSizeResolver
 import coil.target.ViewTarget
 
-/** Used to resolve [ImageRequest.placeholder], [ImageRequest.error], and [ImageRequest.fallback]. */
+/**
+ * Used to resolve [ImageRequest.placeholder], [ImageRequest.error], and [ImageRequest.fallback].
+ */
 internal fun ImageRequest.getDrawableCompat(
     drawable: Drawable?,
     @DrawableRes resId: Int?,
@@ -23,7 +25,10 @@ internal fun ImageRequest.getDrawableCompat(
     }
 }
 
-/** Return 'true' if the request does not require the output image's size to match the requested dimensions exactly. */
+/**
+ * Return 'true' if the request does not require the output image's size to match the
+ * requested dimensions exactly.
+ */
 internal val ImageRequest.allowInexactSize: Boolean
     get() = when (precision) {
         Precision.EXACT -> false

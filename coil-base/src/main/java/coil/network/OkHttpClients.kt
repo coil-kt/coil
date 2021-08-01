@@ -28,7 +28,8 @@ fun OkHttpClient.Builder.imageLoaderDiskCache(context: Context) =
     imageLoaderDiskCache(CoilUtils.createDiskCache(context))
 
 /**
- * Sets the disk cache for this [OkHttpClient] and adds extensions so an [ImageLoader] can read its disk cache.
+ * Sets the disk cache for this [OkHttpClient] and adds extensions so an [ImageLoader] can
+ * read its disk cache.
  *
  * NOTE: You should call this **after** adding any [Interceptor]s.
  *
@@ -131,8 +132,10 @@ internal val Response.inexhaustibleSource: InexhaustibleSource?
  */
 internal fun Call.Factory.assertHasDiskCacheInterceptor() {
     if (this !is OkHttpClient || cache == null) return
-    check(interceptors.lastOrNull() is DiskCacheInterceptor && networkInterceptors.firstOrNull() is InexhaustibleSourceInterceptor) {
+    check(interceptors.lastOrNull() is DiskCacheInterceptor &&
+        networkInterceptors.firstOrNull() is InexhaustibleSourceInterceptor) {
         "The ImageLoader is unable to read the disk cache of the OkHttpClient provided to it." +
-            "Set `OkHttpClient.Builder.imageLoaderDiskCache` after adding any interceptors to fix this."
+            "Set `OkHttpClient.Builder.imageLoaderDiskCache` after adding any interceptors to " +
+            "fix this."
     }
 }

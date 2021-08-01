@@ -94,7 +94,8 @@ internal class RealImageLoader(
         // Decoders
         .add(BitmapFactoryDecoder.Factory(options.bitmapFactoryMaxParallelism))
         .build()
-    private val interceptors = components.interceptors + EngineInterceptor(this, requestService, logger)
+    private val interceptors = components.interceptors +
+        EngineInterceptor(this, requestService, logger)
     private val isShutdown = AtomicBoolean(false)
 
     override fun enqueue(request: ImageRequest): Disposable {
@@ -150,7 +151,8 @@ internal class RealImageLoader(
 
             // Set the placeholder on the target.
             val placeholderBitmap = memoryCache[request.placeholderMemoryCacheKey]?.bitmap
-            val placeholderMemoryCacheKey = request.placeholderMemoryCacheKey.takeIf { placeholderBitmap != null }
+            val placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
+                .takeIf { placeholderBitmap != null }
             val placeholder = placeholderBitmap?.toDrawable(request.context) ?: request.placeholder
             request.target?.onStart(placeholder)
             eventListener.onStart(request)
@@ -163,8 +165,8 @@ internal class RealImageLoader(
 
             // Execute the interceptor chain.
             val result = withContext(request.interceptorDispatcher) {
-                RealInterceptorChain(request, interceptors, 0, request, size, placeholderMemoryCacheKey, eventListener)
-                    .proceed(request)
+                RealInterceptorChain(request, interceptors, 0, request, size,
+                    placeholderMemoryCacheKey, eventListener).proceed(request)
             }
 
             // Set the result on the target.
@@ -209,7 +211,9 @@ internal class RealImageLoader(
     ) {
         val request = result.request
         val dataSource = result.dataSource
-        logger?.log(TAG, Log.INFO) { "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}" }
+        logger?.log(TAG, Log.INFO) {
+            "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}"
+        }
         transition(result, target, eventListener) { target?.onSuccess(result.drawable) }
         eventListener.onSuccess(request, result)
         request.listener?.onSuccess(request, result)
@@ -221,14 +225,18 @@ internal class RealImageLoader(
         eventListener: EventListener
     ) {
         val request = result.request
-        logger?.log(TAG, Log.INFO) { "${Emoji.SIREN} Failed - ${request.data} - ${result.throwable}" }
+        logger?.log(TAG, Log.INFO) {
+            "${Emoji.SIREN} Failed - ${request.data} - ${result.throwable}"
+        }
         transition(result, target, eventListener) { target?.onError(result.drawable) }
         eventListener.onError(request, result)
         request.listener?.onError(request, result)
     }
 
     private fun onCancel(request: ImageRequest, eventListener: EventListener) {
-        logger?.log(TAG, Log.INFO) { "${Emoji.CONSTRUCTION} Cancelled - ${request.data}" }
+        logger?.log(TAG, Log.INFO) {
+            "${Emoji.CONSTRUCTION} Cancelled - ${request.data}"
+        }
         eventListener.onCancel(request)
         request.listener?.onCancel(request)
     }

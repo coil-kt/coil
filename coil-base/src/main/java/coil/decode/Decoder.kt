@@ -19,14 +19,16 @@ fun interface Decoder {
     fun interface Factory {
 
         /**
-         * Return a [Decoder] that can decode [result] or 'null' if this factory cannot create a decoder for the source.
+         * Return a [Decoder] that can decode [result] or 'null' if this factory cannot
+         * create a decoder for the source.
          *
          * Implementations **must not** consume [result]'s [ImageSource], as this can cause calls
          * to subsequent decoders to fail.
          *
-         * Prefer using [BufferedSource.peek], [BufferedSource.rangeEquals], or other non-destructive methods to check
-         * for the presence of header bytes or other markers. Implementations can also rely on [SourceResult.mimeType],
-         * however it is not guaranteed to be accurate (e.g. a file that ends with .png, but is encoded as a .jpg).
+         * Prefer using [BufferedSource.peek], [BufferedSource.rangeEquals], or other
+         * non-destructive methods to check for the presence of header bytes or other markers.
+         * Implementations can also rely on [SourceResult.mimeType], however it is not guaranteed
+         * to be accurate (e.g. a file that ends with .png, but is encoded as a .jpg).
          *
          * @param result The result from the [Fetcher].
          * @param options A set of configuration options for this request.

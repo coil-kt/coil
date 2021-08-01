@@ -23,7 +23,8 @@ import coil.util.safeConfig
 import kotlin.math.roundToInt
 
 /**
- * A [Transformation] that crops the image to fit the target's dimensions and rounds the corners of the image.
+ * A [Transformation] that crops the image to fit the target's dimensions and rounds
+ * the corners of the image.
  *
  * @param topLeft The radius for the top left corner.
  * @param topRight The radius for the top right corner.
@@ -40,7 +41,9 @@ class RoundedCornersTransformation(
     constructor(@Px radius: Float) : this(radius, radius, radius, radius)
 
     init {
-        require(topLeft >= 0 && topRight >= 0 && bottomLeft >= 0 && bottomRight >= 0) { "All radii must be >= 0." }
+        require(topLeft >= 0 && topRight >= 0 && bottomLeft >= 0 && bottomRight >= 0) {
+            "All radii must be >= 0."
+        }
     }
 
     override val cacheKey = "${javaClass.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
@@ -78,7 +81,8 @@ class RoundedCornersTransformation(
             shader.setLocalMatrix(matrix)
             paint.shader = shader
 
-            val radii = floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft)
+            val radii = floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight,
+                bottomLeft, bottomLeft)
             val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
             val path = Path().apply { addRoundRect(rect, radii, Path.Direction.CW) }
             drawPath(path, paint)

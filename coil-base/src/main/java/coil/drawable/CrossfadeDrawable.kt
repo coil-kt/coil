@@ -23,17 +23,18 @@ import kotlin.math.roundToInt
 /**
  * A [Drawable] that crossfades from [start] to [end].
  *
- * NOTE: The animation can only be executed once as the [start] drawable is dereferenced at the end of the transition.
+ * NOTE: The animation can only be executed once as the [start]
+ * drawable is dereferenced at the end of the transition.
  *
  * @param start The [Drawable] to crossfade from.
  * @param end The [Drawable] to crossfade to.
  * @param scale The scaling algorithm for [start] and [end].
  * @param durationMillis The duration of the crossfade animation.
  * @param fadeStart If false, the start drawable will not fade out while the end drawable fades in.
- * @param preferExactIntrinsicSize If true, this drawable's intrinsic width/height will only be -1 if
- *  [start] **and** [end] return -1 for that dimension. If false, the intrinsic width/height will be -1 if
- *  [start] **or** [end] return -1 for that dimension. This is useful for views that require an exact intrinsic
- *  size to scale the drawable.
+ * @param preferExactIntrinsicSize If true, this drawable's intrinsic width/height will only be -1
+ *  if [start] **and** [end] return -1 for that dimension. If false, the intrinsic width/height will
+ *  be -1 if [start] **or** [end] return -1 for that dimension. This is useful for views that
+ *  require an exact intrinsic size to scale the drawable.
  */
 class CrossfadeDrawable @JvmOverloads constructor(
     start: Drawable?,
@@ -41,7 +42,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
     val scale: Scale = Scale.FIT,
     val durationMillis: Int = DEFAULT_DURATION,
     val fadeStart: Boolean = true,
-    val preferExactIntrinsicSize: Boolean = false
+    val preferExactIntrinsicSize: Boolean = false,
 ) : Drawable(), Drawable.Callback, Animatable2Compat {
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
@@ -253,11 +254,8 @@ class CrossfadeDrawable @JvmOverloads constructor(
     }
 
     private fun computeIntrinsicDimension(startSize: Int?, endSize: Int?): Int {
-        return if (!preferExactIntrinsicSize && (startSize == -1 || endSize == -1)) {
-            -1
-        } else {
-            max(startSize ?: -1, endSize ?: -1)
-        }
+        if (!preferExactIntrinsicSize && (startSize == -1 || endSize == -1)) return -1
+        return max(startSize ?: -1, endSize ?: -1)
     }
 
     private fun markDone() {

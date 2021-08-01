@@ -52,7 +52,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         val isFlipped: Boolean
         val rotationDegrees: Int
         if (shouldReadExifData(outMimeType)) {
-            val exifInterface = ExifInterface(ExifInterfaceInputStream(safeBufferedSource.peek().inputStream()))
+            val inputStream = safeBufferedSource.peek().inputStream()
+            val exifInterface = ExifInterface(ExifInterfaceInputStream(inputStream))
             safeSource.exception?.let { throw it }
             isFlipped = exifInterface.isFlipped
             rotationDegrees = exifInterface.rotationDegrees
@@ -61,7 +62,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
             rotationDegrees = 0
         }
 
-        // srcWidth and srcHeight are the dimensions of the image after EXIF transformations (but before sampling).
+        // srcWidth and srcHeight are the dimensions of the image after
+        // EXIF transformations (but before sampling).
         val isSwapped = rotationDegrees == 90 || rotationDegrees == 270
         val srcWidth = if (isSwapped) outHeight else outWidth
         val srcHeight = if (isSwapped) outWidth else outHeight
@@ -91,7 +93,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
             }
             else -> {
                 val (width, height) = options.size
-                inSampleSize = DecodeUtils.calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
+                inSampleSize = DecodeUtils
+                    .calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
 
                 // Calculate the image's density scaling multiple.
                 val rawScale = DecodeUtils.computeSizeMultiplier(
@@ -126,8 +129,9 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         }
         safeSource.exception?.let { throw it }
         checkNotNull(outBitmap) {
-            "BitmapFactory returned a null bitmap. Often this means BitmapFactory could not decode the image data " +
-                "read from the input source (e.g. network, disk, or memory) as it's not encoded as a valid image format."
+            "BitmapFactory returned a null bitmap. Often this means BitmapFactory could not " +
+                "decode the image data read from the input source (e.g. network, disk, or " +
+                "memory) as it's not encoded as a valid image format."
         }
 
         // Fix the incorrect density created by overloading inDensity/inTargetDensity.
@@ -173,7 +177,10 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         return config
     }
 
-    /** NOTE: This method assumes [config] is not [Bitmap.Config.HARDWARE] if the image has to be transformed. */
+    /**
+     * NOTE: This method assumes [config] is not [Bitmap.Config.HARDWARE]
+     * if the image has to be transformed.
+     */
     private fun applyExifTransformations(
         inBitmap: Bitmap,
         config: Bitmap.Config,
@@ -215,7 +222,9 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         return outBitmap
     }
 
-    class Factory @JvmOverloads constructor(maxParallelism: Int = DEFAULT_MAX_PARALLELISM) : Decoder.Factory {
+    class Factory @JvmOverloads constructor(
+        maxParallelism: Int = DEFAULT_MAX_PARALLELISM
+    ) : Decoder.Factory {
 
         private val parallelismLock = Semaphore(maxParallelism)
 
@@ -255,7 +264,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
 
         override fun read(b: ByteArray) = interceptBytesRead(delegate.read(b))
 
-        override fun read(b: ByteArray, off: Int, len: Int) = interceptBytesRead(delegate.read(b, off, len))
+        override fun read(b: ByteArray, off: Int, len: Int) =
+            interceptBytesRead(delegate.read(b, off, len))
 
         override fun skip(n: Long) = delegate.skip(n)
 
@@ -280,6 +290,7 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         // NOTE: We don't support PNG EXIF data as it's very rarely used and requires buffering
         // the entire file into memory. All of the supported formats short circuit when the EXIF
         // chunk is found (often near the top of the file).
-        private val SUPPORTED_EXIF_MIME_TYPES = arrayOf(MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF)
+        private val SUPPORTED_EXIF_MIME_TYPES =
+            arrayOf(MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF)
     }
 }

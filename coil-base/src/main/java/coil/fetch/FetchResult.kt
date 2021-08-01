@@ -23,10 +23,12 @@ data class SourceResult(
 ) : FetchResult()
 
 /**
- * A direct [Drawable] result. Return this from a [Fetcher] if its data cannot be converted into a [BufferedSource].
+ * A direct [Drawable] result. Return this from a [Fetcher] if its data cannot
+ * be converted into a [BufferedSource].
  *
  * @param drawable The fetched [Drawable].
- * @param isSampled 'true' if [drawable] is sampled (i.e. loaded into memory at less than its original size).
+ * @param isSampled 'true' if [drawable] is sampled (i.e. loaded into memory
+ *  at less than its original size).
  * @param dataSource The source that [drawable] was fetched from.
  */
 data class DrawableResult(

@@ -159,13 +159,16 @@ class ImageRequest private constructor(
 ) {
 
     /** @see Builder.placeholder */
-    val placeholder: Drawable? get() = getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
+    val placeholder: Drawable? get() =
+        getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
 
     /** @see Builder.error */
-    val error: Drawable? get() = getDrawableCompat(errorDrawable, errorResId, defaults.error)
+    val error: Drawable? get() =
+        getDrawableCompat(errorDrawable, errorResId, defaults.error)
 
     /** @see Builder.fallback */
-    val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
+    val fallback: Drawable? get() =
+        getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
 
     @JvmOverloads
     fun newBuilder(context: Context = this.context) = Builder(this, context)
@@ -520,7 +523,8 @@ class ImageRequest private constructor(
         /**
          * Set the list of [Transformation]s to be applied to this request.
          */
-        fun transformations(vararg transformations: Transformation) = transformations(transformations.toList())
+        fun transformations(vararg transformations: Transformation) =
+            transformations(transformations.toList())
 
         /**
          * Set the list of [Transformation]s to be applied to this request.
@@ -570,7 +574,8 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the scaling algorithm that will be used to fit/fill the image into the size provided by [sizeResolver].
+         * Set the scaling algorithm that will be used to fit/fill the image into the size provided
+         * by [sizeResolver].
          *
          * NOTE: If [scale] is not set, it is automatically computed for [ImageView] targets.
          */
@@ -584,8 +589,8 @@ class ImageRequest private constructor(
          * The default value is [Precision.AUTOMATIC], which uses the logic in [allowInexactSize]
          * to determine if output image's dimensions must match the input [size] and [scale] exactly.
          *
-         * NOTE: If [size] is [OriginalSize], the returned image's size will always be equal to or greater than
-         * the image's original size.
+         * NOTE: If [size] is [OriginalSize], the returned image's size will always be equal to or
+         * greater than the image's original size.
          *
          * @see Precision
          */
@@ -596,14 +601,17 @@ class ImageRequest private constructor(
         /**
          * Use [factory] to handle fetching any image data.
          *
-         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its [ComponentRegistry].
+         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its
+         * [ComponentRegistry].
          */
-        inline fun <reified T : Any> fetcherFactory(factory: Fetcher.Factory<T>) = fetcherFactory(factory, T::class.java)
+        inline fun <reified T : Any> fetcherFactory(factory: Fetcher.Factory<T>) =
+            fetcherFactory(factory, T::class.java)
 
         /**
          * Use [factory] to handle fetching any image data.
          *
-         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its [ComponentRegistry].
+         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its
+         * [ComponentRegistry].
          */
         @PublishedApi
         internal fun <T : Any> fetcherFactory(factory: Fetcher.Factory<T>, type: Class<T>) = apply {
@@ -613,7 +621,8 @@ class ImageRequest private constructor(
         /**
          * Use [factory] to handle decoding any image data.
          *
-         * If this is null or is not set the [ImageLoader] will find an applicable decoder in its [ComponentRegistry].
+         * If this is null or is not set the [ImageLoader] will find an applicable decoder in its
+         * [ComponentRegistry].
          */
         fun decoderFactory(factory: Decoder.Factory) = apply {
             this.decoderFactory = factory
@@ -622,7 +631,8 @@ class ImageRequest private constructor(
         /**
          * Allow converting the result drawable to a bitmap to apply any [transformations].
          *
-         * If false and the result drawable is not a [BitmapDrawable] any [transformations] will be ignored.
+         * If false and the result drawable is not a [BitmapDrawable] any [transformations] will
+         * be ignored.
          */
         fun allowConversionToBitmap(enable: Boolean) = apply {
             this.allowConversionToBitmap = enable
@@ -643,10 +653,11 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Enable/disable pre-multiplication of the color (RGB) channels of the decoded image by the alpha channel.
+         * Enable/disable pre-multiplication of the color (RGB) channels of the decoded image by
+         * the alpha channel.
          *
-         * The default behavior is to enable pre-multiplication but in some environments it can be necessary
-         * to disable this feature to leave the source pixels unmodified.
+         * The default behavior is to enable pre-multiplication but in some environments it can be
+         * necessary to disable this feature to leave the source pixels unmodified.
          */
         fun premultipliedAlpha(enable: Boolean) = apply {
             this.premultipliedAlpha = enable
@@ -738,7 +749,8 @@ class ImageRequest private constructor(
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
-        fun placeholderMemoryCacheKey(key: String?) = placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
+        fun placeholderMemoryCacheKey(key: String?) =
+            placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
          * Set the memory cache [key] whose value will be used as the placeholder drawable.
@@ -826,7 +838,8 @@ class ImageRequest private constructor(
         /**
          * @see ImageLoader.Builder.crossfade
          */
-        fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+        fun crossfade(enable: Boolean) =
+            crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
         /**
          * @see ImageLoader.Builder.crossfade
@@ -914,8 +927,9 @@ class ImageRequest private constructor(
                 fallbackResId = fallbackResId,
                 fallbackDrawable = fallbackDrawable,
                 defined = DefinedRequestOptions(lifecycle, sizeResolver, scale, interceptorDispatcher,
-                    fetcherDispatcher, decoderDispatcher, transformationDispatcher, transitionFactory, precision,
-                    bitmapConfig, allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy, networkCachePolicy),
+                    fetcherDispatcher, decoderDispatcher, transformationDispatcher, transitionFactory,
+                    precision, bitmapConfig, allowHardware, allowRgb565, memoryCachePolicy,
+                    diskCachePolicy, networkCachePolicy),
                 defaults = defaults,
             )
         }

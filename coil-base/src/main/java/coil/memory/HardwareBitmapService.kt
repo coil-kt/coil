@@ -27,7 +27,7 @@ internal sealed class HardwareBitmapService {
     @MainThread
     abstract fun allowHardwareMainThread(size: Size): Boolean
 
-    /** The same as [allowHardwareMainThread] except perform any checks that cannot be done on the main thread. */
+    /** Perform any hardware bitmap allocation checks that cannot be done on the main thread. */
     @WorkerThread
     abstract fun allowHardwareWorkerThread(): Boolean
 }
@@ -39,10 +39,13 @@ private class ImmutableHardwareBitmapService(private val allowHardware: Boolean)
 }
 
 /** Guards against running out of file descriptors. */
-private class LimitedFileDescriptorHardwareBitmapService(private val logger: Logger?) : HardwareBitmapService() {
+private class LimitedFileDescriptorHardwareBitmapService(
+    private val logger: Logger?
+) : HardwareBitmapService() {
 
     override fun allowHardwareMainThread(size: Size): Boolean {
-        return size !is PixelSize || (size.width >= MIN_SIZE_DIMENSION && size.height >= MIN_SIZE_DIMENSION)
+        return size !is PixelSize ||
+            (size.width >= MIN_SIZE_DIMENSION && size.height >= MIN_SIZE_DIMENSION)
     }
 
     override fun allowHardwareWorkerThread(): Boolean {
@@ -106,7 +109,8 @@ private object FileDescriptorCounter {
 /**
  * Maintains a list of devices with broken/incomplete/unstable hardware bitmap implementations.
  *
- * Model names are retrieved from [Google's official device list](https://support.google.com/googleplay/answer/1727131?hl=en).
+ * Model names are retrieved from
+ * [Google's official device list](https://support.google.com/googleplay/answer/1727131?hl=en).
  */
 private val IS_DEVICE_BLOCKED = when (SDK_INT) {
     26 -> run {

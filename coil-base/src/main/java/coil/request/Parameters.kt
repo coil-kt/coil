@@ -39,7 +39,7 @@ class Parameters private constructor(
         }
     }
 
-    /** Returns a map of keys to non null cache keys. Parameters with a null cache key are filtered out. */
+    /** Returns a map of keys to non-null cache keys. Keys with a null cache key are filtered. */
     fun cacheKeys(): Map<String, String> {
         return if (isEmpty()) {
             emptyMap()
@@ -86,7 +86,8 @@ class Parameters private constructor(
          *
          * @param key The parameter's key.
          * @param value The parameter's value.
-         * @param cacheKey The parameter's cache key. If not null, this value will be added to a request's cache key.
+         * @param cacheKey The parameter's cache key.
+         *  If not null, this value will be added to a request's cache key.
          */
         @JvmOverloads
         fun set(key: String, value: Any?, cacheKey: String? = value?.toString()) = apply {

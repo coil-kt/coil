@@ -65,10 +65,12 @@ internal class HttpUrlFetcher(
 
         val response = if (coroutineContext.dispatcher is MainCoroutineDispatcher) {
             if (networkRead) {
-                // Prevent executing requests on the main thread that could block due to a networking operation.
+                // Prevent executing requests on the main thread that could block due to a
+                // networking operation.
                 throw NetworkOnMainThreadException()
             } else {
-                // Work around https://github.com/Kotlin/kotlinx.coroutines/issues/2448 by blocking the current context.
+                // Work around https://github.com/Kotlin/kotlinx.coroutines/issues/2448 by
+                // blocking the current context.
                 callFactory.newCall(request.build()).execute()
             }
         } else {
@@ -110,12 +112,14 @@ internal class HttpUrlFetcher(
         if (response.networkResponse != null) {
             // Set by 'InexhaustibleSourceInterceptor'.
             val inexhaustibleSource = response.inexhaustibleSource
-                ?.takeUnless { it.isExhausted } // If the source is already exhausted we can't rely on the disk cache file.
+                // If the source is already exhausted we can't rely on the disk cache file.
+                ?.takeUnless { it.isExhausted }
                 ?: return source.toImageSource()
             try {
                 // Prevent the source from being exhausted to stop OkHttp's 'CacheInterceptor' from
-                // automatically closing the cache body, which would make the cache file eligible for eviction.
-                // This way we ensure that the cache file won't be evicted until 'ImageSource.close' is called.
+                // automatically closing the cache body, which would make the cache file eligible
+                // for eviction. This way we ensure that the cache file won't be evicted until
+                // 'ImageSource.close' is called.
                 inexhaustibleSource.isEnabled = true
                 readAll(source, inexhaustibleSource)
             } finally {

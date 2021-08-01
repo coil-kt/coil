@@ -72,7 +72,8 @@ internal class EngineInterceptor(
             val memoryCacheValue = memoryCacheKey?.let { getMemoryCacheValue(request, it) }
 
             // Fast path: return the value from the memory cache.
-            if (memoryCacheValue != null && isCachedValueValid(memoryCacheKey, memoryCacheValue, request, size)) {
+            if (memoryCacheValue != null &&
+                isCachedValueValid(memoryCacheKey, memoryCacheValue, request, size)) {
                 return SuccessResult(
                     drawable = memoryCacheValue.bitmap.toDrawable(context),
                     request = request,
@@ -213,15 +214,17 @@ internal class EngineInterceptor(
                 )
                 if (multiple != 1.0 && !request.allowInexactSize) {
                     logger?.log(TAG, Log.DEBUG) {
-                        "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) does not " +
-                            "exactly match the requested size (${size.width}, ${size.height}, ${request.scale})."
+                        "${request.data}: Cached image's request size " +
+                            "($cachedWidth, $cachedHeight) does not exactly match the requested size " +
+                            "(${size.width}, ${size.height}, ${request.scale})."
                     }
                     return false
                 }
                 if (multiple > 1.0 && cacheValue.isSampled) {
                     logger?.log(TAG, Log.DEBUG) {
-                        "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) is smaller " +
-                            "than the requested size (${size.width}, ${size.height}, ${request.scale})."
+                        "${request.data}: Cached image's request size " +
+                            "($cachedWidth, $cachedHeight) is smaller than the requested size " +
+                            "(${size.width}, ${size.height}, ${request.scale})."
                     }
                     return false
                 }

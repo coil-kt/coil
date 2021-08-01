@@ -51,5 +51,6 @@ internal class RealInterceptorChain(
         index: Int = this.index,
         request: ImageRequest = this.request,
         size: Size = this.size
-    ) = RealInterceptorChain(initialRequest, interceptors, index, request, size, placeholderMemoryCacheKey, eventListener)
+    ) = RealInterceptorChain(initialRequest, interceptors, index, request, size,
+        placeholderMemoryCacheKey, eventListener)
 }
