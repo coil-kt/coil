@@ -33,7 +33,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs = ["-Xjvm-default=all"]
+        freeCompilerArgs += "-Xjvm-default=all"
     }
 }
 ```
@@ -48,7 +48,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs = listOf("-Xjvm-default=all")
+        freeCompilerArgs += "-Xjvm-default=all"
     }
 }
 ```
