@@ -116,6 +116,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun precision (Lcoil/size/Precision;)Lcoil/ImageLoader$Builder;
 	public final fun trackWeakReferences (Z)Lcoil/ImageLoader$Builder;
 	public final fun transformationDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/ImageLoader$Builder;
+	public final fun transition (Lcoil/transition/Transition;)Lcoil/ImageLoader$Builder;
 	public final fun transitionFactory (Lcoil/transition/Transition$Factory;)Lcoil/ImageLoader$Builder;
 }
 

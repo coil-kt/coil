@@ -510,6 +510,13 @@ interface ImageLoader {
             level = DeprecationLevel.ERROR // Temporary migration aid.
         )
         fun componentRegistry(registry: ComponentRegistry): Builder = unsupported()
+
+        @Deprecated(
+            message = "Migration to 'transitionFactory'.",
+            replaceWith = ReplaceWith("transitionFactory { _, _ -> transition }"),
+            level = DeprecationLevel.ERROR // Temporary migration aid.
+        )
+        fun transition(transition: Transition): Builder = unsupported()
     }
 
     companion object {
