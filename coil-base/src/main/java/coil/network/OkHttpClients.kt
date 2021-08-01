@@ -102,11 +102,15 @@ private class InexhaustibleSourceInterceptor : Interceptor {
  */
 internal class InexhaustibleSource(delegate: Source) : ForwardingSource(delegate) {
 
-    @JvmField var isEnabled = false
+    var isEnabled = false
+    var isExhausted = false
+        private set
 
     override fun read(sink: Buffer, byteCount: Long): Long {
         var bytesRead = super.read(sink, byteCount)
-        if (isEnabled) bytesRead = bytesRead.coerceAtLeast(0)
+        val exhausted = bytesRead == -1L
+        if (!isExhausted) isExhausted = exhausted
+        if (isEnabled && exhausted) bytesRead = 0
         return bytesRead
     }
 }

@@ -8,6 +8,7 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.network.HttpException
+import coil.network.InexhaustibleSource
 import coil.network.cacheFile
 import coil.network.inexhaustibleSource
 import coil.request.Options
@@ -26,7 +27,6 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.Buffer
 import okio.BufferedSource
-import okio.Source
 import java.io.File
 import kotlin.coroutines.coroutineContext
 
@@ -109,13 +109,15 @@ internal class HttpUrlFetcher(
         // Read through the source completely if we're reading from the network.
         if (response.networkResponse != null) {
             // Set by 'InexhaustibleSourceInterceptor'.
-            val inexhaustibleSource = response.inexhaustibleSource ?: return source.toImageSource()
+            val inexhaustibleSource = response.inexhaustibleSource
+                ?.takeIf { !it.isExhausted } // If the source has already been exhausted we can't rely on the disk cache file.
+                ?: return source.toImageSource()
             try {
                 // Prevent the source from being exhausted to stop OkHttp's 'CacheInterceptor' from
                 // automatically closing the cache body, which would make the cache file eligible for eviction.
                 // This way we ensure that the cache file won't be evicted until 'ImageSource.close' is called.
                 inexhaustibleSource.isEnabled = true
-                readAll(source)
+                readAll(source, inexhaustibleSource)
             } finally {
                 inexhaustibleSource.isEnabled = false
             }
@@ -131,12 +133,11 @@ internal class HttpUrlFetcher(
     }
 
     /**
-     * Read the [source] until it is empty.
-     * This is different from [BufferedSource.readAll] as it stops reading when [Source.read] returns 0.
+     * Read the [source] until [InexhaustibleSource.isExhausted] is 'true'.
      */
-    private fun readAll(source: BufferedSource) {
+    private fun readAll(source: BufferedSource, inexhaustibleSource: InexhaustibleSource) {
         val buffer = source.buffer
-        while (source.read(buffer, SEGMENT_SIZE) > 0L) {
+        while (source.read(buffer, SEGMENT_SIZE) != -1L && !inexhaustibleSource.isExhausted) {
             val emitByteCount = buffer.completeSegmentByteCount()
             if (emitByteCount > 0L) {
                 buffer.skip(emitByteCount)
