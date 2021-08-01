@@ -55,8 +55,9 @@ class SuccessResult(
      * A direct reference to where this image was stored on disk when it was decoded.
      * It is 'null' if the image is not stored on disk.
      *
-     * NOTE: You should always check [File.exists] before using the file as it may
-     * have been moved or deleted since the image was decoded.
+     * You should treat this file as read-only and not write to it. Also, you should
+     * always check [File.exists] before reading the file as it's possible for the
+     * file to be moved or deleted at any time.
      */
     val file: File?,
 
