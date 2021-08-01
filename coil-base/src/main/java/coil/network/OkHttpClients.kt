@@ -30,6 +30,8 @@ fun OkHttpClient.Builder.imageLoaderDiskCache(context: Context) =
 /**
  * Sets the disk cache for this [OkHttpClient] and adds extensions so an [ImageLoader] can read its disk cache.
  *
+ * NOTE: You should call this **after** adding any [Interceptor]s.
+ *
  * @param diskCache The disk cache to use with this [OkHttpClient].
  */
 fun OkHttpClient.Builder.imageLoaderDiskCache(diskCache: Cache?) = apply {
