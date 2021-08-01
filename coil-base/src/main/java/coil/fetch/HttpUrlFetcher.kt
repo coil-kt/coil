@@ -110,7 +110,7 @@ internal class HttpUrlFetcher(
         if (response.networkResponse != null) {
             // Set by 'InexhaustibleSourceInterceptor'.
             val inexhaustibleSource = response.inexhaustibleSource
-                ?.takeIf { !it.isExhausted } // If the source has already been exhausted we can't rely on the disk cache file.
+                ?.takeUnless { it.isExhausted } // If the source is already exhausted we can't rely on the disk cache file.
                 ?: return source.toImageSource()
             try {
                 // Prevent the source from being exhausted to stop OkHttp's 'CacheInterceptor' from
