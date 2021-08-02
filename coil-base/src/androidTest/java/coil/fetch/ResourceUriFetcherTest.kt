@@ -14,8 +14,8 @@ import coil.map.ResourceUriMapper
 import coil.request.Options
 import coil.size.OriginalSize
 import coil.size.PixelSize
+import coil.util.assertIsSimilarTo
 import coil.util.getDrawableCompat
-import coil.util.isSimilarTo
 import coil.util.withTestActivity
 import kotlinx.coroutines.runBlocking
 import org.junit.Assume.assumeTrue
@@ -112,6 +112,6 @@ class ResourceUriFetcherTest {
         }
         val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
         val actual = (result as DrawableResult).drawable.toBitmap()
-        assertTrue(actual.isSimilarTo(expected))
+        actual.assertIsSimilarTo(expected)
     }
 }

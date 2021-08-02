@@ -6,6 +6,7 @@ import androidx.core.graphics.alpha
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
@@ -32,54 +33,62 @@ fun Bitmap.getPixels(): Array<IntArray> {
     return arrayOf(alpha, red, green, blue)
 }
 
+@FloatRange(from = -1.0, to = 1.0)
+fun Bitmap.computeSimilarity(other: Bitmap): Double = runBlocking(Dispatchers.Default) {
+    val pixels1 = async { getPixels() }
+    val pixels2 = async { other.getPixels() }
+
+    suspend fun computeThresholdAsync(index: Int) = async {
+        crossCorrelation(pixels1.await()[index], pixels2.await()[index])
+            .let { if (it.isNaN()) 1.0 else it }
+    }
+
+    val alphaThreshold = computeThresholdAsync(0)
+    val redThreshold = computeThresholdAsync(1)
+    val greenThreshold = computeThresholdAsync(2)
+    val blueThreshold = computeThresholdAsync(3)
+
+    minOf(
+        alphaThreshold.await(),
+        redThreshold.await(),
+        greenThreshold.await(),
+        blueThreshold.await()
+    )
+}
+
 /**
  * Compares two [Bitmap]s by ensuring that they are the same size and that
  * the cross correlation of their ARGB channels is >= [threshold].
  */
-fun Bitmap.isSimilarTo(other: Bitmap, @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99): Boolean {
-    require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
-
-    if (width != other.width || height != other.height) {
-        return false
-    }
-
-    val (xAlpha, xRed, xGreen, xBlue) = getPixels()
-    val (yAlpha, yRed, yGreen, yBlue) = other.getPixels()
-
-    return crossCorrelation(xAlpha, yAlpha) >= threshold &&
-        crossCorrelation(xRed, yRed) >= threshold &&
-        crossCorrelation(xGreen, yGreen) >= threshold &&
-        crossCorrelation(xBlue, yBlue) >= threshold
-}
-
-/**
- * Asserts that [this] and [expected] are the same size and that
- * the cross correlation of their ARGB channels is >= [threshold].
- */
-fun Bitmap.assertIsSimilarTo(expected: Bitmap, @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99) {
+fun Bitmap.isSimilarTo(
+    expected: Bitmap,
+    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
+): Boolean {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {
         "The actual image ($width, $height) is not the same size as the " +
             "expected image (${expected.width}, ${expected.height})."
     }
 
-    runBlocking {
-        val actualPixels = async { getPixels() }
-        val expectedPixels = async { expected.getPixels() }
+    return computeSimilarity(expected) >= threshold
+}
 
-        val alphaThreshold = async { crossCorrelation(actualPixels.await()[0], expectedPixels.await()[0]) }
-        val redThreshold = async { crossCorrelation(actualPixels.await()[1], expectedPixels.await()[1]) }
-        val greenThreshold = async { crossCorrelation(actualPixels.await()[2], expectedPixels.await()[2]) }
-        val blueThreshold = async { crossCorrelation(actualPixels.await()[3], expectedPixels.await()[3]) }
+/**
+ * Asserts that [this] and [expected] are the same size and that
+ * the cross correlation of their ARGB channels is >= [threshold].
+ */
+fun Bitmap.assertIsSimilarTo(
+    expected: Bitmap,
+    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
+) {
+    require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
+    require(width == expected.width && height == expected.height) {
+        "The actual image ($width, $height) is not the same size as the " +
+            "expected image (${expected.width}, ${expected.height})."
+    }
 
-        val similarity = minOf(
-            alphaThreshold.await(),
-            redThreshold.await(),
-            greenThreshold.await(),
-            blueThreshold.await()
-        )
-        check(similarity >= threshold) {
-            "The images are not visually similar. Actual: $similarity; Expected: $threshold."
-        }
+    val similarity = computeSimilarity(expected)
+    check(similarity >= threshold) {
+        "The images are not visually similar. Actual: $similarity; Expected: $threshold."
     }
 }

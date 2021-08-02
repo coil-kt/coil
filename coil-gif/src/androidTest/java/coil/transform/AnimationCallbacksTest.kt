@@ -10,6 +10,7 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.CachePolicy
+import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.onAnimationEnd
 import coil.request.onAnimationStart
@@ -19,11 +20,11 @@ import coil.util.activity
 import coil.util.runBlockingTest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertTrue
 
 class AnimationCallbacksTest {
 
@@ -60,7 +61,10 @@ class AnimationCallbacksTest {
             GifDecoder.Factory()
         }
 
-        val imageRequest = ImageRequest.Builder(context)
+        val request = ImageRequest.Builder(context)
+            .data("$SCHEME_FILE:///android_asset/animated.gif")
+            .target(imageView)
+            .decoderFactory(decoderFactory)
             .repeatCount(0)
             .onAnimationStart {
                 isStartCalled.value = true
@@ -68,12 +72,10 @@ class AnimationCallbacksTest {
             .onAnimationEnd {
                 isEndCalled.value = true
             }
-            .target(imageView)
-            .decoderFactory(decoderFactory)
-            .data("$SCHEME_FILE:///android_asset/animated.gif")
             .build()
-        imageLoader.enqueue(imageRequest)
-        assertTrue(isStartCalled.first { it })
-        assertTrue(isEndCalled.first { it })
+        val result = imageLoader.execute(request)
+        if (result is ErrorResult) throw result.throwable
+        withTimeout(30_000) { isStartCalled.first { it } }
+        withTimeout(30_000) { isEndCalled.first { it } }
     }
 }

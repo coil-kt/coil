@@ -12,8 +12,8 @@ import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.request.animatedTransformation
+import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
-import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import org.junit.Assume.assumeTrue
 import org.junit.Before
@@ -49,7 +49,7 @@ class AnimatedTransformationTest {
         }
         val expected = context.decodeBitmapAsset("animated_gif_rounded.png")
         assertTrue(actual is SuccessResult)
-        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
+        actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
@@ -68,7 +68,7 @@ class AnimatedTransformationTest {
         }
         val expected = context.decodeBitmapAsset("animated_heif_rounded.png")
         assertTrue(actual is SuccessResult)
-        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
+        actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
@@ -87,6 +87,6 @@ class AnimatedTransformationTest {
         }
         val expected = context.decodeBitmapAsset("animated_webp_rounded.png")
         assertTrue(actual is SuccessResult)
-        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
+        actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 }

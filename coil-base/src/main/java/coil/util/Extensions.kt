@@ -161,7 +161,7 @@ internal inline fun ComponentRegistry.Builder.addFirst(pair: Pair<Fetcher.Factor
 }
 
 internal inline fun ComponentRegistry.Builder.addFirst(factory: Decoder.Factory?) = apply {
-    if (factory != null) decoderFactories.add(factory)
+    if (factory != null) decoderFactories.add(0, factory)
 }
 
 internal fun unsupported(): Nothing = error("Unsupported")

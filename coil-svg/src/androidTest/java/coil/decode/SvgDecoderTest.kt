@@ -8,8 +8,8 @@ import coil.fetch.SourceResult
 import coil.request.Options
 import coil.size.PixelSize
 import coil.size.Scale
+import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
-import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
 import okio.buffer
@@ -89,7 +89,7 @@ class SvgDecoderTest {
         assertTrue(drawable is BitmapDrawable)
 
         val expected = context.decodeBitmapAsset("coil_logo_250.png")
-        assertTrue(drawable.bitmap.isSimilarTo(expected))
+        drawable.bitmap.assertIsSimilarTo(expected)
     }
 
     @Test
@@ -108,7 +108,7 @@ class SvgDecoderTest {
         assertTrue(drawable is BitmapDrawable)
 
         val expected = context.decodeBitmapAsset("instacart_logo_326.png")
-        assertTrue(drawable.bitmap.isSimilarTo(expected))
+        drawable.bitmap.assertIsSimilarTo(expected)
     }
 
     private fun BufferedSource.asSourceResult(

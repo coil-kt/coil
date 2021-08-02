@@ -23,7 +23,8 @@ class FrameDelayRewritingSourceTest {
     @Test
     fun doesNotRewriteGifWithValidFrameDelay() {
         val expected = context.assets.open("animated.gif").source().readBuffer()
-        val actual = FrameDelayRewritingSource(context.assets.open("animated.gif").source()).readBuffer()
+        val source = context.assets.open("animated.gif").source()
+        val actual = FrameDelayRewritingSource(source).readBuffer()
 
         assertEquals(expected, actual)
     }
@@ -31,11 +32,12 @@ class FrameDelayRewritingSourceTest {
     @Test
     fun onlyRewritesFrameDelay() {
         val expected = context.assets.open("no_frame_delay.gif").source().readByteArray()
-        val actual = FrameDelayRewritingSource(context.assets.open("no_frame_delay.gif").source()).readByteArray()
+        val source = context.assets.open("no_frame_delay.gif").source()
+        val actual = FrameDelayRewritingSource(source).readByteArray()
 
-        val graphicsControlExtensionIndexes = arrayOf(32, 40, 11_880, 11_888, 22_443, 22_451, 32_624,
-            32_632, 43_637, 43_645, 54_275, 54_283, 65_070, 65_078, 75_062, 75_070, 86_526, 86_534,
-            98_134, 98_142)
+        val graphicsControlExtensionIndexes = arrayOf(32, 40, 11_880, 11_888, 22_443, 22_451,
+            32_624, 32_632, 43_637, 43_645, 54_275, 54_283, 65_070, 65_078, 75_062, 75_070, 86_526,
+            86_534, 98_134, 98_142)
 
         graphicsControlExtensionIndexes.forEach { index ->
             val frameDelayIndex = index + 4

@@ -13,6 +13,7 @@ import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
+import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
@@ -95,7 +96,7 @@ class BitmapFactoryDecoderTest {
         val size = PixelSize(500, 500)
         val expected = decodeBitmap("exif/large_metadata_normalized.jpg", size)
         val actual = decodeBitmap("exif/large_metadata.jpg", size)
-        assertTrue(expected.isSimilarTo(actual))
+        expected.assertIsSimilarTo(actual)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/619 */
@@ -107,7 +108,7 @@ class BitmapFactoryDecoderTest {
         // Ensure this completes and doesn't end up in an infinite loop.
         val normal = context.decodeBitmapAsset("exif/basic.heic")
         val actual = decodeBitmap("exif/basic.heic", OriginalSize)
-        assertTrue(normal.isSimilarTo(actual))
+        normal.assertIsSimilarTo(actual)
     }
 
     @Test
@@ -200,8 +201,8 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun lossyWebP() {
-        val expectedBitmap = decodeBitmap("normal.jpg", PixelSize(450, 675))
-        assertTrue(decodeBitmap("lossy.webp", PixelSize(450, 675)).isSimilarTo(expectedBitmap))
+        val expected = decodeBitmap("normal.jpg", PixelSize(450, 675))
+        decodeBitmap("lossy.webp", PixelSize(450, 675)).assertIsSimilarTo(expected)
     }
 
     @Test

@@ -8,8 +8,8 @@ import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Options
 import coil.request.Parameters
 import coil.size.PixelSize
+import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
-import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.source
@@ -49,7 +49,7 @@ class VideoFrameDecoderTest {
         assertFalse(result.isSampled)
 
         val expected = context.decodeBitmapAsset("video_frame_1.jpg")
-        assertTrue(actual.isSimilarTo(expected))
+        actual.assertIsSimilarTo(expected)
     }
 
     @Test
@@ -77,7 +77,7 @@ class VideoFrameDecoderTest {
         assertFalse(result.isSampled)
 
         val expected = context.decodeBitmapAsset("video_frame_2.jpg")
-        assertTrue(actual.isSimilarTo(expected))
+        actual.assertIsSimilarTo(expected)
     }
 
     @Test
@@ -100,6 +100,6 @@ class VideoFrameDecoderTest {
         assertTrue(result.isSampled)
 
         val expected = context.decodeBitmapAsset("video_frame_rotated.jpg")
-        assertTrue(actual.isSimilarTo(expected, threshold = 0.97))
+        actual.assertIsSimilarTo(expected, threshold = 0.97)
     }
 }

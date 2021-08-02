@@ -22,8 +22,8 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.request.animatedTransformation
+import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
-import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -67,7 +67,8 @@ class AnimatedAndNormalTransformationTest {
             imageLoader.execute(imageRequest)
         }
         assertTrue(actual is SuccessResult)
-        // Make sure this is still an animated result (has not been flattened to apply CircleCropTransformation).
+        // Make sure this is still an animated result (has not been flattened to
+        // apply CircleCropTransformation).
         assertTrue(actual.drawable is Animatable)
     }
 
@@ -83,7 +84,7 @@ class AnimatedAndNormalTransformationTest {
         assertTrue(actual is SuccessResult)
         // Make sure this is not an animated result.
         assertFalse(actual.drawable is Animatable)
-        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
+        actual.drawable.toBitmap().assertIsSimilarTo(expected)
     }
 
     class AnimatedCircleTransformation : AnimatedTransformation {
