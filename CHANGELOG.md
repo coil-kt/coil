@@ -3,31 +3,35 @@
 ## [2.0.0-alpha01] - XXX, 2021
 
 - **Important**: The minimum supported API is now 21.
-- **Important**: Build with `-Xjvm-default=all`.
+- **Important**: Enable `-Xjvm-default=all`.
     - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
-    - You'll need to add `-Xjvm-default=all` to your build file as well. See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to add it.
+    - **You'll need to add `-Xjvm-default=all` to your build file as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to add it.
 - **Important**: `CoilUtils.createDefaultCache` has been replaced by `OkHttpClient.Builder.imageLoaderDiskCache`.
 - **Important**: `ImageRequest`'s default `Scale` is now `Scale.FIT`
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
+    - Requests with an `ImageViewTarget` still have their scale autodetected.
 - Significant changes to the image pipeline classes:
     - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
     - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
-    - Adds `ImageSource`, which allows `Decoder`s to decode `File`s directly if necessary.
+    - Adds `ImageSource`, which allows `Decoder`s to decode `File`s directly.
 - `BitmapPool` and `PoolableViewTarget` have been removed from the library. Bitmap pooling was removed because:
     - It's most effective on <= API 23 and has become less effective with newer Android releases.
     - Removing bitmap pooling allows Coil to use immutable bitmaps, which have performance benefits.
     - There's runtime overhead to manage the bitmap pool.
-    - Bitmap pooling creates design restrictions on Coil's API (to track if a bitmap is eligible for pooling). Removing bitmap pooling allows Coil to expose the result `Drawable` in more places (e.g. `Listener`, `Disposable`). Additionally, this means Coil doesn't have to clear `ImageView`s, which has can cause [issues](https://github.com/coil-kt/coil/issues/650).
-- `MemoryCache` has been refactored to be more flexible. Also, it can now be created without an `ImageLoader`.
+    - Bitmap pooling creates design restrictions on Coil's API as it requires tracking if a bitmap is eligible for pooling. Removing bitmap pooling allows Coil to expose the result `Drawable` in more places (e.g. `Listener`, `Disposable`). Additionally, this means Coil doesn't have to clear `ImageView`s, which has can cause [issues](https://github.com/coil-kt/coil/issues/650).
+    - Bitmap pooling is error-prone. Allocating a new bitmap is much safer than attempting to re-use a bitmap that could still be in use.
+- `MemoryCache` has been refactored to be more flexible.
+    - Also, it can now be created without an `ImageLoader`.
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. If you use Kotlin, there is essentially no change.
-    - This change allows the library size to be smaller.
+    - This change allows the library's size to be smaller.
 - `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
 - Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. By default, this is 4 which improves UI performance.
 - Adds support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
 - `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
 - Add `GenericViewTarget`, which handles common `ViewTarget` logic.
 - [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library.
+    - If you use them, you can copy their code into your project.
 - `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
 - `Transformation.key` is replaced with `Transformation.cacheKey`.
 - `ImageRequest.Listener` returns `SuccessResult`/`ErrorResult` in `onSuccess` and `onError` respectively.
