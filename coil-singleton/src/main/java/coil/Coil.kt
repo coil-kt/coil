@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package coil
 
 import android.app.Application
@@ -5,6 +7,9 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import coil.Coil.imageLoader
 import coil.Coil.setImageLoader
+import coil.request.Disposable
+import coil.request.ImageRequest
+import coil.request.ImageResult
 
 /**
  * A class that holds the singleton [ImageLoader] instance.
@@ -69,4 +74,27 @@ object Coil {
         imageLoader = null
         imageLoaderFactory = null
     }
+
+    @Deprecated(
+        message = "Replace with 'context.imageLoader.enqueue(request)'.",
+        replaceWith = ReplaceWith(
+            expression = "request.context.imageLoader.enqueue(request)",
+            imports = ["coil.imageLoader"]
+        ),
+        level = DeprecationLevel.ERROR // Temporary migration aid.
+    )
+    @JvmStatic
+    fun enqueue(request: ImageRequest): Disposable = error("Unsupported")
+
+    @Deprecated(
+        message = "Replace with 'context.imageLoader.execute(request)'.",
+        replaceWith = ReplaceWith(
+            expression = "request.context.imageLoader.execute(request)",
+            imports = ["coil.imageLoader"]
+        ),
+        level = DeprecationLevel.ERROR // Temporary migration aid.
+    )
+    @JvmStatic
+    @Suppress("RedundantSuspendModifier")
+    suspend fun execute(request: ImageRequest): ImageResult = error("Unsupported")
 }
