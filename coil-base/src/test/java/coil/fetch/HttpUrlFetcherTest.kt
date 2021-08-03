@@ -7,11 +7,13 @@ import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.decode.DataSource
+import coil.decode.FileImageSource
 import coil.network.HttpException
 import coil.network.imageLoaderDiskCache
 import coil.request.CachePolicy
 import coil.request.Options
 import coil.size.PixelSize
+import coil.util.CoilUtils
 import coil.util.createMockWebServer
 import coil.util.createTestMainDispatcher
 import coil.util.runBlockingTest
@@ -55,8 +57,8 @@ class HttpUrlFetcherTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
-        server = createMockWebServer(context, "normal.jpg")
-        diskCache = Cache(File("build/cache"), Long.MAX_VALUE).apply { evictAll() }
+        server = createMockWebServer(context, "normal.jpg", "normal.jpg")
+        diskCache = Cache(File("build/cache"), Long.MAX_VALUE)
         callFactory = OkHttpClient.Builder().imageLoaderDiskCache(diskCache).build()
     }
 
@@ -64,6 +66,7 @@ class HttpUrlFetcherTest {
     fun after() {
         Dispatchers.resetMain()
         server.shutdown()
+        diskCache.evictAll()
     }
 
     @Test
@@ -159,7 +162,55 @@ class HttpUrlFetcherTest {
         }
 
         assertTrue(result is SourceResult)
-        assertNotNull(result.source.file())
+        assertNotNull(result.source.fileOrNull())
         assertEquals(DataSource.DISK, result.dataSource)
+    }
+
+    @Test
+    fun `no cached file - fetcher returns the file`() {
+        assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
+
+        val url = server.url("/normal.jpg")
+        val uri = url.toString().toUri()
+        val options = Options(context, size = PixelSize(100, 100))
+        val fetcherFactory = HttpUrlFetcher.Factory(callFactory)
+        val result = runBlocking {
+            assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
+        }
+
+        assertTrue(result is SourceResult)
+        val source = result.source
+        assertTrue(source is FileImageSource)
+        val expected = CoilUtils.getDiskCacheFile(diskCache, url)
+        assertTrue(expected in diskCache.directory.listFiles().orEmpty())
+        assertEquals(expected, source.resultFile)
+    }
+
+    @Test
+    fun `existing cached file - fetcher returns the file`() {
+        assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
+
+        val url = server.url("/normal.jpg")
+        val uri = url.toString().toUri()
+        val options = Options(context, size = PixelSize(100, 100))
+        val fetcherFactory = HttpUrlFetcher.Factory(callFactory)
+
+        // Run the fetcher once to create the disk cache file.
+        var result = runBlocking {
+            assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
+        }
+        (result as SourceResult).source.close()
+
+        // Run the fetcher a second time.
+        result = runBlocking {
+            assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
+        }
+
+        assertTrue(result is SourceResult)
+        val source = result.source
+        assertTrue(source is FileImageSource)
+        val expected = CoilUtils.getDiskCacheFile(diskCache, url)
+        assertTrue(expected in diskCache.directory.listFiles().orEmpty())
+        assertEquals(expected, source.resultFile)
     }
 }

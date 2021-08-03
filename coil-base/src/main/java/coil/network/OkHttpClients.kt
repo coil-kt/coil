@@ -113,7 +113,7 @@ internal class InexhaustibleSource(delegate: Source) : ForwardingSource(delegate
         var bytesRead = super.read(sink, byteCount)
         val exhausted = bytesRead == -1L
         if (!isExhausted) isExhausted = exhausted
-        if (isEnabled && exhausted) bytesRead = 0
+        if (exhausted && isEnabled) bytesRead = 0
         return bytesRead
     }
 }
