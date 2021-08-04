@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0-alpha01] - XXX, 2021
+## [2.0.0-alpha01] - August 4, 2021
 
 - **Important**: The minimum supported API is now 21.
 - **Important**: Enable `-Xjvm-default=all`.
