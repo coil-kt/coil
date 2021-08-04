@@ -73,6 +73,14 @@ internal inline fun <K, V, R : Any> Map<K, V>.mapNotNullValues(
     return destination
 }
 
-internal inline fun <T> List<T>.asImmutable(): List<T> {
-    return Collections.unmodifiableList(this)
+internal fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> = when (size) {
+    0 -> emptyMap()
+    1 -> entries.iterator().next().let { (key, value) -> Collections.singletonMap(key, value) }
+    else -> Collections.unmodifiableMap(LinkedHashMap(this))
+}
+
+internal fun <T> List<T>.toImmutableList(): List<T> = when (size) {
+    0 -> emptyList()
+    1 -> Collections.singletonList(get(0))
+    else -> Collections.unmodifiableList(ArrayList(this))
 }

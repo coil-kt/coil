@@ -1,6 +1,7 @@
 package coil.memory
 
 import coil.memory.MemoryCache.Key
+import coil.util.toImmutableMap
 
 internal class RealMemoryCache(
     private val strongMemoryCache: StrongMemoryCache,
@@ -18,7 +19,9 @@ internal class RealMemoryCache(
     }
 
     override fun set(key: Key, value: MemoryCache.Value) {
-        strongMemoryCache.set(key, value.bitmap, value.extras)
+        // Ensure that we only store immutable keys.
+        val immutableKey = key.copy(extras = key.extras.toImmutableMap())
+        strongMemoryCache.set(immutableKey, value.bitmap, value.extras)
         // weakMemoryCache.set() is called by strongMemoryCache when
         // a value is evicted from the strong reference cache.
     }

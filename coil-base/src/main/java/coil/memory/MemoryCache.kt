@@ -49,7 +49,8 @@ interface MemoryCache {
      *
      * @param key The value returned by [Keyer.key] (or a custom value).
      * @param extras Extra values that differentiate the associated
-     *  cached value from other values with the same [key].
+     *  cached value from other values with the same [key]. This map
+     *  **must be** treated as immutable and should not be modified.
      */
     @Parcelize
     data class Key(

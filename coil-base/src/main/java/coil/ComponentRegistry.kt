@@ -9,8 +9,8 @@ import coil.intercept.Interceptor
 import coil.key.Keyer
 import coil.map.Mapper
 import coil.request.Options
-import coil.util.asImmutable
 import coil.util.forEachIndices
+import coil.util.toImmutableList
 
 /**
  * Registry for all the components that an [ImageLoader] uses to fulfil image requests.
@@ -165,11 +165,11 @@ class ComponentRegistry private constructor(
 
         fun build(): ComponentRegistry {
             return ComponentRegistry(
-                interceptors.toList().asImmutable(),
-                mappers.toList().asImmutable(),
-                keyers.toList().asImmutable(),
-                fetcherFactories.toList().asImmutable(),
-                decoderFactories.toList().asImmutable()
+                interceptors.toImmutableList(),
+                mappers.toImmutableList(),
+                keyers.toImmutableList(),
+                fetcherFactories.toImmutableList(),
+                decoderFactories.toImmutableList()
             )
         }
     }

@@ -5,7 +5,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import androidx.collection.arrayMapOf
 import coil.ComponentRegistry
 import coil.EventListener
 import coil.ImageLoader
@@ -130,7 +129,7 @@ internal class EngineInterceptor(
         eventListener.keyEnd(request, base)
         if (base == null) return null
 
-        val extras = arrayMapOf<String, String>()
+        val extras = mutableMapOf<String, String>()
         extras.putAll(request.parameters.cacheKeys())
         if (request.transformations.isNotEmpty()) {
             val transformations = StringBuilder()
@@ -384,8 +383,15 @@ internal class EngineInterceptor(
     }
 
     /** Get the memory cache value for this request. */
-    private fun getMemoryCacheValue(request: ImageRequest, memoryCacheKey: MemoryCache.Key): MemoryCache.Value? {
-        return if (request.memoryCachePolicy.readEnabled) imageLoader.memoryCache[memoryCacheKey] else null
+    private fun getMemoryCacheValue(
+        request: ImageRequest,
+        memoryCacheKey: MemoryCache.Key
+    ): MemoryCache.Value? {
+        return if (request.memoryCachePolicy.readEnabled) {
+            imageLoader.memoryCache[memoryCacheKey]
+        } else {
+            null
+        }
     }
 
     /** Write [drawable] to the memory cache. Return 'true' if it was added to the cache. */
@@ -401,7 +407,7 @@ internal class EngineInterceptor(
         if (key != null) {
             val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
             if (bitmap != null) {
-                val extras = arrayMapOf<String, Any>()
+                val extras = mutableMapOf<String, Any>()
                 extras[EXTRA_IS_SAMPLED] = result.isSampled
                 result.file?.let { extras[EXTRA_FILE_PATH] = it.path }
                 imageLoader.memoryCache[key] = MemoryCache.Value(bitmap, extras)
