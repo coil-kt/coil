@@ -78,9 +78,9 @@ internal class EngineInterceptor(
                     request = request,
                     dataSource = DataSource.MEMORY_CACHE,
                     memoryCacheKey = memoryCacheKey,
-                    placeholderMemoryCacheKey = chain.placeholderMemoryCacheKey,
                     file = memoryCacheValue.file,
                     isSampled = memoryCacheValue.isSampled,
+                    isPlaceholderCached = chain.isPlaceholderCached,
                 )
             }
 
@@ -98,9 +98,9 @@ internal class EngineInterceptor(
                     request = request,
                     dataSource = result.dataSource,
                     memoryCacheKey = memoryCacheKey.takeIf { isMemoryCached },
-                    placeholderMemoryCacheKey = chain.placeholderMemoryCacheKey,
                     file = result.file,
                     isSampled = result.isSampled,
+                    isPlaceholderCached = chain.isPlaceholderCached,
                 )
             }
         } catch (throwable: Throwable) {
@@ -453,11 +453,11 @@ internal class EngineInterceptor(
     private val MemoryCache.Value.file: File?
         get() = (extras[EXTRA_FILE_PATH] as? String)?.let(::File)
 
+    private val Interceptor.Chain.isPlaceholderCached: Boolean
+        get() = this is RealInterceptorChain && isPlaceholderCached
+
     private val Interceptor.Chain.eventListener: EventListener
         get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
-
-    private val Interceptor.Chain.placeholderMemoryCacheKey: MemoryCache.Key?
-        get() = (this as? RealInterceptorChain)?.placeholderMemoryCacheKey
 
     @VisibleForTesting
     internal class ExecuteResult(

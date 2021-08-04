@@ -345,7 +345,7 @@ private fun updatePainter(
         end = painter,
         scale = request.scale,
         durationMillis = transition.durationMillis,
-        fadeStart = state.result.placeholderMemoryCacheKey == null
+        fadeStart = !state.result.isPlaceholderCached
     )
 }
 

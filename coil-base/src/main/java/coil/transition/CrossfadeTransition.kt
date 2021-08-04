@@ -41,7 +41,7 @@ class CrossfadeTransition @JvmOverloads constructor(
                     end = result.drawable,
                     scale = (target.view as? ImageView)?.scale ?: Scale.FIT,
                     durationMillis = durationMillis,
-                    fadeStart = (result as? SuccessResult)?.placeholderMemoryCacheKey == null,
+                    fadeStart = !(result is SuccessResult && result.isPlaceholderCached),
                     preferExactIntrinsicSize = preferExactIntrinsicSize
                 )
                 outerCrossfade = crossfade

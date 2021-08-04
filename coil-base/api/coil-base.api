@@ -655,17 +655,17 @@ public final class coil/request/Parameters$Entry {
 }
 
 public final class coil/request/SuccessResult : coil/request/ImageResult {
-	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Lcoil/memory/MemoryCache$Key;Ljava/io/File;Z)V
-	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Lcoil/memory/MemoryCache$Key;Ljava/io/File;Z)Lcoil/request/SuccessResult;
-	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Lcoil/memory/MemoryCache$Key;Ljava/io/File;ZILjava/lang/Object;)Lcoil/request/SuccessResult;
+	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/io/File;ZZ)V
+	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/io/File;ZZ)Lcoil/request/SuccessResult;
+	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/io/File;ZZILjava/lang/Object;)Lcoil/request/SuccessResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDataSource ()Lcoil/decode/DataSource;
 	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public final fun getFile ()Ljava/io/File;
 	public final fun getMemoryCacheKey ()Lcoil/memory/MemoryCache$Key;
-	public final fun getPlaceholderMemoryCacheKey ()Lcoil/memory/MemoryCache$Key;
 	public fun getRequest ()Lcoil/request/ImageRequest;
 	public fun hashCode ()I
+	public final fun isPlaceholderCached ()Z
 	public final fun isSampled ()Z
 }
 

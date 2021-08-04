@@ -43,15 +43,6 @@ class SuccessResult(
     val memoryCacheKey: MemoryCache.Key?,
 
     /**
-     * The cache key for the placeholder in the memory cache.
-     * It is 'null' if [ImageRequest.placeholderMemoryCacheKey] is 'null'
-     * or if the cache key was not present in the memory cache.
-     *
-     * @see ImageRequest.Builder.placeholderMemoryCacheKey
-     */
-    val placeholderMemoryCacheKey: MemoryCache.Key?,
-
-    /**
      * A direct reference to where this image was stored on disk when it was decoded.
      * It is 'null' if the image is not stored on disk.
      *
@@ -65,6 +56,11 @@ class SuccessResult(
      * 'true' if the image is sampled (i.e. loaded into memory at less than its original size).
      */
     val isSampled: Boolean,
+
+    /**
+     * 'true' if [ImageRequest.placeholderMemoryCacheKey] was present in the memory cache.
+     */
+    val isPlaceholderCached: Boolean
 ) : ImageResult() {
 
     fun copy(
@@ -72,17 +68,17 @@ class SuccessResult(
         request: ImageRequest = this.request,
         dataSource: DataSource = this.dataSource,
         memoryCacheKey: MemoryCache.Key? = this.memoryCacheKey,
-        placeholderMemoryCacheKey: MemoryCache.Key? = this.placeholderMemoryCacheKey,
         file: File? = this.file,
         isSampled: Boolean = this.isSampled,
+        isPlaceholderCached: Boolean = this.isPlaceholderCached,
     ) = SuccessResult(
         drawable = drawable,
         request = request,
         dataSource = dataSource,
         memoryCacheKey = memoryCacheKey,
-        placeholderMemoryCacheKey = placeholderMemoryCacheKey,
         file = file,
         isSampled = isSampled,
+        isPlaceholderCached = isPlaceholderCached,
     )
 
     override fun equals(other: Any?): Boolean {
@@ -92,9 +88,9 @@ class SuccessResult(
             request == other.request &&
             dataSource == other.dataSource &&
             memoryCacheKey == other.memoryCacheKey &&
-            placeholderMemoryCacheKey == other.placeholderMemoryCacheKey &&
             file == other.file &&
-            isSampled == other.isSampled
+            isSampled == other.isSampled &&
+            isPlaceholderCached == other.isPlaceholderCached
     }
 
     override fun hashCode(): Int {
@@ -102,9 +98,9 @@ class SuccessResult(
         result = 31 * result + request.hashCode()
         result = 31 * result + dataSource.hashCode()
         result = 31 * result + (memoryCacheKey?.hashCode() ?: 0)
-        result = 31 * result + (placeholderMemoryCacheKey?.hashCode() ?: 0)
         result = 31 * result + (file?.hashCode() ?: 0)
         result = 31 * result + isSampled.hashCode()
+        result = 31 * result + isPlaceholderCached.hashCode()
         return result
     }
 }

@@ -151,8 +151,6 @@ internal class RealImageLoader(
 
             // Set the placeholder on the target.
             val placeholderBitmap = memoryCache[request.placeholderMemoryCacheKey]?.bitmap
-            val placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
-                .takeIf { placeholderBitmap != null }
             val placeholder = placeholderBitmap?.toDrawable(request.context) ?: request.placeholder
             request.target?.onStart(placeholder)
             eventListener.onStart(request)
@@ -165,8 +163,15 @@ internal class RealImageLoader(
 
             // Execute the interceptor chain.
             val result = withContext(request.interceptorDispatcher) {
-                RealInterceptorChain(request, interceptors, 0, request, size,
-                    placeholderMemoryCacheKey, eventListener).proceed(request)
+                RealInterceptorChain(
+                    initialRequest = request,
+                    interceptors = interceptors,
+                    index = 0,
+                    request = request,
+                    size = size,
+                    eventListener = eventListener,
+                    isPlaceholderCached = placeholderBitmap != null
+                ).proceed(request)
             }
 
             // Set the result on the target.
