@@ -28,7 +28,7 @@ dependencies {
 
     implementation(Library.ANDROIDX_CORE)
 
-    api(Library.COMPOSE_FOUNDATION)
+    api(Library.COMPOSE_UI)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
