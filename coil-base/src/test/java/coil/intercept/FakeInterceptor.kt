@@ -13,9 +13,9 @@ class FakeInterceptor : Interceptor {
             request = chain.request,
             dataSource = DataSource.MEMORY,
             memoryCacheKey = null,
-            placeholderMemoryCacheKey = null,
             file = null,
-            isSampled = false
+            isSampled = false,
+            isPlaceholderCached = false,
         )
     }
 }

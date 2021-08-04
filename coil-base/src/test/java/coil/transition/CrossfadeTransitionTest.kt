@@ -66,9 +66,9 @@ class CrossfadeTransitionTest {
                     request = createRequest(context),
                     dataSource = DataSource.MEMORY_CACHE,
                     memoryCacheKey = null,
-                    placeholderMemoryCacheKey = null,
                     file = null,
-                    isSampled = false
+                    isSampled = false,
+                    isPlaceholderCached = false
                 )
             ).transition()
         }
@@ -99,9 +99,9 @@ class CrossfadeTransitionTest {
                     request = createRequest(context),
                     dataSource = DataSource.DISK,
                     memoryCacheKey = null,
-                    placeholderMemoryCacheKey = null,
                     file = null,
-                    isSampled = false
+                    isSampled = false,
+                    isPlaceholderCached = false
                 )
             ).transition()
         }
@@ -133,9 +133,9 @@ class CrossfadeTransitionTest {
                     request = createRequest(context),
                     dataSource = DataSource.NETWORK,
                     memoryCacheKey = null,
-                    placeholderMemoryCacheKey = null,
                     file = null,
-                    isSampled = false
+                    isSampled = false,
+                    isPlaceholderCached = false
                 )
             ).transition()
         }
