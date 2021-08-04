@@ -8,6 +8,7 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.FileImageSource
+import coil.decode.SourceImageSource
 import coil.network.HttpException
 import coil.network.imageLoaderDiskCache
 import coil.request.CachePolicy
@@ -139,6 +140,20 @@ class HttpUrlFetcherTest {
 
         assertFailsWith<NetworkOnMainThreadException> { fetcher.fetch() }
         assertFalse(diskCache.urls().hasNext())
+    }
+
+    @Test
+    fun `no disk cache - fetcher returns a source result`() {
+        val url = server.url("/normal.jpg")
+        val uri = url.toString().toUri()
+        val options = Options(context, size = PixelSize(100, 100))
+        val fetcherFactory = HttpUrlFetcher.Factory(OkHttpClient())
+        val result = runBlocking {
+            assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
+        }
+
+        assertTrue(result is SourceResult)
+        assertTrue(result.source is SourceImageSource)
     }
 
     @Test

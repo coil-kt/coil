@@ -8,7 +8,6 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.network.HttpException
-import coil.network.InexhaustibleSource
 import coil.network.cacheFile
 import coil.network.inexhaustibleSource
 import coil.request.Options
@@ -122,7 +121,11 @@ internal class HttpUrlFetcher(
                 // for eviction. This way we ensure that the cache file won't be evicted until
                 // 'ImageSource.close' is called.
                 inexhaustibleSource.isEnabled = true
-                readAll(source, inexhaustibleSource)
+                // Skip through the source until it's exhausted.
+                val skipBuffer = Buffer()
+                while (source.read(skipBuffer, SEGMENT_SIZE) != -1L && !inexhaustibleSource.isExhausted) {
+                    skipBuffer.clear()
+                }
             } finally {
                 inexhaustibleSource.isEnabled = false
             }
@@ -135,22 +138,6 @@ internal class HttpUrlFetcher(
             resultFile = resultFile,
             closeable = source
         )
-    }
-
-    /**
-     * Read the [source] until [InexhaustibleSource.isExhausted] is 'true'.
-     */
-    private fun readAll(source: BufferedSource, inexhaustibleSource: InexhaustibleSource) {
-        val buffer = Buffer()
-        while (source.read(buffer, SEGMENT_SIZE) != -1L && !inexhaustibleSource.isExhausted) {
-            val emitByteCount = buffer.completeSegmentByteCount()
-            if (emitByteCount > 0L) {
-                buffer.skip(emitByteCount)
-            }
-        }
-        if (buffer.size > 0L) {
-            buffer.skip(buffer.size)
-        }
     }
 
     /**
