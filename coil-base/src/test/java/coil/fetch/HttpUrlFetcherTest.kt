@@ -183,6 +183,7 @@ class HttpUrlFetcherTest {
 
     @Test
     fun `no cached file - fetcher returns the file`() {
+        diskCache.evictAll()
         assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
 
         val url = server.url("/normal.jpg")
@@ -203,6 +204,7 @@ class HttpUrlFetcherTest {
 
     @Test
     fun `existing cached file - fetcher returns the file`() {
+        diskCache.evictAll()
         assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
 
         val url = server.url("/normal.jpg")
