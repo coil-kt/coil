@@ -33,6 +33,7 @@ dependencies {
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
 
+    androidTestImplementation(Library.COMPOSE_FOUNDATION)
     androidTestImplementation(Library.COMPOSE_UI_TEST_JUNIT)
     androidTestImplementation(Library.COMPOSE_UI_TEST_MANIFEST)
 }
