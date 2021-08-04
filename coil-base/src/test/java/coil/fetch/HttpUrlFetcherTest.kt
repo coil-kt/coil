@@ -59,7 +59,8 @@ class HttpUrlFetcherTest {
         context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg", "normal.jpg")
-        diskCache = Cache(File("build/cache"), Long.MAX_VALUE)
+        diskCache = Cache(File("build/cache"), Long.MAX_VALUE).apply { evictAll() }
+        assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
         callFactory = OkHttpClient.Builder().imageLoaderDiskCache(diskCache).build()
     }
 
@@ -183,9 +184,6 @@ class HttpUrlFetcherTest {
 
     @Test
     fun `no cached file - fetcher returns the file`() {
-        diskCache.evictAll()
-        assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
-
         val url = server.url("/normal.jpg")
         val uri = url.toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
@@ -204,9 +202,6 @@ class HttpUrlFetcherTest {
 
     @Test
     fun `existing cached file - fetcher returns the file`() {
-        diskCache.evictAll()
-        assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
-
         val url = server.url("/normal.jpg")
         val uri = url.toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
