@@ -2,7 +2,8 @@
 
 ## [1.3.2] - August 4, 2021
 
-- `coil-compose` now depends on `compose.ui` instead of `compose.foundation`. `compose.ui` is a smaller dependency as it's a subset of `compose.foundation`.
+- `coil-compose` now depends on `compose.ui` instead of `compose.foundation`.
+    - `compose.ui` is a smaller dependency as it's a subset of `compose.foundation`.
 - Update Jetpack Compose to 1.0.1.
 - Update Kotlin to 1.5.21.
 - Update Coroutines to 1.5.1.
