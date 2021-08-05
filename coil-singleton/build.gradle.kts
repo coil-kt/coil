@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    kotlin("android")
     id("org.jetbrains.dokka")
     id("com.vanniktech.maven.publish")
 }

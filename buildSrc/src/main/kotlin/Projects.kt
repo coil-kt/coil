@@ -45,7 +45,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
             targetCompatibility = JavaVersion.VERSION_1_8
         }
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = JavaVersion.VERSION_1_8.toString()
             allWarningsAsErrors = true
 
             val arguments = mutableListOf("-progressive", "-Xopt-in=kotlin.RequiresOptIn")
