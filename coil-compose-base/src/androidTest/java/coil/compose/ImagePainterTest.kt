@@ -498,7 +498,10 @@ class ImagePainterTest {
 
         waitForRequestComplete()
 
+        val displayWidthDp = composeTestRule.activity.resources.displayMetrics
+            .run { widthPixels / density }.dp
         composeTestRule.onNodeWithTag(Image)
+            .assertWidthIsEqualTo(displayWidthDp)
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
