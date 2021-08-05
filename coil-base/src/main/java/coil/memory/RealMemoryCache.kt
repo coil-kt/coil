@@ -19,9 +19,12 @@ internal class RealMemoryCache(
     }
 
     override fun set(key: Key, value: MemoryCache.Value) {
-        // Ensure that we only store immutable keys.
-        val immutableKey = key.copy(extras = key.extras.toImmutableMap())
-        strongMemoryCache.set(immutableKey, value.bitmap, value.extras)
+        // Ensure that stored keys and values are immutable.
+        strongMemoryCache.set(
+            key = key.copy(extras = key.extras.toImmutableMap()),
+            bitmap = value.bitmap,
+            extras = value.extras.toImmutableMap()
+        )
         // weakMemoryCache.set() is called by strongMemoryCache when
         // a value is evicted from the strong reference cache.
     }
