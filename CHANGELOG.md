@@ -1,9 +1,17 @@
 # Changelog
 
+## [1.3.2] - August 4, 2021
+
+- `coil-compose` now depends on `compose.ui` instead of `compose.foundation`. `compose.ui` is a smaller dependency as it's a subset of `compose.foundation`.
+- Update Jetpack Compose to 1.0.1.
+- Update Kotlin to 1.5.21.
+- Update Coroutines to 1.5.1.
+- Update `androidx.exifinterface:exifinterface` to 1.3.3.
+
 ## [1.3.1] - July 28, 2021
 
 - Update Jetpack Compose to `1.0.0`. Huge congrats to the Compose team on the [stable release](https://android-developers.googleblog.com/2021/07/jetpack-compose-announcement.html)!
-- Update `androidx.appcompat:appcompat-resources` to `1.3.1`.
+- Update `androidx.appcompat:appcompat-resources` to 1.3.1.
 
 ## [1.3.0] - July 10, 2021
 
