@@ -1,12 +1,15 @@
 # Changelog
 
-## [2.0.0-alpha01] - August 4, 2021
+## [2.0.0-alpha01] - August 5, 2021
+
+Coil 2.0.0 is the next major iteration of the library and has improvements to performance, API flexibility, artifact size, and various bug fixes. This release may be binary/source incompatible with future alpha releases until the stable release of 2.0.0.
 
 - **Important**: The minimum supported API is now 21.
 - **Important**: Enable `-Xjvm-default=all`.
     - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
-    - **You'll need to add `-Xjvm-default=all` to your `freeCompilerArgs` as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to add arguments to `freeCompilerArgs`.
+    - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to do this.
 - **Important**: `CoilUtils.createDefaultCache` has been replaced by `OkHttpClient.Builder.imageLoaderDiskCache`.
+    - It's important to use `OkHttpClient.Builder.imageLoaderDiskCache` and **not** `OkHttpClient.Builder.cache`.
 - **Important**: `ImageRequest`'s default `Scale` is now `Scale.FIT`
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
     - Requests with an `ImageViewTarget` still have their scale autodetected.
@@ -19,14 +22,14 @@
     - Removing bitmap pooling allows Coil to use immutable bitmaps, which have performance benefits.
     - There's runtime overhead to manage the bitmap pool.
     - Bitmap pooling creates design restrictions on Coil's API as it requires tracking if a bitmap is eligible for pooling. Removing bitmap pooling allows Coil to expose the result `Drawable` in more places (e.g. `Listener`, `Disposable`). Additionally, this means Coil doesn't have to clear `ImageView`s, which has can cause [issues](https://github.com/coil-kt/coil/issues/650).
-    - Bitmap pooling is error-prone. Allocating a new bitmap is much safer than attempting to re-use a bitmap that could still be in use.
+    - Bitmap pooling is [error-prone](https://github.com/coil-kt/coil/issues/546). Allocating a new bitmap is much safer than attempting to re-use a bitmap that could still be in use.
 - `MemoryCache` has been refactored to be more flexible.
     - Also, it can now be created without an `ImageLoader`.
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. If you use Kotlin, there is essentially no change.
     - This change allows the library's size to be smaller.
 - `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
-- Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. By default, this is 4 which improves UI performance.
+- Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
 - Adds support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
 - `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
 - Add `GenericViewTarget`, which handles common `ViewTarget` logic.

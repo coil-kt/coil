@@ -956,6 +956,7 @@ class ImageRequest private constructor(
             val target = target
             if (target is ViewTarget<*>) {
                 val view = target.view
+                // CENTER and MATRIX scale types should be decoded at the image's original size.
                 if (view !is ImageView || view.scaleType.let { it != CENTER && it != MATRIX }) {
                     return ViewSizeResolver(view)
                 }

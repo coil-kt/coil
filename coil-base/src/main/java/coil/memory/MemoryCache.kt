@@ -62,7 +62,8 @@ interface MemoryCache {
      * The value for an image in the memory cache.
      *
      * @param bitmap The cached [Bitmap].
-     * @param extras Metadata for [bitmap].
+     * @param extras Metadata for [bitmap]. This map **must be**
+     *  treated as immutable and should not be modified.
      */
     data class Value(
         val bitmap: Bitmap,

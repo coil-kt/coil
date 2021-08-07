@@ -85,7 +85,7 @@ fun rememberImagePainter(
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
 
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate + EMPTY_COROUTINE_EXCEPTION_HANDLER }
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val imagePainter = remember(scope) { ImagePainter(scope, request, imageLoader) }
     imagePainter.request = request
     imagePainter.imageLoader = imageLoader
@@ -156,7 +156,8 @@ class ImagePainter internal constructor(
         // Create a new scope to observe state and execute requests while we're remembered.
         rememberScope?.cancel()
         val context = parentScope.coroutineContext
-        val scope = CoroutineScope(context + SupervisorJob(context[Job]))
+        val scope = CoroutineScope(context + SupervisorJob(context[Job]) +
+            EMPTY_COROUTINE_EXCEPTION_HANDLER)
         rememberScope = scope
 
         // Observe the current request + request size and launch new requests as necessary.
@@ -222,7 +223,8 @@ class ImagePainter internal constructor(
                 }
 
                 // Set the scale to fill unless it has been set explicitly.
-                // We do this since it's not possible to auto-detect the scale type like with `ImageView`s.
+                // We do this since it's not possible to auto-detect the scale type like with
+                // `ImageView`s.
                 if (request.defined.scale == null) {
                     scale(Scale.FILL)
                 }
@@ -358,7 +360,8 @@ private fun requireSupportedData(data: Any?) = when (data) {
 
 private fun unsupportedData(name: String): Nothing {
     throw IllegalArgumentException(
-        "Unsupported type: $name. If you wish to display this $name, use androidx.compose.foundation.Image."
+        "Unsupported type: $name. If you wish to display this $name, " +
+            "use androidx.compose.foundation.Image."
     )
 }
 

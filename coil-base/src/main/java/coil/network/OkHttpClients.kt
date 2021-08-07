@@ -22,7 +22,7 @@ import java.io.File
 /**
  * A convenience function to set the default image loader disk cache for this [OkHttpClient].
  *
- * NOTE: You should call this **after** adding any [Interceptor]s.
+ * NOTE: You should set this **after** adding any [Interceptor]s.
  */
 fun OkHttpClient.Builder.imageLoaderDiskCache(context: Context) =
     imageLoaderDiskCache(CoilUtils.createDiskCache(context))
@@ -31,7 +31,7 @@ fun OkHttpClient.Builder.imageLoaderDiskCache(context: Context) =
  * Sets the disk cache for this [OkHttpClient] and adds extensions so an [ImageLoader] can
  * read its disk cache.
  *
- * NOTE: You should call this **after** adding any [Interceptor]s.
+ * NOTE: You should set this **after** adding any [Interceptor]s.
  *
  * @param diskCache The disk cache to use with this [OkHttpClient].
  */
@@ -111,9 +111,10 @@ internal class InexhaustibleSource(delegate: Source) : ForwardingSource(delegate
 
     override fun read(sink: Buffer, byteCount: Long): Long {
         var bytesRead = super.read(sink, byteCount)
-        val exhausted = bytesRead == -1L
-        if (!isExhausted) isExhausted = exhausted
-        if (exhausted && isEnabled) bytesRead = 0
+        if (bytesRead == -1L) {
+            isExhausted = true
+            if (isEnabled) bytesRead = 0
+        }
         return bytesRead
     }
 }
@@ -132,10 +133,9 @@ internal val Response.inexhaustibleSource: InexhaustibleSource?
  */
 internal fun Call.Factory.assertHasDiskCacheInterceptor() {
     if (this !is OkHttpClient || cache == null) return
-    check(interceptors.lastOrNull() is DiskCacheInterceptor &&
-        networkInterceptors.firstOrNull() is InexhaustibleSourceInterceptor) {
+    check(interceptors.any { it is DiskCacheInterceptor } &&
+        networkInterceptors.any { it is InexhaustibleSourceInterceptor }) {
         "The ImageLoader is unable to read the disk cache of the OkHttpClient provided to it." +
-            "Set `OkHttpClient.Builder.imageLoaderDiskCache` after adding any interceptors to " +
-            "fix this."
+            "Set `OkHttpClient.Builder.imageLoaderDiskCache` to fix this."
     }
 }

@@ -2,6 +2,7 @@ package coil.fetch
 
 import android.net.Uri
 import android.os.NetworkOnMainThreadException
+import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import coil.ImageLoader
@@ -11,11 +12,13 @@ import coil.network.HttpException
 import coil.network.cacheFile
 import coil.network.inexhaustibleSource
 import coil.request.Options
+import coil.util.Logger
 import coil.util.SEGMENT_SIZE
 import coil.util.await
 import coil.util.closeQuietly
 import coil.util.dispatcher
 import coil.util.getMimeTypeFromUrl
+import coil.util.log
 import kotlinx.coroutines.MainCoroutineDispatcher
 import okhttp3.CacheControl
 import okhttp3.Call
@@ -32,7 +35,8 @@ import kotlin.coroutines.coroutineContext
 internal class HttpUrlFetcher(
     private val data: Any,
     private val options: Options,
-    private val callFactory: Call.Factory
+    private val callFactory: Call.Factory,
+    private val logger: Logger?
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -123,7 +127,16 @@ internal class HttpUrlFetcher(
                 inexhaustibleSource.isEnabled = true
                 // Skip through the source until it's exhausted.
                 val skipBuffer = Buffer()
-                while (source.read(skipBuffer, SEGMENT_SIZE) != -1L && !inexhaustibleSource.isExhausted) {
+                while (true) {
+                    if (source.read(skipBuffer, SEGMENT_SIZE) == -1L) {
+                        logger?.log(TAG, Log.WARN) {
+                            "The response body was exhausted unexpectedly. " +
+                                "You must set `OkHttpClient.Builder.imageLoaderDiskCache` " +
+                                "when building your custom `OkHttpClient`."
+                        }
+                        break
+                    }
+                    if (inexhaustibleSource.isExhausted) break
                     skipBuffer.clear()
                 }
             } finally {
@@ -163,6 +176,7 @@ internal class HttpUrlFetcher(
 
     /**
      * Buffer the source into memory.
+     * This is used as a fall back if the disk cache file isn't present.
      */
     private fun BufferedSource.toImageSource(): ImageSource {
         return ImageSource(
@@ -171,11 +185,14 @@ internal class HttpUrlFetcher(
         )
     }
 
-    class Factory(private val callFactory: Call.Factory) : Fetcher.Factory<Any> {
+    class Factory(
+        private val callFactory: Call.Factory,
+        private val logger: Logger?
+    ) : Fetcher.Factory<Any> {
 
         override fun create(data: Any, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
-            return HttpUrlFetcher(data, options, callFactory)
+            return HttpUrlFetcher(data, options, callFactory, logger)
         }
 
         private fun isApplicable(data: Any): Boolean {
@@ -184,6 +201,7 @@ internal class HttpUrlFetcher(
     }
 
     companion object {
+        private const val TAG = "HttpUrlFetcher"
         private const val MIME_TYPE_TEXT_PLAIN = "text/plain"
         private val CACHE_CONTROL_FORCE_NETWORK_NO_CACHE = CacheControl.Builder().noCache().noStore().build()
         private val CACHE_CONTROL_NO_NETWORK_NO_CACHE = CacheControl.Builder().noCache().onlyIfCached().build()
