@@ -346,7 +346,7 @@ internal class EngineInterceptor(
             drawable = decodeResult.drawable,
             isSampled = decodeResult.isSampled,
             dataSource = fetchResult.dataSource,
-            file = fetchResult.source.file
+            file = fetchResult.source.resultFile
         )
     }
 
@@ -444,7 +444,7 @@ internal class EngineInterceptor(
             options.scale, options.allowInexactSize)
     }
 
-    private val ImageSource.file: File?
+    private val ImageSource.resultFile: File?
         get() = if (this is FileImageSource) resultFile else null
 
     private val MemoryCache.Value.isSampled: Boolean
