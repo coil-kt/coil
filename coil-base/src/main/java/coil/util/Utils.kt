@@ -2,7 +2,7 @@ package coil.util
 
 import android.app.ActivityManager
 import android.content.Context
-import android.content.pm.ApplicationInfo
+import android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import android.os.StatFs
@@ -28,17 +28,29 @@ internal object Utils {
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
 
-    /** An allowlist of valid bitmap configs for the input and output bitmaps of [Transformation.transform]. */
+    /**
+     * An allowlist of valid bitmap configs for the input and output bitmaps of
+     * [Transformation.transform].
+     */
     @JvmField val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
         arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
     } else {
         arrayOf(Bitmap.Config.ARGB_8888)
     }
 
-    /** Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without transformations. */
-    @JvmField val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) Bitmap.Config.HARDWARE else Bitmap.Config.ARGB_8888
+    /**
+     * Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without
+     * transformations.
+     */
+    @JvmField val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
+        Bitmap.Config.HARDWARE
+    } else {
+        Bitmap.Config.ARGB_8888
+    }
 
-    /** Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config]. */
+    /**
+     * Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config].
+     */
     fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
         return width * height * config.bytesPerPixel
     }
@@ -62,7 +74,7 @@ internal object Utils {
     fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
         val memoryClassMegabytes = try {
             val activityManager: ActivityManager = context.requireSystemService()
-            val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
+            val isLargeHeap = (context.applicationInfo.flags and FLAG_LARGE_HEAP) != 0
             if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
         } catch (_: Exception) {
             DEFAULT_MEMORY_CLASS_MEGABYTES
