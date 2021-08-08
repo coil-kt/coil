@@ -28,11 +28,15 @@ internal class RequestService(
 
     private val hardwareBitmapService = HardwareBitmapService(logger)
 
-    /** Wrap [initialRequest] to automatically dispose and/or restart the [ImageRequest] based on its lifecycle. */
+    /**
+     * Wrap [initialRequest] to automatically dispose and/or restart the [ImageRequest]
+     * based on its lifecycle.
+     */
     fun requestDelegate(initialRequest: ImageRequest, job: Job): RequestDelegate {
         val lifecycle = initialRequest.lifecycle
         return when (val target = initialRequest.target) {
-            is ViewTarget<*> -> ViewTargetRequestDelegate(imageLoader, initialRequest, target, lifecycle, job)
+            is ViewTarget<*> ->
+                ViewTargetRequestDelegate(imageLoader, initialRequest, target, lifecycle, job)
             else -> BaseRequestDelegate(lifecycle, job)
         }
     }
@@ -49,7 +53,9 @@ internal class RequestService(
         )
     }
 
-    /** Return the request options. The function is called from the main thread and must be fast. */
+    /**
+     * Return the request options. The function is called from the main thread and must be fast.
+     */
     fun options(request: ImageRequest, size: Size): Options {
         // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
         val isValidConfig = isConfigValidForTransformations(request) &&
@@ -57,12 +63,17 @@ internal class RequestService(
         val config = if (isValidConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
 
         // Disable fetching from the network if we know we're offline.
-        val networkCachePolicy = if (systemCallbacks.isOnline) request.networkCachePolicy else CachePolicy.DISABLED
+        val networkCachePolicy = if (systemCallbacks.isOnline) {
+            request.networkCachePolicy
+        } else {
+            CachePolicy.DISABLED
+        }
 
         // Disable allowRgb565 if there are transformations or the requested config is ALPHA_8.
         // ALPHA_8 is a mask config where each pixel is 1 byte so it wouldn't make sense to use
         // RGB_565 as an optimization in that case.
-        val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() && config != Bitmap.Config.ALPHA_8
+        val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() &&
+            config != Bitmap.Config.ALPHA_8
 
         return Options(
             context = request.context,
@@ -81,7 +92,10 @@ internal class RequestService(
         )
     }
 
-    /** Return 'true' if [requestedConfig] is a valid (i.e. can be returned to its [Target]) config for [request]. */
+    /**
+     * Return 'true' if [requestedConfig] is a valid (i.e. can be returned to its [Target]) config
+     * for [request].
+     */
     fun isConfigValidForHardware(request: ImageRequest, requestedConfig: Bitmap.Config): Boolean {
         // Short circuit if the requested bitmap config is software.
         if (!requestedConfig.isHardware) return true
@@ -91,7 +105,8 @@ internal class RequestService(
 
         // Prevent hardware bitmaps for non-hardware accelerated targets.
         val target = request.target
-        if (target is ViewTarget<*> && target.view.run { isAttachedToWindow && !isHardwareAccelerated }) return false
+        if (target is ViewTarget<*> &&
+            target.view.run { isAttachedToWindow && !isHardwareAccelerated }) return false
 
         return true
     }
@@ -103,7 +118,8 @@ internal class RequestService(
     }
 
     /**
-     * Return 'true' if [request]'s requested bitmap config is valid (i.e. can be returned to its [Target]).
+     * Return 'true' if [request]'s requested bitmap config is valid (i.e. can be returned to its
+     * [Target]).
      *
      * This check is similar to [isConfigValidForHardware] except this method also checks
      * that we are able to allocate a new hardware bitmap.
@@ -115,6 +131,7 @@ internal class RequestService(
 
     /** Return 'true' if [ImageRequest.bitmapConfig] is valid given its [Transformation]s. */
     private fun isConfigValidForTransformations(request: ImageRequest): Boolean {
-        return request.transformations.isEmpty() || request.bitmapConfig in Utils.VALID_TRANSFORMATION_CONFIGS
+        return request.transformations.isEmpty() ||
+            request.bitmapConfig in Utils.VALID_TRANSFORMATION_CONFIGS
     }
 }
