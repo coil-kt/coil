@@ -524,7 +524,7 @@ interface ImageLoader {
         fun componentRegistry(registry: ComponentRegistry): Builder = unsupported()
 
         @Deprecated(
-            message = "Migration to 'transitionFactory'.",
+            message = "Migrate to 'transitionFactory'.",
             replaceWith = ReplaceWith("transitionFactory { _, _ -> transition }"),
             level = DeprecationLevel.ERROR // Temporary migration aid.
         )
