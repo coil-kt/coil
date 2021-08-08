@@ -79,19 +79,23 @@ interface ImageLoader {
      * if its view is detached.
      *
      * @param request The request to execute.
-     * @return A [SuccessResult] if the request completes successfully. Else, returns an [ErrorResult].
+     * @return A [SuccessResult] if the request completes successfully.
+     *  Else, returns an [ErrorResult].
      */
     suspend fun execute(request: ImageRequest): ImageResult
 
     /**
-     * Cancel any new and in progress requests, clear the [MemoryCache], and close any open system resources.
+     * Cancel any new and in progress requests, clear the [MemoryCache], and close any open
+     * system resources.
      *
-     * Shutting down an image loader is optional. It will be shut down automatically if dereferenced.
+     * Shutting down an image loader is optional. It will be shut down automatically if
+     * dereferenced.
      */
     fun shutdown()
 
     /**
-     * Create an [ImageLoader.Builder] that shares the same resources and configuration as this image loader.
+     * Create an [ImageLoader.Builder] that shares the same resources and configuration as this
+     * image loader.
      */
     fun newBuilder(): Builder
 
@@ -200,7 +204,8 @@ interface ImageLoader {
          *
          * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
          *
-         * NOTE: Setting this to false this will reduce performance on API 26 and above. Only disable if necessary.
+         * NOTE: Setting this to false this will reduce performance on API 26 and above. Only
+         * disable this if necessary.
          *
          * Default: true
          */
@@ -209,7 +214,8 @@ interface ImageLoader {
         }
 
         /**
-         * Allow automatically using [Bitmap.Config.RGB_565] when an image is guaranteed to not have alpha.
+         * Allow automatically using [Bitmap.Config.RGB_565] when an image is guaranteed to not
+         * have alpha.
          *
          * This will reduce the visual quality of the image, but will also reduce memory usage.
          *
@@ -222,11 +228,13 @@ interface ImageLoader {
         }
 
         /**
-         * Enables adding [File.lastModified] to the memory cache key when loading an image from a [File].
+         * Enables adding [File.lastModified] to the memory cache key when loading an image from a
+         * [File].
          *
-         * This allows subsequent requests that load the same file to miss the memory cache if the file has been updated.
-         * However, if the memory cache check occurs on the main thread (see [interceptorDispatcher]) calling
-         * [File.lastModified] will cause a strict mode violation.
+         * This allows subsequent requests that load the same file to miss the memory cache if the
+         * file has been updated. However, if the memory cache check occurs on the main thread
+         * (see [interceptorDispatcher]) calling [File.lastModified] will cause a strict mode
+         * violation.
          *
          * Default: true
          */
@@ -237,8 +245,9 @@ interface ImageLoader {
         /**
          * Enables short circuiting network requests if the device is offline.
          *
-         * If true, reading from the network will automatically be disabled if the device is offline.
-         * If a cached response is unavailable the request will fail with a '504 Unsatisfiable Request' response.
+         * If true, reading from the network will automatically be disabled if the device is
+         * offline. If a cached response is unavailable the request will fail with a
+         * '504 Unsatisfiable Request' response.
          *
          * If false, the image loader will attempt a network request even if the device is offline.
          *
@@ -251,8 +260,8 @@ interface ImageLoader {
         /**
          * Sets the maximum number of parallel [BitmapFactory] decode operations at once.
          *
-         * Increasing this number will allow more parallel [BitmapFactory] decode operations, however
-         * it can result in worse UI performance.
+         * Increasing this number will allow more parallel [BitmapFactory] decode operations,
+         * however it can result in worse UI performance.
          *
          * Default: 4
          */
@@ -262,7 +271,8 @@ interface ImageLoader {
         }
 
         /**
-         * Set a single [EventListener] that will receive all callbacks for requests launched by this image loader.
+         * Set a single [EventListener] that will receive all callbacks for requests launched by
+         * this image loader.
          *
          * @see eventListenerFactory
          */
@@ -276,15 +286,17 @@ interface ImageLoader {
         }
 
         /**
-         * Enable a crossfade animation with duration [CrossfadeDrawable.DEFAULT_DURATION] milliseconds
-         * when a request completes successfully.
+         * Enable a crossfade animation with duration [CrossfadeDrawable.DEFAULT_DURATION]
+         * milliseconds when a request completes successfully.
          *
          * Default: false
          */
-        fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+        fun crossfade(enable: Boolean) =
+            crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
         /**
-         * Enable a crossfade animation with [durationMillis] milliseconds when a request completes successfully.
+         * Enable a crossfade animation with [durationMillis] milliseconds when a request completes
+         * successfully.
          *
          * @see `crossfade(Boolean)`
          */
