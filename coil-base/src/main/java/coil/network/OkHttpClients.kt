@@ -14,9 +14,8 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.Buffer
-import okio.ForwardingSource
+import okio.BufferedSource
 import okio.Source
-import okio.buffer
 import java.io.File
 
 /**
@@ -84,14 +83,13 @@ private class InexhaustibleSourceInterceptor : Interceptor {
         if (response.inexhaustibleSource != null) return response
 
         val source = InexhaustibleSource(body.source())
-        val bufferedSource = source.buffer()
         val request = response.request.newBuilder()
             .inexhaustibleSource(source)
             .build()
         return response.newBuilder()
             .request(request)
             .body(object : ResponseBody() {
-                override fun source() = bufferedSource
+                override fun source() = source
                 override fun contentType() = body.contentType()
                 override fun contentLength() = body.contentLength()
                 override fun close() = body.close()
@@ -103,17 +101,19 @@ private class InexhaustibleSourceInterceptor : Interceptor {
 /**
  * Wraps [delegate] so it returns 0 instead of -1 from [Source.read] if [isEnabled] is `true`.
  */
-internal class InexhaustibleSource(delegate: Source) : ForwardingSource(delegate) {
+internal class InexhaustibleSource(
+    private val delegate: BufferedSource
+) : BufferedSource by delegate {
 
     var isEnabled = false
     var isExhausted = false
         private set
 
     override fun read(sink: Buffer, byteCount: Long): Long {
-        var bytesRead = super.read(sink, byteCount)
+        val bytesRead = delegate.read(sink, byteCount)
         if (bytesRead == -1L) {
             isExhausted = true
-            if (isEnabled) bytesRead = 0
+            if (isEnabled) return 0
         }
         return bytesRead
     }

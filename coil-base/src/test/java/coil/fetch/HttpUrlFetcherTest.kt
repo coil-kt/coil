@@ -195,16 +195,18 @@ class HttpUrlFetcherTest {
             assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
         }
 
-        // Ensure the result file is present.
         assertTrue(result is SourceResult)
         val source = result.source
         assertTrue(source is FileImageSource)
-        val expected = CoilUtils.getDiskCacheFile(diskCache, url)
-        assertTrue(expected in diskCache.directory.listFiles().orEmpty())
-        assertEquals(expected, source.resultFile)
 
         // Ensure we can read the source.
         assertTrue(source.source().use { it.readAll(blackholeSink()) } > 0)
+        source.close()
+
+        // Ensure the result file is present.
+        val expected = CoilUtils.getDiskCacheFile(diskCache, url)
+        assertTrue(expected in diskCache.directory.listFiles().orEmpty())
+        assertEquals(expected, source.resultFile)
     }
 
     @Test
@@ -225,15 +227,17 @@ class HttpUrlFetcherTest {
             assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
         }
 
-        // Ensure the result file is present.
         assertTrue(result is SourceResult)
         val source = result.source
         assertTrue(source is FileImageSource)
-        val expected = CoilUtils.getDiskCacheFile(diskCache, url)
-        assertTrue(expected in diskCache.directory.listFiles().orEmpty())
-        assertEquals(expected, source.resultFile)
 
         // Ensure we can read the source.
         assertTrue(source.source().use { it.readAll(blackholeSink()) } > 0)
+        source.close()
+
+        // Ensure the result file is present.
+        val expected = CoilUtils.getDiskCacheFile(diskCache, url)
+        assertTrue(expected in diskCache.directory.listFiles().orEmpty())
+        assertEquals(expected, source.resultFile)
     }
 }
