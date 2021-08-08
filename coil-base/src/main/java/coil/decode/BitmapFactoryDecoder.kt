@@ -106,7 +106,11 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
                 )
 
                 // Avoid loading the image larger than its original dimensions if allowed.
-                val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
+                val scale = if (options.allowInexactSize) {
+                    rawScale.coerceAtMost(1.0)
+                } else {
+                    rawScale
+                }
 
                 inScaled = scale != 1.0
                 if (inScaled) {

@@ -155,7 +155,13 @@ object DecodeUtils {
         return when (dstSize) {
             is OriginalSize -> PixelSize(srcWidth, srcHeight)
             is PixelSize -> {
-                val multiplier = computeSizeMultiplier(srcWidth, srcHeight, dstSize.width, dstSize.height, scale)
+                val multiplier = computeSizeMultiplier(
+                    srcWidth = srcWidth,
+                    srcHeight = srcHeight,
+                    dstWidth = dstSize.width,
+                    dstHeight = dstSize.height,
+                    scale = scale
+                )
                 PixelSize(
                     width = (multiplier * srcWidth).roundToInt(),
                     height = (multiplier * srcHeight).roundToInt()
