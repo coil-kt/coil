@@ -28,6 +28,8 @@ dependencies {
 
     implementation(Library.ANDROIDX_CORE)
 
+    implementation(Library.ACCOMPANIST_DRAWABLE_PAINTER)
+
     api(Library.COMPOSE_UI)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)

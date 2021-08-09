@@ -3,6 +3,9 @@
 package coil.compose
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
@@ -14,9 +17,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +41,7 @@ import coil.size.OriginalSize
 import coil.size.Precision
 import coil.size.Scale
 import coil.transition.CrossfadeTransition
+import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -374,6 +382,15 @@ private fun ImageResult.toState() = when (this) {
         painter = drawable?.toPainter(),
         result = this
     )
+}
+
+/** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
+private fun Drawable.toPainter(): Painter {
+    return when (this) {
+        is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap())
+        is ColorDrawable -> ColorPainter(Color(color))
+        else -> DrawablePainter(mutate())
+    }
 }
 
 /** A simple mutable value holder that avoids recomposition. */
