@@ -49,7 +49,7 @@ allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.42.0"
+        version by "0.42.1"
         disabledRules by setOf("indent", "max-line-length", "parameter-list-wrapping")
     }
 
