@@ -54,7 +54,8 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 val file = imageSource.fileOrNull()
                 val decoderSource = when {
                     file != null -> ImageDecoder.createSource(file)
-                    SDK_INT < 30 -> ImageDecoder.createSource(imageSource.file()) // https://issuetracker.google.com/issues/139371066
+                    // https://issuetracker.google.com/issues/139371066
+                    SDK_INT < 30 -> ImageDecoder.createSource(imageSource.file())
                     else -> ImageDecoder.createSource(ByteBuffer.wrap(imageSource.source().readByteArray()))
                 }
 

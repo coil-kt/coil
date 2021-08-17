@@ -11,7 +11,8 @@ enum class PixelOpacity {
     /**
      * Indicates that the [AnimatedTransformation] did not change the image's opacity.
      *
-     * Return this unless you add transparent pixels to the image or remove all transparent pixels in the image.
+     * Return this unless you add transparent pixels to the image or remove all transparent
+     * pixels in the image.
      */
     UNCHANGED,
 
