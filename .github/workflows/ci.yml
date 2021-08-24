@@ -92,7 +92,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: avd-${{ matrix.api-level }}-${{ steps.avd-target.outputs.target }}
+                  key: avd-${{ steps.avd-target.outputs.target }}-${{ matrix.api-level }}
 
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
@@ -114,7 +114,7 @@ jobs:
                   disable-animations: true
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-                  script: ./gradlew connectedDebugAndroidTest
+                  script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
         name: Deploy snapshot
