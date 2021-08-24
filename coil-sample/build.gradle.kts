@@ -14,11 +14,11 @@ setupAppModule {
         multiDexEnabled = true
     }
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles("shrinker-rules.pro", "shrinker-rules-android.pro")
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs["debug"]
         }
     }
     buildFeatures {
