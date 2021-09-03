@@ -67,6 +67,7 @@ internal class EmptyNetworkObserver : NetworkObserver {
 }
 
 @SuppressLint("MissingPermission")
+@Suppress("DEPRECATION") // TODO: Remove uses of 'allNetworks'.
 private class RealNetworkObserver(
     private val connectivityManager: ConnectivityManager,
     private val listener: Listener

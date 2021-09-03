@@ -12,6 +12,7 @@
         <!--suppress AndroidDomInspection -->
         <activity
             android:name="androidx.activity.ComponentActivity"
+            android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 </manifest>
