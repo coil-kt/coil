@@ -84,6 +84,7 @@ private object EmptyNetworkObserver : NetworkObserver {
 
 @RequiresApi(21)
 @SuppressLint("MissingPermission")
+@Suppress("DEPRECATION") // TODO: Remove uses of 'allNetworks'.
 private class NetworkObserverApi21(
     private val connectivityManager: ConnectivityManager,
     private val listener: Listener

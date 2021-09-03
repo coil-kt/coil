@@ -6,6 +6,7 @@
     <application>
         <activity
             android:name="coil.util.TestActivity"
+            android:exported="true"
             android:theme="@style/Theme.TestActivity"/>
     </application>
 </manifest>
