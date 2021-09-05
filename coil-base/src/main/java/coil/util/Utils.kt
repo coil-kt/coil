@@ -56,7 +56,7 @@ internal object Utils {
     }
 
     fun getDefaultDiskCacheDirectory(context: Context): File {
-        return File(context.cacheDir, CACHE_DIRECTORY_NAME).apply { mkdirs() }
+        return File(context.safeCacheDir, CACHE_DIRECTORY_NAME).apply { mkdirs() }
     }
 
     /** Modified from Picasso. */
