@@ -97,7 +97,10 @@ internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
     return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
 }
 
-/** Modified from [MimeTypeMap.getFileExtensionFromUrl] to be more permissive with special characters. */
+/**
+ * Modified from [MimeTypeMap.getFileExtensionFromUrl] to be more permissive
+ * with special characters.
+ */
 internal fun MimeTypeMap.getMimeTypeFromUrl(url: String?): String? {
     if (url.isNullOrBlank()) {
         return null
@@ -137,10 +140,12 @@ internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
 
-internal inline val CoroutineContext.job: Job get() = get(Job)!!
+internal inline val CoroutineContext.job: Job
+    get() = get(Job)!!
 
 @OptIn(ExperimentalStdlibApi::class)
-internal inline val CoroutineContext.dispatcher: CoroutineDispatcher get() = get(CoroutineDispatcher)!!
+internal inline val CoroutineContext.dispatcher: CoroutineDispatcher
+    get() = get(CoroutineDispatcher)!!
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
@@ -156,12 +161,12 @@ internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(:
 /** https://github.com/coil-kt/coil/issues/675 */
 internal val Context.safeCacheDir: File get() = cacheDir.apply { mkdirs() }
 
-internal inline fun ComponentRegistry.Builder.addFirst(pair: Pair<Fetcher.Factory<*>, Class<*>>?) = apply {
-    if (pair != null) fetcherFactories.add(0, pair)
-}
+internal inline fun ComponentRegistry.Builder.addFirst(
+    pair: Pair<Fetcher.Factory<*>, Class<*>>?
+) = apply { if (pair != null) fetcherFactories.add(0, pair) }
 
-internal inline fun ComponentRegistry.Builder.addFirst(factory: Decoder.Factory?) = apply {
-    if (factory != null) decoderFactories.add(0, factory)
-}
+internal inline fun ComponentRegistry.Builder.addFirst(
+    factory: Decoder.Factory?
+) = apply { if (factory != null) decoderFactories.add(0, factory) }
 
 internal fun unsupported(): Nothing = error("Unsupported")

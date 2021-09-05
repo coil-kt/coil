@@ -6,6 +6,7 @@ import android.content.Context
 import coil.ImageLoader
 import coil.util.CoilUtils
 import coil.util.removeIfIndices
+import java.io.File
 import okhttp3.Cache
 import okhttp3.Call
 import okhttp3.Interceptor
@@ -16,7 +17,6 @@ import okhttp3.ResponseBody
 import okio.Buffer
 import okio.BufferedSource
 import okio.Source
-import java.io.File
 
 /**
  * A convenience function to set the default image loader disk cache for this [OkHttpClient].
@@ -46,8 +46,8 @@ fun OkHttpClient.Builder.imageLoaderDiskCache(diskCache: Cache?) = apply {
 
 /**
  * Tags [Response]s with their associated disk cache file.
- * This must be the last non-network interceptor in the chain as it
- * relies on implementation details of the [Cache] class to determine the file name.
+ * This should be the last non-network interceptor in the chain as it relies on
+ * implementation details of the [Cache] class to determine the file name.
  */
 private class DiskCacheInterceptor(private val diskCache: Cache) : Interceptor {
 
