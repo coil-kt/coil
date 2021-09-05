@@ -57,6 +57,7 @@ allprojects {
         dokkaSourceSets.configureEach {
             jdkVersion by 8
             skipDeprecated by true
+            suppressInheritedMembers by true
 
             externalDocumentationLink {
                 url by URL("https://developer.android.com/reference/")
