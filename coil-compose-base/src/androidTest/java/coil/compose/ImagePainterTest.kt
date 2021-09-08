@@ -485,7 +485,7 @@ class ImagePainterTest {
             .assertHeightIsEqualTo(128.dp)
             .assertIsDisplayed()
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample)
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
 
     @Test

@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0-alpha01] - August 5, 2021
+## [2.0.0-alpha01] - XXX
 
 Coil 2.0.0 is the next major iteration of the library and has improvements to performance, API flexibility, artifact size, and various bug fixes. This release may be binary/source incompatible with future alpha releases until the stable release of 2.0.0.
 
