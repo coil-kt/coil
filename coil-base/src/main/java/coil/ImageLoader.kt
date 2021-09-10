@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
+import androidx.lifecycle.Lifecycle
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
@@ -66,6 +67,9 @@ interface ImageLoader {
 
     /**
      * Enqueue the [request] to be executed asynchronously.
+     *
+     * NOTE: The request will wait until [ImageRequest.lifecycle] is at least
+     * [Lifecycle.State.STARTED] before being executed.
      *
      * @param request The request to execute.
      * @return A [Disposable] which can be used to cancel or check the status of the request.
