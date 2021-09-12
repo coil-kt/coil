@@ -1,5 +1,4 @@
 @file:SuppressLint("ComposableNaming")
-@file:Suppress("unused")
 
 package coil.compose
 
