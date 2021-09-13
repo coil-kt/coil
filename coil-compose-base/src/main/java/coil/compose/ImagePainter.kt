@@ -1,4 +1,5 @@
 @file:SuppressLint("ComposableNaming")
+@file:Suppress("unused")
 
 package coil.compose
 
@@ -17,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
+import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
@@ -65,7 +67,7 @@ import kotlin.math.roundToInt
 inline fun rememberImagePainter(
     data: Any?,
     imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
+    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
     builder: ImageRequest.Builder.() -> Unit = {},
 ): ImagePainter {
     val request = ImageRequest.Builder(LocalContext.current)
@@ -87,7 +89,7 @@ inline fun rememberImagePainter(
 fun rememberImagePainter(
     request: ImageRequest,
     imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
+    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
 ): ImagePainter {
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
@@ -121,7 +123,7 @@ class ImagePainter internal constructor(
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     internal var painter: Painter? by mutableStateOf(null)
-    internal var onExecute = ExecuteCallback.Default
+    internal var onExecute = ExecuteCallback.Lazy
     internal var isPreview = false
 
     /** The current [ImagePainter.State]. */
@@ -178,15 +180,6 @@ class ImagePainter internal constructor(
                 val previous = snapshot
                 val current = Snapshot(state, request, size)
                 snapshot = current
-
-                // Short circuit if the size hasn't been set explicitly and the draw size is positive.
-                if (request.defined.sizeResolver == null &&
-                        size.isSpecified && (size.width <= 0.5f || size.height <= 0.5f)) {
-                    state = State.Empty
-                    return@collect
-                }
-
-                // Execute the image request.
                 execute(previous, current)
             }
         }
@@ -249,11 +242,37 @@ class ImagePainter internal constructor(
         companion object {
             /**
              * Proceeds with the request if the painter is empty or the request has changed.
-             * This **does not** proceed with the request if only the draw size has changed.
+             *
+             * Additionally, it only proceeds if the image request has an explicit size or
+             * [ImagePainter.onDraw] has been called with the draw canvas' dimensions.
              */
-            @JvmField val Default = ExecuteCallback { previous, current ->
+            @JvmField val Lazy = ExecuteCallback { previous, current ->
+                (current.state == State.Empty || previous?.request != current.request) &&
+                    (current.request.defined.sizeResolver != null ||
+                        current.size.isUnspecified ||
+                        (current.size.width >= 0.5f && current.size.height >= 0.5f))
+            }
+
+            /**
+             * Proceeds with the request if the painter is empty or the request has changed.
+             *
+             * Unlike [Lazy], this callback will execute the request immediately. Typically,
+             * this will load the image at its original size unless [ImageRequest.Builder.size]
+             * has been set.
+             */
+            @JvmField val Immediate = ExecuteCallback { previous, current ->
                 current.state == State.Empty || previous?.request != current.request
             }
+
+            @Deprecated(
+                message = "Migrate to `Lazy`.",
+                replaceWith = ReplaceWith(
+                    expression = "ExecuteCallback.Lazy",
+                    imports = ["coil.compose.ImagePainter.ExecuteCallback"]
+                ),
+                level = DeprecationLevel.ERROR // Temporary migration aid.
+            )
+            @JvmField val Default = Lazy
         }
     }
 

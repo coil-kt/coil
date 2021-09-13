@@ -23,7 +23,7 @@ import coil.request.ImageRequest
 @Composable
 inline fun rememberImagePainter(
     data: Any?,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
+    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
     builder: ImageRequest.Builder.() -> Unit = {},
 ): ImagePainter = rememberImagePainter(data, LocalImageLoader.current, onExecute, builder)
 
@@ -37,7 +37,7 @@ inline fun rememberImagePainter(
 @Composable
 inline fun rememberImagePainter(
     request: ImageRequest,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
+    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
 ): ImagePainter = rememberImagePainter(request, LocalImageLoader.current, onExecute)
 
 /**

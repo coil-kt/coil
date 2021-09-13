@@ -11,6 +11,8 @@ public final class coil/compose/ImagePainter : androidx/compose/ui/graphics/pain
 public abstract interface class coil/compose/ImagePainter$ExecuteCallback {
 	public static final field Companion Lcoil/compose/ImagePainter$ExecuteCallback$Companion;
 	public static final field Default Lcoil/compose/ImagePainter$ExecuteCallback;
+	public static final field Immediate Lcoil/compose/ImagePainter$ExecuteCallback;
+	public static final field Lazy Lcoil/compose/ImagePainter$ExecuteCallback;
 	public abstract fun invoke (Lcoil/compose/ImagePainter$Snapshot;Lcoil/compose/ImagePainter$Snapshot;)Z
 }
 
