@@ -243,8 +243,8 @@ class ImagePainter internal constructor(
             /**
              * Proceeds with the request if the painter is empty or the request has changed.
              *
-             * Additionally, this callback only proceeds if the image request has an explicit size
-             * or [ImagePainter.onDraw] has been called with the draw canvas' dimensions.
+             * Additionally, this callback only proceeds if the image request has an explicit
+             * size or [ImagePainter.onDraw] has been called with the draw canvas' dimensions.
              */
             @JvmField val Lazy = ExecuteCallback { previous, current ->
                 (current.state == State.Empty || previous?.request != current.request) &&
