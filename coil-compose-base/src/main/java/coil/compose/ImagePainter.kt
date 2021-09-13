@@ -294,18 +294,28 @@ class ImagePainter internal constructor(
         /** The request was successful. */
         data class Success(
             override val painter: Painter,
-            @Deprecated("Migrate to `result.metadata`.", ReplaceWith("result.metadata"))
-            val metadata: ImageResult.Metadata,
             val result: SuccessResult,
-        ) : State()
+        ) : State() {
+
+            @Deprecated(
+                message = "Migrate to `result.metadata`.",
+                replaceWith = ReplaceWith("result.metadata")
+            )
+            val metadata: ImageResult.Metadata get() = result.metadata
+        }
 
         /** The request failed due to [ErrorResult.throwable]. */
         data class Error(
             override val painter: Painter?,
-            @Deprecated("Migrate to `result.throwable`.", ReplaceWith("result.throwable"))
-            val throwable: Throwable,
             val result: ErrorResult,
-        ) : State()
+        ) : State() {
+
+            @Deprecated(
+                message = "Migrate to `result.throwable`.",
+                replaceWith = ReplaceWith("result.throwable")
+            )
+            val throwable: Throwable get() = result.throwable
+        }
     }
 }
 
@@ -377,12 +387,10 @@ private fun unsupportedData(name: String): Nothing {
 private fun ImageResult.toState() = when (this) {
     is SuccessResult -> State.Success(
         painter = drawable.toPainter(),
-        metadata = metadata,
         result = this
     )
     is ErrorResult -> State.Error(
         painter = drawable?.toPainter(),
-        throwable = throwable,
         result = this
     )
 }
