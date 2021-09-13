@@ -180,7 +180,16 @@ class ImagePainter internal constructor(
                 val previous = snapshot
                 val current = Snapshot(state, request, size)
                 snapshot = current
-                execute(previous, current)
+
+                // Launch a new image request if necessary.
+                if (onExecute(previous, current)) {
+                    requestJob?.cancel()
+                    requestJob = launch {
+                        state = imageLoader
+                            .execute(updateRequest(current.request, current.size))
+                            .toState()
+                    }
+                }
             }
         }
     }
@@ -193,16 +202,6 @@ class ImagePainter internal constructor(
     }
 
     override fun onAbandoned() = onForgotten()
-
-    private fun CoroutineScope.execute(previous: Snapshot?, current: Snapshot) {
-        if (!onExecute(previous, current)) return
-
-        // Execute the image request.
-        requestJob?.cancel()
-        requestJob = launch {
-            state = imageLoader.execute(updateRequest(current.request, current.size)).toState()
-        }
-    }
 
     /** Update the [request] to work with [ImagePainter]. */
     private fun updateRequest(request: ImageRequest, size: Size): ImageRequest {
