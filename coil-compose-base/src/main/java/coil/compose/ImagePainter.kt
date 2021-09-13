@@ -1,4 +1,5 @@
 @file:SuppressLint("ComposableNaming")
+@file:Suppress("unused")
 
 package coil.compose
 
@@ -294,14 +295,28 @@ class ImagePainter internal constructor(
         /** The request was successful. */
         data class Success(
             override val painter: Painter,
-            val metadata: ImageResult.Metadata,
-        ) : State()
+            val result: SuccessResult,
+        ) : State() {
 
-        /** The request failed due to [throwable]. */
+            @Deprecated(
+                message = "Migrate to `result.metadata`.",
+                replaceWith = ReplaceWith("result.metadata")
+            )
+            val metadata: ImageResult.Metadata get() = result.metadata
+        }
+
+        /** The request failed due to [ErrorResult.throwable]. */
         data class Error(
             override val painter: Painter?,
-            val throwable: Throwable,
-        ) : State()
+            val result: ErrorResult,
+        ) : State() {
+
+            @Deprecated(
+                message = "Migrate to `result.throwable`.",
+                replaceWith = ReplaceWith("result.throwable")
+            )
+            val throwable: Throwable get() = result.throwable
+        }
     }
 }
 
@@ -340,7 +355,7 @@ private fun updatePainter(
     if (state is State.Loading) loading.value = state.painter
 
     // Short circuit if the request isn't successful or if it's returned by the memory cache.
-    if (state !is State.Success || state.metadata.dataSource == DataSource.MEMORY_CACHE) {
+    if (state !is State.Success || state.result.metadata.dataSource == DataSource.MEMORY_CACHE) {
         imagePainter.painter = painter
         return
     }
@@ -353,7 +368,7 @@ private fun updatePainter(
         // Fall back to Scale.FIT to match the default image content scale.
         scale = request.defined.scale ?: Scale.FIT,
         durationMillis = transition.durationMillis,
-        fadeStart = !state.metadata.isPlaceholderMemoryCacheKeyPresent
+        fadeStart = !state.result.metadata.isPlaceholderMemoryCacheKeyPresent
     )
 }
 
@@ -373,11 +388,11 @@ private fun unsupportedData(name: String): Nothing {
 private fun ImageResult.toState() = when (this) {
     is SuccessResult -> State.Success(
         painter = drawable.toPainter(),
-        metadata = metadata
+        result = this
     )
     is ErrorResult -> State.Error(
         painter = drawable?.toPainter(),
-        throwable = throwable
+        result = this
     )
 }
 
