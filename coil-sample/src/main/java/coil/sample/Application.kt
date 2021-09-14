@@ -14,6 +14,7 @@ import coil.decode.VideoFrameDecoder
 import coil.memory.MemoryCache
 import coil.util.DebugLogger
 import okhttp3.Cache
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.io.File
 
@@ -51,9 +52,13 @@ class Application : Application(), ImageLoaderFactory {
                     value = "max-age=31536000,public"
                 )
 
+                // Don't limit concurrent network requests by host.
+                val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }
+
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
                     .cache(diskCache)
+                    .dispatcher(dispatcher)
                     .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
             }
