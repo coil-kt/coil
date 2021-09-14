@@ -46,14 +46,14 @@ class Application : Application(), ImageLoaderFactory {
                 val cacheDirectory = File(filesDir, "image_cache").apply { mkdirs() }
                 val diskCache = Cache(cacheDirectory, Long.MAX_VALUE)
 
+                // Don't limit concurrent network requests by host.
+                val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }
+
                 // Rewrite the Cache-Control header to cache all responses for a year.
                 val cacheControlInterceptor = ResponseHeaderInterceptor(
                     name = "Cache-Control",
                     value = "max-age=31536000,public"
                 )
-
-                // Don't limit concurrent network requests by host.
-                val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }
 
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
