@@ -33,7 +33,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import okhttp3.Call
 import okhttp3.Headers
 import java.io.Closeable
 import java.io.File
@@ -87,15 +86,6 @@ internal val ImageView.scale: Scale
         FIT_START, FIT_CENTER, FIT_END, CENTER_INSIDE -> Scale.FIT
         else -> Scale.FILL
     }
-
-/**
- * Wrap a [Call.Factory] factory as a [Call.Factory] instance.
- * [initializer] is called only once the first time [Call.Factory.newCall] is called.
- */
-internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
-    val lazy: Lazy<Call.Factory> = lazy(initializer)
-    return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
-}
 
 /**
  * Modified from [MimeTypeMap.getFileExtensionFromUrl] to be more permissive

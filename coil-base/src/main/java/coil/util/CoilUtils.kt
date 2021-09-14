@@ -4,7 +4,6 @@ package coil.util
 
 import android.content.Context
 import android.view.View
-import coil.network.imageLoaderDiskCache // ktlint-disable no-unused-imports
 import coil.request.Disposable
 import coil.request.ImageResult
 import okhttp3.Cache
@@ -21,7 +20,7 @@ object CoilUtils {
     /**
      * Create an OkHttp disk cache with a reasonable default size and location.
      *
-     * @see OkHttpClient.Builder.imageLoaderDiskCache
+     * @see OkHttpClient.Builder.cache
      */
     @JvmStatic
     fun createDiskCache(context: Context): Cache {

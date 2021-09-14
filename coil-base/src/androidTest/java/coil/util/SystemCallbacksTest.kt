@@ -55,7 +55,7 @@ class SystemCallbacksTest {
             context = context,
             defaults = DefaultRequestOptions(),
             memoryCache = memoryCache,
-            callFactory = OkHttpClient(),
+            callFactoryInitializer = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             componentRegistry = ComponentRegistry(),
             options = ImageLoaderOptions(),

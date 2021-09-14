@@ -63,7 +63,7 @@ internal class RealImageLoader(
     val context: Context,
     override val defaults: DefaultRequestOptions,
     override val memoryCache: MemoryCache,
-    val callFactory: Call.Factory,
+    val callFactoryInitializer: () -> Call.Factory,
     val eventListenerFactory: EventListener.Factory,
     val componentRegistry: ComponentRegistry,
     val options: ImageLoaderOptions,
@@ -83,7 +83,7 @@ internal class RealImageLoader(
         // Keyers
         .add(CompositeKeyer(options.addLastModifiedToFileCacheKey))
         // Fetchers
-        .add(HttpUrlFetcher.Factory(callFactory, logger))
+        .add(HttpUrlFetcher.Factory(callFactoryInitializer, logger))
         .add(FileFetcher.Factory())
         .add(AssetUriFetcher.Factory())
         .add(ContentUriFetcher.Factory())

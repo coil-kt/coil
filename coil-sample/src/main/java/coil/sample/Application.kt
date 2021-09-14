@@ -12,10 +12,8 @@ import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
 import coil.memory.MemoryCache
-import coil.network.imageLoaderDiskCache
 import coil.util.DebugLogger
 import okhttp3.Cache
-import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.io.File
 
@@ -35,10 +33,10 @@ class Application : Application(), ImageLoaderFactory {
                 // Video frames
                 add(VideoFrameDecoder.Factory())
             }
-            .crossfade(true) // Show a short crossfade when loading images from network or disk.
+            .crossfade(true) // Show a short crossfade when loading images asynchronously.
             .memoryCache(
                 MemoryCache.Builder(this)
-                    .maxSizePercent(0.25) // Use 25% of the application's memory quota.
+                    .maxSizePercent(0.25) // Set the max size to 25% of the app's memory.
                     .build()
             )
             .okHttpClient {
@@ -53,14 +51,10 @@ class Application : Application(), ImageLoaderFactory {
                     value = "max-age=31536000,public"
                 )
 
-                // Don't limit concurrent network requests by host.
-                val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }
-
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
-                    .dispatcher(dispatcher)
+                    .cache(diskCache)
                     .addNetworkInterceptor(cacheControlInterceptor)
-                    .imageLoaderDiskCache(diskCache) // Must be set after adding interceptors.
                     .build()
             }
             .apply {

@@ -128,6 +128,9 @@ public final class coil/ImageLoaders {
 	public static final fun executeBlocking (Lcoil/ImageLoader;Lcoil/request/ImageRequest;)Lcoil/request/ImageResult;
 }
 
+public abstract interface annotation class coil/annotation/DelicateCoilApi : java/lang/annotation/Annotation {
+}
+
 public abstract interface annotation class coil/annotation/ExperimentalCoilApi : java/lang/annotation/Annotation {
 }
 
@@ -366,11 +369,6 @@ public final class coil/memory/MemoryCache$Value {
 public final class coil/network/HttpException : java/lang/RuntimeException {
 	public fun <init> (Lokhttp3/Response;)V
 	public final fun getResponse ()Lokhttp3/Response;
-}
-
-public final class coil/network/OkHttpClients {
-	public static final fun imageLoaderDiskCache (Lokhttp3/OkHttpClient$Builder;Landroid/content/Context;)Lokhttp3/OkHttpClient$Builder;
-	public static final fun imageLoaderDiskCache (Lokhttp3/OkHttpClient$Builder;Lokhttp3/Cache;)Lokhttp3/OkHttpClient$Builder;
 }
 
 public final class coil/request/-Parameters {

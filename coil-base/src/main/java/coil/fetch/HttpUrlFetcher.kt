@@ -9,9 +9,10 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.network.HttpException
-import coil.network.cacheFile
-import coil.network.inexhaustibleSource
+import coil.network.InexhaustibleSource
+import coil.network.InexhaustibleSourceInterceptor
 import coil.request.Options
+import coil.util.CoilUtils
 import coil.util.Logger
 import coil.util.SEGMENT_SIZE
 import coil.util.await
@@ -24,6 +25,7 @@ import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
@@ -105,18 +107,17 @@ internal class HttpUrlFetcher(
      * Create a new [ImageSource] to be decoded.
      */
     private fun newImageSource(response: Response, source: BufferedSource): ImageSource {
-        // Set by 'DiskCacheInterceptor'.
-        val resultFile = response.cacheFile
-        val sourceFile = resultFile
-            ?.let { it.takeIf(File::exists) ?: it.tmp().takeIf(File::exists) }
+        val cache = (callFactory as? OkHttpClient)?.cache
+            ?: return source.toImageSource(buffer = false)
+        val resultFile = CoilUtils.getDiskCacheFile(cache, response.request.url)
+        val sourceFile = resultFile.takeIf(File::exists) ?: resultFile.tmp().takeIf(File::exists)
             ?: return source.toImageSource()
 
         // Read through the source completely if we're reading from the network.
         val networkResponse = response.networkResponse
         if (networkResponse != null) {
-            // Set by 'InexhaustibleSourceInterceptor'.
-            val inexhaustibleSource = networkResponse.inexhaustibleSource
-                // If the source is already exhausted we can't rely on the disk cache file.
+            // If the source is already exhausted we can't rely on the disk cache file.
+            val inexhaustibleSource = (source as? InexhaustibleSource)
                 ?.takeUnless { it.isExhausted }
                 ?: return source.toImageSource()
             try {
@@ -178,17 +179,19 @@ internal class HttpUrlFetcher(
      * Buffer the source into memory.
      * This is used as a fall back if the disk cache file isn't present.
      */
-    private fun BufferedSource.toImageSource(): ImageSource {
+    private fun BufferedSource.toImageSource(buffer: Boolean = true): ImageSource {
         return ImageSource(
-            source = use { Buffer().apply { writeAll(it) } },
+            source = if (buffer) use { Buffer().apply { writeAll(it) } } else this,
             context = options.context
         )
     }
 
     class Factory(
-        private val callFactory: Call.Factory,
+        private val callFactoryInitializer: () -> Call.Factory,
         private val logger: Logger?
     ) : Fetcher.Factory<Any> {
+
+        private val callFactory by lazy(::initializeCallFactory)
 
         override fun create(data: Any, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
@@ -197,6 +200,26 @@ internal class HttpUrlFetcher(
 
         private fun isApplicable(data: Any): Boolean {
             return (data is Uri && (data.scheme == "http" || data.scheme == "https")) || data is HttpUrl
+        }
+
+        private fun initializeCallFactory(): Call.Factory {
+            val callFactory = callFactoryInitializer()
+            return when {
+                callFactory !is OkHttpClient -> {
+                    logger?.log(TAG, Log.INFO) {
+                        "`HttpUrlFetcher` was created with a custom `Call.Factory` implementation. " +
+                            "See `ImageLoader.Builder.callFactory` for why you should be careful " +
+                            "when using a custom `Call.Factory` implementation."
+                    }
+                    return callFactory
+                }
+                callFactory.cache == null -> callFactory
+                else -> {
+                    callFactory.newBuilder()
+                        .addNetworkInterceptor(InexhaustibleSourceInterceptor())
+                        .build()
+                }
+            }
         }
     }
 
