@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import coil.annotation.DelicateCoilApi
 import coil.decode.Decoder
 import coil.decode.ImageSource
+import coil.disk.DiskCache
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.intercept.Interceptor
@@ -61,9 +62,14 @@ interface ImageLoader {
     val components: ComponentRegistry
 
     /**
-     * An in-memory cache of recently loaded images.
+     * An in-memory cache of previously loaded images.
      */
     val memoryCache: MemoryCache
+
+    /**
+     * An on-disk cache of previously loaded images.
+     */
+    val diskCache: DiskCache
 
     /**
      * Enqueue the [request] to be executed asynchronously.

@@ -92,7 +92,7 @@ internal class HttpUrlFetcher(
         val source = body.source()
         try {
             return SourceResult(
-                source = newImageSource(response, source),
+                source = ImageSource(body.source().apply { request(SEGMENT_SIZE) }, options.context),
                 mimeType = getMimeType(url, body),
                 dataSource = if (response.cacheResponse != null) DataSource.DISK else DataSource.NETWORK
             )

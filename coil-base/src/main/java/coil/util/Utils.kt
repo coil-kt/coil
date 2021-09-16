@@ -13,17 +13,16 @@ import java.io.File
 /** Private utility methods for Coil. */
 internal object Utils {
 
-    private const val CACHE_DIRECTORY_NAME = "image_cache"
-
-    private const val MIN_DISK_CACHE_SIZE_BYTES = 10L * 1024 * 1024 // 10MB
-    private const val MAX_DISK_CACHE_SIZE_BYTES = 250L * 1024 * 1024 // 250MB
-
-    private const val DISK_CACHE_PERCENTAGE = 0.02
-
-    private const val STANDARD_MULTIPLIER = 0.2
+    private const val STANDARD_MEMORY_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
 
     private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
+
+    private const val CACHE_DIRECTORY_NAME = "image_cache"
+
+    const val DEFAULT_MIN_DISK_CACHE_SIZE_BYTES = 10L * 1024 * 1024 // 10MB
+    const val DEFAULT_MAX_DISK_CACHE_SIZE_BYTES = 250L * 1024 * 1024 // 250MB
+    const val DEFAULT_DISK_CACHE_PERCENT = 0.02
 
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
@@ -63,10 +62,10 @@ internal object Utils {
     fun calculateDiskCacheSize(cacheDirectory: File): Long {
         return try {
             val cacheDir = StatFs(cacheDirectory.absolutePath)
-            val size = DISK_CACHE_PERCENTAGE * cacheDir.blockCountLong * cacheDir.blockSizeLong
-            return size.toLong().coerceIn(MIN_DISK_CACHE_SIZE_BYTES, MAX_DISK_CACHE_SIZE_BYTES)
+            val size = DEFAULT_DISK_CACHE_PERCENT * cacheDir.blockCountLong * cacheDir.blockSizeLong
+            return size.toLong().coerceIn(DEFAULT_MIN_DISK_CACHE_SIZE_BYTES, DEFAULT_MAX_DISK_CACHE_SIZE_BYTES)
         } catch (_: Exception) {
-            MIN_DISK_CACHE_SIZE_BYTES
+            DEFAULT_MIN_DISK_CACHE_SIZE_BYTES
         }
     }
 
@@ -85,9 +84,9 @@ internal object Utils {
     fun getDefaultMemoryCacheSizePercent(context: Context): Double {
         return try {
             val activityManager: ActivityManager = context.requireSystemService()
-            if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MULTIPLIER
+            if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MEMORY_MULTIPLIER
         } catch (_: Exception) {
-            STANDARD_MULTIPLIER
+            STANDARD_MEMORY_MULTIPLIER
         }
     }
 }

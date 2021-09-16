@@ -12,7 +12,7 @@ import coil.util.Utils
 import kotlinx.parcelize.Parcelize
 
 /**
- * An in-memory cache of recently loaded images.
+ * An in-memory cache of previously loaded images.
  */
 interface MemoryCache {
 
@@ -78,15 +78,6 @@ interface MemoryCache {
         private var weakReferencesEnabled = true
 
         /**
-         * Set the maximum size of the memory cache in bytes.
-         */
-        fun maxSizeBytes(size: Int) = apply {
-            require(size >= 0) { "size must be >= 0." }
-            this.maxSizePercent = Double.MIN_VALUE
-            this.maxSizeBytes = size
-        }
-
-        /**
          * Set the maximum size of the memory cache as a percentage of this application's
          * available memory.
          */
@@ -94,6 +85,15 @@ interface MemoryCache {
             require(percent in 0.0..1.0) { "size must be in the range [0.0, 1.0]." }
             this.maxSizeBytes = Int.MIN_VALUE
             this.maxSizePercent = percent
+        }
+
+        /**
+         * Set the maximum size of the memory cache in bytes.
+         */
+        fun maxSizeBytes(size: Int) = apply {
+            require(size >= 0) { "size must be >= 0." }
+            this.maxSizePercent = Double.MIN_VALUE
+            this.maxSizeBytes = size
         }
 
         /**
