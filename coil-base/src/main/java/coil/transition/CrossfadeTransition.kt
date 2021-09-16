@@ -2,7 +2,6 @@ package coil.transition
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import androidx.core.view.isVisible
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
@@ -85,7 +84,7 @@ class CrossfadeTransition @JvmOverloads constructor(
 
             // Don't animate if the view is not visible as 'CrossfadeDrawable.onDraw'
             // won't be called until the view becomes visible.
-            if (!target.view.isVisible) {
+            if (!target.view.isShown) {
                 return Transition.Factory.NONE.create(target, result)
             }
 
