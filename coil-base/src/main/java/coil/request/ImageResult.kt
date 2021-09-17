@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable
 import coil.ImageLoader
 import coil.decode.DataSource
 import coil.memory.MemoryCache
-import java.io.File
 
 /**
  * Represents the result of an executed [ImageRequest].
@@ -43,14 +42,10 @@ class SuccessResult(
     val memoryCacheKey: MemoryCache.Key?,
 
     /**
-     * A direct reference to where this image was stored on disk when it was decoded.
-     * It is 'null' if the image is not stored on disk.
-     *
-     * You should treat this file as read-only and not write to it. Also, you should
-     * always check [File.exists] before reading the file as it's possible for the
-     * file to be moved or deleted at any time.
+     * The cache key for the image in the disk cache.
+     * It is 'null' if the image was not written to the disk cache.
      */
-    val file: File?,
+    val diskCacheKey: String?,
 
     /**
      * 'true' if the image is sampled (i.e. loaded into memory at less than its original size).
@@ -68,7 +63,7 @@ class SuccessResult(
         request: ImageRequest = this.request,
         dataSource: DataSource = this.dataSource,
         memoryCacheKey: MemoryCache.Key? = this.memoryCacheKey,
-        file: File? = this.file,
+        diskCacheKey: String? = this.diskCacheKey,
         isSampled: Boolean = this.isSampled,
         isPlaceholderCached: Boolean = this.isPlaceholderCached,
     ) = SuccessResult(
@@ -76,7 +71,7 @@ class SuccessResult(
         request = request,
         dataSource = dataSource,
         memoryCacheKey = memoryCacheKey,
-        file = file,
+        diskCacheKey = diskCacheKey,
         isSampled = isSampled,
         isPlaceholderCached = isPlaceholderCached,
     )
@@ -88,7 +83,7 @@ class SuccessResult(
             request == other.request &&
             dataSource == other.dataSource &&
             memoryCacheKey == other.memoryCacheKey &&
-            file == other.file &&
+            diskCacheKey == other.diskCacheKey &&
             isSampled == other.isSampled &&
             isPlaceholderCached == other.isPlaceholderCached
     }
@@ -98,7 +93,7 @@ class SuccessResult(
         result = 31 * result + request.hashCode()
         result = 31 * result + dataSource.hashCode()
         result = 31 * result + (memoryCacheKey?.hashCode() ?: 0)
-        result = 31 * result + (file?.hashCode() ?: 0)
+        result = 31 * result + (diskCacheKey?.hashCode() ?: 0)
         result = 31 * result + isSampled.hashCode()
         result = 31 * result + isPlaceholderCached.hashCode()
         return result

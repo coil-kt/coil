@@ -15,7 +15,7 @@
  */
 package coil.disk
 
-import coil.disk.RealDiskCache.Editor
+import coil.disk.DiskLruCache.Editor
 import coil.util.closeQuietly
 import coil.util.deleteContents
 import coil.util.deleteIfExists
@@ -80,7 +80,7 @@ import java.util.concurrent.Executors
  * @param maxSize the maximum number of bytes this cache should use to store.
  */
 @OptIn(ExperimentalFileSystem::class)
-internal class RealDiskCache(
+internal class DiskLruCache(
     fileSystem: FileSystem,
     val directory: Path,
     private val appVersion: Int,
@@ -151,10 +151,10 @@ internal class RealDiskCache(
     private var nextSequenceNumber = 0L
 
     private val cleanupExecutor = Executors.newSingleThreadExecutor {
-        Thread().apply { name = "${this@RealDiskCache}" }
+        Thread().apply { name = "${this@DiskLruCache}" }
     }
     private val cleanupTask = Runnable {
-        synchronized(this@RealDiskCache) {
+        synchronized(this@DiskLruCache) {
             if (!initialized || closed) return@Runnable
             try {
                 trimToSize()
@@ -175,6 +175,7 @@ internal class RealDiskCache(
 
     private val fileSystem = object : ForwardingFileSystem(fileSystem) {
         override fun sink(file: Path): Sink {
+            // Ensure the parent directory for the file is created if it doesn't already exist.
             file.parent?.let { if (!exists(it)) createDirectories(it) }
             return super.sink(file)
         }
@@ -190,7 +191,7 @@ internal class RealDiskCache(
     }
 
     @Synchronized
-    fun initialize() {
+    private fun initialize() {
         if (initialized) return
 
         // If a bkp file exists, use it instead.
@@ -225,7 +226,6 @@ internal class RealDiskCache(
         }
 
         rebuildJournal()
-
         initialized = true
     }
 
@@ -382,9 +382,9 @@ internal class RealDiskCache(
     @Synchronized
     operator fun get(key: String): Snapshot? {
         initialize()
-
         checkNotClosed()
         validateKey(key)
+
         val entry = lruEntries[key] ?: return null
         val snapshot = entry.snapshot() ?: return null
 
@@ -406,9 +406,9 @@ internal class RealDiskCache(
     @Synchronized
     fun edit(key: String, expectedSequenceNumber: Long = ANY_SEQUENCE_NUMBER): Editor? {
         initialize()
-
         checkNotClosed()
         validateKey(key)
+
         var entry: Entry? = lruEntries[key]
         if (expectedSequenceNumber != ANY_SEQUENCE_NUMBER &&
             (entry == null || entry.sequenceNumber != expectedSequenceNumber)) {
@@ -548,9 +548,9 @@ internal class RealDiskCache(
     @Synchronized
     fun remove(key: String): Boolean {
         initialize()
-
         checkNotClosed()
         validateKey(key)
+
         val entry = lruEntries[key] ?: return false
         val removed = removeEntry(entry)
         if (removed && size <= maxSize) mostRecentTrimFailed = false
@@ -698,7 +698,7 @@ internal class RealDiskCache(
             override fun hasNext(): Boolean {
                 if (nextSnapshot != null) return true
 
-                synchronized(this@RealDiskCache) {
+                synchronized(this@DiskLruCache) {
                     // If the cache is closed, truncate the iterator.
                     if (closed) return false
 
@@ -782,7 +782,7 @@ internal class RealDiskCache(
          * has been committed.
          */
         fun newSource(index: Int): Source? {
-            synchronized(this@RealDiskCache) {
+            synchronized(this@DiskLruCache) {
                 check(!done)
                 if (!entry.readable || entry.currentEditor != this || entry.zombie) {
                     return null
@@ -801,7 +801,7 @@ internal class RealDiskCache(
          * when [commit] is called. The returned output stream does not throw IOExceptions.
          */
         fun newSink(index: Int): Sink {
-            synchronized(this@RealDiskCache) {
+            synchronized(this@DiskLruCache) {
                 check(!done)
                 if (entry.currentEditor != this) {
                     return blackholeSink()
@@ -816,7 +816,7 @@ internal class RealDiskCache(
                     return blackholeSink()
                 }
                 return FaultHidingSink(sink) {
-                    synchronized(this@RealDiskCache) {
+                    synchronized(this@DiskLruCache) {
                         detach()
                     }
                 }
@@ -828,7 +828,7 @@ internal class RealDiskCache(
          * edit may be started on the same key.
          */
         fun commit() {
-            synchronized(this@RealDiskCache) {
+            synchronized(this@DiskLruCache) {
                 check(!done)
                 if (entry.currentEditor == this) {
                     completeEdit(this, true)
@@ -842,7 +842,7 @@ internal class RealDiskCache(
          * same key.
          */
         fun abort() {
-            synchronized(this@RealDiskCache) {
+            synchronized(this@DiskLruCache) {
                 check(!done)
                 if (entry.currentEditor == this) {
                     completeEdit(this, false)

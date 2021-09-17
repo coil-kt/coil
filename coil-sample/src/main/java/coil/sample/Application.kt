@@ -11,17 +11,18 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
+import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.util.DebugLogger
-import okhttp3.Cache
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
-import java.io.File
 
 class Application : Application(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
+            // Show a short crossfade when loading images asynchronously.
+            .crossfade(true)
             .components {
                 // GIFs
                 if (SDK_INT >= 28) {
@@ -34,18 +35,20 @@ class Application : Application(), ImageLoaderFactory {
                 // Video frames
                 add(VideoFrameDecoder.Factory())
             }
-            .crossfade(true) // Show a short crossfade when loading images asynchronously.
             .memoryCache(
                 MemoryCache.Builder(this)
-                    .maxSizePercent(0.25) // Set the max size to 25% of the app's memory.
+                    // Set the max size to 25% of the app's available memory.
+                    .maxSizePercent(0.25)
+                    .build()
+            )
+            .diskCache(
+                DiskCache.Builder(this)
+                    .directory(filesDir.resolve("image_cache"))
+                    // Create a disk cache with "unlimited" size. Don't do this in production.
+                    .maxSizeBytes(Long.MAX_VALUE)
                     .build()
             )
             .okHttpClient {
-                // Create a disk cache with "unlimited" size. Don't do this in production.
-                // To create the an optimized Coil disk cache, use CoilUtils.createDiskCache(context).
-                val cacheDirectory = File(filesDir, "image_cache").apply { mkdirs() }
-                val diskCache = Cache(cacheDirectory, Long.MAX_VALUE)
-
                 // Don't limit concurrent network requests by host.
                 val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }
 
@@ -57,9 +60,8 @@ class Application : Application(), ImageLoaderFactory {
 
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
-                    .cache(diskCache)
                     .dispatcher(dispatcher)
-                    .addNetworkInterceptor(cacheControlInterceptor)
+                    .addInterceptor(cacheControlInterceptor)
                     .build()
             }
             .apply {

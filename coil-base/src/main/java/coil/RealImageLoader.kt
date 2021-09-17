@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.MainThread
 import coil.decode.BitmapFactoryDecoder
+import coil.disk.DiskCache
 import coil.fetch.AssetUriFetcher
 import coil.fetch.BitmapFetcher
 import coil.fetch.ByteBufferFetcher
@@ -63,7 +64,8 @@ internal class RealImageLoader(
     val context: Context,
     override val defaults: DefaultRequestOptions,
     override val memoryCache: MemoryCache,
-    val callFactoryInitializer: () -> Call.Factory,
+    override val diskCache: DiskCache,
+    val callFactory: Call.Factory,
     val eventListenerFactory: EventListener.Factory,
     val componentRegistry: ComponentRegistry,
     val options: ImageLoaderOptions,
@@ -83,7 +85,7 @@ internal class RealImageLoader(
         // Keyers
         .add(CompositeKeyer(options.addLastModifiedToFileCacheKey))
         // Fetchers
-        .add(HttpUrlFetcher.Factory(callFactoryInitializer, logger))
+        .add(HttpUrlFetcher.Factory(callFactory, diskCache, logger))
         .add(FileFetcher.Factory())
         .add(AssetUriFetcher.Factory())
         .add(ContentUriFetcher.Factory())

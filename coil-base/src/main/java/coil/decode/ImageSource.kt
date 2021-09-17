@@ -3,7 +3,6 @@
 package coil.decode
 
 import android.content.Context
-import coil.request.SuccessResult
 import coil.util.closeQuietly
 import coil.util.safeCacheDir
 import okio.BufferedSource
@@ -17,7 +16,6 @@ import java.io.File
  * Create a new [ImageSource] backed by a [File].
  *
  * @param file The file to read from.
- * @param resultFile The file that will be returned in [SuccessResult.file].
  * @param closeable An optional closeable reference that will
  *  be closed when the image source is closed.
  */
@@ -25,9 +23,8 @@ import java.io.File
 @JvmName("create")
 fun ImageSource(
     file: File,
-    resultFile: File = file,
     closeable: Closeable? = null
-): ImageSource = FileImageSource(file, resultFile, closeable)
+): ImageSource = FileImageSource(file, closeable)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -86,7 +83,6 @@ sealed class ImageSource : Closeable {
 
 internal class FileImageSource(
     internal val file: File,
-    internal val resultFile: File,
     private val closeable: Closeable?
 ) : ImageSource() {
 

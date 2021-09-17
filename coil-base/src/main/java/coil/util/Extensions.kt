@@ -33,6 +33,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import okhttp3.Call
 import okhttp3.Headers
 import java.io.Closeable
 import java.io.File
@@ -88,6 +89,15 @@ internal val ImageView.scale: Scale
     }
 
 /**
+ * Wrap a [Call.Factory] factory as a [Call.Factory] instance.
+ * [initializer] is called only once the first time [Call.Factory.newCall] is called.
+ */
+internal fun lazyCallFactory(initializer: () -> Call.Factory): Call.Factory {
+    val lazy: Lazy<Call.Factory> = lazy(initializer)
+    return Call.Factory { lazy.value.newCall(it) } // Intentionally not a method reference.
+}
+
+/**
  * Modified from [MimeTypeMap.getFileExtensionFromUrl] to be more permissive
  * with special characters.
  */
@@ -115,9 +125,6 @@ internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
 
 /** Required for compatibility with API 25 and below. */
 internal val NULL_COLOR_SPACE: ColorSpace? = null
-
-/** Tracks 'okio.Segment.SIZE' which is private. */
-internal const val SEGMENT_SIZE = 8192L
 
 internal val EMPTY_HEADERS = Headers.Builder().build()
 

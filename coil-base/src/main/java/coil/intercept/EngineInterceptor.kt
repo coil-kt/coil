@@ -11,8 +11,6 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.DecodeUtils
-import coil.decode.FileImageSource
-import coil.decode.ImageSource
 import coil.fetch.DrawableResult
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
@@ -78,7 +76,7 @@ internal class EngineInterceptor(
                     request = request,
                     dataSource = DataSource.MEMORY_CACHE,
                     memoryCacheKey = memoryCacheKey,
-                    file = memoryCacheValue.file,
+                    diskCacheKey = null,
                     isSampled = memoryCacheValue.isSampled,
                     isPlaceholderCached = chain.isPlaceholderCached,
                 )
@@ -98,7 +96,7 @@ internal class EngineInterceptor(
                     request = request,
                     dataSource = result.dataSource,
                     memoryCacheKey = memoryCacheKey.takeIf { isMemoryCached },
-                    file = result.file,
+                    diskCacheKey = null,
                     isSampled = result.isSampled,
                     isPlaceholderCached = chain.isPlaceholderCached,
                 )
@@ -444,13 +442,10 @@ internal class EngineInterceptor(
             options.scale, options.allowInexactSize)
     }
 
-    private val ImageSource.resultFile: File?
-        get() = if (this is FileImageSource) resultFile else null
-
     private val MemoryCache.Value.isSampled: Boolean
         get() = (extras[EXTRA_IS_SAMPLED] as? Boolean) ?: false
 
-    private val MemoryCache.Value.file: File?
+    private val MemoryCache.Value.diskCacheKey: String?
         get() = (extras[EXTRA_FILE_PATH] as? String)?.let(::File)
 
     private val Interceptor.Chain.isPlaceholderCached: Boolean

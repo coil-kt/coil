@@ -9,9 +9,7 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import androidx.lifecycle.Lifecycle
-import coil.annotation.DelicateCoilApi
 import coil.decode.Decoder
-import coil.decode.ImageSource
 import coil.disk.DiskCache
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
@@ -29,12 +27,12 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
-import coil.util.CoilUtils
 import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.Utils
 import coil.util.getDrawableCompat
+import coil.util.lazyCallFactory
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -113,43 +111,44 @@ interface ImageLoader {
 
         private val applicationContext: Context
         private var defaults: DefaultRequestOptions
-        private var callFactoryInitializer: (() -> Call.Factory)?
+        private var memoryCache: MemoryCache?
+        private var diskCache: DiskCache?
+        private var callFactory: Call.Factory?
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
         private var options: ImageLoaderOptions
         private var logger: Logger?
-        private var memoryCache: MemoryCache?
 
         constructor(context: Context) {
             applicationContext = context.applicationContext
             defaults = DEFAULT_REQUEST_OPTIONS
-            callFactoryInitializer = null
+            memoryCache = null
+            diskCache = null
+            callFactory = null
             eventListenerFactory = null
             componentRegistry = null
             options = ImageLoaderOptions()
             logger = null
-            memoryCache = null
         }
 
         internal constructor(imageLoader: RealImageLoader) {
             applicationContext = imageLoader.context.applicationContext
             defaults = imageLoader.defaults
-            callFactoryInitializer = imageLoader.callFactoryInitializer
+            memoryCache = imageLoader.memoryCache
+            diskCache = imageLoader.diskCache
+            callFactory = imageLoader.callFactory
             eventListenerFactory = imageLoader.eventListenerFactory
             componentRegistry = imageLoader.componentRegistry
             options = imageLoader.options
             logger = imageLoader.logger
-            memoryCache = imageLoader.memoryCache
         }
 
         /**
          * Set the [OkHttpClient] used for network requests.
          *
-         * **NOTE: You must set [OkHttpClient.Builder.cache] to enable disk caching.**
+         * This is a convenience function for calling `callFactory(Call.Factory)`.
          */
-        fun okHttpClient(okHttpClient: OkHttpClient) = apply {
-            this.callFactoryInitializer = { okHttpClient }
-        }
+        fun okHttpClient(okHttpClient: OkHttpClient) = callFactory(okHttpClient)
 
         /**
          * Set a lazy callback to create the [OkHttpClient] used for network requests.
@@ -159,31 +158,27 @@ interface ImageLoader {
          *
          * Prefer using this instead of `okHttpClient(OkHttpClient)`.
          *
-         * **NOTE: You must set [OkHttpClient.Builder.cache] to enable disk caching.**
+         * This is a convenience function for calling `callFactory(() -> Call.Factory)`.
          */
-        fun okHttpClient(initializer: () -> OkHttpClient) = apply {
-            this.callFactoryInitializer = initializer
-        }
+        fun okHttpClient(initializer: () -> OkHttpClient) = callFactory(initializer)
 
         /**
          * Set the [Call.Factory] used for network requests.
-         *
-         * **Important**: Image loaders rely on several implementation details of OkHttp's disk
-         * cache. If [callFactory] is not an [OkHttpClient] instance:
-         *
-         * - [SuccessResult.file] will always be `null`.
-         * - Calling [ImageSource.file] for a network image will create a temporary file on disk.
-         *
-         * Additionally, if [callFactory] wraps an [OkHttpClient] this can break OkHttp's disk
-         * cache as it doesn't support thread interruption (which is used by several [Decoder]s).
-         * Use `okHttpClient(() -> OkHttpClient)` instead for this use case.
-         *
-         * Overall, heavily prefer using `okHttpClient(() -> OkHttpClient)` and only use
-         * [callFactory] if you're integrating with a different networking library than OkHttp.
          */
-        @DelicateCoilApi
         fun callFactory(callFactory: Call.Factory) = apply {
-            this.callFactoryInitializer = { callFactory }
+            this.callFactory = callFactory
+        }
+
+        /**
+         * Set a lazy callback to create the [Call.Factory] used for network requests.
+         *
+         * This allows lazy creation of the [Call.Factory] on a background thread.
+         * [initializer] is guaranteed to be called at most once.
+         *
+         * Prefer using this instead of `callFactory(Call.Factory)`.
+         */
+        fun callFactory(initializer: () -> Call.Factory) = apply {
+            this.callFactory = lazyCallFactory(initializer)
         }
 
         /**
@@ -206,6 +201,13 @@ interface ImageLoader {
          */
         fun memoryCache(memoryCache: MemoryCache) = apply {
             this.memoryCache = memoryCache
+        }
+
+        /**
+         * Set the [DiskCache].
+         */
+        fun diskCache(diskCache: DiskCache) = apply {
+            this.diskCache = diskCache
         }
 
         /**
@@ -475,25 +477,14 @@ interface ImageLoader {
                 context = applicationContext,
                 defaults = defaults,
                 memoryCache = memoryCache ?: MemoryCache(applicationContext),
-                callFactoryInitializer = callFactoryInitializer ?: buildDefaultCallFactory(),
+                diskCache = diskCache ?: DiskCache(applicationContext),
+                callFactory = callFactory ?: lazyCallFactory { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 options = options,
                 logger = logger
             )
         }
-
-        private fun buildDefaultCallFactory() = {
-            OkHttpClient.Builder()
-                .cache(CoilUtils.createDiskCache(applicationContext))
-                .build()
-        }
-
-        @Deprecated(
-            message = "Migrate to 'callFactory(Call.Factory)' or 'okHttpClient(() -> OkHttpClient)'.",
-            replaceWith = ReplaceWith("okHttpClient(initializer)")
-        )
-        fun callFactory(initializer: () -> Call.Factory): Builder = unsupported()
 
         @Deprecated(
             message = "Migrate to 'memoryCache'.",
