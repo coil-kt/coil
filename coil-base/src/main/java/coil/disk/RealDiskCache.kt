@@ -150,13 +150,6 @@ internal class RealDiskCache(
      */
     private var nextSequenceNumber = 0L
 
-    private val fileSystem: FileSystem = object : ForwardingFileSystem(fileSystem) {
-        override fun sink(file: Path): Sink {
-            file.parent?.let { if (!exists(it)) createDirectories(it) }
-            return super.sink(file)
-        }
-    }
-
     private val cleanupExecutor = Executors.newSingleThreadExecutor {
         Thread().apply { name = "${this@RealDiskCache}" }
     }
@@ -177,6 +170,13 @@ internal class RealDiskCache(
                 mostRecentRebuildFailed = true
                 journalWriter = blackholeSink().buffer()
             }
+        }
+    }
+
+    private val fileSystem = object : ForwardingFileSystem(fileSystem) {
+        override fun sink(file: Path): Sink {
+            file.parent?.let { if (!exists(it)) createDirectories(it) }
+            return super.sink(file)
         }
     }
 
@@ -338,7 +338,7 @@ internal class RealDiskCache(
      * This replaces the current journal if it exists.
      */
     @Synchronized
-    internal fun rebuildJournal() {
+    private fun rebuildJournal() {
         journalWriter?.close()
 
         fileSystem.write(journalFileTmp) {
@@ -759,9 +759,10 @@ internal class RealDiskCache(
     }
 
     /** Edits the values for an entry. */
-    inner class Editor(internal val entry: Entry) {
-        internal val written = if (entry.readable) null else BooleanArray(valueCount)
+    inner class Editor(val entry: Entry) {
+
         private var done = false
+        val written = if (entry.readable) null else BooleanArray(valueCount)
 
         /**
          * Prevents this editor from completing normally. This is necessary either when the edit
@@ -770,7 +771,7 @@ internal class RealDiskCache(
          * created. Note that once an editor has been detached it is possible for another editor to
          * edit the entry.
          */
-        internal fun detach() {
+        fun detach() {
             if (entry.currentEditor == this) {
                 completeEdit(this, false) // Delete it now.
             }
@@ -851,33 +852,33 @@ internal class RealDiskCache(
         }
     }
 
-    internal inner class Entry(val key: String) {
+    inner class Entry(val key: String) {
 
         /** Lengths of this entry's files. */
-        internal val lengths = LongArray(valueCount)
-        internal val cleanFiles = mutableListOf<Path>()
-        internal val dirtyFiles = mutableListOf<Path>()
+        val lengths = LongArray(valueCount)
+        val cleanFiles = mutableListOf<Path>()
+        val dirtyFiles = mutableListOf<Path>()
 
         /** True if this entry has ever been published. */
-        internal var readable = false
+        var readable = false
 
         /** True if this entry must be deleted when the current edit or read completes. */
-        internal var zombie = false
+        var zombie = false
 
         /**
          * The ongoing edit or null if this entry is not being edited. When setting this to null
          * the entry must be removed if it is a zombie.
          */
-        internal var currentEditor: Editor? = null
+        var currentEditor: Editor? = null
 
         /**
          * Sources currently reading this entry before a write or delete can proceed. When
          * decrementing this to zero, the entry must be removed if it is a zombie.
          */
-        internal var lockingSourceCount = 0
+        var lockingSourceCount = 0
 
         /** The sequence number of the most recently committed edit to this entry. */
-        internal var sequenceNumber = 0L
+        var sequenceNumber = 0L
 
         init {
             // The names are repetitive so re-use the same builder to avoid allocations.
@@ -893,7 +894,7 @@ internal class RealDiskCache(
         }
 
         /** Set lengths using decimal numbers like "10123". */
-        internal fun setLengths(strings: List<String>) {
+        fun setLengths(strings: List<String>) {
             if (strings.size != valueCount) {
                 throw IOException("unexpected journal line: $strings")
             }
@@ -908,7 +909,7 @@ internal class RealDiskCache(
         }
 
         /** Append space-prefixed lengths to [writer]. */
-        internal fun writeLengths(writer: BufferedSink) {
+        fun writeLengths(writer: BufferedSink) {
             for (length in lengths) {
                 writer.writeByte(' '.code).writeDecimalLong(length)
             }
@@ -919,7 +920,7 @@ internal class RealDiskCache(
          * see a single published snapshot. If we opened streams lazily then the streams could come
          * from different edits.
          */
-        internal fun snapshot(): Snapshot? {
+        fun snapshot(): Snapshot? {
             if (!readable) return null
 
             val sources = mutableListOf<Source>()
