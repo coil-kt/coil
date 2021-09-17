@@ -44,8 +44,7 @@ class Application : Application(), ImageLoaderFactory {
             .diskCache(
                 DiskCache.Builder(this)
                     .directory(filesDir.resolve("image_cache"))
-                    // Create a disk cache with "unlimited" size. Don't do this in production.
-                    .maxSizeBytes(Long.MAX_VALUE)
+                    .maxSizeBytes(512L * 1024 * 1024) // 512MB
                     .build()
             )
             .okHttpClient {
@@ -61,7 +60,7 @@ class Application : Application(), ImageLoaderFactory {
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
                     .dispatcher(dispatcher)
-                    .addInterceptor(cacheControlInterceptor)
+                    .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
             }
             .apply {

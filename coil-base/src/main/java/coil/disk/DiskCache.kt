@@ -5,7 +5,6 @@ package coil.disk
 import android.content.Context
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
-import coil.util.Utils
 import java.io.File
 
 /**
@@ -46,10 +45,10 @@ interface DiskCache {
 
     class Builder(private val context: Context) {
 
-        private var directory = Utils.getDefaultDiskCacheDirectory(context)
-        private var maxSizePercent = Utils.DEFAULT_DISK_CACHE_PERCENT
-        private var maximumMaxSizeBytes = Utils.DEFAULT_MAX_DISK_CACHE_SIZE_BYTES
-        private var minimumMaxSizeBytes = Utils.DEFAULT_MIN_DISK_CACHE_SIZE_BYTES
+        private var directory: File? = null
+        private var maxSizePercent = 0.02 // 2%
+        private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
+        private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maxSizeBytes = Long.MIN_VALUE
 
         fun directory(directory: File) = apply {
@@ -80,12 +79,5 @@ interface DiskCache {
         }
 
         fun build(): DiskCache = TODO()
-    }
-
-    companion object {
-        /** Create a new [DiskCache] without configuration. */
-        @JvmStatic
-        @JvmName("create")
-        operator fun invoke(context: Context) = Builder(context).build()
     }
 }

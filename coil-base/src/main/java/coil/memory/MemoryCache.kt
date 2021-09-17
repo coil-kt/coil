@@ -139,11 +139,4 @@ interface MemoryCache {
             return RealMemoryCache(strongMemoryCache, weakMemoryCache)
         }
     }
-
-    companion object {
-        /** Create a new [MemoryCache] without configuration. */
-        @JvmStatic
-        @JvmName("create")
-        operator fun invoke(context: Context) = Builder(context).build()
-    }
 }

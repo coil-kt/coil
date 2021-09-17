@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import android.os.StatFs
-import androidx.annotation.Px
 import coil.transform.Transformation
 import java.io.File
 
@@ -15,14 +14,8 @@ internal object Utils {
 
     private const val STANDARD_MEMORY_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
-
     private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
-
     private const val CACHE_DIRECTORY_NAME = "image_cache"
-
-    const val DEFAULT_MIN_DISK_CACHE_SIZE_BYTES = 10L * 1024 * 1024 // 10MB
-    const val DEFAULT_MAX_DISK_CACHE_SIZE_BYTES = 250L * 1024 * 1024 // 250MB
-    const val DEFAULT_DISK_CACHE_PERCENT = 0.02
 
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
@@ -47,25 +40,18 @@ internal object Utils {
         Bitmap.Config.ARGB_8888
     }
 
-    /**
-     * Return the in memory size of a [Bitmap] with the given width, height, and [Bitmap.Config].
-     */
-    fun calculateAllocationByteCount(@Px width: Int, @Px height: Int, config: Bitmap.Config?): Int {
-        return width * height * config.bytesPerPixel
-    }
-
     fun getDefaultDiskCacheDirectory(context: Context): File {
-        return File(context.safeCacheDir, CACHE_DIRECTORY_NAME).apply { mkdirs() }
+        return File(context.safeCacheDir, CACHE_DIRECTORY_NAME)
     }
 
     /** Modified from Picasso. */
-    fun calculateDiskCacheSize(cacheDirectory: File): Long {
+    fun calculateDiskCacheSize(directory: File, percent: Double, min: Long, max: Long): Long {
         return try {
-            val cacheDir = StatFs(cacheDirectory.absolutePath)
-            val size = DEFAULT_DISK_CACHE_PERCENT * cacheDir.blockCountLong * cacheDir.blockSizeLong
-            return size.toLong().coerceIn(DEFAULT_MIN_DISK_CACHE_SIZE_BYTES, DEFAULT_MAX_DISK_CACHE_SIZE_BYTES)
+            val stats = StatFs(directory.absolutePath)
+            val size = percent * stats.blockCountLong * stats.blockSizeLong
+            return size.toLong().coerceIn(min, max)
         } catch (_: Exception) {
-            DEFAULT_MIN_DISK_CACHE_SIZE_BYTES
+            min
         }
     }
 

@@ -21,6 +21,8 @@ import coil.util.deleteContents
 import coil.util.deleteIfExists
 import coil.util.forEachIndices
 import okio.BufferedSink
+import okio.Closeable
+import okio.EOFException
 import okio.ExperimentalFileSystem
 import okio.FileNotFoundException
 import okio.FileSystem
@@ -31,9 +33,6 @@ import okio.Sink
 import okio.Source
 import okio.blackholeSink
 import okio.buffer
-import java.io.Closeable
-import java.io.EOFException
-import java.io.Flushable
 import java.util.concurrent.Executors
 
 /**
@@ -82,11 +81,11 @@ import java.util.concurrent.Executors
 @OptIn(ExperimentalFileSystem::class)
 internal class DiskLruCache(
     fileSystem: FileSystem,
-    val directory: Path,
+    private val directory: Path,
+    private val maxSize: Long,
     private val appVersion: Int,
-    private val valueCount: Int,
-    private val maxSize: Long
-) : Closeable, Flushable {
+    private val valueCount: Int
+) : Closeable {
 
     /*
      * This cache uses a journal file named "journal". A typical journal file looks like this:
@@ -151,7 +150,7 @@ internal class DiskLruCache(
     private var nextSequenceNumber = 0L
 
     private val cleanupExecutor = Executors.newSingleThreadExecutor {
-        Thread().apply { name = "${this@DiskLruCache}" }
+        Thread().apply { name = "coil.disk.DiskLruCache" }
     }
     private val cleanupTask = Runnable {
         synchronized(this@DiskLruCache) {
@@ -465,6 +464,13 @@ internal class DiskLruCache(
         return size
     }
 
+    /** Returns a snapshot of the current keys present in the disk cache. */
+    @Synchronized
+    fun keys(): Set<String> {
+        initialize()
+        return lruEntries.keys.toSet()
+    }
+
     @Synchronized
     private fun completeEdit(editor: Editor, success: Boolean) {
         val entry = editor.entry
@@ -588,19 +594,6 @@ internal class DiskLruCache(
         check(!closed) { "cache is closed" }
     }
 
-    /** Force buffered operations to the filesystem. */
-    @Synchronized
-    override fun flush() {
-        if (!initialized) return
-
-        checkNotClosed()
-        trimToSize()
-        journalWriter!!.flush()
-    }
-
-    @Synchronized
-    fun isClosed(): Boolean = closed
-
     /** Closes this cache. Stored values will remain on the filesystem. */
     @Synchronized
     override fun close() {
@@ -664,72 +657,8 @@ internal class DiskLruCache(
     }
 
     private fun validateKey(key: String) {
-        require(LEGAL_KEY_PATTERN.matches(key)) {
+        require(LEGAL_KEY_PATTERN matches key) {
             "keys must match regex [a-z0-9_-]{1,120}: \"$key\""
-        }
-    }
-
-    /**
-     * Returns an iterator over the cache's current entries. This iterator doesn't throw
-     * `ConcurrentModificationException`, but if new entries are added while iterating, those new
-     * entries will not be returned by the iterator. If existing entries are removed during
-     * iteration, they will be absent (unless they were already returned).
-     *
-     * If there are I/O problems during iteration, this iterator fails silently. For example, if
-     * the hosting filesystem becomes unreachable, the iterator will omit elements rather than
-     * throwing exceptions.
-     *
-     * **The caller must [Snapshot.close]** for each snapshot returned by [Iterator.next].
-     * Failing to do so leaks open files!
-     */
-    @Synchronized
-    fun snapshots(): MutableIterator<Snapshot> {
-        initialize()
-        return object : MutableIterator<Snapshot> {
-            /** Iterate a copy of the entries to defend against concurrent modification errors. */
-            private val delegate = lruEntries.values.toList().iterator()
-
-            /** The snapshot to return from [next]. Null if we haven't computed that yet. */
-            private var nextSnapshot: Snapshot? = null
-
-            /** The snapshot to remove with [remove]. Null if removal is illegal. */
-            private var removeSnapshot: Snapshot? = null
-
-            override fun hasNext(): Boolean {
-                if (nextSnapshot != null) return true
-
-                synchronized(this@DiskLruCache) {
-                    // If the cache is closed, truncate the iterator.
-                    if (closed) return false
-
-                    while (delegate.hasNext()) {
-                        nextSnapshot = delegate.next().snapshot() ?: continue
-                        return true
-                    }
-                }
-
-                return false
-            }
-
-            override fun next(): Snapshot {
-                if (!hasNext()) throw NoSuchElementException()
-                removeSnapshot = nextSnapshot
-                nextSnapshot = null
-                return removeSnapshot!!
-            }
-
-            override fun remove() {
-                val removeSnapshot = checkNotNull(removeSnapshot) { "remove() before next()" }
-                try {
-                    remove(removeSnapshot.key)
-                } catch (_: IOException) {
-                    // Nothing useful to do here. We failed to remove from the cache. Most likely
-                    // that's because we couldn't update the journal, but the cached entry will
-                    // still be gone.
-                } finally {
-                    this.removeSnapshot = null
-                }
-            }
         }
     }
 

@@ -32,7 +32,7 @@ internal val Bitmap.allocationByteCountCompat: Int
         return try {
             allocationByteCount
         } catch (_: Exception) {
-            Utils.calculateAllocationByteCount(width, height, config)
+            width * height * config.bytesPerPixel
         }
     }
 
