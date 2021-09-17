@@ -30,7 +30,7 @@ interface DiskCache {
     fun edit(key: String): Editor?
 
     /**
-     * Remove the value referenced by [key].
+     * Delete the file referenced by [key].
      *
      * @return 'true' if [key] was removed successfully. Else, return 'false'.
      */
