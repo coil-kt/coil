@@ -2,8 +2,8 @@ package coil.disk
 
 import okio.Buffer
 import okio.ForwardingSink
+import okio.IOException
 import okio.Sink
-import java.io.IOException
 
 /** A sink that never throws [IOException]s, even if the underlying sink does. */
 internal open class FaultHidingSink(

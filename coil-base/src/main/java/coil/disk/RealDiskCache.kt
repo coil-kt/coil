@@ -17,18 +17,23 @@ package coil.disk
 
 import coil.disk.RealDiskCache.Editor
 import coil.util.closeQuietly
+import coil.util.deleteContents
+import coil.util.deleteIfExists
 import coil.util.forEachIndices
 import okio.BufferedSink
+import okio.ExperimentalFileSystem
+import okio.FileNotFoundException
+import okio.FileSystem
+import okio.ForwardingFileSystem
+import okio.IOException
+import okio.Path
 import okio.Sink
 import okio.Source
 import okio.blackholeSink
 import okio.buffer
 import java.io.Closeable
 import java.io.EOFException
-import java.io.File
-import java.io.FileNotFoundException
 import java.io.Flushable
-import java.io.IOException
 import java.util.concurrent.Executors
 
 /**
@@ -74,12 +79,13 @@ import java.util.concurrent.Executors
  * @param valueCount the number of values per cache entry. Must be positive.
  * @param maxSize the maximum number of bytes this cache should use to store.
  */
+@OptIn(ExperimentalFileSystem::class)
 internal class RealDiskCache(
-    val fileSystem: FileSystem,
-    val directory: File,
-    val appVersion: Int,
-    val valueCount: Int,
-    val maxSize: Long
+    fileSystem: FileSystem,
+    val directory: Path,
+    private val appVersion: Int,
+    private val valueCount: Int,
+    private val maxSize: Long
 ) : Closeable, Flushable {
 
     /*
@@ -122,9 +128,9 @@ internal class RealDiskCache(
      * compaction; that file should be deleted if it exists when the cache is opened.
      */
 
-    private val journalFile: File
-    private val journalFileTmp: File
-    private val journalFileBackup: File
+    private val journalFile: Path
+    private val journalFileTmp: Path
+    private val journalFileBackup: Path
     private val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
     private var size = 0L
     private var redundantOpCount = 0
@@ -143,6 +149,13 @@ internal class RealDiskCache(
      * its entry's sequence number.
      */
     private var nextSequenceNumber = 0L
+
+    private val fileSystem: FileSystem = object : ForwardingFileSystem(fileSystem) {
+        override fun sink(file: Path): Sink {
+            file.parent?.let { if (!exists(it)) createDirectories(it) }
+            return super.sink(file)
+        }
+    }
 
     private val cleanupExecutor = Executors.newSingleThreadExecutor {
         Thread().apply { name = "${this@RealDiskCache}" }
@@ -171,9 +184,9 @@ internal class RealDiskCache(
         require(maxSize > 0L) { "maxSize <= 0" }
         require(valueCount > 0) { "valueCount <= 0" }
 
-        journalFile = File(directory, JOURNAL_FILE)
-        journalFileTmp = File(directory, JOURNAL_FILE_TEMP)
-        journalFileBackup = File(directory, JOURNAL_FILE_BACKUP)
+        journalFile = directory / JOURNAL_FILE
+        journalFileTmp = directory / JOURNAL_FILE_TEMP
+        journalFileBackup = directory / JOURNAL_FILE_BACKUP
     }
 
     @Synchronized
@@ -186,7 +199,7 @@ internal class RealDiskCache(
             if (fileSystem.exists(journalFile)) {
                 fileSystem.delete(journalFileBackup)
             } else {
-                fileSystem.rename(journalFileBackup, journalFile)
+                fileSystem.atomicMove(journalFileBackup, journalFile)
             }
         }
 
@@ -217,12 +230,12 @@ internal class RealDiskCache(
     }
 
     private fun readJournal() {
-        fileSystem.source(journalFile).buffer().use { source ->
-            val magic = source.readUtf8LineStrict()
-            val version = source.readUtf8LineStrict()
-            val appVersionString = source.readUtf8LineStrict()
-            val valueCountString = source.readUtf8LineStrict()
-            val blank = source.readUtf8LineStrict()
+        fileSystem.read(journalFile) {
+            val magic = readUtf8LineStrict()
+            val version = readUtf8LineStrict()
+            val appVersionString = readUtf8LineStrict()
+            val valueCountString = readUtf8LineStrict()
+            val blank = readUtf8LineStrict()
 
             if (MAGIC != magic ||
                 VERSION != version ||
@@ -235,7 +248,7 @@ internal class RealDiskCache(
             var lineCount = 0
             while (true) {
                 try {
-                    readJournalLine(source.readUtf8LineStrict())
+                    readJournalLine(readUtf8LineStrict())
                     lineCount++
                 } catch (_: EOFException) {
                     break // End of journal.
@@ -245,7 +258,7 @@ internal class RealDiskCache(
             redundantOpCount = lineCount - lruEntries.size
 
             // If we ended on a truncated line, rebuild the journal before appending to it.
-            if (!source.exhausted()) {
+            if (!exhausted()) {
                 rebuildJournal()
             } else {
                 journalWriter = newJournalWriter()
@@ -301,7 +314,7 @@ internal class RealDiskCache(
      * Dirty entries are assumed to be inconsistent and will be deleted.
      */
     private fun processJournal() {
-        fileSystem.delete(journalFileTmp)
+        fileSystem.deleteIfExists(journalFileTmp)
         val i = lruEntries.values.iterator()
         while (i.hasNext()) {
             val entry = i.next()
@@ -312,8 +325,8 @@ internal class RealDiskCache(
             } else {
                 entry.currentEditor = null
                 for (t in 0 until valueCount) {
-                    fileSystem.delete(entry.cleanFiles[t])
-                    fileSystem.delete(entry.dirtyFiles[t])
+                    fileSystem.deleteIfExists(entry.cleanFiles[t])
+                    fileSystem.deleteIfExists(entry.dirtyFiles[t])
                 }
                 i.remove()
             }
@@ -328,32 +341,34 @@ internal class RealDiskCache(
     internal fun rebuildJournal() {
         journalWriter?.close()
 
-        fileSystem.sink(journalFileTmp).buffer().use { sink ->
-            sink.writeUtf8(MAGIC).writeByte('\n'.code)
-            sink.writeUtf8(VERSION).writeByte('\n'.code)
-            sink.writeDecimalLong(appVersion.toLong()).writeByte('\n'.code)
-            sink.writeDecimalLong(valueCount.toLong()).writeByte('\n'.code)
-            sink.writeByte('\n'.code)
+        fileSystem.write(journalFileTmp) {
+            writeUtf8(MAGIC).writeByte('\n'.code)
+            writeUtf8(VERSION).writeByte('\n'.code)
+            writeDecimalLong(appVersion.toLong()).writeByte('\n'.code)
+            writeDecimalLong(valueCount.toLong()).writeByte('\n'.code)
+            writeByte('\n'.code)
 
             for (entry in lruEntries.values) {
                 if (entry.currentEditor != null) {
-                    sink.writeUtf8(DIRTY).writeByte(' '.code)
-                    sink.writeUtf8(entry.key)
-                    sink.writeByte('\n'.code)
+                    writeUtf8(DIRTY).writeByte(' '.code)
+                    writeUtf8(entry.key)
+                    writeByte('\n'.code)
                 } else {
-                    sink.writeUtf8(CLEAN).writeByte(' '.code)
-                    sink.writeUtf8(entry.key)
-                    entry.writeLengths(sink)
-                    sink.writeByte('\n'.code)
+                    writeUtf8(CLEAN).writeByte(' '.code)
+                    writeUtf8(entry.key)
+                    entry.writeLengths(this)
+                    writeByte('\n'.code)
                 }
             }
         }
 
         if (fileSystem.exists(journalFile)) {
-            fileSystem.rename(journalFile, journalFileBackup)
+            fileSystem.atomicMove(journalFile, journalFileBackup)
+            fileSystem.atomicMove(journalFileTmp, journalFile)
+            fileSystem.deleteIfExists(journalFileBackup)
+        } else {
+            fileSystem.atomicMove(journalFileTmp, journalFile)
         }
-        fileSystem.rename(journalFileTmp, journalFile)
-        fileSystem.delete(journalFileBackup)
 
         journalWriter = newJournalWriter()
         hasJournalErrors = false
@@ -474,14 +489,14 @@ internal class RealDiskCache(
             if (success && !entry.zombie) {
                 if (fileSystem.exists(dirty)) {
                     val clean = entry.cleanFiles[i]
-                    fileSystem.rename(dirty, clean)
+                    fileSystem.atomicMove(dirty, clean)
                     val oldLength = entry.lengths[i]
-                    val newLength = fileSystem.size(clean)
+                    val newLength = fileSystem.metadata(clean).size ?: 0
                     entry.lengths[i] = newLength
                     size = size - oldLength + newLength
                 }
             } else {
-                fileSystem.delete(dirty)
+                fileSystem.deleteIfExists(dirty)
             }
         }
 
@@ -547,7 +562,7 @@ internal class RealDiskCache(
         entry.currentEditor?.detach()
 
         for (i in 0 until valueCount) {
-            fileSystem.delete(entry.cleanFiles[i])
+            fileSystem.deleteIfExists(entry.cleanFiles[i])
             size -= entry.lengths[i]
             entry.lengths[i] = 0
         }
@@ -836,12 +851,12 @@ internal class RealDiskCache(
         }
     }
 
-    internal inner class Entry(internal val key: String) {
+    internal inner class Entry(val key: String) {
 
         /** Lengths of this entry's files. */
         internal val lengths = LongArray(valueCount)
-        internal val cleanFiles = mutableListOf<File>()
-        internal val dirtyFiles = mutableListOf<File>()
+        internal val cleanFiles = mutableListOf<Path>()
+        internal val dirtyFiles = mutableListOf<Path>()
 
         /** True if this entry has ever been published. */
         internal var readable = false
@@ -870,9 +885,9 @@ internal class RealDiskCache(
             val truncateTo = fileBuilder.length
             for (i in 0 until valueCount) {
                 fileBuilder.append(i)
-                cleanFiles += File(directory, fileBuilder.toString())
+                cleanFiles += directory / fileBuilder.toString()
                 fileBuilder.append(".tmp")
-                dirtyFiles += File(directory, fileBuilder.toString())
+                dirtyFiles += directory / fileBuilder.toString()
                 fileBuilder.setLength(truncateTo)
             }
         }
