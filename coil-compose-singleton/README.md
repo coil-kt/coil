@@ -67,7 +67,7 @@ Image(
 )
 ```
 
-In the above example, the the composable will recompose when the `ImagePainter`'s state changes. If the image request is successful and not served from the memory cache, it'll execute the animation inside the if statement.
+In the above example, the composable will recompose when the `ImagePainter`'s state changes. If the image request is successful and not served from the memory cache, it'll execute the animation inside the if statement.
 
 ## LocalImageLoader
 
