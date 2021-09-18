@@ -3,8 +3,10 @@
 package coil.disk
 
 import android.content.Context
+import android.os.StatFs
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
+import java.io.Closeable
 import java.io.File
 
 /**
@@ -39,16 +41,21 @@ interface DiskCache {
     /** Delete all files in the disk cache. */
     fun clear()
 
-    interface Snapshot
+    interface Snapshot : Closeable {
+        val metadata: File
+        val data: File
+    }
 
-    interface Editor
+    interface Editor : Closeable {
+
+    }
 
     class Builder(private val context: Context) {
 
         private var directory: File? = null
         private var maxSizePercent = 0.02 // 2%
-        private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
+        private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
         private var maxSizeBytes = Long.MIN_VALUE
 
         fun directory(directory: File) = apply {
@@ -62,22 +69,39 @@ interface DiskCache {
             this.maxSizePercent = percent
         }
 
-        fun maximumMaxSizeBytes(size: Long) = apply {
-            require(size >= 0) { "size must be >= 0." }
-            this.maximumMaxSizeBytes = size
-        }
-
         fun minimumMaxSizeBytes(size: Long) = apply {
-            require(size >= 0) { "size must be >= 0." }
+            require(size > 0) { "size must be > 0." }
             this.minimumMaxSizeBytes = size
         }
 
+        fun maximumMaxSizeBytes(size: Long) = apply {
+            require(size > 0) { "size must be > 0." }
+            this.maximumMaxSizeBytes = size
+        }
+
         fun maxSizeBytes(size: Long) = apply {
-            require(size >= 0) { "size must be >= 0." }
+            require(size > 0) { "size must be > 0." }
             this.maxSizePercent = Double.MIN_VALUE
             this.maxSizeBytes = size
         }
 
-        fun build(): DiskCache = TODO()
+        fun build(): DiskCache {
+            val directory = checkNotNull(directory) { "directory == null" }
+            val maxSize = if (maxSizePercent >= 0) {
+                try {
+                    val stats = StatFs(directory.absolutePath)
+                    val size = maxSizePercent * stats.blockCountLong * stats.blockSizeLong
+                    size.toLong().coerceIn(minimumMaxSizeBytes, maximumMaxSizeBytes)
+                } catch (_: Exception) {
+                    minimumMaxSizeBytes
+                }
+            } else {
+                maxSizeBytes
+            }
+            return RealDiskCache(
+                maxSize = maxSize,
+                directory = directory
+            )
+        }
     }
 }

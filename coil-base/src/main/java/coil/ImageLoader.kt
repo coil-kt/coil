@@ -30,6 +30,7 @@ import coil.transition.Transition
 import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
+import coil.util.Option
 import coil.util.Utils
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
@@ -62,12 +63,12 @@ interface ImageLoader {
     /**
      * An in-memory cache of previously loaded images.
      */
-    val memoryCache: MemoryCache
+    val memoryCache: MemoryCache?
 
     /**
      * An on-disk cache of previously loaded images.
      */
-    val diskCache: DiskCache
+    val diskCache: DiskCache?
 
     /**
      * Enqueue the [request] to be executed asynchronously.
@@ -111,8 +112,8 @@ interface ImageLoader {
 
         private val applicationContext: Context
         private var defaults: DefaultRequestOptions
-        private var memoryCache: MemoryCache?
-        private var diskCache: DiskCache?
+        private var memoryCache: Option<MemoryCache>?
+        private var diskCache: Option<DiskCache>?
         private var callFactory: Call.Factory?
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
@@ -134,8 +135,8 @@ interface ImageLoader {
         internal constructor(imageLoader: RealImageLoader) {
             applicationContext = imageLoader.context.applicationContext
             defaults = imageLoader.defaults
-            memoryCache = imageLoader.memoryCache
-            diskCache = imageLoader.diskCache
+            memoryCache = Option(imageLoader.memoryCache)
+            diskCache = Option(imageLoader.diskCache)
             callFactory = imageLoader.callFactory
             eventListenerFactory = imageLoader.eventListenerFactory
             componentRegistry = imageLoader.componentRegistry
@@ -199,21 +200,28 @@ interface ImageLoader {
         /**
          * Set the [MemoryCache].
          */
-        fun memoryCache(memoryCache: MemoryCache) = apply {
-            this.memoryCache = memoryCache
+        fun memoryCache(memoryCache: MemoryCache?) = apply {
+            this.memoryCache = Option(memoryCache)
         }
 
         /**
          * Set the [DiskCache].
+         *
+         * NOTE: By default, [ImageLoader]s share the same disk cache instance. This is necessary
+         * as having multiple disk cache instances active in the same directory at the same time
+         * can corrupt the disk cache.
+         *
+         * @see DiskCache.directory
          */
-        fun diskCache(diskCache: DiskCache) = apply {
-            this.diskCache = diskCache
+        fun diskCache(diskCache: DiskCache?) = apply {
+            this.diskCache = Option(diskCache)
         }
 
         /**
          * Allow the use of [Bitmap.Config.HARDWARE].
          *
-         * If false, any use of [Bitmap.Config.HARDWARE] will be treated as [Bitmap.Config.ARGB_8888].
+         * If false, any use of [Bitmap.Config.HARDWARE] will be treated as
+         * [Bitmap.Config.ARGB_8888].
          *
          * NOTE: Setting this to false this will reduce performance on API 26 and above. Only
          * disable this if necessary.
@@ -476,8 +484,8 @@ interface ImageLoader {
             return RealImageLoader(
                 context = applicationContext,
                 defaults = defaults,
-                memoryCache = memoryCache ?: MemoryCache(applicationContext),
-                diskCache = diskCache ?: DiskCache(applicationContext),
+                memoryCache = (memoryCache ?: Option(MemoryCache.Builder(applicationContext).build())).value,
+                diskCache = (diskCache ?: Option(Utils.defaultDiskCache(applicationContext))).value,
                 callFactory = callFactory ?: lazyCallFactory { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),

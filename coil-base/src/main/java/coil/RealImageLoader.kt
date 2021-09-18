@@ -63,8 +63,8 @@ import kotlin.coroutines.coroutineContext
 internal class RealImageLoader(
     val context: Context,
     override val defaults: DefaultRequestOptions,
-    override val memoryCache: MemoryCache,
-    override val diskCache: DiskCache,
+    override val memoryCache: MemoryCache?,
+    override val diskCache: DiskCache?,
     val callFactory: Call.Factory,
     val eventListenerFactory: EventListener.Factory,
     val componentRegistry: ComponentRegistry,
@@ -152,7 +152,7 @@ internal class RealImageLoader(
             if (type == REQUEST_TYPE_ENQUEUE) request.lifecycle.awaitStarted()
 
             // Set the placeholder on the target.
-            val placeholderBitmap = memoryCache[request.placeholderMemoryCacheKey]?.bitmap
+            val placeholderBitmap = memoryCache?.get(request.placeholderMemoryCacheKey)?.bitmap
             val placeholder = placeholderBitmap?.toDrawable(request.context) ?: request.placeholder
             request.target?.onStart(placeholder)
             eventListener.onStart(request)
@@ -199,14 +199,14 @@ internal class RealImageLoader(
 
     /** Called by [SystemCallbacks.onTrimMemory]. */
     internal fun onTrimMemory(level: Int) {
-        memoryCache.trimMemory(level)
+        memoryCache?.trimMemory(level)
     }
 
     override fun shutdown() {
         if (isShutdown.getAndSet(true)) return
         scope.cancel()
         systemCallbacks.shutdown()
-        memoryCache.clear()
+        memoryCache?.clear()
     }
 
     override fun newBuilder() = ImageLoader.Builder(this)

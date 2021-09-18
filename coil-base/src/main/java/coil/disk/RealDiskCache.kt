@@ -33,4 +33,10 @@ internal class RealDiskCache(
     }
 
     private fun String.toDiskCacheKey() = encodeUtf8().md5().hex()
+
+    companion object {
+        private const val ENTRY_METADATA = 0
+        private const val ENTRY_BODY = 1
+        private const val ENTRY_COUNT = 2
+    }
 }

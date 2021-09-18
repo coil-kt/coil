@@ -6,7 +6,6 @@ import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import coil.ImageLoader
 import coil.decode.DataSource
-import coil.decode.ImageSource
 import coil.disk.DiskCache
 import coil.network.HttpException
 import coil.request.Options
@@ -22,15 +21,13 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 import okhttp3.ResponseBody
-import okio.Buffer
-import okio.BufferedSource
 import kotlin.coroutines.coroutineContext
 
 internal class HttpUrlFetcher(
     private val data: Any,
     private val options: Options,
     private val callFactory: Call.Factory,
-    private val diskCache: DiskCache,
+    private val diskCache: DiskCache?,
     private val logger: Logger?
 ) : Fetcher {
 
@@ -112,20 +109,9 @@ internal class HttpUrlFetcher(
         return rawContentType?.substringBefore(';')
     }
 
-    /**
-     * Buffer the source into memory.
-     * This is used as a fall back if the disk cache file isn't present.
-     */
-    private fun BufferedSource.toImageSource(): ImageSource {
-        return ImageSource(
-            source = use { Buffer().apply { writeAll(it) } },
-            context = options.context
-        )
-    }
-
     class Factory(
         private val callFactory: Call.Factory,
-        private val diskCache: DiskCache,
+        private val diskCache: DiskCache?,
         private val logger: Logger?
     ) : Fetcher.Factory<Any> {
 

@@ -707,24 +707,6 @@ internal class DiskLruCache(
         }
 
         /**
-         * Returns an unbuffered input stream to read the last committed value, or null if no value
-         * has been committed.
-         */
-        fun newSource(index: Int): Source? {
-            synchronized(this@DiskLruCache) {
-                check(!done)
-                if (!entry.readable || entry.currentEditor != this || entry.zombie) {
-                    return null
-                }
-                return try {
-                    fileSystem.source(entry.cleanFiles[index])
-                } catch (_: FileNotFoundException) {
-                    null
-                }
-            }
-        }
-
-        /**
          * Returns a new unbuffered output stream to write the value at [index]. If the underlying
          * output stream encounters errors when writing to the filesystem, this edit will be aborted
          * when [commit] is called. The returned output stream does not throw IOExceptions.
@@ -856,7 +838,7 @@ internal class DiskLruCache(
             val lengths = lengths.clone() // Defensive copy since these can be zeroed out.
             try {
                 for (i in 0 until valueCount) {
-                    sources += newSource(i)
+                    sources += fileSystem.source(cleanFiles[i])
                 }
                 return Snapshot(key, sequenceNumber, sources, lengths)
             } catch (_: FileNotFoundException) {
@@ -870,8 +852,6 @@ internal class DiskLruCache(
                 return null
             }
         }
-
-        private fun newSource(index: Int): Source = fileSystem.source(cleanFiles[index])
     }
 
     companion object {

@@ -72,7 +72,7 @@ interface MemoryCache {
 
     class Builder(private val context: Context) {
 
-        private var maxSizePercent = Utils.getDefaultMemoryCacheSizePercent(context)
+        private var maxSizePercent = Utils.defaultMemoryCacheSizePercent(context)
         private var maxSizeBytes = Int.MIN_VALUE
         private var strongReferencesEnabled = true
         private var weakReferencesEnabled = true

@@ -5,9 +5,8 @@ import android.content.Context
 import android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
-import android.os.StatFs
+import coil.disk.DiskCache
 import coil.transform.Transformation
-import java.io.File
 
 /** Private utility methods for Coil. */
 internal object Utils {
@@ -40,22 +39,17 @@ internal object Utils {
         Bitmap.Config.ARGB_8888
     }
 
-    fun getDefaultDiskCacheDirectory(context: Context): File {
-        return File(context.safeCacheDir, CACHE_DIRECTORY_NAME)
+    private var defaultDiskCache: DiskCache? = null
+
+    @Synchronized
+    fun defaultDiskCache(context: Context): DiskCache {
+        defaultDiskCache?.let { return it }
+        return DiskCache.Builder(context)
+            .directory(context.safeCacheDir.resolve(CACHE_DIRECTORY_NAME))
+            .build()
+            .also { defaultDiskCache = it }
     }
 
-    /** Modified from Picasso. */
-    fun calculateDiskCacheSize(directory: File, percent: Double, min: Long, max: Long): Long {
-        return try {
-            val stats = StatFs(directory.absolutePath)
-            val size = percent * stats.blockCountLong * stats.blockSizeLong
-            return size.toLong().coerceIn(min, max)
-        } catch (_: Exception) {
-            min
-        }
-    }
-
-    /** Modified from Picasso. */
     fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
         val memoryClassMegabytes = try {
             val activityManager: ActivityManager = context.requireSystemService()
@@ -67,7 +61,7 @@ internal object Utils {
         return (percent * memoryClassMegabytes * 1024 * 1024).toInt()
     }
 
-    fun getDefaultMemoryCacheSizePercent(context: Context): Double {
+    fun defaultMemoryCacheSizePercent(context: Context): Double {
         return try {
             val activityManager: ActivityManager = context.requireSystemService()
             if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MEMORY_MULTIPLIER
