@@ -45,7 +45,43 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-也可以查看 Coil 的[完整文档](https://coil-kt.github.io/coil/getting_started/)获得更多信息。
+### 图片加载器 `ImageLoader`
+`imageView.load` 使用单例 `ImageLoader` 来把 `ImageRequest` 加入队列. `ImageLoader` 单例可以通过扩展方法来获取：
+```kotlin
+val imageLoader = context.imageLoader
+```
+
+此外，你也可以通过创建 `ImageLoader` 实例从而实现依赖注入：
+```kotlin
+val imageLoader = ImageLoader(context)
+```
+
+如果你不需要 `ImageLoader` 作为单例，请把Gradle依赖替换成 `io.coil-kt:coil-base`.
+
+### 图片请求 `ImageRequest`
+
+如果想定制 `ImageRequest` 的加载目标，可以依照如下方式把 `ImageRequest` 加入队列：
+
+```kotlin
+val request = ImageRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .target { drawable ->
+        // Handle the result.
+    }
+    .build()
+val disposable = imageLoader.enqueue(request)
+```
+
+如果想命令式地执行图片加载，也可以直接调用 `execute(ImageRequest)`：
+
+```kotlin
+val request = ImageRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .build()
+val drawable = imageLoader.execute(request).drawable
+```
+
+请至 Coil 的[完整文档](https://coil-kt.github.io/coil/getting_started/)获得更多信息。
 
 ## 环境要求
 
