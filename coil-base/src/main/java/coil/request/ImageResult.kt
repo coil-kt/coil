@@ -55,7 +55,7 @@ class SuccessResult(
     /**
      * 'true' if [ImageRequest.placeholderMemoryCacheKey] was present in the memory cache.
      */
-    val isPlaceholderCached: Boolean
+    val isPlaceholderCached: Boolean,
 ) : ImageResult() {
 
     fun copy(
