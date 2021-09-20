@@ -27,6 +27,7 @@ import okio.ExperimentalFileSystem
 import okio.FileNotFoundException
 import okio.FileSystem
 import okio.ForwardingFileSystem
+import okio.ForwardingSource
 import okio.IOException
 import okio.Path
 import okio.Sink
@@ -150,7 +151,7 @@ internal class DiskLruCache(
     private var nextSequenceNumber = 0L
 
     private val cleanupExecutor = Executors.newSingleThreadExecutor {
-        Thread().apply { name = "coil.disk.DiskLruCache" }
+        Thread().apply { name = "coil.disk.DiskLruCache: $directory" }
     }
     private val cleanupTask = Runnable {
         synchronized(this@DiskLruCache) {
@@ -464,13 +465,6 @@ internal class DiskLruCache(
         return size
     }
 
-    /** Returns a snapshot of the current keys present in the disk cache. */
-    @Synchronized
-    fun keys(): Set<String> {
-        initialize()
-        return lruEntries.keys.toSet()
-    }
-
     @Synchronized
     private fun completeEdit(editor: Editor, success: Boolean) {
         val entry = editor.entry
@@ -564,6 +558,23 @@ internal class DiskLruCache(
     }
 
     private fun removeEntry(entry: Entry): Boolean {
+        // If we can't delete files that are still open, mark this entry as a zombie so its files
+        // will be deleted when those files are closed.
+        if (entry.lockingSourceCount > 0) {
+            // Mark this entry as 'DIRTY' so that if the process crashes this entry won't be used.
+            journalWriter?.apply {
+                writeUtf8(DIRTY)
+                writeByte(' '.code)
+                writeUtf8(entry.key)
+                writeByte('\n'.code)
+                flush()
+            }
+        }
+        if (entry.lockingSourceCount > 0 || entry.currentEditor != null) {
+            entry.zombie = true
+            return true
+        }
+
         // Prevent the edit from completing normally.
         entry.currentEditor?.detach()
 
@@ -574,11 +585,11 @@ internal class DiskLruCache(
         }
 
         redundantOpCount++
-        journalWriter?.let {
-            it.writeUtf8(REMOVE)
-            it.writeByte(' '.code)
-            it.writeUtf8(entry.key)
-            it.writeByte('\n'.code)
+        journalWriter?.apply {
+            writeUtf8(REMOVE)
+            writeByte(' '.code)
+            writeUtf8(entry.key)
+            writeByte('\n'.code)
         }
         lruEntries.remove(entry.key)
 
@@ -677,10 +688,10 @@ internal class DiskLruCache(
         fun edit(): Editor? = edit(key, sequenceNumber)
 
         /** Returns the unbuffered stream with the value for [index]. */
-        fun getSource(index: Int): Source = sources[index]
+        fun source(index: Int): Source = sources[index]
 
         /** Returns the byte length of the value for [index]. */
-        fun getLength(index: Int): Long = lengths[index]
+        fun length(index: Int): Long = lengths[index]
 
         override fun close() {
             sources.forEachIndices { it.closeQuietly() }
@@ -702,61 +713,30 @@ internal class DiskLruCache(
          */
         fun detach() {
             if (entry.currentEditor == this) {
-                completeEdit(this, false) // Delete it now.
+                entry.zombie = true // We can't delete it until the current edit completes.
             }
         }
 
         /**
-         * Returns a new unbuffered output stream to write the value at [index]. If the underlying
-         * output stream encounters errors when writing to the filesystem, this edit will be aborted
-         * when [commit] is called. The returned output stream does not throw IOExceptions.
+         * Commits this edit so it is visible to readers.
+         * This releases the edit lock so another edit may be started on the same key.
          */
-        fun newSink(index: Int): Sink {
-            synchronized(this@DiskLruCache) {
-                check(!done)
-                if (entry.currentEditor != this) {
-                    return blackholeSink()
-                }
-                if (!entry.readable) {
-                    written!![index] = true
-                }
-                val dirtyFile = entry.dirtyFiles[index]
-                val sink = try {
-                    fileSystem.sink(dirtyFile)
-                } catch (_: FileNotFoundException) {
-                    return blackholeSink()
-                }
-                return FaultHidingSink(sink) {
-                    synchronized(this@DiskLruCache) {
-                        detach()
-                    }
-                }
-            }
-        }
+        fun commit()  = complete(true)
 
         /**
-         * Commits this edit so it is visible to readers. This releases the edit lock so another
-         * edit may be started on the same key.
+         * Aborts this edit.
+         * This releases the edit lock so another edit may be started on the same key.
          */
-        fun commit() {
+        fun abort() = complete(false)
+
+        /**
+         * Complete this edit either successfully or unsuccessfully.
+         */
+        private fun complete(success: Boolean) {
             synchronized(this@DiskLruCache) {
                 check(!done)
                 if (entry.currentEditor == this) {
-                    completeEdit(this, true)
-                }
-                done = true
-            }
-        }
-
-        /**
-         * Aborts this edit. This releases the edit lock so another edit may be started on the
-         * same key.
-         */
-        fun abort() {
-            synchronized(this@DiskLruCache) {
-                check(!done)
-                if (entry.currentEditor == this) {
-                    completeEdit(this, false)
+                    completeEdit(this, success)
                 }
                 done = true
             }
@@ -833,12 +813,13 @@ internal class DiskLruCache(
          */
         fun snapshot(): Snapshot? {
             if (!readable) return null
+            if (currentEditor != null || zombie) return null
 
             val sources = mutableListOf<Source>()
             val lengths = lengths.clone() // Defensive copy since these can be zeroed out.
             try {
                 for (i in 0 until valueCount) {
-                    sources += fileSystem.source(cleanFiles[i])
+                    sources += newSource(i)
                 }
                 return Snapshot(key, sequenceNumber, sources, lengths)
             } catch (_: FileNotFoundException) {
@@ -850,6 +831,26 @@ internal class DiskLruCache(
                     removeEntry(this)
                 } catch (_: IOException) {}
                 return null
+            }
+        }
+
+        private fun newSource(index: Int): Source {
+            val fileSource = fileSystem.source(cleanFiles[index])
+            lockingSourceCount++
+            return object : ForwardingSource(fileSource) {
+                private var closed = false
+                override fun close() {
+                    super.close()
+                    if (!closed) {
+                        closed = true
+                        synchronized(this@DiskLruCache) {
+                            lockingSourceCount--
+                            if (lockingSourceCount == 0 && zombie) {
+                                removeEntry(this@Entry)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -5,7 +5,7 @@ import okio.ForwardingSink
 import okio.IOException
 import okio.Sink
 
-/** A sink that never throws [IOException]s, even if the underlying sink does. Modified from OkHttp. */
+/** A sink that never throws [IOException]s, even if the underlying sink does. */
 internal open class FaultHidingSink(
     delegate: Sink,
     private val onException: (IOException) -> Unit

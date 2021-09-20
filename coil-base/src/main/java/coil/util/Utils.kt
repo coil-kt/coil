@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
-import coil.disk.DiskCache
 import coil.transform.Transformation
 
 /** Private utility methods for Coil. */
@@ -14,7 +13,6 @@ internal object Utils {
     private const val STANDARD_MEMORY_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
     private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
-    private const val CACHE_DIRECTORY_NAME = "image_cache"
 
     const val REQUEST_TYPE_ENQUEUE = 0
     const val REQUEST_TYPE_EXECUTE = 1
@@ -37,17 +35,6 @@ internal object Utils {
         Bitmap.Config.HARDWARE
     } else {
         Bitmap.Config.ARGB_8888
-    }
-
-    private var defaultDiskCache: DiskCache? = null
-
-    @Synchronized
-    fun defaultDiskCache(context: Context): DiskCache {
-        defaultDiskCache?.let { return it }
-        return DiskCache.Builder(context)
-            .directory(context.safeCacheDir.resolve(CACHE_DIRECTORY_NAME))
-            .build()
-            .also { defaultDiskCache = it }
     }
 
     fun calculateMemoryCacheSize(context: Context, percent: Double): Int {

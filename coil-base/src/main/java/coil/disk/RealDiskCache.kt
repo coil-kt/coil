@@ -1,5 +1,7 @@
 package coil.disk
 
+import coil.disk.DiskCache.Editor
+import coil.disk.DiskCache.Snapshot
 import okio.ByteString.Companion.encodeUtf8
 import okio.ExperimentalFileSystem
 import okio.FileSystem
@@ -22,21 +24,43 @@ internal class RealDiskCache(
 
     override val size get() = cache.size()
 
-    override val keys get() = cache.keys()
+    override fun get(key: String): Snapshot? {
+        return cache[key.hash()]?.let(::RealSnapshot)
+    }
+
+    override fun edit(key: String): Editor? {
+        return cache.edit(key.hash())?.let(::RealEditor)
+    }
 
     override fun remove(key: String): Boolean {
-        return cache.remove(key.toDiskCacheKey())
+        return cache.remove(key.hash())
     }
 
     override fun clear() {
         cache.evictAll()
     }
 
-    private fun String.toDiskCacheKey() = encodeUtf8().md5().hex()
+    private fun String.hash() = encodeUtf8().sha256().hex()
+
+    private class RealSnapshot(private val snapshot: DiskLruCache.Snapshot) : Snapshot {
+
+        override val metadata get() = TODO()
+        override val data get() = TODO()
+
+        override fun close() = snapshot.close()
+    }
+
+    private class RealEditor(private val editor: DiskLruCache.Editor): Editor {
+
+        override val metadata get() = TODO()
+        override val data get() = TODO()
+
+        override fun commit() = editor.commit()
+        override fun abort() = editor.abort()
+    }
 
     companion object {
         private const val ENTRY_METADATA = 0
         private const val ENTRY_BODY = 1
-        private const val ENTRY_COUNT = 2
     }
 }

@@ -485,7 +485,7 @@ interface ImageLoader {
                 context = applicationContext,
                 defaults = defaults,
                 memoryCache = (memoryCache ?: Option(MemoryCache.Builder(applicationContext).build())).value,
-                diskCache = (diskCache ?: Option(Utils.defaultDiskCache(applicationContext))).value,
+                diskCache = (diskCache ?: Option(DiskCache.get(applicationContext))).value,
                 callFactory = callFactory ?: lazyCallFactory { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),

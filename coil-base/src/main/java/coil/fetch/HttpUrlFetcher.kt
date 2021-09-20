@@ -6,6 +6,7 @@ import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import coil.ImageLoader
 import coil.decode.DataSource
+import coil.decode.ImageSource
 import coil.disk.DiskCache
 import coil.network.HttpException
 import coil.request.Options
@@ -41,7 +42,7 @@ internal class HttpUrlFetcher(
         }
         val request = Request.Builder().url(url).headers(options.headers)
 
-        // Set the cache control in case OkHttp is also set up for caching.
+        // Set the cache control header for the request.
         val networkRead = options.networkCachePolicy.readEnabled
         val diskRead = options.diskCachePolicy.readEnabled
         when {
@@ -83,7 +84,7 @@ internal class HttpUrlFetcher(
         val source = body.source()
         try {
             return SourceResult(
-                source = body.source().toImageSource(),
+                source = ImageSource(body.source(), options.context),
                 mimeType = getMimeType(url, body),
                 dataSource = if (response.cacheResponse != null) DataSource.DISK else DataSource.NETWORK
             )
