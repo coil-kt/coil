@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.net.Uri
 import coil.request.Options
 import coil.util.nightMode
-import okhttp3.HttpUrl
 import java.io.File
 
 /** A [Keyer] that creates the cache keys for all the base data types supported by Coil. */
@@ -14,7 +13,6 @@ internal class CompositeKeyer(
 
     override fun key(data: Any, options: Options) = when (data) {
         is Uri -> newKey(data, options)
-        is HttpUrl -> data.toString()
         is File -> newKey(data)
         else -> null
     }
