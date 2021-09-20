@@ -18,7 +18,10 @@ import kotlinx.coroutines.MainCoroutineDispatcher
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.Request
+import okhttp3.Response
 import okhttp3.ResponseBody
+import okio.BufferedSource
+import okio.sink
 import kotlin.coroutines.coroutineContext
 
 internal class HttpUrlFetcher(
@@ -30,22 +33,52 @@ internal class HttpUrlFetcher(
 
     override suspend fun fetch(): FetchResult {
         // Fast path: fetch the image from the disk cache.
-        val diskRead = options.diskCachePolicy.readEnabled
-        val snapshot = if (diskRead) diskCache?.get(url) else null
-        if (snapshot != null) {
-            return SourceResult(
-                source = ImageSource(
-                    file = snapshot.data,
-                    diskCacheKey = url,
-                    closeable = snapshot
-                ),
-                mimeType = null,
-                dataSource = DataSource.DISK
-            )
-        }
+        readFromDiskCache()?.let { return it }
 
         // Slow path: fetch the image from the network.
+        val response = executeNetworkRequest()
+        val body = checkNotNull(response.body) { "response body == null" }
+        val source = body.source()
+        try {
+            val isSuccessful = writeToDiskCache(source)
+            if (isSuccessful) {
+                val snapshot = diskCache?.get(url)
+                if (snapshot != null) {
+                    return SourceResult(
+                        source = ImageSource(
+                            file = snapshot.data,
+                            diskCacheKey = url,
+                            closeable = snapshot
+                        ),
+                        mimeType = null,
+                        dataSource = if (response.cacheResponse != null) {
+                            DataSource.DISK
+                        } else {
+                            DataSource.NETWORK
+                        }
+                    )
+                }
+            }
+
+            return SourceResult(
+                source = ImageSource(body.source(), options.context),
+                mimeType = getMimeType(url, body),
+                dataSource = if (response.cacheResponse != null) {
+                    DataSource.DISK
+                } else {
+                    DataSource.NETWORK
+                }
+            )
+        } catch (throwable: Throwable) {
+            // Only close the source if an exception occurs.
+            source.closeQuietly()
+            throw throwable
+        }
+    }
+
+    private suspend inline fun executeNetworkRequest(): Response {
         val request = Request.Builder().url(url).headers(options.headers)
+        val diskRead = options.diskCachePolicy.readEnabled
         val networkRead = options.networkCachePolicy.readEnabled
         when {
             !networkRead && diskRead -> {
@@ -76,25 +109,40 @@ internal class HttpUrlFetcher(
             // Suspend and enqueue the request on one of OkHttp's dispatcher threads.
             callFactory.newCall(request.build()).await()
         }
-
         if (!response.isSuccessful) {
             response.body?.close()
             throw HttpException(response)
         }
-        val body = checkNotNull(response.body) { "Null response body!" }
+        return response
+    }
 
-        val source = body.source()
-        try {
-            return SourceResult(
-                source = ImageSource(body.source(), options.context),
-                mimeType = getMimeType(url, body),
-                dataSource = if (response.cacheResponse != null) DataSource.DISK else DataSource.NETWORK
-            )
-        } catch (throwable: Throwable) {
-            // Only close the source if an exception occurs.
-            source.closeQuietly()
-            throw throwable
+    private fun readFromDiskCache(): SourceResult? {
+        if (!options.diskCachePolicy.readEnabled) return null
+        val snapshot = diskCache?.get(url) ?: return null
+        return SourceResult(
+            source = ImageSource(
+                file = snapshot.data,
+                diskCacheKey = url,
+                closeable = snapshot
+            ),
+            mimeType = null,
+            dataSource = DataSource.DISK
+        )
+    }
+
+    private fun writeToDiskCache(source: BufferedSource): Boolean {
+        if (!options.diskCachePolicy.writeEnabled) return false
+        val editor = diskCache?.edit(url)
+        if (editor != null) {
+            try {
+                source.use { it.readAll(editor.data.sink()) }
+                editor.commit()
+                return true
+            } catch (_: Exception) {
+                editor.abort()
+            }
         }
+        return false
     }
 
     /**
@@ -129,7 +177,9 @@ internal class HttpUrlFetcher(
 
     companion object {
         private const val MIME_TYPE_TEXT_PLAIN = "text/plain"
-        private val CACHE_CONTROL_FORCE_NETWORK_NO_CACHE = CacheControl.Builder().noCache().noStore().build()
-        private val CACHE_CONTROL_NO_NETWORK_NO_CACHE = CacheControl.Builder().noCache().onlyIfCached().build()
+        private val CACHE_CONTROL_FORCE_NETWORK_NO_CACHE =
+            CacheControl.Builder().noCache().noStore().build()
+        private val CACHE_CONTROL_NO_NETWORK_NO_CACHE =
+            CacheControl.Builder().noCache().onlyIfCached().build()
     }
 }
