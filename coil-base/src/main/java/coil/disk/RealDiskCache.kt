@@ -44,16 +44,16 @@ internal class RealDiskCache(
 
     private class RealSnapshot(private val snapshot: DiskLruCache.Snapshot) : Snapshot {
 
-        override val metadata get() = TODO()
-        override val data get() = TODO()
+        override val metadata get() = snapshot.entry.cleanFiles[ENTRY_METADATA].toFile()
+        override val data get() = snapshot.entry.cleanFiles[ENTRY_BODY].toFile()
 
         override fun close() = snapshot.close()
     }
 
     private class RealEditor(private val editor: DiskLruCache.Editor): Editor {
 
-        override val metadata get() = TODO()
-        override val data get() = TODO()
+        override val metadata get() = editor.entry.dirtyFiles[ENTRY_METADATA].toFile()
+        override val data get() = editor.entry.dirtyFiles[ENTRY_BODY].toFile()
 
         override fun commit() = editor.commit()
         override fun abort() = editor.abort()

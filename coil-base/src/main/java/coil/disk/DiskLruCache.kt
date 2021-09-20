@@ -16,7 +16,6 @@
 package coil.disk
 
 import coil.disk.DiskLruCache.Editor
-import coil.util.closeQuietly
 import coil.util.deleteContents
 import coil.util.deleteIfExists
 import coil.util.forEachIndices
@@ -24,14 +23,11 @@ import okio.BufferedSink
 import okio.Closeable
 import okio.EOFException
 import okio.ExperimentalFileSystem
-import okio.FileNotFoundException
 import okio.FileSystem
 import okio.ForwardingFileSystem
-import okio.ForwardingSource
 import okio.IOException
 import okio.Path
 import okio.Sink
-import okio.Source
 import okio.blackholeSink
 import okio.buffer
 import java.util.concurrent.Executors
@@ -143,13 +139,6 @@ internal class DiskLruCache(
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
 
-    /**
-     * To differentiate between old and current snapshots, each entry is given a sequence number
-     * each time an edit is committed. A snapshot is stale if its sequence number is not equal to
-     * its entry's sequence number.
-     */
-    private var nextSequenceNumber = 0L
-
     private val cleanupExecutor = Executors.newSingleThreadExecutor {
         Thread().apply { name = "coil.disk.DiskLruCache: $directory" }
     }
@@ -241,8 +230,10 @@ internal class DiskLruCache(
                 VERSION != version ||
                 appVersion.toString() != appVersionString ||
                 valueCount.toString() != valueCountString ||
-                blank.isNotEmpty()) {
-                throw IOException("unexpected journal header: [$magic, $version, $valueCountString, $blank]")
+                blank.isNotEmpty()
+            ) {
+                throw IOException("unexpected journal header: " +
+                    "[$magic, $version, $appVersionString, $valueCountString, $blank]")
             }
 
             var lineCount = 0
@@ -291,7 +282,7 @@ internal class DiskLruCache(
             key = line.substring(keyBegin, secondSpace)
         }
 
-        val entry = lruEntries[key] ?: Entry(key).also { lruEntries[key] = it }
+        val entry = lruEntries.getOrPut(key) { Entry(key) }
         when {
             secondSpace != -1 && firstSpace == CLEAN.length && line.startsWith(CLEAN) -> {
                 val parts = line.substring(secondSpace + 1).split(' ')
@@ -385,8 +376,7 @@ internal class DiskLruCache(
         checkNotClosed()
         validateKey(key)
 
-        val entry = lruEntries[key] ?: return null
-        val snapshot = entry.snapshot() ?: return null
+        val snapshot = lruEntries[key]?.snapshot() ?: return null
 
         redundantOpCount++
         journalWriter!!.apply {
@@ -404,22 +394,18 @@ internal class DiskLruCache(
 
     /** Returns an editor for the entry named [key], or null if another edit is in progress. */
     @Synchronized
-    fun edit(key: String, expectedSequenceNumber: Long = ANY_SEQUENCE_NUMBER): Editor? {
+    fun edit(key: String): Editor? {
         initialize()
         checkNotClosed()
         validateKey(key)
 
-        var entry: Entry? = lruEntries[key]
-        if (expectedSequenceNumber != ANY_SEQUENCE_NUMBER &&
-            (entry == null || entry.sequenceNumber != expectedSequenceNumber)) {
-            return null // Snapshot is stale.
-        }
+        var entry = lruEntries[key]
 
         if (entry?.currentEditor != null) {
             return null // Another edit is in progress.
         }
 
-        if (entry != null && entry.lockingSourceCount != 0) {
+        if (entry != null && entry.lockingSnapshotCount != 0) {
             return null // We can't write this file because a reader is still reading it.
         }
 
@@ -514,9 +500,6 @@ internal class DiskLruCache(
                 writeUtf8(entry.key)
                 entry.writeLengths(this)
                 writeByte('\n'.code)
-                if (success) {
-                    entry.sequenceNumber = nextSequenceNumber++
-                }
             } else {
                 lruEntries.remove(entry.key)
                 writeUtf8(REMOVE).writeByte(' '.code)
@@ -560,7 +543,7 @@ internal class DiskLruCache(
     private fun removeEntry(entry: Entry): Boolean {
         // If we can't delete files that are still open, mark this entry as a zombie so its files
         // will be deleted when those files are closed.
-        if (entry.lockingSourceCount > 0) {
+        if (entry.lockingSnapshotCount > 0) {
             // Mark this entry as 'DIRTY' so that if the process crashes this entry won't be used.
             journalWriter?.apply {
                 writeUtf8(DIRTY)
@@ -570,7 +553,7 @@ internal class DiskLruCache(
                 flush()
             }
         }
-        if (entry.lockingSourceCount > 0 || entry.currentEditor != null) {
+        if (entry.lockingSnapshotCount > 0 || entry.currentEditor != null) {
             entry.zombie = true
             return true
         }
@@ -600,7 +583,6 @@ internal class DiskLruCache(
         return true
     }
 
-    @Synchronized
     private fun checkNotClosed() {
         check(!closed) { "cache is closed" }
     }
@@ -616,7 +598,8 @@ internal class DiskLruCache(
         // Copying for concurrent iteration.
         for (entry in lruEntries.values.toTypedArray()) {
             if (entry.currentEditor != null) {
-                entry.currentEditor?.detach() // Prevent the edit from completing normally.
+                // Prevent the edit from completing normally.
+                entry.currentEditor?.detach()
             }
         }
 
@@ -674,27 +657,20 @@ internal class DiskLruCache(
     }
 
     /** A snapshot of the values for an entry. */
-    inner class Snapshot(
-        val key: String,
-        private val sequenceNumber: Long,
-        private val sources: List<Source>,
-        private val lengths: LongArray
-    ) : Closeable {
+    inner class Snapshot(val entry: Entry) : Closeable {
 
-        /**
-         * Returns an editor for this snapshot's entry, or null if either the entry has changed
-         * since this snapshot was created or if another edit is in progress.
-         */
-        fun edit(): Editor? = edit(key, sequenceNumber)
-
-        /** Returns the unbuffered stream with the value for [index]. */
-        fun source(index: Int): Source = sources[index]
-
-        /** Returns the byte length of the value for [index]. */
-        fun length(index: Int): Long = lengths[index]
+        private var closed = false
 
         override fun close() {
-            sources.forEachIndices { it.closeQuietly() }
+            if (!closed) {
+                closed = true
+                synchronized(this@DiskLruCache) {
+                    entry.lockingSnapshotCount--
+                    if (entry.lockingSnapshotCount == 0 && entry.zombie) {
+                        removeEntry(entry)
+                    }
+                }
+            }
         }
     }
 
@@ -703,6 +679,15 @@ internal class DiskLruCache(
 
         private var done = false
         val written = if (entry.readable) null else BooleanArray(valueCount)
+
+        init {
+            // Ensure all the files for the editor are empty.
+            entry.dirtyFiles.forEachIndices {
+                val file = it.toFile()
+                if (file.exists()) file.delete()
+                file.createNewFile()
+            }
+        }
 
         /**
          * Prevents this editor from completing normally. This is necessary either when the edit
@@ -747,8 +732,8 @@ internal class DiskLruCache(
 
         /** Lengths of this entry's files. */
         val lengths = LongArray(valueCount)
-        val cleanFiles = mutableListOf<Path>()
-        val dirtyFiles = mutableListOf<Path>()
+        val cleanFiles = ArrayList<Path>(valueCount)
+        val dirtyFiles = ArrayList<Path>(valueCount)
 
         /** True if this entry has ever been published. */
         var readable = false
@@ -763,13 +748,10 @@ internal class DiskLruCache(
         var currentEditor: Editor? = null
 
         /**
-         * Sources currently reading this entry before a write or delete can proceed. When
+         * Snapshots currently reading this entry before a write or delete can proceed. When
          * decrementing this to zero, the entry must be removed if it is a zombie.
          */
-        var lockingSourceCount = 0
-
-        /** The sequence number of the most recently committed edit to this entry. */
-        var sequenceNumber = 0L
+        var lockingSnapshotCount = 0
 
         init {
             // The names are repetitive so re-use the same builder to avoid allocations.
@@ -806,52 +788,24 @@ internal class DiskLruCache(
             }
         }
 
-        /**
-         * Returns a snapshot of this entry. This opens all streams eagerly to guarantee that we
-         * see a single published snapshot. If we opened streams lazily then the streams could come
-         * from different edits.
-         */
+        /** Returns a snapshot of this entry. */
         fun snapshot(): Snapshot? {
             if (!readable) return null
             if (currentEditor != null || zombie) return null
 
-            val sources = mutableListOf<Source>()
-            val lengths = lengths.clone() // Defensive copy since these can be zeroed out.
-            try {
-                for (i in 0 until valueCount) {
-                    sources += newSource(i)
-                }
-                return Snapshot(key, sequenceNumber, sources, lengths)
-            } catch (_: FileNotFoundException) {
-                // A file must have been deleted manually!
-                sources.forEachIndices { it.closeQuietly() }
-                // Since the entry is no longer valid, remove it so the metadata is accurate
-                // (i.e. the cache size.)
-                try {
-                    removeEntry(this)
-                } catch (_: IOException) {}
-                return null
-            }
-        }
-
-        private fun newSource(index: Int): Source {
-            val fileSource = fileSystem.source(cleanFiles[index])
-            lockingSourceCount++
-            return object : ForwardingSource(fileSource) {
-                private var closed = false
-                override fun close() {
-                    super.close()
-                    if (!closed) {
-                        closed = true
-                        synchronized(this@DiskLruCache) {
-                            lockingSourceCount--
-                            if (lockingSourceCount == 0 && zombie) {
-                                removeEntry(this@Entry)
-                            }
-                        }
-                    }
+            // Ensure that the entry's files still exist.
+            cleanFiles.forEachIndices {
+                if (!it.toFile().exists()) {
+                    // Since the entry is no longer valid, remove it so the metadata is accurate
+                    // (i.e. the cache size.)
+                    try {
+                        removeEntry(this)
+                    } catch (_: IOException) {}
+                    return null
                 }
             }
+            lockingSnapshotCount++
+            return Snapshot(this)
         }
     }
 
@@ -861,7 +815,6 @@ internal class DiskLruCache(
         private const val JOURNAL_FILE_BACKUP = "journal.bkp"
         private const val MAGIC = "libcore.io.DiskLruCache"
         private const val VERSION = "1"
-        private const val ANY_SEQUENCE_NUMBER = -1L
         private const val CLEAN = "CLEAN"
         private const val DIRTY = "DIRTY"
         private const val REMOVE = "REMOVE"

@@ -38,7 +38,7 @@ interface DiskCache {
      * Edit the entry associated with [key].
      *
      * IMPORTANT: **You must** call either [Editor.commit] or [Editor.abort] to complete the edit.
-     * An open editor prevents opening a new [Editor].
+     * An open editor prevents opening new [Snapshot]s or opening a new [Editor].
      */
     fun edit(key: String): Editor?
 
@@ -63,6 +63,7 @@ interface DiskCache {
         val metadata: File
         val data: File
 
+        /** Close the snapshot to allow editing. */
         override fun close()
     }
 
