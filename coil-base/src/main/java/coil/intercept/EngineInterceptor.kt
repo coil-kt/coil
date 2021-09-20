@@ -210,13 +210,6 @@ internal class EngineInterceptor(
                     }
                 }
 
-                // Short circuit the size check if the size is at most 1 pixel off in either dimension.
-                // This accounts for the fact that downsampling can often produce images with one dimension
-                // at most one pixel off due to rounding.
-                if (abs(cachedWidth - size.width) <= 1 && abs(cachedHeight - size.height) <= 1) {
-                    return true
-                }
-
                 val multiple = DecodeUtils.computeSizeMultiplier(
                     srcWidth = cachedWidth,
                     srcHeight = cachedHeight,
@@ -224,6 +217,14 @@ internal class EngineInterceptor(
                     dstHeight = size.height,
                     scale = request.scale
                 )
+
+                // Short circuit the size check if the size is at most 1 pixel off in either dimension.
+                // This accounts for the fact that downsampling can often produce images with one dimension
+                // at most one pixel off due to rounding.
+                if (abs(cachedWidth - (multiple * cachedWidth)) <= 1 && abs(cachedHeight - (multiple * cachedHeight)) <= 1) {
+                    return true
+                }
+
                 if (multiple != 1.0 && !request.allowInexactSize) {
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) " +
