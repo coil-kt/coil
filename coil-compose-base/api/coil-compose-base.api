@@ -56,7 +56,6 @@ public final class coil/compose/ImagePainter$State$Error : coil/compose/ImagePai
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
 	public final fun getResult ()Lcoil/request/ErrorResult;
-	public final fun getResult ()Lcoil/request/ErrorResult;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

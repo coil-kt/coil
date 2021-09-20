@@ -70,6 +70,7 @@ public abstract interface class coil/ImageLoader {
 	public abstract fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getComponents ()Lcoil/ComponentRegistry;
 	public abstract fun getDefaults ()Lcoil/request/DefaultRequestOptions;
+	public abstract fun getDiskCache ()Lcoil/disk/DiskCache;
 	public abstract fun getMemoryCache ()Lcoil/memory/MemoryCache;
 	public abstract fun newBuilder ()Lcoil/ImageLoader$Builder;
 	public abstract fun shutdown ()V
@@ -93,6 +94,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun crossfade (I)Lcoil/ImageLoader$Builder;
 	public final fun crossfade (Z)Lcoil/ImageLoader$Builder;
 	public final fun decoderDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/ImageLoader$Builder;
+	public final fun diskCache (Lcoil/disk/DiskCache;)Lcoil/ImageLoader$Builder;
 	public final fun diskCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
 	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/ImageLoader$Builder;
 	public final fun error (I)Lcoil/ImageLoader$Builder;
@@ -126,9 +128,6 @@ public final class coil/ImageLoader$Companion {
 
 public final class coil/ImageLoaders {
 	public static final fun executeBlocking (Lcoil/ImageLoader;Lcoil/request/ImageRequest;)Lcoil/request/ImageResult;
-}
-
-public abstract interface annotation class coil/annotation/DelicateCoilApi : java/lang/annotation/Annotation {
 }
 
 public abstract interface annotation class coil/annotation/ExperimentalCoilApi : java/lang/annotation/Annotation {
@@ -203,11 +202,44 @@ public abstract class coil/decode/ImageSource : java/io/Closeable {
 
 public final class coil/decode/ImageSources {
 	public static final fun create (Ljava/io/File;)Lcoil/decode/ImageSource;
-	public static final fun create (Ljava/io/File;Ljava/io/File;)Lcoil/decode/ImageSource;
-	public static final fun create (Ljava/io/File;Ljava/io/File;Ljava/io/Closeable;)Lcoil/decode/ImageSource;
+	public static final fun create (Ljava/io/File;Ljava/lang/String;)Lcoil/decode/ImageSource;
+	public static final fun create (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Ljava/io/File;)Lcoil/decode/ImageSource;
-	public static synthetic fun create$default (Ljava/io/File;Ljava/io/File;Ljava/io/Closeable;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+}
+
+public abstract interface class coil/disk/DiskCache {
+	public abstract fun clear ()V
+	public abstract fun edit (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
+	public abstract fun get (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
+	public abstract fun getDirectory ()Ljava/io/File;
+	public abstract fun getMaxSize ()J
+	public abstract fun getSize ()J
+	public abstract fun remove (Ljava/lang/String;)Z
+}
+
+public final class coil/disk/DiskCache$Builder {
+	public fun <init> (Landroid/content/Context;)V
+	public final fun build ()Lcoil/disk/DiskCache;
+	public final fun directory (Ljava/io/File;)Lcoil/disk/DiskCache$Builder;
+	public final fun maxSizeBytes (J)Lcoil/disk/DiskCache$Builder;
+	public final fun maxSizePercent (D)Lcoil/disk/DiskCache$Builder;
+	public final fun maximumMaxSizeBytes (J)Lcoil/disk/DiskCache$Builder;
+	public final fun minimumMaxSizeBytes (J)Lcoil/disk/DiskCache$Builder;
+}
+
+public abstract interface class coil/disk/DiskCache$Editor {
+	public abstract fun abort ()V
+	public abstract fun commit ()V
+	public abstract fun getData ()Ljava/io/File;
+	public abstract fun getMetadata ()Ljava/io/File;
+}
+
+public abstract interface class coil/disk/DiskCache$Snapshot : java/io/Closeable {
+	public abstract fun close ()V
+	public abstract fun getData ()Ljava/io/File;
+	public abstract fun getMetadata ()Ljava/io/File;
 }
 
 public final class coil/drawable/CrossfadeDrawable : android/graphics/drawable/Drawable, android/graphics/drawable/Drawable$Callback, androidx/vectordrawable/graphics/drawable/Animatable2Compat {
@@ -310,9 +342,7 @@ public abstract interface class coil/map/Mapper {
 }
 
 public abstract interface class coil/memory/MemoryCache {
-	public static final field Companion Lcoil/memory/MemoryCache$Companion;
 	public abstract fun clear ()V
-	public static fun create (Landroid/content/Context;)Lcoil/memory/MemoryCache;
 	public abstract fun get (Lcoil/memory/MemoryCache$Key;)Lcoil/memory/MemoryCache$Value;
 	public abstract fun getKeys ()Ljava/util/Set;
 	public abstract fun getMaxSize ()I
@@ -329,10 +359,6 @@ public final class coil/memory/MemoryCache$Builder {
 	public final fun maxSizePercent (D)Lcoil/memory/MemoryCache$Builder;
 	public final fun strongReferencesEnabled (Z)Lcoil/memory/MemoryCache$Builder;
 	public final fun weakReferencesEnabled (Z)Lcoil/memory/MemoryCache$Builder;
-}
-
-public final class coil/memory/MemoryCache$Companion {
-	public final fun create (Landroid/content/Context;)Lcoil/memory/MemoryCache;
 }
 
 public final class coil/memory/MemoryCache$Key : android/os/Parcelable {
@@ -653,13 +679,13 @@ public final class coil/request/Parameters$Entry {
 }
 
 public final class coil/request/SuccessResult : coil/request/ImageResult {
-	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/io/File;ZZ)V
-	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/io/File;ZZ)Lcoil/request/SuccessResult;
-	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/io/File;ZZILjava/lang/Object;)Lcoil/request/SuccessResult;
+	public fun <init> (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;ZZ)V
+	public final fun copy (Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;ZZ)Lcoil/request/SuccessResult;
+	public static synthetic fun copy$default (Lcoil/request/SuccessResult;Landroid/graphics/drawable/Drawable;Lcoil/request/ImageRequest;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;ZZILjava/lang/Object;)Lcoil/request/SuccessResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDataSource ()Lcoil/decode/DataSource;
+	public final fun getDiskCacheKey ()Ljava/lang/String;
 	public fun getDrawable ()Landroid/graphics/drawable/Drawable;
-	public final fun getFile ()Ljava/io/File;
 	public final fun getMemoryCacheKey ()Lcoil/memory/MemoryCache$Key;
 	public fun getRequest ()Lcoil/request/ImageRequest;
 	public fun hashCode ()I
@@ -826,9 +852,7 @@ public abstract interface class coil/transition/TransitionTarget : coil/target/T
 public final class coil/util/CoilUtils {
 	public static final field INSTANCE Lcoil/util/CoilUtils;
 	public static final fun createDefaultCache (Landroid/content/Context;)Lokhttp3/Cache;
-	public static final fun createDiskCache (Landroid/content/Context;)Lokhttp3/Cache;
 	public static final fun dispose (Landroid/view/View;)V
-	public static final fun getDiskCacheFile (Lokhttp3/Cache;Lokhttp3/HttpUrl;)Ljava/io/File;
 	public static final fun result (Landroid/view/View;)Lcoil/request/ImageResult;
 }
 

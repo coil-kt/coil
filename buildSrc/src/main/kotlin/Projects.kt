@@ -66,7 +66,6 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
                 "-Xopt-in=kotlin.RequiresOptIn"
             )
             if (project.name != "coil-test") {
-                arguments += "-Xopt-in=coil.annotation.DelicateCoilApi"
                 arguments += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
             }
             // https://youtrack.jetbrains.com/issue/KT-41985
