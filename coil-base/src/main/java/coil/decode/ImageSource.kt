@@ -16,6 +16,7 @@ import java.io.File
  * Create a new [ImageSource] backed by a [File].
  *
  * @param file The file to read from.
+ * @param diskCacheKey An optional cache key for the [file] in the disk cache.
  * @param closeable An optional closeable reference that will
  *  be closed when the image source is closed.
  */
@@ -23,8 +24,9 @@ import java.io.File
 @JvmName("create")
 fun ImageSource(
     file: File,
+    diskCacheKey: String? = null,
     closeable: Closeable? = null
-): ImageSource = FileImageSource(file, closeable)
+): ImageSource = FileImageSource(file, diskCacheKey, closeable)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -83,6 +85,7 @@ sealed class ImageSource : Closeable {
 
 internal class FileImageSource(
     internal val file: File,
+    internal val diskCacheKey: String?,
     private val closeable: Closeable?
 ) : ImageSource() {
 

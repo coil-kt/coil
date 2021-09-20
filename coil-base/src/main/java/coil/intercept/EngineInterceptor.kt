@@ -11,6 +11,7 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.DecodeUtils
+import coil.decode.FileImageSource
 import coil.fetch.DrawableResult
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
@@ -39,7 +40,6 @@ import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import java.io.File
 import kotlin.collections.set
 import kotlin.math.abs
 
@@ -76,7 +76,7 @@ internal class EngineInterceptor(
                     request = request,
                     dataSource = DataSource.MEMORY_CACHE,
                     memoryCacheKey = memoryCacheKey,
-                    diskCacheKey = null,
+                    diskCacheKey = memoryCacheValue.diskCacheKey,
                     isSampled = memoryCacheValue.isSampled,
                     isPlaceholderCached = chain.isPlaceholderCached,
                 )
@@ -96,7 +96,7 @@ internal class EngineInterceptor(
                     request = request,
                     dataSource = result.dataSource,
                     memoryCacheKey = memoryCacheKey.takeIf { isMemoryCached },
-                    diskCacheKey = null,
+                    diskCacheKey = result.diskCacheKey,
                     isSampled = result.isSampled,
                     isPlaceholderCached = chain.isPlaceholderCached,
                 )
@@ -265,7 +265,7 @@ internal class EngineInterceptor(
                         drawable = fetchResult.drawable,
                         isSampled = fetchResult.isSampled,
                         dataSource = fetchResult.dataSource,
-                        file = null // This result has no file source.
+                        diskCacheKey = null // This result has no file source.
                     )
                 }
             }
@@ -344,7 +344,7 @@ internal class EngineInterceptor(
             drawable = decodeResult.drawable,
             isSampled = decodeResult.isSampled,
             dataSource = fetchResult.dataSource,
-            file = fetchResult.source.resultFile
+            diskCacheKey = (fetchResult.source as? FileImageSource)?.diskCacheKey
         )
     }
 
@@ -386,7 +386,7 @@ internal class EngineInterceptor(
         memoryCacheKey: MemoryCache.Key
     ): MemoryCache.Value? {
         return if (request.memoryCachePolicy.readEnabled) {
-            imageLoader.memoryCache[memoryCacheKey]
+            imageLoader.memoryCache?.get(memoryCacheKey)
         } else {
             null
         }
@@ -407,8 +407,8 @@ internal class EngineInterceptor(
             if (bitmap != null) {
                 val extras = mutableMapOf<String, Any>()
                 extras[EXTRA_IS_SAMPLED] = result.isSampled
-                result.file?.let { extras[EXTRA_FILE_PATH] = it.path }
-                imageLoader.memoryCache[key] = MemoryCache.Value(bitmap, extras)
+                result.diskCacheKey?.let { extras[EXTRA_DISK_CACHE_KEY] = it }
+                imageLoader.memoryCache?.let { it[key] = MemoryCache.Value(bitmap, extras) }
                 return true
             }
         }
@@ -446,7 +446,7 @@ internal class EngineInterceptor(
         get() = (extras[EXTRA_IS_SAMPLED] as? Boolean) ?: false
 
     private val MemoryCache.Value.diskCacheKey: String?
-        get() = (extras[EXTRA_FILE_PATH] as? String)?.let(::File)
+        get() = extras[EXTRA_DISK_CACHE_KEY] as? String
 
     private val Interceptor.Chain.isPlaceholderCached: Boolean
         get() = this is RealInterceptorChain && isPlaceholderCached
@@ -459,19 +459,19 @@ internal class EngineInterceptor(
         val drawable: Drawable,
         val isSampled: Boolean,
         val dataSource: DataSource,
-        val file: File?
+        val diskCacheKey: String?
     ) {
         fun copy(
             drawable: Drawable = this.drawable,
             isSampled: Boolean = this.isSampled,
             dataSource: DataSource = this.dataSource,
-            file: File? = this.file
-        ) = ExecuteResult(drawable, isSampled, dataSource, file)
+            diskCacheKey: String? = this.diskCacheKey
+        ) = ExecuteResult(drawable, isSampled, dataSource, diskCacheKey)
     }
 
     companion object {
         private const val TAG = "EngineInterceptor"
-        @VisibleForTesting internal const val EXTRA_FILE_PATH = "coil#file_path"
+        @VisibleForTesting internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
         @VisibleForTesting internal const val EXTRA_IS_SAMPLED = "coil#is_sampled"
         @VisibleForTesting internal const val MEMORY_CACHE_KEY_WIDTH = "coil#width"
         @VisibleForTesting internal const val MEMORY_CACHE_KEY_HEIGHT = "coil#height"
