@@ -5,9 +5,7 @@ package coil.disk
 import android.content.Context
 import android.os.StatFs
 import androidx.annotation.FloatRange
-import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.util.safeCacheDir
 import java.io.Closeable
 import java.io.File
 
@@ -160,23 +158,6 @@ interface DiskCache {
                 maxSize = maxSize,
                 directory = directory
             )
-        }
-    }
-
-    companion object {
-        private var instance: DiskCache? = null
-
-        /**
-         * Get the singleton instance of the disk cache.
-         * This is the default value for [ImageLoader.diskCache].
-         */
-        @Synchronized
-        internal fun get(context: Context): DiskCache {
-            instance?.let { return it }
-            val diskCache = Builder(context)
-                .directory(context.safeCacheDir.resolve("coil_image_cache"))
-                .build()
-            return diskCache.also { instance = it }
         }
     }
 }

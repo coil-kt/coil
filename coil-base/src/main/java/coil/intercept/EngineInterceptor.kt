@@ -27,7 +27,7 @@ import coil.size.Size
 import coil.transform.Transformation
 import coil.util.DrawableUtils
 import coil.util.Logger
-import coil.util.Utils
+import coil.util.VALID_TRANSFORMATION_CONFIGS
 import coil.util.addFirst
 import coil.util.allowInexactSize
 import coil.util.closeQuietly
@@ -424,7 +424,7 @@ internal class EngineInterceptor(
         if (drawable is BitmapDrawable) {
             var bitmap = drawable.bitmap
             val config = bitmap.safeConfig
-            if (config !in Utils.VALID_TRANSFORMATION_CONFIGS) {
+            if (config !in VALID_TRANSFORMATION_CONFIGS) {
                 logger?.log(TAG, Log.INFO) {
                     "Converting bitmap with config $config to apply transformations: $transformations"
                 }

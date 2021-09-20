@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import coil.ImageLoader
 import coil.size.Precision
 import coil.transition.Transition
-import coil.util.Utils
+import coil.util.DEFAULT_BITMAP_CONFIG
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
@@ -22,7 +22,7 @@ class DefaultRequestOptions(
     val transformationDispatcher: CoroutineDispatcher = Dispatchers.IO,
     val transitionFactory: Transition.Factory = Transition.Factory.NONE,
     val precision: Precision = Precision.AUTOMATIC,
-    val bitmapConfig: Bitmap.Config = Utils.DEFAULT_BITMAP_CONFIG,
+    val bitmapConfig: Bitmap.Config = DEFAULT_BITMAP_CONFIG,
     val allowHardware: Boolean = true,
     val allowRgb565: Boolean = false,
     val placeholder: Drawable? = null,

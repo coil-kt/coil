@@ -18,14 +18,12 @@ import coil.util.getMimeTypeFromUrl
 import kotlinx.coroutines.MainCoroutineDispatcher
 import okhttp3.CacheControl
 import okhttp3.Call
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 import okhttp3.ResponseBody
 import kotlin.coroutines.coroutineContext
 
 internal class HttpUrlFetcher(
-    private val data: Any,
+    private val url: String,
     private val options: Options,
     private val callFactory: Call.Factory,
     private val diskCache: DiskCache?,
@@ -33,18 +31,20 @@ internal class HttpUrlFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        // Perform this conversion in a fetcher instead of a mapper so
-        // 'toHttpUrl' can be executed off of the main thread.
-        val url = when (data) {
-            is Uri -> data.toString().toHttpUrl()
-            is HttpUrl -> data
-            else -> error("Invalid data: $data.")
-        }
-        val request = Request.Builder().url(url).headers(options.headers)
-
-        // Set the cache control header for the request.
-        val networkRead = options.networkCachePolicy.readEnabled
+        // Fast path: read the image from the disk cache.
         val diskRead = options.diskCachePolicy.readEnabled
+        val snapshot = if (diskRead) diskCache?.get(url) else null
+        if (snapshot != null) {
+            return SourceResult(
+                source = ImageSource(snapshot.data, snapshot),
+                mimeType = null,
+                dataSource = DataSource.DISK
+            )
+        }
+
+        // Slow path: build and execute the network request.
+        val request = Request.Builder().url(url).headers(options.headers)
+        val networkRead = options.networkCachePolicy.readEnabled
         when {
             !networkRead && diskRead -> {
                 request.cacheControl(CacheControl.FORCE_CACHE)
@@ -102,10 +102,10 @@ internal class HttpUrlFetcher(
      * Attempt to guess a better MIME type from the file extension.
      */
     @VisibleForTesting
-    internal fun getMimeType(data: HttpUrl, body: ResponseBody): String? {
+    internal fun getMimeType(url: String, body: ResponseBody): String? {
         val rawContentType = body.contentType()?.toString()
         if (rawContentType == null || rawContentType.startsWith(MIME_TYPE_TEXT_PLAIN)) {
-            MimeTypeMap.getSingleton().getMimeTypeFromUrl(data.toString())?.let { return it }
+            MimeTypeMap.getSingleton().getMimeTypeFromUrl(url)?.let { return it }
         }
         return rawContentType?.substringBefore(';')
     }
@@ -114,20 +114,19 @@ internal class HttpUrlFetcher(
         private val callFactory: Call.Factory,
         private val diskCache: DiskCache?,
         private val logger: Logger?
-    ) : Fetcher.Factory<Any> {
+    ) : Fetcher.Factory<Uri> {
 
-        override fun create(data: Any, options: Options, imageLoader: ImageLoader): Fetcher? {
+        override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
-            return HttpUrlFetcher(data, options, callFactory, diskCache, logger)
+            return HttpUrlFetcher(data.toString(), options, callFactory, diskCache, logger)
         }
 
-        private fun isApplicable(data: Any): Boolean {
-            return (data is Uri && (data.scheme == "http" || data.scheme == "https")) || data is HttpUrl
+        private fun isApplicable(data: Uri): Boolean {
+            return data.scheme == "http" || data.scheme == "https"
         }
     }
 
     companion object {
-        private const val TAG = "HttpUrlFetcher"
         private const val MIME_TYPE_TEXT_PLAIN = "text/plain"
         private val CACHE_CONTROL_FORCE_NETWORK_NO_CACHE = CacheControl.Builder().noCache().noStore().build()
         private val CACHE_CONTROL_NO_NETWORK_NO_CACHE = CacheControl.Builder().noCache().onlyIfCached().build()

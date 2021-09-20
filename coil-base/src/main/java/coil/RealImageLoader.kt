@@ -17,6 +17,7 @@ import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
 import coil.key.CompositeKeyer
 import coil.map.FileUriMapper
+import coil.map.HttpUrlMapper
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.map.StringMapper
@@ -78,6 +79,7 @@ internal class RealImageLoader(
     private val requestService = RequestService(this, systemCallbacks, logger)
     override val components = componentRegistry.newBuilder()
         // Mappers
+        .add(HttpUrlMapper())
         .add(StringMapper())
         .add(FileUriMapper())
         .add(ResourceUriMapper())

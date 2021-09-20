@@ -167,5 +167,3 @@ internal inline fun ComponentRegistry.Builder.addFirst(
 ) = apply { if (factory != null) decoderFactories.add(0, factory) }
 
 internal fun unsupported(): Nothing = error("Unsupported")
-
-internal class Option<T : Any>(val value: T?)

@@ -27,13 +27,14 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
+import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.Option
-import coil.util.Utils
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
+import coil.util.singletonDiskCache
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -350,7 +351,7 @@ interface ImageLoader {
          *
          * This is not guaranteed and a different config may be used in some situations.
          *
-         * Default: [Utils.DEFAULT_BITMAP_CONFIG]
+         * Default: [DEFAULT_BITMAP_CONFIG]
          */
         fun bitmapConfig(bitmapConfig: Bitmap.Config) = apply {
             this.defaults = this.defaults.copy(bitmapConfig = bitmapConfig)
@@ -485,7 +486,7 @@ interface ImageLoader {
                 context = applicationContext,
                 defaults = defaults,
                 memoryCache = (memoryCache ?: Option(MemoryCache.Builder(applicationContext).build())).value,
-                diskCache = (diskCache ?: Option(DiskCache.get(applicationContext))).value,
+                diskCache = (diskCache ?: Option(singletonDiskCache(applicationContext))).value,
                 callFactory = callFactory ?: lazyCallFactory { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),

@@ -14,7 +14,7 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.util.Logger
 import coil.util.SystemCallbacks
-import coil.util.Utils
+import coil.util.VALID_TRANSFORMATION_CONFIGS
 import coil.util.allowInexactSize
 import coil.util.isHardware
 import kotlinx.coroutines.Job
@@ -132,6 +132,6 @@ internal class RequestService(
     /** Return 'true' if [ImageRequest.bitmapConfig] is valid given its [Transformation]s. */
     private fun isConfigValidForTransformations(request: ImageRequest): Boolean {
         return request.transformations.isEmpty() ||
-            request.bitmapConfig in Utils.VALID_TRANSFORMATION_CONFIGS
+            request.bitmapConfig in VALID_TRANSFORMATION_CONFIGS
     }
 }
