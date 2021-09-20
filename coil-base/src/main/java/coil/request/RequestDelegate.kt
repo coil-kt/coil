@@ -1,4 +1,4 @@
-package coil.memory
+package coil.request
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -6,7 +6,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.ImageLoader
-import coil.request.ImageRequest
 import coil.target.ViewTarget
 import coil.util.removeAndAddObserver
 import coil.util.requestManager

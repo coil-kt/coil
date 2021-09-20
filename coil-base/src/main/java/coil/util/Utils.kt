@@ -1,4 +1,4 @@
-@file:JvmName("-Extensions")
+@file:JvmName("-Utils")
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil.util
@@ -13,7 +13,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
 import android.net.Uri
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
 import android.view.View
 import android.webkit.MimeTypeMap
@@ -31,9 +31,9 @@ import coil.decode.Decoder
 import coil.disk.DiskCache
 import coil.fetch.Fetcher
 import coil.memory.MemoryCache
-import coil.memory.ViewTargetRequestManager
 import coil.request.DefaultRequestOptions
 import coil.request.Parameters
+import coil.request.ViewTargetRequestManager
 import coil.size.Scale
 import coil.transform.Transformation
 import kotlinx.coroutines.CoroutineDispatcher
@@ -176,35 +176,11 @@ internal inline fun ComponentRegistry.Builder.addFirst(
 
 internal fun unsupported(): Nothing = error("Unsupported")
 
-private const val STANDARD_MEMORY_MULTIPLIER = 0.2
-private const val LOW_MEMORY_MULTIPLIER = 0.15
-private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
-
-internal fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
-    val memoryClassMegabytes = try {
-        val activityManager: ActivityManager = context.requireSystemService()
-        val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
-        if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
-    } catch (_: Exception) {
-        DEFAULT_MEMORY_CLASS_MEGABYTES
-    }
-    return (percent * memoryClassMegabytes * 1024 * 1024).toInt()
-}
-
-internal fun defaultMemoryCacheSizePercent(context: Context): Double {
-    return try {
-        val activityManager: ActivityManager = context.requireSystemService()
-        if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MEMORY_MULTIPLIER
-    } catch (_: Exception) {
-        STANDARD_MEMORY_MULTIPLIER
-    }
-}
-
 /**
  * An allowlist of valid bitmap configs for the input and output bitmaps of
  * [Transformation.transform].
  */
-@JvmField internal val VALID_TRANSFORMATION_CONFIGS = if (Build.VERSION.SDK_INT >= 26) {
+internal val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
     arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
 } else {
     arrayOf(Bitmap.Config.ARGB_8888)
@@ -214,7 +190,7 @@ internal fun defaultMemoryCacheSizePercent(context: Context): Double {
  * Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without
  * transformations.
  */
-@JvmField internal val DEFAULT_BITMAP_CONFIG = if (Build.VERSION.SDK_INT >= 26) {
+internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
     Bitmap.Config.HARDWARE
 } else {
     Bitmap.Config.ARGB_8888
@@ -238,4 +214,32 @@ internal fun singletonDiskCache(context: Context): DiskCache {
         .directory(context.safeCacheDir.resolve("coil_image_cache"))
         .build()
     return diskCache.also { singletonDiskCache = it }
+}
+
+/** Namespaced private utility methods for Coil. */
+internal object Utils {
+
+    private const val STANDARD_MEMORY_MULTIPLIER = 0.2
+    private const val LOW_MEMORY_MULTIPLIER = 0.15
+    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
+
+    fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
+        val memoryClassMegabytes = try {
+            val activityManager: ActivityManager = context.requireSystemService()
+            val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
+            if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
+        } catch (_: Exception) {
+            DEFAULT_MEMORY_CLASS_MEGABYTES
+        }
+        return (percent * memoryClassMegabytes * 1024 * 1024).toInt()
+    }
+
+    fun defaultMemoryCacheSizePercent(context: Context): Double {
+        return try {
+            val activityManager: ActivityManager = context.requireSystemService()
+            if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MEMORY_MULTIPLIER
+        } catch (_: Exception) {
+            STANDARD_MEMORY_MULTIPLIER
+        }
+    }
 }

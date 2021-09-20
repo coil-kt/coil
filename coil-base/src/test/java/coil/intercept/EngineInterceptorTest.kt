@@ -19,10 +19,10 @@ import coil.intercept.EngineInterceptor.ExecuteResult
 import coil.key.Keyer
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
-import coil.memory.RequestService
 import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.Parameters
+import coil.request.RequestService
 import coil.size
 import coil.size.OriginalSize
 import coil.size.PixelSize

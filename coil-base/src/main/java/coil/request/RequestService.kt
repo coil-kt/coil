@@ -1,17 +1,13 @@
-package coil.memory
+package coil.request
 
 import android.graphics.Bitmap
 import androidx.annotation.WorkerThread
 import coil.ImageLoader
-import coil.request.CachePolicy
-import coil.request.ErrorResult
-import coil.request.ImageRequest
-import coil.request.NullRequestDataException
-import coil.request.Options
 import coil.size.Size
 import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
+import coil.util.HardwareBitmapService
 import coil.util.Logger
 import coil.util.SystemCallbacks
 import coil.util.VALID_TRANSFORMATION_CONFIGS

@@ -22,7 +22,6 @@ import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.map.StringMapper
 import coil.memory.MemoryCache
-import coil.memory.RequestService
 import coil.request.DefaultRequestOptions
 import coil.request.Disposable
 import coil.request.ErrorResult
@@ -31,6 +30,7 @@ import coil.request.ImageResult
 import coil.request.NullRequestData
 import coil.request.NullRequestDataException
 import coil.request.OneShotDisposable
+import coil.request.RequestService
 import coil.request.SuccessResult
 import coil.target.Target
 import coil.target.ViewTarget

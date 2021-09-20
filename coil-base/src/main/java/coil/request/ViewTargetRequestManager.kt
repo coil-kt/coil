@@ -1,10 +1,7 @@
-package coil.memory
+package coil.request
 
 import android.view.View
 import androidx.annotation.MainThread
-import coil.request.ImageRequest
-import coil.request.ImageResult
-import coil.request.ViewTargetDisposable
 import coil.util.getCompletedOrNull
 import coil.util.isMainThread
 import coil.util.requestManager

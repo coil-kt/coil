@@ -17,10 +17,10 @@ import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
 import coil.memory.MemoryCache
-import coil.memory.RequestService
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.Options
+import coil.request.RequestService
 import coil.request.SuccessResult
 import coil.size.OriginalSize
 import coil.size.PixelSize

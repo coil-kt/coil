@@ -6,7 +6,6 @@ import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
-import coil.memory.RequestService
 import coil.size.Precision
 import coil.size.ViewSizeResolver
 import coil.target.ViewTarget

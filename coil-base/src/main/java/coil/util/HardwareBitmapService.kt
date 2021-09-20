@@ -1,4 +1,4 @@
-package coil.memory
+package coil.util
 
 import android.graphics.Bitmap
 import android.os.Build
@@ -9,8 +9,6 @@ import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import coil.size.PixelSize
 import coil.size.Size
-import coil.util.Logger
-import coil.util.log
 import java.io.File
 
 /** Create a new [HardwareBitmapService]. */
