@@ -33,8 +33,8 @@ object CoilUtils {
     }
 
     @Deprecated(
-        message = "ImageLoaders no longer depend on OkHttp and have their own 'DiskCache' " +
-            "instances (enabled by default).",
+        message = "ImageLoaders no longer (and should not) use OkHttp's disk cache. " +
+            "Use 'ImageLoader.Builder.diskCache' to configure a custom disk cache.",
         level = DeprecationLevel.ERROR // Temporary migration aid.
     )
     @JvmStatic

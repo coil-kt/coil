@@ -8,7 +8,8 @@ import android.graphics.Bitmap
 import android.os.Parcelable
 import androidx.annotation.FloatRange
 import coil.key.Keyer
-import coil.util.Utils
+import coil.util.calculateMemoryCacheSize
+import coil.util.defaultMemoryCacheSizePercent
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -72,7 +73,7 @@ interface MemoryCache {
 
     class Builder(private val context: Context) {
 
-        private var maxSizePercent = Utils.defaultMemoryCacheSizePercent(context)
+        private var maxSizePercent = defaultMemoryCacheSizePercent(context)
         private var maxSizeBytes = Int.MIN_VALUE
         private var strongReferencesEnabled = true
         private var weakReferencesEnabled = true
@@ -124,7 +125,7 @@ interface MemoryCache {
             }
             val strongMemoryCache = if (strongReferencesEnabled) {
                 val maxSize = if (maxSizePercent >= 0) {
-                    Utils.calculateMemoryCacheSize(context, maxSizePercent)
+                    calculateMemoryCacheSize(context, maxSizePercent)
                 } else {
                     maxSizeBytes
                 }

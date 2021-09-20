@@ -40,8 +40,6 @@ import coil.util.Emoji
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.SystemCallbacks
-import coil.util.Utils.REQUEST_TYPE_ENQUEUE
-import coil.util.Utils.REQUEST_TYPE_EXECUTE
 import coil.util.awaitStarted
 import coil.util.emoji
 import coil.util.get
@@ -274,5 +272,7 @@ internal class RealImageLoader(
 
     companion object {
         private const val TAG = "RealImageLoader"
+        private const val REQUEST_TYPE_ENQUEUE = 0
+        private const val REQUEST_TYPE_EXECUTE = 1
     }
 }
