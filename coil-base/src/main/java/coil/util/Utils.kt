@@ -197,7 +197,7 @@ internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
 }
 
 /** A simple [Optional] replacement. */
-internal class Option<T : Any>(val value: T?)
+internal class Option<T : Any>(@JvmField val value: T?)
 
 /**
  * Holds the singleton instance of the disk cache. We need to have a singleton disk cache instance

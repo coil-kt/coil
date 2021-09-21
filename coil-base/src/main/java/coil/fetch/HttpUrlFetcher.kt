@@ -10,6 +10,8 @@ import coil.decode.ImageSource
 import coil.disk.DiskCache
 import coil.network.HttpException
 import coil.request.Options
+import coil.request.Parameters
+import coil.util.Logger
 import coil.util.await
 import coil.util.closeQuietly
 import coil.util.dispatcher
@@ -28,7 +30,8 @@ internal class HttpUrlFetcher(
     private val url: String,
     private val options: Options,
     private val callFactory: Call.Factory,
-    private val diskCache: DiskCache?
+    private val diskCache: DiskCache?,
+    private val logger: Logger?
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -76,8 +79,12 @@ internal class HttpUrlFetcher(
         }
     }
 
-    private suspend inline fun executeNetworkRequest(): Response {
-        val request = Request.Builder().url(url).headers(options.headers)
+    private suspend fun executeNetworkRequest(): Response {
+        val request = Request.Builder()
+            .url(url)
+            .headers(options.headers)
+            .tag(Parameters::class.java, options.parameters)
+
         val diskRead = options.diskCachePolicy.readEnabled
         val networkRead = options.networkCachePolicy.readEnabled
         when {
@@ -162,12 +169,13 @@ internal class HttpUrlFetcher(
 
     class Factory(
         private val callFactory: Call.Factory,
-        private val diskCache: DiskCache?
+        private val diskCache: DiskCache?,
+        private val logger: Logger?
     ) : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
-            return HttpUrlFetcher(data.toString(), options, callFactory, diskCache)
+            return HttpUrlFetcher(data.toString(), options, callFactory, diskCache, logger)
         }
 
         private fun isApplicable(data: Uri): Boolean {

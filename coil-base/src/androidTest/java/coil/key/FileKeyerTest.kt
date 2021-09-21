@@ -9,7 +9,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-class CompositeKeyerTest {
+class FileKeyerTest {
 
     private lateinit var context: Context
 
@@ -21,7 +21,7 @@ class CompositeKeyerTest {
     @Test
     fun fileCacheKeyWithLastModified() {
         val file = context.copyAssetToFile("normal.jpg")
-        val keyer = CompositeKeyer(addLastModifiedToFileCacheKey = true)
+        val keyer = FileKeyer(addLastModifiedToFileCacheKey = true)
 
         file.setLastModified(1234L)
         val firstKey = keyer.key(file, Options(context))
@@ -35,7 +35,7 @@ class CompositeKeyerTest {
     @Test
     fun fileCacheKeyWithoutLastModified() {
         val file = context.copyAssetToFile("normal.jpg")
-        val keyer = CompositeKeyer(addLastModifiedToFileCacheKey = false)
+        val keyer = FileKeyer(addLastModifiedToFileCacheKey = false)
 
         file.setLastModified(1234L)
         val firstKey = keyer.key(file, Options(context))
