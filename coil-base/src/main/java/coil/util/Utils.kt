@@ -211,7 +211,7 @@ private var singletonDiskCache: DiskCache? = null
 internal fun singletonDiskCache(context: Context): DiskCache {
     singletonDiskCache?.let { return it }
     val diskCache = DiskCache.Builder(context)
-        .directory(context.safeCacheDir.resolve("coil_image_cache"))
+        .directory(context.safeCacheDir.resolve("image_cache"))
         .build()
     return diskCache.also { singletonDiskCache = it }
 }
