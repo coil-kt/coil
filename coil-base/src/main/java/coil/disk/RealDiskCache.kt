@@ -56,6 +56,7 @@ internal class RealDiskCache(
         override val data get() = editor.entry.dirtyFiles[ENTRY_BODY].toFile()
 
         override fun commit() = editor.commit()
+        override fun commitAndGet() = editor.commitAndGet()?.let(::RealSnapshot)
         override fun abort() = editor.abort()
     }
 

@@ -706,7 +706,17 @@ internal class DiskLruCache(
          * Commits this edit so it is visible to readers.
          * This releases the edit lock so another edit may be started on the same key.
          */
-        fun commit()  = complete(true)
+        fun commit() = complete(true)
+
+        /**
+         * Commit the edit and open a new [Snapshot] atomically.
+         */
+        fun commitAndGet(): Snapshot? {
+            synchronized(this@DiskLruCache) {
+                commit()
+                return get(entry.key)
+            }
+        }
 
         /**
          * Aborts this edit.
@@ -719,7 +729,7 @@ internal class DiskLruCache(
          */
         private fun complete(success: Boolean) {
             synchronized(this@DiskLruCache) {
-                check(!done)
+                check(!done) { "editor is closed" }
                 if (entry.currentEditor == this) {
                     completeEdit(this, success)
                 }

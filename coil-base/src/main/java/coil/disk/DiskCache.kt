@@ -27,16 +27,17 @@ interface DiskCache {
     /**
      * Get the entry associated with [key].
      *
-     * IMPORTANT: **You must** call [Snapshot.close] when finished reading the snapshot.
-     * An open snapshot prevents editing the entry or deleting it on disk.
+     * IMPORTANT: **You must** call [Snapshot.close] when finished reading the snapshot. An open
+     * snapshot prevents editing the entry or deleting it on disk.
      */
     operator fun get(key: String): Snapshot?
 
     /**
      * Edit the entry associated with [key].
      *
-     * IMPORTANT: **You must** call either [Editor.commit] or [Editor.abort] to complete the edit.
-     * An open editor prevents opening new [Snapshot]s or opening a new [Editor].
+     * IMPORTANT: **You must** call one of [Editor.commit], [Editor.commitAndGet], or [Editor.abort]
+     * to complete the edit. An open editor prevents opening new [Snapshot]s or opening a new
+     * [Editor].
      */
     fun edit(key: String): Editor?
 
@@ -68,8 +69,8 @@ interface DiskCache {
     /**
      * Edits the values for an entry.
      *
-     * IMPORTANT: You must **only modify the contents** of [metadata] or [data]. Renaming, locking,
-     * or other mutating file operations can corrupt the disk cache.
+     * IMPORTANT: You must **only read or modify the contents** of [metadata] or [data].
+     * Renaming, locking, or other mutating file operations can corrupt the disk cache.
      */
     interface Editor {
 
@@ -78,6 +79,9 @@ interface DiskCache {
 
         /** Commit the edit so the changes are visible to readers. */
         fun commit()
+
+        /** Commit the edit and open a new [Snapshot] atomically. */
+        fun commitAndGet(): Snapshot?
 
         /** Abort the edit. Any written data will be discarded. */
         fun abort()
