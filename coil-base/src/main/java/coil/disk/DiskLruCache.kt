@@ -139,6 +139,7 @@ internal class DiskLruCache(
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
 
+    // TODO: Replace with https://github.com/Kotlin/kotlinx.coroutines/issues/2919.
     private val cleanupExecutor = Executors.newSingleThreadExecutor {
         Thread().apply { name = "coil.disk.DiskLruCache: $directory" }
     }
