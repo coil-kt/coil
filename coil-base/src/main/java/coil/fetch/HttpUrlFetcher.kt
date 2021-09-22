@@ -77,8 +77,9 @@ internal class HttpUrlFetcher(
             val mimeType = getMimeType(url, body.contentType())
             val dataSource = if (response.networkResponse != null) NETWORK else DISK
             return SourceResult(source, mimeType, dataSource)
-        } finally {
+        } catch (e: Exception) {
             body.closeQuietly()
+            throw e
         }
     }
 
