@@ -5,7 +5,8 @@ import android.os.NetworkOnMainThreadException
 import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import coil.ImageLoader
-import coil.decode.DataSource
+import coil.decode.DataSource.DISK
+import coil.decode.DataSource.NETWORK
 import coil.decode.ImageSource
 import coil.disk.DiskCache
 import coil.network.HttpException
@@ -19,11 +20,17 @@ import coil.util.getMimeTypeFromUrl
 import kotlinx.coroutines.MainCoroutineDispatcher
 import okhttp3.CacheControl
 import okhttp3.Call
+import okhttp3.Headers
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okio.BufferedSink
 import okio.BufferedSource
+import okio.buffer
 import okio.sink
+import okio.source
 import kotlin.coroutines.coroutineContext
 
 internal class HttpUrlFetcher(
@@ -36,46 +43,64 @@ internal class HttpUrlFetcher(
 
     override suspend fun fetch(): FetchResult {
         // Fast path: fetch the image from the disk cache.
-        readFromDiskCache()?.let { return it }
+        var snapshot = readFromDiskCache()
+        if (snapshot != null) {
+            try {
+                val source = snapshot.toImageSource()
+                val metadata = snapshot.metadata.source().buffer().use(::Metadata)
+                val mimeType = getMimeType(url, metadata.contentType())
+                return SourceResult(source, mimeType, DISK)
+            } catch (e: Exception) {
+                snapshot.closeQuietly()
+                throw e
+            }
+        }
 
         // Slow path: fetch the image from the network.
         val response = executeNetworkRequest()
         val body = checkNotNull(response.body) { "response body == null" }
-        val source = body.source()
         try {
-            val isSuccessful = writeToDiskCache(source)
-            if (isSuccessful) {
-                val snapshot = diskCache?.get(url)
-                if (snapshot != null) {
-                    return SourceResult(
-                        source = ImageSource(
-                            file = snapshot.data,
-                            diskCacheKey = url,
-                            closeable = snapshot
-                        ),
-                        mimeType = null,
-                        dataSource = if (response.cacheResponse != null) {
-                            DataSource.DISK
-                        } else {
-                            DataSource.NETWORK
-                        }
-                    )
+            snapshot = writeToDiskCache(response, body)
+            if (snapshot != null) {
+                try {
+                    val source = snapshot.toImageSource()
+                    val metadata = snapshot.metadata.source().buffer().use(::Metadata)
+                    val mimeType = getMimeType(url, metadata.contentType())
+                    return SourceResult(source, mimeType, NETWORK)
+                } catch (e: Exception) {
+                    snapshot.closeQuietly()
+                    throw e
                 }
             }
 
-            return SourceResult(
-                source = ImageSource(body.source(), options.context),
-                mimeType = getMimeType(url, body),
-                dataSource = if (response.cacheResponse != null) {
-                    DataSource.DISK
-                } else {
-                    DataSource.NETWORK
-                }
-            )
-        } catch (throwable: Throwable) {
-            // Only close the source if an exception occurs.
-            source.closeQuietly()
-            throw throwable
+            val source = ImageSource(body.source(), options.context)
+            val mimeType = getMimeType(url, body.contentType())
+            val dataSource = if (response.networkResponse != null) NETWORK else DISK
+            return SourceResult(source, mimeType, dataSource)
+        } finally {
+            body.closeQuietly()
+        }
+    }
+
+    private fun readFromDiskCache(): DiskCache.Snapshot? {
+        if (!options.diskCachePolicy.readEnabled) return null
+        return diskCache?.get(url)
+    }
+
+    private fun writeToDiskCache(response: Response, body: ResponseBody): DiskCache.Snapshot? {
+        if (!options.diskCachePolicy.writeEnabled) return null
+        val editor = diskCache?.edit(url) ?: return null
+        try {
+            editor.metadata.sink().buffer().use { Metadata(response).writeTo(it) }
+            editor.data.sink().buffer().use { it.writeAll(body.source()) }
+            return if (options.diskCachePolicy.readEnabled) {
+                editor.commitAndGet()
+            } else {
+                editor.commit().run { null }
+            }
+        } catch (e: Exception) {
+            editor.abort()
+            throw e
         }
     }
 
@@ -117,39 +142,10 @@ internal class HttpUrlFetcher(
             callFactory.newCall(request.build()).await()
         }
         if (!response.isSuccessful) {
-            response.body?.close()
+            response.body?.closeQuietly()
             throw HttpException(response)
         }
         return response
-    }
-
-    private fun readFromDiskCache(): SourceResult? {
-        if (!options.diskCachePolicy.readEnabled) return null
-        val snapshot = diskCache?.get(url) ?: return null
-        return SourceResult(
-            source = ImageSource(
-                file = snapshot.data,
-                diskCacheKey = url,
-                closeable = snapshot
-            ),
-            mimeType = null,
-            dataSource = DataSource.DISK
-        )
-    }
-
-    private fun writeToDiskCache(source: BufferedSource): Boolean {
-        if (!options.diskCachePolicy.writeEnabled) return false
-        val editor = diskCache?.edit(url)
-        if (editor != null) {
-            try {
-                source.use { it.readAll(editor.data.sink()) }
-                editor.commit()
-                return true
-            } catch (_: Exception) {
-                editor.abort()
-            }
-        }
-        return false
     }
 
     /**
@@ -159,12 +155,56 @@ internal class HttpUrlFetcher(
      * Attempt to guess a better MIME type from the file extension.
      */
     @VisibleForTesting
-    internal fun getMimeType(url: String, body: ResponseBody): String? {
-        val rawContentType = body.contentType()?.toString()
+    internal fun getMimeType(url: String, contentType: MediaType?): String? {
+        val rawContentType = contentType?.toString()
         if (rawContentType == null || rawContentType.startsWith(MIME_TYPE_TEXT_PLAIN)) {
             MimeTypeMap.getSingleton().getMimeTypeFromUrl(url)?.let { return it }
         }
         return rawContentType?.substringBefore(';')
+    }
+
+    private fun DiskCache.Snapshot.toImageSource(): ImageSource {
+        return ImageSource(file = data, diskCacheKey = url, closeable = this)
+    }
+
+    private class Metadata {
+
+        val sentRequestMillis: Long
+        val receivedResponseMillis: Long
+        val responseHeaders: Headers
+
+        constructor(source: BufferedSource) {
+            this.sentRequestMillis = source.readUtf8LineStrict().toLong()
+            this.receivedResponseMillis = source.readUtf8LineStrict().toLong()
+            val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
+            val responseHeaders = Headers.Builder()
+            for (i in 0 until responseHeadersLineCount) {
+                responseHeaders.add(source.readUtf8LineStrict())
+            }
+            this.responseHeaders = responseHeaders.build()
+        }
+
+        constructor(response: Response) {
+            this.sentRequestMillis = response.sentRequestAtMillis
+            this.receivedResponseMillis = response.receivedResponseAtMillis
+            this.responseHeaders = response.headers
+        }
+
+        fun writeTo(sink: BufferedSink) {
+            sink.writeDecimalLong(sentRequestMillis).writeByte('\n'.code)
+            sink.writeDecimalLong(receivedResponseMillis).writeByte('\n'.code)
+            sink.writeDecimalLong(responseHeaders.size.toLong()).writeByte('\n'.code)
+            for (i in 0 until responseHeaders.size) {
+                sink.writeUtf8(responseHeaders.name(i))
+                    .writeUtf8(": ")
+                    .writeUtf8(responseHeaders.value(i))
+                    .writeByte('\n'.code)
+            }
+        }
+
+        fun contentType(): MediaType? {
+            return responseHeaders[CONTENT_TYPE_HEADER]?.toMediaTypeOrNull()
+        }
     }
 
     class Factory(
@@ -185,6 +225,7 @@ internal class HttpUrlFetcher(
 
     companion object {
         private const val MIME_TYPE_TEXT_PLAIN = "text/plain"
+        private const val CONTENT_TYPE_HEADER = "content-type"
         private val CACHE_CONTROL_FORCE_NETWORK_NO_CACHE =
             CacheControl.Builder().noCache().noStore().build()
         private val CACHE_CONTROL_NO_NETWORK_NO_CACHE =
