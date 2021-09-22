@@ -102,7 +102,6 @@ interface DiskCache {
          * directory at the same time as this can corrupt the disk cache.
          */
         fun directory(directory: File) = apply {
-            require(directory.isDirectory) { "$directory is not a directory." }
             this.directory = directory
         }
 

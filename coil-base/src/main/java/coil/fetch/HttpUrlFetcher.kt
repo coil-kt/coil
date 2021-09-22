@@ -12,7 +12,6 @@ import coil.disk.DiskCache
 import coil.network.HttpException
 import coil.request.Options
 import coil.request.Parameters
-import coil.util.Logger
 import coil.util.await
 import coil.util.closeQuietly
 import coil.util.dispatcher
@@ -37,8 +36,7 @@ internal class HttpUrlFetcher(
     private val url: String,
     private val options: Options,
     private val callFactory: Call.Factory,
-    private val diskCache: DiskCache?,
-    private val logger: Logger?
+    private val diskCache: DiskCache?
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -60,6 +58,7 @@ internal class HttpUrlFetcher(
         val response = executeNetworkRequest()
         val body = checkNotNull(response.body) { "response body == null" }
         try {
+            // Read the response from the disk cache after writing it.
             snapshot = writeToDiskCache(response, body)
             if (snapshot != null) {
                 try {
@@ -73,6 +72,7 @@ internal class HttpUrlFetcher(
                 }
             }
 
+            // Read the response directly from the response body.
             val source = ImageSource(body.source(), options.context)
             val mimeType = getMimeType(url, body.contentType())
             val dataSource = if (response.networkResponse != null) NETWORK else DISK
@@ -99,7 +99,9 @@ internal class HttpUrlFetcher(
                 editor.commit().run { null }
             }
         } catch (e: Exception) {
-            editor.abort()
+            try {
+                editor.abort()
+            } catch (_: Exception) {}
             throw e
         }
     }
@@ -209,13 +211,12 @@ internal class HttpUrlFetcher(
 
     class Factory(
         private val callFactory: Call.Factory,
-        private val diskCache: DiskCache?,
-        private val logger: Logger?
+        private val diskCache: DiskCache?
     ) : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
-            return HttpUrlFetcher(data.toString(), options, callFactory, diskCache, logger)
+            return HttpUrlFetcher(data.toString(), options, callFactory, diskCache)
         }
 
         private fun isApplicable(data: Uri): Boolean {
