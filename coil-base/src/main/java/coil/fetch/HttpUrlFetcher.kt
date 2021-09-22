@@ -111,6 +111,7 @@ internal class HttpUrlFetcher(
         val request = Request.Builder()
             .url(url)
             .headers(options.headers)
+            // Support attaching custom data to the network request.
             .tag(Parameters::class.java, options.parameters)
 
         val diskRead = options.diskCachePolicy.readEnabled
