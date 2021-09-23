@@ -81,8 +81,12 @@ class RoundedCornersTransformation(
             shader.setLocalMatrix(matrix)
             paint.shader = shader
 
-            val radii = floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight,
-                bottomLeft, bottomLeft)
+            val radii = floatArrayOf(
+                topLeft, topLeft,
+                topRight, topRight,
+                bottomRight, bottomRight,
+                bottomLeft, bottomLeft
+            )
             val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
             val path = Path().apply { addRoundRect(rect, radii, Path.Direction.CW) }
             drawPath(path, paint)
