@@ -12,7 +12,7 @@ internal class NoneTransition(
     private val result: ImageResult
 ) : Transition {
 
-    override suspend fun transition() {
+    override fun transition() {
         when (result) {
             is SuccessResult -> target.onSuccess(result.drawable)
             is ErrorResult -> target.onError(result.drawable)

@@ -232,6 +232,7 @@ public final class coil/disk/DiskCache$Builder {
 public abstract interface class coil/disk/DiskCache$Editor {
 	public abstract fun abort ()V
 	public abstract fun commit ()V
+	public abstract fun commitAndGet ()Lcoil/disk/DiskCache$Snapshot;
 	public abstract fun getData ()Ljava/io/File;
 	public abstract fun getMetadata ()Ljava/io/File;
 }
@@ -816,7 +817,7 @@ public final class coil/transition/CrossfadeTransition : coil/transition/Transit
 	public synthetic fun <init> (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDurationMillis ()I
 	public final fun getPreferExactIntrinsicSize ()Z
-	public fun transition (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun transition ()V
 }
 
 public final class coil/transition/CrossfadeTransition$Factory : coil/transition/Transition$Factory {
@@ -832,7 +833,7 @@ public final class coil/transition/CrossfadeTransition$Factory : coil/transition
 }
 
 public abstract interface class coil/transition/Transition {
-	public abstract fun transition (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun transition ()V
 }
 
 public abstract interface class coil/transition/Transition$Factory {

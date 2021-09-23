@@ -213,7 +213,7 @@ internal class RealImageLoader(
 
     override fun newBuilder() = ImageLoader.Builder(this)
 
-    private suspend inline fun onSuccess(
+    private fun onSuccess(
         result: SuccessResult,
         target: Target?,
         eventListener: EventListener
@@ -228,7 +228,7 @@ internal class RealImageLoader(
         request.listener?.onSuccess(request, result)
     }
 
-    private suspend inline fun onError(
+    private fun onError(
         result: ErrorResult,
         target: Target?,
         eventListener: EventListener
@@ -250,7 +250,7 @@ internal class RealImageLoader(
         request.listener?.onCancel(request)
     }
 
-    private suspend inline fun transition(
+    private inline fun transition(
         result: ImageResult,
         target: Target?,
         eventListener: EventListener,

@@ -1,8 +1,6 @@
 package coil.transition
 
-import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
@@ -10,8 +8,6 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Scale
 import coil.util.scale
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
 
 /**
  * A [Transition] that crossfades from the current drawable to a new one.
@@ -30,35 +26,18 @@ class CrossfadeTransition @JvmOverloads constructor(
         require(durationMillis > 0) { "durationMillis must be > 0." }
     }
 
-    override suspend fun transition() {
-        // Animate the drawable and suspend until the animation completes.
-        var outerCrossfade: CrossfadeDrawable? = null
-        try {
-            suspendCancellableCoroutine<Unit> { continuation ->
-                val crossfade = CrossfadeDrawable(
-                    start = target.drawable,
-                    end = result.drawable,
-                    scale = (target.view as? ImageView)?.scale ?: Scale.FIT,
-                    durationMillis = durationMillis,
-                    fadeStart = !(result is SuccessResult && result.isPlaceholderCached),
-                    preferExactIntrinsicSize = preferExactIntrinsicSize
-                )
-                outerCrossfade = crossfade
-                crossfade.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-                    override fun onAnimationEnd(drawable: Drawable?) {
-                        crossfade.unregisterAnimationCallback(this)
-                        continuation.resume(Unit)
-                    }
-                })
-                when (result) {
-                    is SuccessResult -> target.onSuccess(crossfade)
-                    is ErrorResult -> target.onError(crossfade)
-                }
-            }
-        } catch (throwable: Throwable) {
-            // Ensure exceptions are handled on the main thread.
-            outerCrossfade?.stop()
-            throw throwable
+    override fun transition() {
+        val drawable = CrossfadeDrawable(
+            start = target.drawable,
+            end = result.drawable,
+            scale = (target.view as? ImageView)?.scale ?: Scale.FIT,
+            durationMillis = durationMillis,
+            fadeStart = !(result is SuccessResult && result.isPlaceholderCached),
+            preferExactIntrinsicSize = preferExactIntrinsicSize
+        )
+        when (result) {
+            is SuccessResult -> target.onSuccess(drawable)
+            is ErrorResult -> target.onError(drawable)
         }
     }
 
@@ -79,12 +58,6 @@ class CrossfadeTransition @JvmOverloads constructor(
 
             // Don't animate if the request was fulfilled by the memory cache.
             if (result.dataSource == DataSource.MEMORY_CACHE) {
-                return Transition.Factory.NONE.create(target, result)
-            }
-
-            // Don't animate if the view is not visible as 'CrossfadeDrawable.onDraw'
-            // won't be called until the view becomes visible.
-            if (!target.view.isShown) {
                 return Transition.Factory.NONE.create(target, result)
             }
 
