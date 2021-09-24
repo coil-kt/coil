@@ -59,7 +59,10 @@ interface DiskCache {
      */
     interface Snapshot : Closeable {
 
+        /** Metadata for the image. */
         val metadata: File
+
+        /** The raw image data. */
         val data: File
 
         /** Close the snapshot to allow editing. */
@@ -74,7 +77,10 @@ interface DiskCache {
      */
     interface Editor {
 
+        /** Metadata for the image. */
         val metadata: File
+
+        /** The raw image data. */
         val data: File
 
         /** Commit the edit so the changes are visible to readers. */
