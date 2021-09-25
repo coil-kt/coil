@@ -9,7 +9,7 @@ An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
 Coil is an acronym for: **Co**routine **I**mage **L**oader.
 
-Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한국어](README-ko.md), [中文](README-zh.md)
+Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한국어](README-ko.md), [中文](README-zh.md), [Türkçe](README-tr.md)
 
 ## Download
 
