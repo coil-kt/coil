@@ -47,7 +47,7 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
-#### Image Loaders
+#### Görüntü Yükleyiciler
 
 `imageView.load` bir `ImageRequest`'i kuyruğa eklemek için yegane `ImageLoader` kullanır. Yegane `ImageLoader` uzantı fonksiyonu kullanılarak erişilebilir:
 
@@ -63,7 +63,7 @@ val imageLoader = ImageLoader(context)
 
 Eğer yegane `ImageLoader` istemiyorsanız, `io.coil-kt:coil-base`'e bağlı kalabilirsiniz.
 
-#### Requests
+#### İstekler
 
 Bir görüntüyü özel bir hedefe yüklemek için, bir `ImageRequest`'i `enqueue` edin:
 
