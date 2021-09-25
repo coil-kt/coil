@@ -10,7 +10,7 @@ Android için Kotlin Coroutines tarafından desteklenen bir görüntü yükleme 
 
 Coil şunların baş harflerinden oluşur: **Co**routine **I**mage **L**oader.
 
-[Instacart](https://www.instacart.com)'da ❤️ ile yapıldı. Çeviriler: [한국어](README-ko.md), [中文](README-zh.md)
+[Instacart](https://www.instacart.com)'da ❤️ ile yapıldı. Çeviriler: [Korece](README-ko.md), [Çince](README-zh.md)
 
 ## Yükleme
 
