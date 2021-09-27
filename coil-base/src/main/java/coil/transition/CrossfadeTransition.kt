@@ -39,8 +39,8 @@ class CrossfadeTransition(
             return
         }
 
-        // Don't animate if the view is not visible as CrossfadeDrawable.onDraw
-        // won't be called until the view becomes visible.
+        // Don't animate if the view is not shown as CrossfadeDrawable.onDraw
+        // won't be called until the view is shown.
         if (!target.view.isShown) {
             when (result) {
                 is SuccessResult -> target.onSuccess(result.drawable)
