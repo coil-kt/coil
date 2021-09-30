@@ -1,6 +1,6 @@
 rootProject.extra.apply {
     set("androidPlugin", "com.android.tools.build:gradle:7.0.2")
-    set("kotlinPlugin", "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21")
+    set("kotlinPlugin", "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30")
     set("mavenPublishPlugin", "com.vanniktech:gradle-maven-publish-plugin:0.18.0")
     set("dokkaPlugin", "org.jetbrains.dokka:dokka-gradle-plugin:1.5.30")
     set("dokkaAndroidPlugin", "org.jetbrains.dokka:android-documentation-plugin:1.5.30")
