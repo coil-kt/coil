@@ -174,6 +174,15 @@ internal inline fun ComponentRegistry.Builder.addFirst(
     factory: Decoder.Factory?
 ) = apply { if (factory != null) decoderFactories.add(0, factory) }
 
+internal fun String.toNonNegativeInt(defaultValue: Int): Int {
+    val value = toLongOrNull() ?: return defaultValue
+    return when {
+        value > Int.MAX_VALUE -> Int.MAX_VALUE
+        value < 0 -> 0
+        else -> value.toInt()
+    }
+}
+
 internal fun unsupported(): Nothing = error("Unsupported")
 
 /**

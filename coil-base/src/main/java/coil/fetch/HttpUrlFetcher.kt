@@ -45,7 +45,7 @@ internal class HttpUrlFetcher(
         if (snapshot != null) {
             try {
                 val source = snapshot.toImageSource()
-                val metadata = snapshot.metadata.source().buffer().use(::Metadata)
+                val metadata = snapshot.metadata.source().buffer().use(::ResponseMetadata)
                 val mimeType = getMimeType(url, metadata.contentType())
                 return SourceResult(source, mimeType, DISK)
             } catch (e: Exception) {
@@ -63,7 +63,7 @@ internal class HttpUrlFetcher(
             if (snapshot != null) {
                 try {
                     val source = snapshot.toImageSource()
-                    val metadata = snapshot.metadata.source().buffer().use(::Metadata)
+                    val metadata = snapshot.metadata.source().buffer().use(::ResponseMetadata)
                     val mimeType = getMimeType(url, metadata.contentType())
                     return SourceResult(source, mimeType, NETWORK)
                 } catch (e: Exception) {
@@ -92,7 +92,7 @@ internal class HttpUrlFetcher(
         if (!options.diskCachePolicy.writeEnabled) return null
         val editor = diskCache?.edit(url) ?: return null
         try {
-            editor.metadata.sink().buffer().use { Metadata(response).writeTo(it) }
+            editor.metadata.sink().buffer().use { ResponseMetadata(response).writeTo(it) }
             editor.data.sink().buffer().use { it.writeAll(body.source()) }
             return if (options.diskCachePolicy.readEnabled) {
                 editor.commitAndGet()
@@ -171,15 +171,20 @@ internal class HttpUrlFetcher(
         return ImageSource(file = data, diskCacheKey = url, closeable = this)
     }
 
-    private class Metadata {
+    /** Holds the response metadata for an image in the disk cache. */
+    class ResponseMetadata {
 
-        val sentRequestMillis: Long
-        val receivedResponseMillis: Long
+        val sentRequestAtMillis: Long
+        val receivedResponseAtMillis: Long
         val responseHeaders: Headers
 
+        private var lazyCacheControl: CacheControl? = null
+        val cacheControl get() = lazyCacheControl
+            ?: CacheControl.parse(responseHeaders).also { lazyCacheControl = it }
+
         constructor(source: BufferedSource) {
-            this.sentRequestMillis = source.readUtf8LineStrict().toLong()
-            this.receivedResponseMillis = source.readUtf8LineStrict().toLong()
+            this.sentRequestAtMillis = source.readUtf8LineStrict().toLong()
+            this.receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
             val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
             val responseHeaders = Headers.Builder()
             for (i in 0 until responseHeadersLineCount) {
@@ -189,14 +194,14 @@ internal class HttpUrlFetcher(
         }
 
         constructor(response: Response) {
-            this.sentRequestMillis = response.sentRequestAtMillis
-            this.receivedResponseMillis = response.receivedResponseAtMillis
+            this.sentRequestAtMillis = response.sentRequestAtMillis
+            this.receivedResponseAtMillis = response.receivedResponseAtMillis
             this.responseHeaders = response.headers
         }
 
         fun writeTo(sink: BufferedSink) {
-            sink.writeDecimalLong(sentRequestMillis).writeByte('\n'.code)
-            sink.writeDecimalLong(receivedResponseMillis).writeByte('\n'.code)
+            sink.writeDecimalLong(sentRequestAtMillis).writeByte('\n'.code)
+            sink.writeDecimalLong(receivedResponseAtMillis).writeByte('\n'.code)
             sink.writeDecimalLong(responseHeaders.size.toLong()).writeByte('\n'.code)
             for (i in 0 until responseHeaders.size) {
                 sink.writeUtf8(responseHeaders.name(i))
