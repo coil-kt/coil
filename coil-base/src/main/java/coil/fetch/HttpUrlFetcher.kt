@@ -130,7 +130,11 @@ internal class HttpUrlFetcher(
             return null
         }
 
-        val editor = (if (snapshot != null) snapshot.closeAndEdit() else diskCache?.edit(url)) ?: return null
+        val editor = if (snapshot != null) {
+            snapshot.closeAndEdit()
+        } else {
+            diskCache?.edit(url)
+        } ?: return null
         try {
             // Write the response to the disk cache.
             if (allowNotModified && response.code == HTTP_NOT_MODIFIED) {
