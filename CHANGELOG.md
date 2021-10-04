@@ -20,7 +20,6 @@ Coil 2.0.0 is the next major iteration of the library and has improvements to pe
 - **Important**: `ImageRequest`'s default `Scale` is now `Scale.FIT`
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
     - Requests with an `ImageViewTarget` still have their scale autodetected.
-    - If you use a custom `ContentScale` when rendering an image from `rememberImagePainter`, you must set `ImageRequest.Builder.scale(Scale.FILL)`.
 - Significant changes to the image pipeline classes:
     - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
     - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.

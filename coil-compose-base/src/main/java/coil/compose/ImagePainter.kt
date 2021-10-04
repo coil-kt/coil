@@ -41,6 +41,7 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.OriginalSize
 import coil.size.Precision
+import coil.size.Scale
 import coil.transition.CrossfadeTransition
 import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -219,6 +220,12 @@ class ImagePainter internal constructor(
                     } else {
                         size(OriginalSize)
                     }
+                }
+
+                // Set the scale to fill unless it has been set explicitly.
+                // We do this since it's not possible to auto-detect the scale type like with `ImageView`s.
+                if (request.defined.scale == null) {
+                    scale(Scale.FILL)
                 }
 
                 // Set inexact precision unless exact precision has been set explicitly.
