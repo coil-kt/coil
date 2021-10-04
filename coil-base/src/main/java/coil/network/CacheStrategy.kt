@@ -1,6 +1,5 @@
 package coil.network
 
-import coil.fetch.HttpUrlFetcher.CacheResponse
 import coil.util.toNonNegativeInt
 import okhttp3.CacheControl
 import okhttp3.Headers
@@ -84,18 +83,6 @@ internal class CacheStrategy private constructor(
 
         /** Returns a strategy to satisfy [request] using [cacheResponse]. */
         fun compute(): CacheStrategy {
-            val candidate = computeCandidate()
-
-            // We're forbidden from using the network and the cache is insufficient.
-            if (candidate.networkRequest != null && request.cacheControl.onlyIfCached) {
-                return CacheStrategy(null, null)
-            }
-
-            return candidate
-        }
-
-        /** Returns a strategy to use assuming the request can use the network. */
-        private fun computeCandidate(): CacheStrategy {
             // No cached response.
             if (cacheResponse == null) {
                 return CacheStrategy(request, null)
@@ -109,7 +96,8 @@ internal class CacheStrategy private constructor(
             // If this response shouldn't have been stored, it should never be used as a response
             // source. This check should be redundant as long as the persistence store is
             // well-behaved and the rules are constant.
-            if (!isCacheable(cacheResponse.cacheControl(), request.cacheControl)) {
+            val responseCaching = cacheResponse.cacheControl()
+            if (!isCacheable(responseCaching, request.cacheControl)) {
                 return CacheStrategy(request, null)
             }
 
@@ -117,8 +105,6 @@ internal class CacheStrategy private constructor(
             if (requestCaching.noCache || hasConditions(request)) {
                 return CacheStrategy(request, null)
             }
-
-            val responseCaching = cacheResponse.cacheControl()
 
             val ageMillis = cacheResponseAge()
             var freshMillis = computeFreshnessLifetime()
