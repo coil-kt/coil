@@ -68,6 +68,12 @@ class Options(
     val premultipliedAlpha: Boolean = true,
 
     /**
+     * The cache key to use when persisting images to the disk cache or 'null' if the component can
+     * compute its own.
+     */
+    val diskCacheKey: String? = null,
+
+    /**
      * The header fields to use for any network requests.
      */
     val headers: Headers = EMPTY_HEADERS,
@@ -102,6 +108,7 @@ class Options(
         allowInexactSize: Boolean = this.allowInexactSize,
         allowRgb565: Boolean = this.allowRgb565,
         premultipliedAlpha: Boolean = this.premultipliedAlpha,
+        diskCacheKey: String? = this.diskCacheKey,
         headers: Headers = this.headers,
         parameters: Parameters = this.parameters,
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
@@ -116,6 +123,7 @@ class Options(
         allowInexactSize = allowInexactSize,
         allowRgb565 = allowRgb565,
         premultipliedAlpha = premultipliedAlpha,
+        diskCacheKey = diskCacheKey,
         headers = headers,
         parameters = parameters,
         memoryCachePolicy = memoryCachePolicy,
@@ -134,6 +142,7 @@ class Options(
             allowInexactSize == other.allowInexactSize &&
             allowRgb565 == other.allowRgb565 &&
             premultipliedAlpha == other.premultipliedAlpha &&
+            diskCacheKey == other.diskCacheKey &&
             headers == other.headers &&
             parameters == other.parameters &&
             memoryCachePolicy == other.memoryCachePolicy &&
@@ -150,6 +159,7 @@ class Options(
         result = 31 * result + allowInexactSize.hashCode()
         result = 31 * result + allowRgb565.hashCode()
         result = 31 * result + premultipliedAlpha.hashCode()
+        result = 31 * result + (diskCacheKey?.hashCode() ?: 0)
         result = 31 * result + headers.hashCode()
         result = 31 * result + parameters.hashCode()
         result = 31 * result + memoryCachePolicy.hashCode()

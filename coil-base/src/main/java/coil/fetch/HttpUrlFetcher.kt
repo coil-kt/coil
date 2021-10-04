@@ -115,7 +115,7 @@ internal class HttpUrlFetcher(
     }
 
     private fun readFromDiskCache(): DiskCache.Snapshot? {
-        return if (options.diskCachePolicy.readEnabled) diskCache?.get(url) else null
+        return if (options.diskCachePolicy.readEnabled) diskCache?.get(diskCacheKey) else null
     }
 
     private fun writeToDiskCache(
@@ -133,7 +133,7 @@ internal class HttpUrlFetcher(
         val editor = if (snapshot != null) {
             snapshot.closeAndEdit()
         } else {
-            diskCache?.edit(url)
+            diskCache?.edit(diskCacheKey)
         } ?: return null
         try {
             // Write the response to the disk cache.
@@ -226,6 +226,8 @@ internal class HttpUrlFetcher(
     private fun ResponseBody.toImageSource(): ImageSource {
         return ImageSource(source = source(), context = options.context)
     }
+
+    private val diskCacheKey get() = options.diskCacheKey ?: url
 
     class Factory(
         private val callFactory: Call.Factory,

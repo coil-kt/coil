@@ -72,6 +72,9 @@ class ImageRequest private constructor(
     /** @see Builder.memoryCacheKey */
     val memoryCacheKey: MemoryCache.Key?,
 
+    /** @see Builder.diskCacheKey */
+    val diskCacheKey: String?,
+
     /** @see Builder.colorSpace */
     val colorSpace: ColorSpace?,
 
@@ -181,6 +184,7 @@ class ImageRequest private constructor(
             target == other.target &&
             listener == other.listener &&
             memoryCacheKey == other.memoryCacheKey &&
+            diskCacheKey == other.diskCacheKey &&
             (SDK_INT < 26 || colorSpace == other.colorSpace) &&
             fetcherFactory == other.fetcherFactory &&
             decoderFactory == other.decoderFactory &&
@@ -221,6 +225,7 @@ class ImageRequest private constructor(
         result = 31 * result + (target?.hashCode() ?: 0)
         result = 31 * result + (listener?.hashCode() ?: 0)
         result = 31 * result + (memoryCacheKey?.hashCode() ?: 0)
+        result = 31 * result + (diskCacheKey?.hashCode() ?: 0)
         result = 31 * result + if (SDK_INT < 26) 0 else (colorSpace?.hashCode() ?: 0)
         result = 31 * result + (fetcherFactory?.hashCode() ?: 0)
         result = 31 * result + (decoderFactory?.hashCode() ?: 0)
@@ -295,6 +300,7 @@ class ImageRequest private constructor(
         private var target: Target?
         private var listener: Listener?
         private var memoryCacheKey: MemoryCache.Key?
+        private var diskCacheKey: String?
         private var colorSpace: ColorSpace? = null
         private var fetcherFactory: Pair<Fetcher.Factory<*>, Class<*>>?
         private var decoderFactory: Decoder.Factory?
@@ -342,6 +348,7 @@ class ImageRequest private constructor(
             target = null
             listener = null
             memoryCacheKey = null
+            diskCacheKey = null
             if (SDK_INT >= 26) colorSpace = null
             fetcherFactory = null
             decoderFactory = null
@@ -385,6 +392,7 @@ class ImageRequest private constructor(
             target = request.target
             listener = request.listener
             memoryCacheKey = request.memoryCacheKey
+            diskCacheKey = request.diskCacheKey
             if (SDK_INT >= 26) colorSpace = request.colorSpace
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory
@@ -448,17 +456,26 @@ class ImageRequest private constructor(
         /**
          * Set the memory cache key for this request.
          *
-         * If this is null or is not set the [ImageLoader] will compute a memory cache key.
+         * If this is null or is not set, the [ImageLoader] will compute a memory cache key.
          */
         fun memoryCacheKey(key: String?) = memoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
          * Set the memory cache key for this request.
          *
-         * If this is null or is not set the [ImageLoader] will compute a memory cache key.
+         * If this is null or is not set, the [ImageLoader] will compute a memory cache key.
          */
         fun memoryCacheKey(key: MemoryCache.Key?) = apply {
             this.memoryCacheKey = key
+        }
+
+        /**
+         * Set the disk cache key for this request.
+         *
+         * If this is null or is not set, the [ImageLoader] will compute a disk cache key.
+         */
+        fun diskCacheKey(key: String?) = apply {
+            this.diskCacheKey = key
         }
 
         /**
@@ -896,6 +913,7 @@ class ImageRequest private constructor(
                 target = target,
                 listener = listener,
                 memoryCacheKey = memoryCacheKey,
+                diskCacheKey = diskCacheKey,
                 colorSpace = colorSpace,
                 fetcherFactory = fetcherFactory,
                 decoderFactory = decoderFactory,
