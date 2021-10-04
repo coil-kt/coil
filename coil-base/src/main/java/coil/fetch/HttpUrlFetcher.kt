@@ -83,7 +83,6 @@ internal class HttpUrlFetcher(
                 throw e
             }
         } catch (e: Exception) {
-            // Close the snapshot if there's an unexpected error.
             snapshot?.closeQuietly()
             throw e
         }
