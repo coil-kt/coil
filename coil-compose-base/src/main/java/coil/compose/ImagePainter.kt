@@ -342,6 +342,8 @@ private fun updatePainter(
     val painter = remember(state) { state.painter }
 
     // Short circuit if the crossfade transition isn't set.
+    // Check `imageLoader.defaults.transitionFactory` specifically as the default isn't set
+    // until the request is executed.
     val transition = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
     if (transition !is CrossfadeTransition.Factory) {
         imagePainter.painter = painter
