@@ -56,7 +56,7 @@ class HttpUrlFetcherTest {
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg", "normal.jpg")
         diskCache = DiskCache.Builder(context).directory(File("build/cache")).build()
-        assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
+        diskCache.directory.delete() // Ensure the disk cache is empty.
         callFactory = OkHttpClient()
     }
 
@@ -114,7 +114,6 @@ class HttpUrlFetcherTest {
             .create(url.toUri(), options, ImageLoader(context)))
 
         assertFailsWith<NetworkOnMainThreadException> { fetcher.fetch() }
-        assertNotNull(diskCache[url]).close()
     }
 
     @Test
@@ -174,7 +173,7 @@ class HttpUrlFetcherTest {
         source.close()
 
         // Ensure the result file is present.
-        val expected = diskCache[uri.toString()]?.metadata
+        val expected = diskCache[uri.toString()]?.data
         assertTrue(expected in diskCache.directory.listFiles().orEmpty())
         assertEquals(expected, source.file)
     }
@@ -205,7 +204,7 @@ class HttpUrlFetcherTest {
         source.close()
 
         // Ensure the result file is present.
-        val expected = diskCache[uri.toString()]?.metadata
+        val expected = diskCache[uri.toString()]?.data
         assertTrue(expected in diskCache.directory.listFiles().orEmpty())
         assertEquals(expected, source.file)
     }
