@@ -1,7 +1,9 @@
 package coil.network
 
-import coil.fetch.HttpUrlFetcher.ResponseMetadata
+import coil.fetch.HttpUrlFetcher.CacheResponse
 import coil.util.toNonNegativeInt
+import okhttp3.CacheControl
+import okhttp3.Headers
 import okhttp3.Request
 import okhttp3.Response
 import java.util.Date
@@ -14,13 +16,13 @@ internal class CacheStrategy private constructor(
     /** The request to send on the network, or null if this call doesn't use the network. */
     val networkRequest: Request?,
     /** The cached response to return or validate, or null if this call doesn't use a cache. */
-    val cacheResponse: ResponseMetadata?
+    val cacheResponse: CacheResponse?
 ) {
 
     class Factory(
-        private val nowMillis: Long,
         private val request: Request,
-        private val cacheResponse: ResponseMetadata?
+        private val cacheResponse: CacheResponse?,
+        private val nowMillis: Long = System.currentTimeMillis()
     ) {
 
         /** The server's time when the cached response was served, if known. */
@@ -99,10 +101,15 @@ internal class CacheStrategy private constructor(
                 return CacheStrategy(request, null)
             }
 
+            // Drop the cached response if it's missing a required handshake.
+            if (request.isHttps && !cacheResponse.isTls) {
+                return CacheStrategy(request, null)
+            }
+
             // If this response shouldn't have been stored, it should never be used as a response
             // source. This check should be redundant as long as the persistence store is
             // well-behaved and the rules are constant.
-            if (!isCacheable(cacheResponse, request)) {
+            if (!isCacheable(cacheResponse.cacheControl(), request.cacheControl)) {
                 return CacheStrategy(request, null)
             }
 
@@ -111,7 +118,7 @@ internal class CacheStrategy private constructor(
                 return CacheStrategy(request, null)
             }
 
-            val responseCaching = cacheResponse.cacheControl
+            val responseCaching = cacheResponse.cacheControl()
 
             val ageMillis = cacheResponseAge()
             var freshMillis = computeFreshnessLifetime()
@@ -169,7 +176,7 @@ internal class CacheStrategy private constructor(
          * starting from the served date.
          */
         private fun computeFreshnessLifetime(): Long {
-            val responseCaching = cacheResponse!!.cacheControl
+            val responseCaching = cacheResponse!!.cacheControl()
             if (responseCaching.maxAgeSeconds != -1) {
                 return SECONDS.toMillis(responseCaching.maxAgeSeconds.toLong())
             }
@@ -228,10 +235,65 @@ internal class CacheStrategy private constructor(
     }
 
     companion object {
-        /** Returns true if [response] can be stored to later serve another request. */
-        fun isCacheable(response: ResponseMetadata, request: Request): Boolean {
+
+        /** Returns true if the response can be stored to later serve another request. */
+        fun isCacheable(request: Request, response: Response): Boolean {
             // A 'no-store' directive on request or response prevents the response from being cached.
-            return !response.cacheControl.noStore && !request.cacheControl.noStore
+            return isCacheable(request.cacheControl, response.cacheControl) &&
+                // Vary all responses cannot be cached.
+                response.headers["Vary"] != "*"
+        }
+
+        /** Returns true if the response can be stored to later serve another request. */
+        fun isCacheable(requestControl: CacheControl, responseControl: CacheControl): Boolean {
+            return !requestControl.noStore && !responseControl.noStore
+        }
+
+        /** Combines cached headers with a network headers as defined by RFC 7234, 4.3.4. */
+        fun combineHeaders(cachedHeaders: Headers, networkHeaders: Headers): Headers {
+            val result = Headers.Builder()
+
+            for (index in 0 until cachedHeaders.size) {
+                val name = cachedHeaders.name(index)
+                val value = cachedHeaders.value(index)
+                if ("Warning".equals(name, ignoreCase = true) && value.startsWith("1")) {
+                    // Drop 100-level freshness warnings.
+                    continue
+                }
+                if (isContentSpecificHeader(name) ||
+                    !isEndToEnd(name) ||
+                    networkHeaders[name] == null) {
+                    result.add(name, value)
+                }
+            }
+
+            for (index in 0 until networkHeaders.size) {
+                val fieldName = networkHeaders.name(index)
+                if (!isContentSpecificHeader(fieldName) && isEndToEnd(fieldName)) {
+                    result.add(fieldName, networkHeaders.value(index))
+                }
+            }
+
+            return result.build()
+        }
+
+        /** Returns true if [name] is an end-to-end HTTP header, as defined by RFC 2616, 13.5.1. */
+        private fun isEndToEnd(name: String): Boolean {
+            return !"Connection".equals(name, ignoreCase = true) &&
+                !"Keep-Alive".equals(name, ignoreCase = true) &&
+                !"Proxy-Authenticate".equals(name, ignoreCase = true) &&
+                !"Proxy-Authorization".equals(name, ignoreCase = true) &&
+                !"TE".equals(name, ignoreCase = true) &&
+                !"Trailers".equals(name, ignoreCase = true) &&
+                !"Transfer-Encoding".equals(name, ignoreCase = true) &&
+                !"Upgrade".equals(name, ignoreCase = true)
+        }
+
+        /** Returns true if [name] is content specific and therefore should always be used from cached headers. */
+        private fun isContentSpecificHeader(name: String): Boolean {
+            return "Content-Length".equals(name, ignoreCase = true) ||
+                "Content-Encoding".equals(name, ignoreCase = true) ||
+                "Content-Type".equals(name, ignoreCase = true)
         }
     }
 }

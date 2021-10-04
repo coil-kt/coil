@@ -5,13 +5,16 @@ import android.os.NetworkOnMainThreadException
 import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import coil.ImageLoader
-import coil.decode.DataSource.DISK
-import coil.decode.DataSource.NETWORK
+import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.disk.DiskCache
+import coil.network.CacheStrategy
+import coil.network.CacheStrategy.Companion.combineHeaders
+import coil.network.CacheStrategy.Companion.isCacheable
 import coil.network.HttpException
 import coil.request.Options
 import coil.request.Parameters
+import coil.util.abortQuietly
 import coil.util.await
 import coil.util.closeQuietly
 import coil.util.dispatcher
@@ -26,10 +29,10 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.BufferedSink
-import okio.BufferedSource
 import okio.buffer
 import okio.sink
 import okio.source
+import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import kotlin.coroutines.coroutineContext
 
 internal class HttpUrlFetcher(
@@ -40,45 +43,57 @@ internal class HttpUrlFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        // Fast path: fetch the image from the disk cache.
+        // Fast path: fetch the image from the disk cache without performing a network request.
+        var request = newRequest()
         var snapshot = readFromDiskCache()
-        if (snapshot != null) {
-            try {
-                val source = snapshot.toImageSource()
-                val metadata = snapshot.metadata.source().buffer().use(::ResponseMetadata)
-                val mimeType = getMimeType(url, metadata.contentType())
-                return SourceResult(source, mimeType, DISK)
-            } catch (e: Exception) {
-                snapshot.closeQuietly()
-                throw e
+        try {
+            val metadata = snapshot?.let(::CacheResponse)
+            val cacheStrategy = CacheStrategy.Factory(request, metadata).compute()
+            if (cacheStrategy.cacheResponse != null && cacheStrategy.networkRequest == null) {
+                return SourceResult(
+                    source = snapshot!!.toImageSource(),
+                    mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType()),
+                    dataSource = DataSource.DISK
+                )
             }
+
+            // Close the current snapshot so we can open an editor later.
+            snapshot?.closeQuietly()
+            // Update the network request in case we need to verify the image.
+            cacheStrategy.networkRequest?.let { request = it }
+        } catch (e: Exception) {
+            // Close the snapshot if there's an unexpected error.
+            snapshot?.closeQuietly()
+            throw e
         }
 
         // Slow path: fetch the image from the network.
-        val response = executeNetworkRequest()
-        val body = checkNotNull(response.body) { "response body == null" }
+        val response = executeNetworkRequest(request)
         try {
             // Read the response from the disk cache after writing it.
-            snapshot = writeToDiskCache(response, body)
-            if (snapshot != null) {
+            snapshot = writeToDiskCache(request, response)
+            val metadata = snapshot?.let(::CacheResponse)
+            if (metadata != null) {
                 try {
-                    val source = snapshot.toImageSource()
-                    val metadata = snapshot.metadata.source().buffer().use(::ResponseMetadata)
-                    val mimeType = getMimeType(url, metadata.contentType())
-                    return SourceResult(source, mimeType, NETWORK)
+                    return SourceResult(
+                        source = snapshot!!.toImageSource(),
+                        mimeType = getMimeType(url, metadata.contentType()),
+                        dataSource = DataSource.NETWORK
+                    )
                 } catch (e: Exception) {
-                    snapshot.closeQuietly()
+                    snapshot?.closeQuietly()
                     throw e
                 }
             }
 
             // Read the response directly from the response body.
-            val source = ImageSource(body.source(), options.context)
-            val mimeType = getMimeType(url, body.contentType())
-            val dataSource = if (response.networkResponse != null) NETWORK else DISK
-            return SourceResult(source, mimeType, dataSource)
+            return SourceResult(
+                source = response.body!!.toImageSource(),
+                mimeType = getMimeType(url, response.body!!.contentType()),
+                dataSource = if (response.networkResponse != null) DataSource.NETWORK else DataSource.DISK
+            )
         } catch (e: Exception) {
-            body.closeQuietly()
+            response.body!!.closeQuietly()
             throw e
         }
     }
@@ -88,26 +103,35 @@ internal class HttpUrlFetcher(
         return diskCache?.get(url)
     }
 
-    private fun writeToDiskCache(response: Response, body: ResponseBody): DiskCache.Snapshot? {
+    private fun writeToDiskCache(request: Request, response: Response): DiskCache.Snapshot? {
         if (!options.diskCachePolicy.writeEnabled) return null
+        if (!isCacheable(request, response)) return null
+
         val editor = diskCache?.edit(url) ?: return null
         try {
-            editor.metadata.sink().buffer().use { ResponseMetadata(response).writeTo(it) }
-            editor.data.sink().buffer().use { it.writeAll(body.source()) }
+            if (response.code == HTTP_NOT_MODIFIED) {
+                // Only update the metadata.
+                val combinedResponse = response.newBuilder()
+                    .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
+                    .build()
+                editor.metadata.sink().buffer().use { CacheResponse(combinedResponse).writeTo(it) }
+            } else {
+                // Update the metadata and the image data.
+                editor.metadata.sink().buffer().use { CacheResponse(response).writeTo(it) }
+                editor.data.sink().buffer().use { it.writeAll(response.body!!.source()) }
+            }
             return if (options.diskCachePolicy.readEnabled) {
                 editor.commitAndGet()
             } else {
                 editor.commit().run { null }
             }
         } catch (e: Exception) {
-            try {
-                editor.abort()
-            } catch (_: Exception) {}
+            editor.abortQuietly()
             throw e
         }
     }
 
-    private suspend fun executeNetworkRequest(): Response {
+    private fun newRequest(): Request {
         val request = Request.Builder()
             .url(url)
             .headers(options.headers)
@@ -131,24 +155,28 @@ internal class HttpUrlFetcher(
             }
         }
 
+        return request.build()
+    }
+
+    private suspend fun executeNetworkRequest(request: Request): Response {
         val response = if (coroutineContext.dispatcher is MainCoroutineDispatcher) {
-            if (networkRead) {
+            if (options.networkCachePolicy.readEnabled) {
                 // Prevent executing requests on the main thread that could block due to a
                 // networking operation.
                 throw NetworkOnMainThreadException()
             } else {
-                // Work around https://github.com/Kotlin/kotlinx.coroutines/issues/2448 by
-                // blocking the current context.
-                callFactory.newCall(request.build()).execute()
+                // Work around: https://github.com/Kotlin/kotlinx.coroutines/issues/2448
+                callFactory.newCall(request).execute()
             }
         } else {
             // Suspend and enqueue the request on one of OkHttp's dispatcher threads.
-            callFactory.newCall(request.build()).await()
+            callFactory.newCall(request).await()
         }
         if (!response.isSuccessful) {
             response.body?.closeQuietly()
             throw HttpException(response)
         }
+        checkNotNull(response.body) { "response body == null" }
         return response
     }
 
@@ -171,37 +199,45 @@ internal class HttpUrlFetcher(
         return ImageSource(file = data, diskCacheKey = url, closeable = this)
     }
 
+    private fun ResponseBody.toImageSource(): ImageSource {
+        return ImageSource(source = source(), context = options.context)
+    }
+
     /** Holds the response metadata for an image in the disk cache. */
-    class ResponseMetadata {
+    class CacheResponse {
+
+        private var lazyCacheControl: CacheControl? = null
 
         val sentRequestAtMillis: Long
         val receivedResponseAtMillis: Long
+        val isTls: Boolean
         val responseHeaders: Headers
 
-        private var lazyCacheControl: CacheControl? = null
-        val cacheControl get() = lazyCacheControl
-            ?: CacheControl.parse(responseHeaders).also { lazyCacheControl = it }
-
-        constructor(source: BufferedSource) {
-            this.sentRequestAtMillis = source.readUtf8LineStrict().toLong()
-            this.receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
-            val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
-            val responseHeaders = Headers.Builder()
-            for (i in 0 until responseHeadersLineCount) {
-                responseHeaders.add(source.readUtf8LineStrict())
+        constructor(snapshot: DiskCache.Snapshot) {
+            snapshot.metadata.source().buffer().use { source ->
+                this.sentRequestAtMillis = source.readUtf8LineStrict().toLong()
+                this.receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
+                this.isTls = source.readUtf8LineStrict().toInt() > 0
+                val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
+                val responseHeaders = Headers.Builder()
+                for (i in 0 until responseHeadersLineCount) {
+                    responseHeaders.add(source.readUtf8LineStrict())
+                }
+                this.responseHeaders = responseHeaders.build()
             }
-            this.responseHeaders = responseHeaders.build()
         }
 
         constructor(response: Response) {
             this.sentRequestAtMillis = response.sentRequestAtMillis
             this.receivedResponseAtMillis = response.receivedResponseAtMillis
+            this.isTls = response.handshake != null
             this.responseHeaders = response.headers
         }
 
         fun writeTo(sink: BufferedSink) {
             sink.writeDecimalLong(sentRequestAtMillis).writeByte('\n'.code)
             sink.writeDecimalLong(receivedResponseAtMillis).writeByte('\n'.code)
+            sink.writeDecimalLong(if (isTls) 1 else 0).writeByte('\n'.code)
             sink.writeDecimalLong(responseHeaders.size.toLong()).writeByte('\n'.code)
             for (i in 0 until responseHeaders.size) {
                 sink.writeUtf8(responseHeaders.name(i))
@@ -209,6 +245,10 @@ internal class HttpUrlFetcher(
                     .writeUtf8(responseHeaders.value(i))
                     .writeByte('\n'.code)
             }
+        }
+
+        fun cacheControl(): CacheControl {
+            return lazyCacheControl ?: CacheControl.parse(responseHeaders).also { lazyCacheControl = it }
         }
 
         fun contentType(): MediaType? {
@@ -233,7 +273,7 @@ internal class HttpUrlFetcher(
 
     companion object {
         private const val MIME_TYPE_TEXT_PLAIN = "text/plain"
-        private const val CONTENT_TYPE_HEADER = "content-type"
+        private const val CONTENT_TYPE_HEADER = "Content-Type"
         private val CACHE_CONTROL_FORCE_NETWORK_NO_CACHE =
             CacheControl.Builder().noCache().noStore().build()
         private val CACHE_CONTROL_NO_NETWORK_NO_CACHE =

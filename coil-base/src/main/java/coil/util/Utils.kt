@@ -183,6 +183,12 @@ internal fun String.toNonNegativeInt(defaultValue: Int): Int {
     }
 }
 
+internal fun DiskCache.Editor.abortQuietly() {
+    try {
+        abort()
+    } catch (_: Exception) {}
+}
+
 internal fun unsupported(): Nothing = error("Unsupported")
 
 /**
