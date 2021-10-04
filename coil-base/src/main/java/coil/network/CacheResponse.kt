@@ -46,7 +46,7 @@ internal class CacheResponse {
     fun writeTo(sink: BufferedSink) {
         sink.writeDecimalLong(sentRequestAtMillis).writeByte('\n'.code)
         sink.writeDecimalLong(receivedResponseAtMillis).writeByte('\n'.code)
-        sink.writeDecimalLong(if (isTls) 1 else 0).writeByte('\n'.code)
+        sink.writeDecimalLong(if (isTls) 1L else 0L).writeByte('\n'.code)
         sink.writeDecimalLong(responseHeaders.size.toLong()).writeByte('\n'.code)
         for (i in 0 until responseHeaders.size) {
             sink.writeUtf8(responseHeaders.name(i))
