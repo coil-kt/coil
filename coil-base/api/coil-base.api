@@ -239,6 +239,7 @@ public abstract interface class coil/disk/DiskCache$Editor {
 
 public abstract interface class coil/disk/DiskCache$Snapshot : java/io/Closeable {
 	public abstract fun close ()V
+	public abstract fun closeAndEdit ()Lcoil/disk/DiskCache$Editor;
 	public abstract fun getData ()Ljava/io/File;
 	public abstract fun getMetadata ()Ljava/io/File;
 }
