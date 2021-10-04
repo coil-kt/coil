@@ -1,6 +1,7 @@
 package coil.network
 
 import coil.disk.DiskCache
+import coil.util.Option
 import okhttp3.CacheControl
 import okhttp3.Headers
 import okhttp3.MediaType
@@ -15,6 +16,7 @@ import okio.source
 internal class CacheResponse {
 
     private var lazyCacheControl: CacheControl? = null
+    private var lazyContentType: Option<MediaType>? = null
 
     val sentRequestAtMillis: Long
     val receivedResponseAtMillis: Long
@@ -58,12 +60,14 @@ internal class CacheResponse {
     }
 
     fun contentType(): MediaType? {
-        return responseHeaders["Content-Type"]?.toMediaTypeOrNull()
+        return (lazyContentType
+            ?: Option(responseHeaders["Content-Type"]?.toMediaTypeOrNull()).also { lazyContentType = it })
+            .value
     }
 
     companion object {
         fun from(snapshot: DiskCache.Snapshot?): CacheResponse? {
-            return (snapshot ?: return null).metadata.source().buffer().use(::CacheResponse)
+            return snapshot?.metadata?.source()?.buffer()?.use(::CacheResponse)
         }
     }
 }

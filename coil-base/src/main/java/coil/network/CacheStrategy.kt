@@ -11,7 +11,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 /** Modified from OkHttp's `okhttp3.internal.cache.CacheStrategy`. */
-internal class CacheStrategy private constructor(
+internal class CacheStrategy(
     /** The request to send on the network, or null if this call doesn't use the network. */
     val networkRequest: Request?,
     /** The cached response to return or validate, or null if this call doesn't use a cache. */

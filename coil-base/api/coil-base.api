@@ -116,6 +116,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun placeholder (I)Lcoil/ImageLoader$Builder;
 	public final fun placeholder (Landroid/graphics/drawable/Drawable;)Lcoil/ImageLoader$Builder;
 	public final fun precision (Lcoil/size/Precision;)Lcoil/ImageLoader$Builder;
+	public final fun respectCacheHeaders (Z)Lcoil/ImageLoader$Builder;
 	public final fun trackWeakReferences (Z)Lcoil/ImageLoader$Builder;
 	public final fun transformationDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/ImageLoader$Builder;
 	public final fun transition (Lcoil/transition/Transition;)Lcoil/ImageLoader$Builder;

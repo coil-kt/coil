@@ -36,7 +36,8 @@ internal class HttpUrlFetcher(
     private val url: String,
     private val options: Options,
     private val callFactory: Call.Factory,
-    private val diskCache: DiskCache?
+    private val diskCache: DiskCache?,
+    private val respectCacheHeaders: Boolean
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -44,7 +45,12 @@ internal class HttpUrlFetcher(
         var snapshot = readFromDiskCache()
         try {
             val cacheRequest = newRequest()
-            val cacheStrategy = CacheStrategy.Factory(cacheRequest, CacheResponse.from(snapshot)).compute()
+            // Treat images with empty metadata as always eligible to be returned.
+            val cacheStrategy = if (!respectCacheHeaders || snapshot?.metadata?.length() == 0L) {
+                CacheStrategy(null, CacheResponse.from(snapshot))
+            } else {
+                CacheStrategy.Factory(cacheRequest, CacheResponse.from(snapshot)).compute()
+            }
             if (cacheStrategy.cacheResponse != null && cacheStrategy.networkRequest == null) {
                 return SourceResult(
                     source = snapshot!!.toImageSource(),
@@ -100,30 +106,24 @@ internal class HttpUrlFetcher(
         allowNotModified: Boolean
     ): DiskCache.Snapshot? {
         if (!options.diskCachePolicy.writeEnabled) return null
-        if (!isCacheable(request, response)) return null
+        if (respectCacheHeaders && !isCacheable(request, response)) return null
 
-        val editor = if (snapshot != null) {
-            snapshot.closeAndEdit()
-        } else {
-            diskCache?.edit(url)
-        } ?: return null
+        val editor = (if (snapshot != null) snapshot.closeAndEdit() else diskCache?.edit(url)) ?: return null
         try {
-            if (allowNotModified && response.code == HTTP_NOT_MODIFIED) {
+            // Write the response to the disk cache.
+            if (respectCacheHeaders && allowNotModified && response.code == HTTP_NOT_MODIFIED) {
                 // Only update the metadata.
                 val combinedResponse = response.newBuilder()
                     .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
                     .build()
                 editor.metadata.sink().buffer().use { CacheResponse(combinedResponse).writeTo(it) }
+                response.body!!.closeQuietly()
             } else {
                 // Update the metadata and the image data.
                 editor.metadata.sink().buffer().use { CacheResponse(response).writeTo(it) }
-                editor.data.sink().buffer().use { it.writeAll(response.body!!.source()) }
+                response.body!!.source().readAll(editor.data.sink())
             }
-            return if (options.diskCachePolicy.readEnabled) {
-                editor.commitAndGet()
-            } else {
-                editor.commit().run { null }
-            }
+            return editor.commitAndGet()
         } catch (e: Exception) {
             editor.abortQuietly()
             throw e
@@ -203,12 +203,13 @@ internal class HttpUrlFetcher(
 
     class Factory(
         private val callFactory: Call.Factory,
-        private val diskCache: DiskCache?
+        private val diskCache: DiskCache?,
+        private val respectCacheHeaders: Boolean
     ) : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
-            return HttpUrlFetcher(data.toString(), options, callFactory, diskCache)
+            return HttpUrlFetcher(data.toString(), options, callFactory, diskCache, respectCacheHeaders)
         }
 
         private fun isApplicable(data: Uri): Boolean {

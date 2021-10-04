@@ -278,6 +278,18 @@ interface ImageLoader {
         }
 
         /**
+         * Enables support for network cache headers. If enabled, this image loader will respect the
+         * cache headers returned by network responses when deciding if an image can be stored or
+         * served from the disk cache. If disabled, images will always be served from the disk cache
+         * (if present) and will only be evicted to stay under the maximum size.
+         *
+         * Default: true
+         */
+        fun respectCacheHeaders(enable: Boolean) = apply {
+            this.options = this.options.copy(respectCacheHeaders = enable)
+        }
+
+        /**
          * Sets the maximum number of parallel [BitmapFactory] decode operations at once.
          *
          * Increasing this number will allow more parallel [BitmapFactory] decode operations,

@@ -51,18 +51,13 @@ class Application : Application(), ImageLoaderFactory {
                 // Don't limit concurrent network requests by host.
                 val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }
 
-                // Rewrite the Cache-Control header to cache all responses for a year.
-                val cacheControlInterceptor = ResponseHeaderInterceptor(
-                    name = "Cache-Control",
-                    value = "max-age=31536000,public"
-                )
-
                 // Lazily create the OkHttpClient that is used for network operations.
                 OkHttpClient.Builder()
                     .dispatcher(dispatcher)
-                    .addNetworkInterceptor(cacheControlInterceptor)
                     .build()
             }
+            // Ignore the network cache headers and always read from/write to the disk cache.
+            .respectCacheHeaders(false)
             .apply {
                 // Enable logging to the standard Android log if this is a debug build.
                 if (BuildConfig.DEBUG) {

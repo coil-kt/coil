@@ -87,7 +87,7 @@ internal class RealImageLoader(
         .add(UriKeyer())
         .add(FileKeyer(options.addLastModifiedToFileCacheKey))
         // Fetchers
-        .add(HttpUrlFetcher.Factory(callFactory, diskCache))
+        .add(HttpUrlFetcher.Factory(callFactory, diskCache, options.respectCacheHeaders))
         .add(FileFetcher.Factory())
         .add(AssetUriFetcher.Factory())
         .add(ContentUriFetcher.Factory())
