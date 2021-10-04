@@ -21,8 +21,6 @@ class Application : Application(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
-            // Show a short crossfade when loading images asynchronously.
-            .crossfade(true)
             .components {
                 // GIFs
                 if (SDK_INT >= 28) {
@@ -56,6 +54,8 @@ class Application : Application(), ImageLoaderFactory {
                     .dispatcher(dispatcher)
                     .build()
             }
+            // Show a short crossfade when loading images asynchronously.
+            .crossfade(true)
             // Ignore the network cache headers and always read from/write to the disk cache.
             .respectCacheHeaders(false)
             .apply {
