@@ -12,7 +12,7 @@ import okio.buffer
 import okio.source
 
 /** Holds the response metadata for an image in the disk cache. */
-class CacheResponse {
+internal class CacheResponse {
 
     private var lazyCacheControl: CacheControl? = null
 
