@@ -9,12 +9,10 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.FileImageSource
 import coil.decode.SourceImageSource
-import coil.network.HttpException
-import coil.network.imageLoaderDiskCache
+import coil.disk.DiskCache
 import coil.request.CachePolicy
 import coil.request.Options
 import coil.size.PixelSize
-import coil.util.CoilUtils
 import coil.util.createMockWebServer
 import coil.util.createTestMainDispatcher
 import coil.util.runBlockingTest
@@ -23,12 +21,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
-import okhttp3.Cache
 import okhttp3.Call
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.mockwebserver.MockWebServer
 import okio.blackholeSink
 import org.junit.After
@@ -40,7 +36,6 @@ import org.robolectric.Shadows
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -49,7 +44,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class HttpUrlFetcherTest {
 
-    private lateinit var diskCache: Cache
+    private lateinit var diskCache: DiskCache
     private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var server: MockWebServer
@@ -60,33 +55,22 @@ class HttpUrlFetcherTest {
         context = ApplicationProvider.getApplicationContext()
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg", "normal.jpg")
-        diskCache = Cache(File("build/cache"), Long.MAX_VALUE).apply { evictAll() }
+        diskCache = DiskCache.Builder(context).directory(File("build/cache")).build()
         assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
-        callFactory = OkHttpClient.Builder().imageLoaderDiskCache(diskCache).build()
+        callFactory = OkHttpClient.Builder().build()
     }
 
     @After
     fun after() {
         Dispatchers.resetMain()
         server.shutdown()
-        diskCache.evictAll()
+        diskCache.clear()
     }
 
     @Test
-    fun `basic network URL fetch`() {
-        val url = server.url("/normal.jpg")
-        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, null)
-        val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertNotNull(fetcherFactory.create(url, options, ImageLoader(context)))
-        val result = runBlocking { fetcher.fetch() }
-
-        assertTrue(result is SourceResult)
-    }
-
-    @Test
-    fun `basic network URI fetch`() {
+    fun `basic network fetch`() {
         val uri = server.url("/normal.jpg").toString().toUri()
-        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, null)
+        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, diskCache)
         val options = Options(context, size = PixelSize(100, 100))
         val fetcher = assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context)))
         val result = runBlocking { fetcher.fetch() }
@@ -96,54 +80,41 @@ class HttpUrlFetcherTest {
 
     @Test
     fun `mime type is parsed correctly from content type`() {
-        val fetcher = HttpUrlFetcher(Unit, Options(context), callFactory, null)
+        val fetcher = HttpUrlFetcher("error", Options(context), callFactory, diskCache)
 
         // https://android.googlesource.com/platform/frameworks/base/+/61ae88e/core/java/android/webkit/MimeTypeMap.java#407
         Shadows.shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("svg", "image/svg+xml")
 
-        val url1 = "https://www.example.com/image.jpg".toHttpUrl()
-        val body1 = "".toResponseBody("image/svg+xml".toMediaType())
-        assertEquals("image/svg+xml", fetcher.getMimeType(url1, body1))
+        val url1 = "https://www.example.com/image.jpg"
+        val type1 = "image/svg+xml".toMediaType()
+        assertEquals("image/svg+xml", fetcher.getMimeType(url1, type1))
 
-        val url2 = "https://www.example.com/image.svg".toHttpUrl()
-        val body2 = "".toResponseBody(null)
-        assertEquals("image/svg+xml", fetcher.getMimeType(url2, body2))
+        val url2 = "https://www.example.com/image.svg"
+        val type2: MediaType? = null
+        assertEquals("image/svg+xml", fetcher.getMimeType(url2, type2))
 
-        val url3 = "https://www.example.com/image".toHttpUrl()
-        val body3 = "".toResponseBody("image/svg+xml;charset=utf-8".toMediaType())
-        assertEquals("image/svg+xml", fetcher.getMimeType(url3, body3))
+        val url3 = "https://www.example.com/image"
+        val type3 = "image/svg+xml;charset=utf-8".toMediaType()
+        assertEquals("image/svg+xml", fetcher.getMimeType(url3, type3))
 
-        val url4 = "https://www.example.com/image.svg".toHttpUrl()
-        val body4 = "".toResponseBody("text/plain".toMediaType())
-        assertEquals("image/svg+xml", fetcher.getMimeType(url4, body4))
+        val url4 = "https://www.example.com/image.svg"
+        val type4 = "text/plain".toMediaType()
+        assertEquals("image/svg+xml", fetcher.getMimeType(url4, type4))
 
-        val url5 = "https://www.example.com/image".toHttpUrl()
-        val body5 = "".toResponseBody(null)
-        assertNull(fetcher.getMimeType(url5, body5))
-    }
-
-    @Test
-    fun `not found response is cached`() {
-        val uri = createMockWebServer(context).url("/notfound.jpg").toString().toUri()
-        val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertNotNull(HttpUrlFetcher.Factory(callFactory, null)
-            .create(uri, options, ImageLoader(context)))
-
-        runBlocking {
-            assertFailsWith<HttpException> { fetcher.fetch() }
-        }
-        assertEquals(uri.toString(), diskCache.urls().next())
+        val url5 = "https://www.example.com/image"
+        val type5: MediaType? = null
+        assertNull(fetcher.getMimeType(url5, type5))
     }
 
     @Test
     fun `request on main thread throws NetworkOnMainThreadException`() = runBlockingTest {
-        val uri = server.url("/normal.jpg").toString().toUri()
+        val url = server.url("/normal.jpg").toString()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertNotNull(HttpUrlFetcher.Factory(callFactory, null)
-            .create(uri, options, ImageLoader(context)))
+        val fetcher = assertNotNull(HttpUrlFetcher.Factory(callFactory, diskCache)
+            .create(url.toUri(), options, ImageLoader(context)))
 
         assertFailsWith<NetworkOnMainThreadException> { fetcher.fetch() }
-        assertFalse(diskCache.urls().hasNext())
+        assertNotNull(diskCache[url]).close()
     }
 
     @Test
@@ -164,7 +135,7 @@ class HttpUrlFetcherTest {
     fun `request on main thread with network cache policy disabled executes correctly`() {
         val uri = server.url("/normal.jpg").toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, null)
+        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, diskCache)
 
         // Save the image in the disk cache.
         var result = runBlocking {
@@ -172,7 +143,7 @@ class HttpUrlFetcherTest {
         }
         (result as SourceResult).source.close()
 
-        assertEquals(uri.toString(), diskCache.urls().next())
+        assertNotNull(diskCache[uri.toString()]).close()
 
         // Load it from the disk cache on the main thread.
         result = runBlocking(Dispatchers.Main.immediate) {
@@ -187,10 +158,9 @@ class HttpUrlFetcherTest {
 
     @Test
     fun `no cached file - fetcher returns the file`() {
-        val url = server.url("/normal.jpg")
-        val uri = url.toString().toUri()
+        val uri = server.url("/normal.jpg").toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, null)
+        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, diskCache)
         val result = runBlocking {
             assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
         }
@@ -204,17 +174,16 @@ class HttpUrlFetcherTest {
         source.close()
 
         // Ensure the result file is present.
-        val expected = CoilUtils.getDiskCacheFile(diskCache, url)
+        val expected = diskCache[uri.toString()]?.metadata
         assertTrue(expected in diskCache.directory.listFiles().orEmpty())
-        assertEquals(expected, source.resultFile)
+        assertEquals(expected, source.file)
     }
 
     @Test
     fun `existing cached file - fetcher returns the file`() {
-        val url = server.url("/normal.jpg")
-        val uri = url.toString().toUri()
+        val uri = server.url("/normal.jpg").toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, null)
+        val fetcherFactory = HttpUrlFetcher.Factory(callFactory, diskCache)
 
         // Run the fetcher once to create the disk cache file.
         var result = runBlocking {
@@ -236,8 +205,8 @@ class HttpUrlFetcherTest {
         source.close()
 
         // Ensure the result file is present.
-        val expected = CoilUtils.getDiskCacheFile(diskCache, url)
+        val expected = diskCache[uri.toString()]?.metadata
         assertTrue(expected in diskCache.directory.listFiles().orEmpty())
-        assertEquals(expected, source.resultFile)
+        assertEquals(expected, source.file)
     }
 }

@@ -440,7 +440,7 @@ class EngineInterceptorTest {
                     drawable = drawable,
                     isSampled = false,
                     dataSource = DataSource.MEMORY,
-                    file = null
+                    diskCacheKey = null
                 ),
                 request = createRequest(context) { transformations(CircleCropTransformation()) },
                 options = Options(context, size = size),
@@ -463,7 +463,7 @@ class EngineInterceptorTest {
                     drawable = drawable,
                     isSampled = false,
                     dataSource = DataSource.MEMORY,
-                    file = null
+                    diskCacheKey = null
                 ),
                 request = createRequest(context) { transformations(emptyList()) },
                 options = Options(context, size = PixelSize(100, 100)),

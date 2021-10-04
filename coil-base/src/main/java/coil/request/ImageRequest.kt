@@ -221,7 +221,7 @@ class ImageRequest private constructor(
         result = 31 * result + (target?.hashCode() ?: 0)
         result = 31 * result + (listener?.hashCode() ?: 0)
         result = 31 * result + (memoryCacheKey?.hashCode() ?: 0)
-        result = 31 * result + (colorSpace?.hashCode() ?: 0)
+        result = 31 * result + if (SDK_INT < 26) 0 else (colorSpace?.hashCode() ?: 0)
         result = 31 * result + (fetcherFactory?.hashCode() ?: 0)
         result = 31 * result + (decoderFactory?.hashCode() ?: 0)
         result = 31 * result + transformations.hashCode()

@@ -27,8 +27,8 @@ interface DiskCache {
     /**
      * Get the entry associated with [key].
      *
-     * IMPORTANT: **You must** call [Snapshot.close] when finished reading the snapshot. An open
-     * snapshot prevents editing the entry or deleting it on disk.
+     * IMPORTANT: **You must** call either [Snapshot.close] or [Snapshot.closeAndEdit] when finished
+     * reading the snapshot. An open snapshot prevents editing the entry or deleting it on disk.
      */
     operator fun get(key: String): Snapshot?
 

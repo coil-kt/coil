@@ -13,7 +13,7 @@ class FakeInterceptor : Interceptor {
             request = chain.request,
             dataSource = DataSource.MEMORY,
             memoryCacheKey = null,
-            file = null,
+            diskCacheKey = null,
             isSampled = false,
             isPlaceholderCached = false,
         )

@@ -106,7 +106,7 @@ internal class HttpUrlFetcher(
             snapshot.closeAndEdit()
         } else {
             diskCache?.edit(url)
-        }  ?: return null
+        } ?: return null
         try {
             if (allowNotModified && response.code == HTTP_NOT_MODIFIED) {
                 // Only update the metadata.

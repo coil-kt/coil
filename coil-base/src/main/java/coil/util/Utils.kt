@@ -129,10 +129,30 @@ internal val Uri.firstPathSegment: String?
 internal val Configuration.nightMode: Int
     get() = uiMode and Configuration.UI_MODE_NIGHT_MASK
 
-internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
+/**
+ * An allowlist of valid bitmap configs for the input and output bitmaps of
+ * [Transformation.transform].
+ */
+internal val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
+    arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
+} else {
+    arrayOf(Bitmap.Config.ARGB_8888)
+}
+
+/**
+ * Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without
+ * transformations.
+ */
+internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
+    Bitmap.Config.HARDWARE
+} else {
+    Bitmap.Config.ARGB_8888
+}
 
 /** Required for compatibility with API 25 and below. */
 internal val NULL_COLOR_SPACE: ColorSpace? = null
+
+internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
 
 internal val EMPTY_HEADERS = Headers.Builder().build()
 
@@ -190,26 +210,6 @@ internal fun DiskCache.Editor.abortQuietly() {
 }
 
 internal fun unsupported(): Nothing = error("Unsupported")
-
-/**
- * An allowlist of valid bitmap configs for the input and output bitmaps of
- * [Transformation.transform].
- */
-internal val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
-    arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
-} else {
-    arrayOf(Bitmap.Config.ARGB_8888)
-}
-
-/**
- * Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without
- * transformations.
- */
-internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
-    Bitmap.Config.HARDWARE
-} else {
-    Bitmap.Config.ARGB_8888
-}
 
 /** A simple [Optional] replacement. */
 internal class Option<T : Any>(@JvmField val value: T?)

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import androidx.core.view.isVisible
 import androidx.test.core.app.ApplicationProvider
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
@@ -52,26 +51,23 @@ class CrossfadeTransitionTest {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
-        runBlocking {
-            transitionFactory.create(
-                target = createTransitionTarget(
-                    onSuccess = { result ->
-                        assertFalse(onSuccessCalled)
-                        onSuccessCalled = true
-                        assertEquals(drawable, result)
-                    }
-                ),
-                result = SuccessResult(
-                    drawable = drawable,
-                    request = createRequest(context),
-                    dataSource = DataSource.MEMORY_CACHE,
-                    memoryCacheKey = null,
-                    file = null,
-                    isSampled = false,
-                    isPlaceholderCached = false
-                )
-            ).transition()
-        }
+        val target = createTransitionTarget(
+            onSuccess = { result ->
+                assertFalse(onSuccessCalled)
+                onSuccessCalled = true
+                assertEquals(drawable, result)
+            }
+        )
+        val result = SuccessResult(
+            drawable = drawable,
+            request = createRequest(context),
+            dataSource = DataSource.MEMORY_CACHE,
+            memoryCacheKey = null,
+            diskCacheKey = null,
+            isSampled = false,
+            isPlaceholderCached = false
+        )
+        transitionFactory.create(target, result).transition()
 
         assertTrue(onSuccessCalled)
     }
@@ -81,64 +77,29 @@ class CrossfadeTransitionTest {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
-        runBlocking {
-            transitionFactory.create(
-                target = createTransitionTarget(
-                    onSuccess = { result ->
-                        assertFalse(onSuccessCalled)
-                        onSuccessCalled = true
+        val target = createTransitionTarget(
+            onSuccess = { result ->
+                assertFalse(onSuccessCalled)
+                onSuccessCalled = true
 
-                        assertTrue(result is CrossfadeDrawable)
+                assertTrue(result is CrossfadeDrawable)
 
-                        // Stop the transition early to simulate the end of the animation.
-                        result.stop()
-                    }
-                ),
-                result = SuccessResult(
-                    drawable = drawable,
-                    request = createRequest(context),
-                    dataSource = DataSource.DISK,
-                    memoryCacheKey = null,
-                    file = null,
-                    isSampled = false,
-                    isPlaceholderCached = false
-                )
-            ).transition()
-        }
+                // Stop the transition early to simulate the end of the animation.
+                result.stop()
+            }
+        )
+        val result = SuccessResult(
+            drawable = drawable,
+            request = createRequest(context),
+            dataSource = DataSource.DISK,
+            memoryCacheKey = null,
+            diskCacheKey = null,
+            isSampled = false,
+            isPlaceholderCached = false
+        )
+        transitionFactory.create(target, result).transition()
 
         assertTrue(onSuccessCalled)
-    }
-
-    /** Regression test: https://github.com/coil-kt/coil/issues/304 */
-    @Test
-    fun `success - view not visible`() {
-        val drawable = ColorDrawable()
-        val imageView = ImageView(context)
-        imageView.isVisible = false
-        var onSuccessCalled = false
-
-        runBlocking {
-            transitionFactory.create(
-                target = createTransitionTarget(
-                    imageView = imageView,
-                    onSuccess = { result ->
-                        assertFalse(onSuccessCalled)
-                        onSuccessCalled = true
-
-                        assertFalse(result is CrossfadeDrawable)
-                    }
-                ),
-                result = SuccessResult(
-                    drawable = drawable,
-                    request = createRequest(context),
-                    dataSource = DataSource.NETWORK,
-                    memoryCacheKey = null,
-                    file = null,
-                    isSampled = false,
-                    isPlaceholderCached = false
-                )
-            ).transition()
-        }
     }
 
     @Test

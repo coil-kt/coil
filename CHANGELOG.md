@@ -8,8 +8,15 @@ Coil 2.0.0 is the next major iteration of the library and has improvements to pe
 - **Important**: Enable `-Xjvm-default=all`.
     - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
     - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to do this.
-- **Important**: `CoilUtils.createDefaultCache` has been replaced by `OkHttpClient.Builder.imageLoaderDiskCache`.
-    - It's important to use `OkHttpClient.Builder.imageLoaderDiskCache` and **not** `OkHttpClient.Builder.cache`.
+- **Important**: Coil now has its own disk cache implementation and no longer relies on OkHttp for disk caching.
+    - This change was made to:
+        - Better support thread interruption while decoding images. This improves performance when image requests are started and stopped in quick succession.
+        - Support exposing `ImageSource`s backed by `File`s. This avoids unnecessary copying when an Android API requires a `File` to decode (e.g. `MediaMetadataRetriever`).
+        - Support reading from/writing to the disk cache files directly.
+    - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
+    - You **should not** use OkHttp's `Cache` with Coil 2.x as it can be corrupted if it's interrupted while writing to it.
+    - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match.
+    - Your existing disk cache will be cleared and rebuilt when upgrading to 2.x.
 - **Important**: `ImageRequest`'s default `Scale` is now `Scale.FIT`
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
     - Requests with an `ImageViewTarget` still have their scale autodetected.
@@ -40,7 +47,7 @@ Coil 2.0.0 is the next major iteration of the library and has improvements to pe
 - `ImageRequest.Listener` returns `SuccessResult`/`ErrorResult` in `onSuccess` and `onError` respectively.
 - Add `ByteBuffer`s to the default supported data types.
 - Remove `toString` implementations from several classes.
-- Update OkHttp to 4.9.1.
+- Update OkHttp to 4.9.2.
 
 ## [1.3.2] - August 4, 2021
 
