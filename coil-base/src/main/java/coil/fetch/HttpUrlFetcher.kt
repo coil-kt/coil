@@ -61,9 +61,11 @@ internal class HttpUrlFetcher(
             val responseBody = checkNotNull(response.body) { "response body == null" }
             try {
                 // Read the response from the disk cache after writing it.
-                val allowNotModified = cacheStrategy.run { networkRequest != null && cacheResponse != null }
+                val allowNotModified = cacheStrategy.networkRequest != null &&
+                    cacheStrategy.cacheResponse != null
                 snapshot = writeToDiskCache(snapshot, request, response, allowNotModified)
-                CacheResponse.from(snapshot)?.let { cacheResponse ->
+                val cacheResponse = CacheResponse.from(snapshot)
+                if (cacheResponse != null) {
                     return SourceResult(
                         source = snapshot!!.toImageSource(),
                         mimeType = getMimeType(url, cacheResponse.contentType()),
