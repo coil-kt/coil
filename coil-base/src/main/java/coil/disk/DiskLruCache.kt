@@ -669,6 +669,13 @@ internal class DiskLruCache(
                 }
             }
         }
+
+        fun closeAndEdit(): Editor? {
+            synchronized(this@DiskLruCache) {
+                close()
+                return edit(entry.key)
+            }
+        }
     }
 
     /** Edits the values for an entry. */
@@ -678,19 +685,15 @@ internal class DiskLruCache(
 
         init {
             // Ensure all the files for the editor are empty.
-            entry.dirtyFiles.forEachIndices {
-                val file = it.toFile()
-                if (file.exists()) file.delete()
-                file.createNewFile()
+            entry.dirtyFiles.forEachIndices { file ->
+                fileSystem.deleteIfExists(file)
+                file.toFile().createNewFile()
             }
         }
 
         /**
-         * Prevents this editor from completing normally. This is necessary either when the edit
-         * causes an I/O error, or if the target entry is evicted while this editor is active. In
-         * either case we delete the editor's created files and prevent new files from being
-         * created. Note that once an editor has been detached it is possible for another editor to
-         * edit the entry.
+         * Prevents this editor from completing normally. This is necessary if the target entry is
+         * evicted while this editor is active.
          */
         fun detach() {
             if (entry.currentEditor == this) {
@@ -800,8 +803,8 @@ internal class DiskLruCache(
             if (currentEditor != null || zombie) return null
 
             // Ensure that the entry's files still exist.
-            cleanFiles.forEachIndices {
-                if (!it.toFile().exists()) {
+            cleanFiles.forEachIndices { file ->
+                if (!fileSystem.exists(file)) {
                     // Since the entry is no longer valid, remove it so the metadata is accurate
                     // (i.e. the cache size.)
                     try {

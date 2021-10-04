@@ -48,6 +48,7 @@ internal class RealDiskCache(
         override val data get() = snapshot.entry.cleanFiles[ENTRY_DATA].toFile()
 
         override fun close() = snapshot.close()
+        override fun closeAndEdit() = snapshot.closeAndEdit()?.let(::RealEditor)
     }
 
     private class RealEditor(private val editor: DiskLruCache.Editor): Editor {

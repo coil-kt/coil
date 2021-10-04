@@ -44,53 +44,47 @@ internal class HttpUrlFetcher(
         var request = newRequest()
         var snapshot = readFromDiskCache()
         try {
-            val cacheResponse = CacheResponse.from(snapshot)
-            val cacheStrategy = CacheStrategy.Factory(request, cacheResponse).compute()
+            val cacheStrategy = CacheStrategy.Factory(request, CacheResponse.from(snapshot)).compute()
             if (cacheStrategy.cacheResponse != null && cacheStrategy.networkRequest == null) {
                 return SourceResult(
                     source = snapshot!!.toImageSource(),
                     mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType()),
                     dataSource = DataSource.DISK
                 )
+            } else {
+                // Update the network request in case we need to verify the image.
+                cacheStrategy.networkRequest?.let { request = it }
             }
 
-            // Close the current snapshot so we can open an editor later.
-            snapshot?.closeQuietly()
-            // Update the network request in case we need to verify the image.
-            cacheStrategy.networkRequest?.let { request = it }
-        } catch (e: Exception) {
-            // Close the snapshot if there's an unexpected error.
-            snapshot?.closeQuietly()
-            throw e
-        }
-
-        // Slow path: fetch the image from the network.
-        val response = executeNetworkRequest(request)
-        try {
-            // Read the response from the disk cache after writing it.
-            snapshot = writeToDiskCache(request, response)
+            // Slow path: fetch the image from the network.
+            val response = executeNetworkRequest(request)
+            val responseBody = checkNotNull(response.body) { "response body == null" }
             try {
-                val cacheResponse = CacheResponse.from(snapshot)
-                if (cacheResponse != null) {
+                // Read the response from the disk cache after writing it.
+                val allowNotModified = cacheStrategy.run { networkRequest != null && cacheResponse != null }
+                snapshot = writeToDiskCache(snapshot, request, response, allowNotModified)
+                CacheResponse.from(snapshot)?.let { cacheResponse ->
                     return SourceResult(
                         source = snapshot!!.toImageSource(),
                         mimeType = getMimeType(url, cacheResponse.contentType()),
                         dataSource = DataSource.NETWORK
                     )
                 }
+
+                // If we can't read it from the cache or write it to the cache, read the response
+                // directly from the response body.
+                return SourceResult(
+                    source = responseBody.toImageSource(),
+                    mimeType = getMimeType(url, responseBody.contentType()),
+                    dataSource = if (response.networkResponse != null) DataSource.NETWORK else DataSource.DISK
+                )
             } catch (e: Exception) {
-                snapshot?.closeQuietly()
+                responseBody.closeQuietly()
                 throw e
             }
-
-            // Read the response directly from the response body.
-            return SourceResult(
-                source = response.body!!.toImageSource(),
-                mimeType = getMimeType(url, response.body!!.contentType()),
-                dataSource = if (response.networkResponse != null) DataSource.NETWORK else DataSource.DISK
-            )
         } catch (e: Exception) {
-            response.body!!.closeQuietly()
+            // Close the snapshot if there's an unexpected error.
+            snapshot?.closeQuietly()
             throw e
         }
     }
@@ -100,13 +94,22 @@ internal class HttpUrlFetcher(
         return diskCache?.get(url)
     }
 
-    private fun writeToDiskCache(request: Request, response: Response): DiskCache.Snapshot? {
+    private fun writeToDiskCache(
+        snapshot: DiskCache.Snapshot?,
+        request: Request,
+        response: Response,
+        allowNotModified: Boolean
+    ): DiskCache.Snapshot? {
         if (!options.diskCachePolicy.writeEnabled) return null
         if (!isCacheable(request, response)) return null
 
-        val editor = diskCache?.edit(url) ?: return null
+        val editor = if (snapshot != null) {
+            snapshot.closeAndEdit()
+        } else {
+            diskCache?.edit(url)
+        }  ?: return null
         try {
-            if (response.code == HTTP_NOT_MODIFIED) {
+            if (allowNotModified && response.code == HTTP_NOT_MODIFIED) {
                 // Only update the metadata.
                 val combinedResponse = response.newBuilder()
                     .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
@@ -173,7 +176,6 @@ internal class HttpUrlFetcher(
             response.body?.closeQuietly()
             throw HttpException(response)
         }
-        checkNotNull(response.body) { "response body == null" }
         return response
     }
 
