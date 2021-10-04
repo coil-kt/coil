@@ -57,7 +57,7 @@ class HttpUrlFetcherTest {
         server = createMockWebServer(context, "normal.jpg", "normal.jpg")
         diskCache = DiskCache.Builder(context).directory(File("build/cache")).build()
         assertTrue(diskCache.directory.list().contentEquals(arrayOf("journal")))
-        callFactory = OkHttpClient.Builder().build()
+        callFactory = OkHttpClient()
     }
 
     @After
