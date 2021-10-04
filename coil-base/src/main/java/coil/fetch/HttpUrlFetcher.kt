@@ -41,29 +41,27 @@ internal class HttpUrlFetcher(
 
     override suspend fun fetch(): FetchResult {
         // Fast path: fetch the image from the disk cache without performing a network request.
-        var request = newRequest()
         var snapshot = readFromDiskCache()
         try {
-            val cacheStrategy = CacheStrategy.Factory(request, CacheResponse.from(snapshot)).compute()
+            val cacheRequest = newRequest()
+            val cacheStrategy = CacheStrategy.Factory(cacheRequest, CacheResponse.from(snapshot)).compute()
             if (cacheStrategy.cacheResponse != null && cacheStrategy.networkRequest == null) {
                 return SourceResult(
                     source = snapshot!!.toImageSource(),
                     mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType()),
                     dataSource = DataSource.DISK
                 )
-            } else {
-                // Update the network request in case we need to verify the image.
-                cacheStrategy.networkRequest?.let { request = it }
             }
 
             // Slow path: fetch the image from the network.
-            val response = executeNetworkRequest(request)
+            val networkRequest = cacheStrategy.networkRequest ?: cacheRequest
+            val response = executeNetworkRequest(networkRequest)
             val responseBody = checkNotNull(response.body) { "response body == null" }
             try {
                 // Read the response from the disk cache after writing it.
                 val allowNotModified = cacheStrategy.networkRequest != null &&
                     cacheStrategy.cacheResponse != null
-                snapshot = writeToDiskCache(snapshot, request, response, allowNotModified)
+                snapshot = writeToDiskCache(snapshot, networkRequest, response, allowNotModified)
                 val cacheResponse = CacheResponse.from(snapshot)
                 if (cacheResponse != null) {
                     return SourceResult(
