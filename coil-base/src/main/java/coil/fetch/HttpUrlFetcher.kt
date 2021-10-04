@@ -95,8 +95,7 @@ internal class HttpUrlFetcher(
     }
 
     private fun readFromDiskCache(): DiskCache.Snapshot? {
-        if (!options.diskCachePolicy.readEnabled) return null
-        return diskCache?.get(url)
+        return if (options.diskCachePolicy.readEnabled) diskCache?.get(url) else null
     }
 
     private fun writeToDiskCache(
@@ -105,8 +104,11 @@ internal class HttpUrlFetcher(
         response: Response,
         allowNotModified: Boolean
     ): DiskCache.Snapshot? {
-        if (!options.diskCachePolicy.writeEnabled) return null
-        if (respectCacheHeaders && !isCacheable(request, response)) return null
+        if (!options.diskCachePolicy.writeEnabled ||
+            (respectCacheHeaders && !isCacheable(request, response))) {
+            snapshot?.closeQuietly()
+            return null
+        }
 
         val editor = (if (snapshot != null) snapshot.closeAndEdit() else diskCache?.edit(url)) ?: return null
         try {
