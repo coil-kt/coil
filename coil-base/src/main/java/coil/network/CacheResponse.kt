@@ -8,7 +8,6 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Response
 import okio.BufferedSink
-import okio.BufferedSource
 import okio.buffer
 import okio.source
 
@@ -23,16 +22,18 @@ internal class CacheResponse {
     val isTls: Boolean
     val responseHeaders: Headers
 
-    constructor(source: BufferedSource) {
-        this.sentRequestAtMillis = source.readUtf8LineStrict().toLong()
-        this.receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
-        this.isTls = source.readUtf8LineStrict().toInt() > 0
-        val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
-        val responseHeaders = Headers.Builder()
-        for (i in 0 until responseHeadersLineCount) {
-            responseHeaders.add(source.readUtf8LineStrict())
+    constructor(snapshot: DiskCache.Snapshot) {
+        snapshot.metadata.source().buffer().use { source ->
+            this.sentRequestAtMillis = source.readUtf8LineStrict().toLong()
+            this.receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
+            this.isTls = source.readUtf8LineStrict().toInt() > 0
+            val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
+            val responseHeaders = Headers.Builder()
+            for (i in 0 until responseHeadersLineCount) {
+                responseHeaders.add(source.readUtf8LineStrict())
+            }
+            this.responseHeaders = responseHeaders.build()
         }
-        this.responseHeaders = responseHeaders.build()
     }
 
     constructor(response: Response) {
@@ -63,11 +64,5 @@ internal class CacheResponse {
         return (lazyContentType
             ?: Option(responseHeaders["Content-Type"]?.toMediaTypeOrNull()).also { lazyContentType = it })
             .value
-    }
-
-    companion object {
-        fun from(snapshot: DiskCache.Snapshot?): CacheResponse? {
-            return snapshot?.metadata?.source()?.buffer()?.use(::CacheResponse)
-        }
     }
 }

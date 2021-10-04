@@ -41,38 +41,58 @@ internal class HttpUrlFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        // Fast path: fetch the image from the disk cache without performing a network request.
         var snapshot = readFromDiskCache()
         try {
-            val cacheRequest = newRequest()
-            // Treat images with empty metadata as always eligible to be returned.
-            val cacheStrategy = if (!respectCacheHeaders || snapshot?.metadata?.length() == 0L) {
-                CacheStrategy(null, CacheResponse.from(snapshot))
+            // Fast path: fetch the image from the disk cache without performing a network request.
+            val cacheStrategy: CacheStrategy
+            if (snapshot != null) {
+                // Always return cached images with empty metadata as they were likely added manually.
+                if (snapshot.metadata.length() == 0L) {
+                    return SourceResult(
+                        source = snapshot.toImageSource(),
+                        mimeType = null,
+                        dataSource = DataSource.DISK
+                    )
+                }
+
+                // Return the candidate from the cache if it is eligible.
+                if (respectCacheHeaders) {
+                    cacheStrategy = CacheStrategy.Factory(newRequest(), CacheResponse(snapshot)).compute()
+                    if (cacheStrategy.networkRequest == null && cacheStrategy.cacheResponse != null) {
+                        return SourceResult(
+                            source = snapshot.toImageSource(),
+                            mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType()),
+                            dataSource = DataSource.DISK
+                        )
+                    }
+                } else {
+                    // Skip checking the cache headers if the option is disabled.
+                    return SourceResult(
+                        source = snapshot.toImageSource(),
+                        mimeType = getMimeType(url, CacheResponse(snapshot).contentType()),
+                        dataSource = DataSource.DISK
+                    )
+                }
             } else {
-                CacheStrategy.Factory(cacheRequest, CacheResponse.from(snapshot)).compute()
-            }
-            if (cacheStrategy.cacheResponse != null && cacheStrategy.networkRequest == null) {
-                return SourceResult(
-                    source = snapshot!!.toImageSource(),
-                    mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType()),
-                    dataSource = DataSource.DISK
-                )
+                cacheStrategy = CacheStrategy.Factory(newRequest(), null).compute()
             }
 
             // Slow path: fetch the image from the network.
-            val networkRequest = cacheStrategy.networkRequest ?: cacheRequest
-            val response = executeNetworkRequest(networkRequest)
+            val request = cacheStrategy.networkRequest ?: newRequest()
+            val response = executeNetworkRequest(request)
             val responseBody = checkNotNull(response.body) { "response body == null" }
             try {
                 // Read the response from the disk cache after writing it.
-                val allowNotModified = cacheStrategy.networkRequest != null &&
-                    cacheStrategy.cacheResponse != null
-                snapshot = writeToDiskCache(snapshot, networkRequest, response, allowNotModified)
-                val cacheResponse = CacheResponse.from(snapshot)
-                if (cacheResponse != null) {
+                snapshot = writeToDiskCache(
+                    snapshot = snapshot,
+                    request = request,
+                    response = response,
+                    allowNotModified = cacheStrategy.cacheResponse != null
+                )
+                if (snapshot != null) {
                     return SourceResult(
-                        source = snapshot!!.toImageSource(),
-                        mimeType = getMimeType(url, cacheResponse.contentType()),
+                        source = snapshot.toImageSource(),
+                        mimeType = getMimeType(url, CacheResponse(snapshot).contentType()),
                         dataSource = DataSource.NETWORK
                     )
                 }
@@ -113,7 +133,7 @@ internal class HttpUrlFetcher(
         val editor = (if (snapshot != null) snapshot.closeAndEdit() else diskCache?.edit(url)) ?: return null
         try {
             // Write the response to the disk cache.
-            if (respectCacheHeaders && allowNotModified && response.code == HTTP_NOT_MODIFIED) {
+            if (allowNotModified && response.code == HTTP_NOT_MODIFIED) {
                 // Only update the metadata.
                 val combinedResponse = response.newBuilder()
                     .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
