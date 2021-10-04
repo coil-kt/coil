@@ -73,7 +73,8 @@ class RealImageLoaderTest {
             context = context,
             defaults = DefaultRequestOptions(),
             memoryCache = memoryCache,
-            callFactoryInitializer = OkHttpClient(),
+            diskCache = null,
+            callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             componentRegistry = ComponentRegistry(),
             options = ImageLoaderOptions(),
@@ -259,7 +260,7 @@ class RealImageLoaderTest {
         assertTrue(result is SuccessResult)
         val bitmap = (result.drawable as BitmapDrawable).bitmap
         assertNotNull(bitmap)
-        assertEquals(bitmap, imageLoader.memoryCache[result.memoryCacheKey!!]?.bitmap)
+        assertEquals(bitmap, imageLoader.memoryCache!![result.memoryCacheKey!!]?.bitmap)
     }
 
     @Test
@@ -326,13 +327,13 @@ class RealImageLoaderTest {
         val imageLoader2 = imageLoader1.newBuilder().build()
 
         assertSame(imageLoader1.memoryCache, imageLoader2.memoryCache)
-        assertNull(imageLoader1.memoryCache[key])
-        assertNull(imageLoader2.memoryCache[key])
+        assertNull(imageLoader1.memoryCache!![key])
+        assertNull(imageLoader2.memoryCache!![key])
 
         val bitmap = createBitmap(100, 100)
-        imageLoader1.memoryCache[key] = MemoryCache.Value(bitmap)
+        imageLoader1.memoryCache!![key] = MemoryCache.Value(bitmap)
 
-        assertSame(bitmap, imageLoader2.memoryCache[key]?.bitmap)
+        assertSame(bitmap, imageLoader2.memoryCache!![key]?.bitmap)
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {

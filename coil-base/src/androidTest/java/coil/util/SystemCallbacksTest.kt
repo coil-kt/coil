@@ -50,12 +50,13 @@ class SystemCallbacksTest {
 
     @Test
     fun trimMemoryCallsArePassedThrough() {
-        val memoryCache = MemoryCache(context)
+        val memoryCache = MemoryCache.Builder(context).build()
         val imageLoader = RealImageLoader(
             context = context,
             defaults = DefaultRequestOptions(),
             memoryCache = memoryCache,
-            callFactoryInitializer = OkHttpClient(),
+            diskCache = null,
+            callFactory = OkHttpClient(),
             eventListenerFactory = EventListener.Factory.NONE,
             componentRegistry = ComponentRegistry(),
             options = ImageLoaderOptions(),

@@ -44,10 +44,10 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class HttpUrlFetcherTest {
 
-    private lateinit var diskCache: DiskCache
     private lateinit var context: Context
     private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var server: MockWebServer
+    private lateinit var diskCache: DiskCache
     private lateinit var callFactory: Call.Factory
 
     @Before
