@@ -29,6 +29,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.buffer
 import okio.sink
+import okio.source
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import kotlin.coroutines.coroutineContext
 
@@ -225,6 +226,10 @@ internal class HttpUrlFetcher(
 
     private fun ResponseBody.toImageSource(): ImageSource {
         return ImageSource(source = source(), context = options.context)
+    }
+
+    private fun CacheResponse(snapshot: DiskCache.Snapshot): CacheResponse {
+        return snapshot.metadata.source().buffer().use(::CacheResponse)
     }
 
     private val diskCacheKey get() = options.diskCacheKey ?: url

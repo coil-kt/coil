@@ -142,7 +142,7 @@ class HttpUrlFetcherTest {
         }
         (result as SourceResult).source.close()
 
-        assertNotNull(diskCache[uri.toString()]).close()
+        diskCache[uri.toString()].use { assertNull(it) }
 
         // Load it from the disk cache on the main thread.
         result = runBlocking(Dispatchers.Main.immediate) {

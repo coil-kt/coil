@@ -1,6 +1,5 @@
 package coil.network
 
-import coil.disk.DiskCache
 import coil.util.Option
 import okhttp3.CacheControl
 import okhttp3.Headers
@@ -8,8 +7,7 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Response
 import okio.BufferedSink
-import okio.buffer
-import okio.source
+import okio.BufferedSource
 
 /** Holds the response metadata for an image in the disk cache. */
 internal class CacheResponse {
@@ -22,18 +20,16 @@ internal class CacheResponse {
     val isTls: Boolean
     val responseHeaders: Headers
 
-    constructor(snapshot: DiskCache.Snapshot) {
-        snapshot.metadata.source().buffer().use { source ->
-            this.sentRequestAtMillis = source.readUtf8LineStrict().toLong()
-            this.receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
-            this.isTls = source.readUtf8LineStrict().toInt() > 0
-            val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
-            val responseHeaders = Headers.Builder()
-            for (i in 0 until responseHeadersLineCount) {
-                responseHeaders.add(source.readUtf8LineStrict())
-            }
-            this.responseHeaders = responseHeaders.build()
+    constructor(source: BufferedSource) {
+        this.sentRequestAtMillis = source.readUtf8LineStrict().toLong()
+        this.receivedResponseAtMillis = source.readUtf8LineStrict().toLong()
+        this.isTls = source.readUtf8LineStrict().toInt() > 0
+        val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
+        val responseHeaders = Headers.Builder()
+        for (i in 0 until responseHeadersLineCount) {
+            responseHeaders.add(source.readUtf8LineStrict())
         }
+        this.responseHeaders = responseHeaders.build()
     }
 
     constructor(response: Response) {
