@@ -142,8 +142,6 @@ class HttpUrlFetcherTest {
         }
         (result as SourceResult).source.close()
 
-        diskCache[uri.toString()].use { assertNull(it) }
-
         // Load it from the disk cache on the main thread.
         result = runBlocking(Dispatchers.Main.immediate) {
             val newOptions = options.copy(networkCachePolicy = CachePolicy.DISABLED)
