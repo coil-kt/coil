@@ -137,30 +137,30 @@ class ComponentRegistry private constructor(
         /** Register a [Mapper]. */
         inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(mapper, T::class.java)
 
+        /** Register a [Mapper]. */
+        fun <T : Any> add(mapper: Mapper<T, *>, type: Class<T>) = apply {
+            mappers += mapper to type
+        }
+
         /** Register a [Keyer]. */
         inline fun <reified T : Any> add(keyer: Keyer<T>) = add(keyer, T::class.java)
+
+        /** Register a [Keyer]. */
+        fun <T : Any> add(keyer: Keyer<T>, type: Class<T>) = apply {
+            keyers += keyer to type
+        }
 
         /** Register a [Fetcher.Factory]. */
         inline fun <reified T : Any> add(factory: Fetcher.Factory<T>) = add(factory, T::class.java)
 
+        /** Register a [Fetcher.Factory]. */
+        fun <T : Any> add(factory: Fetcher.Factory<T>, type: Class<T>) = apply {
+            fetcherFactories += factory to type
+        }
+
         /** Register a [Decoder.Factory]. */
         fun add(factory: Decoder.Factory) = apply {
             decoderFactories += factory
-        }
-
-        @PublishedApi
-        internal fun <T : Any> add(mapper: Mapper<T, *>, type: Class<T>) = apply {
-            mappers += mapper to type
-        }
-
-        @PublishedApi
-        internal fun <T : Any> add(keyer: Keyer<T>, type: Class<T>) = apply {
-            keyers += keyer to type
-        }
-
-        @PublishedApi
-        internal fun <T : Any> add(factory: Fetcher.Factory<T>, type: Class<T>) = apply {
-            fetcherFactories += factory to type
         }
 
         fun build(): ComponentRegistry {
