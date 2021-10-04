@@ -59,6 +59,24 @@ class DiskCacheTest {
         }
     }
 
+    @Test
+    fun `can remove singular entries`() {
+        diskCache.edit("test1")?.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test2")?.use { /** Empty edit to create the file on disk. */ }
+        assertTrue(diskCache.remove("test1"))
+        diskCache["test1"].use { assertNull(it) }
+        diskCache["test2"].use { assertNotNull(it) }
+    }
+
+    @Test
+    fun `can clear all entries`() {
+        diskCache.edit("test1")?.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test2")?.use { /** Empty edit to create the file on disk. */ }
+        diskCache.clear()
+        diskCache["test1"].use { assertNull(it) }
+        diskCache["test2"].use { assertNull(it) }
+    }
+
     private inline fun <T : DiskCache.Editor?, R> T.use(block: (T) -> R): R {
         try {
             return block(this).also { this?.commit() }
