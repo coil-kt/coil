@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.request.CachePolicy
 import coil.request.SuccessResult
 import coil.result
 import coil.sample.ImageListAdapter.ViewHolder
@@ -46,7 +45,6 @@ class ImageListAdapter(
                 placeholder(ColorDrawable(item.color))
                 error(ColorDrawable(Color.RED))
                 parameters(item.parameters)
-                memoryCachePolicy(CachePolicy.WRITE_ONLY)
             }
 
             setOnClickListener {
