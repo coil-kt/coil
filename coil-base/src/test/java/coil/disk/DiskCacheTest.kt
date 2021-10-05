@@ -26,7 +26,7 @@ class DiskCacheTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         diskCache = DiskCache.Builder(context).directory(File("build/cache")).build()
-        diskCache.directory.delete() // Ensure the disk cache is empty.
+        diskCache.clear()
     }
 
     @After
@@ -61,8 +61,8 @@ class DiskCacheTest {
 
     @Test
     fun `can remove singular entries`() {
-        diskCache.edit("test1")?.use { /** Empty edit to create the file on disk. */ }
-        diskCache.edit("test2")?.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test1")!!.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test2")!!.use { /** Empty edit to create the file on disk. */ }
         assertTrue(diskCache.remove("test1"))
         diskCache["test1"].use { assertNull(it) }
         diskCache["test2"].use { assertNotNull(it) }
@@ -70,8 +70,8 @@ class DiskCacheTest {
 
     @Test
     fun `can clear all entries`() {
-        diskCache.edit("test1")?.use { /** Empty edit to create the file on disk. */ }
-        diskCache.edit("test2")?.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test1")!!.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test2")!!.use { /** Empty edit to create the file on disk. */ }
         diskCache.clear()
         diskCache["test1"].use { assertNull(it) }
         diskCache["test2"].use { assertNull(it) }

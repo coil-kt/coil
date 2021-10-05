@@ -73,7 +73,7 @@ interface MemoryCache {
     class Builder(private val context: Context) {
 
         private var maxSizePercent = Utils.defaultMemoryCacheSizePercent(context)
-        private var maxSizeBytes = Int.MIN_VALUE
+        private var maxSizeBytes = 0
         private var strongReferencesEnabled = true
         private var weakReferencesEnabled = true
 
@@ -83,7 +83,7 @@ interface MemoryCache {
          */
         fun maxSizePercent(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
             require(percent in 0.0..1.0) { "size must be in the range [0.0, 1.0]." }
-            this.maxSizeBytes = Int.MIN_VALUE
+            this.maxSizeBytes = 0
             this.maxSizePercent = percent
         }
 
@@ -92,7 +92,7 @@ interface MemoryCache {
          */
         fun maxSizeBytes(size: Int) = apply {
             require(size >= 0) { "size must be >= 0." }
-            this.maxSizePercent = Double.MIN_VALUE
+            this.maxSizePercent = 0.0
             this.maxSizeBytes = size
         }
 
@@ -123,7 +123,7 @@ interface MemoryCache {
                 EmptyWeakMemoryCache()
             }
             val strongMemoryCache = if (strongReferencesEnabled) {
-                val maxSize = if (maxSizePercent >= 0) {
+                val maxSize = if (maxSizePercent > 0) {
                     Utils.calculateMemoryCacheSize(context, maxSizePercent)
                 } else {
                     maxSizeBytes

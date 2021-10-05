@@ -56,7 +56,7 @@ class HttpUrlFetcherTest {
         mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer(context, "normal.jpg", "normal.jpg")
         diskCache = DiskCache.Builder(context).directory(File("build/cache")).build()
-        diskCache.directory.delete() // Ensure the disk cache is empty.
+        diskCache.clear()
         callFactory = OkHttpClient()
     }
 

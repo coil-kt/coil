@@ -102,7 +102,7 @@ interface DiskCache {
         private var maxSizePercent = 0.02 // 2%
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
-        private var maxSizeBytes = Long.MIN_VALUE
+        private var maxSizeBytes = 0L
 
         /**
          * Set the [directory] where the cache stores its data.
@@ -119,7 +119,7 @@ interface DiskCache {
          */
         fun maxSizePercent(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
             require(percent in 0.0..1.0) { "size must be in the range [0.0, 1.0]." }
-            this.maxSizeBytes = Long.MIN_VALUE
+            this.maxSizeBytes = 0
             this.maxSizePercent = percent
         }
 
@@ -146,7 +146,7 @@ interface DiskCache {
          */
         fun maxSizeBytes(size: Long) = apply {
             require(size > 0) { "size must be > 0." }
-            this.maxSizePercent = Double.MIN_VALUE
+            this.maxSizePercent = 0.0
             this.maxSizeBytes = size
         }
 
@@ -155,7 +155,7 @@ interface DiskCache {
          */
         fun build(): DiskCache {
             val directory = checkNotNull(directory) { "directory == null" }
-            val maxSize = if (maxSizePercent >= 0) {
+            val maxSize = if (maxSizePercent > 0) {
                 try {
                     val stats = StatFs(directory.absolutePath)
                     val size = maxSizePercent * stats.blockCountLong * stats.blockSizeLong
