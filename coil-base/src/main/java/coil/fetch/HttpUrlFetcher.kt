@@ -27,6 +27,7 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okio.IOException
 import okio.buffer
 import okio.sink
 import okio.source
@@ -58,7 +59,7 @@ internal class HttpUrlFetcher(
 
                 // Return the candidate from the cache if it is eligible.
                 if (respectCacheHeaders) {
-                    cacheStrategy = CacheStrategy.Factory(newRequest(), CacheResponse(snapshot)).compute()
+                    cacheStrategy = CacheStrategy.Factory(newRequest(), newCacheResponse(snapshot)).compute()
                     if (cacheStrategy.networkRequest == null && cacheStrategy.cacheResponse != null) {
                         return SourceResult(
                             source = snapshot.toImageSource(),
@@ -70,7 +71,7 @@ internal class HttpUrlFetcher(
                     // Skip checking the cache headers if the option is disabled.
                     return SourceResult(
                         source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, CacheResponse(snapshot).contentType()),
+                        mimeType = getMimeType(url, newCacheResponse(snapshot)?.contentType()),
                         dataSource = DataSource.DISK
                     )
                 }
@@ -93,7 +94,7 @@ internal class HttpUrlFetcher(
                 if (snapshot != null) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, CacheResponse(snapshot).contentType()),
+                        mimeType = getMimeType(url, newCacheResponse(snapshot)?.contentType()),
                         dataSource = DataSource.NETWORK
                     )
                 }
@@ -228,8 +229,13 @@ internal class HttpUrlFetcher(
         return ImageSource(source = source(), context = options.context)
     }
 
-    private fun CacheResponse(snapshot: DiskCache.Snapshot): CacheResponse {
-        return snapshot.metadata.source().buffer().use(::CacheResponse)
+    private fun newCacheResponse(snapshot: DiskCache.Snapshot): CacheResponse? {
+        try {
+            return snapshot.metadata.source().buffer().use(::CacheResponse)
+        } catch (_: IOException) {
+            // If we can't parse the metadata, ignore this entry.
+            return null
+        }
     }
 
     private val diskCacheKey get() = options.diskCacheKey ?: url
