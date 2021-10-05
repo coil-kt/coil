@@ -39,6 +39,7 @@ Coil 2.0.0 is the next major iteration of the library and has improvements to pe
 - Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
 - Adds support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
 - `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
+- Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
 - Add `GenericViewTarget`, which handles common `ViewTarget` logic.
 - [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library.
     - If you use them, you can copy their code into your project.
