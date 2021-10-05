@@ -2,7 +2,7 @@
 
 ## [2.0.0-alpha01] - XXX
 
-Coil 2.0.0 is the next major iteration of the library and has improvements to performance, API flexibility, artifact size, and various bug fixes. This release may be binary/source incompatible with future alpha releases until the stable release of 2.0.0.
+Coil 2.0.0 is the next major iteration of the library and has new features, improvements to performance, API improvements, and various bug fixes. This release may be binary/source incompatible with future alpha releases until the stable release of 2.0.0.
 
 - **Important**: The minimum supported API is now 21.
 - **Important**: Enable `-Xjvm-default=all`.
@@ -49,6 +49,7 @@ Coil 2.0.0 is the next major iteration of the library and has improvements to pe
 - Add `ByteBuffer`s to the default supported data types.
 - Remove `toString` implementations from several classes.
 - Update OkHttp to 4.9.2.
+- Update Okio to 3.0.0-alpha.10.
 
 ## [1.3.2] - August 4, 2021
 
