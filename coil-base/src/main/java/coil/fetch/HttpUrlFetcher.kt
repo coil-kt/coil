@@ -221,14 +221,6 @@ internal class HttpUrlFetcher(
         return rawContentType?.substringBefore(';')
     }
 
-    private fun DiskCache.Snapshot.toImageSource(): ImageSource {
-        return ImageSource(file = data, diskCacheKey = diskCacheKey, closeable = this)
-    }
-
-    private fun ResponseBody.toImageSource(): ImageSource {
-        return ImageSource(source = source(), context = options.context)
-    }
-
     private fun newCacheResponse(snapshot: DiskCache.Snapshot): CacheResponse? {
         try {
             return snapshot.metadata.source().buffer().use(::CacheResponse)
@@ -236,6 +228,14 @@ internal class HttpUrlFetcher(
             // If we can't parse the metadata, ignore this entry.
             return null
         }
+    }
+
+    private fun DiskCache.Snapshot.toImageSource(): ImageSource {
+        return ImageSource(file = data, diskCacheKey = diskCacheKey, closeable = this)
+    }
+
+    private fun ResponseBody.toImageSource(): ImageSource {
+        return ImageSource(source = source(), context = options.context)
     }
 
     private val diskCacheKey get() = options.diskCacheKey ?: url
