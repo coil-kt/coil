@@ -253,11 +253,12 @@ internal object Utils {
 
     @Synchronized
     fun singletonDiskCache(context: Context): DiskCache {
-        singletonDiskCache?.let { return it }
-        val diskCache = DiskCache.Builder(context)
-            .directory(context.safeCacheDir.resolve(SINGLETON_DISK_CACHE_NAME))
-            .build()
-        singletonDiskCache = diskCache
-        return diskCache
+        return singletonDiskCache ?: run {
+            // Create the singleton disk cache instance.
+            DiskCache.Builder(context)
+                .directory(context.safeCacheDir.resolve(SINGLETON_DISK_CACHE_NAME))
+                .build()
+                .also { singletonDiskCache = it }
+        }
     }
 }
