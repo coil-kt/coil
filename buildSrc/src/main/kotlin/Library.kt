@@ -31,7 +31,7 @@ object Library {
     const val COMPOSE_UI_TEST_JUNIT = "androidx.compose.ui:ui-test-junit4:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest:$COMPOSE_VERSION"
 
-    const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:0.18.0"
+    const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:0.19.0"
 
     const val MATERIAL = "com.google.android.material:material:1.4.0"
 
