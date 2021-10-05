@@ -221,7 +221,7 @@ internal class HttpUrlFetcher(
     }
 
     private fun DiskCache.Snapshot.toImageSource(): ImageSource {
-        return ImageSource(file = data, diskCacheKey = url, closeable = this)
+        return ImageSource(file = data, diskCacheKey = diskCacheKey, closeable = this)
     }
 
     private fun ResponseBody.toImageSource(): ImageSource {
