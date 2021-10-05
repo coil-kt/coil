@@ -59,7 +59,7 @@ internal class HttpUrlFetcher(
 
                 // Return the candidate from the cache if it is eligible.
                 if (respectCacheHeaders) {
-                    cacheStrategy = CacheStrategy.Factory(newRequest(), newCacheResponse(snapshot)).compute()
+                    cacheStrategy = CacheStrategy.Factory(newRequest(), snapshot.toCacheResponse()).compute()
                     if (cacheStrategy.networkRequest == null && cacheStrategy.cacheResponse != null) {
                         return SourceResult(
                             source = snapshot.toImageSource(),
@@ -71,7 +71,7 @@ internal class HttpUrlFetcher(
                     // Skip checking the cache headers if the option is disabled.
                     return SourceResult(
                         source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, newCacheResponse(snapshot)?.contentType()),
+                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType()),
                         dataSource = DataSource.DISK
                     )
                 }
@@ -94,7 +94,7 @@ internal class HttpUrlFetcher(
                 if (snapshot != null) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, newCacheResponse(snapshot)?.contentType()),
+                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType()),
                         dataSource = DataSource.NETWORK
                     )
                 }
@@ -221,9 +221,9 @@ internal class HttpUrlFetcher(
         return rawContentType?.substringBefore(';')
     }
 
-    private fun newCacheResponse(snapshot: DiskCache.Snapshot): CacheResponse? {
+    private fun DiskCache.Snapshot.toCacheResponse(): CacheResponse? {
         try {
-            return snapshot.metadata.source().buffer().use(::CacheResponse)
+            return metadata.source().buffer().use(::CacheResponse)
         } catch (_: IOException) {
             // If we can't parse the metadata, ignore this entry.
             return null
