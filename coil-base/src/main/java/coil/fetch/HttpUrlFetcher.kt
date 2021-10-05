@@ -149,7 +149,7 @@ internal class HttpUrlFetcher(
             } else {
                 // Update the metadata and the image data.
                 editor.metadata.sink().buffer().use { CacheResponse(response).writeTo(it) }
-                response.body!!.source().readAll(editor.data.sink())
+                response.body!!.source().use { it.readAll(editor.data.sink()) }
             }
             return editor.commitAndGet()
         } catch (e: Exception) {
