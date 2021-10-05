@@ -16,6 +16,7 @@ Coil 2.0.0 is the next major iteration of the library and has new features, impr
     - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
     - You **should not** use OkHttp's `Cache` with Coil 2.0 as it can be corrupted if it's interrupted while writing to it.
     - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
+    - Support for cache headers can be enabled or disabled using `ImageLoader.Builder.respectCacheHeaders`.
     - Your existing disk cache will be cleared and rebuilt when upgrading to 2.0.
 - **Important**: `ImageRequest`'s default `Scale` is now `Scale.FIT`
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
