@@ -214,29 +214,22 @@ internal fun unsupported(): Nothing = error("Unsupported")
 /** A simple [Optional] replacement. */
 internal class Option<T : Any>(@JvmField val value: T?)
 
-/**
- * Holds the singleton instance of the disk cache. We need to have a singleton disk cache instance
- * to support creating multiple [ImageLoader]s without specifying the disk cache directory.
- *
- * @see DiskCache.Builder.directory
- */
-private var singletonDiskCache: DiskCache? = null
-
-@Synchronized
-internal fun singletonDiskCache(context: Context): DiskCache {
-    singletonDiskCache?.let { return it }
-    val diskCache = DiskCache.Builder(context)
-        .directory(context.safeCacheDir.resolve("image_cache"))
-        .build()
-    return diskCache.also { singletonDiskCache = it }
-}
-
 /** Namespaced private utility methods for Coil. */
 internal object Utils {
 
     private const val STANDARD_MEMORY_MULTIPLIER = 0.2
     private const val LOW_MEMORY_MULTIPLIER = 0.15
     private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
+    private const val SINGLETON_DISK_CACHE_NAME = "image_cache"
+
+    /**
+     * Holds the singleton instance of the disk cache. We need to have a singleton disk cache
+     * instance to support creating multiple [ImageLoader]s without specifying the disk cache
+     * directory.
+     *
+     * @see DiskCache.Builder.directory
+     */
+    private var singletonDiskCache: DiskCache? = null
 
     fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
         val memoryClassMegabytes = try {
@@ -256,5 +249,15 @@ internal object Utils {
         } catch (_: Exception) {
             STANDARD_MEMORY_MULTIPLIER
         }
+    }
+
+    @Synchronized
+    fun singletonDiskCache(context: Context): DiskCache {
+        singletonDiskCache?.let { return it }
+        val diskCache = DiskCache.Builder(context)
+            .directory(context.safeCacheDir.resolve(SINGLETON_DISK_CACHE_NAME))
+            .build()
+        singletonDiskCache = diskCache
+        return diskCache
     }
 }

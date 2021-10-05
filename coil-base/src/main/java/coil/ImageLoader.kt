@@ -32,9 +32,9 @@ import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.Option
+import coil.util.Utils
 import coil.util.getDrawableCompat
 import coil.util.lazyCallFactory
-import coil.util.singletonDiskCache
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -498,7 +498,7 @@ interface ImageLoader {
                 context = applicationContext,
                 defaults = defaults,
                 memoryCache = (memoryCache ?: Option(MemoryCache.Builder(applicationContext).build())).value,
-                diskCache = (diskCache ?: Option(singletonDiskCache(applicationContext))).value,
+                diskCache = (diskCache ?: Option(Utils.singletonDiskCache(applicationContext))).value,
                 callFactory = callFactory ?: lazyCallFactory { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
