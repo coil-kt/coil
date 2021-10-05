@@ -86,7 +86,7 @@ val drawable = imageLoader.execute(request).drawable
 ## 环境要求
 
 - AndroidX
-- Min SDK 21+
+- Min SDK 14+
 - [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
 
 ## R8 / Proguard
