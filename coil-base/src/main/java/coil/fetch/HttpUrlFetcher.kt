@@ -52,7 +52,7 @@ internal class HttpUrlFetcher(
                 if (snapshot.metadata.length() == 0L) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
-                        mimeType = null,
+                        mimeType = getMimeType(url, null),
                         dataSource = DataSource.DISK
                     )
                 }
