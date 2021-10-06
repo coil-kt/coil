@@ -13,6 +13,7 @@ cp coil-svg/README.md docs/svgs.md
 cp coil-video/README.md docs/videos.md
 cp logo.svg docs/logo.svg
 cp README-ko.md docs/README-ko.md
+cp README-tr.md docs/README-tr.md
 cp README-zh.md docs/README-zh.md
 
 # Deploy to Github pages.
@@ -28,4 +29,5 @@ rm docs/index.md \
    docs/svgs.md \
    docs/videos.md \
    docs/README-ko.md \
+   docs/README-tr.md \
    docs/README-zh.md
