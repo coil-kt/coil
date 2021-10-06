@@ -54,16 +54,16 @@ class ComponentRegistry private constructor(
         /** Register a [Mapper]. */
         inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(mapper, T::class.java)
 
-        @PublishedApi
-        internal fun <T : Any> add(mapper: Mapper<T, *>, type: Class<T>) = apply {
+        /** Register a [Mapper]. */
+        fun <T : Any> add(mapper: Mapper<T, *>, type: Class<T>) = apply {
             mappers += mapper to type
         }
 
         /** Register a [Fetcher]. */
         inline fun <reified T : Any> add(fetcher: Fetcher<T>) = add(fetcher, T::class.java)
 
-        @PublishedApi
-        internal fun <T : Any> add(fetcher: Fetcher<T>, type: Class<T>) = apply {
+        /** Register a [Fetcher]. */
+        fun <T : Any> add(fetcher: Fetcher<T>, type: Class<T>) = apply {
             fetchers += fetcher to type
         }
 
