@@ -240,7 +240,6 @@ class ImagePainter internal constructor(
      * Invoked immediately before the [ImagePainter] executes a new image request.
      * Return 'true' to proceed with the request. Return 'false' to skip executing the request.
      */
-    @ExperimentalCoilApi
     fun interface ExecuteCallback {
 
         operator fun invoke(previous: Snapshot?, current: Snapshot): Boolean

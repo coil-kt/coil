@@ -52,6 +52,21 @@ Coil 2.0.0 is the next major iteration of the library and has new features, impr
 - Update OkHttp to 4.9.2.
 - Update Okio to 3.0.0-alpha.10.
 
+## [1.4.0] - October 6, 2021
+
+- **New**: Add `ImageResult` to `ImagePainter.State.Success` and `ImagePainter.State.Error`. ([#887](https://github.com/coil-kt/coil/pull/887))
+    - This is a binary incompatible change to the signatures of `ImagePainter.State.Success` and `ImagePainter.State.Error`, however these APIs are marked as experimental.
+- Only execute `CrossfadeTransition` if `View.isShown` is `true`. Previously it would only check `View.isVisible`. ([#898](https://github.com/coil-kt/coil/pull/898))
+- Fix potential memory cache miss if scaling multiplier is slightly less than 1 due to a rounding issue. ([#899](https://github.com/coil-kt/coil/pull/899))
+- Make non-inlined `ComponentRegistry` methods public. ([#925](https://github.com/coil-kt/coil/pull/925))
+- Depend on `accompanist-drawablepainter` and remove Coil's custom `DrawablePainter` implementation. ([#845](https://github.com/coil-kt/coil/pull/845))
+- Remove use of a Java 8 method to guard against desugaring issue. ([#924](https://github.com/coil-kt/coil/pull/924))
+- Promote `ImagePainter.ExecuteCallback` to stable API. ([#927](https://github.com/coil-kt/coil/pull/927))
+- Update compileSdk to 31.
+- Update Kotlin to 1.5.30.
+- Update Coroutines to 1.5.2.
+- Update Compose to 1.0.3.
+
 ## [1.3.2] - August 4, 2021
 
 - `coil-compose` now depends on `compose.ui` instead of `compose.foundation`.

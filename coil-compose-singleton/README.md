@@ -3,7 +3,7 @@
 To add support for [Jetpack Compose](https://developer.android.com/jetpack/compose), import the extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:1.3.2")
+implementation("io.coil-kt:coil-compose:1.4.0")
 ```
 
 Then use the `rememberImagePainter` function to create an `ImagePainter` that can be drawn by the `Image` composable:
