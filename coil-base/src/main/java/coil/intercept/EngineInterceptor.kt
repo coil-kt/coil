@@ -219,13 +219,22 @@ internal class EngineInterceptor(
                 )
 
                 // Short circuit the size check if the size is at most 1 pixel off in either dimension.
-                // This accounts for the fact that downsampling can often produce images with one dimension
+                // This accounts for the fact that downsampling can often produce images with dimensions
                 // at most one pixel off due to rounding.
-                if (abs(cachedWidth - (multiple * cachedWidth)) <= 1 && abs(cachedHeight - (multiple * cachedHeight)) <= 1) {
-                    return true
+                val allowInexactSize = request.allowInexactSize
+                if (allowInexactSize) {
+                    val downsampleMultiplier = multiple.coerceAtMost(1.0)
+                    if (abs(size.width - (downsampleMultiplier * cachedWidth)) <= 1 ||
+                        abs(size.height - (downsampleMultiplier * cachedHeight)) <= 1) {
+                        return true
+                    }
+                } else {
+                    if (abs(size.width - cachedWidth) <= 1 && abs(size.height - cachedHeight) <= 1) {
+                        return true
+                    }
                 }
 
-                if (multiple != 1.0 && !request.allowInexactSize) {
+                if (multiple != 1.0 && !allowInexactSize) {
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) " +
                             "does not exactly match the requested size (${size.width}, ${size.height}, ${request.scale})."
