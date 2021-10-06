@@ -3,7 +3,6 @@ package coil.memory
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
-import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.VisibleForTesting
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
@@ -135,11 +134,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
                 }
             } else {
                 // Iterate over the list of values and delete individual entries that have been collected.
-                if (SDK_INT >= 24) {
-                    list.removeIf { it.bitmap.get() == null }
-                } else {
-                    list.removeIfIndices { it.bitmap.get() == null }
-                }
+                list.removeIfIndices { it.bitmap.get() == null }
 
                 if (list.isEmpty()) {
                     iterator.remove()

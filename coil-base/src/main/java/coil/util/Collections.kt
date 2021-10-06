@@ -44,12 +44,9 @@ internal inline fun <R, T> List<R>.firstNotNullOfOrNullIndices(transform: (R) ->
  */
 internal inline fun <T> MutableList<T>.removeIfIndices(predicate: (T) -> Boolean) {
     var numDeleted = 0
-
     for (rawIndex in indices) {
         val index = rawIndex - numDeleted
-        val value = get(index)
-
-        if (predicate(value)) {
+        if (predicate(get(index))) {
             removeAt(index)
             numDeleted++
         }
