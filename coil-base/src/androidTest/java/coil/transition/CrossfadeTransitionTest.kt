@@ -6,50 +6,40 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
 import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
+import coil.util.TestActivity
+import coil.util.activity
 import coil.util.createRequest
-import coil.util.createTestMainDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
-@RunWith(RobolectricTestRunner::class)
-@OptIn(ExperimentalCoroutinesApi::class)
 class CrossfadeTransitionTest {
 
     private lateinit var context: Context
-    private lateinit var mainDispatcher: TestCoroutineDispatcher
     private lateinit var transition: CrossfadeTransition
+
+    @get:Rule
+    val activityRule = activityScenarioRule<TestActivity>()
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        mainDispatcher = createTestMainDispatcher()
         transition = CrossfadeTransition()
     }
 
-    @After
-    fun after() {
-        Dispatchers.resetMain()
-    }
-
     @Test
-    fun `success - memory cache`() {
+    fun successMemoryCache() {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
@@ -80,7 +70,7 @@ class CrossfadeTransitionTest {
     }
 
     @Test
-    fun `success - disk`() {
+    fun successDisk() {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
@@ -115,7 +105,7 @@ class CrossfadeTransitionTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/304 */
     @Test
-    fun `success - view not visible`() {
+    fun successViewNotShown() {
         val drawable = ColorDrawable()
         val imageView = ImageView(context)
         imageView.isVisible = false
@@ -147,7 +137,7 @@ class CrossfadeTransitionTest {
     }
 
     @Test
-    fun `failure - disk`() {
+    fun failureDisk() {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
@@ -176,7 +166,7 @@ class CrossfadeTransitionTest {
     }
 
     private inline fun createTransitionTarget(
-        imageView: ImageView = ImageView(context),
+        imageView: ImageView = activityRule.scenario.activity.imageView,
         crossinline onStart: (placeholder: Drawable?) -> Unit = { fail() },
         crossinline onError: (error: Drawable?) -> Unit = { fail() },
         crossinline onSuccess: (result: Drawable) -> Unit = { fail() }
