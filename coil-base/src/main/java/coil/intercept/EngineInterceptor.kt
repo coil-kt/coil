@@ -195,13 +195,6 @@ internal class EngineInterceptor(
                     cachedHeight = bitmap.height
                 }
 
-                // Short circuit the size check if the size is at most 1 pixel off in either dimension.
-                // This accounts for the fact that downsampling can often produce images with one dimension
-                // at most one pixel off due to rounding.
-                if (abs(cachedWidth - size.width) <= 1 && abs(cachedHeight - size.height) <= 1) {
-                    return true
-                }
-
                 val multiple = DecodeUtils.computeSizeMultiplier(
                     srcWidth = cachedWidth,
                     srcHeight = cachedHeight,
@@ -209,7 +202,24 @@ internal class EngineInterceptor(
                     dstHeight = size.height,
                     scale = request.scale
                 )
-                if (multiple != 1.0 && !request.allowInexactSize) {
+
+                // Short circuit the size check if the size is at most 1 pixel off in either dimension.
+                // This accounts for the fact that downsampling can often produce images with dimensions
+                // at most one pixel off due to rounding.
+                val allowInexactSize = request.allowInexactSize
+                if (allowInexactSize) {
+                    val downsampleMultiplier = multiple.coerceAtMost(1.0)
+                    if (abs(size.width - (downsampleMultiplier * cachedWidth)) <= 1 ||
+                        abs(size.height - (downsampleMultiplier * cachedHeight)) <= 1) {
+                        return true
+                    }
+                } else {
+                    if (abs(size.width - cachedWidth) <= 1 && abs(size.height - cachedHeight) <= 1) {
+                        return true
+                    }
+                }
+
+                if (multiple != 1.0 && !allowInexactSize) {
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size " +
                             "($cachedWidth, $cachedHeight) does not exactly match the requested size " +

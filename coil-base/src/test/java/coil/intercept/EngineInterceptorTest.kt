@@ -360,7 +360,7 @@ class EngineInterceptorTest {
             size = PixelSize(245, 600)
         ))
         assertFalse(interceptor.isCachedValueValid(
-            cached = createBitmap(width = 243, height = 599),
+            cached = createBitmap(width = 243, height = 595),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.EXACT)
@@ -369,13 +369,23 @@ class EngineInterceptorTest {
             size = PixelSize(245, 600)
         ))
         assertFalse(interceptor.isCachedValueValid(
-            cached = createBitmap(width = 243, height = 599),
+            cached = createBitmap(width = 243, height = 595),
             isSampled = true,
             request = createRequest(context) {
                 precision(Precision.INEXACT)
                 scale(Scale.FIT)
             },
             size = PixelSize(245, 600)
+        ))
+        // Regression test: https://github.com/coil-kt/coil/issues/817
+        assertTrue(interceptor.isCachedValueValid(
+            cached = createBitmap(width = 175, height = 117),
+            isSampled = true,
+            request = createRequest(context) {
+                precision(Precision.INEXACT)
+                scale(Scale.FIT)
+            },
+            size = PixelSize(176, 176)
         ))
     }
 
