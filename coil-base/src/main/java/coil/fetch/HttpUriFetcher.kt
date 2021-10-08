@@ -34,7 +34,7 @@ import okio.source
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import kotlin.coroutines.coroutineContext
 
-internal class HttpUrlFetcher(
+internal class HttpUriFetcher(
     private val url: String,
     private val options: Options,
     private val callFactory: Call.Factory,
@@ -248,7 +248,7 @@ internal class HttpUrlFetcher(
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
-            return HttpUrlFetcher(data.toString(), options, callFactory, diskCache, respectCacheHeaders)
+            return HttpUriFetcher(data.toString(), options, callFactory, diskCache, respectCacheHeaders)
         }
 
         private fun isApplicable(data: Uri): Boolean {
