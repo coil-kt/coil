@@ -9,11 +9,13 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.widget.ImageView
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.base.test.R
+import coil.decode.DataSource
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.memory.MemoryCache
 import coil.request.ErrorResult
@@ -263,7 +265,7 @@ class RealImageLoaderTest {
     @Test
     fun placeholderKeyReturnsCorrectMemoryCacheEntry() {
         val key = MemoryCache.Key("fake_key")
-        val fileName = "normal.jpg"
+        val fileName = IMAGE_NAME
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
 
         runBlocking {
@@ -300,7 +302,7 @@ class RealImageLoaderTest {
     @Test
     fun cachedValueIsResolvedSynchronously() = runBlockingTest {
         val key = MemoryCache.Key("fake_key")
-        val fileName = "normal.jpg"
+        val fileName = IMAGE_NAME
         decodeAssetAndAddToMemoryCache(key, fileName)
 
         var isSuccessful = false
@@ -318,7 +320,7 @@ class RealImageLoaderTest {
     }
 
     @Test
-    fun newBuilderSharesPublicProperties() {
+    fun newBuilderSharesResources() {
         val imageLoader1 = ImageLoader(context)
         val imageLoader2 = imageLoader1.newBuilder().build()
 
@@ -329,6 +331,42 @@ class RealImageLoaderTest {
         )
         assertSame(imageLoader1.memoryCache, imageLoader2.memoryCache)
         assertSame(imageLoader1.diskCache, imageLoader2.diskCache)
+    }
+
+    @Test
+    fun customMemoryCacheKey() {
+        val imageLoader = ImageLoader(context)
+        val key = MemoryCache.Key("fake_key")
+
+        val result = runBlocking {
+            val request = ImageRequest.Builder(context)
+                .data(server.url(IMAGE_NAME))
+                .memoryCacheKey(key)
+                .build()
+            imageLoader.execute(request) as SuccessResult
+        }
+
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(key, result.memoryCacheKey)
+        assertSame(imageLoader.memoryCache!![key]!!.bitmap, result.drawable.toBitmap())
+    }
+
+    @Test
+    fun customDiskCacheKey() {
+        val imageLoader = ImageLoader(context)
+        val key = "fake_key"
+
+        val result = runBlocking {
+            val request = ImageRequest.Builder(context)
+                .data(server.url(IMAGE_NAME))
+                .diskCacheKey(key)
+                .build()
+            imageLoader.execute(request) as SuccessResult
+        }
+
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(key, result.diskCacheKey)
+        imageLoader.diskCache!![key]!!.use { assertNotNull(it) }
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {

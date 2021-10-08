@@ -80,6 +80,7 @@ internal class RequestService(
             allowInexactSize = request.allowInexactSize,
             allowRgb565 = allowRgb565,
             premultipliedAlpha = request.premultipliedAlpha,
+            diskCacheKey = request.diskCacheKey,
             headers = request.headers,
             parameters = request.parameters,
             memoryCachePolicy = request.memoryCachePolicy,
