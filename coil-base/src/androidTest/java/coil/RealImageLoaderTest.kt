@@ -323,7 +323,10 @@ class RealImageLoaderTest {
         val imageLoader2 = imageLoader1.newBuilder().build()
 
         assertSame(imageLoader1.defaults, imageLoader2.defaults)
-        assertSame((imageLoader1 as RealImageLoader).componentRegistry, (imageLoader2 as RealImageLoader).componentRegistry)
+        assertSame(
+            (imageLoader1 as RealImageLoader).componentRegistry,
+            (imageLoader2 as RealImageLoader).componentRegistry
+        )
         assertSame(imageLoader1.memoryCache, imageLoader2.memoryCache)
         assertSame(imageLoader1.diskCache, imageLoader2.diskCache)
     }
