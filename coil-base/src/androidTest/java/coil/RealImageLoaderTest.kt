@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.widget.ImageView
-import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
@@ -319,19 +318,14 @@ class RealImageLoaderTest {
     }
 
     @Test
-    fun newBuilderSharesMemoryCache() {
-        val key = MemoryCache.Key("fake_key")
+    fun newBuilderSharesPublicProperties() {
         val imageLoader1 = ImageLoader(context)
         val imageLoader2 = imageLoader1.newBuilder().build()
 
+        assertSame(imageLoader1.defaults, imageLoader2.defaults)
+        assertSame((imageLoader1 as RealImageLoader).componentRegistry, (imageLoader2 as RealImageLoader).componentRegistry)
         assertSame(imageLoader1.memoryCache, imageLoader2.memoryCache)
-        assertNull(imageLoader1.memoryCache!![key])
-        assertNull(imageLoader2.memoryCache!![key])
-
-        val bitmap = createBitmap(100, 100)
-        imageLoader1.memoryCache!![key] = MemoryCache.Value(bitmap)
-
-        assertSame(bitmap, imageLoader2.memoryCache!![key]?.bitmap)
+        assertSame(imageLoader1.diskCache, imageLoader2.diskCache)
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
