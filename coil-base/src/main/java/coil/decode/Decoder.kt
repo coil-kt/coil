@@ -1,46 +1,39 @@
 package coil.decode
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import coil.bitmap.BitmapPool
-import coil.size.Size
+import coil.ImageLoader
+import coil.fetch.Fetcher
+import coil.fetch.SourceResult
+import coil.request.Options
 import okio.BufferedSource
 
 /**
- * Converts a [BufferedSource] into a [Drawable].
+ * A [Decoder] converts a [SourceResult] into a [Drawable].
  *
  * Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
  */
-interface Decoder {
+fun interface Decoder {
 
-    /**
-     * Return true if this decoder supports decoding [source].
-     *
-     * Implementations **must not** consume the source, as this can cause subsequent calls to [handles] and [decode] to fail.
-     *
-     * Prefer using [BufferedSource.peek], [BufferedSource.rangeEquals], or other non-destructive methods to check
-     * for the presence of header bytes or other markers. Implementations can also rely on [mimeType],
-     * however it is not guaranteed to be accurate (e.g. a file that ends with .png, but is encoded as a .jpg).
-     *
-     * @param source The [BufferedSource] to read from.
-     * @param mimeType An optional MIME type for the [source].
-     */
-    fun handles(source: BufferedSource, mimeType: String?): Boolean
+    suspend fun decode(): DecodeResult?
 
-    /**
-     * Decode [source] as a [Drawable].
-     *
-     * NOTE: Implementations are responsible for closing [source] when finished with it.
-     *
-     * @param pool A [BitmapPool] which can be used to request [Bitmap] instances.
-     * @param source The [BufferedSource] to read from.
-     * @param size The requested dimensions for the image.
-     * @param options A set of configuration options for this request.
-     */
-    suspend fun decode(
-        pool: BitmapPool,
-        source: BufferedSource,
-        size: Size,
-        options: Options
-    ): DecodeResult
+    fun interface Factory {
+
+        /**
+         * Return a [Decoder] that can decode [result] or 'null' if this factory cannot
+         * create a decoder for the source.
+         *
+         * Implementations **must not** consume [result]'s [ImageSource], as this can cause calls
+         * to subsequent decoders to fail.
+         *
+         * Prefer using [BufferedSource.peek], [BufferedSource.rangeEquals], or other
+         * non-destructive methods to check for the presence of header bytes or other markers.
+         * Implementations can also rely on [SourceResult.mimeType], however it is not guaranteed
+         * to be accurate (e.g. a file that ends with .png, but is encoded as a .jpg).
+         *
+         * @param result The result from the [Fetcher].
+         * @param options A set of configuration options for this request.
+         * @param imageLoader The [ImageLoader] that's executing this request.
+         */
+        fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder?
+    }
 }

@@ -1,34 +1,29 @@
 package coil.fetch
 
 import android.content.ContentResolver
-import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Contacts
 import androidx.annotation.VisibleForTesting
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
 import coil.decode.DataSource
-import coil.decode.Options
-import coil.size.Size
+import coil.decode.ImageSource
+import coil.request.Options
 import okio.buffer
 import okio.source
 import java.io.InputStream
 
-internal class ContentUriFetcher(private val context: Context) : Fetcher<Uri> {
+internal class ContentUriFetcher(
+    private val data: Uri,
+    private val options: Options
+) : Fetcher {
 
-    override fun handles(data: Uri) = data.scheme == ContentResolver.SCHEME_CONTENT
-
-    override fun key(data: Uri) = data.toString()
-
-    override suspend fun fetch(
-        pool: BitmapPool,
-        data: Uri,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(): FetchResult {
+        val context = options.context
         val inputStream = if (isContactPhotoUri(data)) {
             // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
-            val stream: InputStream? = context.contentResolver.openAssetFileDescriptor(data, "r")?.createInputStream()
+            val stream: InputStream? = context.contentResolver
+                .openAssetFileDescriptor(data, "r")?.createInputStream()
             checkNotNull(stream) { "Unable to find a contact photo associated with '$data'." }
         } else {
             val stream: InputStream? = context.contentResolver.openInputStream(data)
@@ -36,15 +31,31 @@ internal class ContentUriFetcher(private val context: Context) : Fetcher<Uri> {
         }
 
         return SourceResult(
-            source = inputStream.source().buffer(),
+            source = ImageSource(inputStream.source().buffer(), context),
             mimeType = context.contentResolver.getType(data),
             dataSource = DataSource.DISK
         )
     }
 
-    /** Contact photos are a special case of content uris that must be loaded using [ContentResolver.openAssetFileDescriptor]. */
+    /**
+     * Contact photos are a special case of content uris that
+     * must be loaded using [ContentResolver.openAssetFileDescriptor].
+     */
     @VisibleForTesting
     internal fun isContactPhotoUri(data: Uri): Boolean {
-        return data.authority == ContactsContract.AUTHORITY && data.lastPathSegment == Contacts.Photo.DISPLAY_PHOTO
+        return data.authority == ContactsContract.AUTHORITY &&
+            data.lastPathSegment == Contacts.Photo.DISPLAY_PHOTO
+    }
+
+    class Factory : Fetcher.Factory<Uri> {
+
+        override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
+            if (!isApplicable(data)) return null
+            return ContentUriFetcher(data, options)
+        }
+
+        private fun isApplicable(data: Uri): Boolean {
+            return data.scheme == ContentResolver.SCHEME_CONTENT
+        }
     }
 }

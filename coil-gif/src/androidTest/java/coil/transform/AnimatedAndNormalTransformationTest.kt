@@ -12,7 +12,7 @@ import android.graphics.PorterDuff.Mode.SRC
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.graphics.drawable.Animatable
-import android.os.Build.VERSION
+import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
@@ -22,8 +22,8 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.request.animatedTransformation
+import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
-import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -31,6 +31,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AnimatedAndNormalTransformationTest {
+
     private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader
     private lateinit var imageRequestBuilder: ImageRequest.Builder
@@ -40,18 +41,16 @@ class AnimatedAndNormalTransformationTest {
         context = ApplicationProvider.getApplicationContext()
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
-            .componentRegistry {
-                val gifDecoder = if (VERSION.SDK_INT >= 28) {
-                    ImageDecoderDecoder(context)
+            .components {
+                if (SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
                 } else {
-                    GifDecoder()
+                    add(GifDecoder.Factory())
                 }
-                add(gifDecoder)
             }
             .memoryCachePolicy(CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
             .build()
-
         imageRequestBuilder = ImageRequest.Builder(context)
             .bitmapConfig(Bitmap.Config.ARGB_8888)
             .transformations(CircleCropTransformation())
@@ -68,7 +67,8 @@ class AnimatedAndNormalTransformationTest {
             imageLoader.execute(imageRequest)
         }
         assertTrue(actual is SuccessResult)
-        // Make sure this is still an animated result (has not been flattened to apply CircleCropTransformation).
+        // Make sure this is still an animated result (has not been flattened to
+        // apply CircleCropTransformation).
         assertTrue(actual.drawable is Animatable)
     }
 
@@ -84,7 +84,7 @@ class AnimatedAndNormalTransformationTest {
         assertTrue(actual is SuccessResult)
         // Make sure this is not an animated result.
         assertFalse(actual.drawable is Animatable)
-        assertTrue(actual.drawable.toBitmap().isSimilarTo(expected))
+        actual.drawable.toBitmap().assertIsSimilarTo(expected)
     }
 
     class AnimatedCircleTransformation : AnimatedTransformation {

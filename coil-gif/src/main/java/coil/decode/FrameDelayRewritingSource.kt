@@ -10,7 +10,8 @@ import okio.ForwardingSource
 import okio.Source
 
 /**
- * A [ForwardingSource] that rewrites the GIF frame delay in every graphics control block if it's below a threshold.
+ * A [ForwardingSource] that rewrites the GIF frame delay in every graphics control block if it's
+ * below a threshold.
  */
 internal class FrameDelayRewritingSource(delegate: Source) : ForwardingSource(delegate) {
 

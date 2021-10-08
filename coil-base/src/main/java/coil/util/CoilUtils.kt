@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package coil.util
 
 import android.content.Context
@@ -9,28 +11,32 @@ import okhttp3.Cache
 /** Public utility methods for Coil. */
 object CoilUtils {
 
-    /** Create an OkHttp disk cache with a reasonable default size and location. */
+    /**
+     * Dispose the request attached to this view (if there is one).
+     *
+     * NOTE: Typically you should use [Disposable.dispose] to cancel requests and clear resources,
+     * however this method is provided for convenience.
+     *
+     * @see Disposable.dispose
+     */
     @JvmStatic
-    fun createDefaultCache(context: Context): Cache {
-        val cacheDirectory = Utils.getDefaultCacheDirectory(context)
-        val cacheSize = Utils.calculateDiskCacheSize(cacheDirectory)
-        return Cache(cacheDirectory, cacheSize)
+    fun dispose(view: View) {
+        view.requestManager.dispose()
     }
 
     /**
-     * Cancel any in progress requests attached to [view] and clear any associated resources.
-     *
-     * NOTE: Typically you should use [Disposable.dispose] to clear any associated resources,
-     * however this method is provided for convenience.
+     * Get the [ImageResult] of the most recent executed image request attached to this view.
      */
     @JvmStatic
-    fun clear(view: View) {
-        view.requestManager.clearCurrentRequest()
+    fun result(view: View): ImageResult? {
+        return view.requestManager.getResult()
     }
 
-    /** Get the metadata of the successful request attached to this view. */
+    @Deprecated(
+        message = "ImageLoaders no longer (and should not) use OkHttp's disk cache. " +
+            "Use 'ImageLoader.Builder.diskCache' to configure a custom disk cache.",
+        level = DeprecationLevel.ERROR // Temporary migration aid.
+    )
     @JvmStatic
-    fun metadata(view: View): ImageResult.Metadata? {
-        return view.requestManager.metadata
-    }
+    fun createDefaultCache(context: Context): Cache = unsupported()
 }

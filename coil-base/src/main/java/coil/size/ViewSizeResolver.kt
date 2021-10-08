@@ -108,7 +108,8 @@ interface ViewSizeResolver<T : View> : SizeResolver {
 
         // If the dimension is set to WRAP_CONTENT, fall back to the size of the display.
         if (paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            return view.context.resources.displayMetrics.run { if (isWidth) widthPixels else heightPixels }
+            return view.context.resources.displayMetrics
+                .run { if (isWidth) widthPixels else heightPixels }
         }
 
         // Unable to resolve the dimension's size.

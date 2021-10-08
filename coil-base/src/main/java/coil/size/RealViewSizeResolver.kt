@@ -19,8 +19,4 @@ internal class RealViewSizeResolver<T : View>(
         result = 31 * result + subtractPadding.hashCode()
         return result
     }
-
-    override fun toString(): String {
-        return "RealViewSizeResolver(view=$view, subtractPadding=$subtractPadding)"
-    }
 }

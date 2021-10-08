@@ -1,39 +1,46 @@
 package coil.fetch
 
 import android.content.ContentResolver
-import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
 import coil.decode.DataSource
-import coil.decode.Options
-import coil.size.Size
+import coil.decode.ImageSource
+import coil.request.Options
 import coil.util.firstPathSegment
 import coil.util.getMimeTypeFromUrl
 import okio.buffer
 import okio.source
 
-internal class AssetUriFetcher(private val context: Context) : Fetcher<Uri> {
+internal class AssetUriFetcher(
+    private val data: Uri,
+    private val options: Options
+) : Fetcher {
 
-    override fun handles(data: Uri): Boolean {
-        return data.scheme == ContentResolver.SCHEME_FILE && data.firstPathSegment == ASSET_FILE_PATH_ROOT
-    }
-
-    override fun key(data: Uri) = data.toString()
-
-    override suspend fun fetch(
-        pool: BitmapPool,
-        data: Uri,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(): FetchResult {
         val path = data.pathSegments.drop(1).joinToString("/")
 
         return SourceResult(
-            source = context.assets.open(path).source().buffer(),
+            source = ImageSource(
+                source = options.context.assets.open(path).source().buffer(),
+                context = options.context
+            ),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(path),
             dataSource = DataSource.DISK
         )
+    }
+
+    class Factory : Fetcher.Factory<Uri> {
+
+        override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
+            if (!isApplicable(data)) return null
+            return AssetUriFetcher(data, options)
+        }
+
+        private fun isApplicable(data: Uri): Boolean {
+            return data.scheme == ContentResolver.SCHEME_FILE &&
+                data.firstPathSegment == ASSET_FILE_PATH_ROOT
+        }
     }
 
     companion object {

@@ -7,126 +7,98 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import coil.ComponentRegistry
 import coil.EventListener
-import coil.bitmap.BitmapPool
-import coil.bitmap.BitmapReferenceCounter
+import coil.ImageLoader
 import coil.decode.DataSource
+import coil.decode.DecodeResult
 import coil.decode.DecodeUtils
-import coil.decode.DrawableDecoderService
-import coil.decode.EmptyDecoder
-import coil.decode.Options
+import coil.decode.FileImageSource
 import coil.fetch.DrawableResult
+import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
 import coil.memory.MemoryCache
-import coil.memory.MemoryCacheService
-import coil.memory.RealMemoryCache
-import coil.memory.RequestService
-import coil.memory.StrongMemoryCache
 import coil.request.ImageRequest
 import coil.request.ImageResult
-import coil.request.ImageResult.Metadata
+import coil.request.Options
+import coil.request.RequestService
 import coil.request.SuccessResult
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Size
 import coil.transform.Transformation
+import coil.util.DrawableUtils
 import coil.util.Logger
-import coil.util.SystemCallbacks
-import coil.util.Utils.REQUEST_TYPE_ENQUEUE
+import coil.util.VALID_TRANSFORMATION_CONFIGS
+import coil.util.addFirst
 import coil.util.allowInexactSize
 import coil.util.closeQuietly
-import coil.util.fetcher
 import coil.util.foldIndices
-import coil.util.invoke
+import coil.util.forEachIndices
 import coil.util.log
-import coil.util.mapData
-import coil.util.requireDecoder
-import coil.util.requireFetcher
 import coil.util.safeConfig
-import coil.util.setValid
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.coroutineContext
+import kotlin.collections.set
 import kotlin.math.abs
 
 /** The last interceptor in the chain which executes the [ImageRequest]. */
 internal class EngineInterceptor(
-    private val registry: ComponentRegistry,
-    private val bitmapPool: BitmapPool,
-    private val referenceCounter: BitmapReferenceCounter,
-    private val strongMemoryCache: StrongMemoryCache,
-    private val memoryCacheService: MemoryCacheService,
+    private val imageLoader: ImageLoader,
     private val requestService: RequestService,
-    private val systemCallbacks: SystemCallbacks,
-    private val drawableDecoder: DrawableDecoderService,
     private val logger: Logger?
 ) : Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         try {
-            // This interceptor uses some internal APIs.
-            check(chain is RealInterceptorChain)
-
             val request = chain.request
             val context = request.context
             val data = request.data
             val size = chain.size
             val eventListener = chain.eventListener
+            val options = requestService.options(request, size)
 
             // Perform any data mapping.
             eventListener.mapStart(request, data)
-            val mappedData = registry.mapData(data)
+            val mappedData = imageLoader.components.map(data, options)
             eventListener.mapEnd(request, mappedData)
 
             // Check the memory cache.
-            val fetcher = request.fetcher(mappedData) ?: registry.requireFetcher(mappedData)
-            val memoryCacheKey = request.memoryCacheKey ?: computeMemoryCacheKey(request, mappedData, fetcher, size)
-            val value = if (request.memoryCachePolicy.readEnabled) memoryCacheService[memoryCacheKey] else null
+            val memoryCacheKey = getMemoryCacheKey(request, mappedData, options, eventListener)
+            val memoryCacheValue = memoryCacheKey?.let { getMemoryCacheValue(request, it) }
 
-            // Short circuit if the cached bitmap is valid.
-            if (value != null && isCachedValueValid(memoryCacheKey, value, request, size)) {
+            // Fast path: return the value from the memory cache.
+            if (memoryCacheValue != null &&
+                isCachedValueValid(memoryCacheKey, memoryCacheValue, request, size)) {
                 return SuccessResult(
-                    drawable = value.bitmap.toDrawable(context),
+                    drawable = memoryCacheValue.bitmap.toDrawable(context),
                     request = request,
-                    metadata = Metadata(
-                        memoryCacheKey = memoryCacheKey,
-                        isSampled = value.isSampled,
-                        dataSource = DataSource.MEMORY_CACHE,
-                        isPlaceholderMemoryCacheKeyPresent = chain.cached != null
-                    )
+                    dataSource = DataSource.MEMORY_CACHE,
+                    memoryCacheKey = memoryCacheKey,
+                    diskCacheKey = memoryCacheValue.diskCacheKey,
+                    isSampled = memoryCacheValue.isSampled,
+                    isPlaceholderCached = chain.isPlaceholderCached,
                 )
             }
 
-            // Fetch, decode, transform, and cache the image on a background dispatcher.
-            return withContext(request.dispatcher) {
-                // Mark the input data as ineligible for pooling (if necessary).
-                invalidateData(request.data)
-
-                // Decrement the value from the memory cache if it was not used.
-                if (value != null) referenceCounter.decrement(value.bitmap)
-
+            // Slow path: fetch, decode, transform, and cache the image.
+            return withContext(request.fetcherDispatcher) {
                 // Fetch and decode the image.
-                val (drawable, isSampled, dataSource) =
-                    execute(mappedData, fetcher, request, chain.requestType, size, eventListener)
+                val result = execute(request, mappedData, options, eventListener)
 
-                // Mark the drawable's bitmap as eligible for pooling.
-                validateDrawable(drawable)
-
-                // Cache the result in the memory cache.
-                val isCached = writeToMemoryCache(request, memoryCacheKey, drawable, isSampled)
+                // Store the result in the memory cache.
+                val isMemoryCached = setMemoryCacheValue(memoryCacheKey, request, result)
 
                 // Return the result.
                 SuccessResult(
-                    drawable = drawable,
+                    drawable = result.drawable,
                     request = request,
-                    metadata = Metadata(
-                        memoryCacheKey = memoryCacheKey.takeIf { isCached },
-                        isSampled = isSampled,
-                        dataSource = dataSource,
-                        isPlaceholderMemoryCacheKeyPresent = chain.cached != null
-                    )
+                    dataSource = result.dataSource,
+                    memoryCacheKey = memoryCacheKey.takeIf { isMemoryCached },
+                    diskCacheKey = result.diskCacheKey,
+                    isSampled = result.isSampled,
+                    isPlaceholderCached = chain.isPlaceholderCached,
                 )
             }
         } catch (throwable: Throwable) {
@@ -138,27 +110,46 @@ internal class EngineInterceptor(
         }
     }
 
-    /** Compute the complex cache key for this request. */
+    /** Get the memory cache key for this request. */
     @VisibleForTesting
-    internal fun computeMemoryCacheKey(
+    internal fun getMemoryCacheKey(
         request: ImageRequest,
-        data: Any,
-        fetcher: Fetcher<Any>,
-        size: Size
+        mappedData: Any,
+        options: Options,
+        eventListener: EventListener
     ): MemoryCache.Key? {
-        val base = fetcher.key(data) ?: return null
-        return if (request.transformations.isEmpty()) {
-            MemoryCache.Key(base, request.parameters)
-        } else {
-            MemoryCache.Key(base, request.transformations, size, request.parameters)
+        // Fast path: an explicit memory cache key has been set.
+        request.memoryCacheKey?.let { return it }
+
+        // Slow path: create a new memory cache key.
+        eventListener.keyStart(request, mappedData)
+        val base = imageLoader.components.key(mappedData, options)
+        eventListener.keyEnd(request, base)
+        if (base == null) return null
+
+        val extras = mutableMapOf<String, String>()
+        extras.putAll(request.parameters.cacheKeys())
+        if (request.transformations.isNotEmpty()) {
+            val transformations = StringBuilder()
+            request.transformations.forEachIndices {
+                transformations.append(it.cacheKey).append(TRANSFORMATIONS_DELIMITER)
+            }
+            extras[MEMORY_CACHE_KEY_TRANSFORMATIONS] = transformations.toString()
+
+            val size = options.size
+            if (size is PixelSize) {
+                extras[MEMORY_CACHE_KEY_WIDTH] = size.width.toString()
+                extras[MEMORY_CACHE_KEY_HEIGHT] = size.height.toString()
+            }
         }
+        return MemoryCache.Key(base, extras)
     }
 
-    /** Return true if [cacheValue] satisfies the [request]. */
+    /** Return 'true' if [cacheValue] satisfies the [request]. */
     @VisibleForTesting
     internal fun isCachedValueValid(
-        cacheKey: MemoryCache.Key?,
-        cacheValue: RealMemoryCache.Value,
+        cacheKey: MemoryCache.Key,
+        cacheValue: MemoryCache.Value,
         request: ImageRequest,
         size: Size
     ): Boolean {
@@ -179,10 +170,10 @@ internal class EngineInterceptor(
         return true
     }
 
-    /** Return true if [cacheValue]'s size satisfies the [request]. */
+    /** Return 'true' if [cacheValue]'s size satisfies the [request]. */
     private fun isSizeValid(
-        cacheKey: MemoryCache.Key?,
-        cacheValue: RealMemoryCache.Value,
+        cacheKey: MemoryCache.Key,
+        cacheValue: MemoryCache.Value,
         request: ImageRequest,
         size: Size
     ): Boolean {
@@ -196,18 +187,12 @@ internal class EngineInterceptor(
                 }
             }
             is PixelSize -> {
-                val cachedWidth: Int
-                val cachedHeight: Int
-                when (val cachedSize = (cacheKey as? MemoryCache.Key.Complex)?.size) {
-                    is PixelSize -> {
-                        cachedWidth = cachedSize.width
-                        cachedHeight = cachedSize.height
-                    }
-                    OriginalSize, null -> {
-                        val bitmap = cacheValue.bitmap
-                        cachedWidth = bitmap.width
-                        cachedHeight = bitmap.height
-                    }
+                var cachedWidth = cacheKey.extras[MEMORY_CACHE_KEY_WIDTH]?.toInt()
+                var cachedHeight = cacheKey.extras[MEMORY_CACHE_KEY_HEIGHT]?.toInt()
+                if (cachedWidth == null || cachedHeight == null) {
+                    val bitmap = cacheValue.bitmap
+                    cachedWidth = bitmap.width
+                    cachedHeight = bitmap.height
                 }
 
                 val multiple = DecodeUtils.computeSizeMultiplier(
@@ -236,15 +221,17 @@ internal class EngineInterceptor(
 
                 if (multiple != 1.0 && !allowInexactSize) {
                     logger?.log(TAG, Log.DEBUG) {
-                        "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) " +
-                            "does not exactly match the requested size (${size.width}, ${size.height}, ${request.scale})."
+                        "${request.data}: Cached image's request size " +
+                            "($cachedWidth, $cachedHeight) does not exactly match the requested size " +
+                            "(${size.width}, ${size.height}, ${request.scale})."
                     }
                     return false
                 }
                 if (multiple > 1.0 && cacheValue.isSampled) {
                     logger?.log(TAG, Log.DEBUG) {
-                        "${request.data}: Cached image's request size ($cachedWidth, $cachedHeight) " +
-                            "is smaller than the requested size (${size.width}, ${size.height}, ${request.scale})."
+                        "${request.data}: Cached image's request size " +
+                            "($cachedWidth, $cachedHeight) is smaller than the requested size " +
+                            "(${size.width}, ${size.height}, ${request.scale})."
                     }
                     return false
                 }
@@ -254,157 +241,251 @@ internal class EngineInterceptor(
         return true
     }
 
-    /** Prevent pooling the input data's bitmap. */
-    @Suppress("USELESS_CAST")
-    private fun invalidateData(data: Any) {
-        when (data) {
-            is BitmapDrawable -> referenceCounter.setValid(data.bitmap as Bitmap?, false)
-            is Bitmap -> referenceCounter.setValid(data, false)
-        }
-    }
-
-    /** Allow pooling the successful drawable's bitmap. */
-    private fun validateDrawable(drawable: Drawable) {
-        val bitmap = (drawable as? BitmapDrawable)?.bitmap
-        if (bitmap != null) {
-            // Mark this bitmap as valid for pooling (if it has not already been made invalid).
-            referenceCounter.setValid(bitmap, true)
-
-            // Eagerly increment the bitmap's reference count to prevent it being pooled on another thread.
-            referenceCounter.increment(bitmap)
-        }
-    }
-
-    /** Load the [data] as a [Drawable]. Apply any [Transformation]s. */
+    /** Execute the [Fetcher], decode any data into a [Drawable], and apply any [Transformation]s. */
     private suspend inline fun execute(
-        data: Any,
-        fetcher: Fetcher<Any>,
         request: ImageRequest,
-        type: Int,
-        size: Size,
+        mappedData: Any,
+        requestOptions: Options,
         eventListener: EventListener
-    ): DrawableResult {
-        val options = requestService.options(request, size, systemCallbacks.isOnline)
-
-        eventListener.fetchStart(request, fetcher, options)
-        val fetchResult = fetcher.fetch(bitmapPool, data, size, options)
-        eventListener.fetchEnd(request, fetcher, options, fetchResult)
-
-        val baseResult = when (fetchResult) {
-            is SourceResult -> {
-                val decodeResult = try {
-                    // Check if we're cancelled.
-                    coroutineContext.ensureActive()
-
-                    // Find the relevant decoder.
-                    val isDiskOnlyPreload = type == REQUEST_TYPE_ENQUEUE &&
-                        request.target == null &&
-                        !request.memoryCachePolicy.writeEnabled
-                    val decoder = if (isDiskOnlyPreload) {
-                        // Skip decoding the result if we are preloading the data and writing to the memory cache is
-                        // disabled. Instead, we exhaust the source and return an empty result.
-                        EmptyDecoder
-                    } else {
-                        request.decoder ?: registry.requireDecoder(request.data, fetchResult.source, fetchResult.mimeType)
-                    }
-
-                    // Decode the stream.
-                    eventListener.decodeStart(request, decoder, options)
-                    val decodeResult = decoder.decode(bitmapPool, fetchResult.source, size, options)
-                    eventListener.decodeEnd(request, decoder, options, decodeResult)
-                    decodeResult
-                } catch (throwable: Throwable) {
-                    // Only close the stream automatically if there is an uncaught exception.
-                    // This allows custom decoders to continue to read the source after returning a drawable.
-                    fetchResult.source.closeQuietly()
-                    throw throwable
-                }
-
-                // Combine the fetch and decode operations' results.
-                DrawableResult(
-                    drawable = decodeResult.drawable,
-                    isSampled = decodeResult.isSampled,
-                    dataSource = fetchResult.dataSource
-                )
+    ): ExecuteResult {
+        var options = requestOptions
+        var components = imageLoader.components
+        var fetchResult: FetchResult? = null
+        val executeResult = try {
+            if (!requestService.allowHardwareWorkerThread(options)) {
+                options = options.copy(config = Bitmap.Config.ARGB_8888)
             }
-            is DrawableResult -> fetchResult
-        }
+            if (request.fetcherFactory != null || request.decoderFactory != null) {
+                components = components.newBuilder()
+                    .addFirst(request.fetcherFactory)
+                    .addFirst(request.decoderFactory)
+                    .build()
+            }
 
-        // Check if we're cancelled.
-        coroutineContext.ensureActive()
+            // Fetch the data.
+            fetchResult = fetch(components, request, mappedData, options, eventListener)
+
+            // Decode the data.
+            when (fetchResult) {
+                is SourceResult -> withContext(request.decoderDispatcher) {
+                    decode(fetchResult, components, request, mappedData, options, eventListener)
+                }
+                is DrawableResult -> {
+                    ExecuteResult(
+                        drawable = fetchResult.drawable,
+                        isSampled = fetchResult.isSampled,
+                        dataSource = fetchResult.dataSource,
+                        diskCacheKey = null // This result has no file source.
+                    )
+                }
+            }
+        } finally {
+            // Ensure the fetch result's source is always closed.
+            (fetchResult as? SourceResult)?.source?.closeQuietly()
+        }
 
         // Apply any transformations and prepare to draw.
-        val finalResult = applyTransformations(baseResult, request, size, options, eventListener)
+        val finalResult = transform(executeResult, request, options, eventListener)
         (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
         return finalResult
     }
 
-    /** Apply any [Transformation]s and return an updated [DrawableResult]. */
-    @VisibleForTesting
-    internal suspend inline fun applyTransformations(
-        result: DrawableResult,
+    private suspend inline fun fetch(
+        components: ComponentRegistry,
         request: ImageRequest,
-        size: Size,
+        mappedData: Any,
         options: Options,
         eventListener: EventListener
-    ): DrawableResult {
+    ): FetchResult {
+        val fetchResult: FetchResult
+        var searchIndex = 0
+        while (true) {
+            val pair = components.newFetcher(mappedData, options, imageLoader, searchIndex)
+            checkNotNull(pair) { "Unable to create a fetcher that supports: $mappedData" }
+            val fetcher = pair.first
+            searchIndex = pair.second + 1
+
+            eventListener.fetchStart(request, fetcher, options)
+            val result = fetcher.fetch()
+            try {
+                eventListener.fetchEnd(request, fetcher, options, result)
+            } catch (throwable: Throwable) {
+                // Ensure the source is closed if an exception occurs before returning the result.
+                (result as? SourceResult)?.source?.closeQuietly()
+                throw throwable
+            }
+
+            if (result != null) {
+                fetchResult = result
+                break
+            }
+        }
+        return fetchResult
+    }
+
+    private suspend inline fun decode(
+        fetchResult: SourceResult,
+        components: ComponentRegistry,
+        request: ImageRequest,
+        mappedData: Any,
+        options: Options,
+        eventListener: EventListener
+    ): ExecuteResult {
+        val decodeResult: DecodeResult
+        var searchIndex = 0
+        while (true) {
+            val pair = components.newDecoder(fetchResult, options, imageLoader, searchIndex)
+            checkNotNull(pair) { "Unable to create a decoder that supports: $mappedData" }
+            val decoder = pair.first
+            searchIndex = pair.second + 1
+
+            eventListener.decodeStart(request, decoder, options)
+            val result = decoder.decode()
+            eventListener.decodeEnd(request, decoder, options, result)
+
+            if (result != null) {
+                decodeResult = result
+                break
+            }
+        }
+
+        // Combine the fetch and decode operations' results.
+        return ExecuteResult(
+            drawable = decodeResult.drawable,
+            isSampled = decodeResult.isSampled,
+            dataSource = fetchResult.dataSource,
+            diskCacheKey = (fetchResult.source as? FileImageSource)?.diskCacheKey
+        )
+    }
+
+    /** Apply any [Transformation]s and return an updated [ExecuteResult]. */
+    @VisibleForTesting
+    internal suspend inline fun transform(
+        result: ExecuteResult,
+        request: ImageRequest,
+        options: Options,
+        eventListener: EventListener
+    ): ExecuteResult {
         val transformations = request.transformations
         if (transformations.isEmpty()) return result
 
-        // Convert the drawable into a bitmap with a valid config.
-        val input = if (result.drawable is BitmapDrawable) {
-            val resultBitmap = result.drawable.bitmap
-            if (resultBitmap.safeConfig in RequestService.VALID_TRANSFORMATION_CONFIGS) {
-                resultBitmap
-            } else {
-                logger?.log(TAG, Log.INFO) {
-                    "Converting bitmap with config ${resultBitmap.safeConfig} to apply transformations: $transformations"
-                }
-                drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
+        // Skip the transformations as converting to a bitmap is disabled.
+        if (result.drawable !is BitmapDrawable && !request.allowConversionToBitmap) {
+            logger?.log(TAG, Log.INFO) {
+                val type = result.drawable::class.java.canonicalName
+                "allowConversionToBitmap=false, skipping transformations for type $type"
             }
-        } else {
-            if (request.allowConversionToBitmap) {
-                logger?.log(TAG, Log.INFO) {
-                    "Converting drawable of type ${result.drawable::class.java.canonicalName} to apply transformations: $transformations"
-                }
-                drawableDecoder.convert(result.drawable, options.config, size, options.scale, options.allowInexactSize)
-            } else {
-                logger?.log(TAG, Log.INFO) {
-                    "allowConversionToBitmap=false, skipping transformations for type ${result.drawable::class.java.canonicalName}"
-                }
-                return result
+            return result
+        }
+
+        // Apply the transformations.
+        return withContext(request.transformationDispatcher) {
+            val input = convertDrawableToBitmap(result.drawable, options, transformations)
+            eventListener.transformStart(request, input)
+            val output = transformations.foldIndices(input) { bitmap, transformation ->
+                transformation.transform(bitmap, options.size).also { ensureActive() }
             }
+            eventListener.transformEnd(request, output)
+            result.copy(drawable = output.toDrawable(request.context))
         }
-        eventListener.transformStart(request, input)
-        val output = transformations.foldIndices(input) { bitmap, transformation ->
-            transformation.transform(bitmapPool, bitmap, size).also { coroutineContext.ensureActive() }
-        }
-        eventListener.transformEnd(request, output)
-        return result.copy(drawable = output.toDrawable(request.context))
     }
 
-    /** Write [drawable] to the memory cache. Return true if it was added to the cache. */
-    private fun writeToMemoryCache(
+    /** Get the memory cache value for this request. */
+    private fun getMemoryCacheValue(
         request: ImageRequest,
+        memoryCacheKey: MemoryCache.Key
+    ): MemoryCache.Value? {
+        return if (request.memoryCachePolicy.readEnabled) {
+            imageLoader.memoryCache?.get(memoryCacheKey)
+        } else {
+            null
+        }
+    }
+
+    /** Write [drawable] to the memory cache. Return 'true' if it was added to the cache. */
+    private fun setMemoryCacheValue(
         key: MemoryCache.Key?,
-        drawable: Drawable,
-        isSampled: Boolean
+        request: ImageRequest,
+        result: ExecuteResult
     ): Boolean {
         if (!request.memoryCachePolicy.writeEnabled) {
             return false
         }
 
         if (key != null) {
-            val bitmap = (drawable as? BitmapDrawable)?.bitmap
+            val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
             if (bitmap != null) {
-                strongMemoryCache.set(key, bitmap, isSampled)
+                val extras = mutableMapOf<String, Any>()
+                extras[EXTRA_IS_SAMPLED] = result.isSampled
+                result.diskCacheKey?.let { extras[EXTRA_DISK_CACHE_KEY] = it }
+                imageLoader.memoryCache?.let { it[key] = MemoryCache.Value(bitmap, extras) }
                 return true
             }
         }
         return false
     }
 
+    /** Convert [drawable] to a [Bitmap]. */
+    private fun convertDrawableToBitmap(
+        drawable: Drawable,
+        options: Options,
+        transformations: List<Transformation>
+    ): Bitmap {
+        if (drawable is BitmapDrawable) {
+            var bitmap = drawable.bitmap
+            val config = bitmap.safeConfig
+            if (config !in VALID_TRANSFORMATION_CONFIGS) {
+                logger?.log(TAG, Log.INFO) {
+                    "Converting bitmap with config $config to apply transformations: $transformations"
+                }
+                bitmap = DrawableUtils.convertToBitmap(drawable, options.config, options.size,
+                    options.scale, options.allowInexactSize)
+            }
+            return bitmap
+        }
+
+        logger?.log(TAG, Log.INFO) {
+            val type = drawable::class.java.canonicalName
+            "Converting drawable of type $type to apply transformations: $transformations"
+        }
+        return DrawableUtils.convertToBitmap(drawable, options.config, options.size,
+            options.scale, options.allowInexactSize)
+    }
+
+    private val MemoryCache.Value.isSampled: Boolean
+        get() = (extras[EXTRA_IS_SAMPLED] as? Boolean) ?: false
+
+    private val MemoryCache.Value.diskCacheKey: String?
+        get() = extras[EXTRA_DISK_CACHE_KEY] as? String
+
+    private val Interceptor.Chain.isPlaceholderCached: Boolean
+        get() = this is RealInterceptorChain && isPlaceholderCached
+
+    private val Interceptor.Chain.eventListener: EventListener
+        get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
+
+    @VisibleForTesting
+    internal class ExecuteResult(
+        val drawable: Drawable,
+        val isSampled: Boolean,
+        val dataSource: DataSource,
+        val diskCacheKey: String?
+    ) {
+        fun copy(
+            drawable: Drawable = this.drawable,
+            isSampled: Boolean = this.isSampled,
+            dataSource: DataSource = this.dataSource,
+            diskCacheKey: String? = this.diskCacheKey
+        ) = ExecuteResult(drawable, isSampled, dataSource, diskCacheKey)
+    }
+
     companion object {
         private const val TAG = "EngineInterceptor"
+        @VisibleForTesting internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
+        @VisibleForTesting internal const val EXTRA_IS_SAMPLED = "coil#is_sampled"
+        @VisibleForTesting internal const val MEMORY_CACHE_KEY_WIDTH = "coil#width"
+        @VisibleForTesting internal const val MEMORY_CACHE_KEY_HEIGHT = "coil#height"
+        @VisibleForTesting internal const val MEMORY_CACHE_KEY_TRANSFORMATIONS = "coil#transformations"
+        @VisibleForTesting internal const val TRANSFORMATIONS_DELIMITER = '~'
     }
 }

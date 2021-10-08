@@ -1,31 +1,26 @@
 package coil.fetch
 
 import android.graphics.drawable.Drawable
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
 import coil.decode.DataSource
-import coil.decode.DrawableDecoderService
-import coil.decode.Options
-import coil.size.Size
+import coil.request.Options
+import coil.util.DrawableUtils
 import coil.util.isVector
 import coil.util.toDrawable
 
-internal class DrawableFetcher(private val drawableDecoder: DrawableDecoderService) : Fetcher<Drawable> {
+internal class DrawableFetcher(
+    private val data: Drawable,
+    private val options: Options
+) : Fetcher {
 
-    override fun key(data: Drawable): String? = null
-
-    override suspend fun fetch(
-        pool: BitmapPool,
-        data: Drawable,
-        size: Size,
-        options: Options
-    ): FetchResult {
+    override suspend fun fetch(): FetchResult {
         val isVector = data.isVector
         return DrawableResult(
             drawable = if (isVector) {
-                drawableDecoder.convert(
+                DrawableUtils.convertToBitmap(
                     drawable = data,
                     config = options.config,
-                    size = size,
+                    size = options.size,
                     scale = options.scale,
                     allowInexactSize = options.allowInexactSize
                 ).toDrawable(options.context)
@@ -35,5 +30,12 @@ internal class DrawableFetcher(private val drawableDecoder: DrawableDecoderServi
             isSampled = isVector,
             dataSource = DataSource.MEMORY
         )
+    }
+
+    class Factory : Fetcher.Factory<Drawable> {
+
+        override fun create(data: Drawable, options: Options, imageLoader: ImageLoader): Fetcher {
+            return DrawableFetcher(data, options)
+        }
     }
 }

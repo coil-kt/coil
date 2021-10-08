@@ -6,18 +6,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
-import coil.ComponentRegistry
-import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
-import coil.bitmap.BitmapPool
-import coil.bitmap.RealBitmapReferenceCounter
 import coil.memory.MemoryCache
-import coil.memory.RealMemoryCache
-import coil.memory.RealWeakMemoryCache
-import coil.memory.StrongMemoryCache
-import coil.request.DefaultRequestOptions
-import okhttp3.OkHttpClient
+import coil.memory.MemoryCache.Key
+import coil.memory.MemoryCache.Value
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
@@ -53,40 +46,20 @@ class SystemCallbacksTest {
 
     @Test
     fun trimMemoryCallsArePassedThrough() {
-        val bitmapPool = BitmapPool(Int.MAX_VALUE)
-        val weakMemoryCache = RealWeakMemoryCache(null)
-        val referenceCounter = RealBitmapReferenceCounter(weakMemoryCache, bitmapPool, null)
-        val strongMemoryCache = StrongMemoryCache(weakMemoryCache, referenceCounter, Int.MAX_VALUE, null)
-        val memoryCache = RealMemoryCache(strongMemoryCache, weakMemoryCache, referenceCounter, bitmapPool)
-        val imageLoader = RealImageLoader(
-            context = context,
-            defaults = DefaultRequestOptions(),
-            bitmapPool = bitmapPool,
-            memoryCache = memoryCache,
-            callFactory = OkHttpClient(),
-            eventListenerFactory = EventListener.Factory.NONE,
-            componentRegistry = ComponentRegistry(),
-            options = ImageLoaderOptions(),
-            logger = null
-        )
-        val systemCallbacks = SystemCallbacks(imageLoader, context, true)
+        val memoryCache = MemoryCache.Builder(context).build()
+        val imageLoader = ImageLoader.Builder(context)
+            .memoryCache(memoryCache)
+            .diskCache(null)
+            .build()
+        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader, context, true)
 
-        strongMemoryCache.set(
-            key = MemoryCache.Key("1"),
-            bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
-            isSampled = false
-        )
+        memoryCache[Key("1")] = Value(createBitmap(1000, 1000, Bitmap.Config.ARGB_8888))
+        memoryCache[Key("2")] = Value(createBitmap(1000, 1000, Bitmap.Config.ARGB_8888))
 
-        strongMemoryCache.set(
-            key = MemoryCache.Key("2"),
-            bitmap = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888),
-            isSampled = false
-        )
-
-        assertTrue(strongMemoryCache.size == 8000000)
+        assertTrue(memoryCache.size == 8000000)
 
         systemCallbacks.onTrimMemory(TRIM_MEMORY_COMPLETE)
 
-        assertTrue(strongMemoryCache.size == 0)
+        assertTrue(memoryCache.size == 0)
     }
 }

@@ -18,8 +18,8 @@ import android.provider.ContactsContract.RawContacts
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
-import coil.bitmap.BitmapPool
-import coil.decode.Options
+import coil.ImageLoader
+import coil.request.Options
 import coil.size.PixelSize
 import kotlinx.coroutines.runBlocking
 import okio.buffer
@@ -31,13 +31,13 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class ContentUriFetcherTest {
 
     private lateinit var context: Context
-    private lateinit var fetcher: ContentUriFetcher
-    private lateinit var pool: BitmapPool
+    private lateinit var fetcherFactory: ContentUriFetcher.Factory
 
     @get:Rule
     val grantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_CONTACTS, WRITE_CONTACTS)
@@ -48,8 +48,7 @@ class ContentUriFetcherTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        fetcher = ContentUriFetcher(context)
-        pool = BitmapPool(0)
+        fetcherFactory = ContentUriFetcher.Factory()
     }
 
     @Test
@@ -58,10 +57,11 @@ class ContentUriFetcherTest {
         assumeTrue(SDK_INT <= 30)
 
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$CONTENT_DIRECTORY".toUri()
+        val options = Options(context, size = PixelSize(100, 100))
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))
 
         assertFalse(fetcher.isContactPhotoUri(uri))
-        assertTrue(fetcher.handles(uri))
-        assertUriFetchesCorrectly(uri)
+        assertUriFetchesCorrectly(fetcher)
     }
 
     @Test
@@ -70,22 +70,19 @@ class ContentUriFetcherTest {
         assumeTrue(SDK_INT <= 30)
 
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$DISPLAY_PHOTO".toUri()
+        val options = Options(context, size = PixelSize(100, 100))
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))
 
         assertTrue(fetcher.isContactPhotoUri(uri))
-        assertTrue(fetcher.handles(uri))
-        assertUriFetchesCorrectly(uri)
+        assertUriFetchesCorrectly(fetcher)
     }
 
-    private fun assertUriFetchesCorrectly(uri: Uri) {
-        assertTrue(fetcher.handles(uri))
-
-        val result = runBlocking {
-            fetcher.fetch(pool, uri, PixelSize(100, 100), Options(context))
-        }
+    private fun assertUriFetchesCorrectly(fetcher: ContentUriFetcher) {
+        val result = runBlocking { fetcher.fetch() }
 
         assertTrue(result is SourceResult)
         assertEquals("image/jpeg", result.mimeType)
-        assertFalse(result.source.exhausted())
+        assertFalse(result.source.source().exhausted())
     }
 
     /** Create and insert a fake contact. Return its ID. */
@@ -113,14 +110,10 @@ class ContentUriFetcherTest {
         val photoUri = Uri.withAppendedPath(contentUri, RawContacts.DisplayPhoto.CONTENT_DIRECTORY)
         val fd = checkNotNull(context.contentResolver.openAssetFileDescriptor(photoUri, "rw"))
 
-        // AssetFileDescriptor does not implement Closable before API 19 so we can't use `use`.
-        @Suppress("ConvertTryFinallyToUseCall")
-        try {
+        fd.use {
             val source = context.assets.open("normal.jpg").source()
-            val sink = fd.createOutputStream().sink().buffer()
+            val sink = it.createOutputStream().sink().buffer()
             source.use { sink.use { sink.writeAll(source) } }
-        } finally {
-            fd.close()
         }
 
         // Wait for the display image to be parsed by the system.

@@ -1,22 +1,24 @@
 package coil
 
 import android.graphics.Bitmap
-import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import coil.EventListener.Factory
 import coil.decode.DecodeResult
 import coil.decode.Decoder
-import coil.decode.Options
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
+import coil.key.Keyer
 import coil.map.Mapper
+import coil.request.ErrorResult
 import coil.request.ImageRequest
-import coil.request.ImageResult
+import coil.request.Options
+import coil.request.SuccessResult
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.Transformation
+import coil.transition.NoneTransition
 import coil.transition.Transition
 import coil.transition.TransitionTarget
 
@@ -24,7 +26,7 @@ import coil.transition.TransitionTarget
  * A listener for tracking the progress of an image request. This class is useful for
  * measuring analytics, performance, or other metrics tracking.
  *
- * @see ImageLoader.Builder.eventListener
+ * @see ImageLoader.Builder.eventListenerFactory
  */
 interface EventListener : ImageRequest.Listener {
 
@@ -53,17 +55,34 @@ interface EventListener : ImageRequest.Listener {
      *
      * @param input The data that will be converted.
      */
-    @AnyThread
+    @MainThread
     fun mapStart(request: ImageRequest, input: Any) {}
 
     /**
      * Called after [Mapper.map].
      *
-     * @param output The data after it has been converted. If there were no applicable mappers,
-     *  [output] will be the same as [ImageRequest.data].
+     * @param output The data after it has been converted. If there were no
+     *  applicable mappers, [output] will be the same as [ImageRequest.data].
      */
-    @AnyThread
+    @MainThread
     fun mapEnd(request: ImageRequest, output: Any) {}
+
+    /**
+     * Called before [Keyer.key].
+     *
+     * @param input The data that will be converted.
+     */
+    @MainThread
+    fun keyStart(request: ImageRequest, input: Any) {}
+
+    /**
+     * Called after [Keyer.key].
+     *
+     * @param output The data after it has been converted into a string key.
+     *  If [output] is 'null' it will not be cached in the memory cache.
+     */
+    @MainThread
+    fun keyEnd(request: ImageRequest, output: String?) {}
 
     /**
      * Called before [Fetcher.fetch].
@@ -72,18 +91,17 @@ interface EventListener : ImageRequest.Listener {
      * @param options The [Options] that will be passed to [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchStart(request: ImageRequest, fetcher: Fetcher<*>, options: Options) {}
+    fun fetchStart(request: ImageRequest, fetcher: Fetcher, options: Options) {}
 
     /**
      * Called after [Fetcher.fetch].
      *
      * @param fetcher The [Fetcher] that was used to handle the request.
      * @param options The [Options] that were passed to [Fetcher.fetch].
-     * @param result The result of [Fetcher.fetch]. **Do not** keep a reference to [result] or its data
-     *  outside the scope of this method.
+     * @param result The result of [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchEnd(request: ImageRequest, fetcher: Fetcher<*>, options: Options, result: FetchResult) {}
+    fun fetchEnd(request: ImageRequest, fetcher: Fetcher, options: Options, result: FetchResult?) {}
 
     /**
      * Called before [Decoder.decode].
@@ -103,19 +121,17 @@ interface EventListener : ImageRequest.Listener {
      *
      * @param decoder The [Decoder] that was used to handle the request.
      * @param options The [Options] that were passed to [Decoder.decode].
-     * @param result The result of [Decoder.decode]. **Do not** keep a reference to [result] or its data
-     *  outside the scope of this method.
+     * @param result The result of [Decoder.decode].
      */
     @WorkerThread
-    fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult) {}
+    fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult?) {}
 
     /**
      * Called before any [Transformation]s are applied.
      *
      * This is skipped if [ImageRequest.transformations] is empty.
      *
-     * @param input The [Bitmap] that will be transformed. **Do not** keep a reference to [input] outside
-     *  the scope of this method.
+     * @param input The [Bitmap] that will be transformed.
      */
     @WorkerThread
     fun transformStart(request: ImageRequest, input: Bitmap) {}
@@ -125,8 +141,7 @@ interface EventListener : ImageRequest.Listener {
      *
      * This is skipped if [ImageRequest.transformations] is empty.
      *
-     * @param output The [Bitmap] that was transformed. **Do not** keep a reference to [output] outside
-     *  the scope of this method.
+     * @param output The [Bitmap] that was transformed.
      */
     @WorkerThread
     fun transformEnd(request: ImageRequest, output: Bitmap) {}
@@ -134,20 +149,20 @@ interface EventListener : ImageRequest.Listener {
     /**
      * Called before [Transition.transition].
      *
-     * This is skipped if [ImageRequest.transition] is [Transition.NONE]
+     * This is skipped if [transition] is a [NoneTransition]
      * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     @MainThread
-    fun transitionStart(request: ImageRequest) {}
+    fun transitionStart(request: ImageRequest, transition: Transition) {}
 
     /**
      * Called after [Transition.transition].
      *
-     * This is skipped if [ImageRequest.transition] is [Transition.NONE]
+     * This is skipped if [transition] is a [NoneTransition]
      * or [ImageRequest.target] does not implement [TransitionTarget].
      */
     @MainThread
-    fun transitionEnd(request: ImageRequest) {}
+    fun transitionEnd(request: ImageRequest, transition: Transition) {}
 
     /**
      * @see ImageRequest.Listener.onCancel
@@ -159,28 +174,21 @@ interface EventListener : ImageRequest.Listener {
      * @see ImageRequest.Listener.onError
      */
     @MainThread
-    override fun onError(request: ImageRequest, throwable: Throwable) {}
+    override fun onError(request: ImageRequest, result: ErrorResult) {}
 
     /**
      * @see ImageRequest.Listener.onSuccess
      */
     @MainThread
-    override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
+    override fun onSuccess(request: ImageRequest, result: SuccessResult) {}
 
-    /** A factory that creates new [EventListener] instances. */
     fun interface Factory {
 
-        companion object {
-            @JvmField val NONE = Factory(EventListener.NONE)
-
-            /** Create an [EventListener.Factory] that always returns [listener]. */
-            @JvmStatic
-            @JvmName("create")
-            operator fun invoke(listener: EventListener) = Factory { listener }
-        }
-
-        /** Return a new [EventListener]. */
         fun create(request: ImageRequest): EventListener
+
+        companion object {
+            @JvmField val NONE = Factory { EventListener.NONE }
+        }
     }
 
     companion object {

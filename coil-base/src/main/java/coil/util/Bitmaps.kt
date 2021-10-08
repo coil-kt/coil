@@ -25,16 +25,14 @@ internal val Bitmap.Config?.bytesPerPixel: Int
  */
 internal val Bitmap.allocationByteCountCompat: Int
     get() {
-        check(!isRecycled) { "Cannot obtain size for recycled bitmap: $this [$width x $height] + $config" }
+        check(!isRecycled) {
+            "Cannot obtain size for recycled bitmap: $this [$width x $height] + $config"
+        }
 
         return try {
-            if (SDK_INT >= 19) {
-                allocationByteCount
-            } else {
-                rowBytes * height
-            }
+            allocationByteCount
         } catch (_: Exception) {
-            Utils.calculateAllocationByteCount(width, height, config)
+            width * height * config.bytesPerPixel
         }
     }
 
@@ -45,7 +43,8 @@ internal val Bitmap.Config.isHardware: Boolean
 internal val Bitmap.safeConfig: Bitmap.Config
     get() = config ?: Bitmap.Config.ARGB_8888
 
-internal inline fun Bitmap.toDrawable(context: Context): BitmapDrawable = toDrawable(context.resources)
+internal inline fun Bitmap.toDrawable(context: Context): BitmapDrawable =
+    toDrawable(context.resources)
 
 /** Convert null and [Bitmap.Config.HARDWARE] configs to [Bitmap.Config.ARGB_8888]. */
 internal fun Bitmap.Config?.toSoftware(): Bitmap.Config {

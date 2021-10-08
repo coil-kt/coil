@@ -6,55 +6,142 @@ import coil.decode.DataSource
 import coil.memory.MemoryCache
 
 /**
- * Represents the result of an image request.
+ * Represents the result of an executed [ImageRequest].
  *
+ * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
 sealed class ImageResult {
-
     abstract val drawable: Drawable?
     abstract val request: ImageRequest
-
-    /**
-     * Supplemental information about a successful image request.
-     *
-     * @param memoryCacheKey The cache key for the image in the memory cache.
-     *  It is null if the image was not written to the memory cache.
-     * @param isSampled True if the image is sampled (i.e. loaded into memory at less than its original size).
-     * @param dataSource The data source that the image was loaded from.
-     * @param isPlaceholderMemoryCacheKeyPresent True if the request's [ImageRequest.placeholderMemoryCacheKey] was
-     *  present in the memory cache and was set as the placeholder.
-     */
-    data class Metadata(
-        val memoryCacheKey: MemoryCache.Key?,
-        val isSampled: Boolean,
-        val dataSource: DataSource,
-        val isPlaceholderMemoryCacheKeyPresent: Boolean
-    )
 }
 
 /**
  * Indicates that the request completed successfully.
- *
- * @param drawable The success drawable.
- * @param request The request that was executed to create this result.
- * @param metadata Metadata about the request that created this result.
  */
-data class SuccessResult(
+class SuccessResult(
+    /**
+     * The success drawable.
+     */
     override val drawable: Drawable,
+
+    /**
+     * The request that was executed to create this result.
+     */
     override val request: ImageRequest,
-    val metadata: Metadata
-) : ImageResult()
+
+    /**
+     * The data source that the image was loaded from.
+     */
+    val dataSource: DataSource,
+
+    /**
+     * The cache key for the image in the memory cache.
+     * It is 'null' if the image was not written to the memory cache.
+     */
+    val memoryCacheKey: MemoryCache.Key?,
+
+    /**
+     * The cache key for the image in the disk cache.
+     * It is 'null' if the image was not written to the disk cache.
+     */
+    val diskCacheKey: String?,
+
+    /**
+     * 'true' if the image is sampled (i.e. loaded into memory at less than its original size).
+     */
+    val isSampled: Boolean,
+
+    /**
+     * 'true' if [ImageRequest.placeholderMemoryCacheKey] was present in the memory cache.
+     */
+    val isPlaceholderCached: Boolean,
+) : ImageResult() {
+
+    fun copy(
+        drawable: Drawable = this.drawable,
+        request: ImageRequest = this.request,
+        dataSource: DataSource = this.dataSource,
+        memoryCacheKey: MemoryCache.Key? = this.memoryCacheKey,
+        diskCacheKey: String? = this.diskCacheKey,
+        isSampled: Boolean = this.isSampled,
+        isPlaceholderCached: Boolean = this.isPlaceholderCached,
+    ) = SuccessResult(
+        drawable = drawable,
+        request = request,
+        dataSource = dataSource,
+        memoryCacheKey = memoryCacheKey,
+        diskCacheKey = diskCacheKey,
+        isSampled = isSampled,
+        isPlaceholderCached = isPlaceholderCached,
+    )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is SuccessResult &&
+            drawable == other.drawable &&
+            request == other.request &&
+            dataSource == other.dataSource &&
+            memoryCacheKey == other.memoryCacheKey &&
+            diskCacheKey == other.diskCacheKey &&
+            isSampled == other.isSampled &&
+            isPlaceholderCached == other.isPlaceholderCached
+    }
+
+    override fun hashCode(): Int {
+        var result = drawable.hashCode()
+        result = 31 * result + request.hashCode()
+        result = 31 * result + dataSource.hashCode()
+        result = 31 * result + (memoryCacheKey?.hashCode() ?: 0)
+        result = 31 * result + (diskCacheKey?.hashCode() ?: 0)
+        result = 31 * result + isSampled.hashCode()
+        result = 31 * result + isPlaceholderCached.hashCode()
+        return result
+    }
+}
 
 /**
  * Indicates that an error occurred while executing the request.
- *
- * @param drawable The error drawable.
- * @param request The request that was executed to create this result.
- * @param throwable The error that failed the request.
  */
-data class ErrorResult(
+class ErrorResult(
+    /**
+     * The error drawable.
+     */
     override val drawable: Drawable?,
+
+    /**
+     * The request that was executed to create this result.
+     */
     override val request: ImageRequest,
-    val throwable: Throwable
-) : ImageResult()
+
+    /**
+     * The error that failed the request.
+     */
+    val throwable: Throwable,
+) : ImageResult() {
+
+    fun copy(
+        drawable: Drawable? = this.drawable,
+        request: ImageRequest = this.request,
+        throwable: Throwable = this.throwable,
+    ) = ErrorResult(
+        drawable = drawable,
+        request = request,
+        throwable = throwable,
+    )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is ErrorResult &&
+            drawable == other.drawable &&
+            request == other.request &&
+            throwable == other.throwable
+    }
+
+    override fun hashCode(): Int {
+        var result = drawable?.hashCode() ?: 0
+        result = 31 * result + request.hashCode()
+        result = 31 * result + throwable.hashCode()
+        return result
+    }
+}

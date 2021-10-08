@@ -13,7 +13,7 @@ import android.graphics.RectF
 import android.graphics.Shader
 import androidx.annotation.Px
 import androidx.core.graphics.applyCanvas
-import coil.bitmap.BitmapPool
+import androidx.core.graphics.createBitmap
 import coil.decode.DecodeUtils
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -23,7 +23,8 @@ import coil.util.safeConfig
 import kotlin.math.roundToInt
 
 /**
- * A [Transformation] that crops the image to fit the target's dimensions and rounds the corners of the image.
+ * A [Transformation] that crops the image to fit the target's dimensions and rounds
+ * the corners of the image.
  *
  * @param topLeft The radius for the top left corner.
  * @param topRight The radius for the top right corner.
@@ -40,12 +41,14 @@ class RoundedCornersTransformation(
     constructor(@Px radius: Float) : this(radius, radius, radius, radius)
 
     init {
-        require(topLeft >= 0 && topRight >= 0 && bottomLeft >= 0 && bottomRight >= 0) { "All radii must be >= 0." }
+        require(topLeft >= 0 && topRight >= 0 && bottomLeft >= 0 && bottomRight >= 0) {
+            "All radii must be >= 0."
+        }
     }
 
-    override fun key() = "${RoundedCornersTransformation::class.java.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
+    override val cacheKey = "${javaClass.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
 
-    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap {
+    override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
         val outputWidth: Int
@@ -68,7 +71,7 @@ class RoundedCornersTransformation(
             }
         }
 
-        val output = pool.get(outputWidth, outputHeight, input.safeConfig)
+        val output = createBitmap(outputWidth, outputHeight, input.safeConfig)
         output.applyCanvas {
             drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
@@ -78,7 +81,12 @@ class RoundedCornersTransformation(
             shader.setLocalMatrix(matrix)
             paint.shader = shader
 
-            val radii = floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft)
+            val radii = floatArrayOf(
+                topLeft, topLeft,
+                topRight, topRight,
+                bottomRight, bottomRight,
+                bottomLeft, bottomLeft
+            )
             val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
             val path = Path().apply { addRoundRect(rect, radii, Path.Direction.CW) }
             drawPath(path, paint)
@@ -102,10 +110,5 @@ class RoundedCornersTransformation(
         result = 31 * result + bottomLeft.hashCode()
         result = 31 * result + bottomRight.hashCode()
         return result
-    }
-
-    override fun toString(): String {
-        return "RoundedCornersTransformation(topLeft=$topLeft, topRight=$topRight, " +
-            "bottomLeft=$bottomLeft, bottomRight=$bottomRight)"
     }
 }

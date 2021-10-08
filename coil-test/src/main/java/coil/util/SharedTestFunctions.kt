@@ -1,14 +1,11 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE", "NOTHING_TO_INLINE", "unused")
-
 package coil.util
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import coil.request.ImageRequest
-import coil.size.PixelSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.setMain
@@ -22,22 +19,20 @@ import java.io.File
 import kotlin.coroutines.CoroutineContext
 
 fun createMockWebServer(context: Context, vararg images: String): MockWebServer {
-    return MockWebServer().apply {
-        if (images.isNotEmpty()) {
-            images.forEach { image ->
-                val buffer = Buffer()
-                context.assets.open(image).source().buffer().readAll(buffer)
-                enqueue(MockResponse().setBody(buffer))
-            }
-        } else {
-            enqueue(
-                MockResponse()
-                    .setResponseCode(404)
-                    .addHeader("Cache-Control", "public,max-age=60")
-            )
+    val server = MockWebServer()
+    if (images.isEmpty()) {
+        val response = MockResponse()
+            .setResponseCode(404)
+            .addHeader("Cache-Control", "public,max-age=60")
+        server.enqueue(response)
+    } else {
+        images.forEach { image ->
+            val buffer = Buffer()
+            context.assets.open(image).source().buffer().readAll(buffer)
+            server.enqueue(MockResponse().setBody(buffer))
         }
-        start()
     }
+    return server.apply { start() }
 }
 
 fun Context.decodeBitmapAsset(
@@ -53,20 +48,13 @@ fun Context.copyAssetToFile(fileName: String): File {
     return file
 }
 
-val Bitmap.size: PixelSize
-    get() = PixelSize(width, height)
-
-inline fun createRequest(
-    context: Context,
-    builder: ImageRequest.Builder.() -> Unit = {}
-): ImageRequest = ImageRequest.Builder(context).data(Unit).apply(builder).build()
-
-/** Runs the given [block] on the main thread by default and returns [Unit]. */
+/** Runs the given [block] on the main thread by default. */
 fun runBlockingTest(
     context: CoroutineContext = Dispatchers.Main.immediate,
     block: suspend CoroutineScope.() -> Unit
 ) = runBlocking(context, block)
 
+@OptIn(ExperimentalCoroutinesApi::class)
 fun createTestMainDispatcher(): TestCoroutineDispatcher {
     return TestCoroutineDispatcher().apply { Dispatchers.setMain(this) }
 }

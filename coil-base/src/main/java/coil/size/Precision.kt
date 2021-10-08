@@ -16,12 +16,13 @@ enum class Precision {
     EXACT,
 
     /**
-     * Allow the size of the loaded image to not match the requested dimensions exactly. This enables several optimizations:
+     * Allow the size of the loaded image to not match the requested dimensions exactly.
+     * This enables several optimizations:
      *
      * - If the requested dimensions are larger than the original size of the image,
      *   it will be loaded using its original dimensions. This uses less memory.
-     * - If the image is present in the memory cache at a larger size than the request's dimensions, it will be returned.
-     *   This increases the hit rate of the memory cache.
+     * - If the image is present in the memory cache at a larger size than the request's dimensions,
+     *   it will be returned. This increases the hit rate of the memory cache.
      *
      * Prefer this option if your target can scale the loaded image (e.g. [ImageView]).
      */
