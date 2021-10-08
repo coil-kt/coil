@@ -32,7 +32,6 @@ Coil 2.0.0 is the next major iteration of the library and has new features, impr
     - Bitmap pooling creates design restrictions on Coil's API as it requires tracking if a bitmap is eligible for pooling. Removing bitmap pooling allows Coil to expose the result `Drawable` in more places (e.g. `Listener`, `Disposable`). Additionally, this means Coil doesn't have to clear `ImageView`s, which has can cause [issues](https://github.com/coil-kt/coil/issues/650).
     - Bitmap pooling is [error-prone](https://github.com/coil-kt/coil/issues/546). Allocating a new bitmap is much safer than attempting to re-use a bitmap that could still be in use.
 - `MemoryCache` has been refactored to be more flexible.
-    - Also, it can now be created without an `ImageLoader`.
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. If you use Kotlin, there is essentially no change.
     - This change allows the library's size to be smaller.
