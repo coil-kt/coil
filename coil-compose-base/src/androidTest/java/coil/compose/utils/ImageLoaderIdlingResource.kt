@@ -2,8 +2,9 @@ package coil.compose.utils
 
 import androidx.compose.ui.test.IdlingResource
 import coil.EventListener
+import coil.request.ErrorResult
 import coil.request.ImageRequest
-import coil.request.ImageResult
+import coil.request.SuccessResult
 
 class ImageLoaderIdlingResource : EventListener, IdlingResource {
 
@@ -27,12 +28,12 @@ class ImageLoaderIdlingResource : EventListener, IdlingResource {
         ongoingRequests -= request
     }
 
-    override fun onError(request: ImageRequest, throwable: Throwable) {
+    override fun onError(request: ImageRequest, result: ErrorResult) {
         ongoingRequests -= request
         finishedRequests++
     }
 
-    override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {
+    override fun onSuccess(request: ImageRequest, result: SuccessResult) {
         ongoingRequests -= request
         finishedRequests++
     }

@@ -10,12 +10,13 @@ import java.io.StringWriter
 /**
  * A [Logger] implementation that writes to Android's [Log].
  *
- * NOTE: You **should not** enable this in release builds. Adding this to your [ImageLoader] reduces performance.
- * Additionally, this will log URLs which can contain [PII](https://en.wikipedia.org/wiki/Personal_data).
+ * NOTE: You **should not** enable this in release builds. Adding this to your [ImageLoader]
+ * reduces performance. Additionally, this will log URLs which can contain
+ * [PII](https://en.wikipedia.org/wiki/Personal_data).
  */
 class DebugLogger @JvmOverloads constructor(level: Int = Log.DEBUG) : Logger {
 
-    override var level: Int = level
+    override var level = level
         set(value) {
             assertValidLevel(value)
             field = value

@@ -46,7 +46,9 @@ fun ImageMockWebServer(responseDelayMillis: Long = 0): MockWebServer {
             }
         }
     }
-    return MockWebServer().apply { setDispatcher(dispatcher) }
+    val server = MockWebServer()
+    server.dispatcher = dispatcher
+    return server
 }
 
 private fun rawResourceAsResponse(

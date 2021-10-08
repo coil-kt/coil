@@ -3,7 +3,6 @@ package coil.intercept
 import android.graphics.drawable.ColorDrawable
 import coil.decode.DataSource
 import coil.request.ImageResult
-import coil.request.ImageResult.Metadata
 import coil.request.SuccessResult
 
 class FakeInterceptor : Interceptor {
@@ -12,12 +11,11 @@ class FakeInterceptor : Interceptor {
         return SuccessResult(
             drawable = ColorDrawable(),
             request = chain.request,
-            metadata = Metadata(
-                memoryCacheKey = null,
-                isSampled = false,
-                dataSource = DataSource.MEMORY,
-                isPlaceholderMemoryCacheKeyPresent = true
-            )
+            dataSource = DataSource.MEMORY,
+            memoryCacheKey = null,
+            diskCacheKey = null,
+            isSampled = false,
+            isPlaceholderCached = false,
         )
     }
 }

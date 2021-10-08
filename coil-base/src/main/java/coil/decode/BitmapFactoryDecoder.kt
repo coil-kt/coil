@@ -1,6 +1,5 @@
 package coil.decode
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -8,44 +7,39 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import androidx.exifinterface.media.ExifInterface
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
+import coil.fetch.SourceResult
+import coil.request.Options
 import coil.size.PixelSize
-import coil.size.Size
 import coil.util.toDrawable
 import coil.util.toSoftware
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import okio.Buffer
-import okio.BufferedSource
 import okio.ForwardingSource
 import okio.Source
 import okio.buffer
 import java.io.InputStream
-import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-/** The base [Decoder] that uses [BitmapFactory] to decode a given [BufferedSource]. */
-internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
+/** The base [Decoder] that uses [BitmapFactory] to decode a given [ImageSource]. */
+class BitmapFactoryDecoder @JvmOverloads constructor(
+    private val source: ImageSource,
+    private val options: Options,
+    private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE)
+) : Decoder {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-    override fun handles(source: BufferedSource, mimeType: String?) = true
-
-    override suspend fun decode(
-        pool: BitmapPool,
-        source: BufferedSource,
-        size: Size,
-        options: Options
-    ) = withInterruptibleSource(source) { interruptibleSource ->
-        decodeInterruptible(pool, interruptibleSource, size, options)
+    override suspend fun decode() = parallelismLock.withPermit {
+        runInterruptible { BitmapFactory.Options().decode() }
     }
 
-    private fun decodeInterruptible(
-        pool: BitmapPool,
-        source: Source,
-        size: Size,
-        options: Options
-    ): DecodeResult = BitmapFactory.Options().run {
-        val safeSource = ExceptionCatchingSource(source)
+    private fun BitmapFactory.Options.decode(): DecodeResult {
+        val safeSource = ExceptionCatchingSource(source.source())
         val safeBufferedSource = safeSource.buffer()
 
         // Read the image's dimensions.
@@ -58,7 +52,8 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         val isFlipped: Boolean
         val rotationDegrees: Int
         if (shouldReadExifData(outMimeType)) {
-            val exifInterface = ExifInterface(ExifInterfaceInputStream(safeBufferedSource.peek().inputStream()))
+            val inputStream = safeBufferedSource.peek().inputStream()
+            val exifInterface = ExifInterface(ExifInterfaceInputStream(inputStream))
             safeSource.exception?.let { throw it }
             isFlipped = exifInterface.isFlipped
             rotationDegrees = exifInterface.rotationDegrees
@@ -67,23 +62,21 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
             rotationDegrees = 0
         }
 
-        // srcWidth and srcHeight are the dimensions of the image after EXIF transformations (but before sampling).
+        // srcWidth and srcHeight are the dimensions of the image after
+        // EXIF transformations (but before sampling).
         val isSwapped = rotationDegrees == 90 || rotationDegrees == 270
         val srcWidth = if (isSwapped) outHeight else outWidth
         val srcHeight = if (isSwapped) outWidth else outHeight
 
         inPreferredConfig = computeConfig(options, isFlipped, rotationDegrees)
+        inPremultiplied = options.premultipliedAlpha
 
         if (SDK_INT >= 26 && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
         }
 
-        if (SDK_INT >= 19) {
-            inPremultiplied = options.premultipliedAlpha
-        }
-
-        // Create immutable bitmaps on API 24 and above.
-        inMutable = SDK_INT < 24
+        // Always create immutable bitmaps as they have performance benefits.
+        inMutable = false
         inScaled = false
 
         when {
@@ -93,18 +86,15 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 inScaled = false
                 inBitmap = null
             }
-            size !is PixelSize -> {
+            options.size !is PixelSize -> {
                 // This occurs if size is OriginalSize.
                 inSampleSize = 1
                 inScaled = false
-
-                if (inMutable) {
-                    inBitmap = pool.getDirty(outWidth, outHeight, inPreferredConfig)
-                }
             }
             else -> {
-                val (width, height) = size
-                inSampleSize = DecodeUtils.calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
+                val (width, height) = options.size
+                inSampleSize = DecodeUtils
+                    .calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
 
                 // Calculate the image's density scaling multiple.
                 val rawScale = DecodeUtils.computeSizeMultiplier(
@@ -116,7 +106,11 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                 )
 
                 // Avoid loading the image larger than its original dimensions if allowed.
-                val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
+                val scale = if (options.allowInexactSize) {
+                    rawScale.coerceAtMost(1.0)
+                } else {
+                    rawScale
+                }
 
                 inScaled = scale != 1.0
                 if (inScaled) {
@@ -130,75 +124,33 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
                         inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
                     }
                 }
-
-                if (inMutable) {
-                    inBitmap = when {
-                        // If we're not scaling the image, use the image's source dimensions.
-                        inSampleSize == 1 && !inScaled -> {
-                            pool.getDirty(outWidth, outHeight, inPreferredConfig)
-                        }
-                        // We can only re-use bitmaps that don't match the image's source dimensions on API 19 and above.
-                        SDK_INT >= 19 -> {
-                            // Request a slightly larger bitmap than necessary as the output bitmap's dimensions
-                            // may not match the requested dimensions exactly. This is due to intricacies in Android's
-                            // downsampling algorithm across different API levels.
-                            val sampledOutWidth = outWidth / inSampleSize.toDouble()
-                            val sampledOutHeight = outHeight / inSampleSize.toDouble()
-                            pool.getDirty(
-                                width = ceil(scale * sampledOutWidth + 0.5).toInt(),
-                                height = ceil(scale * sampledOutHeight + 0.5).toInt(),
-                                config = inPreferredConfig
-                            )
-                        }
-                        // Else, let BitmapFactory allocate the bitmap internally.
-                        else -> null
-                    }
-                }
             }
         }
-
-        // Keep a reference to the input bitmap so it can be returned to
-        // the pool if the decode doesn't complete successfully.
-        val inBitmap: Bitmap? = inBitmap
 
         // Decode the bitmap.
-        var outBitmap: Bitmap? = null
-        try {
-            outBitmap = safeBufferedSource.use {
-                // outMimeType is null for unsupported formats as well as on older devices with incomplete WebP support.
-                if (SDK_INT < 19 && outMimeType == null) {
-                    val bytes = it.readByteArray()
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, this)
-                } else {
-                    BitmapFactory.decodeStream(it.inputStream(), null, this)
-                }
-            }
-            safeSource.exception?.let { throw it }
-        } catch (throwable: Throwable) {
-            inBitmap?.let(pool::put)
-            if (outBitmap !== inBitmap) {
-                outBitmap?.let(pool::put)
-            }
-            throw throwable
+        val outBitmap: Bitmap? = safeBufferedSource.use {
+            BitmapFactory.decodeStream(it.inputStream(), null, this)
         }
+        safeSource.exception?.let { throw it }
         checkNotNull(outBitmap) {
-            "BitmapFactory returned a null bitmap. Often this means BitmapFactory could not decode the image data " +
-                "read from the input source (e.g. network, disk, or memory) as it's not encoded as a valid image format."
+            "BitmapFactory returned a null bitmap. Often this means BitmapFactory could not " +
+                "decode the image data read from the input source (e.g. network, disk, or " +
+                "memory) as it's not encoded as a valid image format."
         }
 
         // Fix the incorrect density created by overloading inDensity/inTargetDensity.
         outBitmap.density = options.context.resources.displayMetrics.densityDpi
 
         // Apply any EXIF transformations.
-        val bitmap = applyExifTransformations(pool, outBitmap, inPreferredConfig, isFlipped, rotationDegrees)
+        val bitmap = applyExifTransformations(outBitmap, inPreferredConfig, isFlipped, rotationDegrees)
 
-        DecodeResult(
-            drawable = bitmap.toDrawable(context),
+        return DecodeResult(
+            drawable = bitmap.toDrawable(options.context),
             isSampled = inSampleSize > 1 || inScaled
         )
     }
 
-    /** Return true if we should read the image's EXIF data. */
+    /** Return 'true' if we should read the image's EXIF data. */
     private fun shouldReadExifData(mimeType: String?): Boolean {
         return mimeType != null && mimeType in SUPPORTED_EXIF_MIME_TYPES
     }
@@ -217,7 +169,6 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
 
         // Decode the image as RGB_565 as an optimization if allowed.
-        // TODO: Peek the source to figure out its format (and if it has alpha) instead of relying on the MIME type.
         if (options.allowRgb565 && config == Bitmap.Config.ARGB_8888 && outMimeType == MIME_TYPE_JPEG) {
             config = Bitmap.Config.RGB_565
         }
@@ -230,9 +181,11 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         return config
     }
 
-    /** NOTE: This method assumes [config] is not [Bitmap.Config.HARDWARE] if the image has to be transformed. */
+    /**
+     * NOTE: This method assumes [config] is not [Bitmap.Config.HARDWARE]
+     * if the image has to be transformed.
+     */
     private fun applyExifTransformations(
-        pool: BitmapPool,
         inBitmap: Bitmap,
         config: Bitmap.Config,
         isFlipped: Boolean,
@@ -261,16 +214,31 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
 
         val outBitmap = if (rotationDegrees == 90 || rotationDegrees == 270) {
-            pool.get(inBitmap.height, inBitmap.width, config)
+            createBitmap(inBitmap.height, inBitmap.width, config)
         } else {
-            pool.get(inBitmap.width, inBitmap.height, config)
+            createBitmap(inBitmap.width, inBitmap.height, config)
         }
 
         outBitmap.applyCanvas {
             drawBitmap(inBitmap, matrix, paint)
         }
-        pool.put(inBitmap)
+        inBitmap.recycle()
         return outBitmap
+    }
+
+    class Factory @JvmOverloads constructor(
+        maxParallelism: Int = DEFAULT_MAX_PARALLELISM
+    ) : Decoder.Factory {
+
+        private val parallelismLock = Semaphore(maxParallelism)
+
+        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder {
+            return BitmapFactoryDecoder(result.source, options, parallelismLock)
+        }
+
+        override fun equals(other: Any?) = other is Factory
+
+        override fun hashCode() = javaClass.hashCode()
     }
 
     /** Prevent [BitmapFactory.decodeStream] from swallowing [Exception]s. */
@@ -294,13 +262,14 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
 
         // Ensure that this value is always larger than the size of the image
         // so ExifInterface won't stop reading the stream prematurely.
-        @Volatile private var availableBytes = GIGABYTE_IN_BYTES
+        private var availableBytes = GIGABYTE_IN_BYTES
 
         override fun read() = interceptBytesRead(delegate.read())
 
         override fun read(b: ByteArray) = interceptBytesRead(delegate.read(b))
 
-        override fun read(b: ByteArray, off: Int, len: Int) = interceptBytesRead(delegate.read(b, off, len))
+        override fun read(b: ByteArray, off: Int, len: Int) =
+            interceptBytesRead(delegate.read(b, off, len))
 
         override fun skip(n: Long) = delegate.skip(n)
 
@@ -314,16 +283,18 @@ internal class BitmapFactoryDecoder(private val context: Context) : Decoder {
         }
     }
 
-    companion object {
+    internal companion object {
         private const val MIME_TYPE_JPEG = "image/jpeg"
         private const val MIME_TYPE_WEBP = "image/webp"
         private const val MIME_TYPE_HEIC = "image/heic"
         private const val MIME_TYPE_HEIF = "image/heif"
         private const val GIGABYTE_IN_BYTES = 1024 * 1024 * 1024
+        internal const val DEFAULT_MAX_PARALLELISM = 4
 
         // NOTE: We don't support PNG EXIF data as it's very rarely used and requires buffering
         // the entire file into memory. All of the supported formats short circuit when the EXIF
         // chunk is found (often near the top of the file).
-        private val SUPPORTED_EXIF_MIME_TYPES = arrayOf(MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF)
+        private val SUPPORTED_EXIF_MIME_TYPES =
+            arrayOf(MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF)
     }
 }

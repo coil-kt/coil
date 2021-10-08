@@ -1,4 +1,4 @@
-@file:JvmName("ParametersKt")
+@file:JvmName("-Parameters")
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil.request
@@ -27,7 +27,7 @@ class Parameters private constructor(
     /** Returns the entry associated with [key] or null if [key] has no mapping. */
     fun entry(key: String): Entry? = map[key]
 
-    /** Returns true if this object has no parameters. */
+    /** Returns 'true' if this object has no parameters. */
     fun isEmpty(): Boolean = map.isEmpty()
 
     /** Returns a map of keys to values. */
@@ -39,7 +39,7 @@ class Parameters private constructor(
         }
     }
 
-    /** Returns a map of keys to non null cache keys. Parameters with a null cache key are filtered out. */
+    /** Returns a map of keys to non-null cache keys. Keys with a null cache key are filtered. */
     fun cacheKeys(): Map<String, String> {
         return if (isEmpty()) {
             emptyMap()
@@ -54,7 +54,8 @@ class Parameters private constructor(
     }
 
     override fun equals(other: Any?): Boolean {
-        return (this === other) || (other is Parameters && map == other.map)
+        if (this === other) return true
+        return other is Parameters && map == other.map
     }
 
     override fun hashCode() = map.hashCode()
@@ -65,7 +66,7 @@ class Parameters private constructor(
 
     data class Entry(
         val value: Any?,
-        val cacheKey: String?
+        val cacheKey: String?,
     )
 
     class Builder {
@@ -85,7 +86,8 @@ class Parameters private constructor(
          *
          * @param key The parameter's key.
          * @param value The parameter's value.
-         * @param cacheKey The parameter's cache key. If not null, this value will be added to a request's cache key.
+         * @param cacheKey The parameter's cache key.
+         *  If not null, this value will be added to a request's cache key.
          */
         @JvmOverloads
         fun set(key: String, value: Any?, cacheKey: String? = value?.toString()) = apply {

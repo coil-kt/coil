@@ -1,5 +1,3 @@
-@file:Suppress("unused", "SpellCheckingInspection")
-
 package coil
 
 object Library {
@@ -15,7 +13,6 @@ object Library {
     const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:2.1.0"
     const val ANDROIDX_CORE = "androidx.core:core-ktx:1.6.0"
     const val ANDROIDX_EXIF_INTERFACE = "androidx.exifinterface:exifinterface:1.3.3"
-    const val ANDROIDX_MULTIDEX = "androidx.multidex:multidex:2.0.1"
     const val ANDROIDX_RECYCLER_VIEW = "androidx.recyclerview:recyclerview:1.2.1"
     const val ANDROIDX_VECTOR_DRAWABLE_ANIMATED = "androidx.vectordrawable:vectordrawable-animated:1.1.0"
 
@@ -40,10 +37,10 @@ object Library {
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
-    private const val OKHTTP_VERSION = "3.12.13"
+    private const val OKHTTP_VERSION = "4.9.2"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
-    const val OKIO = "com.squareup.okio:okio:2.10.0"
+    const val OKIO = "com.squareup.okio:okio:3.0.0-alpha.10"
 
     // TEST
 

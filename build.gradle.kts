@@ -50,13 +50,14 @@ allprojects {
 
     extensions.configure<KtlintExtension>("ktlint") {
         version by "0.42.1"
-        disabledRules by setOf("indent", "max-line-length")
+        disabledRules by setOf("indent", "max-line-length", "parameter-list-wrapping")
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
             jdkVersion by 8
             skipDeprecated by true
+            suppressInheritedMembers by true
 
             externalDocumentationLink {
                 url by URL("https://developer.android.com/reference/")

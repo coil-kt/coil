@@ -4,16 +4,18 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
-import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
-import coil.bitmap.BitmapPool
+import coil.ImageLoader
+import coil.fetch.SourceResult
+import coil.request.Options
+import coil.size
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
+import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
-import coil.util.size
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.source
@@ -23,21 +25,17 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
-import kotlin.test.assertNotSame
-import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class BitmapFactoryDecoderTest {
 
     private lateinit var context: Context
-    private lateinit var pool: BitmapPool
-    private lateinit var decoder: BitmapFactoryDecoder
+    private lateinit var decoderFactory: BitmapFactoryDecoder.Factory
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        pool = BitmapPool(Int.MAX_VALUE)
-        decoder = BitmapFactoryDecoder(context)
+        decoderFactory = BitmapFactoryDecoder.Factory()
     }
 
     @Test
@@ -98,7 +96,7 @@ class BitmapFactoryDecoderTest {
         val size = PixelSize(500, 500)
         val expected = decodeBitmap("exif/large_metadata_normalized.jpg", size)
         val actual = decodeBitmap("exif/large_metadata.jpg", size)
-        assertTrue(expected.isSimilarTo(actual))
+        expected.assertIsSimilarTo(actual)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/619 */
@@ -110,16 +108,16 @@ class BitmapFactoryDecoderTest {
         // Ensure this completes and doesn't end up in an infinite loop.
         val normal = context.decodeBitmapAsset("exif/basic.heic")
         val actual = decodeBitmap("exif/basic.heic", OriginalSize)
-        assertTrue(normal.isSimilarTo(actual))
+        normal.assertIsSimilarTo(actual)
     }
 
     @Test
     fun allowInexactSize_true() {
         val result = decodeBitmap(
             assetName = "normal.jpg",
-            size = PixelSize(1500, 1500),
             options = Options(
                 context = context,
+                size = PixelSize(1500, 1500),
                 scale = Scale.FIT,
                 allowInexactSize = true
             )
@@ -131,9 +129,9 @@ class BitmapFactoryDecoderTest {
     fun allowInexactSize_false() {
         val result = decodeBitmap(
             assetName = "normal.jpg",
-            size = PixelSize(1500, 1500),
             options = Options(
                 context = context,
+                size = PixelSize(1500, 1500),
                 scale = Scale.FIT,
                 allowInexactSize = false
             )
@@ -145,9 +143,9 @@ class BitmapFactoryDecoderTest {
     fun allowRgb565_true() {
         val result = decodeBitmap(
             assetName = "normal.jpg",
-            size = PixelSize(500, 500),
             options = Options(
                 context = context,
+                size = PixelSize(500, 500),
                 scale = Scale.FILL,
                 allowRgb565 = true
             )
@@ -160,9 +158,9 @@ class BitmapFactoryDecoderTest {
     fun allowRgb565_false() {
         val result = decodeBitmap(
             assetName = "normal.jpg",
-            size = PixelSize(500, 500),
             options = Options(
                 context = context,
+                size = PixelSize(500, 500),
                 scale = Scale.FILL,
                 allowRgb565 = false
             )
@@ -175,101 +173,36 @@ class BitmapFactoryDecoderTest {
     fun premultipliedAlpha_true() {
         val result = decodeBitmap(
             assetName = "normal_alpha.png",
-            size = PixelSize(400, 200),
             options = Options(
                 context = context,
+                size = PixelSize(400, 200),
                 scale = Scale.FILL,
                 premultipliedAlpha = true
             )
         )
         assertEquals(PixelSize(400, 200), result.size)
-        if (SDK_INT >= 19) {
-            assertTrue(result.isPremultiplied)
-        }
+        assertTrue(result.isPremultiplied)
     }
 
     @Test
     fun premultipliedAlpha_false() {
         val result = decodeBitmap(
             assetName = "normal_alpha.png",
-            size = PixelSize(400, 200),
             options = Options(
                 context = context,
+                size = PixelSize(400, 200),
                 scale = Scale.FILL,
                 premultipliedAlpha = false
             )
         )
         assertEquals(PixelSize(400, 200), result.size)
-        if (SDK_INT >= 19) {
-            assertFalse(result.isPremultiplied)
-        }
-    }
-
-    @Test
-    fun pooledBitmap_exactSize() {
-        val pooledBitmap = createBitmap(1080, 1350, Bitmap.Config.ARGB_8888)
-        pool.put(pooledBitmap)
-
-        val result = decodeBitmap(
-            assetName = "normal.jpg",
-            size = PixelSize(1080, 1350),
-            options = Options(
-                context = context,
-                config = Bitmap.Config.ARGB_8888,
-                scale = Scale.FIT,
-                allowInexactSize = false
-            )
-        )
-        assertEquals(PixelSize(1080, 1350), result.size)
-
-        // BitmapFactoryDecoder creates immutable bitmaps instead of using pooled bitmaps on API 24+.
-        if (SDK_INT >= 24) {
-            assertNotSame(pooledBitmap, result)
-            assertFalse(result.isMutable)
-        } else {
-            assertSame(pooledBitmap, result)
-            assertTrue(result.isMutable)
-        }
-    }
-
-    @Test
-    fun pooledBitmap_inexactSize() {
-        val pooledBitmap = createBitmap(900, 850, Bitmap.Config.ARGB_8888)
-        pool.put(pooledBitmap)
-
-        val result = decodeBitmap(
-            assetName = "normal.jpg",
-            size = PixelSize(500, 500),
-            options = Options(
-                context = context,
-                config = Bitmap.Config.ARGB_8888,
-                scale = Scale.FILL,
-                allowInexactSize = false
-            )
-        )
-        assertEquals(PixelSize(500, 625), result.size)
-
-        // BitmapFactoryDecoder creates immutable bitmaps instead of using pooled bitmaps on API 24+.
-        when {
-            SDK_INT >= 24 -> {
-                assertNotSame(pooledBitmap, result)
-                assertFalse(result.isMutable)
-            }
-            SDK_INT >= 19 -> {
-                assertSame(pooledBitmap, result)
-                assertTrue(result.isMutable)
-            }
-            else -> {
-                assertNotSame(pooledBitmap, result)
-                assertTrue(result.isMutable)
-            }
-        }
+        assertFalse(result.isPremultiplied)
     }
 
     @Test
     fun lossyWebP() {
-        val expectedBitmap = decodeBitmap("normal.jpg", PixelSize(450, 675))
-        assertTrue(decodeBitmap("lossy.webp", PixelSize(450, 675)).isSimilarTo(expectedBitmap))
+        val expected = decodeBitmap("normal.jpg", PixelSize(450, 675))
+        decodeBitmap("lossy.webp", PixelSize(450, 675)).assertIsSimilarTo(expected)
     }
 
     @Test
@@ -289,27 +222,18 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun largeJpeg() {
-        // The emulator runs out of memory on pre-19.
-        assumeTrue(SDK_INT >= 19)
-
         decodeBitmap("large.jpg", PixelSize(1080, 1920))
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/368 */
     @Test
     fun largePng() {
-        // The emulator runs out of memory on pre-19.
-        assumeTrue(SDK_INT >= 19)
-
         // Ensure that this doesn't cause an OOM exception - particularly on API 23 and below.
         decodeBitmap("large.png", PixelSize(1080, 1920))
     }
 
     @Test
     fun largeWebP() {
-        // The emulator runs out of memory on pre-19.
-        assumeTrue(SDK_INT >= 19)
-
         decodeBitmap("large.webp", PixelSize(1080, 1920))
     }
 
@@ -321,18 +245,27 @@ class BitmapFactoryDecoderTest {
         decodeBitmap("large.heic", PixelSize(1080, 1920))
     }
 
-    private fun decode(
-        assetName: String,
-        size: Size,
-        options: Options = Options(context, scale = Scale.FILL)
-    ): DecodeResult = runBlocking {
+    private fun decodeBitmap(assetName: String, size: Size): Bitmap =
+        decodeBitmap(assetName, Options(context = context, size = size, scale = Scale.FILL))
+
+    private fun decodeBitmap(assetName: String, options: Options): Bitmap =
+        (decode(assetName, options).drawable as BitmapDrawable).bitmap
+
+    private fun decode(assetName: String, size: Size): DecodeResult =
+        decode(assetName, Options(context = context, size = size, scale = Scale.FILL))
+
+    private fun decode(assetName: String, options: Options): DecodeResult = runBlocking {
         val source = context.assets.open(assetName).source().buffer()
-        val result = decoder.decode(
-            pool = pool,
-            source = source,
-            size = size,
-            options = options
+        val decoder = decoderFactory.create(
+            result = SourceResult(
+                source = ImageSource(source, context),
+                mimeType = null,
+                dataSource = DataSource.DISK
+            ),
+            options = options,
+            imageLoader = ImageLoader(context)
         )
+        val result = checkNotNull(decoder.decode())
 
         // Assert that the source has been closed.
         val exception = assertFailsWith<IllegalStateException> { source.exhausted() }
@@ -340,10 +273,4 @@ class BitmapFactoryDecoderTest {
 
         return@runBlocking result
     }
-
-    private fun decodeBitmap(
-        assetName: String,
-        size: Size,
-        options: Options = Options(context, scale = Scale.FILL)
-    ): Bitmap = (decode(assetName, size, options).drawable as BitmapDrawable).bitmap
 }

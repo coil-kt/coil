@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
+import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
@@ -43,6 +44,7 @@ import coil.size.Precision
 import coil.size.Scale
 import coil.transition.CrossfadeTransition
 import com.google.accompanist.drawablepainter.DrawablePainter
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -66,12 +68,12 @@ import kotlin.math.roundToInt
 inline fun rememberImagePainter(
     data: Any?,
     imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
+    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
     builder: ImageRequest.Builder.() -> Unit = {},
 ): ImagePainter {
     val request = ImageRequest.Builder(LocalContext.current)
-        .data(data)
         .apply(builder)
+        .data(data)
         .build()
     return rememberImagePainter(request, imageLoader, onExecute)
 }
@@ -88,7 +90,7 @@ inline fun rememberImagePainter(
 fun rememberImagePainter(
     request: ImageRequest,
     imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
+    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
 ): ImagePainter {
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
@@ -122,7 +124,7 @@ class ImagePainter internal constructor(
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     internal var painter: Painter? by mutableStateOf(null)
-    internal var onExecute = ExecuteCallback.Default
+    internal var onExecute = ExecuteCallback.Lazy
     internal var isPreview = false
 
     /** The current [ImagePainter.State]. */
@@ -164,7 +166,8 @@ class ImagePainter internal constructor(
         // Create a new scope to observe state and execute requests while we're remembered.
         rememberScope?.cancel()
         val context = parentScope.coroutineContext
-        val scope = CoroutineScope(context + SupervisorJob(context[Job]))
+        val scope = CoroutineScope(context + SupervisorJob(context[Job]) +
+            EMPTY_COROUTINE_EXCEPTION_HANDLER)
         rememberScope = scope
 
         // Observe the current request + request size and launch new requests as necessary.
@@ -179,15 +182,15 @@ class ImagePainter internal constructor(
                 val current = Snapshot(state, request, size)
                 snapshot = current
 
-                // Short circuit if the size hasn't been set explicitly and the draw size is positive.
-                if (request.defined.sizeResolver == null &&
-                        size.isSpecified && (size.width <= 0.5f || size.height <= 0.5f)) {
-                    state = State.Empty
-                    return@collect
+                // Launch a new image request if necessary.
+                if (onExecute(previous, current)) {
+                    requestJob?.cancel()
+                    requestJob = launch {
+                        state = imageLoader
+                            .execute(updateRequest(current.request, current.size))
+                            .toState()
+                    }
                 }
-
-                // Execute the image request.
-                execute(previous, current)
             }
         }
     }
@@ -200,16 +203,6 @@ class ImagePainter internal constructor(
     }
 
     override fun onAbandoned() = onForgotten()
-
-    private fun CoroutineScope.execute(previous: Snapshot?, current: Snapshot) {
-        if (!onExecute(previous, current)) return
-
-        // Execute the image request.
-        requestJob?.cancel()
-        requestJob = launch {
-            state = imageLoader.execute(updateRequest(current.request, current.size)).toState()
-        }
-    }
 
     /** Update the [request] to work with [ImagePainter]. */
     private fun updateRequest(request: ImageRequest, size: Size): ImageRequest {
@@ -254,11 +247,37 @@ class ImagePainter internal constructor(
         companion object {
             /**
              * Proceeds with the request if the painter is empty or the request has changed.
-             * This **does not** proceed with the request if only the draw size has changed.
+             *
+             * Additionally, this callback only proceeds if the image request has an explicit
+             * size or [ImagePainter.onDraw] has been called with the draw canvas' dimensions.
              */
-            @JvmField val Default = ExecuteCallback { previous, current ->
+            @JvmField val Lazy = ExecuteCallback { previous, current ->
+                (current.state == State.Empty || previous?.request != current.request) &&
+                    (current.request.defined.sizeResolver != null ||
+                        current.size.isUnspecified ||
+                        (current.size.width >= 0.5f && current.size.height >= 0.5f))
+            }
+
+            /**
+             * Proceeds with the request if the painter is empty or the request has changed.
+             *
+             * Unlike [Lazy], this callback will execute the request immediately. Typically,
+             * this will load the image at its original size unless [ImageRequest.Builder.size]
+             * has been set.
+             */
+            @JvmField val Immediate = ExecuteCallback { previous, current ->
                 current.state == State.Empty || previous?.request != current.request
             }
+
+            @Deprecated(
+                message = "Migrate to `Lazy`.",
+                replaceWith = ReplaceWith(
+                    expression = "ExecuteCallback.Lazy",
+                    imports = ["coil.compose.ImagePainter.ExecuteCallback"]
+                ),
+                level = DeprecationLevel.ERROR // Temporary migration aid.
+            )
+            @JvmField val Default = Lazy
         }
     }
 
@@ -295,27 +314,13 @@ class ImagePainter internal constructor(
         data class Success(
             override val painter: Painter,
             val result: SuccessResult,
-        ) : State() {
-
-            @Deprecated(
-                message = "Migrate to `result.metadata`.",
-                replaceWith = ReplaceWith("result.metadata")
-            )
-            val metadata: ImageResult.Metadata get() = result.metadata
-        }
+        ) : State()
 
         /** The request failed due to [ErrorResult.throwable]. */
         data class Error(
             override val painter: Painter?,
             val result: ErrorResult,
-        ) : State() {
-
-            @Deprecated(
-                message = "Migrate to `result.throwable`.",
-                replaceWith = ReplaceWith("result.throwable")
-            )
-            val throwable: Throwable get() = result.throwable
-        }
+        ) : State()
     }
 }
 
@@ -343,8 +348,10 @@ private fun updatePainter(
     val painter = remember(state) { state.painter }
 
     // Short circuit if the crossfade transition isn't set.
-    val transition = request.defined.transition ?: imageLoader.defaults.transition
-    if (transition !is CrossfadeTransition) {
+    // Check `imageLoader.defaults.transitionFactory` specifically as the default isn't set
+    // until the request is executed.
+    val transition = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
+    if (transition !is CrossfadeTransition.Factory) {
         imagePainter.painter = painter
         return
     }
@@ -354,7 +361,7 @@ private fun updatePainter(
     if (state is State.Loading) loading.value = state.painter
 
     // Short circuit if the request isn't successful or if it's returned by the memory cache.
-    if (state !is State.Success || state.result.metadata.dataSource == DataSource.MEMORY_CACHE) {
+    if (state !is State.Success || state.result.dataSource == DataSource.MEMORY_CACHE) {
         imagePainter.painter = painter
         return
     }
@@ -364,10 +371,9 @@ private fun updatePainter(
         key = state,
         start = loading.value,
         end = painter,
-        // Fall back to Scale.FIT to match the default image content scale.
-        scale = request.defined.scale ?: Scale.FIT,
+        scale = request.scale,
         durationMillis = transition.durationMillis,
-        fadeStart = !state.result.metadata.isPlaceholderMemoryCacheKeyPresent
+        fadeStart = !state.result.isPlaceholderCached
     )
 }
 
@@ -380,7 +386,8 @@ private fun requireSupportedData(data: Any?) = when (data) {
 
 private fun unsupportedData(name: String): Nothing {
     throw IllegalArgumentException(
-        "Unsupported type: $name. If you wish to display this $name, use androidx.compose.foundation.Image."
+        "Unsupported type: $name. If you wish to display this $name, " +
+            "use androidx.compose.foundation.Image."
     )
 }
 
@@ -406,3 +413,6 @@ private fun Drawable.toPainter(): Painter {
 
 /** A simple mutable value holder that avoids recomposition. */
 private class ValueHolder<T>(@JvmField var value: T)
+
+/** An exception handler that ignores any uncaught exceptions. */
+private val EMPTY_COROUTINE_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, _ -> }

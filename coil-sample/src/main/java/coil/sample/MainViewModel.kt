@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import coil.fetch.VideoFrameFetcher.Companion.VIDEO_FRAME_MICROS_KEY
+import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Parameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +43,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val images = mutableListOf<Image>()
 
         if (assetType == AssetType.MP4) {
-            for (index in 0 until 50) {
+            for (index in 0 until 200) {
                 val videoFrameMicros = Random.nextLong(62000000L)
                 val parameters = Parameters.Builder()
                     .set(VIDEO_FRAME_MICROS_KEY, videoFrameMicros)

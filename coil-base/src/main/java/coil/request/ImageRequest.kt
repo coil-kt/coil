@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "UNUSED_PARAMETER")
 
 package coil.request
 
@@ -20,13 +20,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.request.ImageRequest.Builder
-import coil.size.DisplaySizeResolver
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
@@ -40,15 +38,18 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
+import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.allowInexactSize
 import coil.util.getDrawableCompat
 import coil.util.getLifecycle
 import coil.util.orEmpty
 import coil.util.scale
+import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import java.io.File
+import java.nio.ByteBuffer
 
 /**
  * An immutable value object that represents a request for an image.
@@ -71,17 +72,17 @@ class ImageRequest private constructor(
     /** @see Builder.memoryCacheKey */
     val memoryCacheKey: MemoryCache.Key?,
 
-    /** @see Builder.placeholderMemoryCacheKey */
-    val placeholderMemoryCacheKey: MemoryCache.Key?,
+    /** @see Builder.diskCacheKey */
+    val diskCacheKey: String?,
 
     /** @see Builder.colorSpace */
     val colorSpace: ColorSpace?,
 
-    /** @see Builder.fetcher */
-    val fetcher: Pair<Fetcher<*>, Class<*>>?,
+    /** @see Builder.fetcherFactory */
+    val fetcherFactory: Pair<Fetcher.Factory<*>, Class<*>>?,
 
-    /** @see Builder.decoder */
-    val decoder: Decoder?,
+    /** @see Builder.decoderFactory */
+    val decoderFactory: Decoder.Factory?,
 
     /** @see Builder.transformations */
     val transformations: List<Transformation>,
@@ -101,11 +102,20 @@ class ImageRequest private constructor(
     /** @see Builder.scale */
     val scale: Scale,
 
-    /** @see Builder.dispatcher */
-    val dispatcher: CoroutineDispatcher,
+    /** @see Builder.interceptorDispatcher */
+    val interceptorDispatcher: CoroutineDispatcher,
 
-    /** @see Builder.transition */
-    val transition: Transition,
+    /** @see Builder.fetcherDispatcher */
+    val fetcherDispatcher: CoroutineDispatcher,
+
+    /** @see Builder.decoderDispatcher */
+    val decoderDispatcher: CoroutineDispatcher,
+
+    /** @see Builder.transformationDispatcher */
+    val transformationDispatcher: CoroutineDispatcher,
+
+    /** @see Builder.transitionFactory */
+    val transitionFactory: Transition.Factory,
 
     /** @see Builder.precision */
     val precision: Precision,
@@ -134,6 +144,9 @@ class ImageRequest private constructor(
     /** @see Builder.networkCachePolicy */
     val networkCachePolicy: CachePolicy,
 
+    /** @see Builder.placeholderMemoryCacheKey */
+    val placeholderMemoryCacheKey: MemoryCache.Key?,
+
     private val placeholderResId: Int?,
     private val placeholderDrawable: Drawable?,
     private val errorResId: Int?,
@@ -145,17 +158,20 @@ class ImageRequest private constructor(
     val defined: DefinedRequestOptions,
 
     /** The defaults used to fill unset values. */
-    val defaults: DefaultRequestOptions
+    val defaults: DefaultRequestOptions,
 ) {
 
     /** @see Builder.placeholder */
-    val placeholder: Drawable? get() = getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
+    val placeholder: Drawable? get() =
+        getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
 
     /** @see Builder.error */
-    val error: Drawable? get() = getDrawableCompat(errorDrawable, errorResId, defaults.error)
+    val error: Drawable? get() =
+        getDrawableCompat(errorDrawable, errorResId, defaults.error)
 
     /** @see Builder.fallback */
-    val fallback: Drawable? get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
+    val fallback: Drawable? get() =
+        getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
 
     @JvmOverloads
     fun newBuilder(context: Context = this.context) = Builder(this, context)
@@ -168,18 +184,21 @@ class ImageRequest private constructor(
             target == other.target &&
             listener == other.listener &&
             memoryCacheKey == other.memoryCacheKey &&
-            placeholderMemoryCacheKey == other.placeholderMemoryCacheKey &&
+            diskCacheKey == other.diskCacheKey &&
             (SDK_INT < 26 || colorSpace == other.colorSpace) &&
-            fetcher == other.fetcher &&
-            decoder == other.decoder &&
+            fetcherFactory == other.fetcherFactory &&
+            decoderFactory == other.decoderFactory &&
             transformations == other.transformations &&
             headers == other.headers &&
             parameters == other.parameters &&
             lifecycle == other.lifecycle &&
             sizeResolver == other.sizeResolver &&
             scale == other.scale &&
-            dispatcher == other.dispatcher &&
-            transition == other.transition &&
+            interceptorDispatcher == other.interceptorDispatcher &&
+            fetcherDispatcher == other.fetcherDispatcher &&
+            decoderDispatcher == other.decoderDispatcher &&
+            transformationDispatcher == other.transformationDispatcher &&
+            transitionFactory == other.transitionFactory &&
             precision == other.precision &&
             bitmapConfig == other.bitmapConfig &&
             allowConversionToBitmap == other.allowConversionToBitmap &&
@@ -189,6 +208,7 @@ class ImageRequest private constructor(
             memoryCachePolicy == other.memoryCachePolicy &&
             diskCachePolicy == other.diskCachePolicy &&
             networkCachePolicy == other.networkCachePolicy &&
+            placeholderMemoryCacheKey == other.placeholderMemoryCacheKey &&
             placeholderResId == other.placeholderResId &&
             placeholderDrawable == other.placeholderDrawable &&
             errorResId == other.errorResId &&
@@ -205,18 +225,21 @@ class ImageRequest private constructor(
         result = 31 * result + (target?.hashCode() ?: 0)
         result = 31 * result + (listener?.hashCode() ?: 0)
         result = 31 * result + (memoryCacheKey?.hashCode() ?: 0)
-        result = 31 * result + (placeholderMemoryCacheKey?.hashCode() ?: 0)
-        result = 31 * result + (colorSpace?.hashCode() ?: 0)
-        result = 31 * result + (fetcher?.hashCode() ?: 0)
-        result = 31 * result + (decoder?.hashCode() ?: 0)
+        result = 31 * result + (diskCacheKey?.hashCode() ?: 0)
+        result = 31 * result + if (SDK_INT < 26) 0 else (colorSpace?.hashCode() ?: 0)
+        result = 31 * result + (fetcherFactory?.hashCode() ?: 0)
+        result = 31 * result + (decoderFactory?.hashCode() ?: 0)
         result = 31 * result + transformations.hashCode()
         result = 31 * result + headers.hashCode()
         result = 31 * result + parameters.hashCode()
         result = 31 * result + lifecycle.hashCode()
         result = 31 * result + sizeResolver.hashCode()
         result = 31 * result + scale.hashCode()
-        result = 31 * result + dispatcher.hashCode()
-        result = 31 * result + transition.hashCode()
+        result = 31 * result + interceptorDispatcher.hashCode()
+        result = 31 * result + fetcherDispatcher.hashCode()
+        result = 31 * result + decoderDispatcher.hashCode()
+        result = 31 * result + transformationDispatcher.hashCode()
+        result = 31 * result + transitionFactory.hashCode()
         result = 31 * result + precision.hashCode()
         result = 31 * result + bitmapConfig.hashCode()
         result = 31 * result + allowConversionToBitmap.hashCode()
@@ -226,6 +249,7 @@ class ImageRequest private constructor(
         result = 31 * result + memoryCachePolicy.hashCode()
         result = 31 * result + diskCachePolicy.hashCode()
         result = 31 * result + networkCachePolicy.hashCode()
+        result = 31 * result + (placeholderMemoryCacheKey?.hashCode() ?: 0)
         result = 31 * result + (placeholderResId ?: 0)
         result = 31 * result + (placeholderDrawable?.hashCode() ?: 0)
         result = 31 * result + (errorResId ?: 0)
@@ -235,20 +259,6 @@ class ImageRequest private constructor(
         result = 31 * result + defined.hashCode()
         result = 31 * result + defaults.hashCode()
         return result
-    }
-
-    override fun toString(): String {
-        return "ImageRequest(context=$context, data=$data, target=$target, listener=$listener, " +
-            "memoryCacheKey=$memoryCacheKey, placeholderMemoryCacheKey=$placeholderMemoryCacheKey, " +
-            "colorSpace=$colorSpace, fetcher=$fetcher, decoder=$decoder, transformations=$transformations, " +
-            "headers=$headers, parameters=$parameters, lifecycle=$lifecycle, sizeResolver=$sizeResolver, " +
-            "scale=$scale, dispatcher=$dispatcher, transition=$transition, precision=$precision, " +
-            "bitmapConfig=$bitmapConfig, allowConversionToBitmap=$allowConversionToBitmap, " +
-            "allowHardware=$allowHardware, allowRgb565=$allowRgb565, premultipliedAlpha=$premultipliedAlpha, " +
-            "memoryCachePolicy=$memoryCachePolicy, diskCachePolicy=$diskCachePolicy, " +
-            "networkCachePolicy=$networkCachePolicy, placeholderResId=$placeholderResId, " +
-            "placeholderDrawable=$placeholderDrawable, errorResId=$errorResId, errorDrawable=$errorDrawable, " +
-            "fallbackResId=$fallbackResId, fallbackDrawable=$fallbackDrawable, defined=$defined, defaults=$defaults)"
     }
 
     /**
@@ -272,13 +282,13 @@ class ImageRequest private constructor(
          * Called if an error occurs while executing the request.
          */
         @MainThread
-        fun onError(request: ImageRequest, throwable: Throwable) {}
+        fun onError(request: ImageRequest, result: ErrorResult) {}
 
         /**
          * Called if the request completes successfully.
          */
         @MainThread
-        fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {}
+        fun onSuccess(request: ImageRequest, result: SuccessResult) {}
     }
 
     class Builder {
@@ -290,10 +300,10 @@ class ImageRequest private constructor(
         private var target: Target?
         private var listener: Listener?
         private var memoryCacheKey: MemoryCache.Key?
-        private var placeholderMemoryCacheKey: MemoryCache.Key?
+        private var diskCacheKey: String?
         private var colorSpace: ColorSpace? = null
-        private var fetcher: Pair<Fetcher<*>, Class<*>>?
-        private var decoder: Decoder?
+        private var fetcherFactory: Pair<Fetcher.Factory<*>, Class<*>>?
+        private var decoderFactory: Decoder.Factory?
         private var transformations: List<Transformation>
 
         private var headers: Headers.Builder?
@@ -303,8 +313,12 @@ class ImageRequest private constructor(
         private var sizeResolver: SizeResolver?
         private var scale: Scale?
 
-        private var dispatcher: CoroutineDispatcher?
-        private var transition: Transition?
+        private var interceptorDispatcher: CoroutineDispatcher?
+        private var fetcherDispatcher: CoroutineDispatcher?
+        private var decoderDispatcher: CoroutineDispatcher?
+        private var transformationDispatcher: CoroutineDispatcher?
+
+        private var transitionFactory: Transition.Factory?
         private var precision: Precision?
         private var bitmapConfig: Bitmap.Config?
         private var allowHardware: Boolean?
@@ -315,6 +329,7 @@ class ImageRequest private constructor(
         private var diskCachePolicy: CachePolicy?
         private var networkCachePolicy: CachePolicy?
 
+        private var placeholderMemoryCacheKey: MemoryCache.Key?
         @DrawableRes private var placeholderResId: Int?
         private var placeholderDrawable: Drawable?
         @DrawableRes private var errorResId: Int?
@@ -328,23 +343,26 @@ class ImageRequest private constructor(
 
         constructor(context: Context) {
             this.context = context
-            defaults = DefaultRequestOptions.INSTANCE
+            defaults = DEFAULT_REQUEST_OPTIONS
             data = null
             target = null
             listener = null
             memoryCacheKey = null
-            placeholderMemoryCacheKey = null
+            diskCacheKey = null
             if (SDK_INT >= 26) colorSpace = null
-            fetcher = null
-            decoder = null
+            fetcherFactory = null
+            decoderFactory = null
             transformations = emptyList()
             headers = null
             parameters = null
             lifecycle = null
             sizeResolver = null
             scale = null
-            dispatcher = null
-            transition = null
+            interceptorDispatcher = null
+            fetcherDispatcher = null
+            decoderDispatcher = null
+            transformationDispatcher = null
+            transitionFactory = null
             precision = null
             bitmapConfig = null
             allowHardware = null
@@ -354,6 +372,7 @@ class ImageRequest private constructor(
             memoryCachePolicy = null
             diskCachePolicy = null
             networkCachePolicy = null
+            placeholderMemoryCacheKey = null
             placeholderResId = null
             placeholderDrawable = null
             errorResId = null
@@ -373,18 +392,21 @@ class ImageRequest private constructor(
             target = request.target
             listener = request.listener
             memoryCacheKey = request.memoryCacheKey
-            placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
+            diskCacheKey = request.diskCacheKey
             if (SDK_INT >= 26) colorSpace = request.colorSpace
-            fetcher = request.fetcher
-            decoder = request.decoder
+            fetcherFactory = request.fetcherFactory
+            decoderFactory = request.decoderFactory
             transformations = request.transformations
             headers = request.headers.newBuilder()
             parameters = request.parameters.newBuilder()
             lifecycle = request.defined.lifecycle
             sizeResolver = request.defined.sizeResolver
             scale = request.defined.scale
-            dispatcher = request.defined.dispatcher
-            transition = request.defined.transition
+            interceptorDispatcher = request.defined.interceptorDispatcher
+            fetcherDispatcher = request.defined.fetcherDispatcher
+            decoderDispatcher = request.defined.decoderDispatcher
+            transformationDispatcher = request.defined.transformationDispatcher
+            transitionFactory = request.defined.transitionFactory
             precision = request.defined.precision
             bitmapConfig = request.defined.bitmapConfig
             allowHardware = request.defined.allowHardware
@@ -394,6 +416,7 @@ class ImageRequest private constructor(
             memoryCachePolicy = request.defined.memoryCachePolicy
             diskCachePolicy = request.defined.diskCachePolicy
             networkCachePolicy = request.defined.networkCachePolicy
+            placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
             placeholderResId = request.placeholderResId
             placeholderDrawable = request.placeholderDrawable
             errorResId = request.errorResId
@@ -424,6 +447,7 @@ class ImageRequest private constructor(
          * - [DrawableRes]
          * - [Drawable]
          * - [Bitmap]
+         * - [ByteBuffer]
          */
         fun data(data: Any?) = apply {
             this.data = data
@@ -432,17 +456,26 @@ class ImageRequest private constructor(
         /**
          * Set the memory cache key for this request.
          *
-         * If this is null or is not set the [ImageLoader] will compute a memory cache key.
+         * If this is null or is not set, the [ImageLoader] will compute a memory cache key.
          */
         fun memoryCacheKey(key: String?) = memoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
          * Set the memory cache key for this request.
          *
-         * If this is null or is not set the [ImageLoader] will compute a memory cache key.
+         * If this is null or is not set, the [ImageLoader] will compute a memory cache key.
          */
         fun memoryCacheKey(key: MemoryCache.Key?) = apply {
             this.memoryCacheKey = key
+        }
+
+        /**
+         * Set the disk cache key for this request.
+         *
+         * If this is null or is not set, the [ImageLoader] will compute a disk cache key.
+         */
+        fun diskCacheKey(key: String?) = apply {
+            this.diskCacheKey = key
         }
 
         /**
@@ -451,13 +484,13 @@ class ImageRequest private constructor(
         inline fun listener(
             crossinline onStart: (request: ImageRequest) -> Unit = {},
             crossinline onCancel: (request: ImageRequest) -> Unit = {},
-            crossinline onError: (request: ImageRequest, throwable: Throwable) -> Unit = { _, _ -> },
-            crossinline onSuccess: (request: ImageRequest, metadata: ImageResult.Metadata) -> Unit = { _, _ -> }
+            crossinline onError: (request: ImageRequest, result: ErrorResult) -> Unit = { _, _ -> },
+            crossinline onSuccess: (request: ImageRequest, result: SuccessResult) -> Unit = { _, _ -> }
         ) = listener(object : Listener {
             override fun onStart(request: ImageRequest) = onStart(request)
             override fun onCancel(request: ImageRequest) = onCancel(request)
-            override fun onError(request: ImageRequest, throwable: Throwable) = onError(request, throwable)
-            override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) = onSuccess(request, metadata)
+            override fun onError(request: ImageRequest, result: ErrorResult) = onError(request, result)
+            override fun onSuccess(request: ImageRequest, result: SuccessResult) = onSuccess(request, result)
         })
 
         /**
@@ -468,16 +501,47 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the [CoroutineDispatcher] to launch the request.
+         * @see ImageLoader.Builder.dispatcher
          */
         fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
-            this.dispatcher = dispatcher
+            this.fetcherDispatcher = dispatcher
+            this.decoderDispatcher = dispatcher
+            this.transformationDispatcher = dispatcher
+        }
+
+        /**
+         * @see ImageLoader.Builder.interceptorDispatcher
+         */
+        fun interceptorDispatcher(dispatcher: CoroutineDispatcher) = apply {
+            this.interceptorDispatcher = dispatcher
+        }
+
+        /**
+         * @see ImageLoader.Builder.fetcherDispatcher
+         */
+        fun fetcherDispatcher(dispatcher: CoroutineDispatcher) = apply {
+            this.fetcherDispatcher = dispatcher
+        }
+
+        /**
+         * @see ImageLoader.Builder.decoderDispatcher
+         */
+        fun decoderDispatcher(dispatcher: CoroutineDispatcher) = apply {
+            this.decoderDispatcher = dispatcher
+        }
+
+        /**
+         * @see ImageLoader.Builder.transformationDispatcher
+         */
+        fun transformationDispatcher(dispatcher: CoroutineDispatcher) = apply {
+            this.transformationDispatcher = dispatcher
         }
 
         /**
          * Set the list of [Transformation]s to be applied to this request.
          */
-        fun transformations(vararg transformations: Transformation) = transformations(transformations.toList())
+        fun transformations(vararg transformations: Transformation) =
+            transformations(transformations.toList())
 
         /**
          * Set the list of [Transformation]s to be applied to this request.
@@ -527,7 +591,8 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the scaling algorithm that will be used to fit/fill the image into the size provided by [sizeResolver].
+         * Set the scaling algorithm that will be used to fit/fill the image into the size provided
+         * by [sizeResolver].
          *
          * NOTE: If [scale] is not set, it is automatically computed for [ImageView] targets.
          */
@@ -541,8 +606,8 @@ class ImageRequest private constructor(
          * The default value is [Precision.AUTOMATIC], which uses the logic in [allowInexactSize]
          * to determine if output image's dimensions must match the input [size] and [scale] exactly.
          *
-         * NOTE: If [size] is [OriginalSize], the returned image's size will always be equal to or greater than
-         * the image's original size.
+         * NOTE: If [size] is [OriginalSize], the returned image's size will always be equal to or
+         * greater than the image's original size.
          *
          * @see Precision
          */
@@ -551,35 +616,40 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Use [fetcher] to handle fetching any image data.
+         * Use [factory] to handle fetching any image data.
          *
-         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its [ComponentRegistry].
+         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its
+         * [ComponentRegistry].
          */
-        inline fun <reified T : Any> fetcher(fetcher: Fetcher<T>) = fetcher(fetcher, T::class.java)
+        inline fun <reified T : Any> fetcherFactory(factory: Fetcher.Factory<T>) =
+            fetcherFactory(factory, T::class.java)
 
         /**
-         * Use [fetcher] to handle fetching any image data.
+         * Use [factory] to handle fetching any image data.
          *
-         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its [ComponentRegistry].
+         * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its
+         * [ComponentRegistry].
          */
         @PublishedApi
-        internal fun <T : Any> fetcher(fetcher: Fetcher<T>, type: Class<T>) = apply {
-            this.fetcher = fetcher to type
+        internal fun <T : Any> fetcherFactory(factory: Fetcher.Factory<T>, type: Class<T>) = apply {
+            this.fetcherFactory = factory to type
         }
 
         /**
-         * Use [decoder] to handle decoding any image data.
+         * Use [factory] to handle decoding any image data.
          *
-         * If this is null or is not set the [ImageLoader] will find an applicable decoder in its [ComponentRegistry].
+         * If this is null or is not set the [ImageLoader] will find an applicable decoder in its
+         * [ComponentRegistry].
          */
-        fun decoder(decoder: Decoder) = apply {
-            this.decoder = decoder
+        fun decoderFactory(factory: Decoder.Factory) = apply {
+            this.decoderFactory = factory
         }
 
         /**
          * Allow converting the result drawable to a bitmap to apply any [transformations].
          *
-         * If false and the result drawable is not a [BitmapDrawable] any [transformations] will be ignored.
+         * If false and the result drawable is not a [BitmapDrawable] any [transformations] will
+         * be ignored.
          */
         fun allowConversionToBitmap(enable: Boolean) = apply {
             this.allowConversionToBitmap = enable
@@ -600,10 +670,11 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Enable/disable pre-multiplication of the color (RGB) channels of the decoded image by the alpha channel.
+         * Enable/disable pre-multiplication of the color (RGB) channels of the decoded image by
+         * the alpha channel.
          *
-         * The default behavior is to enable pre-multiplication but in some environments it can be necessary
-         * to disable this feature to leave the source pixels unmodified.
+         * The default behavior is to enable pre-multiplication but in some environments it can be
+         * necessary to disable this feature to leave the source pixels unmodified.
          */
         fun premultipliedAlpha(enable: Boolean) = apply {
             this.premultipliedAlpha = enable
@@ -695,7 +766,8 @@ class ImageRequest private constructor(
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
-        fun placeholderMemoryCacheKey(key: String?) = placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
+        fun placeholderMemoryCacheKey(key: String?) =
+            placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
          * Set the memory cache [key] whose value will be used as the placeholder drawable.
@@ -783,20 +855,26 @@ class ImageRequest private constructor(
         /**
          * @see ImageLoader.Builder.crossfade
          */
-        fun crossfade(enable: Boolean) = crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+        fun crossfade(enable: Boolean) =
+            crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
 
         /**
          * @see ImageLoader.Builder.crossfade
          */
-        fun crossfade(durationMillis: Int) =
-            transition(if (durationMillis > 0) CrossfadeTransition(durationMillis) else Transition.NONE)
+        fun crossfade(durationMillis: Int) = apply {
+            val factory = if (durationMillis > 0) {
+                CrossfadeTransition.Factory(durationMillis)
+            } else {
+                Transition.Factory.NONE
+            }
+            transitionFactory(factory)
+        }
 
         /**
-         * @see ImageLoader.Builder.transition
+         * @see ImageLoader.Builder.transitionFactory
          */
-        @ExperimentalCoilApi
-        fun transition(transition: Transition) = apply {
-            this.transition = transition
+        fun transitionFactory(transition: Transition.Factory) = apply {
+            this.transitionFactory = transition
         }
 
         /**
@@ -835,18 +913,21 @@ class ImageRequest private constructor(
                 target = target,
                 listener = listener,
                 memoryCacheKey = memoryCacheKey,
-                placeholderMemoryCacheKey = placeholderMemoryCacheKey,
+                diskCacheKey = diskCacheKey,
                 colorSpace = colorSpace,
-                fetcher = fetcher,
-                decoder = decoder,
+                fetcherFactory = fetcherFactory,
+                decoderFactory = decoderFactory,
                 transformations = transformations,
                 headers = headers?.build().orEmpty(),
                 parameters = parameters?.build().orEmpty(),
                 lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
                 sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
                 scale = scale ?: resolvedScale ?: resolveScale(),
-                dispatcher = dispatcher ?: defaults.dispatcher,
-                transition = transition ?: defaults.transition,
+                interceptorDispatcher = interceptorDispatcher ?: defaults.interceptorDispatcher,
+                fetcherDispatcher = fetcherDispatcher ?: defaults.fetcherDispatcher,
+                decoderDispatcher = decoderDispatcher ?: defaults.decoderDispatcher,
+                transformationDispatcher = transformationDispatcher ?: defaults.transformationDispatcher,
+                transitionFactory = transitionFactory ?: defaults.transitionFactory,
                 precision = precision ?: defaults.precision,
                 bitmapConfig = bitmapConfig ?: defaults.bitmapConfig,
                 allowConversionToBitmap = allowConversionToBitmap,
@@ -856,15 +937,18 @@ class ImageRequest private constructor(
                 memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,
                 diskCachePolicy = diskCachePolicy ?: defaults.diskCachePolicy,
                 networkCachePolicy = networkCachePolicy ?: defaults.networkCachePolicy,
-                defined = DefinedRequestOptions(lifecycle, sizeResolver, scale, dispatcher, transition, precision,
-                    bitmapConfig, allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy, networkCachePolicy),
-                defaults = defaults,
+                placeholderMemoryCacheKey = placeholderMemoryCacheKey,
                 placeholderResId = placeholderResId,
                 placeholderDrawable = placeholderDrawable,
                 errorResId = errorResId,
                 errorDrawable = errorDrawable,
                 fallbackResId = fallbackResId,
-                fallbackDrawable = fallbackDrawable
+                fallbackDrawable = fallbackDrawable,
+                defined = DefinedRequestOptions(lifecycle, sizeResolver, scale, interceptorDispatcher,
+                    fetcherDispatcher, decoderDispatcher, transformationDispatcher, transitionFactory,
+                    precision, bitmapConfig, allowHardware, allowRgb565, memoryCachePolicy,
+                    diskCachePolicy, networkCachePolicy),
+                defaults = defaults,
             )
         }
 
@@ -888,16 +972,14 @@ class ImageRequest private constructor(
 
         private fun resolveSizeResolver(): SizeResolver {
             val target = target
-            return if (target is ViewTarget<*>) {
+            if (target is ViewTarget<*>) {
                 val view = target.view
-                if (view is ImageView && view.scaleType.let { it == CENTER || it == MATRIX }) {
-                    SizeResolver(OriginalSize)
-                } else {
-                    ViewSizeResolver(view)
+                // CENTER and MATRIX scale types should be decoded at the image's original size.
+                if (view !is ImageView || view.scaleType.let { it != CENTER && it != MATRIX }) {
+                    return ViewSizeResolver(view)
                 }
-            } else {
-                DisplaySizeResolver(context)
             }
+            return SizeResolver(OriginalSize)
         }
 
         private fun resolveScale(): Scale {
@@ -913,7 +995,28 @@ class ImageRequest private constructor(
                 if (view is ImageView) return view.scale
             }
 
-            return Scale.FILL
+            return Scale.FIT
         }
+
+        @Deprecated(
+            message = "Migrate to 'fetcherFactory'.",
+            replaceWith = ReplaceWith("fetcherFactory<Any> { _, _, _ -> fetcher }"),
+            level = DeprecationLevel.ERROR // Temporary migration aid.
+        )
+        fun fetcher(fetcher: Fetcher): Builder = unsupported()
+
+        @Deprecated(
+            message = "Migrate to 'decoderFactory'.",
+            replaceWith = ReplaceWith("decoderFactory { _, _, _ -> decoder }"),
+            level = DeprecationLevel.ERROR // Temporary migration aid.
+        )
+        fun decoder(decoder: Decoder): Builder = unsupported()
+
+        @Deprecated(
+            message = "Migrate to 'transitionFactory'.",
+            replaceWith = ReplaceWith("transitionFactory { _, _ -> transition }"),
+            level = DeprecationLevel.ERROR // Temporary migration aid.
+        )
+        fun transition(transition: Transition): Builder = unsupported()
     }
 }

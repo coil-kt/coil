@@ -21,7 +21,7 @@ If you need [transformations](transformations.md) that aren't part of the base C
 
 ## Java 8
 
-Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support). To enable this feature add the following to your Gradle build script:
+Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support). To enable this add the following to your Gradle build script:
 
 Gradle (`.gradle`):
 
@@ -33,6 +33,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xjvm-default=all" // Only required for 2.x.
     }
 }
 ```
@@ -47,6 +48,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xjvm-default=all" // Only required for 2.x.
     }
 }
 ```
@@ -180,11 +182,12 @@ The base data types that are supported by all `ImageLoader` instances are:
 
 * String (mapped to a Uri)
 * HttpUrl
-* Uri (`android.resource`, `content`, `file`, `http`, and `https` schemes only)
+* Uri (`android.resource`, `content`, `file`, `http`, and `https` schemes)
 * File
 * @DrawableRes Int
 * Drawable
 * Bitmap
+* ByteBuffer
 
 ## Supported Image Formats
 

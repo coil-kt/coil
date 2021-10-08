@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
  */
 class ScaleDrawable @JvmOverloads constructor(
     val child: Drawable,
-    private val scale: Scale = Scale.FIT
+    val scale: Scale = Scale.FIT
 ) : Drawable(), Drawable.Callback, Animatable {
 
     private var childDx = 0f
@@ -42,7 +42,6 @@ class ScaleDrawable @JvmOverloads constructor(
         }
     }
 
-    @RequiresApi(19)
     override fun getAlpha() = child.alpha
 
     override fun setAlpha(alpha: Int) {
@@ -52,10 +51,8 @@ class ScaleDrawable @JvmOverloads constructor(
     @Suppress("DEPRECATION")
     override fun getOpacity() = child.opacity
 
-    @RequiresApi(21)
     override fun getColorFilter() = child.colorFilter
 
-    @RequiresApi(21)
     override fun setColorFilter(colorFilter: ColorFilter?) {
         child.colorFilter = colorFilter
     }
@@ -100,13 +97,10 @@ class ScaleDrawable @JvmOverloads constructor(
 
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
 
-    @RequiresApi(21)
     override fun setTint(tintColor: Int) = child.setTint(tintColor)
 
-    @RequiresApi(21)
     override fun setTintList(tint: ColorStateList?) = child.setTintList(tint)
 
-    @RequiresApi(21)
     override fun setTintMode(tintMode: PorterDuff.Mode?) = child.setTintMode(tintMode)
 
     @RequiresApi(29)

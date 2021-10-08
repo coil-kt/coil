@@ -1,3 +1,14 @@
+public final class coil/-SingletonExtensions {
+	public static final fun clear (Landroid/widget/ImageView;)V
+	public static final fun dispose (Landroid/widget/ImageView;)V
+	public static final fun getImageLoader (Landroid/content/Context;)Lcoil/ImageLoader;
+	public static final fun getResult (Landroid/widget/ImageView;)Lcoil/request/ImageResult;
+	public static final fun load (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
+	public static final fun loadAny (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
+	public static synthetic fun loadAny$default (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
+}
+
 public final class coil/Coil {
 	public static final field INSTANCE Lcoil/Coil;
 	public static final fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
@@ -7,32 +18,7 @@ public final class coil/Coil {
 	public static final fun setImageLoader (Lcoil/ImageLoaderFactory;)V
 }
 
-public final class coil/Contexts {
-	public static final fun imageLoader (Landroid/content/Context;)Lcoil/ImageLoader;
-}
-
 public abstract interface class coil/ImageLoaderFactory {
 	public abstract fun newImageLoader ()Lcoil/ImageLoader;
-}
-
-public final class coil/ImageViews {
-	public static final fun clear (Landroid/widget/ImageView;)V
-	public static final synthetic fun load (Landroid/widget/ImageView;ILcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
-	public static final synthetic fun load (Landroid/widget/ImageView;Landroid/graphics/Bitmap;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
-	public static final synthetic fun load (Landroid/widget/ImageView;Landroid/graphics/drawable/Drawable;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
-	public static final synthetic fun load (Landroid/widget/ImageView;Landroid/net/Uri;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
-	public static final synthetic fun load (Landroid/widget/ImageView;Ljava/io/File;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
-	public static final synthetic fun load (Landroid/widget/ImageView;Ljava/lang/String;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
-	public static final synthetic fun load (Landroid/widget/ImageView;Lokhttp3/HttpUrl;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
-	public static synthetic fun load$default (Landroid/widget/ImageView;ILcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
-	public static synthetic fun load$default (Landroid/widget/ImageView;Landroid/graphics/Bitmap;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
-	public static synthetic fun load$default (Landroid/widget/ImageView;Landroid/graphics/drawable/Drawable;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
-	public static synthetic fun load$default (Landroid/widget/ImageView;Landroid/net/Uri;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
-	public static synthetic fun load$default (Landroid/widget/ImageView;Ljava/io/File;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
-	public static synthetic fun load$default (Landroid/widget/ImageView;Ljava/lang/String;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
-	public static synthetic fun load$default (Landroid/widget/ImageView;Lokhttp3/HttpUrl;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
-	public static final synthetic fun loadAny (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil/request/Disposable;
-	public static synthetic fun loadAny$default (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil/request/Disposable;
-	public static final fun metadata (Landroid/widget/ImageView;)Lcoil/request/ImageResult$Metadata;
 }
 

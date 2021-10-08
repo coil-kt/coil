@@ -11,6 +11,8 @@ public final class coil/compose/ImagePainter : androidx/compose/ui/graphics/pain
 public abstract interface class coil/compose/ImagePainter$ExecuteCallback {
 	public static final field Companion Lcoil/compose/ImagePainter$ExecuteCallback$Companion;
 	public static final field Default Lcoil/compose/ImagePainter$ExecuteCallback;
+	public static final field Immediate Lcoil/compose/ImagePainter$ExecuteCallback;
+	public static final field Lazy Lcoil/compose/ImagePainter$ExecuteCallback;
 	public abstract fun invoke (Lcoil/compose/ImagePainter$Snapshot;Lcoil/compose/ImagePainter$Snapshot;)Z
 }
 
@@ -54,7 +56,6 @@ public final class coil/compose/ImagePainter$State$Error : coil/compose/ImagePai
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
 	public final fun getResult ()Lcoil/request/ErrorResult;
-	public final fun getThrowable ()Ljava/lang/Throwable;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -79,7 +80,6 @@ public final class coil/compose/ImagePainter$State$Success : coil/compose/ImageP
 	public final fun copy (Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/SuccessResult;)Lcoil/compose/ImagePainter$State$Success;
 	public static synthetic fun copy$default (Lcoil/compose/ImagePainter$State$Success;Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/SuccessResult;ILjava/lang/Object;)Lcoil/compose/ImagePainter$State$Success;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getMetadata ()Lcoil/request/ImageResult$Metadata;
 	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
 	public final fun getResult ()Lcoil/request/SuccessResult;
 	public fun hashCode ()I

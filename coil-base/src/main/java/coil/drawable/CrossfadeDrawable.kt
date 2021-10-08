@@ -1,5 +1,3 @@
-@file:Suppress("NEWER_VERSION_IN_SINCE_KOTLIN", "unused")
-
 package coil.drawable
 
 import android.content.res.ColorStateList
@@ -25,25 +23,26 @@ import kotlin.math.roundToInt
 /**
  * A [Drawable] that crossfades from [start] to [end].
  *
- * NOTE: The animation can only be executed once as the [start] drawable is dereferenced at the end of the transition.
+ * NOTE: The animation can only be executed once as the [start]
+ * drawable is dereferenced at the end of the transition.
  *
  * @param start The [Drawable] to crossfade from.
  * @param end The [Drawable] to crossfade to.
  * @param scale The scaling algorithm for [start] and [end].
  * @param durationMillis The duration of the crossfade animation.
  * @param fadeStart If false, the start drawable will not fade out while the end drawable fades in.
- * @param preferExactIntrinsicSize If true, this drawable's intrinsic width/height will only be -1 if
- *  [start] **and** [end] return -1 for that dimension. If false, the intrinsic width/height will be -1 if
- *  [start] **or** [end] return -1 for that dimension. This is useful for views that require an exact intrinsic
- *  size to scale the drawable.
+ * @param preferExactIntrinsicSize If true, this drawable's intrinsic width/height will only be -1
+ *  if [start] **and** [end] return -1 for that dimension. If false, the intrinsic width/height will
+ *  be -1 if [start] **or** [end] return -1 for that dimension. This is useful for views that
+ *  require an exact intrinsic size to scale the drawable.
  */
-class CrossfadeDrawable(
+class CrossfadeDrawable @JvmOverloads constructor(
     start: Drawable?,
     end: Drawable?,
     val scale: Scale = Scale.FIT,
     val durationMillis: Int = DEFAULT_DURATION,
     val fadeStart: Boolean = true,
-    val preferExactIntrinsicSize: Boolean = false
+    val preferExactIntrinsicSize: Boolean = false,
 ) : Drawable(), Drawable.Callback, Animatable2Compat {
 
     private val callbacks = mutableListOf<Animatable2Compat.AnimationCallback>()
@@ -107,7 +106,6 @@ class CrossfadeDrawable(
         }
     }
 
-    @RequiresApi(19)
     override fun getAlpha() = maxAlpha
 
     override fun setAlpha(alpha: Int) {
@@ -136,7 +134,6 @@ class CrossfadeDrawable(
         }
     }
 
-    @RequiresApi(21)
     override fun getColorFilter(): ColorFilter? = when (state) {
         STATE_START -> start?.colorFilter
         STATE_RUNNING -> end?.colorFilter ?: start?.colorFilter
@@ -144,7 +141,6 @@ class CrossfadeDrawable(
         else -> null
     }
 
-    @RequiresApi(21)
     override fun setColorFilter(colorFilter: ColorFilter?) {
         start?.colorFilter = colorFilter
         end?.colorFilter = colorFilter
@@ -177,19 +173,16 @@ class CrossfadeDrawable(
 
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
 
-    @RequiresApi(21)
     override fun setTint(tintColor: Int) {
         start?.setTint(tintColor)
         end?.setTint(tintColor)
     }
 
-    @RequiresApi(21)
     override fun setTintList(tint: ColorStateList?) {
         start?.setTintList(tint)
         end?.setTintList(tint)
     }
 
-    @RequiresApi(21)
     override fun setTintMode(tintMode: PorterDuff.Mode?) {
         start?.setTintMode(tintMode)
         end?.setTintMode(tintMode)
@@ -261,11 +254,8 @@ class CrossfadeDrawable(
     }
 
     private fun computeIntrinsicDimension(startSize: Int?, endSize: Int?): Int {
-        return if (!preferExactIntrinsicSize && (startSize == -1 || endSize == -1)) {
-            -1
-        } else {
-            max(startSize ?: -1, endSize ?: -1)
-        }
+        if (!preferExactIntrinsicSize && (startSize == -1 || endSize == -1)) return -1
+        return max(startSize ?: -1, endSize ?: -1)
     }
 
     private fun markDone() {
@@ -273,16 +263,6 @@ class CrossfadeDrawable(
         start = null
         callbacks.forEachIndices { it.onAnimationEnd(this) }
     }
-
-    @JvmOverloads
-    @SinceKotlin("999.9") // Kept for binary compatibility.
-    constructor(
-        start: Drawable?,
-        end: Drawable?,
-        scale: Scale = Scale.FIT,
-        durationMillis: Int = DEFAULT_DURATION,
-        fadeStart: Boolean = true
-    ) : this(start, end, scale, durationMillis, fadeStart)
 
     companion object {
         private const val STATE_START = 0
