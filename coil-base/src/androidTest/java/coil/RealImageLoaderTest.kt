@@ -17,14 +17,12 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.base.test.R
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.memory.MemoryCache
-import coil.request.DefaultRequestOptions
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import coil.request.SuccessResult
 import coil.size.PixelSize
 import coil.size.Precision
-import coil.util.ImageLoaderOptions
 import coil.util.TestActivity
 import coil.util.activity
 import coil.util.createMockWebServer
@@ -35,7 +33,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import okio.buffer
 import okio.sink
@@ -45,6 +42,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.io.File
+import java.nio.ByteBuffer
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
@@ -59,7 +57,7 @@ class RealImageLoaderTest {
     private lateinit var context: Context
     private lateinit var server: MockWebServer
     private lateinit var memoryCache: MemoryCache
-    private lateinit var imageLoader: RealImageLoader
+    private lateinit var imageLoader: ImageLoader
 
     @get:Rule
     val activityRule = activityScenarioRule<TestActivity>()
@@ -69,17 +67,10 @@ class RealImageLoaderTest {
         context = ApplicationProvider.getApplicationContext()
         server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
         memoryCache = MemoryCache.Builder(context).maxSizeBytes(Int.MAX_VALUE).build()
-        imageLoader = RealImageLoader(
-            context = context,
-            defaults = DefaultRequestOptions(),
-            memoryCache = memoryCache,
-            diskCache = null,
-            callFactory = OkHttpClient(),
-            eventListenerFactory = EventListener.Factory.NONE,
-            componentRegistry = ComponentRegistry(),
-            options = ImageLoaderOptions(),
-            logger = null
-        )
+        imageLoader = ImageLoader.Builder(context)
+            .memoryCache(memoryCache)
+            .diskCache(null)
+            .build()
         activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
     }
 
@@ -196,6 +187,13 @@ class RealImageLoaderTest {
         val expectedSize = PixelSize(1080, 1350)
         testEnqueue(data, expectedSize)
         testExecute(data, expectedSize)
+    }
+
+    @Test
+    fun byteBuffer() {
+        val data = ByteBuffer.wrap(context.resources.openRawResource(R.drawable.normal).readBytes())
+        testEnqueue(data)
+        testExecute(data)
     }
 
     // endregion

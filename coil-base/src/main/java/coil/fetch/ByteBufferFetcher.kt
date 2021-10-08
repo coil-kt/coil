@@ -13,11 +13,14 @@ internal class ByteBufferFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
+        val source = try {
+            Buffer().apply { write(data) }
+        } finally {
+            // Reset the position so we can read the byte buffer again.
+            data.position(0)
+        }
         return SourceResult(
-            source = ImageSource(
-                source = Buffer().apply { write(data) },
-                context = options.context
-            ),
+            source = ImageSource(source, options.context),
             mimeType = null,
             dataSource = DataSource.MEMORY
         )

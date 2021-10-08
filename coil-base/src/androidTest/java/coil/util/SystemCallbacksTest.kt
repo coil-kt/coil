@@ -6,15 +6,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
-import coil.ComponentRegistry
-import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.memory.MemoryCache
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
-import coil.request.DefaultRequestOptions
-import okhttp3.OkHttpClient
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
@@ -51,18 +47,11 @@ class SystemCallbacksTest {
     @Test
     fun trimMemoryCallsArePassedThrough() {
         val memoryCache = MemoryCache.Builder(context).build()
-        val imageLoader = RealImageLoader(
-            context = context,
-            defaults = DefaultRequestOptions(),
-            memoryCache = memoryCache,
-            diskCache = null,
-            callFactory = OkHttpClient(),
-            eventListenerFactory = EventListener.Factory.NONE,
-            componentRegistry = ComponentRegistry(),
-            options = ImageLoaderOptions(),
-            logger = null
-        )
-        val systemCallbacks = SystemCallbacks(imageLoader, context, true)
+        val imageLoader = ImageLoader.Builder(context)
+            .memoryCache(memoryCache)
+            .diskCache(null)
+            .build()
+        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader, context, true)
 
         memoryCache[Key("1")] = Value(createBitmap(1000, 1000, Bitmap.Config.ARGB_8888))
         memoryCache[Key("2")] = Value(createBitmap(1000, 1000, Bitmap.Config.ARGB_8888))
