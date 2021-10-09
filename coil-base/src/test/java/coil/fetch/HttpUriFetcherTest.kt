@@ -228,37 +228,51 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - no-store is never cached`() {
+    fun `cache control - no-store is never cached or returned`() {
+        val url = server.url(IMAGE).toString()
+
         val headers = Headers.Builder()
             .set("Cache-Control", "no-store")
             .build()
-        val expectedSize = server.enqueueImage(IMAGE, headers)
-        val url = server.url(IMAGE).toString()
-
-        val result = runBlocking { newFetcher(url).fetch() }
+        var expectedSize = server.enqueueImage(IMAGE, headers)
+        var result = runBlocking { newFetcher(url).fetch() }
 
         assertTrue(result is SourceResult)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
         diskCache[url].use(::assertNull)
+
+        expectedSize = server.enqueueImage(IMAGE, headers)
+        result = runBlocking { newFetcher(url).fetch() }
+
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
     @Test
     fun `cache control - respectCacheHeaders=false is always cached`() {
+        val url = server.url(IMAGE).toString()
+
         val headers = Headers.Builder()
             .set("Cache-Control", "no-store")
             .build()
-        val expectedSize = server.enqueueImage(IMAGE, headers)
-        val url = server.url(IMAGE).toString()
-
-        val result = runBlocking { newFetcher(url, respectCacheHeaders = false).fetch() }
+        var expectedSize = server.enqueueImage(IMAGE, headers)
+        var result = runBlocking { newFetcher(url, respectCacheHeaders = false).fetch() }
 
         assertTrue(result is SourceResult)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
         diskCache[url].use(::assertNotNull)
+
+        expectedSize = server.enqueueImage(IMAGE, headers)
+        result = runBlocking { newFetcher(url, respectCacheHeaders = false).fetch() }
+
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.DISK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
     private fun newFetcher(
