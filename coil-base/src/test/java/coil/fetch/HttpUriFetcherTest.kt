@@ -70,7 +70,7 @@ class HttpUriFetcherTest {
     @Test
     fun `basic network fetch`() {
         val uri = server.url("/normal.jpg").toString().toUri()
-        val fetcherFactory = HttpUriFetcher.Factory(callFactory, diskCache, true)
+        val fetcherFactory = HttpUriFetcher.Factory(callFactory, lazyOf(diskCache), true)
         val options = Options(context, size = PixelSize(100, 100))
         val fetcher = assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context)))
         val result = runBlocking { fetcher.fetch() }
@@ -80,7 +80,7 @@ class HttpUriFetcherTest {
 
     @Test
     fun `mime type is parsed correctly from content type`() {
-        val fetcher = HttpUriFetcher("error", Options(context), callFactory, diskCache, true)
+        val fetcher = HttpUriFetcher("error", Options(context), callFactory, lazyOf(diskCache), true)
 
         // https://android.googlesource.com/platform/frameworks/base/+/61ae88e/core/java/android/webkit/MimeTypeMap.java#407
         Shadows.shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("svg", "image/svg+xml")
@@ -110,7 +110,7 @@ class HttpUriFetcherTest {
     fun `request on main thread throws NetworkOnMainThreadException`() = runBlockingTest {
         val url = server.url("/normal.jpg").toString()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertNotNull(HttpUriFetcher.Factory(callFactory, diskCache, true)
+        val fetcher = assertNotNull(HttpUriFetcher.Factory(callFactory, lazyOf(diskCache), true)
             .create(url.toUri(), options, ImageLoader(context)))
 
         assertFailsWith<NetworkOnMainThreadException> { fetcher.fetch() }
@@ -121,7 +121,7 @@ class HttpUriFetcherTest {
         val url = server.url("/normal.jpg")
         val uri = url.toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcherFactory = HttpUriFetcher.Factory(OkHttpClient(), null, true)
+        val fetcherFactory = HttpUriFetcher.Factory(OkHttpClient(), lazyOf(null), true)
         val result = runBlocking {
             assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
         }
@@ -134,7 +134,7 @@ class HttpUriFetcherTest {
     fun `request on main thread with network cache policy disabled executes correctly`() {
         val uri = server.url("/normal.jpg").toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcherFactory = HttpUriFetcher.Factory(callFactory, diskCache, true)
+        val fetcherFactory = HttpUriFetcher.Factory(callFactory, lazyOf(diskCache), true)
 
         // Save the image in the disk cache.
         var result = runBlocking {
@@ -157,7 +157,7 @@ class HttpUriFetcherTest {
     fun `no cached file - fetcher returns the file`() {
         val uri = server.url("/normal.jpg").toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcherFactory = HttpUriFetcher.Factory(callFactory, diskCache, true)
+        val fetcherFactory = HttpUriFetcher.Factory(callFactory, lazyOf(diskCache), true)
         val result = runBlocking {
             assertNotNull(fetcherFactory.create(uri, options, ImageLoader(context))).fetch()
         }
@@ -180,7 +180,7 @@ class HttpUriFetcherTest {
     fun `existing cached file - fetcher returns the file`() {
         val uri = server.url("/normal.jpg").toString().toUri()
         val options = Options(context, size = PixelSize(100, 100))
-        val fetcherFactory = HttpUriFetcher.Factory(callFactory, diskCache, true)
+        val fetcherFactory = HttpUriFetcher.Factory(callFactory, lazyOf(diskCache), true)
 
         // Run the fetcher once to create the disk cache file.
         var result = runBlocking {
