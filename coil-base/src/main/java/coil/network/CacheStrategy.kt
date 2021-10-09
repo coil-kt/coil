@@ -20,8 +20,7 @@ internal class CacheStrategy private constructor(
 
     class Factory(
         private val request: Request,
-        private val cacheResponse: CacheResponse?,
-        private val nowMillis: Long = System.currentTimeMillis()
+        private val cacheResponse: CacheResponse?
     ) {
 
         /** The server's time when the cached response was served, if known. */
@@ -205,7 +204,7 @@ internal class CacheStrategy private constructor(
             }
 
             val responseDuration = receivedResponseMillis - sentRequestMillis
-            val residentDuration = nowMillis - receivedResponseMillis
+            val residentDuration = System.currentTimeMillis() - receivedResponseMillis
             return receivedAge + responseDuration + residentDuration
         }
 
