@@ -3,6 +3,7 @@ package coil.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,21 +19,20 @@ import okio.source
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-fun createMockWebServer(context: Context, vararg images: String): MockWebServer {
+fun createMockWebServer(vararg images: String): MockWebServer {
     val server = MockWebServer()
-    if (images.isEmpty()) {
-        val response = MockResponse()
-            .setResponseCode(404)
-            .addHeader("Cache-Control", "public,max-age=60")
-        server.enqueue(response)
-    } else {
-        images.forEach { image ->
-            val buffer = Buffer()
-            context.assets.open(image).source().buffer().readAll(buffer)
-            server.enqueue(MockResponse().setBody(buffer))
-        }
+    images.forEach { image ->
+        server.enqueueImage(image)
     }
     return server.apply { start() }
+}
+
+fun MockWebServer.enqueueImage(image: String): Long {
+    val buffer = Buffer()
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    context.assets.open(image).source().buffer().readAll(buffer)
+    enqueue(MockResponse().setBody(buffer))
+    return buffer.size
 }
 
 fun Context.decodeBitmapAsset(

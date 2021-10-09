@@ -394,8 +394,6 @@ interface ImageLoader {
         /**
          * A convenience function to set [fetcherDispatcher], [decoderDispatcher], and
          * [transformationDispatcher] in one call.
-         *
-         * Default: [Dispatchers.IO], [Dispatchers.Default], [Dispatchers.Default]
          */
         fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.defaults = this.defaults.copy(
