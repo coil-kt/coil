@@ -39,12 +39,12 @@ class Application : Application(), ImageLoaderFactory {
                     .maxSizePercent(0.25)
                     .build()
             )
-            .diskCache(
+            .diskCache {
                 DiskCache.Builder(this)
                     .directory(filesDir.resolve("image_cache"))
                     .maxSizeBytes(512L * 1024 * 1024) // 512MB
                     .build()
-            )
+            }
             .okHttpClient {
                 // Don't limit concurrent network requests by host.
                 val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }

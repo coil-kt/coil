@@ -114,7 +114,7 @@ interface ImageLoader {
         private val applicationContext: Context
         private var defaults: DefaultRequestOptions
         private var memoryCache: Option<MemoryCache>?
-        private var diskCache: Option<DiskCache>?
+        private var diskCache: Lazy<DiskCache?>?
         private var callFactory: Call.Factory?
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
@@ -137,7 +137,7 @@ interface ImageLoader {
             applicationContext = imageLoader.context.applicationContext
             defaults = imageLoader.defaults
             memoryCache = Option(imageLoader.memoryCache)
-            diskCache = Option(imageLoader.diskCache)
+            diskCache = imageLoader.diskCacheLazy
             callFactory = imageLoader.callFactory
             eventListenerFactory = imageLoader.eventListenerFactory
             componentRegistry = imageLoader.componentRegistry
@@ -215,7 +215,22 @@ interface ImageLoader {
          * @see DiskCache.directory
          */
         fun diskCache(diskCache: DiskCache?) = apply {
-            this.diskCache = Option(diskCache)
+            this.diskCache = lazyOf(diskCache)
+        }
+
+        /**
+         * Set a lazy callback to create the [DiskCache].
+         *
+         * Prefer using this instead of `diskCache(DiskCache)`.
+         *
+         * NOTE: By default, [ImageLoader]s share the same disk cache instance. This is necessary
+         * as having multiple disk cache instances active in the same directory at the same time
+         * can corrupt the disk cache.
+         *
+         * @see DiskCache.directory
+         */
+        fun diskCache(initializer: () -> DiskCache?) = apply {
+            this.diskCache = lazy(initializer)
         }
 
         /**
@@ -498,7 +513,7 @@ interface ImageLoader {
                 context = applicationContext,
                 defaults = defaults,
                 memoryCache = (memoryCache ?: Option(MemoryCache.Builder(applicationContext).build())).value,
-                diskCache = (diskCache ?: Option(Utils.singletonDiskCache(applicationContext))).value,
+                diskCacheLazy = diskCache ?: lazy { Utils.singletonDiskCache(applicationContext) },
                 callFactory = callFactory ?: lazyCallFactory { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
