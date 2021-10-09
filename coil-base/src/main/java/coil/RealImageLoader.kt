@@ -64,7 +64,7 @@ internal class RealImageLoader(
     val context: Context,
     override val defaults: DefaultRequestOptions,
     override val memoryCache: MemoryCache?,
-    val diskCacheLazy: Lazy<DiskCache>?,
+    val diskCacheLazy: Lazy<DiskCache?>,
     val callFactory: Call.Factory,
     val eventListenerFactory: EventListener.Factory,
     val componentRegistry: ComponentRegistry,
@@ -76,7 +76,7 @@ internal class RealImageLoader(
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) })
     private val systemCallbacks = SystemCallbacks(this, context, options.networkObserverEnabled)
     private val requestService = RequestService(this, systemCallbacks, logger)
-    override val diskCache get() = diskCacheLazy?.value
+    override val diskCache by diskCacheLazy
     override val components = componentRegistry.newBuilder()
         // Mappers
         .add(HttpUrlMapper())

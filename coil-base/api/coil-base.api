@@ -95,6 +95,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun crossfade (Z)Lcoil/ImageLoader$Builder;
 	public final fun decoderDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/ImageLoader$Builder;
 	public final fun diskCache (Lcoil/disk/DiskCache;)Lcoil/ImageLoader$Builder;
+	public final fun diskCache (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoader$Builder;
 	public final fun diskCachePolicy (Lcoil/request/CachePolicy;)Lcoil/ImageLoader$Builder;
 	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/ImageLoader$Builder;
 	public final fun error (I)Lcoil/ImageLoader$Builder;
