@@ -6,7 +6,7 @@ See a common use case that isn't covered? Feel free to submit a PR with a new se
 
 ## Palette
 
-[Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to exact prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done in a number of ways:
+[Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to extract prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done in a number of ways:
 
 #### Enqueue
 
@@ -126,7 +126,7 @@ Headers can be added to your image requests in one of two ways. You can set head
 ```kotlin
 val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
-    .setHeader("Cache-Control", "max-age=31536000,public")
+    .setHeader("Cache-Control", "max-age=31536000")
     .target(imageView)
     .build()
 imageLoader.execute(request)
