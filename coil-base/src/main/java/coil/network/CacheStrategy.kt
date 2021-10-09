@@ -1,7 +1,6 @@
 package coil.network
 
 import coil.util.toNonNegativeInt
-import okhttp3.CacheControl
 import okhttp3.Headers
 import okhttp3.Request
 import okhttp3.Response
@@ -96,7 +95,7 @@ internal class CacheStrategy private constructor(
             // source. This check should be redundant as long as the persistence store is
             // well-behaved and the rules are constant.
             val responseCaching = cacheResponse.cacheControl()
-            if (!isCacheable(responseCaching, request.cacheControl)) {
+            if (!isCacheable(request, cacheResponse)) {
                 return CacheStrategy(request, null)
             }
 
@@ -224,14 +223,17 @@ internal class CacheStrategy private constructor(
         /** Returns true if the response can be stored to later serve another request. */
         fun isCacheable(request: Request, response: Response): Boolean {
             // A 'no-store' directive on request or response prevents the response from being cached.
-            return isCacheable(request.cacheControl, response.cacheControl) &&
+            return !request.cacheControl.noStore && !response.cacheControl.noStore &&
                 // Vary all responses cannot be cached.
                 response.headers["Vary"] != "*"
         }
 
         /** Returns true if the response can be stored to later serve another request. */
-        fun isCacheable(requestControl: CacheControl, responseControl: CacheControl): Boolean {
-            return !requestControl.noStore && !responseControl.noStore
+        fun isCacheable(request: Request, response: CacheResponse): Boolean {
+            // A 'no-store' directive on request or response prevents the response from being cached.
+            return !request.cacheControl.noStore && !response.cacheControl().noStore &&
+                // Vary all responses cannot be cached.
+                response.responseHeaders["Vary"] != "*"
         }
 
         /** Combines cached headers with a network headers as defined by RFC 7234, 4.3.4. */
