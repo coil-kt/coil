@@ -38,7 +38,7 @@ internal class HttpUriFetcher(
     private val url: String,
     private val options: Options,
     private val callFactory: Call.Factory,
-    private val diskCache: DiskCache?,
+    private val diskCache: Lazy<DiskCache>?,
     private val respectCacheHeaders: Boolean
 ) : Fetcher {
 
@@ -117,7 +117,7 @@ internal class HttpUriFetcher(
     }
 
     private fun readFromDiskCache(): DiskCache.Snapshot? {
-        return if (options.diskCachePolicy.readEnabled) diskCache?.get(diskCacheKey) else null
+        return if (options.diskCachePolicy.readEnabled) diskCache?.value?.get(diskCacheKey) else null
     }
 
     private fun writeToDiskCache(
@@ -135,7 +135,7 @@ internal class HttpUriFetcher(
         val editor = if (snapshot != null) {
             snapshot.closeAndEdit()
         } else {
-            diskCache?.edit(diskCacheKey)
+            diskCache?.value?.edit(diskCacheKey)
         } ?: return null
         try {
             // Write the response to the disk cache.
@@ -242,13 +242,13 @@ internal class HttpUriFetcher(
 
     class Factory(
         private val callFactory: Call.Factory,
-        private val diskCache: DiskCache?,
+        private val diskCacheLazy: Lazy<DiskCache>?,
         private val respectCacheHeaders: Boolean
     ) : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
-            return HttpUriFetcher(data.toString(), options, callFactory, diskCache, respectCacheHeaders)
+            return HttpUriFetcher(data.toString(), options, callFactory, diskCacheLazy, respectCacheHeaders)
         }
 
         private fun isApplicable(data: Uri): Boolean {
