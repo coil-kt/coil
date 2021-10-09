@@ -25,6 +25,7 @@ import okhttp3.Headers
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.blackholeSink
 import okio.buffer
@@ -37,6 +38,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 import java.io.File
+import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
@@ -252,7 +255,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - respectCacheHeaders=false is always cached`() {
+    fun `cache control - respectCacheHeaders=false is always cached and returned`() {
         val url = server.url(IMAGE).toString()
 
         val headers = Headers.Builder()
@@ -275,15 +278,44 @@ class HttpUriFetcherTest {
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
+    @Test
+    fun `cache control - cached response is verified if necessary and returned from the cache`() {
+        val url = server.url(IMAGE).toString()
+
+        val etag = UUID.randomUUID().toString()
+        val headers = Headers.Builder()
+            .set("Cache-Control", "no-cache")
+            .set("ETag", etag)
+            .build()
+        val expectedSize = server.enqueueImage(IMAGE, headers)
+        var result = runBlocking { newFetcher(url).fetch() }
+
+        server.takeRequest() // Discard the first request.
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+        diskCache[url].use(::assertNotNull)
+
+        // Don't set a response body as it should be read from the cache.
+        server.enqueue(MockResponse().setResponseCode(HTTP_NOT_MODIFIED))
+        result = runBlocking { newFetcher(url).fetch() }
+
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        // Ensure we passed the correct etag.
+        assertEquals(etag, server.takeRequest().headers["If-None-Match"])
+    }
+
     private fun newFetcher(
         url: String,
         options: Options = Options(context),
         respectCacheHeaders: Boolean = true,
         diskCache: DiskCache? = this.diskCache
-    ): HttpUriFetcher {
+    ): Fetcher {
         val factory = HttpUriFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), respectCacheHeaders)
-        val fetcher = checkNotNull(factory.create(url.toUri(), options, imageLoader)) { "fetcher == null" }
-        return fetcher as HttpUriFetcher
+        return checkNotNull(factory.create(url.toUri(), options, imageLoader)) { "fetcher == null" }
     }
 
     companion object {
