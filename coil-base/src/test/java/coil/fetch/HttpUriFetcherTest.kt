@@ -279,7 +279,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - cached response is verified if necessary and returned from the cache`() {
+    fun `cache control - cached response is verified and returned from the cache`() {
         val url = server.url(IMAGE).toString()
 
         val etag = UUID.randomUUID().toString()
