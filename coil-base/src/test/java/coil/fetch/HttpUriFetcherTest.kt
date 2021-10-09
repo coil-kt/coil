@@ -21,6 +21,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import okhttp3.Call
+import okhttp3.Headers
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -209,7 +210,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache response - empty metadata is always returned`() {
+    fun `cache control - empty metadata is always returned`() {
         val url = server.url(IMAGE).toString()
 
         val editor = diskCache.edit(url)!!
@@ -226,13 +227,49 @@ class HttpUriFetcherTest {
         assertEquals(DataSource.DISK, result.dataSource)
     }
 
+    @Test
+    fun `cache control - no-store is never cached`() {
+        val headers = Headers.Builder()
+            .set("Cache-Control", "no-store")
+            .build()
+        val expectedSize = server.enqueueImage(IMAGE, headers)
+        val url = server.url(IMAGE).toString()
+
+        val result = runBlocking { newFetcher(url).fetch() }
+
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        diskCache[url].use(::assertNull)
+    }
+
+    @Test
+    fun `cache control - respectCacheHeaders=false is always cached`() {
+        val headers = Headers.Builder()
+            .set("Cache-Control", "no-store")
+            .build()
+        val expectedSize = server.enqueueImage(IMAGE, headers)
+        val url = server.url(IMAGE).toString()
+
+        val result = runBlocking { newFetcher(url, respectCacheHeaders = false).fetch() }
+
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        diskCache[url].use(::assertNotNull)
+    }
+
     private fun newFetcher(
         url: String,
         options: Options = Options(context),
+        respectCacheHeaders: Boolean = true,
         diskCache: DiskCache? = this.diskCache
     ): HttpUriFetcher {
-        return HttpUriFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), true)
-            .create(url.toUri(), options, imageLoader) as HttpUriFetcher
+        val factory = HttpUriFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), respectCacheHeaders)
+        val fetcher = checkNotNull(factory.create(url.toUri(), options, imageLoader)) { "fetcher == null" }
+        return fetcher as HttpUriFetcher
     }
 
     companion object {

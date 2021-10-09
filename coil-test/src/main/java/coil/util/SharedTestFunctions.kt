@@ -10,6 +10,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.setMain
+import okhttp3.Headers
+import okhttp3.Headers.Companion.headersOf
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -21,17 +23,15 @@ import kotlin.coroutines.CoroutineContext
 
 fun createMockWebServer(vararg images: String): MockWebServer {
     val server = MockWebServer()
-    images.forEach { image ->
-        server.enqueueImage(image)
-    }
+    images.forEach { server.enqueueImage(it) }
     return server.apply { start() }
 }
 
-fun MockWebServer.enqueueImage(image: String): Long {
+fun MockWebServer.enqueueImage(image: String, headers: Headers = headersOf()): Long {
     val buffer = Buffer()
     val context = ApplicationProvider.getApplicationContext<Context>()
     context.assets.open(image).source().buffer().readAll(buffer)
-    enqueue(MockResponse().setBody(buffer))
+    enqueue(MockResponse().setHeaders(headers).setBody(buffer))
     return buffer.size
 }
 
