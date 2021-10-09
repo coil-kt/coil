@@ -29,11 +29,13 @@ import coil.util.activity
 import coil.util.createMockWebServer
 import coil.util.decodeBitmapAsset
 import coil.util.getDrawableCompat
+import coil.util.isMainThread
 import coil.util.runBlockingTest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import okio.buffer
 import okio.sink
@@ -48,6 +50,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
@@ -367,6 +370,54 @@ class RealImageLoaderTest {
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(key, result.diskCacheKey)
         imageLoader.diskCache!![key]!!.use { assertNotNull(it) }
+    }
+
+    @Test
+    fun callFactoryIsInitializedLazily() {
+        var isInitialized = false
+        val imageLoader = ImageLoader.Builder(context)
+            .callFactory {
+                assertFalse(isMainThread())
+                check(!isInitialized)
+                isInitialized = true
+                OkHttpClient()
+            }
+            .build()
+
+        assertFalse(isInitialized)
+
+        runBlocking {
+            val request = ImageRequest.Builder(context)
+                .data(server.url(IMAGE_NAME))
+                .build()
+            imageLoader.execute(request) as SuccessResult
+        }
+
+        assertTrue(isInitialized)
+    }
+
+    @Test
+    fun diskCacheIsInitializedLazily() {
+        var isInitialized = false
+        val imageLoader = ImageLoader.Builder(context)
+            .diskCache {
+                assertFalse(isMainThread())
+                check(!isInitialized)
+                isInitialized = true
+                null
+            }
+            .build()
+
+        assertFalse(isInitialized)
+
+        runBlocking {
+            val request = ImageRequest.Builder(context)
+                .data(server.url(IMAGE_NAME))
+                .build()
+            imageLoader.execute(request) as SuccessResult
+        }
+
+        assertTrue(isInitialized)
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
