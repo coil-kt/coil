@@ -29,6 +29,7 @@ import coil.util.activity
 import coil.util.createMockWebServer
 import coil.util.decodeBitmapAsset
 import coil.util.getDrawableCompat
+import coil.util.isMainThread
 import coil.util.runBlockingTest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -376,6 +377,7 @@ class RealImageLoaderTest {
         var isInitialized = false
         val imageLoader = ImageLoader.Builder(context)
             .callFactory {
+                assertFalse(isMainThread())
                 check(!isInitialized)
                 isInitialized = true
                 OkHttpClient()
@@ -399,6 +401,7 @@ class RealImageLoaderTest {
         var isInitialized = false
         val imageLoader = ImageLoader.Builder(context)
             .diskCache {
+                assertFalse(isMainThread())
                 check(!isInitialized)
                 isInitialized = true
                 null
