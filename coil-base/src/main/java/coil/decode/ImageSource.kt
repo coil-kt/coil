@@ -111,7 +111,7 @@ internal class FileImageSource(
         return file
     }
 
-    override fun fileOrNull() = file()
+    override fun fileOrNull(): File = file()
 
     @Synchronized
     override fun close() {
@@ -145,7 +145,7 @@ internal class SourceImageSource(
         return file!!.source().buffer().also { source = it }
     }
 
-    override fun sourceOrNull() = source()
+    override fun sourceOrNull(): BufferedSource = source()
 
     @Synchronized
     override fun file(): File {

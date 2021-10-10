@@ -22,7 +22,7 @@ internal class RealDiskCache(
         valueCount = 2
     )
 
-    override val size get() = cache.size()
+    override val size get(): Long = cache.size()
 
     override fun get(key: String): Snapshot? {
         return cache[key.hash()]?.let(::RealSnapshot)
@@ -40,25 +40,25 @@ internal class RealDiskCache(
         cache.evictAll()
     }
 
-    private fun String.hash() = encodeUtf8().sha256().hex()
+    private fun String.hash(): String = encodeUtf8().sha256().hex()
 
     private class RealSnapshot(private val snapshot: DiskLruCache.Snapshot) : Snapshot {
 
-        override val metadata get() = snapshot.entry.cleanFiles[ENTRY_METADATA].toFile()
-        override val data get() = snapshot.entry.cleanFiles[ENTRY_DATA].toFile()
+        override val metadata get(): File = snapshot.entry.cleanFiles[ENTRY_METADATA].toFile()
+        override val data get(): File = snapshot.entry.cleanFiles[ENTRY_DATA].toFile()
 
-        override fun close() = snapshot.close()
-        override fun closeAndEdit() = snapshot.closeAndEdit()?.let(::RealEditor)
+        override fun close(): Unit = snapshot.close()
+        override fun closeAndEdit(): Editor? = snapshot.closeAndEdit()?.let(::RealEditor)
     }
 
     private class RealEditor(private val editor: DiskLruCache.Editor) : Editor {
 
-        override val metadata get() = editor.entry.dirtyFiles[ENTRY_METADATA].toFile()
-        override val data get() = editor.entry.dirtyFiles[ENTRY_DATA].toFile()
+        override val metadata get(): File = editor.entry.dirtyFiles[ENTRY_METADATA].toFile()
+        override val data get(): File = editor.entry.dirtyFiles[ENTRY_DATA].toFile()
 
-        override fun commit() = editor.commit()
-        override fun commitAndGet() = editor.commitAndGet()?.let(::RealSnapshot)
-        override fun abort() = editor.abort()
+        override fun commit(): Unit = editor.commit()
+        override fun commitAndGet(): Snapshot? = editor.commitAndGet()?.let(::RealSnapshot)
+        override fun abort(): Unit = editor.abort()
     }
 
     companion object {

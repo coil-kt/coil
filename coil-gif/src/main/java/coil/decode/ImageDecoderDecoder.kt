@@ -145,8 +145,8 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
         }
 
-        override fun equals(other: Any?) = other is Factory
+        override fun equals(other: Any?): Boolean = other is Factory
 
-        override fun hashCode() = javaClass.hashCode()
+        override fun hashCode(): Int = javaClass.hashCode()
     }
 }

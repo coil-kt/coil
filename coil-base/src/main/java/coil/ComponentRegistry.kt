@@ -103,7 +103,7 @@ class ComponentRegistry private constructor(
         return null
     }
 
-    fun newBuilder() = Builder(this)
+    fun newBuilder(): Builder = Builder(this)
 
     class Builder {
 
@@ -135,7 +135,7 @@ class ComponentRegistry private constructor(
         }
 
         /** Register a [Mapper]. */
-        inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(mapper, T::class.java)
+        inline fun <reified T : Any> add(mapper: Mapper<T, *>): Builder = add(mapper, T::class.java)
 
         /** Register a [Mapper]. */
         fun <T : Any> add(mapper: Mapper<T, *>, type: Class<T>) = apply {
@@ -143,7 +143,7 @@ class ComponentRegistry private constructor(
         }
 
         /** Register a [Keyer]. */
-        inline fun <reified T : Any> add(keyer: Keyer<T>) = add(keyer, T::class.java)
+        inline fun <reified T : Any> add(keyer: Keyer<T>): Builder = add(keyer, T::class.java)
 
         /** Register a [Keyer]. */
         fun <T : Any> add(keyer: Keyer<T>, type: Class<T>) = apply {
@@ -151,7 +151,7 @@ class ComponentRegistry private constructor(
         }
 
         /** Register a [Fetcher.Factory]. */
-        inline fun <reified T : Any> add(factory: Fetcher.Factory<T>) = add(factory, T::class.java)
+        inline fun <reified T : Any> add(factory: Fetcher.Factory<T>): Builder = add(factory, T::class.java)
 
         /** Register a [Fetcher.Factory]. */
         fun <T : Any> add(factory: Fetcher.Factory<T>, type: Class<T>) = apply {

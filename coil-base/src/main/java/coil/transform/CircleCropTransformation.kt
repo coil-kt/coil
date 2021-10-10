@@ -34,7 +34,7 @@ class CircleCropTransformation : Transformation {
         return output
     }
 
-    override fun equals(other: Any?) = other is CircleCropTransformation
+    override fun equals(other: Any?): Boolean = other is CircleCropTransformation
 
-    override fun hashCode() = javaClass.hashCode()
+    override fun hashCode(): Int = javaClass.hashCode()
 }

@@ -6,5 +6,5 @@ import coil.request.Options
 
 internal class StringMapper : Mapper<String, Uri> {
 
-    override fun map(data: String, options: Options) = data.toUri()
+    override fun map(data: String, options: Options): Uri = data.toUri()
 }

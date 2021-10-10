@@ -238,7 +238,7 @@ internal class HttpUriFetcher(
         return ImageSource(source = source(), context = options.context)
     }
 
-    private val diskCacheKey get() = options.diskCacheKey ?: url
+    private val diskCacheKey: String get() = options.diskCacheKey ?: url
 
     class Factory(
         private val callFactory: Call.Factory,

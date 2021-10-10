@@ -5,5 +5,5 @@ import okhttp3.HttpUrl
 
 internal class HttpUrlMapper : Mapper<HttpUrl, String> {
 
-    override fun map(data: HttpUrl, options: Options) = data.toString()
+    override fun map(data: HttpUrl, options: Options): String = data.toString()
 }

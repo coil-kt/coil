@@ -174,7 +174,7 @@ class ImageRequest private constructor(
         getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
 
     @JvmOverloads
-    fun newBuilder(context: Context = this.context) = Builder(this, context)
+    fun newBuilder(context: Context = this.context): Builder = Builder(this, context)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -458,7 +458,7 @@ class ImageRequest private constructor(
          *
          * If this is null or is not set, the [ImageLoader] will compute a memory cache key.
          */
-        fun memoryCacheKey(key: String?) = memoryCacheKey(key?.let { MemoryCache.Key(it) })
+        fun memoryCacheKey(key: String?): Builder = memoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
          * Set the memory cache key for this request.
@@ -486,11 +486,11 @@ class ImageRequest private constructor(
             crossinline onCancel: (request: ImageRequest) -> Unit = {},
             crossinline onError: (request: ImageRequest, result: ErrorResult) -> Unit = { _, _ -> },
             crossinline onSuccess: (request: ImageRequest, result: SuccessResult) -> Unit = { _, _ -> }
-        ) = listener(object : Listener {
-            override fun onStart(request: ImageRequest) = onStart(request)
-            override fun onCancel(request: ImageRequest) = onCancel(request)
-            override fun onError(request: ImageRequest, result: ErrorResult) = onError(request, result)
-            override fun onSuccess(request: ImageRequest, result: SuccessResult) = onSuccess(request, result)
+        ): Builder = listener(object : Listener {
+            override fun onStart(request: ImageRequest): Unit = onStart(request)
+            override fun onCancel(request: ImageRequest): Unit = onCancel(request)
+            override fun onError(request: ImageRequest, result: ErrorResult): Unit = onError(request, result)
+            override fun onSuccess(request: ImageRequest, result: SuccessResult): Unit = onSuccess(request, result)
         })
 
         /**
@@ -570,17 +570,17 @@ class ImageRequest private constructor(
         /**
          * Set the requested width/height.
          */
-        fun size(@Px size: Int) = size(size, size)
+        fun size(@Px size: Int): Builder = size(size, size)
 
         /**
          * Set the requested width/height.
          */
-        fun size(@Px width: Int, @Px height: Int) = size(PixelSize(width, height))
+        fun size(@Px width: Int, @Px height: Int): Builder = size(PixelSize(width, height))
 
         /**
          * Set the requested width/height.
          */
-        fun size(size: Size) = size(SizeResolver(size))
+        fun size(size: Size): Builder = size(SizeResolver(size))
 
         /**
          * Set the [SizeResolver] to resolve the requested width/height.
@@ -766,7 +766,7 @@ class ImageRequest private constructor(
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
-        fun placeholderMemoryCacheKey(key: String?) =
+        fun placeholderMemoryCacheKey(key: String?): Builder =
             placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
@@ -829,7 +829,7 @@ class ImageRequest private constructor(
         /**
          * Convenience function to set [imageView] as the [Target].
          */
-        fun target(imageView: ImageView) = target(ImageViewTarget(imageView))
+        fun target(imageView: ImageView): Builder = target(ImageViewTarget(imageView))
 
         /**
          * Convenience function to create and set the [Target].
@@ -838,10 +838,10 @@ class ImageRequest private constructor(
             crossinline onStart: (placeholder: Drawable?) -> Unit = {},
             crossinline onError: (error: Drawable?) -> Unit = {},
             crossinline onSuccess: (result: Drawable) -> Unit = {}
-        ) = target(object : Target {
-            override fun onStart(placeholder: Drawable?) = onStart(placeholder)
-            override fun onError(error: Drawable?) = onError(error)
-            override fun onSuccess(result: Drawable) = onSuccess(result)
+        ): Builder = target(object : Target {
+            override fun onStart(placeholder: Drawable?): Unit = onStart(placeholder)
+            override fun onError(error: Drawable?): Unit = onError(error)
+            override fun onSuccess(result: Drawable): Unit = onSuccess(result)
         })
 
         /**
@@ -880,7 +880,7 @@ class ImageRequest private constructor(
         /**
          * Set the [Lifecycle] for this request.
          */
-        fun lifecycle(owner: LifecycleOwner?) = lifecycle(owner?.lifecycle)
+        fun lifecycle(owner: LifecycleOwner?): Builder = lifecycle(owner?.lifecycle)
 
         /**
          * Set the [Lifecycle] for this request.

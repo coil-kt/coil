@@ -36,8 +36,8 @@ internal class SystemCallbacks(
     @Volatile private var _isOnline = networkObserver.isOnline
     private val _isShutdown = AtomicBoolean(false)
 
-    val isOnline get() = _isOnline
-    val isShutdown get() = _isShutdown.get()
+    val isOnline: Boolean get() = _isOnline
+    val isShutdown: Boolean get() = _isShutdown.get()
 
     init {
         context.registerComponentCallbacks(this)
@@ -47,14 +47,14 @@ internal class SystemCallbacks(
         imageLoader.get() ?: shutdown()
     }
 
-    override fun onTrimMemory(level: Int) = withImageLoader { imageLoader ->
+    override fun onTrimMemory(level: Int): Unit = withImageLoader { imageLoader ->
         imageLoader.logger?.log(TAG, Log.VERBOSE) { "trimMemory, level=$level" }
         imageLoader.onTrimMemory(level)
     }
 
-    override fun onLowMemory() = onTrimMemory(TRIM_MEMORY_COMPLETE)
+    override fun onLowMemory(): Unit = onTrimMemory(TRIM_MEMORY_COMPLETE)
 
-    override fun onConnectivityChange(isOnline: Boolean) = withImageLoader { imageLoader ->
+    override fun onConnectivityChange(isOnline: Boolean): Unit = withImageLoader { imageLoader ->
         imageLoader.logger?.log(TAG, Log.INFO) { if (isOnline) ONLINE else OFFLINE }
         _isOnline = isOnline
     }

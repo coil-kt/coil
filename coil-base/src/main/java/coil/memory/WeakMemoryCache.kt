@@ -34,13 +34,13 @@ internal interface WeakMemoryCache {
 /** A [WeakMemoryCache] implementation that holds no references. */
 internal class EmptyWeakMemoryCache : WeakMemoryCache {
 
-    override val keys get() = emptySet<Key>()
+    override val keys get(): Set<Key> = emptySet<Key>()
 
     override fun get(key: Key): Value? = null
 
     override fun set(key: Key, bitmap: Bitmap, extras: Map<String, Any>, size: Int) {}
 
-    override fun remove(key: Key) = false
+    override fun remove(key: Key): Boolean = false
 
     override fun clearMemory() {}
 
@@ -53,7 +53,7 @@ internal class RealWeakMemoryCache : WeakMemoryCache {
     @VisibleForTesting internal val cache = LinkedHashMap<Key, ArrayList<InternalValue>>()
     private var operationsSinceCleanUp = 0
 
-    override val keys @Synchronized get() = cache.keys.toSet()
+    override val keys @Synchronized get(): Set<Key> = cache.keys.toSet()
 
     @Synchronized
     override fun get(key: Key): Value? {

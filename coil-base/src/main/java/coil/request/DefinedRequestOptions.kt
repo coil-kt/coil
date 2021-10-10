@@ -48,7 +48,7 @@ class DefinedRequestOptions(
         memoryCachePolicy: CachePolicy? = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy? = this.diskCachePolicy,
         networkCachePolicy: CachePolicy? = this.networkCachePolicy,
-    ) = DefinedRequestOptions(
+    ): DefinedRequestOptions = DefinedRequestOptions(
         lifecycle = lifecycle,
         sizeResolver = sizeResolver,
         scale = scale,

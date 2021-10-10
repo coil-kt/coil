@@ -78,9 +78,9 @@ class GifDecoder @JvmOverloads constructor(
             return GifDecoder(result.source, options, enforceMinimumFrameDelay)
         }
 
-        override fun equals(other: Any?) = other is Factory
+        override fun equals(other: Any?): Boolean = other is Factory
 
-        override fun hashCode() = javaClass.hashCode()
+        override fun hashCode(): Int = javaClass.hashCode()
     }
 
     companion object {

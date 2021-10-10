@@ -106,7 +106,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
         }
     }
 
-    override fun getAlpha() = maxAlpha
+    override fun getAlpha(): Int = maxAlpha
 
     override fun setAlpha(alpha: Int) {
         require(alpha in 0..255) { "Invalid alpha: $alpha" }
@@ -163,15 +163,15 @@ class CrossfadeDrawable @JvmOverloads constructor(
         return startChanged || endChanged
     }
 
-    override fun getIntrinsicWidth() = intrinsicWidth
+    override fun getIntrinsicWidth(): Int = intrinsicWidth
 
-    override fun getIntrinsicHeight() = intrinsicHeight
+    override fun getIntrinsicHeight(): Int = intrinsicHeight
 
-    override fun unscheduleDrawable(who: Drawable, what: Runnable) = unscheduleSelf(what)
+    override fun unscheduleDrawable(who: Drawable, what: Runnable): Unit = unscheduleSelf(what)
 
-    override fun invalidateDrawable(who: Drawable) = invalidateSelf()
+    override fun invalidateDrawable(who: Drawable): Unit = invalidateSelf()
 
-    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
+    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long): Unit = scheduleSelf(what, `when`)
 
     override fun setTint(tintColor: Int) {
         start?.setTint(tintColor)
@@ -194,7 +194,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
         end?.setTintBlendMode(blendMode)
     }
 
-    override fun isRunning() = state == STATE_RUNNING
+    override fun isRunning(): Boolean = state == STATE_RUNNING
 
     override fun start() {
         (start as? Animatable)?.start()
@@ -228,7 +228,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
         return callbacks.remove(callback)
     }
 
-    override fun clearAnimationCallbacks() = callbacks.clear()
+    override fun clearAnimationCallbacks(): Unit = callbacks.clear()
 
     /** Update the [Drawable]'s bounds inside [targetBounds] preserving aspect ratio. */
     @VisibleForTesting

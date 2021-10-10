@@ -46,7 +46,7 @@ class RoundedCornersTransformation(
         }
     }
 
-    override val cacheKey = "${javaClass.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
+    override val cacheKey: String = "${javaClass.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)

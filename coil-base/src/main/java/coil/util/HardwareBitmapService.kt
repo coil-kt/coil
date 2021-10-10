@@ -32,8 +32,8 @@ internal sealed class HardwareBitmapService {
 
 /** Returns a fixed value for [allowHardwareMainThread] and [allowHardwareWorkerThread]. */
 private class ImmutableHardwareBitmapService(private val allowHardware: Boolean) : HardwareBitmapService() {
-    override fun allowHardwareMainThread(size: Size) = allowHardware
-    override fun allowHardwareWorkerThread() = allowHardware
+    override fun allowHardwareMainThread(size: Size): Boolean = allowHardware
+    override fun allowHardwareWorkerThread(): Boolean = allowHardware
 }
 
 /** Guards against running out of file descriptors. */

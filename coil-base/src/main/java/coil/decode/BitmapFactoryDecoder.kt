@@ -34,7 +34,7 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-    override suspend fun decode() = parallelismLock.withPermit {
+    override suspend fun decode(): DecodeResult = parallelismLock.withPermit {
         runInterruptible { BitmapFactory.Options().decode() }
     }
 
@@ -142,7 +142,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         outBitmap.density = options.context.resources.displayMetrics.densityDpi
 
         // Apply any EXIF transformations.
-        val bitmap = applyExifTransformations(outBitmap, inPreferredConfig, isFlipped, rotationDegrees)
+        val bitmap =
+            applyExifTransformations(outBitmap, inPreferredConfig, isFlipped, rotationDegrees)
 
         return DecodeResult(
             drawable = bitmap.toDrawable(options.context),
@@ -236,9 +237,9 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
             return BitmapFactoryDecoder(result.source, options, parallelismLock)
         }
 
-        override fun equals(other: Any?) = other is Factory
+        override fun equals(other: Any?): Boolean = other is Factory
 
-        override fun hashCode() = javaClass.hashCode()
+        override fun hashCode(): Int = javaClass.hashCode()
     }
 
     /** Prevent [BitmapFactory.decodeStream] from swallowing [Exception]s. */
@@ -264,18 +265,18 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         // so ExifInterface won't stop reading the stream prematurely.
         private var availableBytes = GIGABYTE_IN_BYTES
 
-        override fun read() = interceptBytesRead(delegate.read())
+        override fun read(): Int = interceptBytesRead(delegate.read())
 
-        override fun read(b: ByteArray) = interceptBytesRead(delegate.read(b))
+        override fun read(b: ByteArray): Int = interceptBytesRead(delegate.read(b))
 
-        override fun read(b: ByteArray, off: Int, len: Int) =
+        override fun read(b: ByteArray, off: Int, len: Int): Int =
             interceptBytesRead(delegate.read(b, off, len))
 
-        override fun skip(n: Long) = delegate.skip(n)
+        override fun skip(n: Long): Long = delegate.skip(n)
 
-        override fun available() = availableBytes
+        override fun available(): Int = availableBytes
 
-        override fun close() = delegate.close()
+        override fun close(): Unit = delegate.close()
 
         private fun interceptBytesRead(bytesRead: Int): Int {
             if (bytesRead == -1) availableBytes = 0

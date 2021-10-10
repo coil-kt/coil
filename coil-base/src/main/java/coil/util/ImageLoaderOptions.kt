@@ -21,7 +21,7 @@ internal class ImageLoaderOptions(
         networkObserverEnabled: Boolean = this.networkObserverEnabled,
         respectCacheHeaders: Boolean = this.respectCacheHeaders,
         bitmapFactoryMaxParallelism: Int = this.bitmapFactoryMaxParallelism,
-    ) = ImageLoaderOptions(
+    ): ImageLoaderOptions = ImageLoaderOptions(
         addLastModifiedToFileCacheKey,
         networkObserverEnabled,
         respectCacheHeaders,

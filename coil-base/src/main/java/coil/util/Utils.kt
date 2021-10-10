@@ -156,11 +156,11 @@ internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
 
 internal val EMPTY_HEADERS = Headers.Builder().build()
 
-internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
+internal fun Headers?.orEmpty(): Headers = this ?: EMPTY_HEADERS
 
-internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
+internal fun Parameters?.orEmpty(): Parameters = this ?: Parameters.EMPTY
 
-internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
+internal fun isMainThread(): Boolean = Looper.myLooper() == Looper.getMainLooper()
 
 internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
@@ -181,7 +181,7 @@ internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
     }
 }
 
-internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
+internal inline operator fun MemoryCache.get(key: MemoryCache.Key?): MemoryCache.Value? = key?.let(::get)
 
 /** https://github.com/coil-kt/coil/issues/675 */
 internal val Context.safeCacheDir: File get() = cacheDir.apply { mkdirs() }

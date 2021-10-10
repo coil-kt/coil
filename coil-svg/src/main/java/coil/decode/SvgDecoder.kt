@@ -118,7 +118,7 @@ class SvgDecoder @JvmOverloads constructor(
             return other is Factory && useViewBoundsAsIntrinsicSize == other.useViewBoundsAsIntrinsicSize
         }
 
-        override fun hashCode() = useViewBoundsAsIntrinsicSize.hashCode()
+        override fun hashCode(): Int = useViewBoundsAsIntrinsicSize.hashCode()
     }
 
     private companion object {

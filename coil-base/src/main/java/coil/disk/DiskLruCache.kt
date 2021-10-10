@@ -705,7 +705,7 @@ internal class DiskLruCache(
          * Commits this edit so it is visible to readers.
          * This releases the edit lock so another edit may be started on the same key.
          */
-        fun commit() = complete(true)
+        fun commit(): Unit = complete(true)
 
         /**
          * Commit the edit and open a new [Snapshot] atomically.
@@ -721,7 +721,7 @@ internal class DiskLruCache(
          * Aborts this edit.
          * This releases the edit lock so another edit may be started on the same key.
          */
-        fun abort() = complete(false)
+        fun abort(): Unit = complete(false)
 
         /**
          * Complete this edit either successfully or unsuccessfully.

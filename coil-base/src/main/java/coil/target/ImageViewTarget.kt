@@ -17,5 +17,5 @@ open class ImageViewTarget(override val view: ImageView) : GenericViewTarget<Ima
         return other is ImageViewTarget && view == other.view
     }
 
-    override fun hashCode() = view.hashCode()
+    override fun hashCode(): Int = view.hashCode()
 }

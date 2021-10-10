@@ -476,7 +476,7 @@ internal class EngineInterceptor(
             isSampled: Boolean = this.isSampled,
             dataSource: DataSource = this.dataSource,
             diskCacheKey: String? = this.diskCacheKey
-        ) = ExecuteResult(drawable, isSampled, dataSource, diskCacheKey)
+        ): ExecuteResult = ExecuteResult(drawable, isSampled, dataSource, diskCacheKey)
     }
 
     companion object {

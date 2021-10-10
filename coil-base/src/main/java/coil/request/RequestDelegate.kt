@@ -49,7 +49,7 @@ internal class BaseRequestDelegate(
         job.cancel()
     }
 
-    override fun onDestroy(owner: LifecycleOwner) = dispose()
+    override fun onDestroy(owner: LifecycleOwner): Unit = dispose()
 }
 
 /** A request delegate for restartable requests with a [ViewTarget]. */

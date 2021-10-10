@@ -66,7 +66,7 @@ class SuccessResult(
         diskCacheKey: String? = this.diskCacheKey,
         isSampled: Boolean = this.isSampled,
         isPlaceholderCached: Boolean = this.isPlaceholderCached,
-    ) = SuccessResult(
+    ): SuccessResult = SuccessResult(
         drawable = drawable,
         request = request,
         dataSource = dataSource,
@@ -124,7 +124,7 @@ class ErrorResult(
         drawable: Drawable? = this.drawable,
         request: ImageRequest = this.request,
         throwable: Throwable = this.throwable,
-    ) = ErrorResult(
+    ): ErrorResult = ErrorResult(
         drawable = drawable,
         request = request,
         throwable = throwable,

@@ -49,7 +49,7 @@ class DefaultRequestOptions(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy,
-    ) = DefaultRequestOptions(
+    ): DefaultRequestOptions = DefaultRequestOptions(
         interceptorDispatcher = interceptorDispatcher,
         fetcherDispatcher = fetcherDispatcher,
         decoderDispatcher = decoderDispatcher,

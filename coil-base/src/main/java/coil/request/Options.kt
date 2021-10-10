@@ -114,7 +114,7 @@ class Options(
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
         networkCachePolicy: CachePolicy = this.networkCachePolicy,
-    ) = Options(
+    ): Options = Options(
         context = context,
         config = config,
         colorSpace = colorSpace,

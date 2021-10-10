@@ -61,7 +61,7 @@ internal interface NetworkObserver {
 
 internal class EmptyNetworkObserver : NetworkObserver {
 
-    override val isOnline get() = true
+    override val isOnline: Boolean get() = true
 
     override fun shutdown() {}
 }
@@ -74,8 +74,8 @@ private class RealNetworkObserver(
 ) : NetworkObserver {
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) = onConnectivityChange(network, true)
-        override fun onLost(network: Network) = onConnectivityChange(network, false)
+        override fun onAvailable(network: Network): Unit = onConnectivityChange(network, true)
+        override fun onLost(network: Network): Unit = onConnectivityChange(network, false)
     }
 
     override val isOnline: Boolean

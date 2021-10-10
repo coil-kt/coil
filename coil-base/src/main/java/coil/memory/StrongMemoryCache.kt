@@ -35,11 +35,11 @@ internal class EmptyStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
 ) : StrongMemoryCache {
 
-    override val size get() = 0
+    override val size get(): Int = 0
 
-    override val maxSize get() = 0
+    override val maxSize get(): Int = 0
 
-    override val keys get() = emptySet<Key>()
+    override val keys get(): Set<Key> = emptySet<Key>()
 
     override fun get(key: Key): Value? = null
 
@@ -47,7 +47,7 @@ internal class EmptyStrongMemoryCache(
         weakMemoryCache.set(key, bitmap, extras, bitmap.allocationByteCountCompat)
     }
 
-    override fun remove(key: Key) = false
+    override fun remove(key: Key): Boolean = false
 
     override fun clearMemory() {}
 
@@ -68,11 +68,11 @@ internal class RealStrongMemoryCache(
         }
     )
 
-    override val size get() = cache.size()
+    override val size get(): Int = cache.size()
 
-    override val maxSize get() = cache.maxSize()
+    override val maxSize get(): Int = cache.maxSize()
 
-    override val keys get() = cache.snapshot().keys
+    override val keys get(): Set<Key> = cache.snapshot().keys
 
     override fun get(key: Key): Value? {
         return cache.get(key)?.let { Value(it.bitmap, it.extras) }

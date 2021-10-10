@@ -212,7 +212,7 @@ internal class RealImageLoader(
         memoryCache?.clear()
     }
 
-    override fun newBuilder() = ImageLoader.Builder(this)
+    override fun newBuilder(): ImageLoader.Builder = ImageLoader.Builder(this)
 
     private fun onSuccess(
         result: SuccessResult,

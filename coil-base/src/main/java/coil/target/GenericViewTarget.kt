@@ -24,11 +24,11 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
      */
     abstract override var drawable: Drawable?
 
-    override fun onStart(placeholder: Drawable?) = updateDrawable(placeholder)
+    override fun onStart(placeholder: Drawable?): Unit  = updateDrawable(placeholder)
 
-    override fun onError(error: Drawable?) = updateDrawable(error)
+    override fun onError(error: Drawable?): Unit = updateDrawable(error)
 
-    override fun onSuccess(result: Drawable) = updateDrawable(result)
+    override fun onSuccess(result: Drawable): Unit = updateDrawable(result)
 
     override fun onStart(owner: LifecycleOwner) {
         isStarted = true
