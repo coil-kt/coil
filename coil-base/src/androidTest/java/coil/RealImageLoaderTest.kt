@@ -69,8 +69,10 @@ class RealImageLoaderTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        server = createMockWebServer(context, IMAGE_NAME, IMAGE_NAME)
-        memoryCache = MemoryCache.Builder(context).maxSizeBytes(Int.MAX_VALUE).build()
+        server = createMockWebServer(IMAGE_NAME, IMAGE_NAME)
+        memoryCache = MemoryCache.Builder(context)
+            .maxSizeBytes(Int.MAX_VALUE)
+            .build()
         imageLoader = ImageLoader.Builder(context)
             .memoryCache(memoryCache)
             .diskCache(null)

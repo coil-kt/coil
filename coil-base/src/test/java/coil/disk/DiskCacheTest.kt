@@ -26,12 +26,12 @@ class DiskCacheTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         diskCache = DiskCache.Builder(context).directory(File("build/cache")).build()
-        diskCache.clear()
     }
 
     @After
     fun after() {
         diskCache.clear()
+        diskCache.directory.deleteRecursively() // Ensure we start fresh.
     }
 
     @Test
