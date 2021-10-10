@@ -2,7 +2,11 @@
 
 package coil.compose
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocal
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
 import coil.compose.ImagePainter.ExecuteCallback
@@ -54,5 +58,6 @@ value class ImageLoaderProvidableCompositionLocal internal constructor(
 
     infix fun provides(value: ImageLoader): ProvidedValue<ImageLoader?> = delegate provides value
 
-    infix fun providesDefault(value: ImageLoader): ProvidedValue<ImageLoader?> = delegate providesDefault value
+    infix fun providesDefault(value: ImageLoader): ProvidedValue<ImageLoader?> =
+        delegate providesDefault value
 }

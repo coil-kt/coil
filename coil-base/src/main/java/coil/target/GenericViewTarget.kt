@@ -24,7 +24,7 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
      */
     abstract override var drawable: Drawable?
 
-    override fun onStart(placeholder: Drawable?): Unit  = updateDrawable(placeholder)
+    override fun onStart(placeholder: Drawable?): Unit = updateDrawable(placeholder)
 
     override fun onError(error: Drawable?): Unit = updateDrawable(error)
 
