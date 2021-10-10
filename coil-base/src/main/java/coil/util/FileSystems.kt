@@ -28,9 +28,7 @@ import okio.Path
 internal fun FileSystem.deleteIfExists(path: Path) {
     try {
         delete(path)
-    } catch (_: FileNotFoundException) {
-        return
-    }
+    } catch (_: FileNotFoundException) {}
 }
 
 /** Tolerant delete, try to clear as many files as possible even after a failure. */
