@@ -67,7 +67,6 @@ class HttpUriFetcherTest {
             .directory(File("build/cache"))
             .maxSizeBytes(10L * 1024 * 1024) // 10MB
             .build()
-        diskCache.clear() // Ensure we start fresh.
         callFactory = OkHttpClient()
         imageLoader = ImageLoader.Builder(context)
             .callFactory(callFactory)
@@ -78,9 +77,11 @@ class HttpUriFetcherTest {
     @After
     fun after() {
         Dispatchers.resetMain()
+        Utils.resetTimeProvider()
         server.shutdown()
         imageLoader.shutdown()
         diskCache.clear()
+        diskCache.directory.deleteRecursively() // Ensure we start fresh.
     }
 
     @Test
@@ -357,7 +358,7 @@ class HttpUriFetcherTest {
         diskCache[url].use(::assertNotNull)
 
         // Increase the current time.
-        Utils.setCurrentTimeMillis(now + 65_000)
+        Utils.setTimeProvider { now + 65_000 }
 
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = runBlocking { newFetcher(url).fetch() }

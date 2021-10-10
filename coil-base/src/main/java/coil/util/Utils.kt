@@ -259,7 +259,11 @@ internal object Utils {
 
     fun currentTimeMillis(): Long = timeProvider()
 
-    fun setCurrentTimeMillis(timeMillis: Long) {
-        timeProvider = { timeMillis }
+    fun setTimeProvider(provider: () -> Long) {
+        timeProvider = provider
+    }
+
+    fun resetTimeProvider() {
+        timeProvider = System::currentTimeMillis
     }
 }
