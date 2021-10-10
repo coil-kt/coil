@@ -16,7 +16,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.withTimeout
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
@@ -60,6 +59,7 @@ class RealImageLoaderTest {
         scope.launch {
             val request = ImageRequest.Builder(context)
                 .data(server.url("normal.jpg"))
+                .dispatcher(mainDispatcher)
                 .listener(onCancel = {
                     isCancelled.value = true
                 })
@@ -72,8 +72,7 @@ class RealImageLoaderTest {
 
         scope.cancel()
 
-        withTimeout(5_000) {
-            isCancelled.first { it }
-        }
+        // Suspend until the request is cancelled.
+        isCancelled.first { it }
     }
 }
