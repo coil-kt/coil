@@ -1,0 +1,18 @@
+name: 'Get AVD Info'
+description: 'Get the AVD arch and target based on its API level.'
+inputs:
+    api-level:
+        required: true
+outputs:
+    arch:
+        value: ${{ steps.get-avd-target.outputs.arch }}
+    target:
+        value: ${{ steps.get-avd-target.outputs.target }}
+runs:
+    using: "composite"
+    steps:
+        - id: get-avd-info
+          run:
+              echo "::set-output name=arch::$(if [ ${{ inputs.api-level }} -ge 30 ]; then echo x86_64; else echo x86; fi)" |
+              echo "::set-output name=target::$(if [ ${{ inputs.api-level }} -ge 30 ]; then echo google_apis; else echo default; fi)"
+          shell: bash
