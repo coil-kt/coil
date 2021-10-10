@@ -122,7 +122,8 @@ internal class RealImageLoader(
 
     override suspend fun execute(request: ImageRequest): ImageResult {
         // Start executing the request on the main thread.
-        val job = scope.async {
+        // We need to pass parent context for proper cancellation propagation.
+        val job = scope.async(coroutineContext) {
             executeMain(request, REQUEST_TYPE_EXECUTE)
         }
 
