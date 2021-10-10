@@ -31,10 +31,8 @@ import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
-import coil.util.Option
 import coil.util.Utils
 import coil.util.getDrawableCompat
-import coil.util.lazyCallFactory
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -113,9 +111,9 @@ interface ImageLoader {
 
         private val applicationContext: Context
         private var defaults: DefaultRequestOptions
-        private var memoryCache: Option<MemoryCache>?
+        private var memoryCache: Lazy<MemoryCache?>?
         private var diskCache: Lazy<DiskCache?>?
-        private var callFactory: Call.Factory?
+        private var callFactory: Lazy<Call.Factory>?
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
         private var options: ImageLoaderOptions
@@ -136,9 +134,9 @@ interface ImageLoader {
         internal constructor(imageLoader: RealImageLoader) {
             applicationContext = imageLoader.context.applicationContext
             defaults = imageLoader.defaults
-            memoryCache = Option(imageLoader.memoryCache)
+            memoryCache = imageLoader.memoryCacheLazy
             diskCache = imageLoader.diskCacheLazy
-            callFactory = imageLoader.callFactory
+            callFactory = imageLoader.callFactoryLazy
             eventListenerFactory = imageLoader.eventListenerFactory
             componentRegistry = imageLoader.componentRegistry
             options = imageLoader.options
@@ -168,7 +166,7 @@ interface ImageLoader {
          * Set the [Call.Factory] used for network requests.
          */
         fun callFactory(callFactory: Call.Factory) = apply {
-            this.callFactory = callFactory
+            this.callFactory = lazyOf(callFactory)
         }
 
         /**
@@ -180,7 +178,7 @@ interface ImageLoader {
          * Prefer using this instead of `callFactory(Call.Factory)`.
          */
         fun callFactory(initializer: () -> Call.Factory) = apply {
-            this.callFactory = lazyCallFactory(initializer)
+            this.callFactory = lazy(initializer)
         }
 
         /**
@@ -202,7 +200,16 @@ interface ImageLoader {
          * Set the [MemoryCache].
          */
         fun memoryCache(memoryCache: MemoryCache?) = apply {
-            this.memoryCache = Option(memoryCache)
+            this.memoryCache = lazyOf(memoryCache)
+        }
+
+        /**
+         * Set a lazy callback to create the [MemoryCache].
+         *
+         * Prefer using this instead of `memoryCache(MemoryCache)`.
+         */
+        fun memoryCache(initializer: () -> MemoryCache?) = apply {
+            this.memoryCache = lazy(initializer)
         }
 
         /**
@@ -512,9 +519,9 @@ interface ImageLoader {
             return RealImageLoader(
                 context = applicationContext,
                 defaults = defaults,
-                memoryCache = (memoryCache ?: Option(MemoryCache.Builder(applicationContext).build())).value,
+                memoryCacheLazy = memoryCache ?: lazy { MemoryCache.Builder(applicationContext).build() },
                 diskCacheLazy = diskCache ?: lazy { Utils.singletonDiskCache(applicationContext) },
-                callFactory = callFactory ?: lazyCallFactory { OkHttpClient() },
+                callFactoryLazy = callFactory ?: lazy { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 options = options,
