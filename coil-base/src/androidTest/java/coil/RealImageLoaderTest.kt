@@ -397,6 +397,29 @@ class RealImageLoaderTest {
     }
 
     @Test
+    fun memoryCacheIsInitializedLazily() {
+        var isInitialized = false
+        val imageLoader = ImageLoader.Builder(context)
+            .memoryCache {
+                check(!isInitialized)
+                isInitialized = true
+                null
+            }
+            .build()
+
+        assertFalse(isInitialized)
+
+        runBlocking {
+            val request = ImageRequest.Builder(context)
+                .data(server.url(IMAGE_NAME))
+                .build()
+            imageLoader.execute(request) as SuccessResult
+        }
+
+        assertTrue(isInitialized)
+    }
+
+    @Test
     fun diskCacheIsInitializedLazily() {
         var isInitialized = false
         val imageLoader = ImageLoader.Builder(context)
