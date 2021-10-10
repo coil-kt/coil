@@ -63,9 +63,9 @@ import kotlin.coroutines.coroutineContext
 internal class RealImageLoader(
     val context: Context,
     override val defaults: DefaultRequestOptions,
-    override val memoryCache: MemoryCache?,
+    val memoryCacheLazy: Lazy<MemoryCache?>,
     val diskCacheLazy: Lazy<DiskCache?>,
-    val callFactory: Call.Factory,
+    val callFactoryLazy: Lazy<Call.Factory>,
     val eventListenerFactory: EventListener.Factory,
     val componentRegistry: ComponentRegistry,
     val options: ImageLoaderOptions,
@@ -76,6 +76,7 @@ internal class RealImageLoader(
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) })
     private val systemCallbacks = SystemCallbacks(this, context, options.networkObserverEnabled)
     private val requestService = RequestService(this, systemCallbacks, logger)
+    override val memoryCache by memoryCacheLazy
     override val diskCache by diskCacheLazy
     override val components = componentRegistry.newBuilder()
         // Mappers
@@ -88,7 +89,7 @@ internal class RealImageLoader(
         .add(UriKeyer())
         .add(FileKeyer(options.addLastModifiedToFileCacheKey))
         // Fetchers
-        .add(HttpUriFetcher.Factory(callFactory, diskCacheLazy, options.respectCacheHeaders))
+        .add(HttpUriFetcher.Factory(callFactoryLazy, diskCacheLazy, options.respectCacheHeaders))
         .add(FileFetcher.Factory())
         .add(AssetUriFetcher.Factory())
         .add(ContentUriFetcher.Factory())
