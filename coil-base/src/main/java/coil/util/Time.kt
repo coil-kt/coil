@@ -5,7 +5,7 @@ internal object Time {
 
     private var provider: () -> Long = System::currentTimeMillis
 
-    fun currentMillis(): Long = provider()
+    fun currentMillis() = provider()
 
     fun setCurrentMillis(currentMillis: Long) {
         provider = { currentMillis }
