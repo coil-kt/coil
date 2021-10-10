@@ -5,7 +5,7 @@ inputs:
         required: true
 outputs:
     arch:
-        value: ${{ steps.get-avd-target.outputs.arch }}
+        value: ${{ steps.get-avd-arch.outputs.arch }}
     target:
         value: ${{ steps.get-avd-target.outputs.target }}
 runs:
