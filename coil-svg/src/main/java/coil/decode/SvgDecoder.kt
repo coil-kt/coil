@@ -28,7 +28,7 @@ class SvgDecoder @JvmOverloads constructor(
     val useViewBoundsAsIntrinsicSize: Boolean = true
 ) : Decoder {
 
-    override suspend fun decode() = runInterruptible {
+    override suspend fun decode(): DecodeResult = runInterruptible {
         val svg = source.source().use { SVG.getFromInputStream(it.inputStream()) }
 
         val svgWidth: Float

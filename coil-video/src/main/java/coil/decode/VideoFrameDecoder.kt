@@ -32,7 +32,7 @@ class VideoFrameDecoder(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-    override suspend fun decode() = MediaMetadataRetriever().use { retriever ->
+    override suspend fun decode(): DecodeResult = MediaMetadataRetriever().use { retriever ->
         retriever.setDataSource(source.file().path)
         val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
         val frameMicros = options.parameters.videoFrameMicros() ?: 0L
