@@ -98,7 +98,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: ${{ runner.os }}-${{ env.CACHE_VERSION }}-avd-${{ steps.avd-cache.outputs.arch }}-${{ steps.avd-cache.outputs.target }}-${{ matrix.api-level }}
+                  key: ${{ runner.os }}-avd-${{ env.CACHE_VERSION }}-${{ steps.avd-info.outputs.arch }}-${{ steps.avd-info.outputs.target }}-${{ matrix.api-level }}
 
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
@@ -106,8 +106,8 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
-                  arch: ${{ steps.avd-cache.outputs.arch }}
-                  target: ${{ steps.avd-cache.outputs.target }}
+                  arch: ${{ steps.avd-info.outputs.arch }}
+                  target: ${{ steps.avd-info.outputs.target }}
                   disable-animations: false
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
@@ -117,8 +117,8 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
-                  arch: ${{ steps.avd-cache.outputs.arch }}
-                  target: ${{ steps.avd-cache.outputs.target }}
+                  arch: ${{ steps.avd-info.outputs.arch }}
+                  target: ${{ steps.avd-info.outputs.target }}
                   disable-animations: true
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
