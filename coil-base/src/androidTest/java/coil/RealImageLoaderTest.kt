@@ -17,6 +17,7 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.base.test.R
 import coil.decode.DataSource
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
+import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -32,7 +33,12 @@ import coil.util.getDrawableCompat
 import coil.util.isMainThread
 import coil.util.runBlockingTest
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
@@ -443,6 +449,30 @@ class RealImageLoaderTest {
         }
 
         assertTrue(isInitialized)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/933 */
+    @Test
+    fun executeIsCancelledIfScopeIsCancelled() {
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+            val request = ImageRequest.Builder(context)
+                .data(Unit)
+                .fetcherFactory<Unit> { _, _, _ ->
+                    Fetcher {
+                        delay(5_000)
+                        error("The operation was not cancelled.")
+                    }
+                }
+                .build()
+            imageLoader.execute(request)
+        }
+
+        assertTrue(scope.isActive)
+
+        scope.cancel()
+
+        assertFalse(scope.isActive)
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
