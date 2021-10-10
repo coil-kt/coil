@@ -37,7 +37,7 @@ import kotlin.coroutines.coroutineContext
 internal class HttpUriFetcher(
     private val url: String,
     private val options: Options,
-    private val callFactory: Call.Factory,
+    private val callFactory: Lazy<Call.Factory>,
     private val diskCache: Lazy<DiskCache?>,
     private val respectCacheHeaders: Boolean
 ) : Fetcher {
@@ -193,11 +193,11 @@ internal class HttpUriFetcher(
                 throw NetworkOnMainThreadException()
             } else {
                 // Work around: https://github.com/Kotlin/kotlinx.coroutines/issues/2448
-                callFactory.newCall(request).execute()
+                callFactory.value.newCall(request).execute()
             }
         } else {
             // Suspend and enqueue the request on one of OkHttp's dispatcher threads.
-            callFactory.newCall(request).await()
+            callFactory.value.newCall(request).await()
         }
         if (!response.isSuccessful) {
             response.body?.closeQuietly()
@@ -241,7 +241,7 @@ internal class HttpUriFetcher(
     private val diskCacheKey get() = options.diskCacheKey ?: url
 
     class Factory(
-        private val callFactory: Call.Factory,
+        private val callFactory: Lazy<Call.Factory>,
         private val diskCache: Lazy<DiskCache?>,
         private val respectCacheHeaders: Boolean
     ) : Fetcher.Factory<Uri> {

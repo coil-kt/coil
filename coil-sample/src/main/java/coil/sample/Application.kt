@@ -33,12 +33,12 @@ class Application : Application(), ImageLoaderFactory {
                 // Video frames
                 add(VideoFrameDecoder.Factory())
             }
-            .memoryCache(
+            .memoryCache {
                 MemoryCache.Builder(this)
                     // Set the max size to 25% of the app's available memory.
                     .maxSizePercent(0.25)
                     .build()
-            )
+            }
             .diskCache {
                 DiskCache.Builder(this)
                     .directory(filesDir.resolve("image_cache"))
