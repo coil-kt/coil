@@ -17,7 +17,6 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.base.test.R
 import coil.decode.DataSource
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
-import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -29,16 +28,12 @@ import coil.util.TestActivity
 import coil.util.activity
 import coil.util.createMockWebServer
 import coil.util.decodeBitmapAsset
+import coil.util.enqueueImage
 import coil.util.getDrawableCompat
 import coil.util.isMainThread
 import coil.util.runBlockingTest
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
@@ -62,7 +57,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-class RealImageLoaderTest {
+class RealImageLoaderAndroidTest {
 
     private lateinit var context: Context
     private lateinit var server: MockWebServer
@@ -75,7 +70,7 @@ class RealImageLoaderTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        server = createMockWebServer(IMAGE_NAME, IMAGE_NAME)
+        server = createMockWebServer()
         memoryCache = MemoryCache.Builder(context)
             .maxSizeBytes(Int.MAX_VALUE)
             .build()
@@ -96,21 +91,24 @@ class RealImageLoaderTest {
 
     @Test
     fun string() {
-        val data = server.url(IMAGE_NAME).toString()
+        val data = server.url(IMAGE).toString()
+        server.enqueueImage(IMAGE)
         testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun httpUri() {
-        val data = server.url(IMAGE_NAME).toString().toUri()
+        val data = server.url(IMAGE).toString().toUri()
+        server.enqueueImage(IMAGE)
         testEnqueue(data)
         testExecute(data)
     }
 
     @Test
     fun httpUrl() {
-        val data = server.url(IMAGE_NAME)
+        val data = server.url(IMAGE)
+        server.enqueueImage(IMAGE)
         testEnqueue(data)
         testExecute(data)
     }
@@ -180,7 +178,7 @@ class RealImageLoaderTest {
 
     @Test
     fun contentUri() {
-        val data = "$SCHEME_CONTENT://coil/$IMAGE_NAME".toUri()
+        val data = "$SCHEME_CONTENT://coil/$IMAGE".toUri()
         testEnqueue(data)
         testExecute(data)
     }
@@ -259,9 +257,10 @@ class RealImageLoaderTest {
 
     @Test
     fun loadedImageIsPresentInMemoryCache() {
+        server.enqueueImage(IMAGE)
         val result = runBlocking {
             val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE_NAME))
+                .data(server.url(IMAGE))
                 .size(100, 100)
                 .build()
             imageLoader.execute(request)
@@ -276,7 +275,7 @@ class RealImageLoaderTest {
     @Test
     fun placeholderKeyReturnsCorrectMemoryCacheEntry() {
         val key = MemoryCache.Key("fake_key")
-        val fileName = IMAGE_NAME
+        val fileName = IMAGE
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
 
         runBlocking {
@@ -313,7 +312,7 @@ class RealImageLoaderTest {
     @Test
     fun cachedValueIsResolvedSynchronously() = runBlockingTest {
         val key = MemoryCache.Key("fake_key")
-        val fileName = IMAGE_NAME
+        val fileName = IMAGE
         decodeAssetAndAddToMemoryCache(key, fileName)
 
         var isSuccessful = false
@@ -349,9 +348,10 @@ class RealImageLoaderTest {
         val imageLoader = ImageLoader(context)
         val key = MemoryCache.Key("fake_key")
 
+        server.enqueueImage(IMAGE)
         val result = runBlocking {
             val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE_NAME))
+                .data(server.url(IMAGE))
                 .memoryCacheKey(key)
                 .build()
             imageLoader.execute(request) as SuccessResult
@@ -367,9 +367,10 @@ class RealImageLoaderTest {
         val imageLoader = ImageLoader(context)
         val key = "fake_key"
 
+        server.enqueueImage(IMAGE)
         val result = runBlocking {
             val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE_NAME))
+                .data(server.url(IMAGE))
                 .diskCacheKey(key)
                 .build()
             imageLoader.execute(request) as SuccessResult
@@ -394,9 +395,10 @@ class RealImageLoaderTest {
 
         assertFalse(isInitialized)
 
+        server.enqueueImage(IMAGE)
         runBlocking {
             val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE_NAME))
+                .data(server.url(IMAGE))
                 .build()
             imageLoader.execute(request) as SuccessResult
         }
@@ -417,9 +419,10 @@ class RealImageLoaderTest {
 
         assertFalse(isInitialized)
 
+        server.enqueueImage(IMAGE)
         runBlocking {
             val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE_NAME))
+                .data(server.url(IMAGE))
                 .build()
             imageLoader.execute(request) as SuccessResult
         }
@@ -441,38 +444,15 @@ class RealImageLoaderTest {
 
         assertFalse(isInitialized)
 
+        server.enqueueImage(IMAGE)
         runBlocking {
             val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE_NAME))
+                .data(server.url(IMAGE))
                 .build()
             imageLoader.execute(request) as SuccessResult
         }
 
         assertTrue(isInitialized)
-    }
-
-    /** Regression test: https://github.com/coil-kt/coil/issues/933 */
-    @Test
-    fun executeIsCancelledIfScopeIsCancelled() {
-        val scope = CoroutineScope(Dispatchers.IO)
-        scope.launch {
-            val request = ImageRequest.Builder(context)
-                .data(Unit)
-                .fetcherFactory<Unit> { _, _, _ ->
-                    Fetcher {
-                        delay(5_000)
-                        error("The operation was not cancelled.")
-                    }
-                }
-                .build()
-            imageLoader.execute(request)
-        }
-
-        assertTrue(scope.isActive)
-
-        scope.cancel()
-
-        assertFalse(scope.isActive)
     }
 
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
@@ -522,8 +502,8 @@ class RealImageLoaderTest {
     }
 
     private fun copyNormalImageAssetToCacheDir(): File {
-        val file = File(context.cacheDir, IMAGE_NAME)
-        val source = context.assets.open(IMAGE_NAME).source()
+        val file = File(context.cacheDir, IMAGE)
+        val source = context.assets.open(IMAGE).source()
         val sink = file.sink().buffer()
         source.use { sink.use { sink.writeAll(source) } }
         return file
@@ -537,6 +517,6 @@ class RealImageLoaderTest {
     }
 
     companion object {
-        private const val IMAGE_NAME = "normal.jpg"
+        private const val IMAGE = "normal.jpg"
     }
 }
