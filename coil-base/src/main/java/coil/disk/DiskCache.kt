@@ -75,8 +75,8 @@ interface DiskCache {
     /**
      * Edits the values for an entry.
      *
-     * Calling [metadata] or [data] marks only that file as dirty so it will be persisted
-     * to disk if this editor is committed.
+     * Calling [metadata] or [data] marks that file as dirty so it will be persisted to disk
+     * if this editor is committed.
      *
      * IMPORTANT: You must **only read or modify the contents** of [metadata] or [data].
      * Renaming, locking, or other mutating file operations can corrupt the disk cache.
