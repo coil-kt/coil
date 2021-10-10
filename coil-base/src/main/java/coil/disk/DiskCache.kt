@@ -59,10 +59,10 @@ interface DiskCache {
      */
     interface Snapshot : Closeable {
 
-        /** Metadata for the image. */
+        /** Get the metadata for the image. */
         val metadata: File
 
-        /** The raw image data. */
+        /** Get the raw image data. */
         val data: File
 
         /** Close the snapshot to allow editing. */
@@ -75,15 +75,18 @@ interface DiskCache {
     /**
      * Edits the values for an entry.
      *
+     * Calling [metadata] or [data] marks only that file as dirty so it will be persisted
+     * to disk if this editor is committed.
+     *
      * IMPORTANT: You must **only read or modify the contents** of [metadata] or [data].
      * Renaming, locking, or other mutating file operations can corrupt the disk cache.
      */
     interface Editor {
 
-        /** Metadata for the image. */
+        /** Get the metadata for the image. */
         val metadata: File
 
-        /** The raw image data. */
+        /** Get the raw image data. */
         val data: File
 
         /** Commit the edit so the changes are visible to readers. */
