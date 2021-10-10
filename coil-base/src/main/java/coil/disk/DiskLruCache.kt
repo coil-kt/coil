@@ -30,6 +30,7 @@ import okio.Path
 import okio.Sink
 import okio.blackholeSink
 import okio.buffer
+import java.io.File
 import java.util.concurrent.Executors
 
 /**
@@ -457,16 +458,6 @@ internal class DiskLruCache(
         val entry = editor.entry
         check(entry.currentEditor == editor)
 
-        // If this edit is creating the entry for the first time, every index must have a value.
-        if (success && !entry.readable) {
-            for (i in 0 until valueCount) {
-                if (!fileSystem.exists(entry.dirtyFiles[i])) {
-                    editor.abort()
-                    return
-                }
-            }
-        }
-
         for (i in 0 until valueCount) {
             val dirty = entry.dirtyFiles[i]
             if (success && !entry.zombie) {
@@ -480,6 +471,13 @@ internal class DiskLruCache(
                 }
             } else {
                 fileSystem.deleteIfExists(dirty)
+            }
+        }
+
+        // Ensure every entry is complete.
+        if (success) {
+            for (i in 0 until valueCount) {
+                entry.cleanFiles[i].toFile().createNewFile()
             }
         }
 
@@ -658,6 +656,11 @@ internal class DiskLruCache(
 
         private var closed = false
 
+        fun file(index: Int): File {
+            check(!closed) { "snapshot is closed" }
+            return entry.cleanFiles[index].toFile()
+        }
+
         override fun close() {
             if (!closed) {
                 closed = true
@@ -681,13 +684,12 @@ internal class DiskLruCache(
     /** Edits the values for an entry. */
     inner class Editor(val entry: Entry) {
 
-        private var done = false
+        private var closed = false
 
-        init {
-            // Ensure all the files for the editor are empty.
-            entry.dirtyFiles.forEachIndices { file ->
-                fileSystem.deleteIfExists(file)
-                file.toFile().createNewFile()
+        fun file(index: Int): File {
+            synchronized(this@DiskLruCache) {
+                check(!closed) { "editor is closed" }
+                return entry.dirtyFiles[index].toFile().apply { createNewFile() }
             }
         }
 
@@ -728,11 +730,11 @@ internal class DiskLruCache(
          */
         private fun complete(success: Boolean) {
             synchronized(this@DiskLruCache) {
-                check(!done) { "editor is closed" }
+                check(!closed) { "editor is closed" }
                 if (entry.currentEditor == this) {
                     completeEdit(this, success)
                 }
-                done = true
+                closed = true
             }
         }
     }

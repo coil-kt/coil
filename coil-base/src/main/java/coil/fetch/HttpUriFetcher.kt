@@ -144,7 +144,7 @@ internal class HttpUriFetcher(
             } else {
                 // Update the metadata and the image data.
                 editor.metadata.sink().buffer().use { CacheResponse(response).writeTo(it) }
-                response.body!!.source().use { it.readAll(editor.data.sink()) }
+                response.body!!.source().use { editor.data.sink().use(it::readAll) }
             }
             return editor.commitAndGet()
         } catch (e: Exception) {
