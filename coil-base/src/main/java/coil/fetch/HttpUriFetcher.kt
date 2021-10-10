@@ -85,12 +85,7 @@ internal class HttpUriFetcher(
             val responseBody = checkNotNull(response.body) { "response body == null" }
             try {
                 // Read the response from the disk cache after writing it.
-                snapshot = writeToDiskCache(
-                    snapshot = snapshot,
-                    request = request,
-                    response = response,
-                    allowNotModified = cacheStrategy.cacheResponse != null
-                )
+                snapshot = writeToDiskCache(snapshot, request, response, cacheStrategy.cacheResponse)
                 if (snapshot != null) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
@@ -124,7 +119,7 @@ internal class HttpUriFetcher(
         snapshot: DiskCache.Snapshot?,
         request: Request,
         response: Response,
-        allowNotModified: Boolean
+        cacheResponse: CacheResponse?
     ): DiskCache.Snapshot? {
         if (!options.diskCachePolicy.writeEnabled ||
             (respectCacheHeaders && !isCacheable(request, response))) {
@@ -139,7 +134,7 @@ internal class HttpUriFetcher(
         } ?: return null
         try {
             // Write the response to the disk cache.
-            if (allowNotModified && response.code == HTTP_NOT_MODIFIED) {
+            if (cacheResponse != null && response.code == HTTP_NOT_MODIFIED) {
                 // Only update the metadata.
                 val combinedResponse = response.newBuilder()
                     .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
@@ -149,7 +144,7 @@ internal class HttpUriFetcher(
             } else {
                 // Update the metadata and the image data.
                 editor.metadata.sink().buffer().use { CacheResponse(response).writeTo(it) }
-                response.body!!.source().use { it.readAll(editor.data.sink()) }
+                response.body!!.source().use { editor.data.sink().use(it::readAll) }
             }
             return editor.commitAndGet()
         } catch (e: Exception) {
@@ -199,7 +194,7 @@ internal class HttpUriFetcher(
             // Suspend and enqueue the request on one of OkHttp's dispatcher threads.
             callFactory.value.newCall(request).await()
         }
-        if (!response.isSuccessful) {
+        if (!response.isSuccessful && response.code != HTTP_NOT_MODIFIED) {
             response.body?.closeQuietly()
             throw HttpException(response)
         }

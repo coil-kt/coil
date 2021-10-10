@@ -22,7 +22,7 @@ class CacheResponseTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        server = createMockWebServer(context, "normal.jpg")
+        server = createMockWebServer("normal.jpg")
     }
 
     @Test
