@@ -57,13 +57,13 @@ class RealImageLoaderTest {
             val request = ImageRequest.Builder(context)
                 .data(Unit)
                 .dispatcher(mainDispatcher)
-                .listener(onCancel = {
-                    isCancelled.value = true
-                })
                 // Use a custom fetcher that suspends until cancellation.
                 .fetcherFactory<Unit> { _, _, _ ->
                     Fetcher { awaitCancellation() }
                 }
+                .listener(onCancel = {
+                    isCancelled.value = true
+                })
                 .build()
             imageLoader.execute(request)
         }
