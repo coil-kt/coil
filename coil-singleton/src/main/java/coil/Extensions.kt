@@ -88,7 +88,7 @@ inline fun ImageView.loadAny(
     data: Any?,
     imageLoader: ImageLoader = context.imageLoader,
     builder: ImageRequest.Builder.() -> Unit = {}
-) = load(data, imageLoader, builder)
+): Disposable = load(data, imageLoader, builder)
 
 @Deprecated(
     message = "Migrate to 'dispose'.",
@@ -98,4 +98,4 @@ inline fun ImageView.loadAny(
     ),
     level = DeprecationLevel.ERROR // Temporary migration aid.
 )
-inline fun ImageView.clear() = dispose()
+inline fun ImageView.clear(): Unit = dispose()
