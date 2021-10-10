@@ -1,6 +1,6 @@
 package coil.network
 
-import coil.util.Utils
+import coil.util.Time
 import coil.util.toNonNegativeInt
 import okhttp3.Headers
 import okhttp3.Request
@@ -204,7 +204,7 @@ internal class CacheStrategy private constructor(
             }
 
             val responseDuration = receivedResponseMillis - sentRequestMillis
-            val residentDuration = Utils.currentTimeMillis() - receivedResponseMillis
+            val residentDuration = Time.currentMillis() - receivedResponseMillis
             return receivedAge + responseDuration + residentDuration
         }
 

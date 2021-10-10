@@ -12,7 +12,7 @@ import coil.decode.SourceImageSource
 import coil.disk.DiskCache
 import coil.request.CachePolicy
 import coil.request.Options
-import coil.util.Utils
+import coil.util.Time
 import coil.util.createMockWebServer
 import coil.util.createTestMainDispatcher
 import coil.util.enqueueImage
@@ -77,7 +77,7 @@ class HttpUriFetcherTest {
     @After
     fun after() {
         Dispatchers.resetMain()
-        Utils.resetTimeProvider()
+        Time.reset()
         server.shutdown()
         imageLoader.shutdown()
         diskCache.clear()
@@ -358,7 +358,7 @@ class HttpUriFetcherTest {
         diskCache[url].use(::assertNotNull)
 
         // Increase the current time.
-        Utils.setTimeProvider { now + 65_000 }
+        Time.setCurrentMillis(now + 65_000)
 
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = runBlocking { newFetcher(url).fetch() }
