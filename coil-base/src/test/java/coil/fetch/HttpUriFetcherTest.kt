@@ -226,6 +226,7 @@ class HttpUriFetcherTest {
             newFetcher(url).fetch()
         }
 
+        assertEquals(1, server.requestCount)
         assertTrue(result is SourceResult)
         assertEquals(DataSource.DISK, result.dataSource)
     }
@@ -249,6 +250,7 @@ class HttpUriFetcherTest {
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = runBlocking { newFetcher(url).fetch() }
 
+        assertEquals(2, server.requestCount)
         assertTrue(result is SourceResult)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
@@ -273,6 +275,7 @@ class HttpUriFetcherTest {
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = runBlocking { newFetcher(url, respectCacheHeaders = false).fetch() }
 
+        assertEquals(1, server.requestCount)
         assertTrue(result is SourceResult)
         assertEquals(DataSource.DISK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
@@ -290,6 +293,7 @@ class HttpUriFetcherTest {
         val expectedSize = server.enqueueImage(IMAGE, headers)
         var result = runBlocking { newFetcher(url).fetch() }
 
+        assertEquals(1, server.requestCount)
         server.takeRequest() // Discard the first request.
         assertTrue(result is SourceResult)
         assertEquals(DataSource.NETWORK, result.dataSource)
@@ -305,7 +309,33 @@ class HttpUriFetcherTest {
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
         // Ensure we passed the correct etag.
+        assertEquals(2, server.requestCount)
         assertEquals(etag, server.takeRequest().headers["If-None-Match"])
+    }
+
+    @Test
+    fun `cache control - max-age is returned from cache`() {
+        val url = server.url(IMAGE).toString()
+
+        val headers = Headers.Builder()
+            .set("Cache-Control", "max-age=600")
+            .build()
+        var expectedSize = server.enqueueImage(IMAGE, headers)
+        var result = runBlocking { newFetcher(url).fetch() }
+
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        diskCache[url].use(::assertNotNull)
+
+        expectedSize = server.enqueueImage(IMAGE, headers)
+        result = runBlocking { newFetcher(url).fetch() }
+
+        assertEquals(1, server.requestCount)
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.DISK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
     private fun newFetcher(
