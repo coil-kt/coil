@@ -11,7 +11,6 @@ import coil.disk.DiskCache
 import coil.network.CacheResponse
 import coil.network.CacheStrategy
 import coil.network.CacheStrategy.Companion.combineHeaders
-import coil.network.CacheStrategy.Companion.isCacheable
 import coil.network.HttpException
 import coil.request.Options
 import coil.request.Parameters
@@ -121,8 +120,8 @@ internal class HttpUriFetcher(
         response: Response,
         cacheResponse: CacheResponse?
     ): DiskCache.Snapshot? {
-        if (!options.diskCachePolicy.writeEnabled ||
-            (respectCacheHeaders && !isCacheable(request, response))) {
+        // Short circuit if we're not allowed to cache this response.
+        if (!isCacheable(request, response)) {
             snapshot?.closeQuietly()
             return null
         }
@@ -134,7 +133,7 @@ internal class HttpUriFetcher(
         } ?: return null
         try {
             // Write the response to the disk cache.
-            if (cacheResponse != null && response.code == HTTP_NOT_MODIFIED) {
+            if (response.code == HTTP_NOT_MODIFIED && cacheResponse != null) {
                 // Only update the metadata.
                 val combinedResponse = response.newBuilder()
                     .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
@@ -214,6 +213,11 @@ internal class HttpUriFetcher(
             MimeTypeMap.getSingleton().getMimeTypeFromUrl(url)?.let { return it }
         }
         return rawContentType?.substringBefore(';')
+    }
+
+    private fun isCacheable(request: Request, response: Response): Boolean {
+        return options.diskCachePolicy.writeEnabled &&
+            (!respectCacheHeaders || CacheStrategy.isCacheable(request, response))
     }
 
     private fun DiskCache.Snapshot.toCacheResponse(): CacheResponse? {
