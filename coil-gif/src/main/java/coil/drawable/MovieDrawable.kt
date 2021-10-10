@@ -241,11 +241,11 @@ class MovieDrawable @JvmOverloads constructor(
         }
     }
 
-    override fun getIntrinsicWidth() = movie.width()
+    override fun getIntrinsicWidth(): Int = movie.width()
 
-    override fun getIntrinsicHeight() = movie.height()
+    override fun getIntrinsicHeight(): Int = movie.height()
 
-    override fun isRunning() = isRunning
+    override fun isRunning(): Boolean = isRunning
 
     override fun start() {
         if (isRunning) return
@@ -273,9 +273,9 @@ class MovieDrawable @JvmOverloads constructor(
         return callbacks.remove(callback)
     }
 
-    override fun clearAnimationCallbacks() = callbacks.clear()
+    override fun clearAnimationCallbacks(): Unit = callbacks.clear()
 
-    private val Canvas.bounds get() = tempCanvasBounds.apply { set(0, 0, width, height) }
+    private val Canvas.bounds: Rect get() = tempCanvasBounds.apply { set(0, 0, width, height) }
 
     companion object {
         /** Pass this to [setRepeatCount] to repeat infinitely. */

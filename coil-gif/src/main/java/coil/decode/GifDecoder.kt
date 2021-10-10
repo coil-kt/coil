@@ -31,7 +31,7 @@ class GifDecoder @JvmOverloads constructor(
     private val enforceMinimumFrameDelay: Boolean = true
 ) : Decoder {
 
-    override suspend fun decode() = runInterruptible {
+    override suspend fun decode(): DecodeResult = runInterruptible {
         val bufferedSource = if (enforceMinimumFrameDelay) {
             FrameDelayRewritingSource(source.source()).buffer()
         } else {

@@ -42,16 +42,16 @@ class ScaleDrawable @JvmOverloads constructor(
         }
     }
 
-    override fun getAlpha() = child.alpha
+    override fun getAlpha(): Int = child.alpha
 
     override fun setAlpha(alpha: Int) {
         child.alpha = alpha
     }
 
     @Suppress("DEPRECATION")
-    override fun getOpacity() = child.opacity
+    override fun getOpacity(): Int = child.opacity
 
-    override fun getColorFilter() = child.colorFilter
+    override fun getColorFilter(): ColorFilter? = child.colorFilter
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
         child.colorFilter = colorFilter
@@ -83,30 +83,30 @@ class ScaleDrawable @JvmOverloads constructor(
         childScale = multiplier.toFloat()
     }
 
-    override fun onLevelChange(level: Int) = child.setLevel(level)
+    override fun onLevelChange(level: Int): Boolean = child.setLevel(level)
 
-    override fun onStateChange(state: IntArray) = child.setState(state)
+    override fun onStateChange(state: IntArray): Boolean = child.setState(state)
 
-    override fun getIntrinsicWidth() = child.intrinsicWidth
+    override fun getIntrinsicWidth(): Int = child.intrinsicWidth
 
-    override fun getIntrinsicHeight() = child.intrinsicHeight
+    override fun getIntrinsicHeight(): Int = child.intrinsicHeight
 
-    override fun unscheduleDrawable(who: Drawable, what: Runnable) = unscheduleSelf(what)
+    override fun unscheduleDrawable(who: Drawable, what: Runnable): Unit = unscheduleSelf(what)
 
-    override fun invalidateDrawable(who: Drawable) = invalidateSelf()
+    override fun invalidateDrawable(who: Drawable): Unit = invalidateSelf()
 
-    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = scheduleSelf(what, `when`)
+    override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long): Unit = scheduleSelf(what, `when`)
 
-    override fun setTint(tintColor: Int) = child.setTint(tintColor)
+    override fun setTint(tintColor: Int): Unit = child.setTint(tintColor)
 
-    override fun setTintList(tint: ColorStateList?) = child.setTintList(tint)
+    override fun setTintList(tint: ColorStateList?): Unit = child.setTintList(tint)
 
-    override fun setTintMode(tintMode: PorterDuff.Mode?) = child.setTintMode(tintMode)
+    override fun setTintMode(tintMode: PorterDuff.Mode?): Unit = child.setTintMode(tintMode)
 
     @RequiresApi(29)
-    override fun setTintBlendMode(blendMode: BlendMode?) = child.setTintBlendMode(blendMode)
+    override fun setTintBlendMode(blendMode: BlendMode?): Unit = child.setTintBlendMode(blendMode)
 
-    override fun isRunning() = child is Animatable && child.isRunning
+    override fun isRunning(): Boolean = child is Animatable && child.isRunning
 
     override fun start() {
         if (child is Animatable) child.start()
