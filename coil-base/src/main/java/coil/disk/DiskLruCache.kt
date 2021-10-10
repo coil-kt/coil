@@ -686,6 +686,10 @@ internal class DiskLruCache(
 
         private var closed = false
 
+        /**
+         * Get the file to read from/write to for [index].
+         * This file will become the new value for this index if committed.
+         */
         fun file(index: Int): File {
             synchronized(this@DiskLruCache) {
                 check(!closed) { "editor is closed" }
@@ -694,8 +698,8 @@ internal class DiskLruCache(
         }
 
         /**
-         * Prevents this editor from completing normally. This is necessary if the target entry is
-         * evicted while this editor is active.
+         * Prevents this editor from completing normally.
+         * This is necessary if the target entry is evicted while this editor is active.
          */
         fun detach() {
             if (entry.currentEditor == this) {
