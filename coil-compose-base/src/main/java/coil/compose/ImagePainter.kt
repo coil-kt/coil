@@ -202,7 +202,7 @@ class ImagePainter internal constructor(
         requestJob = null
     }
 
-    override fun onAbandoned() = onForgotten()
+    override fun onAbandoned(): Unit = onForgotten()
 
     /** Update the [request] to work with [ImagePainter]. */
     private fun updateRequest(request: ImageRequest, size: Size): ImageRequest {
@@ -377,7 +377,7 @@ private fun updatePainter(
     )
 }
 
-private fun requireSupportedData(data: Any?) = when (data) {
+private fun requireSupportedData(data: Any?): Any? = when (data) {
     is ImageBitmap -> unsupportedData("ImageBitmap")
     is ImageVector -> unsupportedData("ImageVector")
     is Painter -> unsupportedData("Painter")
@@ -391,7 +391,7 @@ private fun unsupportedData(name: String): Nothing {
     )
 }
 
-private fun ImageResult.toState() = when (this) {
+private fun ImageResult.toState(): State = when (this) {
     is SuccessResult -> State.Success(
         painter = drawable.toPainter(),
         result = this
