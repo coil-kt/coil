@@ -92,7 +92,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: avd-${{ steps.avd-target.outputs.arch }}-${{ steps.avd-target.outputs.target }}-${{ matrix.api-level }}
+                  key: avd-${{ steps.avd-arch.outputs.arch }}-${{ steps.avd-target.outputs.target }}-${{ matrix.api-level }}
 
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
@@ -100,8 +100,8 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
-                  arch: ${{ steps.avd-info.outputs.arch }}
-                  target: ${{ steps.avd-info.outputs.target }}
+                  arch: ${{ steps.avd-arch.outputs.arch }}
+                  target: ${{ steps.avd-target.outputs.target }}
                   disable-animations: false
                   force-avd-creation: false
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
