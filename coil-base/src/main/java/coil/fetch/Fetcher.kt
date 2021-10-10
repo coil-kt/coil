@@ -16,6 +16,10 @@ import coil.request.Options
  */
 fun interface Fetcher {
 
+    /**
+     * Fetch the data provided by [Factory.create] or return 'null' to delegate to the next
+     * [Fetcher] in the component registry.
+     */
     suspend fun fetch(): FetchResult?
 
     fun interface Factory<T : Any> {
