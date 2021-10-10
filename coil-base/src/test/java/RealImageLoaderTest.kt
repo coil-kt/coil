@@ -57,8 +57,8 @@ class RealImageLoaderTest {
             val request = ImageRequest.Builder(context)
                 .data(Unit)
                 .dispatcher(mainDispatcher)
-                // Use a custom fetcher that suspends until cancellation.
                 .fetcherFactory<Unit> { _, _, _ ->
+                    // Use a custom fetcher that suspends until cancellation.
                     Fetcher { awaitCancellation() }
                 }
                 .listener(onCancel = {
