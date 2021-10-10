@@ -221,6 +221,11 @@ internal object Utils {
      */
     private var singletonDiskCache: DiskCache? = null
 
+    /**
+     * Support overriding the current time for testing.
+     */
+    private var timeProvider: () -> Long = System::currentTimeMillis
+
     fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
         val memoryClassMegabytes = try {
             val activityManager: ActivityManager = context.requireSystemService()
@@ -250,5 +255,11 @@ internal object Utils {
                 .build()
                 .also { singletonDiskCache = it }
         }
+    }
+
+    fun currentTimeMillis() = timeProvider()
+
+    fun setCurrentTimeMillis(timeMillis: Long) {
+        timeProvider = { timeMillis }
     }
 }

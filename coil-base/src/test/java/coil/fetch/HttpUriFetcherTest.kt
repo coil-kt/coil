@@ -12,6 +12,7 @@ import coil.decode.SourceImageSource
 import coil.disk.DiskCache
 import coil.request.CachePolicy
 import coil.request.Options
+import coil.util.Utils
 import coil.util.createMockWebServer
 import coil.util.createTestMainDispatcher
 import coil.util.enqueueImage
@@ -226,7 +227,7 @@ class HttpUriFetcherTest {
             newFetcher(url).fetch()
         }
 
-        assertEquals(1, server.requestCount)
+        assertEquals(0, server.requestCount)
         assertTrue(result is SourceResult)
         assertEquals(DataSource.DISK, result.dataSource)
     }
@@ -314,11 +315,11 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - max-age is returned from cache`() {
+    fun `cache control - unexpired max-age is returned from cache`() {
         val url = server.url(IMAGE).toString()
 
         val headers = Headers.Builder()
-            .set("Cache-Control", "max-age=600")
+            .set("Cache-Control", "max-age=60")
             .build()
         var expectedSize = server.enqueueImage(IMAGE, headers)
         var result = runBlocking { newFetcher(url).fetch() }
@@ -335,6 +336,35 @@ class HttpUriFetcherTest {
         assertEquals(1, server.requestCount)
         assertTrue(result is SourceResult)
         assertEquals(DataSource.DISK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+    }
+
+    @Test
+    fun `cache control - expired max-age is not returned from cache`() {
+        val url = server.url(IMAGE).toString()
+
+        val now = System.currentTimeMillis()
+        val headers = Headers.Builder()
+            .set("Cache-Control", "max-age=60")
+            .build()
+        var expectedSize = server.enqueueImage(IMAGE, headers)
+        var result = runBlocking { newFetcher(url).fetch() }
+
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        diskCache[url].use(::assertNotNull)
+
+        // Increase the current time.
+        Utils.setCurrentTimeMillis(now + 65_000)
+
+        expectedSize = server.enqueueImage(IMAGE, headers)
+        result = runBlocking { newFetcher(url).fetch() }
+
+        assertEquals(2, server.requestCount)
+        assertTrue(result is SourceResult)
+        assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
