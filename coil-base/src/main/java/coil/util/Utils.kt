@@ -257,7 +257,7 @@ internal object Utils {
         }
     }
 
-    fun currentTimeMillis() = timeProvider()
+    fun currentTimeMillis(): Long = timeProvider()
 
     fun setCurrentTimeMillis(timeMillis: Long) {
         timeProvider = { timeMillis }
