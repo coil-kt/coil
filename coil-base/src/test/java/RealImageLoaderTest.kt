@@ -5,7 +5,6 @@ import androidx.test.core.app.ApplicationProvider
 import coil.fetch.Fetcher
 import coil.request.ImageRequest
 import coil.util.createTestMainDispatcher
-import coil.util.runBlockingTest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import org.junit.After
@@ -49,7 +49,7 @@ class RealImageLoaderTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/933 */
     @Test
-    fun executeIsCancelledIfScopeIsCancelled() = runBlockingTest {
+    fun executeIsCancelledIfScopeIsCancelled() {
         val isCancelled = MutableStateFlow(false)
 
         val scope = CoroutineScope(mainDispatcher)
@@ -74,6 +74,8 @@ class RealImageLoaderTest {
         scope.cancel()
 
         // Suspend until the request is cancelled.
-        isCancelled.first { it }
+        runBlocking {
+            isCancelled.first { it }
+        }
     }
 }
