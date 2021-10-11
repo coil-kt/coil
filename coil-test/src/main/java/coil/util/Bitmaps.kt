@@ -89,6 +89,6 @@ fun Bitmap.assertIsSimilarTo(
 
     val similarity = computeSimilarity(expected)
     check(similarity >= threshold) {
-        "The images are not visually similar. Actual: $similarity; Expected: $threshold."
+        "The images are not visually similar. Expected: $threshold; Actual: $similarity."
     }
 }
