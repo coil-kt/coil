@@ -557,7 +557,7 @@ class ImagePainterTest {
     }
 
     @Test
-    fun immediateExecuteCallback() {
+    fun immediateExecuteCallbackExecutesWithoutSpecifiedSize() {
         // captureToImage is SDK_INT >= 26.
         assumeTrue(SDK_INT >= 26)
 
@@ -570,7 +570,6 @@ class ImagePainterTest {
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(100.dp, 100.dp)
                     .testTag(Image),
             )
         }
@@ -580,7 +579,7 @@ class ImagePainterTest {
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample)
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
 
     @Composable
