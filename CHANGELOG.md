@@ -1,8 +1,8 @@
 # Changelog
 
-## [2.0.0-alpha01] - XXX
+## [2.0.0-alpha01] - October 11, 2021
 
-Coil 2.0.0 is the next major iteration of the library and has new features, improvements to performance, API improvements, and various bug fixes. This release may be binary/source incompatible with future alpha releases until the stable release of 2.0.0.
+Coil 2.0.0 is the next major iteration of the library and has new features, performance improvements, API improvements, and various bug fixes. This release may be binary/source incompatible with future alpha releases until the stable release of 2.0.0.
 
 - **Important**: The minimum supported API is now 21.
 - **Important**: Enable `-Xjvm-default=all`.
