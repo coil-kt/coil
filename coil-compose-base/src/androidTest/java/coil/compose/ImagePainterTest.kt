@@ -38,6 +38,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import coil.EventListener
 import coil.ImageLoader
+import coil.compose.ImagePainter.ExecuteCallback
 import coil.compose.ImagePainter.State
 import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
@@ -553,6 +554,32 @@ class ImagePainterTest {
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
+    fun immediateExecuteCallbackExecutesWithoutSpecifiedSize() {
+        // captureToImage is SDK_INT >= 26.
+        assumeTrue(SDK_INT >= 26)
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberImagePainter(
+                    data = server.url("/image"),
+                    imageLoader = imageLoader,
+                    onExecute = ExecuteCallback.Immediate
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .testTag(Image),
+            )
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
 
     @Composable

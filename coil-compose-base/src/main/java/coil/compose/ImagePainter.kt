@@ -52,6 +52,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -95,7 +96,7 @@ fun rememberImagePainter(
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
 
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate + EMPTY_COROUTINE_EXCEPTION_HANDLER }
     val imagePainter = remember(scope) { ImagePainter(scope, request, imageLoader) }
     imagePainter.request = request
     imagePainter.imageLoader = imageLoader
@@ -166,8 +167,7 @@ class ImagePainter internal constructor(
         // Create a new scope to observe state and execute requests while we're remembered.
         rememberScope?.cancel()
         val context = parentScope.coroutineContext
-        val scope = CoroutineScope(context + SupervisorJob(context[Job]) +
-            EMPTY_COROUTINE_EXCEPTION_HANDLER)
+        val scope = CoroutineScope(context + SupervisorJob(context.job))
         rememberScope = scope
 
         // Observe the current request + request size and launch new requests as necessary.
@@ -216,7 +216,12 @@ class ImagePainter internal constructor(
                 // Set the size unless it has been set explicitly.
                 if (request.defined.sizeResolver == null) {
                     if (size.isSpecified) {
-                        size(size.width.roundToInt(), size.height.roundToInt())
+                        val (width, height) = size
+                        if (width >= 0.5f && height >= 0.5f) {
+                            size(size.width.roundToInt(), size.height.roundToInt())
+                        } else {
+                            size(OriginalSize)
+                        }
                     } else {
                         size(OriginalSize)
                     }
