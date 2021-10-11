@@ -44,7 +44,6 @@ import coil.util.SystemCallbacks
 import coil.util.awaitStarted
 import coil.util.emoji
 import coil.util.get
-import coil.util.job
 import coil.util.log
 import coil.util.requestManager
 import coil.util.toDrawable
@@ -55,6 +54,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import java.util.concurrent.atomic.AtomicBoolean
@@ -120,9 +121,9 @@ internal class RealImageLoader(
         }
     }
 
-    override suspend fun execute(request: ImageRequest): ImageResult {
+    override suspend fun execute(request: ImageRequest) = coroutineScope {
         // Start executing the request on the main thread.
-        val job = scope.async {
+        val job = async(Dispatchers.Main.immediate) {
             executeMain(request, REQUEST_TYPE_EXECUTE)
         }
 
@@ -130,7 +131,7 @@ internal class RealImageLoader(
         if (request.target is ViewTarget<*>) {
             request.target.view.requestManager.getDisposable(job)
         }
-        return job.await()
+        return@coroutineScope job.await()
     }
 
     @MainThread

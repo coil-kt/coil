@@ -22,12 +22,12 @@ class CacheResponseTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        server = createMockWebServer("normal.jpg")
+        server = createMockWebServer(IMAGE)
     }
 
     @Test
     fun `can serialize and deserialize cache response`() {
-        val url = server.url("/normal.jpg")
+        val url = server.url(IMAGE)
         val request = Request.Builder().url(url).build()
         val response = OkHttpClient().newCall(request).execute()
         val expected = CacheResponse(response)
@@ -40,5 +40,9 @@ class CacheResponseTest {
         assertEquals(expected.receivedResponseAtMillis, actual.receivedResponseAtMillis)
         assertEquals(expected.isTls, actual.isTls)
         assertEquals(expected.responseHeaders, actual.responseHeaders)
+    }
+
+    companion object {
+        private const val IMAGE = "normal.jpg"
     }
 }

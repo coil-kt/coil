@@ -39,7 +39,6 @@ import coil.transform.Transformation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import okhttp3.Headers
 import java.io.Closeable
 import java.io.File
@@ -155,12 +154,9 @@ internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
 
-internal inline val CoroutineContext.job: Job
-    get() = get(Job)!!
-
 @OptIn(ExperimentalStdlibApi::class)
 internal inline val CoroutineContext.dispatcher: CoroutineDispatcher
-    get() = get(CoroutineDispatcher)!!
+    get() = get(CoroutineDispatcher) ?: error("Current context doesn't contain CoroutineDispatcher in it: $this")
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
