@@ -33,6 +33,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xjvm-default=all" // Only required for 2.x.
     }
 }
 ```
@@ -47,6 +48,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xjvm-default=all" // Only required for 2.x.
     }
 }
 ```
