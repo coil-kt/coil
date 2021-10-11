@@ -630,8 +630,7 @@ class ImageRequest private constructor(
          * If this is null or is not set the [ImageLoader] will find an applicable fetcher in its
          * [ComponentRegistry].
          */
-        @PublishedApi
-        internal fun <T : Any> fetcherFactory(factory: Fetcher.Factory<T>, type: Class<T>) = apply {
+        fun <T : Any> fetcherFactory(factory: Fetcher.Factory<T>, type: Class<T>) = apply {
             this.fetcherFactory = factory to type
         }
 
