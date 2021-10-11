@@ -1,5 +1,56 @@
 # Changelog
 
+## [2.0.0-alpha01] - October 11, 2021
+
+Coil 2.0.0 is the next major iteration of the library and has new features, performance improvements, API improvements, and various bug fixes. This release may be binary/source incompatible with future alpha releases until the stable release of 2.0.0.
+
+- **Important**: The minimum supported API is now 21.
+- **Important**: Enable `-Xjvm-default=all`.
+    - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
+    - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to do this.
+- **Important**: Coil now has its own disk cache implementation and no longer relies on OkHttp for disk caching.
+    - This change was made to:
+        - Better support thread interruption while decoding images. This improves performance when image requests are started and stopped in quick succession.
+        - Support exposing `ImageSource`s backed by `File`s. This avoids unnecessary copying when an Android API requires a `File` to decode (e.g. `MediaMetadataRetriever`).
+        - Support reading from/writing to the disk cache files directly.
+    - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
+    - You **should not** use OkHttp's `Cache` with Coil 2.0 as it can be corrupted if it's interrupted while writing to it.
+    - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
+    - Support for cache headers can be enabled or disabled using `ImageLoader.Builder.respectCacheHeaders`.
+    - Your existing disk cache will be cleared and rebuilt when upgrading to 2.0.
+- **Important**: `ImageRequest`'s default `Scale` is now `Scale.FIT`
+    - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
+    - Requests with an `ImageViewTarget` still have their scale autodetected.
+- Significant changes to the image pipeline classes:
+    - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
+    - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
+    - Adds `ImageSource`, which allows `Decoder`s to decode `File`s directly.
+- `BitmapPool` and `PoolableViewTarget` have been removed from the library. Bitmap pooling was removed because:
+    - It's most effective on <= API 23 and has become less effective with newer Android releases.
+    - Removing bitmap pooling allows Coil to use immutable bitmaps, which have performance benefits.
+    - There's runtime overhead to manage the bitmap pool.
+    - Bitmap pooling creates design restrictions on Coil's API as it requires tracking if a bitmap is eligible for pooling. Removing bitmap pooling allows Coil to expose the result `Drawable` in more places (e.g. `Listener`, `Disposable`). Additionally, this means Coil doesn't have to clear `ImageView`s, which has can cause [issues](https://github.com/coil-kt/coil/issues/650).
+    - Bitmap pooling is [error-prone](https://github.com/coil-kt/coil/issues/546). Allocating a new bitmap is much safer than attempting to re-use a bitmap that could still be in use.
+- `MemoryCache` has been refactored to be more flexible.
+- Disable generating runtime not-null assertions.
+    - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. If you use Kotlin, there is essentially no change.
+    - This change allows the library's size to be smaller.
+- `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
+- Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
+- Adds support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
+- `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
+- Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
+- Add `GenericViewTarget`, which handles common `ViewTarget` logic.
+- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library.
+    - If you use them, you can copy their code into your project.
+- `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
+- `Transformation.key` is replaced with `Transformation.cacheKey`.
+- `ImageRequest.Listener` returns `SuccessResult`/`ErrorResult` in `onSuccess` and `onError` respectively.
+- Add `ByteBuffer`s to the default supported data types.
+- Remove `toString` implementations from several classes.
+- Update OkHttp to 4.9.2.
+- Update Okio to 3.0.0-alpha.10.
+
 ## [1.4.0] - October 6, 2021
 
 - **New**: Add `ImageResult` to `ImagePainter.State.Success` and `ImagePainter.State.Error`. ([#887](https://github.com/coil-kt/coil/pull/887))
