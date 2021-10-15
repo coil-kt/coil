@@ -11,7 +11,7 @@ Coil has 8 artifacts published to `mavenCentral()`:
 * `io.coil-kt:coil-gif`: Includes two [decoders](../api/coil-base/coil.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
 * `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
 * `io.coil-kt:coil-video`: Includes two [fetchers](../api/coil-base/coil.fetch/-fetcher) to support fetching and decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
-* `io.coil-kt:coil-bom`: Includes a bill of material. See [Bill of Materials](#bill-of-materials) for more details
+* `io.coil-kt:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). See [Bill of Materials](#bill-of-materials) for more details.
 
 You should depend on `io.coil-kt:coil-base` and **not** `io.coil-kt:coil` if either of the following is true:
 
