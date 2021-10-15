@@ -2,7 +2,7 @@
 
 ## Artifacts
 
-Coil has 7 artifacts published to `mavenCentral()`:
+Coil has 8 artifacts published to `mavenCentral()`:
 
 * `io.coil-kt:coil`: The default artifact which depends on `io.coil-kt:coil-base` and includes the `Coil` singleton and the `ImageView` extension functions.
 * `io.coil-kt:coil-base`: A subset of `io.coil-kt:coil` which **does not** include the singleton `ImageLoader` and the `ImageView` extension functions.
@@ -11,6 +11,7 @@ Coil has 7 artifacts published to `mavenCentral()`:
 * `io.coil-kt:coil-gif`: Includes two [decoders](../api/coil-base/coil.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
 * `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
 * `io.coil-kt:coil-video`: Includes two [fetchers](../api/coil-base/coil.fetch/-fetcher) to support fetching and decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
+* `io.coil-kt:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). See [Bill of Materials](#bill-of-materials) for more details.
 
 You should depend on `io.coil-kt:coil-base` and **not** `io.coil-kt:coil` if either of the following is true:
 
@@ -18,6 +19,20 @@ You should depend on `io.coil-kt:coil-base` and **not** `io.coil-kt:coil` if eit
 - You want to use dependency injection to inject your [ImageLoader](image_loaders.md) instance(s).
 
 If you need [transformations](transformations.md) that aren't part of the base Coil artifact, check out the third-party `coil-transformations` library hosted [here](https://github.com/Commit451/coil-transformations).
+
+### Bill of Materials
+You can use the Bill of Material artifact to define version once, and then just define which dependencies you want.
+
+```gradle
+implementation("io.coil-kt:coil-bom:<version>")
+implementation("io.coil-kt:coil")
+implementation("io.coil-kt:coil-base")
+implementation("io.coil-kt:coil-compose")
+implementation("io.coil-kt:coil-compose-base")
+implementation("io.coil-kt:coil-gif")
+implementation("io.coil-kt:coil-svg")
+implementation("io.coil-kt:coil-video")
+```
 
 ## Java 8
 
