@@ -7,6 +7,7 @@ include(
     "coil-gif",
     "coil-svg",
     "coil-video",
+    "coil-bom",
 )
 
 // Private modules
