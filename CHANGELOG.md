@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.0-alpha02] - October 24, 2021
+
+- Add a new `coil-bom` artifact which includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import).
+    - Importing `coil-bom` allows you to depend on other Coil artifacts without specifying a version.
+- Fix failing to load an image when using `ExecuteCallback.Immediate`.
+- Update Okio to 3.0.0-alpha.11.
+    - This also resolves a compatibility issue with Okio 3.0.0-alpha.11.
+- Update Kotlin to 1.5.31.
+- Update Compose to 1.0.4.
+
 ## [2.0.0-alpha01] - October 11, 2021
 
 Coil 2.0.0 is the next major iteration of the library and has new features, performance improvements, API improvements, and various bug fixes. This release may be binary/source incompatible with future alpha releases until the stable release of 2.0.0.
