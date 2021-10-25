@@ -10,12 +10,12 @@ setupLibraryModule()
 
 dependencies {
     constraints {
-        api(project(":coil-singleton"))
         api(project(":coil-base"))
-        api(project(":coil-compose-singleton"))
+        api(project(":coil-singleton"))
         api(project(":coil-compose-base"))
+        api(project(":coil-compose-singleton"))
         api(project(":coil-gif"))
-        api(project(":coil-video"))
         api(project(":coil-svg"))
+        api(project(":coil-video"))
     }
 }
