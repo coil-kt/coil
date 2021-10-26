@@ -26,38 +26,37 @@ internal class ContentUriFetcher(
     override suspend fun fetch(): FetchResult {
 
         val context = options.context
-        val inputStream =
-            if (isContactPhotoUri(data)) {
-                // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
-                val stream: InputStream? =
-                    context.contentResolver.openAssetFileDescriptor(data, "r")
-                        ?.createInputStream()
-                checkNotNull(stream) { "Unable to find a contact photo associated with '$data'." }
-            } else if (Build.VERSION.SDK_INT >= 29 && isMusicThumbUri(data)) {
+        val inputStream = if (isContactPhotoUri(data)) {
+            // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
+            val stream: InputStream? =
+                context.contentResolver.openAssetFileDescriptor(data, "r")
+                    ?.createInputStream()
+            checkNotNull(stream) { "Unable to find a contact photo associated with '$data'." }
+        } else if (Build.VERSION.SDK_INT >= 29 && isMusicThumbUri(data)) {
 
-                var optimalSizeOptions: Bundle? = null
-                val size = options.size
-                if (size is PixelSize) {
-                    optimalSizeOptions = Bundle(1)
-                    optimalSizeOptions.putParcelable(
-                        ContentResolver.EXTRA_SIZE,
-                        Point(size.width, size.height)
-                    )
-                }
-
-                val stream = context.contentResolver.openTypedAssetFile(
-                    data,
-                    "image/*",
-                    optimalSizeOptions,
-                    null
-                )?.createInputStream()
-
-                checkNotNull(stream) { "Unable to find a music thumb associated with '$data'." }
-
-            } else {
-                val stream: InputStream? = context.contentResolver.openInputStream(data)
-                checkNotNull(stream) { "Unable to open '$data'." }
+            var optimalSizeOptions: Bundle? = null
+            val size = options.size
+            if (size is PixelSize) {
+                optimalSizeOptions = Bundle(1)
+                optimalSizeOptions.putParcelable(
+                    ContentResolver.EXTRA_SIZE,
+                    Point(size.width, size.height)
+                )
             }
+
+            val stream = context.contentResolver.openTypedAssetFile(
+                data,
+                "image/*",
+                optimalSizeOptions,
+                null
+            )?.createInputStream()
+
+            checkNotNull(stream) { "Unable to find a music thumb associated with '$data'." }
+
+        } else {
+            val stream: InputStream? = context.contentResolver.openInputStream(data)
+            checkNotNull(stream) { "Unable to open '$data'." }
+        }
 
         return SourceResult(
             source = ImageSource(inputStream.source().buffer(), context),
@@ -76,11 +75,16 @@ internal class ContentUriFetcher(
             data.lastPathSegment == Contacts.Photo.DISPLAY_PHOTO
     }
 
-    /** Music thumbs are also the special case of content uris that must be loaded
-     *  using [ContentResolver.openAssetFileDescriptor] or [ContentResolver.openTypedAssetFile].*/
+    /**
+     * Music thumbs are also the special case of content uris that must be loaded
+     * using [ContentResolver.openAssetFileDescriptor] or [ContentResolver.openTypedAssetFile].
+     * Looks like this - content://media/external/audio/albums/1961323289806133467
+     */
     @VisibleForTesting
     internal fun isMusicThumbUri(data: Uri): Boolean {
-        return data.authority == MediaStore.AUTHORITY && "audio" in data.pathSegments
+        if (data.authority != MediaStore.AUTHORITY) return false
+        val pathSegments: List<String> = data.pathSegments
+        return  "audio" in pathSegments && "albums" in pathSegments
     }
 
     class Factory : Fetcher.Factory<Uri> {
