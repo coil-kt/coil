@@ -15,6 +15,7 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.provider.ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
 import android.provider.ContactsContract.Contacts.Photo.DISPLAY_PHOTO
 import android.provider.ContactsContract.RawContacts
+import android.provider.MediaStore
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
@@ -44,6 +45,7 @@ class ContentUriFetcherTest {
 
     // Re-use the same contact across all tests. Must be created lazily.
     private val contactId by lazy(::createFakeContact)
+    private val albumId by lazy(::createFakeAlbum)
 
     @Before
     fun before() {
@@ -77,12 +79,37 @@ class ContentUriFetcherTest {
         assertUriFetchesCorrectly(fetcher)
     }
 
+
+    @Test
+    fun musicThumbnail() {
+        // This test is flaky on API 30. musicThumbnail fetch available only since android 29
+        assumeTrue(SDK_INT in 29..30)
+        val uri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, albumId)
+        val options = Options(context, size = PixelSize(100, 100))
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))
+
+        assertTrue(fetcher.isMusicThumbUri(uri))
+        assertUriFetchesCorrectly(fetcher)
+    }
+
     private fun assertUriFetchesCorrectly(fetcher: ContentUriFetcher) {
         val result = runBlocking { fetcher.fetch() }
 
         assertTrue(result is SourceResult)
         assertEquals("image/jpeg", result.mimeType)
         assertFalse(result.source.source().exhausted())
+    }
+
+    /** Create and insert a fake album. Return its ID. */
+    private fun createFakeAlbum(): Long {
+        val values = ContentValues()
+        val id = 1L
+        values.put(MediaStore.Audio.Albums.ALBUM, "Test Album")
+        values.put(MediaStore.Audio.Albums.ARTIST, "Test Artist")
+        values.put(MediaStore.Audio.Albums.ALBUM_ID, id)
+
+        context.contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
+        return id
     }
 
     /** Create and insert a fake contact. Return its ID. */
