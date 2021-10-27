@@ -79,11 +79,10 @@ class ContentUriFetcherTest {
         assertUriFetchesCorrectly(fetcher)
     }
 
-
     @Test
     fun musicThumbnail() {
         // This test is flaky on API 30. musicThumbnail fetch available only since android 29
-        assumeTrue(SDK_INT in 29..30)
+        assumeTrue(SDK_INT >= 29)
         val uri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, albumId)
         val options = Options(context, size = PixelSize(100, 100))
         val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))

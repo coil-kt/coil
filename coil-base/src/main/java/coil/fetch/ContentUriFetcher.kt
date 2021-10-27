@@ -52,7 +52,6 @@ internal class ContentUriFetcher(
             )?.createInputStream()
 
             checkNotNull(stream) { "Unable to find a music thumb associated with '$data'." }
-
         } else {
             val stream: InputStream? = context.contentResolver.openInputStream(data)
             checkNotNull(stream) { "Unable to open '$data'." }
@@ -84,7 +83,7 @@ internal class ContentUriFetcher(
     internal fun isMusicThumbUri(data: Uri): Boolean {
         if (data.authority != MediaStore.AUTHORITY) return false
         val pathSegments: List<String> = data.pathSegments
-        return  "audio" in pathSegments && "albums" in pathSegments
+        return "audio" in pathSegments && "albums" in pathSegments
     }
 
     class Factory : Fetcher.Factory<Uri> {
