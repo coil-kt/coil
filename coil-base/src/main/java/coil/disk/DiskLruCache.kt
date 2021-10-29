@@ -22,7 +22,6 @@ import coil.util.forEachIndices
 import okio.BufferedSink
 import okio.Closeable
 import okio.EOFException
-import okio.ExperimentalFileSystem
 import okio.FileSystem
 import okio.ForwardingFileSystem
 import okio.IOException
@@ -76,7 +75,6 @@ import java.util.concurrent.Executors
  * @param valueCount the number of values per cache entry. Must be positive.
  * @param maxSize the maximum number of bytes this cache should use to store.
  */
-@OptIn(ExperimentalFileSystem::class)
 internal class DiskLruCache(
     fileSystem: FileSystem,
     private val directory: Path,
