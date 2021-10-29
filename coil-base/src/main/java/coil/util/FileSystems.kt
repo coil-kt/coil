@@ -17,14 +17,12 @@
 
 package coil.util
 
-import okio.ExperimentalFileSystem
 import okio.FileNotFoundException
 import okio.FileSystem
 import okio.IOException
 import okio.Path
 
 /** Delete file we expect but don't require to exist. */
-@OptIn(ExperimentalFileSystem::class)
 internal fun FileSystem.deleteIfExists(path: Path) {
     try {
         delete(path)
@@ -32,7 +30,6 @@ internal fun FileSystem.deleteIfExists(path: Path) {
 }
 
 /** Tolerant delete, try to clear as many files as possible even after a failure. */
-@OptIn(ExperimentalFileSystem::class)
 internal fun FileSystem.deleteContents(directory: Path) {
     var exception: IOException? = null
     val files = try {

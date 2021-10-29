@@ -31,7 +31,7 @@ object Library {
     const val COMPOSE_UI_TEST_JUNIT = "androidx.compose.ui:ui-test-junit4:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest:$COMPOSE_VERSION"
 
-    const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:0.19.0"
+    const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:0.20.0"
 
     const val MATERIAL = "com.google.android.material:material:1.4.0"
 
@@ -40,7 +40,7 @@ object Library {
     private const val OKHTTP_VERSION = "4.9.2"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
-    const val OKIO = "com.squareup.okio:okio:3.0.0-alpha.11"
+    const val OKIO = "com.squareup.okio:okio:3.0.0"
 
     // TEST
 

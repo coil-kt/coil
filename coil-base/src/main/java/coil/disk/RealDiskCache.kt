@@ -3,12 +3,10 @@ package coil.disk
 import coil.disk.DiskCache.Editor
 import coil.disk.DiskCache.Snapshot
 import okio.ByteString.Companion.encodeUtf8
-import okio.ExperimentalFileSystem
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import java.io.File
 
-@OptIn(ExperimentalFileSystem::class)
 internal class RealDiskCache(
     override val maxSize: Long,
     override val directory: File
