@@ -16,7 +16,7 @@ fun interface Decoder {
 
     /**
      * Decode the [SourceResult] provided by [Factory.create] or return 'null' to delegate to the
-     * next [Decoder] in the component registry.
+     * next [Factory] in the component registry.
      */
     suspend fun decode(): DecodeResult?
 
@@ -30,7 +30,7 @@ fun interface Decoder {
          * to subsequent decoders to fail. [ImageSource]s should only be consumed in [decode].
          *
          * Prefer using [BufferedSource.peek], [BufferedSource.rangeEquals], or other
-         * non-destructive methods to check for the presence of header bytes or other markers.
+         * non-consuming methods to check for the presence of header bytes or other markers.
          * Implementations can also rely on [SourceResult.mimeType], however it is not guaranteed
          * to be accurate (e.g. a file that ends with .png, but is encoded as a .jpg).
          *
