@@ -27,7 +27,9 @@ internal fun rememberCrossfadePainter(
     scale: Scale,
     durationMillis: Int,
     fadeStart: Boolean
-): Painter = remember(key) { CrossfadePainter(start, end, scale, durationMillis, fadeStart) }
+): Painter = remember(key) {
+    CrossfadePainter(start, end, scale, durationMillis, fadeStart)
+}
 
 /**
  * A [Painter] that crossfades from [start] to [end].
