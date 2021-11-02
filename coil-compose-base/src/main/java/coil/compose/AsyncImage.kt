@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 
 /**
- * A composable that executes the given [ImageRequest] asynchronously and renders the [ImagePainter].
+ * A composable that executes the given [ImageRequest] asynchronously and renders the resulting [ImagePainter].
  *
  * @param data The [ImageRequest.data] to load.
  * @param contentDescription Text used by accessibility services to describe what this image represents.
@@ -71,7 +71,7 @@ fun AsyncImage(
 )
 
 /**
- * A composable that executes the given [ImageRequest] asynchronously and renders the [ImagePainter].
+ * A composable that executes the given [ImageRequest] asynchronously and renders the resulting [ImagePainter].
  *
  * @param request The [ImageRequest] to execute.
  * @param contentDescription Text used by accessibility services to describe what this image represents.

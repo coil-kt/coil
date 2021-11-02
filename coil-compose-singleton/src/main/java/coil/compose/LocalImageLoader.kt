@@ -21,7 +21,7 @@ import coil.request.ImageRequest
 
 /**
  * A composable that executes the given [ImageRequest] asynchronously using [LocalImageLoader]
- * and renders the [ImagePainter].
+ * and renders the resulting [ImagePainter].
  *
  * @param data The [ImageRequest.data] to load.
  * @param contentDescription Text used by accessibility services to describe what this image represents.
@@ -62,7 +62,7 @@ fun AsyncImage(
 
 /**
  * A composable that executes the given [ImageRequest] asynchronously using [LocalImageLoader]
- * and renders the [ImagePainter].
+ * and renders the resulting [ImagePainter].
  *
  * @param request The [ImageRequest] to execute.
  * @param contentDescription Text used by accessibility services to describe what this image represents.
