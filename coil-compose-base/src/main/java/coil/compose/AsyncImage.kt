@@ -36,8 +36,8 @@ fun AsyncImage(
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
     loading: @Composable ((State.Loading) -> Unit)? = null,
-    error: @Composable ((State.Error) -> Unit)? = null,
     success: @Composable ((State.Success) -> Unit)? = null,
+    error: @Composable ((State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
@@ -48,8 +48,8 @@ fun AsyncImage(
     imageLoader = imageLoader,
     modifier = modifier,
     loading = loading,
-    error = error,
     success = success,
+    error = error,
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,
@@ -64,22 +64,13 @@ fun AsyncImage(
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
     loading: @Composable ((State.Loading) -> Unit)? = null,
-    error: @Composable ((State.Error) -> Unit)? = null,
     success: @Composable ((State.Success) -> Unit)? = null,
+    error: @Composable ((State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
 ) {
-    val semantics = if (contentDescription != null) {
-        Modifier.semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        Modifier
-    }
-
     val requestBuilder = request.newBuilder()
     val layoutSize: MutableStateFlow<Size?>?
     if (request.defined.sizeResolver == null) {
@@ -92,8 +83,26 @@ fun AsyncImage(
         requestBuilder.scale(contentScale.toScale())
     }
     val painter = rememberImagePainter(requestBuilder.build(), imageLoader)
-    val context = LocalContext.current
 
+    // Support overriding what's drawn for each image painter state.
+    if (loading != null || success != null || error != null) {
+        val state = painter.state
+        if (loading != null && state is State.Loading) loading(state).also { return }
+        if (success != null && state is State.Success) success(state).also { return }
+        if (error != null && state is State.Error) error(state).also { return }
+    }
+
+    val context = LocalContext.current
+    val semantics = if (contentDescription != null) {
+        Modifier.semantics {
+            this.contentDescription = contentDescription
+            this.role = Role.Image
+        }
+    } else {
+        Modifier
+    }
+
+    // Draw the image painter.
     Layout(
         content = {},
         modifier = modifier
