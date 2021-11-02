@@ -107,7 +107,7 @@ fun AsyncImage(
                 colorFilter = colorFilter
             ),
         measurePolicy = { _, constraints ->
-            size?.value = constraints.toSize(context)
+            if (size != null) size.value = constraints.toSize(context)
             layout(constraints.minWidth, constraints.minHeight) {}
         }
     )
