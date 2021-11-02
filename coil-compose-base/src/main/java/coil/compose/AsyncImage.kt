@@ -164,9 +164,8 @@ private fun Constraints.toSize(context: Context): Size {
     val hasBoundedHeight = hasBoundedHeight
     if (!hasBoundedWidth && !hasBoundedHeight) return OriginalSize
 
-    val displayMetrics = context.resources.displayMetrics
     return PixelSize(
-        width = if (hasBoundedWidth) maxWidth else displayMetrics.widthPixels,
-        height = if (hasBoundedHeight) maxHeight else displayMetrics.heightPixels
+        width = if (hasBoundedWidth) maxWidth else context.resources.displayMetrics.widthPixels,
+        height = if (hasBoundedHeight) maxHeight else context.resources.displayMetrics.heightPixels
     )
 }
