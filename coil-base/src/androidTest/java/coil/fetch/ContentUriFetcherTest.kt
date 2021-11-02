@@ -15,12 +15,12 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.provider.ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
 import android.provider.ContactsContract.Contacts.Photo.DISPLAY_PHOTO
 import android.provider.ContactsContract.RawContacts
+import android.provider.MediaStore
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import coil.ImageLoader
 import coil.request.Options
-import coil.size.PixelSize
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.sink
@@ -53,12 +53,11 @@ class ContentUriFetcherTest {
 
     @Test
     fun contactsThumbnail() {
-        // This test is flaky on API 30.
-        assumeTrue(SDK_INT <= 30)
+        // This test is flaky on API 30+.
+        assumeTrue(SDK_INT < 30)
 
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$CONTENT_DIRECTORY".toUri()
-        val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, Options(context), ImageLoader(context)))
 
         assertFalse(fetcher.isContactPhotoUri(uri))
         assertUriFetchesCorrectly(fetcher)
@@ -66,15 +65,24 @@ class ContentUriFetcherTest {
 
     @Test
     fun contactsDisplayPhoto() {
-        // This test is flaky on API 30.
-        assumeTrue(SDK_INT <= 30)
+        // This test is flaky on API 30+.
+        assumeTrue(SDK_INT < 30)
 
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$DISPLAY_PHOTO".toUri()
-        val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, Options(context), ImageLoader(context)))
 
         assertTrue(fetcher.isContactPhotoUri(uri))
         assertUriFetchesCorrectly(fetcher)
+    }
+
+    @Test
+    fun musicThumbnail() {
+        assumeTrue(SDK_INT >= 29)
+
+        val uri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, 1)
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, Options(context), ImageLoader(context)))
+
+        assertTrue(fetcher.isMusicThumbnailUri(uri))
     }
 
     private fun assertUriFetchesCorrectly(fetcher: ContentUriFetcher) {
