@@ -1,3 +1,8 @@
+public final class coil/compose/AsyncImageKt {
+	public static final fun AsyncImage (Lcoil/request/ImageRequest;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;III)V
+	public static final fun AsyncImage (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;III)V
+}
+
 public final class coil/compose/ImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
 	public final fun getImageLoader ()Lcoil/ImageLoader;
 	public fun getIntrinsicSize-NH-jbRc ()J
