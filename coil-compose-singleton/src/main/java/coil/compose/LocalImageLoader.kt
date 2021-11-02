@@ -19,6 +19,20 @@ import coil.compose.ImagePainter.State
 import coil.imageLoader
 import coil.request.ImageRequest
 
+/**
+ * A composable that executes the given [ImageRequest] asynchronously using [LocalImageLoader]
+ * and renders the [ImagePainter].
+ *
+ * @param data The [ImageRequest.data] to load.
+ * @param contentDescription Text used by accessibility services to describe what this image represents.
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content (ex. background).
+ * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
+ *  bounds defined by the width and height.
+ * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be used
+ *  if the bounds are a different size from the intrinsic size of the [ImagePainter].
+ * @param alpha Optional opacity to be applied to the [ImagePainter] when it is rendered onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [ImagePainter] when it is rendered onscreen.
+ */
 @ExperimentalCoilApi
 @Composable
 fun AsyncImage(
@@ -46,6 +60,20 @@ fun AsyncImage(
     colorFilter = colorFilter,
 )
 
+/**
+ * A composable that executes the given [ImageRequest] asynchronously using [LocalImageLoader]
+ * and renders the [ImagePainter].
+ *
+ * @param request The [ImageRequest] to execute.
+ * @param contentDescription Text used by accessibility services to describe what this image represents.
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content (ex. background).
+ * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
+ *  bounds defined by the width and height.
+ * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be used
+ *  if the bounds are a different size from the intrinsic size of the [ImagePainter].
+ * @param alpha Optional opacity to be applied to the [ImagePainter] when it is rendered onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [ImagePainter] when it is rendered onscreen.
+ */
 @ExperimentalCoilApi
 @Composable
 fun AsyncImage(

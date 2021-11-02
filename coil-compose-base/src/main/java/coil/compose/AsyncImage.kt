@@ -28,6 +28,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 
+/**
+ * A composable that executes the given [ImageRequest] asynchronously and renders the [ImagePainter].
+ *
+ * @param data The [ImageRequest.data] to load.
+ * @param contentDescription Text used by accessibility services to describe what this image represents.
+ * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content (ex. background).
+ * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
+ *  bounds defined by the width and height.
+ * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be used
+ *  if the bounds are a different size from the intrinsic size of the [ImagePainter].
+ * @param alpha Optional opacity to be applied to the [ImagePainter] when it is rendered onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [ImagePainter] when it is rendered onscreen.
+ */
 @ExperimentalCoilApi
 @Composable
 fun AsyncImage(
@@ -56,6 +70,20 @@ fun AsyncImage(
     colorFilter = colorFilter,
 )
 
+/**
+ * A composable that executes the given [ImageRequest] asynchronously and renders the [ImagePainter].
+ *
+ * @param request The [ImageRequest] to execute.
+ * @param contentDescription Text used by accessibility services to describe what this image represents.
+ * @param imageLoader The [ImageLoader] that will be used to execute [request].
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content (ex. background).
+ * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
+ *  bounds defined by the width and height.
+ * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be used
+ *  if the bounds are a different size from the intrinsic size of the [ImagePainter].
+ * @param alpha Optional opacity to be applied to the [ImagePainter] when it is rendered onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [ImagePainter] when it is rendered onscreen.
+ */
 @ExperimentalCoilApi
 @Composable
 fun AsyncImage(
