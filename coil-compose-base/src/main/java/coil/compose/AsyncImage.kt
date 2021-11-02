@@ -81,12 +81,12 @@ fun AsyncImage(
     }
 
     val requestBuilder = request.newBuilder()
-    val size: MutableStateFlow<Size?>?
+    val layoutSize: MutableStateFlow<Size?>?
     if (request.defined.sizeResolver == null) {
-        size = MutableStateFlow(null)
-        requestBuilder.size { size.filterNotNull().first() }
+        layoutSize = MutableStateFlow(null)
+        requestBuilder.size { layoutSize.filterNotNull().first() }
     } else {
-        size = null
+        layoutSize = null
     }
     if (request.defined.scale == null) {
         requestBuilder.scale(contentScale.toScale())
@@ -107,7 +107,7 @@ fun AsyncImage(
                 colorFilter = colorFilter
             ),
         measurePolicy = { _, constraints ->
-            if (size != null) size.value = constraints.toSize(context)
+            if (layoutSize != null) layoutSize.value = constraints.toSize(context)
             layout(constraints.minWidth, constraints.minHeight) {}
         }
     )
