@@ -3,7 +3,7 @@ package coil.fetch
 import android.content.ContentResolver
 import android.graphics.Point
 import android.net.Uri
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Contacts
@@ -16,7 +16,6 @@ import coil.request.Options
 import coil.size.PixelSize
 import okio.buffer
 import okio.source
-import java.io.InputStream
 
 internal class ContentUriFetcher(
     private val data: Uri,
@@ -24,49 +23,34 @@ internal class ContentUriFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-
-        val context = options.context
+        val contentResolver = options.context.contentResolver
         val inputStream = if (isContactPhotoUri(data)) {
             // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
-            val stream: InputStream? =
-                context.contentResolver.openAssetFileDescriptor(data, "r")
-                    ?.createInputStream()
+            val stream = contentResolver
+                .openAssetFileDescriptor(data, "r")
+                ?.createInputStream()
             checkNotNull(stream) { "Unable to find a contact photo associated with '$data'." }
-        } else if (Build.VERSION.SDK_INT >= 29 && isMusicThumbUri(data)) {
-
-            var optimalSizeOptions: Bundle? = null
-            val size = options.size
-            if (size is PixelSize) {
-                optimalSizeOptions = Bundle(1)
-                optimalSizeOptions.putParcelable(
-                    ContentResolver.EXTRA_SIZE,
-                    Point(size.width, size.height)
-                )
-            }
-
-            val stream = context.contentResolver.openTypedAssetFile(
-                data,
-                "image/*",
-                optimalSizeOptions,
-                null
-            )?.createInputStream()
-
-            checkNotNull(stream) { "Unable to find a music thumb associated with '$data'." }
+        } else if (SDK_INT >= 29 && isMusicThumbnailUri(data)) {
+            val bundle = newMusicThumbnailSizeOptions()
+            val stream = contentResolver
+                .openTypedAssetFile(data, "image/*", bundle, null)
+                ?.createInputStream()
+            checkNotNull(stream) { "Unable to find a music thumbnail associated with '$data'." }
         } else {
-            val stream: InputStream? = context.contentResolver.openInputStream(data)
+            val stream = contentResolver.openInputStream(data)
             checkNotNull(stream) { "Unable to open '$data'." }
         }
 
         return SourceResult(
-            source = ImageSource(inputStream.source().buffer(), context),
-            mimeType = context.contentResolver.getType(data),
+            source = ImageSource(inputStream.source().buffer(), options.context),
+            mimeType = contentResolver.getType(data),
             dataSource = DataSource.DISK
         )
     }
 
     /**
-     * Contact photos are a special case of content uris that
-     * must be loaded using [ContentResolver.openAssetFileDescriptor] or [ContentResolver.openTypedAssetFile].
+     * Contact photos are a special case of content uris that must be loaded using
+     * [ContentResolver.openAssetFileDescriptor] or [ContentResolver.openTypedAssetFile].
      */
     @VisibleForTesting
     internal fun isContactPhotoUri(data: Uri): Boolean {
@@ -75,15 +59,25 @@ internal class ContentUriFetcher(
     }
 
     /**
-     * Music thumbs are also the special case of content uris that must be loaded
-     * using [ContentResolver.openAssetFileDescriptor] or [ContentResolver.openTypedAssetFile].
-     * Looks like this - content://media/external/audio/albums/1961323289806133467
+     * Music thumbnails on API 29+ are a special case of content uris that must be loaded using
+     * [ContentResolver.openAssetFileDescriptor] or [ContentResolver.openTypedAssetFile].
+     *
+     * Example URI: content://media/external/audio/albums/1961323289806133467
      */
     @VisibleForTesting
-    internal fun isMusicThumbUri(data: Uri): Boolean {
+    internal fun isMusicThumbnailUri(data: Uri): Boolean {
         if (data.authority != MediaStore.AUTHORITY) return false
-        val pathSegments: List<String> = data.pathSegments
-        return "audio" in pathSegments && "albums" in pathSegments
+        val segments = data.pathSegments
+        val size = segments.size
+        return size >= 3 && segments[size - 3] == "audio" && segments[size - 2] == "albums"
+    }
+
+    private fun newMusicThumbnailSizeOptions(): Bundle? {
+        return (options.size as? PixelSize)?.let { (width, height) ->
+            Bundle(1).apply {
+                putParcelable(ContentResolver.EXTRA_SIZE, Point(width, height))
+            }
+        }
     }
 
     class Factory : Fetcher.Factory<Uri> {

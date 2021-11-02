@@ -21,7 +21,10 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import coil.ImageLoader
 import coil.request.Options
-import coil.size.PixelSize
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.sink
@@ -30,10 +33,6 @@ import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 
 class ContentUriFetcherTest {
 
@@ -45,7 +44,6 @@ class ContentUriFetcherTest {
 
     // Re-use the same contact across all tests. Must be created lazily.
     private val contactId by lazy(::createFakeContact)
-    private val albumId by lazy(::createFakeAlbum)
 
     @Before
     fun before() {
@@ -55,12 +53,11 @@ class ContentUriFetcherTest {
 
     @Test
     fun contactsThumbnail() {
-        // This test is flaky on API 30.
-        assumeTrue(SDK_INT <= 30)
+        // This test is flaky on API 30+.
+        assumeTrue(SDK_INT < 30)
 
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$CONTENT_DIRECTORY".toUri()
-        val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, Options(context), ImageLoader(context)))
 
         assertFalse(fetcher.isContactPhotoUri(uri))
         assertUriFetchesCorrectly(fetcher)
@@ -68,12 +65,11 @@ class ContentUriFetcherTest {
 
     @Test
     fun contactsDisplayPhoto() {
-        // This test is flaky on API 30.
-        assumeTrue(SDK_INT <= 30)
+        // This test is flaky on API 30+.
+        assumeTrue(SDK_INT < 30)
 
         val uri = "$SCHEME_CONTENT://$AUTHORITY/contacts/$contactId/$DISPLAY_PHOTO".toUri()
-        val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, Options(context), ImageLoader(context)))
 
         assertTrue(fetcher.isContactPhotoUri(uri))
         assertUriFetchesCorrectly(fetcher)
@@ -81,14 +77,12 @@ class ContentUriFetcherTest {
 
     @Test
     fun musicThumbnail() {
-        // This test is flaky on API 30. musicThumbnail fetch available only since android 29
         assumeTrue(SDK_INT >= 29)
-        val uri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, albumId)
-        val options = Options(context, size = PixelSize(100, 100))
-        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, options, ImageLoader(context)))
 
-        assertTrue(fetcher.isMusicThumbUri(uri))
-        assertUriFetchesCorrectly(fetcher)
+        val uri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, 1)
+        val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, Options(context), ImageLoader(context)))
+
+        assertTrue(fetcher.isMusicThumbnailUri(uri))
     }
 
     private fun assertUriFetchesCorrectly(fetcher: ContentUriFetcher) {
@@ -97,18 +91,6 @@ class ContentUriFetcherTest {
         assertTrue(result is SourceResult)
         assertEquals("image/jpeg", result.mimeType)
         assertFalse(result.source.source().exhausted())
-    }
-
-    /** Create and insert a fake album. Return its ID. */
-    private fun createFakeAlbum(): Long {
-        val values = ContentValues()
-        val id = 1L
-        values.put(MediaStore.Audio.Albums.ALBUM, "Test Album")
-        values.put(MediaStore.Audio.Albums.ARTIST, "Test Artist")
-        values.put(MediaStore.Audio.Albums.ALBUM_ID, id)
-
-        context.contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
-        return id
     }
 
     /** Create and insert a fake contact. Return its ID. */
