@@ -114,10 +114,17 @@ fun AsyncImage(
 
     // Support overriding what's drawn for each image painter state.
     if (loading != null || success != null || error != null) {
-        val state = painter.state
-        if (loading != null && state is State.Loading) loading(state).also { return }
-        if (success != null && state is State.Success) success(state).also { return }
-        if (error != null && state is State.Error) error(state).also { return }
+        when (val state = painter.state) {
+            is State.Loading -> if (loading != null) {
+                loading(state).also { return }
+            }
+            is State.Success -> if (success != null) {
+                success(state).also { return }
+            }
+            is State.Error -> if (error != null) {
+                error(state).also { return }
+            }
+        }
     }
 
     val context = LocalContext.current
