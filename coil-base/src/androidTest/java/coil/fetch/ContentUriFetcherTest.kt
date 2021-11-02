@@ -21,10 +21,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import coil.ImageLoader
 import coil.request.Options
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.sink
@@ -33,6 +29,10 @@ import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class ContentUriFetcherTest {
 
