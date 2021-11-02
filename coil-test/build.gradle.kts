@@ -15,7 +15,6 @@ dependencies {
 
     implementation(Library.ANDROIDX_APPCOMPAT)
     implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_LIFECYCLE_COMMON)
 
     implementation(Library.MATERIAL)
 
