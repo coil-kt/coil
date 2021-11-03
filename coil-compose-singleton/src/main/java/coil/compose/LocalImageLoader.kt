@@ -24,13 +24,12 @@ import coil.request.ImageRequest
  *
  * @param data The [ImageRequest.data] to load.
  * @param contentDescription Text used by accessibility services to describe what this image
- *  represents.
+ *  represents. This should always be provided unless this image is used for decorative purposes,
+ *  and does not represent a meaningful action that a user can take.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
  * @param loading An optional callback to overwrite what's drawn while the image request is loading.
- * @param success An optional callback to overwrite what's drawn when the image request is
- *  successful.
- * @param error An optional callback to overwrite what's drawn when the image request encounters an
- *  error.
+ * @param success An optional callback to overwrite what's drawn when the image request succeeds.
+ * @param error An optional callback to overwrite what's drawn when the image request fails.
  * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -71,13 +70,12 @@ fun AsyncImage(
  *
  * @param request The [ImageRequest] to execute.
  * @param contentDescription Text used by accessibility services to describe what this image
- *  represents.
+ *  represents. This should always be provided unless this image is used for decorative purposes,
+ *  and does not represent a meaningful action that a user can take.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
  * @param loading An optional callback to overwrite what's drawn while the image request is loading.
- * @param success An optional callback to overwrite what's drawn when the image request is
- *  successful.
- * @param error An optional callback to overwrite what's drawn when the image request encounters an
- *  error.
+ * @param success An optional callback to overwrite what's drawn when the image request succeeds.
+ * @param error An optional callback to overwrite what's drawn when the image request fails.
  * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
