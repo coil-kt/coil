@@ -93,7 +93,7 @@ inline fun ImageView.loadAny(
 @Deprecated(
     message = "Migrate to 'dispose'.",
     replaceWith = ReplaceWith(
-        expression = "dispose",
+        expression = "dispose()",
         imports = ["coil.dispose"]
     ),
     level = DeprecationLevel.ERROR // Temporary migration aid.
