@@ -57,7 +57,7 @@ class AsyncImageTest {
     }
 
     @Test
-    fun basicLoad_http_fixedSize() {
+    fun fixedSize() {
         // captureToImage is SDK_INT >= 26.
         assumeTrue(SDK_INT >= 26)
 
@@ -83,7 +83,7 @@ class AsyncImageTest {
     }
 
     @Test
-    fun basicLoad_http_dynamicSize() {
+    fun dynamicSize() {
         // captureToImage is SDK_INT >= 26.
         assumeTrue(SDK_INT >= 26)
 
@@ -112,7 +112,7 @@ class AsyncImageTest {
     }
 
     @Test
-    fun basicLoad_http_dynamicHeight() {
+    fun dynamicHeight() {
         // captureToImage is SDK_INT >= 26.
         assumeTrue(SDK_INT >= 26)
 
