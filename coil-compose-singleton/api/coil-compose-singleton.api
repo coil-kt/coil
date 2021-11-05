@@ -15,9 +15,15 @@ public final class coil/compose/ImageLoaderProvidableCompositionLocal {
 }
 
 public final class coil/compose/LocalImageLoaderKt {
+	public static final fun getLocalImageLoader ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class coil/compose/SingletonAsyncImageKt {
 	public static final fun AsyncImage (Lcoil/request/ImageRequest;Ljava/lang/String;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;II)V
 	public static final fun AsyncImage (Ljava/lang/Object;Ljava/lang/String;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;II)V
-	public static final fun getLocalImageLoader ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class coil/compose/SingletonImagePainterKt {
 	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/compose/ImagePainter$ExecuteCallback;Landroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/compose/ImagePainter$ExecuteCallback;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/ImagePainter;
 }
