@@ -1,5 +1,4 @@
-@file:JvmMultifileClass
-@file:JvmName("-Utils")
+@file:JvmName("-Lifecycles")
 
 package coil.util
 

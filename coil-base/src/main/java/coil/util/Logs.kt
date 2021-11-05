@@ -1,5 +1,4 @@
-@file:JvmMultifileClass
-@file:JvmName("-Utils")
+@file:JvmName("-Logs")
 
 package coil.util
 

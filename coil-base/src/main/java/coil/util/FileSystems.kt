@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmMultifileClass
-@file:JvmName("-Utils")
+@file:JvmName("-FileSystems")
 
 package coil.util
 

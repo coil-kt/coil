@@ -1,5 +1,4 @@
-@file:JvmMultifileClass
-@file:JvmName("-Utils")
+@file:JvmName("-Bitmaps")
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil.util
