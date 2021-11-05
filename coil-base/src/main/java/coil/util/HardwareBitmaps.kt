@@ -1,4 +1,4 @@
-@file:JvmName("-HardwareBitmapServices")
+@file:JvmName("-HardwareBitmaps")
 
 package coil.util
 
