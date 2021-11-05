@@ -2,7 +2,9 @@ package coil.compose
 
 import android.os.Build.VERSION.SDK_INT
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHeightIsEqualTo
@@ -81,7 +83,7 @@ class AsyncImageTest {
     }
 
     @Test
-    fun basicLoad_http_dynamicHeight() {
+    fun basicLoad_http_dynamicSize() {
         // captureToImage is SDK_INT >= 26.
         assumeTrue(SDK_INT >= 26)
 
@@ -90,7 +92,8 @@ class AsyncImageTest {
                 data = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader,
-                modifier = Modifier.testTag(Image),
+                modifier = Modifier
+                    .testTag(Image),
             )
         }
 
@@ -98,6 +101,42 @@ class AsyncImageTest {
 
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
         val expectedWidthPx = displayMetrics.widthPixels.coerceAtMost(1024)
+        val expectedHeightPx = expectedWidthPx * 1326 / 1024
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
+            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
+    fun basicLoad_http_dynamicHeight() {
+        // captureToImage is SDK_INT >= 26.
+        assumeTrue(SDK_INT >= 26)
+
+        composeTestRule.setContent {
+            LazyColumn(
+                content = {
+                    item {
+                        AsyncImage(
+                            data = server.url("/image"),
+                            contentDescription = null,
+                            imageLoader = imageLoader,
+                            modifier = Modifier.testTag(Image),
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(fraction = 0.5f)
+            )
+        }
+
+        waitForRequestComplete()
+
+        val displayMetrics = composeTestRule.activity.resources.displayMetrics
+        val expectedWidthPx = (displayMetrics.widthPixels / 2).coerceAtMost(1024)
         val expectedHeightPx = expectedWidthPx * 1326 / 1024
 
         composeTestRule.onNodeWithTag(Image)
