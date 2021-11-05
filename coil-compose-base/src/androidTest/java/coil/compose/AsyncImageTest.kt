@@ -26,6 +26,7 @@ import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.math.ceil
 
 class AsyncImageTest {
 
@@ -136,7 +137,7 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = (displayMetrics.widthPixels / 2.0).coerceAtMost(1024.0)
+        val expectedWidthPx = ceil(displayMetrics.widthPixels / 2.0).coerceAtMost(1024.0)
         val expectedHeightPx = expectedWidthPx * 1326 / 1024
 
         composeTestRule.onNodeWithTag(Image)
