@@ -1,3 +1,4 @@
+@file:JvmMultifileClass
 @file:JvmName("-Utils")
 @file:Suppress("NOTHING_TO_INLINE")
 

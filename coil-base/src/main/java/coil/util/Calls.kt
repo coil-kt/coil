@@ -1,4 +1,5 @@
-@file:JvmName("-Calls")
+@file:JvmMultifileClass
+@file:JvmName("-Utils")
 
 package coil.util
 

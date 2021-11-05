@@ -1,3 +1,6 @@
+@file:JvmMultifileClass
+@file:JvmName("-Utils")
+
 package coil.util
 
 import android.graphics.Bitmap

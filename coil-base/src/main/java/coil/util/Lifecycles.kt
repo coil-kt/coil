@@ -1,5 +1,5 @@
-@file:JvmName("-Lifecycles")
-@file:Suppress("NOTHING_TO_INLINE")
+@file:JvmMultifileClass
+@file:JvmName("-Utils")
 
 package coil.util
 

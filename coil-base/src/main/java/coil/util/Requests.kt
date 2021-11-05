@@ -1,4 +1,5 @@
-@file:JvmName("-Requests")
+@file:JvmMultifileClass
+@file:JvmName("-Utils")
 
 package coil.util
 
