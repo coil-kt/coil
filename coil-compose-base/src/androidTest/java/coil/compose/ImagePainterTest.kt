@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -104,7 +104,10 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(server.url("/image")),
+                painter = rememberImagePainter(
+                    data = server.url("/image"),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp, 166.dp)
@@ -129,7 +132,10 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(R.drawable.sample),
+                painter = rememberImagePainter(
+                    data = R.drawable.sample,
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp, 166.dp)
@@ -154,7 +160,10 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(resourceUri(R.drawable.sample)),
+                painter = rememberImagePainter(
+                    data = resourceUri(R.drawable.sample),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp, 166.dp)
@@ -218,7 +227,10 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(data),
+                painter = rememberImagePainter(
+                    data = data,
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp)
@@ -258,7 +270,10 @@ class ImagePainterTest {
             var size by mutableStateOf(128.dp)
 
             composeTestRule.setContent {
-                val painter = rememberImagePainter(server.url("/image"))
+                val painter = rememberImagePainter(
+                    data = server.url("/image"),
+                    imageLoader = imageLoader
+                )
 
                 Image(
                     painter = painter,
@@ -297,7 +312,10 @@ class ImagePainterTest {
     fun basicLoad_nosize() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(server.url("/image")),
+                painter = rememberImagePainter(
+                    data = server.url("/image"),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier.testTag(Image),
             )
@@ -320,7 +338,10 @@ class ImagePainterTest {
             ) {
                 item {
                     Image(
-                        painter = rememberImagePainter(server.url("/image")),
+                        painter = rememberImagePainter(
+                            data = server.url("/image"),
+                            imageLoader = imageLoader
+                        ),
                         contentDescription = null,
                         modifier = Modifier
                             .fillParentMaxHeight()
@@ -346,8 +367,11 @@ class ImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberImagePainter(
-                    data = server.url("/noimage"),
-                    builder = { error(R.drawable.red_rectangle) }
+                    request = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/noimage"))
+                        .error(R.drawable.red_rectangle)
+                        .build(),
+                    imageLoader = imageLoader
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -376,8 +400,11 @@ class ImagePainterTest {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 Image(
                     painter = rememberImagePainter(
-                        data = server.url("/image"),
-                        builder = { placeholder(R.drawable.red_rectangle) }
+                        request = ImageRequest.Builder(LocalContext.current)
+                            .data(server.url("/image"))
+                            .placeholder(R.drawable.red_rectangle)
+                            .build(),
+                        imageLoader = imageLoader
                     ),
                     contentDescription = null,
                     modifier = Modifier
@@ -404,7 +431,10 @@ class ImagePainterTest {
     fun errorStillHasSize() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(server.url("/noimage")),
+                painter = rememberImagePainter(
+                    data = server.url("/noimage"),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp)
@@ -426,7 +456,8 @@ class ImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberImagePainter(
-                    painterResource(R.drawable.sample),
+                    data = painterResource(R.drawable.sample),
+                    imageLoader = imageLoader
                 ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
@@ -439,7 +470,8 @@ class ImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberImagePainter(
-                    painterResource(R.drawable.black_rectangle_vector),
+                    data = painterResource(R.drawable.black_rectangle_vector),
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
@@ -451,7 +483,10 @@ class ImagePainterTest {
     fun data_painter_throws() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(ColorPainter(Color.Magenta)),
+                painter = rememberImagePainter(
+                    data = ColorPainter(Color.Magenta),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
             )
@@ -466,11 +501,12 @@ class ImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberImagePainter(
-                    data = server.url("/image"),
-                    builder = {
-                        placeholder(R.drawable.red_rectangle)
-                        crossfade(true)
-                    }
+                    request = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/image"))
+                        .placeholder(R.drawable.red_rectangle)
+                        .crossfade(true)
+                        .build(),
+                    imageLoader = imageLoader
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -497,7 +533,8 @@ class ImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberImagePainter(
-                    data = server.url("/image")
+                    data = server.url("/image"),
+                    imageLoader = imageLoader
                 ),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
@@ -536,6 +573,7 @@ class ImagePainterTest {
                     Image(
                         painter = rememberImagePainter(
                             data = server.url("/image"),
+                            imageLoader = imageLoader
                         ),
                         contentDescription = null,
                         contentScale = ContentScale.Fit,
@@ -581,12 +619,6 @@ class ImagePainterTest {
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
-
-    @Composable
-    private inline fun rememberImagePainter(
-        data: Any,
-        builder: ImageRequest.Builder.() -> Unit = {}
-    ) = rememberImagePainter(data, imageLoader, builder = builder)
 
     private fun waitForRequestComplete(requestNumber: Int = 1) {
         composeTestRule.waitForIdle()
