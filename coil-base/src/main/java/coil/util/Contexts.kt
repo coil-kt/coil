@@ -1,12 +1,11 @@
 @file:JvmName("-Contexts")
-@file:Suppress("NOTHING_TO_INLINE")
 
 package coil.util
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
@@ -82,6 +81,6 @@ internal inline fun <reified T : Any> Context.requireSystemService(): T {
     return checkNotNull(getSystemService()) { "System service of type ${T::class.java} was not found." }
 }
 
-internal inline fun Context.isPermissionGranted(permission: String): Boolean {
-    return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+internal fun Context.isPermissionGranted(permission: String): Boolean {
+    return ContextCompat.checkSelfPermission(this, permission) == PERMISSION_GRANTED
 }

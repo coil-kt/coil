@@ -1,4 +1,4 @@
-@file:JvmName("-SvgExtensions")
+@file:JvmName("-SvgUtils")
 
 package coil.util
 

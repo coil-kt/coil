@@ -1,6 +1,7 @@
 package coil.fetch
 
 import android.content.ContentResolver
+import android.content.ContentResolver.EXTRA_SIZE
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
@@ -73,11 +74,8 @@ internal class ContentUriFetcher(
     }
 
     private fun newMusicThumbnailSizeOptions(): Bundle? {
-        return (options.size as? PixelSize)?.let { (width, height) ->
-            Bundle(1).apply {
-                putParcelable(ContentResolver.EXTRA_SIZE, Point(width, height))
-            }
-        }
+        val (width, height) = options.size as? PixelSize ?: return null
+        return Bundle(1).apply { putParcelable(EXTRA_SIZE, Point(width, height)) }
     }
 
     class Factory : Fetcher.Factory<Uri> {
