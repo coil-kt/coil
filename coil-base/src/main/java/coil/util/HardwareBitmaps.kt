@@ -1,3 +1,5 @@
+@file:JvmName("-HardwareBitmaps")
+
 package coil.util
 
 import android.graphics.Bitmap

@@ -1,4 +1,4 @@
-@file:JvmName("-GifExtensions")
+@file:JvmName("-GifUtils")
 
 package coil.util
 

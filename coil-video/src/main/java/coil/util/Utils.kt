@@ -1,4 +1,4 @@
-@file:JvmName("-VideoExtensions")
+@file:JvmName("-VideoUtils")
 
 package coil.util
 
