@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -18,7 +16,9 @@ import coil.ImageLoader
 import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
 import coil.compose.utils.ImageMockWebServer
+import coil.compose.utils.assertHeightIsEqualTo
 import coil.compose.utils.assertIsSimilarTo
+import coil.compose.utils.assertWidthIsEqualTo
 import coil.request.CachePolicy
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -136,13 +136,13 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = (displayMetrics.widthPixels / 2).coerceAtMost(1024)
+        val expectedWidthPx = (displayMetrics.widthPixels / 2.0).coerceAtMost(1024.0)
         val expectedHeightPx = expectedWidthPx * 1326 / 1024
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
-            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp, tolerance = 1.dp)
+            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp, tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
