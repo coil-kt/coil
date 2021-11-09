@@ -99,7 +99,6 @@ private val SemanticsNode.unclippedBoundsInRoot: Rect
 
 private fun Dp.assertIsEqualTo(expected: Dp, subject: String, tolerance: Dp) {
     if (!isWithinTolerance(expected, tolerance)) {
-        // Comparison failed, report the error in DPs
         throw AssertionError(
             "Actual $subject is $this, expected $expected (tolerance: $tolerance)"
         )
