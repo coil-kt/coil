@@ -9,7 +9,6 @@
 - Update `accompanist-drawablepainter` to 0.20.2.
 - Update Okio to 3.0.0.
 - Update `androidx.annotation` to 1.3.0.
-- Update `androidx.activity` to 1.4.0.
 - Update `androidx.core` to 1.7.0.
 - Update `androidx.lifecycle` to 2.4.0.
     - Remove dependency on `lifecycle-common-java8` as it's been merged into `lifecycle-common`.
