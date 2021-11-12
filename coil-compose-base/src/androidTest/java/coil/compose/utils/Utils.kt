@@ -41,6 +41,13 @@ fun ImageBitmap.assertIsSimilarTo(
     asAndroidBitmap().assertIsSimilarTo(expected, threshold)
 }
 
+fun ImageBitmap.assertIsSimilarTo(
+    bitmap: ImageBitmap,
+    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.9 // Use a lower threshold by default.
+) {
+    asAndroidBitmap().assertIsSimilarTo(bitmap.asAndroidBitmap(), threshold)
+}
+
 private fun Bitmap.fitCenter(width: Int, height: Int): Bitmap {
     val input = this.apply { density = Bitmap.DENSITY_NONE }
 
