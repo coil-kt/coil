@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.0-alpha03] - November 12, 2021
+
+- Add ability to load music thumbnails on Android 29+. ([#967](https://github.com/coil-kt/coil/pull/967))
+- Fix: Use `context.resources` to load resources for current package. ([#968](https://github.com/coil-kt/coil/pull/968))
+- Fix: `clear` -> `dispose` replacement expression. ([#970](https://github.com/coil-kt/coil/pull/970))
+- Update Compose to 1.0.5.
+- Update `accompanist-drawablepainter` to 0.20.2.
+- Update Okio to 3.0.0.
+- Update `androidx.annotation` to 1.3.0.
+- Update `androidx.activity` to 1.4.0.
+- Update `androidx.core` to 1.7.0.
+- Update `androidx.lifecycle` to 2.4.0.
+    - Remove dependency on `lifecycle-common-java8` as it's been merged into `lifecycle-common`.
+
 ## [2.0.0-alpha02] - October 24, 2021
 
 - Add a new `coil-bom` artifact which includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import).
