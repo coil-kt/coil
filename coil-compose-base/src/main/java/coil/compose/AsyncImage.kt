@@ -151,7 +151,6 @@ fun AsyncImage(
 
     // Draw the image painter.
     Layout(
-        content = {},
         modifier = modifier
             .then(semantics)
             .clipToBounds()
