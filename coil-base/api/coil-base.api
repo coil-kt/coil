@@ -225,6 +225,7 @@ public abstract interface class coil/disk/DiskCache {
 public final class coil/disk/DiskCache$Builder {
 	public fun <init> (Landroid/content/Context;)V
 	public final fun build ()Lcoil/disk/DiskCache;
+	public final fun cleanupDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/disk/DiskCache$Builder;
 	public final fun directory (Ljava/io/File;)Lcoil/disk/DiskCache$Builder;
 	public final fun maxSizeBytes (J)Lcoil/disk/DiskCache$Builder;
 	public final fun maxSizePercent (D)Lcoil/disk/DiskCache$Builder;
