@@ -74,7 +74,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                data = server.url("/image"),
+                model = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -100,7 +100,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                data = server.url("/image"),
+                model = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -132,7 +132,7 @@ class AsyncImageTest {
                 content = {
                     item {
                         AsyncImage(
-                            data = server.url("/image"),
+                            model = server.url("/image"),
                             contentDescription = null,
                             imageLoader = imageLoader,
                             modifier = Modifier.testTag(Image),
@@ -165,7 +165,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                request = ImageRequest.Builder(LocalContext.current)
+                model = ImageRequest.Builder(LocalContext.current)
                     .data(server.url("/image"))
                     .fetcherFactory(LoadingFetcher.Factory())
                     .build(),
@@ -212,7 +212,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                request = ImageRequest.Builder(LocalContext.current)
+                model = ImageRequest.Builder(LocalContext.current)
                     .data(server.url("/image"))
                     .fetcherFactory(ErrorFetcher.Factory())
                     .build(),
@@ -257,7 +257,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                data = server.url("/image"),
+                model = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier

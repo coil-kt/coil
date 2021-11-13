@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.first
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
  *
- * @param data The [ImageRequest.data] to load.
+ * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param contentDescription Text used by accessibility services to describe what this image
  *  represents. This should always be provided unless this image is used for decorative purposes,
  *  and does not represent a meaningful action that a user can take.
@@ -51,55 +51,7 @@ import kotlinx.coroutines.flow.first
 @ExperimentalCoilApi
 @Composable
 fun AsyncImage(
-    data: Any?,
-    contentDescription: String?,
-    imageLoader: ImageLoader,
-    modifier: Modifier = Modifier,
-    loading: @Composable ((State.Loading) -> Unit)? = null,
-    success: @Composable ((State.Success) -> Unit)? = null,
-    error: @Composable ((State.Error) -> Unit)? = null,
-    alignment: Alignment = Alignment.Center,
-    contentScale: ContentScale = ContentScale.Fit,
-    alpha: Float = DefaultAlpha,
-    colorFilter: ColorFilter? = null,
-) = AsyncImage(
-    request = ImageRequest.Builder(LocalContext.current).data(data).build(),
-    contentDescription = contentDescription,
-    imageLoader = imageLoader,
-    modifier = modifier,
-    loading = loading,
-    success = success,
-    error = error,
-    alignment = alignment,
-    contentScale = contentScale,
-    alpha = alpha,
-    colorFilter = colorFilter,
-)
-
-/**
- * A composable that executes the given [ImageRequest] asynchronously and renders the result.
- *
- * @param request The [ImageRequest] to execute.
- * @param contentDescription Text used by accessibility services to describe what this image
- *  represents. This should always be provided unless this image is used for decorative purposes,
- *  and does not represent a meaningful action that a user can take.
- * @param imageLoader The [ImageLoader] that will be used to execute the request.
- * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param loading An optional callback to overwrite what's drawn while the image request is loading.
- * @param success An optional callback to overwrite what's drawn when the image request succeeds.
- * @param error An optional callback to overwrite what's drawn when the image request fails.
- * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
- *  bounds defined by the width and height.
- * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
- *  used if the bounds are a different size from the intrinsic size of the [ImagePainter].
- * @param alpha Optional opacity to be applied to the [ImagePainter] when it is rendered onscreen.
- * @param colorFilter Optional [ColorFilter] to apply for the [ImagePainter] when it is rendered
- *  onscreen.
- */
-@ExperimentalCoilApi
-@Composable
-fun AsyncImage(
-    request: ImageRequest,
+    model: Any?,
     contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
@@ -111,6 +63,11 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
 ) {
+    val request = if (model is ImageRequest) {
+        model
+    } else {
+        ImageRequest.Builder(LocalContext.current).data(model).build()
+    }
     val requestBuilder = request.newBuilder()
     val measureSize: MutableStateFlow<Size?>?
     if (request.defined.sizeResolver == null) {
