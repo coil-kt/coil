@@ -2,6 +2,7 @@ package coil.disk
 
 import coil.disk.DiskCache.Editor
 import coil.disk.DiskCache.Snapshot
+import kotlinx.coroutines.CoroutineDispatcher
 import okio.ByteString.Companion.encodeUtf8
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
@@ -9,12 +10,14 @@ import java.io.File
 
 internal class RealDiskCache(
     override val maxSize: Long,
-    override val directory: File
+    override val directory: File,
+    cleanupDispatcher: CoroutineDispatcher
 ) : DiskCache {
 
     private val cache = DiskLruCache(
         fileSystem = FileSystem.SYSTEM,
         directory = directory.toOkioPath(),
+        cleanupDispatcher = cleanupDispatcher,
         maxSize = maxSize,
         appVersion = 1,
         valueCount = 2

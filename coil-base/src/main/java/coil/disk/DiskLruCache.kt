@@ -19,6 +19,11 @@ import coil.disk.DiskLruCache.Editor
 import coil.util.deleteContents
 import coil.util.deleteIfExists
 import coil.util.forEachIndices
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import okio.BufferedSink
 import okio.Closeable
 import okio.EOFException
@@ -30,7 +35,6 @@ import okio.Sink
 import okio.blackholeSink
 import okio.buffer
 import java.io.File
-import java.util.concurrent.Executors
 
 /**
  * A cache that uses a bounded amount of space on a filesystem. Each cache entry has a string key
@@ -72,12 +76,14 @@ import java.util.concurrent.Executors
  * @constructor Create a cache which will reside in [directory]. This cache is lazily initialized on
  *  first access and will be created if it does not exist.
  * @param directory a writable directory.
+ * @param cleanupDispatcher the dispatcher to run cache size trim operations on.
  * @param valueCount the number of values per cache entry. Must be positive.
  * @param maxSize the maximum number of bytes this cache should use to store.
  */
 internal class DiskLruCache(
     fileSystem: FileSystem,
     private val directory: Path,
+    cleanupDispatcher: CoroutineDispatcher,
     private val maxSize: Long,
     private val appVersion: Int,
     private val valueCount: Int
@@ -138,29 +144,8 @@ internal class DiskLruCache(
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
 
-    // TODO: Replace with https://github.com/Kotlin/kotlinx.coroutines/issues/2919.
-    private val cleanupExecutor = Executors.newSingleThreadExecutor {
-        Thread().apply { name = "coil.disk.DiskLruCache: $directory" }
-    }
-    private val cleanupTask = Runnable {
-        synchronized(this@DiskLruCache) {
-            if (!initialized || closed) return@Runnable
-            try {
-                trimToSize()
-            } catch (_: IOException) {
-                mostRecentTrimFailed = true
-            }
-            try {
-                if (journalRebuildRequired()) {
-                    rebuildJournal()
-                    redundantOpCount = 0
-                }
-            } catch (_: IOException) {
-                mostRecentRebuildFailed = true
-                journalWriter = blackholeSink().buffer()
-            }
-        }
-    }
+    private val cleanupScope = CoroutineScope(SupervisorJob() + cleanupDispatcher)
+    private var cleanupScheduled = false
 
     private val fileSystem = object : ForwardingFileSystem(fileSystem) {
         override fun sink(file: Path, mustCreate: Boolean): Sink {
@@ -386,7 +371,7 @@ internal class DiskLruCache(
             writeByte('\n'.code)
         }
         if (journalRebuildRequired()) {
-            cleanupExecutor.submit(cleanupTask)
+            scheduleCleanup()
         }
 
         return snapshot
@@ -415,7 +400,7 @@ internal class DiskLruCache(
             // any further. If the journal rebuild failed, the journal writer will not be active,
             // meaning we will not be able to record the edit, causing file leaks. In both cases,
             // we want to retry the clean up so we can get out of this state!
-            cleanupExecutor.submit(cleanupTask)
+            scheduleCleanup()
             return null
         }
 
@@ -503,7 +488,7 @@ internal class DiskLruCache(
         }
 
         if (size > maxSize || journalRebuildRequired()) {
-            cleanupExecutor.submit(cleanupTask)
+            scheduleCleanup()
         }
     }
 
@@ -570,7 +555,7 @@ internal class DiskLruCache(
         lruEntries.remove(entry.key)
 
         if (journalRebuildRequired()) {
-            cleanupExecutor.submit(cleanupTask)
+            scheduleCleanup()
         }
 
         return true
@@ -597,6 +582,7 @@ internal class DiskLruCache(
         }
 
         trimToSize()
+        cleanupScope.cancel()
         journalWriter!!.close()
         journalWriter = null
         closed = true
@@ -641,6 +627,36 @@ internal class DiskLruCache(
             removeEntry(entry)
         }
         mostRecentTrimFailed = false
+    }
+
+    /**
+     * Launch an asynchronous operation to trim files from the disk cache and update the journal.
+     */
+    @Synchronized
+    private fun scheduleCleanup() {
+        if (cleanupScheduled) return
+        cleanupScheduled = true
+
+        cleanupScope.launch {
+            synchronized(this@DiskLruCache) {
+                cleanupScheduled = false
+                if (!initialized || closed) return@launch
+                try {
+                    trimToSize()
+                } catch (_: IOException) {
+                    mostRecentTrimFailed = true
+                }
+                try {
+                    if (journalRebuildRequired()) {
+                        rebuildJournal()
+                        redundantOpCount = 0
+                    }
+                } catch (_: IOException) {
+                    mostRecentRebuildFailed = true
+                    journalWriter = blackholeSink().buffer()
+                }
+            }
+        }
     }
 
     private fun validateKey(key: String) {
