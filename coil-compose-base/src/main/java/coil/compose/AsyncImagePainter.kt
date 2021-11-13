@@ -32,8 +32,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.ImagePainter.ExecuteCallback
-import coil.compose.ImagePainter.State
+import coil.compose.AsyncImagePainter.ExecuteCallback
+import coil.compose.AsyncImagePainter.State
 import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -56,61 +56,43 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /**
- * Return an [ImagePainter] that will execute an [ImageRequest] using [imageLoader].
+ * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and
+ * renders the result.
  *
- * @param data The [ImageRequest.data] to load.
+ * This is a lower-level API than [AsyncImage] and may not work as expected in all situations.
+ * It's recommended to use [AsyncImage] unless you need a reference to a [Painter].
+ *
+ * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
- * @param onExecute Called immediately before the [ImagePainter] launches an image request.
- *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
- * @param builder An optional lambda to configure the request.
- */
-@Composable
-inline fun rememberImagePainter(
-    data: Any?,
-    imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
-    builder: ImageRequest.Builder.() -> Unit = {},
-): ImagePainter {
-    val request = ImageRequest.Builder(LocalContext.current)
-        .apply(builder)
-        .data(data)
-        .build()
-    return rememberImagePainter(request, imageLoader, onExecute)
-}
-
-/**
- * Return an [ImagePainter] that will execute the [request] using [imageLoader].
- *
- * @param request The [ImageRequest] to execute.
- * @param imageLoader The [ImageLoader] that will be used to execute [request].
- * @param onExecute Called immediately before the [ImagePainter] launches an image request.
+ * @param onExecute Called immediately before the [AsyncImagePainter] launches an image request.
  *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  */
 @Composable
-fun rememberImagePainter(
-    request: ImageRequest,
+fun rememberAsyncImagePainter(
+    model: Any?,
     imageLoader: ImageLoader,
     onExecute: ExecuteCallback = ExecuteCallback.Lazy,
-): ImagePainter {
+): AsyncImagePainter {
+    val request = if (model is ImageRequest) model else
+        ImageRequest.Builder(LocalContext.current).data(model).build()
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
 
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate + EMPTY_COROUTINE_EXCEPTION_HANDLER }
-    val imagePainter = remember(scope) { ImagePainter(scope, request, imageLoader) }
-    imagePainter.request = request
-    imagePainter.imageLoader = imageLoader
-    imagePainter.onExecute = onExecute
-    imagePainter.isPreview = LocalInspectionMode.current
-    updatePainter(imagePainter, request, imageLoader)
-    return imagePainter
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate + EMPTY_EXCEPTION_HANDLER }
+    val painter = remember(scope) { AsyncImagePainter(scope, request, imageLoader) }
+    painter.request = request
+    painter.imageLoader = imageLoader
+    painter.onExecute = onExecute
+    painter.isPreview = LocalInspectionMode.current
+    updatePainter(painter, request, imageLoader)
+    return painter
 }
 
 /**
- * A [Painter] that asynchronously executes [ImageRequest]s and draws the result.
- * Instances can only be created with [rememberImagePainter].
+ * A [Painter] that that executes an [ImageRequest] asynchronously and renders the result.
  */
 @Stable
-class ImagePainter internal constructor(
+class AsyncImagePainter internal constructor(
     private val parentScope: CoroutineScope,
     request: ImageRequest,
     imageLoader: ImageLoader
@@ -127,7 +109,7 @@ class ImagePainter internal constructor(
     internal var onExecute = ExecuteCallback.Lazy
     internal var isPreview = false
 
-    /** The current [ImagePainter.State]. */
+    /** The current [AsyncImagePainter.State]. */
     var state: State by mutableStateOf(State.Empty)
         private set
 
@@ -203,7 +185,7 @@ class ImagePainter internal constructor(
 
     override fun onAbandoned() = onForgotten()
 
-    /** Update the [request] to work with [ImagePainter]. */
+    /** Update the [request] to work with [AsyncImagePainter]. */
     private fun updateRequest(request: ImageRequest, size: Size): ImageRequest {
         return request.newBuilder()
             .target(
@@ -235,7 +217,7 @@ class ImagePainter internal constructor(
     }
 
     /**
-     * Invoked immediately before the [ImagePainter] executes a new image request.
+     * Invoked immediately before the [AsyncImagePainter] executes a new image request.
      * Return 'true' to proceed with the request. Return 'false' to skip executing the request.
      */
     fun interface ExecuteCallback {
@@ -247,7 +229,7 @@ class ImagePainter internal constructor(
              * Proceeds with the request if the painter is empty or the request has changed.
              *
              * Additionally, this callback only proceeds if the image request has an explicit
-             * size or [ImagePainter.onDraw] has been called with the draw canvas' dimensions.
+             * size or [AsyncImagePainter.onDraw] has been called with the draw canvas' dimensions.
              */
             @JvmField val Lazy = ExecuteCallback { previous, current ->
                 (current.state == State.Empty || previous?.request != current.request) &&
@@ -266,21 +248,11 @@ class ImagePainter internal constructor(
             @JvmField val Immediate = ExecuteCallback { previous, current ->
                 current.state == State.Empty || previous?.request != current.request
             }
-
-            @Deprecated(
-                message = "Migrate to `Lazy`.",
-                replaceWith = ReplaceWith(
-                    expression = "ExecuteCallback.Lazy",
-                    imports = ["coil.compose.ImagePainter.ExecuteCallback"]
-                ),
-                level = DeprecationLevel.ERROR // Temporary migration aid.
-            )
-            @JvmField val Default = Lazy
         }
     }
 
     /**
-     * A snapshot of the [ImagePainter]'s properties.
+     * A snapshot of the [AsyncImagePainter]'s properties.
      */
     @ExperimentalCoilApi
     data class Snapshot(
@@ -290,12 +262,12 @@ class ImagePainter internal constructor(
     )
 
     /**
-     * The current state of the [ImagePainter].
+     * The current state of the [AsyncImagePainter].
      */
     @ExperimentalCoilApi
     sealed class State {
 
-        /** The current painter being drawn by [ImagePainter]. */
+        /** The current painter being drawn by [AsyncImagePainter]. */
         abstract val painter: Painter?
 
         /** The request has not been started. */
@@ -323,13 +295,13 @@ class ImagePainter internal constructor(
 }
 
 /**
- * Allows us to observe the current [ImagePainter.painter]. This function allows us to
+ * Allows us to observe the current [AsyncImagePainter.painter]. This function allows us to
  * minimize the amount of recomposition needed such that this function only needs to be restarted
- * when the [ImagePainter.state] changes.
+ * when the [AsyncImagePainter.state] changes.
  */
 @Composable
 private fun updatePainter(
-    imagePainter: ImagePainter,
+    imagePainter: AsyncImagePainter,
     request: ImageRequest,
     imageLoader: ImageLoader
 ) {
@@ -413,4 +385,69 @@ private fun Drawable.toPainter(): Painter {
 private class ValueHolder<T>(@JvmField var value: T)
 
 /** An exception handler that ignores any uncaught exceptions. */
-private val EMPTY_COROUTINE_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, _ -> }
+private val EMPTY_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, _ -> }
+
+/* DEPRECATED */
+
+@Deprecated(
+    message = "ImagePainter has been renamed to AsyncImagePainter.",
+    replaceWith = ReplaceWith(
+        expression = "AsyncImagePainter",
+        imports = ["coil.compose.AsyncImagePainter"]
+    )
+)
+typealias ImagePainter = AsyncImagePainter
+
+/**
+ * IntelliJ IDEA's [ReplaceWith] doesn't work well with lambda arguments so call sites using this
+ * function should be replaced manually.
+ *
+ * Call sites that do not use the `builder` argument can be replaced like so:
+ *
+ * ```
+ * rememberImagePainter(data, imageLoader, onExecute)
+ * ```
+ *
+ * Call sites that use the `builder` argument should be converted to create an [ImageRequest]:
+ *
+ * ```
+ * rememberImagePainter(
+ *     model = ImageRequest.Builder(LocalContext.current)
+ *         .data(data)
+ *         .apply(builder)
+ *         .build(),
+ *     imageLoader = imageLoader,
+ *     onExecute = onExecute
+ * )
+ * ```
+ */
+@Deprecated("ImagePainter has been renamed to AsyncImagePainter.")
+@Composable
+inline fun rememberImagePainter(
+    data: Any?,
+    imageLoader: ImageLoader,
+    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
+    builder: ImageRequest.Builder.() -> Unit = {},
+) = rememberAsyncImagePainter(
+    model = ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(),
+    imageLoader = imageLoader,
+    onExecute = onExecute
+)
+
+@Deprecated(
+    message = "ImagePainter has been renamed to AsyncImagePainter.",
+    replaceWith = ReplaceWith(
+        expression = "rememberAsyncImagePainter(request, imageLoader, onExecute)",
+        imports = ["coil.compose.rememberAsyncImagePainter"]
+    )
+)
+@Composable
+fun rememberImagePainter(
+    request: ImageRequest,
+    imageLoader: ImageLoader,
+    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
+) = rememberAsyncImagePainter(
+    model = request,
+    imageLoader = imageLoader,
+    onExecute = onExecute
+)

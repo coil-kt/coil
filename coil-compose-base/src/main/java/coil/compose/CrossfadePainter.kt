@@ -120,7 +120,9 @@ private class CrossfadePainter(
                 inset(
                     horizontal = (size.width - drawSize.width) / 2,
                     vertical = (size.height - drawSize.height) / 2
-                ) { draw(drawSize, alpha, colorFilter) }
+                ) {
+                    draw(drawSize, alpha, colorFilter)
+                }
             }
         }
     }

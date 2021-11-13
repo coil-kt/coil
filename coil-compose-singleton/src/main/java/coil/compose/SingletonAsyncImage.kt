@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 
 /**
@@ -22,12 +23,12 @@ import coil.request.ImageRequest
  * @param loading An optional callback to overwrite what's drawn while the image request is loading.
  * @param success An optional callback to overwrite what's drawn when the image request succeeds.
  * @param error An optional callback to overwrite what's drawn when the image request fails.
- * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
+ * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
- *  used if the bounds are a different size from the intrinsic size of the [ImagePainter].
- * @param alpha Optional opacity to be applied to the [ImagePainter] when it is rendered onscreen.
- * @param colorFilter Optional [ColorFilter] to apply for the [ImagePainter] when it is rendered
+ *  used if the bounds are a different size from the intrinsic size of the [AsyncImagePainter].
+ * @param alpha Optional opacity to be applied to the [AsyncImagePainter] when it is rendered onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is rendered
  *  onscreen.
  */
 @ExperimentalCoilApi
@@ -36,9 +37,9 @@ fun AsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    loading: @Composable ((ImagePainter.State.Loading) -> Unit)? = null,
-    success: @Composable ((ImagePainter.State.Success) -> Unit)? = null,
-    error: @Composable ((ImagePainter.State.Error) -> Unit)? = null,
+    loading: @Composable ((State.Loading) -> Unit)? = null,
+    success: @Composable ((State.Success) -> Unit)? = null,
+    error: @Composable ((State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,

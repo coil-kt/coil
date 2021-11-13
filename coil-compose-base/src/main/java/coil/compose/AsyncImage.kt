@@ -18,7 +18,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.ImagePainter.State
+import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -40,12 +40,12 @@ import kotlinx.coroutines.flow.first
  * @param loading An optional callback to overwrite what's drawn while the image request is loading.
  * @param success An optional callback to overwrite what's drawn when the image request succeeds.
  * @param error An optional callback to overwrite what's drawn when the image request fails.
- * @param alignment Optional alignment parameter used to place the [ImagePainter] in the given
+ * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
- *  used if the bounds are a different size from the intrinsic size of the [ImagePainter].
- * @param alpha Optional opacity to be applied to the [ImagePainter] when it is rendered onscreen.
- * @param colorFilter Optional [ColorFilter] to apply for the [ImagePainter] when it is rendered
+ *  used if the bounds are a different size from the intrinsic size of the [AsyncImagePainter].
+ * @param alpha Optional opacity to be applied to the [AsyncImagePainter] when it is rendered onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is rendered
  *  onscreen.
  */
 @ExperimentalCoilApi
@@ -63,11 +63,8 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
 ) {
-    val request = if (model is ImageRequest) {
-        model
-    } else {
+    val request = if (model is ImageRequest) model else
         ImageRequest.Builder(LocalContext.current).data(model).build()
-    }
     val requestBuilder = request.newBuilder()
     val measureSize: MutableStateFlow<Size?>?
     if (request.defined.sizeResolver == null) {
@@ -79,7 +76,7 @@ fun AsyncImage(
     if (request.defined.scale == null) {
         requestBuilder.scale(contentScale.toScale())
     }
-    val painter = rememberImagePainter(requestBuilder.build(), imageLoader)
+    val painter = rememberAsyncImagePainter(requestBuilder.build(), imageLoader)
 
     // Support overriding what's drawn for each image painter state.
     if (loading != null || success != null || error != null) {

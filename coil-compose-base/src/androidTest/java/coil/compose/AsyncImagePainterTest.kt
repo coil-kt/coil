@@ -38,8 +38,8 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import coil.EventListener
 import coil.ImageLoader
-import coil.compose.ImagePainter.ExecuteCallback
-import coil.compose.ImagePainter.State
+import coil.compose.AsyncImagePainter.ExecuteCallback
+import coil.compose.AsyncImagePainter.State
 import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
 import coil.compose.utils.ImageMockWebServer
@@ -68,7 +68,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ImagePainterTest {
+class AsyncImagePainterTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -104,8 +104,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image"),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -132,8 +132,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = R.drawable.sample,
+                painter = rememberAsyncImagePainter(
+                    model = R.drawable.sample,
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -160,8 +160,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = resourceUri(R.drawable.sample),
+                painter = rememberAsyncImagePainter(
+                    model = resourceUri(R.drawable.sample),
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -201,8 +201,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image"),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
                     imageLoader = imageLoader,
                 ),
                 contentDescription = null,
@@ -227,8 +227,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = data,
+                painter = rememberAsyncImagePainter(
+                    model = data,
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -270,8 +270,8 @@ class ImagePainterTest {
             var size by mutableStateOf(128.dp)
 
             composeTestRule.setContent {
-                val painter = rememberImagePainter(
-                    data = server.url("/image"),
+                val painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
                     imageLoader = imageLoader
                 )
 
@@ -312,8 +312,8 @@ class ImagePainterTest {
     fun basicLoad_nosize() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image"),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -330,7 +330,7 @@ class ImagePainterTest {
     }
 
     @Test
-    fun lazycolumn() {
+    fun lazyColumn() {
         composeTestRule.setContent {
             LazyColumn(
                 modifier = Modifier
@@ -338,8 +338,8 @@ class ImagePainterTest {
             ) {
                 item {
                     Image(
-                        painter = rememberImagePainter(
-                            data = server.url("/image"),
+                        painter = rememberAsyncImagePainter(
+                            model = server.url("/image"),
                             imageLoader = imageLoader
                         ),
                         contentDescription = null,
@@ -366,8 +366,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    request = ImageRequest.Builder(LocalContext.current)
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
                         .data(server.url("/noimage"))
                         .error(R.drawable.red_rectangle)
                         .build(),
@@ -399,8 +399,8 @@ class ImagePainterTest {
         composeTestRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 Image(
-                    painter = rememberImagePainter(
-                        request = ImageRequest.Builder(LocalContext.current)
+                    painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
                             .data(server.url("/image"))
                             .placeholder(R.drawable.red_rectangle)
                             .build(),
@@ -431,8 +431,8 @@ class ImagePainterTest {
     fun errorStillHasSize() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/noimage"),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/noimage"),
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -455,8 +455,8 @@ class ImagePainterTest {
     fun data_imagebitmap_throws() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = painterResource(R.drawable.sample),
+                painter = rememberAsyncImagePainter(
+                    model = painterResource(R.drawable.sample),
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -469,8 +469,8 @@ class ImagePainterTest {
     fun data_imagevector_throws() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = painterResource(R.drawable.black_rectangle_vector),
+                painter = rememberAsyncImagePainter(
+                    model = painterResource(R.drawable.black_rectangle_vector),
                     imageLoader = imageLoader,
                 ),
                 contentDescription = null,
@@ -483,8 +483,8 @@ class ImagePainterTest {
     fun data_painter_throws() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = ColorPainter(Color.Magenta),
+                painter = rememberAsyncImagePainter(
+                    model = ColorPainter(Color.Magenta),
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -500,8 +500,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    request = ImageRequest.Builder(LocalContext.current)
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
                         .data(server.url("/image"))
                         .placeholder(R.drawable.red_rectangle)
                         .crossfade(true)
@@ -532,8 +532,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image"),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -571,8 +571,8 @@ class ImagePainterTest {
                         .verticalScroll(rememberScrollState())
                 ) {
                     Image(
-                        painter = rememberImagePainter(
-                            data = server.url("/image"),
+                        painter = rememberAsyncImagePainter(
+                            model = server.url("/image"),
                             imageLoader = imageLoader
                         ),
                         contentDescription = null,
@@ -601,8 +601,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image"),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
                     imageLoader = imageLoader,
                     onExecute = ExecuteCallback.Immediate
                 ),
