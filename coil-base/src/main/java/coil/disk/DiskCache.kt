@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.StatFs
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import java.io.Closeable
 import java.io.File
 
@@ -106,6 +108,7 @@ interface DiskCache {
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
         private var maxSizeBytes = 0L
+        private var cleanupDispatcher = Dispatchers.IO
 
         /**
          * Set the [directory] where the cache stores its data.
@@ -154,6 +157,13 @@ interface DiskCache {
         }
 
         /**
+         * Set the [CoroutineDispatcher] that cache size trim operations will be executed on.
+         */
+        fun cleanupDispatcher(dispatcher: CoroutineDispatcher) = apply {
+            this.cleanupDispatcher = dispatcher
+        }
+
+        /**
          * Create a new [DiskCache] instance.
          */
         fun build(): DiskCache {
@@ -171,7 +181,8 @@ interface DiskCache {
             }
             return RealDiskCache(
                 maxSize = maxSize,
-                directory = directory
+                directory = directory,
+                cleanupDispatcher = cleanupDispatcher
             )
         }
     }
