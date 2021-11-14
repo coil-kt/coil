@@ -65,19 +65,19 @@ fun AsyncImage(
 ) {
     // Create and execute the image request.
     val request = requestOf(model)
-    val requestBuilder = request.newBuilder()
-    val constraintsSizeResolver: ConstraintsSizeResolver?
+    val newRequest = request.newBuilder()
+    val sizeResolver: ConstraintsSizeResolver?
     if (request.defined.sizeResolver == null) {
         val context = LocalContext.current
-        constraintsSizeResolver = remember(context) { ConstraintsSizeResolver(context) }
-        requestBuilder.size(constraintsSizeResolver)
+        sizeResolver = remember(context) { ConstraintsSizeResolver(context) }
+        newRequest.size(sizeResolver)
     } else {
-        constraintsSizeResolver = null
+        sizeResolver = null
     }
     if (request.defined.scale == null) {
-        requestBuilder.scale(contentScale.toScale())
+        newRequest.scale(contentScale.toScale())
     }
-    val painter = rememberAsyncImagePainter(requestBuilder.build(), imageLoader)
+    val painter = rememberAsyncImagePainter(newRequest.build(), imageLoader)
 
     // Support overriding what's drawn for each image painter state.
     if (loading != null || success != null || error != null) {
@@ -107,7 +107,7 @@ fun AsyncImage(
                 colorFilter = colorFilter
             ),
         measurePolicy = { _, constraints ->
-            constraintsSizeResolver?.setConstraints(constraints)
+            sizeResolver?.setConstraints(constraints)
             layout(constraints.minWidth, constraints.minHeight) {}
         }
     )
