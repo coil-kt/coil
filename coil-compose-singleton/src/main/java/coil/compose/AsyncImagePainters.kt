@@ -11,8 +11,6 @@ import coil.request.ImageRequest
  * renders the result.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
- * @param onExecute Called immediately before the [AsyncImagePainter] launches an image request.
- *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  */
 @Composable
 fun rememberAsyncImagePainter(model: Any?): AsyncImagePainter =
@@ -20,45 +18,31 @@ fun rememberAsyncImagePainter(model: Any?): AsyncImagePainter =
 
 /******************** DEPRECATED ********************/
 
-/**
- * IntelliJ IDEA's [ReplaceWith] doesn't work well with lambda arguments so call sites using this
- * function should be replaced manually.
- *
- * Call sites that do not use the `builder` argument can be replaced like so:
- *
- * ```
- * rememberImagePainter(data, onExecute)
- * ```
- *
- * Call sites that use the `builder` argument should be converted to create an [ImageRequest]:
- *
- * ```
- * rememberImagePainter(
- *     model = ImageRequest.Builder(LocalContext.current)
- *         .data(data)
- *         .apply(builder)
- *         .build(),
- *     onExecute = onExecute
- * )
- * ```
- */
-@Deprecated("ImagePainter has been renamed to AsyncImagePainter.")
+@Deprecated(
+    message = "ImagePainter has been renamed to AsyncImagePainter.",
+    replaceWith = ReplaceWith(
+        expression = "rememberAsyncImagePainter(" +
+            "ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build())",
+        imports = ["coil.compose.rememberAsyncImagePainter", "coil.request.ImageRequest"]
+    )
+)
 @Composable
 inline fun rememberImagePainter(
     data: Any?,
     builder: ImageRequest.Builder.() -> Unit = {},
-): AsyncImagePainter = rememberAsyncImagePainter(
-    model = ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(),
-    imageLoader = LocalImageLoader.current
+) = rememberAsyncImagePainter(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data(data)
+        .apply(builder)
+        .build()
 )
 
 @Deprecated(
     message = "ImagePainter has been renamed to AsyncImagePainter.",
     replaceWith = ReplaceWith(
-        expression = "rememberAsyncImagePainter(request, onExecute)",
+        expression = "rememberAsyncImagePainter(request)",
         imports = ["coil.compose.rememberAsyncImagePainter"]
     )
 )
 @Composable
-fun rememberImagePainter(request: ImageRequest): AsyncImagePainter =
-    rememberAsyncImagePainter(request, LocalImageLoader.current)
+fun rememberImagePainter(request: ImageRequest) = rememberAsyncImagePainter(request)

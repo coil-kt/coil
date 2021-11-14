@@ -326,30 +326,15 @@ private class ValueHolder<T>(@JvmField var value: T)
 )
 typealias ImagePainter = AsyncImagePainter
 
-/**
- * IntelliJ IDEA's [ReplaceWith] doesn't work well with lambda arguments so call sites using this
- * function should be replaced manually.
- *
- * Call sites that do not use the `builder` argument can be replaced like so:
- *
- * ```
- * rememberImagePainter(data, imageLoader, onExecute)
- * ```
- *
- * Call sites that use the `builder` argument should be converted to create an [ImageRequest]:
- *
- * ```
- * rememberImagePainter(
- *     model = ImageRequest.Builder(LocalContext.current)
- *         .data(data)
- *         .apply(builder)
- *         .build(),
- *     imageLoader = imageLoader,
- *     onExecute = onExecute
- * )
- * ```
- */
-@Deprecated("ImagePainter has been renamed to AsyncImagePainter.")
+@Deprecated(
+    message = "ImagePainter has been renamed to AsyncImagePainter.",
+    replaceWith = ReplaceWith(
+        expression = "rememberAsyncImagePainter(" +
+            "ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(), " +
+            "imageLoader)",
+        imports = ["coil.compose.rememberAsyncImagePainter", "coil.request.ImageRequest"]
+    )
+)
 @Composable
 inline fun rememberImagePainter(
     data: Any?,
@@ -363,7 +348,7 @@ inline fun rememberImagePainter(
 @Deprecated(
     message = "ImagePainter has been renamed to AsyncImagePainter.",
     replaceWith = ReplaceWith(
-        expression = "rememberAsyncImagePainter(request, imageLoader, onExecute)",
+        expression = "rememberAsyncImagePainter(request, imageLoader)",
         imports = ["coil.compose.rememberAsyncImagePainter"]
     )
 )
