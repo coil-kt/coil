@@ -21,7 +21,7 @@ fun rememberAsyncImagePainter(
     onExecute: ExecuteCallback = ExecuteCallback.Lazy,
 ): AsyncImagePainter = rememberAsyncImagePainter(model, LocalImageLoader.current, onExecute)
 
-/* DEPRECATED */
+/******************** DEPRECATED ********************/
 
 /**
  * IntelliJ IDEA's [ReplaceWith] doesn't work well with lambda arguments so call sites using this

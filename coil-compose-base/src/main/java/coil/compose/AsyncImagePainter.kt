@@ -39,8 +39,9 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
-import coil.size.OriginalSize
+import coil.size.PixelSize
 import coil.size.Precision
+import coil.size.SizeResolver
 import coil.transition.CrossfadeTransition
 import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -49,8 +50,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -73,8 +76,7 @@ fun rememberAsyncImagePainter(
     imageLoader: ImageLoader,
     onExecute: ExecuteCallback = ExecuteCallback.Lazy,
 ): AsyncImagePainter {
-    val request = if (model is ImageRequest) model else
-        ImageRequest.Builder(LocalContext.current).data(model).build()
+    val request = requestOf(model)
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
 
@@ -100,7 +102,7 @@ class AsyncImagePainter internal constructor(
 
     private var rememberScope: CoroutineScope? = null
     private var requestJob: Job? = null
-    private var drawSize: Size by mutableStateOf(Size.Zero)
+    private var drawSize = MutableStateFlow(Size.Zero)
 
     private var alpha: Float by mutableStateOf(1f)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
@@ -110,7 +112,7 @@ class AsyncImagePainter internal constructor(
     internal var isPreview = false
 
     /** The current [AsyncImagePainter.State]. */
-    var state: State by mutableStateOf(State.Empty)
+    var state: State by mutableStateOf(State.Loading(null))
         private set
 
     /** The current [ImageRequest]. */
@@ -126,7 +128,7 @@ class AsyncImagePainter internal constructor(
 
     override fun DrawScope.onDraw() {
         // Update the draw scope's current size.
-        drawSize = size
+        drawSize.value = size
 
         // Draw the current painter.
         painter?.apply { draw(size, alpha, colorFilter) }
@@ -153,24 +155,10 @@ class AsyncImagePainter internal constructor(
 
         // Observe the current request + request size and launch new requests as necessary.
         scope.launch {
-            var snapshot: Snapshot? = null
-            combine(
-                snapshotFlow { request },
-                snapshotFlow { drawSize },
-                transform = ::Pair
-            ).collect { (request, size) ->
-                val previous = snapshot
-                val current = Snapshot(state, request, size)
-                snapshot = current
-
-                // Launch a new image request if necessary.
-                if (onExecute(previous, current)) {
-                    requestJob?.cancel()
-                    requestJob = launch {
-                        state = imageLoader
-                            .execute(updateRequest(current.request, current.size))
-                            .toState()
-                    }
+            snapshotFlow { request }.collect { request ->
+                requestJob?.cancel()
+                requestJob = launch {
+                    state = imageLoader.execute(updateRequest(request)).toState()
                 }
             }
         }
@@ -186,7 +174,7 @@ class AsyncImagePainter internal constructor(
     override fun onAbandoned() = onForgotten()
 
     /** Update the [request] to work with [AsyncImagePainter]. */
-    private fun updateRequest(request: ImageRequest, size: Size): ImageRequest {
+    private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
@@ -194,26 +182,22 @@ class AsyncImagePainter internal constructor(
                 }
             )
             .apply {
-                // Set the size unless it has been set explicitly.
-                if (request.defined.sizeResolver == null) {
-                    if (size.isSpecified) {
-                        val (width, height) = size
-                        if (width >= 0.5f && height >= 0.5f) {
-                            size(size.width.roundToInt(), size.height.roundToInt())
-                        } else {
-                            size(OriginalSize)
-                        }
-                    } else {
-                        size(OriginalSize)
-                    }
-                }
+                // Await the draw size unless it has been set explicitly.
+                if (request.defined.sizeResolver == null) size(DrawSizeResolver())
 
                 // Set inexact precision unless exact precision has been set explicitly.
-                if (request.defined.precision != Precision.EXACT) {
-                    precision(Precision.INEXACT)
-                }
+                if (request.defined.precision != Precision.EXACT) precision(Precision.INEXACT)
             }
             .build()
+    }
+
+    /** Suspends until the draw size for this [AsyncImagePainter] is positive. */
+    private inner class DrawSizeResolver : SizeResolver {
+
+        override suspend fun size(): PixelSize {
+            val (width, height) = drawSize.filter { it.isPositive }.first()
+            return PixelSize(width.roundToInt(), height.roundToInt())
+        }
     }
 
     /**
@@ -232,7 +216,7 @@ class AsyncImagePainter internal constructor(
              * size or [AsyncImagePainter.onDraw] has been called with the draw canvas' dimensions.
              */
             @JvmField val Lazy = ExecuteCallback { previous, current ->
-                (current.state == State.Empty || previous?.request != current.request) &&
+                previous?.request != current.request &&
                     (current.request.defined.sizeResolver != null ||
                         current.size.isUnspecified ||
                         (current.size.width >= 0.5f && current.size.height >= 0.5f))
@@ -246,7 +230,7 @@ class AsyncImagePainter internal constructor(
              * has been set.
              */
             @JvmField val Immediate = ExecuteCallback { previous, current ->
-                current.state == State.Empty || previous?.request != current.request
+                previous?.request != current.request
             }
         }
     }
@@ -269,11 +253,6 @@ class AsyncImagePainter internal constructor(
 
         /** The current painter being drawn by [AsyncImagePainter]. */
         abstract val painter: Painter?
-
-        /** The request has not been started. */
-        object Empty : State() {
-            override val painter: Painter? get() = null
-        }
 
         /** The request is in-progress. */
         data class Loading(
@@ -381,13 +360,22 @@ private fun Drawable.toPainter(): Painter {
     }
 }
 
+private val Size.isPositive get() = isSpecified && width >= 0.5 && height >= 0.5
+
+/** Create an [ImageRequest] using the [model]. */
+@Composable
+internal fun requestOf(model: Any?): ImageRequest {
+    if (model is ImageRequest) return model
+    return ImageRequest.Builder(LocalContext.current).data(model).build()
+}
+
 /** A simple mutable value holder that avoids recomposition. */
 private class ValueHolder<T>(@JvmField var value: T)
 
 /** An exception handler that ignores any uncaught exceptions. */
 private val EMPTY_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, _ -> }
 
-/* DEPRECATED */
+/******************** DEPRECATED ********************/
 
 @Deprecated(
     message = "ImagePainter has been renamed to AsyncImagePainter.",

@@ -63,8 +63,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
 ) {
-    val request = if (model is ImageRequest) model else
-        ImageRequest.Builder(LocalContext.current).data(model).build()
+    val request = requestOf(model)
     val requestBuilder = request.newBuilder()
     val measureSize: MutableStateFlow<Size?>?
     if (request.defined.sizeResolver == null) {
