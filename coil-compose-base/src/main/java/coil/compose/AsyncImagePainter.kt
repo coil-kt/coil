@@ -232,7 +232,8 @@ private fun updatePainter(
     // If we're in inspection mode (preview) and we have a placeholder, just draw
     // that without executing an image request.
     if (imagePainter.isPreview) {
-        imagePainter.painter = request.placeholder?.toPainter()
+        val newRequest = request.newBuilder().defaults(imageLoader.defaults).build()
+        imagePainter.painter = newRequest.placeholder?.toPainter()
         return
     }
 
