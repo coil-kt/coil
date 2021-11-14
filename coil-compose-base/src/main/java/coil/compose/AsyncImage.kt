@@ -65,6 +65,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
 ) {
+    // Create and execute the image request.
     val request = requestOf(model)
     val requestBuilder = request.newBuilder()
     val constraintsSizeResolver: ConstraintsSizeResolver?
