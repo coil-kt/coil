@@ -4,7 +4,6 @@ package coil.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import coil.compose.AsyncImagePainter.ExecuteCallback
 import coil.request.ImageRequest
 
 /**
@@ -16,10 +15,8 @@ import coil.request.ImageRequest
  *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  */
 @Composable
-fun rememberAsyncImagePainter(
-    model: Any?,
-    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
-): AsyncImagePainter = rememberAsyncImagePainter(model, LocalImageLoader.current, onExecute)
+fun rememberAsyncImagePainter(model: Any?): AsyncImagePainter =
+    rememberAsyncImagePainter(model, LocalImageLoader.current)
 
 /******************** DEPRECATED ********************/
 
@@ -49,12 +46,10 @@ fun rememberAsyncImagePainter(
 @Composable
 inline fun rememberImagePainter(
     data: Any?,
-    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
     builder: ImageRequest.Builder.() -> Unit = {},
 ): AsyncImagePainter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(),
-    imageLoader = LocalImageLoader.current,
-    onExecute = onExecute
+    imageLoader = LocalImageLoader.current
 )
 
 @Deprecated(
@@ -65,7 +60,5 @@ inline fun rememberImagePainter(
     )
 )
 @Composable
-fun rememberImagePainter(
-    request: ImageRequest,
-    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
-): AsyncImagePainter = rememberAsyncImagePainter(request, LocalImageLoader.current, onExecute)
+fun rememberImagePainter(request: ImageRequest): AsyncImagePainter =
+    rememberAsyncImagePainter(request, LocalImageLoader.current)

@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
-import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
@@ -32,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.AsyncImagePainter.ExecuteCallback
 import coil.compose.AsyncImagePainter.State
 import coil.decode.DataSource
 import coil.request.ErrorResult
@@ -67,14 +65,11 @@ import kotlin.math.roundToInt
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
- * @param onExecute Called immediately before the [AsyncImagePainter] launches an image request.
- *  Return 'true' to proceed with the request. Return 'false' to skip executing the request.
  */
 @Composable
 fun rememberAsyncImagePainter(
     model: Any?,
     imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
 ): AsyncImagePainter {
     val request = requestOf(model)
     requireSupportedData(request.data)
@@ -84,7 +79,6 @@ fun rememberAsyncImagePainter(
     val painter = remember(scope) { AsyncImagePainter(scope, request, imageLoader) }
     painter.request = request
     painter.imageLoader = imageLoader
-    painter.onExecute = onExecute
     painter.isPreview = LocalInspectionMode.current
     updatePainter(painter, request, imageLoader)
     return painter
@@ -108,7 +102,6 @@ class AsyncImagePainter internal constructor(
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     internal var painter: Painter? by mutableStateOf(null)
-    internal var onExecute = ExecuteCallback.Lazy
     internal var isPreview = false
 
     /** The current [AsyncImagePainter.State]. */
@@ -199,51 +192,6 @@ class AsyncImagePainter internal constructor(
             return PixelSize(width.roundToInt(), height.roundToInt())
         }
     }
-
-    /**
-     * Invoked immediately before the [AsyncImagePainter] executes a new image request.
-     * Return 'true' to proceed with the request. Return 'false' to skip executing the request.
-     */
-    fun interface ExecuteCallback {
-
-        operator fun invoke(previous: Snapshot?, current: Snapshot): Boolean
-
-        companion object {
-            /**
-             * Proceeds with the request if the painter is empty or the request has changed.
-             *
-             * Additionally, this callback only proceeds if the image request has an explicit
-             * size or [AsyncImagePainter.onDraw] has been called with the draw canvas' dimensions.
-             */
-            @JvmField val Lazy = ExecuteCallback { previous, current ->
-                previous?.request != current.request &&
-                    (current.request.defined.sizeResolver != null ||
-                        current.size.isUnspecified ||
-                        (current.size.width >= 0.5f && current.size.height >= 0.5f))
-            }
-
-            /**
-             * Proceeds with the request if the painter is empty or the request has changed.
-             *
-             * Unlike [Lazy], this callback will execute the request immediately. Typically,
-             * this will load the image at its original size unless [ImageRequest.Builder.size]
-             * has been set.
-             */
-            @JvmField val Immediate = ExecuteCallback { previous, current ->
-                previous?.request != current.request
-            }
-        }
-    }
-
-    /**
-     * A snapshot of the [AsyncImagePainter]'s properties.
-     */
-    @ExperimentalCoilApi
-    data class Snapshot(
-        val state: State,
-        val request: ImageRequest,
-        val size: Size,
-    )
 
     /**
      * The current state of the [AsyncImagePainter].
@@ -414,12 +362,10 @@ typealias ImagePainter = AsyncImagePainter
 inline fun rememberImagePainter(
     data: Any?,
     imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
     builder: ImageRequest.Builder.() -> Unit = {},
 ) = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(),
-    imageLoader = imageLoader,
-    onExecute = onExecute
+    imageLoader = imageLoader
 )
 
 @Deprecated(
@@ -433,9 +379,7 @@ inline fun rememberImagePainter(
 fun rememberImagePainter(
     request: ImageRequest,
     imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Lazy,
 ) = rememberAsyncImagePainter(
     model = request,
-    imageLoader = imageLoader,
-    onExecute = onExecute
+    imageLoader = imageLoader
 )
