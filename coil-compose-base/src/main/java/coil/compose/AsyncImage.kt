@@ -64,34 +64,22 @@ fun AsyncImage(
     colorFilter: ColorFilter? = null,
 ) {
     // Create and execute the image request.
-    val request = requestOf(model)
-    val newRequest = request.newBuilder()
-    val sizeResolver: ConstraintsSizeResolver?
-    if (request.defined.sizeResolver == null) {
-        val context = LocalContext.current
-        sizeResolver = remember(context) { ConstraintsSizeResolver(context) }
-        newRequest.size(sizeResolver)
-    } else {
-        sizeResolver = null
-    }
-    if (request.defined.scale == null) {
-        newRequest.scale(contentScale.toScale())
-    }
-    val painter = rememberAsyncImagePainter(newRequest.build(), imageLoader)
+    val request = createRequest(model, contentScale)
+    val painter = rememberAsyncImagePainter(request, imageLoader)
 
     // Draw the content.
     Layout(
         content = {
-            // Skip drawing the image if overridden.
-            var handled = false
+            // Skip drawing the image if the current state is overridden.
+            var skip = false
             when (val state = painter.state) {
-                is State.Loading -> if (loading != null) loading(state).also { handled = true }
-                is State.Success -> if (success != null) success(state).also { handled = true }
-                is State.Error -> if (error != null) error(state).also { handled = true }
+                is State.Loading -> if (loading != null) loading(state).also { skip = true }
+                is State.Success -> if (success != null) success(state).also { skip = true }
+                is State.Error -> if (error != null) error(state).also { skip = true }
             }
 
             // Draw the image.
-            if (!handled) {
+            if (!skip) {
                 Layout(
                     content = {},
                     modifier = Modifier
@@ -112,21 +100,27 @@ fun AsyncImage(
         },
         modifier = modifier,
         measurePolicy = { _, constraints ->
-            sizeResolver?.setConstraints(constraints)
+            (request.sizeResolver as? ConstraintsSizeResolver)?.setConstraints(constraints)
             layout(constraints.minWidth, constraints.minHeight) {}
         }
     )
 }
 
-private class ConstraintsSizeResolver(private val context: Context) : SizeResolver {
-
-    private val size = MutableStateFlow<Size?>(null)
-
-    override suspend fun size() = size.filterNotNull().first()
-
-    fun setConstraints(constraints: Constraints) {
-        size.value = constraints.toSize(context)
-    }
+@Composable
+private fun createRequest(model: Any?, contentScale: ContentScale): ImageRequest {
+    val request = requestOf(model)
+    return request.newBuilder()
+        .apply {
+            if (request.defined.sizeResolver == null) {
+                val context = LocalContext.current
+                val sizeResolver = remember(context) { ConstraintsSizeResolver(context) }
+                size(sizeResolver)
+            }
+            if (request.defined.scale == null) {
+                scale(contentScale.toScale())
+            }
+        }
+        .build()
 }
 
 private fun ContentScale.toScale() = when (this) {
@@ -155,5 +149,16 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
         }
     } else {
         this
+    }
+}
+
+private class ConstraintsSizeResolver(private val context: Context) : SizeResolver {
+
+    private val size = MutableStateFlow<Size?>(null)
+
+    override suspend fun size() = size.filterNotNull().first()
+
+    fun setConstraints(constraints: Constraints) {
+        size.value = constraints.toSize(context)
     }
 }
