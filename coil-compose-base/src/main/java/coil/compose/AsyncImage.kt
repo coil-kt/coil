@@ -132,11 +132,9 @@ private class ConstraintsSizeResolver(private val context: Context) : SizeResolv
     }
 }
 
-private fun ContentScale.toScale(): Scale {
-    return when (this) {
-        ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
-        else -> Scale.FILL
-    }
+private fun ContentScale.toScale() = when (this) {
+    ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
+    else -> Scale.FILL
 }
 
 private fun Constraints.toSize(context: Context): Size {
