@@ -1,7 +1,7 @@
 public final class coil/compose/AsyncImagePaintersKt {
-	public static final fun rememberAsyncImagePainter (Ljava/lang/Object;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
-	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
-	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberAsyncImagePainter (Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 }
 
 public final class coil/compose/AsyncImagesKt {
