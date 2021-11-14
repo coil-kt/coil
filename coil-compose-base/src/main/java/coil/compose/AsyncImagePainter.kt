@@ -286,14 +286,8 @@ private fun unsupportedData(name: String): Nothing {
 }
 
 private fun ImageResult.toState() = when (this) {
-    is SuccessResult -> State.Success(
-        painter = drawable.toPainter(),
-        result = this
-    )
-    is ErrorResult -> State.Error(
-        painter = drawable?.toPainter(),
-        result = this
-    )
+    is SuccessResult -> State.Success(drawable.toPainter(), this)
+    is ErrorResult -> State.Error(drawable?.toPainter(), this)
 }
 
 /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
