@@ -81,19 +81,13 @@ fun AsyncImage(
 
     // Draw the content.
     Layout(
-        content = content@{
+        content = {
             // Allow overriding what's drawn for each image painter state.
             if (loading != null || success != null || error != null) {
                 when (val state = painter.state) {
-                    is State.Loading -> if (loading != null) {
-                        loading(state).also { return@content }
-                    }
-                    is State.Success -> if (success != null) {
-                        success(state).also { return@content }
-                    }
-                    is State.Error -> if (error != null) {
-                        error(state).also { return@content }
-                    }
+                    is State.Loading -> if (loading != null) loading(state).also { return }
+                    is State.Success -> if (success != null) success(state).also { return }
+                    is State.Error -> if (error != null) error(state).also { return }
                 }
             }
 
