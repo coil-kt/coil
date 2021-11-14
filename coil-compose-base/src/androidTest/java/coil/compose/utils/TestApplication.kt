@@ -1,4 +1,4 @@
-package coil.compose
+package coil.compose.utils
 
 import android.app.Application
 import android.os.Handler

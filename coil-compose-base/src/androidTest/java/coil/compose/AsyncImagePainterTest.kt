@@ -38,7 +38,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import coil.EventListener
 import coil.ImageLoader
-import coil.compose.AsyncImagePainter.ExecuteCallback
 import coil.compose.AsyncImagePainter.State
 import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
@@ -595,16 +594,18 @@ class AsyncImagePainterTest {
     }
 
     @Test
-    fun immediateExecuteCallbackExecutesWithoutSpecifiedSize() {
+    fun specifiedSizeResolverExecutesWithoutSpecifiedSize() {
         // captureToImage is SDK_INT >= 26.
         assumeTrue(SDK_INT >= 26)
 
         composeTestRule.setContent {
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = server.url("/image"),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/image"))
+                        .size(100, 100)
+                        .build(),
                     imageLoader = imageLoader,
-                    onExecute = ExecuteCallback.Immediate
                 ),
                 contentDescription = null,
                 modifier = Modifier
