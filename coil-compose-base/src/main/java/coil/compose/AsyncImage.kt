@@ -81,34 +81,36 @@ fun AsyncImage(
 
     // Draw the content.
     Layout(
-        content = content@{
-            // Allow overriding what's drawn for each image painter state.
-            if (loading != null || success != null || error != null) {
-                when (val state = painter.state) {
-                    is State.Loading -> if (loading != null) loading(state).also { return@content }
-                    is State.Success -> if (success != null) success(state).also { return@content }
-                    is State.Error -> if (error != null) error(state).also { return@content }
-                }
+        content = {
+            // Skip drawing the image if necessary.
+            var handled = false
+            when (val state = painter.state) {
+                is State.Loading -> if (loading != null) loading(state).also { handled = true }
+                is State.Success -> if (success != null) success(state).also { handled = true }
+                is State.Error -> if (error != null) error(state).also { handled = true }
             }
 
             // Draw the image.
-            Layout(
-                content = {},
-                modifier = modifier
-                    .contentDescription(contentDescription)
-                    .clipToBounds()
-                    .paint(
-                        painter = painter,
-                        alignment = alignment,
-                        contentScale = contentScale,
-                        alpha = alpha,
-                        colorFilter = colorFilter
-                    ),
-                measurePolicy = { _, constraints ->
-                    layout(constraints.minWidth, constraints.minHeight) {}
-                }
-            )
+            if (!handled) {
+                Layout(
+                    content = {},
+                    modifier = Modifier
+                        .contentDescription(contentDescription)
+                        .clipToBounds()
+                        .paint(
+                            painter = painter,
+                            alignment = alignment,
+                            contentScale = contentScale,
+                            alpha = alpha,
+                            colorFilter = colorFilter
+                        ),
+                    measurePolicy = { _, constraints ->
+                        layout(constraints.minWidth, constraints.minHeight) {}
+                    }
+                )
+            }
         },
+        modifier = modifier,
         measurePolicy = { _, constraints ->
             sizeResolver?.setConstraints(constraints)
             layout(constraints.minWidth, constraints.minHeight) {}
