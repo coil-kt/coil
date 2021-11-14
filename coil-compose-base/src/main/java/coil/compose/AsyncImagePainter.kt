@@ -305,8 +305,11 @@ private val Size.isPositive get() = isSpecified && width >= 0.5 && height >= 0.5
 /** Create an [ImageRequest] using the [model]. */
 @Composable
 internal fun requestOf(model: Any?): ImageRequest {
-    if (model is ImageRequest) return model
-    return ImageRequest.Builder(LocalContext.current).data(model).build()
+    return if (model is ImageRequest) {
+        return model
+    } else {
+        ImageRequest.Builder(LocalContext.current).data(model).build()
+    }
 }
 
 /** A simple mutable value holder that avoids recomposition. */
