@@ -82,7 +82,7 @@ fun AsyncImage(
     // Draw the content.
     Layout(
         content = {
-            // Skip drawing the image if necessary.
+            // Skip drawing the image if overridden.
             var handled = false
             when (val state = painter.state) {
                 is State.Loading -> if (loading != null) loading(state).also { handled = true }
