@@ -18,7 +18,6 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.OriginalSize
@@ -50,7 +49,6 @@ import kotlinx.coroutines.flow.first
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is rendered
  *  onscreen.
  */
-@ExperimentalCoilApi
 @Composable
 fun AsyncImage(
     model: Any?,
@@ -96,19 +94,10 @@ fun AsyncImage(
         }
     }
 
-    val semantics = if (contentDescription != null) {
-        Modifier.semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        Modifier
-    }
-
     // Draw the image painter.
     Layout(
         modifier = modifier
-            .then(semantics)
+            .contentDescription(contentDescription)
             .clipToBounds()
             .paint(
                 painter = painter,
@@ -153,4 +142,15 @@ private fun Constraints.toSize(context: Context): Size {
         width = if (hasBoundedWidth) maxWidth else context.resources.displayMetrics.widthPixels,
         height = if (hasBoundedHeight) maxHeight else context.resources.displayMetrics.heightPixels
     )
+}
+
+private fun Modifier.contentDescription(contentDescription: String?): Modifier {
+    return if (contentDescription != null) {
+        semantics {
+            this.contentDescription = contentDescription
+            this.role = Role.Image
+        }
+    } else {
+        this
+    }
 }

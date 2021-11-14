@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImagePainter.State
 import coil.decode.DataSource
 import coil.request.ErrorResult
@@ -195,7 +194,6 @@ class AsyncImagePainter internal constructor(
     /**
      * The current state of the [AsyncImagePainter].
      */
-    @ExperimentalCoilApi
     sealed class State {
 
         /** The current painter being drawn by [AsyncImagePainter]. */
