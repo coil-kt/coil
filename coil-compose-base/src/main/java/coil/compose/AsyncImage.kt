@@ -2,6 +2,7 @@ package coil.compose
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -24,6 +25,7 @@ import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
+import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -65,12 +67,13 @@ fun AsyncImage(
 ) {
     val request = requestOf(model)
     val requestBuilder = request.newBuilder()
-    val measureSize: MutableStateFlow<Size?>?
+    val constraintsSizeResolver: ConstraintsSizeResolver?
     if (request.defined.sizeResolver == null) {
-        measureSize = MutableStateFlow(null)
-        requestBuilder.size { measureSize.filterNotNull().first() }
+        val context = LocalContext.current
+        constraintsSizeResolver = remember(context) { ConstraintsSizeResolver(context) }
+        requestBuilder.size(constraintsSizeResolver)
     } else {
-        measureSize = null
+        constraintsSizeResolver = null
     }
     if (request.defined.scale == null) {
         requestBuilder.scale(contentScale.toScale())
@@ -92,7 +95,6 @@ fun AsyncImage(
         }
     }
 
-    val context = LocalContext.current
     val semantics = if (contentDescription != null) {
         Modifier.semantics {
             this.contentDescription = contentDescription
@@ -115,10 +117,21 @@ fun AsyncImage(
                 colorFilter = colorFilter
             ),
         measurePolicy = { _, constraints ->
-            if (measureSize != null) measureSize.value = constraints.toSize(context)
+            constraintsSizeResolver?.setConstraints(constraints)
             layout(constraints.minWidth, constraints.minHeight) {}
         }
     )
+}
+
+private class ConstraintsSizeResolver(private val context: Context) : SizeResolver {
+
+    private val size = MutableStateFlow<Size?>(null)
+
+    override suspend fun size() = size.filterNotNull().first()
+
+    fun setConstraints(constraints: Constraints) {
+        size.value = constraints.toSize(context)
+    }
 }
 
 private fun ContentScale.toScale(): Scale {

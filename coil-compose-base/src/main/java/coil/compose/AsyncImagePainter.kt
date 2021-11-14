@@ -42,7 +42,6 @@ import coil.size.Precision
 import coil.size.SizeResolver
 import coil.transition.CrossfadeTransition
 import com.google.accompanist.drawablepainter.DrawablePainter
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -75,7 +74,7 @@ fun rememberAsyncImagePainter(
     requireSupportedData(request.data)
     require(request.target == null) { "request.target must be null." }
 
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate + EMPTY_EXCEPTION_HANDLER }
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val painter = remember(scope) { AsyncImagePainter(scope, request, imageLoader) }
     painter.request = request
     painter.imageLoader = imageLoader
@@ -319,9 +318,6 @@ internal fun requestOf(model: Any?): ImageRequest {
 
 /** A simple mutable value holder that avoids recomposition. */
 private class ValueHolder<T>(@JvmField var value: T)
-
-/** An exception handler that ignores any uncaught exceptions. */
-private val EMPTY_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, _ -> }
 
 /******************** DEPRECATED ********************/
 
