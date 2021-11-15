@@ -29,7 +29,7 @@ import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import kotlin.math.abs
 
-fun assumeSupportsCaptureImage() {
+fun assumeSupportsCaptureToImage() {
     assumeTrue(SDK_INT >= 26, "captureToImage is not supported on SDK_INT=$SDK_INT")
 }
 

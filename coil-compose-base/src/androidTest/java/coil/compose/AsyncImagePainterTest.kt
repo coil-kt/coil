@@ -42,7 +42,7 @@ import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
 import coil.compose.utils.ImageMockWebServer
 import coil.compose.utils.assertIsSimilarTo
-import coil.compose.utils.assumeSupportsCaptureImage
+import coil.compose.utils.assumeSupportsCaptureToImage
 import coil.compose.utils.resourceUri
 import coil.request.CachePolicy
 import coil.request.ErrorResult
@@ -97,7 +97,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_http() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
@@ -124,7 +124,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_drawableId() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
@@ -151,7 +151,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_drawableUri() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
@@ -215,7 +215,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_switchData() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         var data by mutableStateOf(server.url("/image"))
 
@@ -355,7 +355,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_error() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
@@ -386,7 +386,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun previewPlaceholder() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {
@@ -487,7 +487,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun crossfade() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
@@ -518,7 +518,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun fillMaxWidth() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
@@ -547,7 +547,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun columnWithHeight() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Box(
@@ -585,7 +585,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun specifiedSizeResolverExecutesWithoutSpecifiedSize() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(

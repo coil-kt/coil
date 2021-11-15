@@ -25,7 +25,7 @@ import coil.compose.utils.ImageMockWebServer
 import coil.compose.utils.assertHeightIsEqualTo
 import coil.compose.utils.assertIsSimilarTo
 import coil.compose.utils.assertWidthIsEqualTo
-import coil.compose.utils.assumeSupportsCaptureImage
+import coil.compose.utils.assumeSupportsCaptureToImage
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.request.CachePolicy
@@ -70,7 +70,7 @@ class AsyncImageTest {
 
     @Test
     fun fixedSize() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             AsyncImage(
@@ -95,7 +95,7 @@ class AsyncImageTest {
 
     @Test
     fun dynamicSize() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             AsyncImage(
@@ -123,7 +123,7 @@ class AsyncImageTest {
 
     @Test
     fun dynamicHeight() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             LazyColumn(
@@ -158,7 +158,7 @@ class AsyncImageTest {
 
     @Test
     fun overwriteLoading() {
-        assumeSupportsCaptureImage()
+        assumeSupportsCaptureToImage()
 
         // Remove this or `setContent` will timeout.
         composeTestRule.unregisterIdlingResource(requestTracker)
