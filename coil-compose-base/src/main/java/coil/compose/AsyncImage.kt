@@ -131,10 +131,11 @@ private class ConstraintsSizeResolver(private val context: Context) : SizeResolv
 
         val hasBoundedWidth = hasBoundedWidth
         val hasBoundedHeight = hasBoundedHeight
-        if (!hasBoundedWidth && !hasBoundedHeight) return OriginalSize
-
-        val width = if (hasBoundedWidth) maxWidth else context.resources.displayMetrics.widthPixels
-        val height = if (hasBoundedHeight) maxHeight else context.resources.displayMetrics.heightPixels
-        return PixelSize(width, height)
+        return when {
+            hasBoundedWidth && hasBoundedHeight -> PixelSize(maxWidth, maxHeight)
+            hasBoundedWidth -> PixelSize(maxWidth, context.resources.displayMetrics.heightPixels)
+            hasBoundedHeight -> PixelSize(context.resources.displayMetrics.widthPixels, maxHeight)
+            else -> OriginalSize
+        }
     }
 }
