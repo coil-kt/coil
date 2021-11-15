@@ -299,6 +299,9 @@ private fun Drawable.toPainter(): Painter = when (this) {
 
 private val Size.isPositive get() = isSpecified && width >= 0.5 && height >= 0.5
 
+/** A simple mutable value holder that avoids recomposition. */
+private class ValueHolder<T>(@JvmField var value: T)
+
 /** Create an [ImageRequest] using the [model]. */
 @Composable
 internal fun requestOf(model: Any?): ImageRequest {
@@ -308,6 +311,3 @@ internal fun requestOf(model: Any?): ImageRequest {
         ImageRequest.Builder(LocalContext.current).data(model).build()
     }
 }
-
-/** A simple mutable value holder that avoids recomposition. */
-private class ValueHolder<T>(@JvmField var value: T)
