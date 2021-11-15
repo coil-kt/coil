@@ -1,21 +1,16 @@
 package coil.compose
 
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
@@ -80,21 +75,13 @@ fun AsyncImage(
 
             // Draw the image.
             if (draw) {
-                Layout(
-                    content = {},
-                    modifier = Modifier
-                        .contentDescription(contentDescription)
-                        .clipToBounds()
-                        .paint(
-                            painter = painter,
-                            alignment = alignment,
-                            contentScale = contentScale,
-                            alpha = alpha,
-                            colorFilter = colorFilter
-                        ),
-                    measurePolicy = { _, constraints ->
-                        layout(constraints.minWidth, constraints.minHeight) {}
-                    }
+                Image(
+                    painter = painter,
+                    contentDescription = contentDescription,
+                    alignment = alignment,
+                    contentScale = contentScale,
+                    alpha = alpha,
+                    colorFilter = colorFilter
                 )
             }
         },
@@ -127,30 +114,6 @@ private fun ContentScale.toScale() = when (this) {
     else -> Scale.FILL
 }
 
-private fun Constraints.toSize(context: Context): Size {
-    if (isZero) return OriginalSize
-
-    val hasBoundedWidth = hasBoundedWidth
-    val hasBoundedHeight = hasBoundedHeight
-    if (!hasBoundedWidth && !hasBoundedHeight) return OriginalSize
-
-    return PixelSize(
-        width = if (hasBoundedWidth) maxWidth else context.resources.displayMetrics.widthPixels,
-        height = if (hasBoundedHeight) maxHeight else context.resources.displayMetrics.heightPixels
-    )
-}
-
-private fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    return if (contentDescription != null) {
-        semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        this
-    }
-}
-
 private class ConstraintsSizeResolver(private val context: Context) : SizeResolver {
 
     private val size = MutableStateFlow<Size?>(null)
@@ -158,6 +121,18 @@ private class ConstraintsSizeResolver(private val context: Context) : SizeResolv
     override suspend fun size() = size.filterNotNull().first()
 
     fun setConstraints(constraints: Constraints) {
-        size.value = constraints.toSize(context)
+        size.value = constraints.toSize()
+    }
+
+    private fun Constraints.toSize(): Size {
+        if (isZero) return OriginalSize
+
+        val hasBoundedWidth = hasBoundedWidth
+        val hasBoundedHeight = hasBoundedHeight
+        if (!hasBoundedWidth && !hasBoundedHeight) return OriginalSize
+
+        val width = if (hasBoundedWidth) maxWidth else context.resources.displayMetrics.widthPixels
+        val height = if (hasBoundedHeight) maxHeight else context.resources.displayMetrics.heightPixels
+        return PixelSize(width, height)
     }
 }

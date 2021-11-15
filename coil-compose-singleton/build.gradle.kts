@@ -25,6 +25,4 @@ dependencies {
     api(project(":coil-compose-base"))
 
     implementation(Library.ANDROIDX_CORE)
-
-    api(Library.COMPOSE_UI)
 }
