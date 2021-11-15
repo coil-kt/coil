@@ -52,6 +52,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlin.math.roundToInt
 
 /**
@@ -140,8 +141,7 @@ class AsyncImagePainter internal constructor(
 
         // Create a new scope to observe state and execute requests while we're remembered.
         rememberScope?.cancel()
-        val context = parentScope.coroutineContext
-        val scope = CoroutineScope(context + SupervisorJob(context.job))
+        val scope = parentScope + SupervisorJob(parentScope.coroutineContext.job)
         rememberScope = scope
 
         // Observe the current request + request size and launch new requests as necessary.
