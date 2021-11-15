@@ -64,7 +64,7 @@ fun AsyncImage(
     colorFilter: ColorFilter? = null,
 ) {
     // Create and execute the image request.
-    val request = createRequest(model, contentScale)
+    val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(request, imageLoader)
 
     // Draw the content.
@@ -107,8 +107,7 @@ fun AsyncImage(
 }
 
 @Composable
-private fun createRequest(model: Any?, contentScale: ContentScale): ImageRequest {
-    val request = requestOf(model)
+private fun updateRequest(request: ImageRequest, contentScale: ContentScale): ImageRequest {
     return request.newBuilder()
         .apply {
             if (request.defined.sizeResolver == null) {
