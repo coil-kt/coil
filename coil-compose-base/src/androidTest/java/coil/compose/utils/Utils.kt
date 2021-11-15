@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
 import androidx.compose.ui.geometry.Rect
@@ -25,7 +26,12 @@ import androidx.test.platform.app.InstrumentationRegistry
 import coil.decode.DecodeUtils
 import coil.size.Scale
 import coil.util.assertIsSimilarTo
+import coil.util.assumeTrue
 import kotlin.math.abs
+
+fun assumeSupportsCaptureImage() {
+    assumeTrue(SDK_INT >= 26, "captureToImage is not supported on SDK_INT=$SDK_INT")
+}
 
 fun resourceUri(@IdRes resId: Int): Uri {
     val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName

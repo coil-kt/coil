@@ -25,15 +25,16 @@ import coil.compose.utils.ImageMockWebServer
 import coil.compose.utils.assertHeightIsEqualTo
 import coil.compose.utils.assertIsSimilarTo
 import coil.compose.utils.assertWidthIsEqualTo
+import coil.compose.utils.assumeSupportsCaptureImage
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.Options
+import coil.util.assumeTrue
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -69,8 +70,7 @@ class AsyncImageTest {
 
     @Test
     fun fixedSize() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             AsyncImage(
@@ -95,8 +95,7 @@ class AsyncImageTest {
 
     @Test
     fun dynamicSize() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             AsyncImage(
@@ -124,8 +123,7 @@ class AsyncImageTest {
 
     @Test
     fun dynamicHeight() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             LazyColumn(
@@ -160,8 +158,7 @@ class AsyncImageTest {
 
     @Test
     fun overwriteLoading() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         // Remove this or `setContent` will timeout.
         composeTestRule.unregisterIdlingResource(requestTracker)

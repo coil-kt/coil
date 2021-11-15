@@ -1,6 +1,5 @@
 package coil.compose
 
-import android.os.Build.VERSION.SDK_INT
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -43,6 +42,7 @@ import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
 import coil.compose.utils.ImageMockWebServer
 import coil.compose.utils.assertIsSimilarTo
+import coil.compose.utils.assumeSupportsCaptureImage
 import coil.compose.utils.resourceUri
 import coil.request.CachePolicy
 import coil.request.ErrorResult
@@ -58,7 +58,6 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -98,8 +97,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_http() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             Image(
@@ -126,8 +124,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_drawableId() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             Image(
@@ -154,8 +151,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_drawableUri() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             Image(
@@ -219,8 +215,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_switchData() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         var data by mutableStateOf(server.url("/image"))
 
@@ -360,8 +355,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun basicLoad_error() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             Image(
@@ -392,8 +386,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun previewPlaceholder() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {
@@ -494,8 +487,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun crossfade() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             Image(
@@ -526,8 +518,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun fillMaxWidth() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             Image(
@@ -556,8 +547,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun columnWithHeight() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             Box(
@@ -595,8 +585,7 @@ class AsyncImagePainterTest {
 
     @Test
     fun specifiedSizeResolverExecutesWithoutSpecifiedSize() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureImage()
 
         composeTestRule.setContent {
             Image(
