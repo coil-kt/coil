@@ -39,8 +39,14 @@ fun Bitmap.computeSimilarity(other: Bitmap): Double = runBlocking(Dispatchers.De
     val pixels2 = async { other.getPixels() }
 
     suspend fun computeThresholdAsync(index: Int) = async {
-        crossCorrelation(pixels1.await()[index], pixels2.await()[index])
-            .let { if (it.isNaN()) 1.0 else it }
+        val channel1 = pixels1.await()[index]
+        val channel2 = pixels2.await()[index]
+        val crossCorrelation = crossCorrelation(channel1, channel2)
+        if (crossCorrelation.isNaN()) {
+            if (channel1.contentEquals(channel2)) 1.0 else 0.0
+        } else {
+            crossCorrelation
+        }
     }
 
     val alphaThreshold = computeThresholdAsync(0)

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -43,7 +44,7 @@ fun ImageBitmap.assertIsSimilarTo(
     @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.9 // Use a lower threshold by default.
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val expected = context.getDrawable(resId)!!.toBitmap().fitCenter(width, height)
+    val expected = AppCompatResources.getDrawable(context, resId)!!.toBitmap().fitCenter(width, height)
     asAndroidBitmap().assertIsSimilarTo(expected, threshold)
 }
 
@@ -55,7 +56,7 @@ fun ImageBitmap.assertIsSimilarTo(
 }
 
 private fun Bitmap.fitCenter(width: Int, height: Int): Bitmap {
-    val input = this.apply { density = Bitmap.DENSITY_NONE }
+    val input = apply { density = Bitmap.DENSITY_NONE }
 
     return createBitmap(width, height).applyCanvas {
         // Draw the white background to match the test background.

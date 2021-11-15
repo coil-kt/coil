@@ -41,9 +41,10 @@ import kotlinx.coroutines.flow.first
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
  *  used if the bounds are a different size from the intrinsic size of the [AsyncImagePainter].
- * @param alpha Optional opacity to be applied to the [AsyncImagePainter] when it is rendered onscreen.
- * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is rendered
+ * @param alpha Optional opacity to be applied to the [AsyncImagePainter] when it is rendered
  *  onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
+ *  rendered onscreen.
  */
 @Composable
 fun AsyncImage(
