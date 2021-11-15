@@ -3,16 +3,17 @@ package coil.util
 import android.app.Activity
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ActivityScenario.ActivityAction
 import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
-/** Launch [TestActivity] and invoke [block]. */
-fun withTestActivity(block: (TestActivity) -> Unit) {
+/** Launch [TestActivity] and invoke [action]. */
+fun withTestActivity(action: ActivityAction<TestActivity>) {
     launchActivity<TestActivity>().use { scenario ->
         scenario.moveToState(Lifecycle.State.RESUMED)
-        scenario.onActivity(block)
+        scenario.onActivity(action)
     }
 }
 
