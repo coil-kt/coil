@@ -1,12 +1,9 @@
-@file:SuppressLint("ComposableNaming")
-@file:Suppress("unused")
-
 package coil.compose
 
-import android.annotation.SuppressLint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
@@ -60,7 +57,9 @@ import kotlin.math.roundToInt
  * renders the result.
  *
  * This is a lower-level API than [AsyncImage] and may not work as expected in all situations.
- * It's recommended to use [AsyncImage] unless you need a reference to a [Painter].
+ * Notably, it will not finish loading if [AsyncImagePainter.onDraw] is not called, which can occur
+ * for composables that don't have a fixed size (e.g. [LazyColumn]). It's recommended to use
+ * [AsyncImage] unless you need a reference to a [Painter].
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
@@ -312,49 +311,3 @@ internal fun requestOf(model: Any?): ImageRequest {
 
 /** A simple mutable value holder that avoids recomposition. */
 private class ValueHolder<T>(@JvmField var value: T)
-
-/******************** DEPRECATED ********************/
-
-@Deprecated(
-    message = "ImagePainter has been renamed to AsyncImagePainter.",
-    replaceWith = ReplaceWith(
-        expression = "AsyncImagePainter",
-        imports = ["coil.compose.AsyncImagePainter"]
-    )
-)
-typealias ImagePainter = AsyncImagePainter
-
-@Deprecated(
-    message = "ImagePainter has been renamed to AsyncImagePainter.",
-    replaceWith = ReplaceWith(
-        expression = "rememberAsyncImagePainter(" +
-            "ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(), " +
-            "imageLoader)",
-        imports = ["coil.compose.rememberAsyncImagePainter", "coil.request.ImageRequest"]
-    )
-)
-@Composable
-inline fun rememberImagePainter(
-    data: Any?,
-    imageLoader: ImageLoader,
-    builder: ImageRequest.Builder.() -> Unit = {},
-) = rememberAsyncImagePainter(
-    model = ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(),
-    imageLoader = imageLoader
-)
-
-@Deprecated(
-    message = "ImagePainter has been renamed to AsyncImagePainter.",
-    replaceWith = ReplaceWith(
-        expression = "rememberAsyncImagePainter(request, imageLoader)",
-        imports = ["coil.compose.rememberAsyncImagePainter"]
-    )
-)
-@Composable
-fun rememberImagePainter(
-    request: ImageRequest,
-    imageLoader: ImageLoader,
-) = rememberAsyncImagePainter(
-    model = request,
-    imageLoader = imageLoader
-)
