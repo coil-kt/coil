@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 
@@ -31,7 +30,6 @@ import coil.request.ImageRequest
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is rendered
  *  onscreen.
  */
-@ExperimentalCoilApi
 @Composable
 fun AsyncImage(
     model: Any?,
