@@ -111,7 +111,7 @@ private fun updateRequest(request: ImageRequest, contentScale: ContentScale): Im
         .build()
 }
 
-private fun ContentScale.toScale() = when (this) {
+private fun ContentScale.toScale(): Scale = when (this) {
     ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
     else -> Scale.FILL
 }

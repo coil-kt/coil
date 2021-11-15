@@ -286,18 +286,16 @@ private fun unsupportedData(name: String): Nothing {
     )
 }
 
-private fun ImageResult.toState() = when (this) {
+private fun ImageResult.toState(): State = when (this) {
     is SuccessResult -> State.Success(drawable.toPainter(), this)
     is ErrorResult -> State.Error(drawable?.toPainter(), this)
 }
 
 /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
-private fun Drawable.toPainter(): Painter {
-    return when (this) {
-        is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap())
-        is ColorDrawable -> ColorPainter(Color(color))
-        else -> DrawablePainter(mutate())
-    }
+private fun Drawable.toPainter(): Painter = when (this) {
+    is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap())
+    is ColorDrawable -> ColorPainter(Color(color))
+    else -> DrawablePainter(mutate())
 }
 
 private val Size.isPositive get() = isSpecified && width >= 0.5 && height >= 0.5
