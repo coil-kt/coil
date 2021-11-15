@@ -2,6 +2,7 @@ package coil.compose
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -78,6 +79,7 @@ fun AsyncImage(
                 Image(
                     painter = painter,
                     contentDescription = contentDescription,
+                    modifier = Modifier.fillMaxSize(),
                     alignment = alignment,
                     contentScale = contentScale,
                     alpha = alpha,
