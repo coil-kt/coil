@@ -5,19 +5,19 @@ import coil.EventListener
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import java.util.Collections
 
 class ImageLoaderIdlingResource : EventListener, IdlingResource {
 
-    private val ongoingRequests = mutableSetOf<ImageRequest>()
+    private val ongoingRequests = Collections.synchronizedSet(mutableSetOf<ImageRequest>())
 
-    var startedRequests = 0
+    @field:Volatile var startedRequests = 0
         private set
 
-    var finishedRequests = 0
+    @field:Volatile var finishedRequests = 0
         private set
 
-    override val isIdleNow: Boolean
-        get() = ongoingRequests.isEmpty()
+    override val isIdleNow get() = ongoingRequests.isEmpty()
 
     override fun onStart(request: ImageRequest) {
         ongoingRequests += request

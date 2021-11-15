@@ -163,6 +163,9 @@ class AsyncImageTest {
         // captureToImage is SDK_INT >= 26.
         assumeTrue(SDK_INT >= 26)
 
+        // Remove this or `setContent` will timeout.
+        composeTestRule.unregisterIdlingResource(requestTracker)
+
         composeTestRule.setContent {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
