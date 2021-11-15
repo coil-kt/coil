@@ -1,3 +1,4 @@
+@file:JvmName("AsyncImagePainterSingletonKt")
 @file:Suppress("unused")
 
 package coil.compose

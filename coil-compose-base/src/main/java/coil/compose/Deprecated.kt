@@ -1,5 +1,4 @@
 @file:Suppress("unused")
-@file:JvmName("DeprecatedBase")
 
 package coil.compose
 

@@ -59,6 +59,9 @@ public final class coil/compose/AsyncImagePainter$State$Success : coil/compose/A
 
 public final class coil/compose/AsyncImagePainterKt {
 	public static final fun rememberAsyncImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+}
+
+public final class coil/compose/DeprecatedKt {
 	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/ImageLoader;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 }

@@ -1,4 +1,4 @@
-@file:JvmName("DeprecatedSingleton")
+@file:JvmName("DeprecatedSingletonKt")
 
 package coil.compose
 
