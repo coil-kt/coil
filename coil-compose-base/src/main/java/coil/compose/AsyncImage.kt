@@ -71,15 +71,15 @@ fun AsyncImage(
     Layout(
         content = {
             // Skip drawing the image if the current state is overridden.
-            var skip = false
+            var draw = true
             when (val state = painter.state) {
-                is State.Loading -> if (loading != null) loading(state).also { skip = true }
-                is State.Success -> if (success != null) success(state).also { skip = true }
-                is State.Error -> if (error != null) error(state).also { skip = true }
+                is State.Loading -> if (loading != null) loading(state).also { draw = false }
+                is State.Success -> if (success != null) success(state).also { draw = false }
+                is State.Error -> if (error != null) error(state).also { draw = false }
             }
 
             // Draw the image.
-            if (!skip) {
+            if (draw) {
                 Layout(
                     content = {},
                     modifier = Modifier
