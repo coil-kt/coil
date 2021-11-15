@@ -173,7 +173,7 @@ class AsyncImagePainter internal constructor(
                 }
             )
             .apply {
-                // Await the draw size unless it has been set explicitly.
+                // Await the draw size unless the size resolver has been set explicitly.
                 if (request.defined.sizeResolver == null) size(DrawSizeResolver())
 
                 // Set inexact precision unless exact precision has been set explicitly.
