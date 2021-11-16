@@ -399,7 +399,7 @@ class AsyncImageTest {
     private fun Double.toDp() = with(composeTestRule.density) { toInt().toDp() }
 
     private val displaySize: PixelSize
-        get() = composeTestRule.activity.requireViewById<View>(android.R.id.content)
+        get() = composeTestRule.activity.findViewById<View>(android.R.id.content)!!
             .run { PixelSize(width, height) }
 
     private class LoadingFetcher : Fetcher {

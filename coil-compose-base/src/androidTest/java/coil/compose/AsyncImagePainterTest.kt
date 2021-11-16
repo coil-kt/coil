@@ -630,7 +630,7 @@ class AsyncImagePainterTest {
     private fun Int.toDp() = with(composeTestRule.density) { toDp() }
 
     private val displaySize: PixelSize
-        get() = composeTestRule.activity.requireViewById<View>(android.R.id.content)
+        get() = composeTestRule.activity.findViewById<View>(android.R.id.content)!!
             .run { PixelSize(width, height) }
 
     companion object {
