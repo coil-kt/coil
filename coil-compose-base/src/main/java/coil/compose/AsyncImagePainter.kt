@@ -82,6 +82,7 @@ fun rememberAsyncImagePainter(
     painter.imageLoader = imageLoader
     painter.isPreview = LocalInspectionMode.current
     updatePainter(painter, request, imageLoader)
+    painter.onRemembered() // Invoke this manually so `painter.state` is up to date immediately.
     return painter
 }
 
@@ -140,9 +141,9 @@ class AsyncImagePainter internal constructor(
 
     override fun onRemembered() {
         if (isPreview) return
+        if (rememberScope != null) return
 
         // Create a new scope to observe state and execute requests while we're remembered.
-        rememberScope?.cancel()
         val scope = parentScope + SupervisorJob(parentScope.coroutineContext.job)
         rememberScope = scope
 
