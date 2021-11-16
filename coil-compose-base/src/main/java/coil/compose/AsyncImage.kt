@@ -64,7 +64,11 @@ fun AsyncImage(
     val painter = rememberAsyncImagePainter(request, imageLoader)
 
     // Draw the content.
-    BoxWithConstraints(modifier = modifier) {
+    BoxWithConstraints(
+        modifier = modifier,
+        contentAlignment = alignment,
+        propagateMinConstraints = true
+    ) {
         // Resolve the size for the image request.
         (request.sizeResolver as? ConstraintsSizeResolver)?.setConstraints(constraints)
 
