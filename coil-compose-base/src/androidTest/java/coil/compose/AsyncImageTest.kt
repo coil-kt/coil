@@ -1,6 +1,5 @@
 package coil.compose
 
-import android.os.Build.VERSION.SDK_INT
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,7 +30,6 @@ import coil.fetch.Fetcher
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.Options
-import coil.util.assumeTrue
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -207,8 +205,7 @@ class AsyncImageTest {
 
     @Test
     fun overwriteError() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             AsyncImage(
@@ -252,8 +249,7 @@ class AsyncImageTest {
 
     @Test
     fun overwriteSuccess() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             AsyncImage(
