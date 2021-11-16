@@ -142,7 +142,7 @@ private fun Modifier.imageSize(scope: BoxWithConstraintsScope, painter: Painter)
 
     return composed {
         with(LocalDensity.current) {
-            Modifier.size(
+            size(
                 width = (scale * intrinsicSize.width).toDp(),
                 height = (scale * intrinsicSize.height).toDp()
             )
