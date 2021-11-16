@@ -82,10 +82,9 @@ fun rememberAsyncImagePainter(
     painter.request = request
     painter.imageLoader = imageLoader
     painter.isPreview = LocalInspectionMode.current
+    painter.onRemembered() // Invoke this manually so `painter.state` is up to date immediately.
     updatePainter(painter, request, imageLoader)
-
-    // Invoke `onRemembered` manually so `painter.state` is up to date immediately.
-    return painter.apply { onRemembered() }
+    return painter
 }
 
 /**
@@ -280,7 +279,7 @@ private fun updatePainter(
         return
     }
 
-    // This may look like a useless remember, but this allows any Painter instances
+    // This may look like a useless remember, but this allows any painter instances
     // to receive remember events (if it implements RememberObserver). Do not remove.
     val state = imagePainter.state
     val painter = remember(state) { state.painter }
