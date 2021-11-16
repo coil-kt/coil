@@ -82,8 +82,9 @@ fun rememberAsyncImagePainter(
     painter.imageLoader = imageLoader
     painter.isPreview = LocalInspectionMode.current
     updatePainter(painter, request, imageLoader)
-    painter.onRemembered() // Invoke this manually so `painter.state` is up to date immediately.
-    return painter
+
+    // Invoke `onRemembered` manually so `painter.state` is up to date immediately.
+    return painter.apply { onRemembered() }
 }
 
 /**
