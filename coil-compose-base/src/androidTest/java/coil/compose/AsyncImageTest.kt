@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -111,6 +112,36 @@ class AsyncImageTest {
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
         val expectedWidthPx = displayMetrics.widthPixels.toDouble()
         val expectedHeightPx = expectedWidthPx * 1326 / 1024
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
+            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
+    fun fillMaxHeight() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            AsyncImage(
+                model = server.url("/image"),
+                contentDescription = null,
+                imageLoader = imageLoader,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .testTag(Image),
+            )
+        }
+
+        waitForRequestComplete()
+
+        val displayMetrics = composeTestRule.activity.resources.displayMetrics
+        val expectedHeightPx = displayMetrics.heightPixels.toDouble()
+        val expectedWidthPx = (expectedHeightPx * 1024 / 1326)
+            .coerceAtMost(displayMetrics.widthPixels.toDouble())
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
