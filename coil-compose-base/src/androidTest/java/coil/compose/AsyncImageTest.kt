@@ -17,7 +17,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
 import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
@@ -31,12 +33,14 @@ import coil.fetch.Fetcher
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.Options
+import coil.request.SuccessResult
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class AsyncImageTest {
 
@@ -83,6 +87,11 @@ class AsyncImageTest {
         }
 
         waitForRequestComplete()
+
+        // Assert that the image was decoded at the correct size.
+        val bitmap = (requestTracker.results.first() as SuccessResult).drawable.toBitmap()
+        assertEquals(bitmap.width, 128.dp.toPx())
+        assertEquals(bitmap.height, 166.dp.toPx())
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -386,6 +395,10 @@ class AsyncImageTest {
             requestTracker.finishedRequests >= requestNumber
         }
         composeTestRule.waitForIdle()
+    }
+
+    private fun Dp.toPx(): Int {
+        return (value * composeTestRule.activity.resources.displayMetrics.density).toInt()
     }
 
     private class LoadingFetcher : Fetcher {

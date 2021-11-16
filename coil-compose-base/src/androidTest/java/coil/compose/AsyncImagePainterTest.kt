@@ -34,7 +34,9 @@ import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import coil.EventListener
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
@@ -113,6 +115,11 @@ class AsyncImagePainterTest {
         }
 
         waitForRequestComplete()
+
+        // Assert that the image was decoded at the correct size.
+        val bitmap = (requestTracker.results.first() as SuccessResult).drawable.toBitmap()
+        assertEquals(bitmap.width, 128.dp.toPx())
+        assertEquals(bitmap.height, 166.dp.toPx())
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -616,6 +623,10 @@ class AsyncImagePainterTest {
             requestTracker.finishedRequests >= requestNumber
         }
         composeTestRule.waitForIdle()
+    }
+
+    private fun Dp.toPx(): Int {
+        return (value * composeTestRule.activity.resources.displayMetrics.density).toInt()
     }
 
     companion object {
