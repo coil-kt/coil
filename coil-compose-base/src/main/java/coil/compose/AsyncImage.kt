@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -52,9 +53,9 @@ fun AsyncImage(
     contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
-    loading: @Composable ((State.Loading) -> Unit)? = null,
-    success: @Composable ((State.Success) -> Unit)? = null,
-    error: @Composable ((State.Error) -> Unit)? = null,
+    loading: @Composable (ColumnScope.(State.Loading) -> Unit)? = null,
+    success: @Composable (ColumnScope.(State.Success) -> Unit)? = null,
+    error: @Composable (ColumnScope.(State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
