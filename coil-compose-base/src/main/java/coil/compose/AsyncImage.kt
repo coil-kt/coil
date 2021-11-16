@@ -3,6 +3,7 @@ package coil.compose
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -71,9 +72,15 @@ fun AsyncImage(
         // Skip drawing the image if the current state is overridden.
         var draw = true
         when (val state = painter.state) {
-            is State.Loading -> if (loading != null) loading(state).also { draw = false }
-            is State.Success -> if (success != null) success(state).also { draw = false }
-            is State.Error -> if (error != null) error(state).also { draw = false }
+            is State.Loading -> if (loading != null) {
+                Column { loading(state) }.also { draw = false }
+            }
+            is State.Success -> if (success != null) {
+                Column { success(state) }.also { draw = false }
+            }
+            is State.Error -> if (error != null) {
+                Column { error(state) }.also { draw = false }
+            }
         }
 
         // Draw the image.
