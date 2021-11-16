@@ -3,7 +3,7 @@
 
 package coil.compose
 
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,9 +38,9 @@ fun AsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    loading: @Composable (ColumnScope.(State.Loading) -> Unit)? = null,
-    success: @Composable (ColumnScope.(State.Success) -> Unit)? = null,
-    error: @Composable (ColumnScope.(State.Error) -> Unit)? = null,
+    loading: @Composable (BoxScope.(State.Loading) -> Unit)? = null,
+    success: @Composable (BoxScope.(State.Success) -> Unit)? = null,
+    error: @Composable (BoxScope.(State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
