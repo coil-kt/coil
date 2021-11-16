@@ -49,7 +49,7 @@ allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.42.1"
+        version by "0.43.0"
         disabledRules by setOf("indent", "max-line-length", "parameter-list-wrapping")
     }
 
@@ -66,10 +66,11 @@ allprojects {
                 url by URL("https://kotlin.github.io/kotlinx.coroutines/")
             }
             externalDocumentationLink {
-                url by URL("https://square.github.io/okhttp/3.x/okhttp/")
+                url by URL("https://square.github.io/okhttp/4.x/okhttp/")
             }
             externalDocumentationLink {
-                url by URL("https://square.github.io/okio/2.x/okio/")
+                url by URL("https://square.github.io/okio/3.x/okio/")
+                packageListUrl by URL("https://square.github.io/okio/3.x/okio/okio/package-list")
             }
         }
     }
