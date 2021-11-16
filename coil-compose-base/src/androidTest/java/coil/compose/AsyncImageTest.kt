@@ -92,6 +92,35 @@ class AsyncImageTest {
     }
 
     @Test
+    fun fillMaxWidth() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            AsyncImage(
+                model = server.url("/image"),
+                contentDescription = null,
+                imageLoader = imageLoader,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(Image),
+            )
+        }
+
+        waitForRequestComplete()
+
+        val displayMetrics = composeTestRule.activity.resources.displayMetrics
+        val expectedWidthPx = displayMetrics.widthPixels.toDouble()
+        val expectedHeightPx = expectedWidthPx * 1326 / 1024
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
+            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
     fun dynamicSize() {
         assumeSupportsCaptureToImage()
 
