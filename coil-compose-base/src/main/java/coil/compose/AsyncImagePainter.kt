@@ -16,7 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.isSpecified
+import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
@@ -36,6 +36,7 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
+import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.SizeResolver
@@ -48,8 +49,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -187,13 +188,18 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
-    /** Suspends until the draw size for this [AsyncImagePainter] is positive. */
+    /** Suspends until the draw size for this [AsyncImagePainter] is unspecified or positive. */
     private inner class DrawSizeResolver : SizeResolver {
 
-        override suspend fun size(): PixelSize {
-            val (width, height) = drawSize.filter { it.isPositive }.first()
-            return PixelSize(width.roundToInt(), height.roundToInt())
-        }
+        override suspend fun size() = drawSize
+            .mapNotNull { size ->
+                when {
+                    size.isUnspecified -> OriginalSize
+                    size.isPositive -> PixelSize(size.width.roundToInt(), size.height.roundToInt())
+                    else -> null
+                }
+            }
+            .first()
     }
 
     @Deprecated(
@@ -330,7 +336,7 @@ private fun Drawable.toPainter(): Painter = when (this) {
     else -> DrawablePainter(mutate())
 }
 
-private val Size.isPositive get() = isSpecified && width >= 0.5 && height >= 0.5
+private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
 /** A simple mutable value holder that avoids recomposition. */
 private class ValueHolder<T>(@JvmField var value: T)
