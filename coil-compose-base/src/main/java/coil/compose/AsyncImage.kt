@@ -113,12 +113,12 @@ private fun ContentScale.toScale(): Scale = when (this) {
 
 private class ConstraintsSizeResolver(private val context: Context) : SizeResolver {
 
-    private val size = MutableStateFlow<Size?>(null)
+    private val constraints = MutableStateFlow<Constraints?>(null)
 
-    override suspend fun size() = size.filterNotNull().first()
+    override suspend fun size() = constraints.filterNotNull().first().toSize()
 
     fun setConstraints(constraints: Constraints) {
-        size.value = constraints.toSize()
+        this.constraints.value = constraints
     }
 
     private fun Constraints.toSize(): Size {
