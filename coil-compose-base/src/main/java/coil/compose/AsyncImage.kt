@@ -131,9 +131,11 @@ private fun Modifier.imageSize(scope: BoxWithConstraintsScope, painter: Painter)
     val dstHeight = constraints.minHeight
     if (dstWidth == Infinity || dstHeight == Infinity) return this
 
+    val srcWidth = intrinsicSize.width
+    val srcHeight = intrinsicSize.height
     val scale = DecodeUtils.computeSizeMultiplier(
-        srcWidth = intrinsicSize.width,
-        srcHeight = intrinsicSize.height,
+        srcWidth = srcWidth,
+        srcHeight = srcHeight,
         dstWidth = dstWidth.toFloat(),
         dstHeight = dstHeight.toFloat(),
         scale = Scale.FILL
@@ -143,8 +145,8 @@ private fun Modifier.imageSize(scope: BoxWithConstraintsScope, painter: Painter)
     return composed {
         with(LocalDensity.current) {
             size(
-                width = (scale * intrinsicSize.width).toDp(),
-                height = (scale * intrinsicSize.height).toDp()
+                width = (scale * srcWidth).toDp(),
+                height = (scale * srcHeight).toDp()
             )
         }
     }
