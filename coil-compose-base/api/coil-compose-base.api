@@ -42,6 +42,12 @@ public abstract class coil/compose/AsyncImagePainter$State {
 	public abstract fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
 }
 
+public final class coil/compose/AsyncImagePainter$State$Empty : coil/compose/AsyncImagePainter$State {
+	public static final field $stable I
+	public static final field INSTANCE Lcoil/compose/AsyncImagePainter$State$Empty;
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+}
+
 public final class coil/compose/AsyncImagePainter$State$Error : coil/compose/AsyncImagePainter$State {
 	public static final field $stable I
 	public fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Lcoil/request/ErrorResult;)V

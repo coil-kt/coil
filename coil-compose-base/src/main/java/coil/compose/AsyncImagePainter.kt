@@ -109,7 +109,7 @@ class AsyncImagePainter internal constructor(
     internal var isPreview = false
 
     /** The current [AsyncImagePainter.State]. */
-    var state: State by mutableStateOf(InitialState)
+    var state: State by mutableStateOf(State.Empty)
         private set
 
     /** The current [ImageRequest]. */
@@ -237,6 +237,11 @@ class AsyncImagePainter internal constructor(
         /** The current painter being drawn by [AsyncImagePainter]. */
         abstract val painter: Painter?
 
+        /** The request has not been started. */
+        object Empty : State() {
+            override val painter: Painter? get() = null
+        }
+
         /** The request is in-progress. */
         data class Loading(
             override val painter: Painter?,
@@ -350,9 +355,6 @@ internal fun requestOf(model: Any?): ImageRequest {
         ImageRequest.Builder(LocalContext.current).data(model).build()
     }
 }
-
-/** A transient state value that's replaced before [rememberAsyncImagePainter] returns. */
-private val InitialState = State.Loading(null)
 
 @Deprecated(
     message = "ImagePainter has been renamed to AsyncImagePainter.",
