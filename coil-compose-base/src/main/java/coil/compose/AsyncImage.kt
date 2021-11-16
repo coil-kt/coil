@@ -1,5 +1,6 @@
 package coil.compose
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxScope
@@ -120,6 +121,7 @@ private fun updateRequest(request: ImageRequest, contentScale: ContentScale): Im
         .build()
 }
 
+@SuppressLint("UnnecessaryComposedModifier")
 private fun Modifier.imageSize(scope: BoxWithConstraintsScope, painter: Painter): Modifier {
     val intrinsicSize = painter.intrinsicSize
     if (intrinsicSize.isUnspecified) return this
