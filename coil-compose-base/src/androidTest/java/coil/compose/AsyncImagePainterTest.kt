@@ -118,10 +118,7 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        // Assert that the image was decoded at the correct size.
-        val bitmap = (requestTracker.results.first() as SuccessResult).drawable.toBitmap()
-        assertEquals(bitmap.width, 128.dp.toPx())
-        assertEquals(bitmap.height, 166.dp.toPx())
+        assertLoadedBitmapSize(128.dp, 166.dp)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -150,6 +147,8 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
+        assertLoadedBitmapSize(128.dp, 166.dp)
+
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
             .assertHeightIsEqualTo(166.dp)
@@ -176,6 +175,8 @@ class AsyncImagePainterTest {
         }
 
         waitForRequestComplete()
+
+        assertLoadedBitmapSize(128.dp, 166.dp)
 
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
@@ -241,7 +242,7 @@ class AsyncImagePainterTest {
             )
         }
 
-        waitForRequestComplete(requestNumber = 1)
+        waitForRequestComplete(finishedRequests = 1)
 
         // Assert that the content is completely red.
         composeTestRule.onNodeWithTag(Image)
@@ -254,7 +255,7 @@ class AsyncImagePainterTest {
         // Now switch the data URI to the blue drawable.
         data = server.url("/blue")
 
-        waitForRequestComplete(requestNumber = 2)
+        waitForRequestComplete(finishedRequests = 2)
 
         // Assert that the content is completely blue.
         composeTestRule.onNodeWithTag(Image)
@@ -617,12 +618,18 @@ class AsyncImagePainterTest {
             .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
 
-    private fun waitForRequestComplete(requestNumber: Int = 1) {
+    private fun waitForRequestComplete(finishedRequests: Int = 1) {
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(10_000) {
-            requestTracker.finishedRequests >= requestNumber
+            requestTracker.finishedRequests >= finishedRequests
         }
         composeTestRule.waitForIdle()
+    }
+
+    private fun assertLoadedBitmapSize(width: Dp, height: Dp, requestNumber: Int = 0) {
+        val bitmap = (requestTracker.results[requestNumber] as SuccessResult).drawable.toBitmap()
+        assertEquals(bitmap.width, width.toPx())
+        assertEquals(bitmap.height, height.toPx())
     }
 
     private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }
