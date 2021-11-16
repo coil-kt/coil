@@ -120,7 +120,7 @@ class AsyncImageTest {
 
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
         val expectedWidthPx = displayMetrics.widthPixels.toDouble()
-        val expectedHeightPx = expectedWidthPx * 1326 / 1024
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -149,7 +149,7 @@ class AsyncImageTest {
 
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
         val expectedHeightPx = displayMetrics.heightPixels.toDouble()
-        val expectedWidthPx = (expectedHeightPx * 1024 / 1326)
+        val expectedWidthPx = (expectedHeightPx * SampleWidth / SampleHeight)
             .coerceAtMost(displayMetrics.widthPixels.toDouble())
 
         composeTestRule.onNodeWithTag(Image)
@@ -177,8 +177,8 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = displayMetrics.widthPixels.toDouble().coerceAtMost(1024.0)
-        val expectedHeightPx = expectedWidthPx * 1326 / 1024
+        val expectedWidthPx = displayMetrics.widthPixels.coerceAtMost(SampleWidth).toDouble()
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -212,8 +212,8 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = (displayMetrics.widthPixels / 2.0).coerceAtMost(1024.0)
-        val expectedHeightPx = expectedWidthPx * 1326 / 1024
+        val expectedWidthPx = (displayMetrics.widthPixels / 2.0).coerceAtMost(SampleWidth.toDouble())
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -378,8 +378,8 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = displayMetrics.widthPixels.toDouble().coerceAtMost(1024.0)
-        val expectedHeightPx = expectedWidthPx * 1326 / 1024
+        val expectedWidthPx = displayMetrics.widthPixels.coerceAtMost(SampleWidth).toDouble()
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -428,5 +428,7 @@ class AsyncImageTest {
         private const val Loading = "loading"
         private const val Error = "error"
         private const val Success = "success"
+        private const val SampleWidth = 1024
+        private const val SampleHeight = 1326
     }
 }
