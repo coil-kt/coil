@@ -4,17 +4,25 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Constraints.Companion.Infinity
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
+import coil.decode.DecodeUtils
 import coil.request.ImageRequest
 import coil.size.OriginalSize
 import coil.size.PixelSize
@@ -85,6 +93,7 @@ fun AsyncImage(
             Image(
                 painter = painter,
                 contentDescription = contentDescription,
+                modifier = Modifier.imageSize(this, painter),
                 alignment = alignment,
                 contentScale = contentScale,
                 alpha = alpha,
@@ -108,6 +117,34 @@ private fun updateRequest(request: ImageRequest, contentScale: ContentScale): Im
             }
         }
         .build()
+}
+
+private fun Modifier.imageSize(scope: BoxWithConstraintsScope, painter: Painter): Modifier {
+    val intrinsicSize = painter.intrinsicSize
+    if (intrinsicSize.isUnspecified) return this
+
+    val constraints = scope.constraints
+    val dstWidth = constraints.minWidth
+    val dstHeight = constraints.minHeight
+    if (dstWidth == Infinity || dstHeight == Infinity) return this
+
+    val scale = DecodeUtils.computeSizeMultiplier(
+        srcWidth = intrinsicSize.width,
+        srcHeight = intrinsicSize.height,
+        dstWidth = dstWidth.toFloat(),
+        dstHeight = dstHeight.toFloat(),
+        scale = Scale.FILL
+    )
+    if (scale <= 1) return this
+
+    return composed {
+        with(LocalDensity.current) {
+            Modifier.size(
+                width = (scale * intrinsicSize.width).toDp(),
+                height = (scale * intrinsicSize.height).toDp()
+            )
+        }
+    }
 }
 
 private fun ContentScale.toScale(): Scale = when (this) {
