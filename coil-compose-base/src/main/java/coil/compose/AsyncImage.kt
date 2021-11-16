@@ -3,6 +3,9 @@ package coil.compose
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -64,7 +67,7 @@ fun AsyncImage(
     val painter = rememberAsyncImagePainter(request, imageLoader)
 
     // Draw the content.
-    BoxWithConstraints(modifier = modifier) {
+    BoxWithConstraints(modifier) {
         // Resolve the size for the image request.
         (request.sizeResolver as? ConstraintsSizeResolver)?.setConstraints(constraints)
 
