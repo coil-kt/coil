@@ -90,7 +90,7 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        assertLoadedBitmapSize(128.dp, 166.dp)
+        assertLoadedBitmapSize(128.dp.toPx(), 166.dp.toPx())
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -121,8 +121,8 @@ class AsyncImageTest {
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         assertLoadedBitmapSize(
-            width = expectedWidthPx.coerceAtMost(SampleWidth.toDouble()).toDp(),
-            height = expectedHeightPx.coerceAtMost(SampleHeight.toDouble()).toDp()
+            width = expectedWidthPx.toInt().coerceAtMost(SampleWidth),
+            height = expectedHeightPx.toInt().coerceAtMost(SampleHeight)
         )
 
         composeTestRule.onNodeWithTag(Image)
@@ -155,8 +155,8 @@ class AsyncImageTest {
             .coerceAtMost(displaySize.width.toDouble())
 
         assertLoadedBitmapSize(
-            width = expectedWidthPx.coerceAtMost(SampleWidth.toDouble()).toDp(),
-            height = expectedHeightPx.coerceAtMost(SampleHeight.toDouble()).toDp()
+            width = expectedWidthPx.toInt().coerceAtMost(SampleWidth),
+            height = expectedHeightPx.toInt().coerceAtMost(SampleHeight)
         )
 
         composeTestRule.onNodeWithTag(Image)
@@ -187,8 +187,8 @@ class AsyncImageTest {
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         assertLoadedBitmapSize(
-            width = expectedWidthPx.coerceAtMost(SampleWidth.toDouble()).toDp(),
-            height = expectedHeightPx.coerceAtMost(SampleHeight.toDouble()).toDp()
+            width = expectedWidthPx.toInt().coerceAtMost(SampleWidth),
+            height = expectedHeightPx.toInt().coerceAtMost(SampleHeight)
         )
 
         composeTestRule.onNodeWithTag(Image)
@@ -226,8 +226,8 @@ class AsyncImageTest {
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         assertLoadedBitmapSize(
-            width = expectedWidthPx.coerceAtMost(SampleWidth.toDouble()).toDp(),
-            height = expectedHeightPx.coerceAtMost(SampleHeight.toDouble()).toDp()
+            width = expectedWidthPx.toInt().coerceAtMost(SampleWidth),
+            height = expectedHeightPx.toInt().coerceAtMost(SampleHeight)
         )
 
         composeTestRule.onNodeWithTag(Image)
@@ -396,8 +396,8 @@ class AsyncImageTest {
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         assertLoadedBitmapSize(
-            width = expectedWidthPx.coerceAtMost(SampleWidth.toDouble()).toDp(),
-            height = expectedHeightPx.coerceAtMost(SampleHeight.toDouble()).toDp()
+            width = expectedWidthPx.toInt().coerceAtMost(SampleWidth),
+            height = expectedHeightPx.toInt().coerceAtMost(SampleHeight)
         )
 
         composeTestRule.onNodeWithTag(Image)
@@ -416,10 +416,10 @@ class AsyncImageTest {
         composeTestRule.waitForIdle()
     }
 
-    private fun assertLoadedBitmapSize(width: Dp, height: Dp, requestNumber: Int = 0) {
+    private fun assertLoadedBitmapSize(width: Int, height: Int, requestNumber: Int = 0) {
         val bitmap = (requestTracker.results[requestNumber] as SuccessResult).drawable.toBitmap()
-        assertEquals(bitmap.width, width.toPx())
-        assertEquals(bitmap.height, height.toPx())
+        assertEquals(bitmap.width, width)
+        assertEquals(bitmap.height, height)
     }
 
     private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }
