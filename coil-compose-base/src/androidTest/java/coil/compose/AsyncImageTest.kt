@@ -34,6 +34,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
+import coil.size.PixelSize
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -118,14 +119,13 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = displayMetrics.widthPixels.toDouble()
+        val expectedWidthPx = displaySize.width.toDouble()
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
-            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -147,15 +147,14 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedHeightPx = displayMetrics.heightPixels.toDouble()
+        val expectedHeightPx = displaySize.height.toDouble()
         val expectedWidthPx = (expectedHeightPx * SampleWidth / SampleHeight)
-            .coerceAtMost(displayMetrics.widthPixels.toDouble())
+            .coerceAtMost(displaySize.width.toDouble())
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
-            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -176,14 +175,13 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = displayMetrics.widthPixels.coerceAtMost(SampleWidth).toDouble()
+        val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
-            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -211,14 +209,13 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = (displayMetrics.widthPixels / 2.0).coerceAtMost(SampleWidth.toDouble())
+        val expectedWidthPx = (displaySize.width / 2.0).coerceAtMost(SampleWidth.toDouble())
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp, tolerance = 1.dp)
-            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp, tolerance = 1.dp)
+            .assertWidthIsEqualTo(expectedWidthPx.toDp(), tolerance = 1.dp)
+            .assertHeightIsEqualTo(expectedHeightPx.toDp(), tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -377,14 +374,13 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val displayMetrics = composeTestRule.activity.resources.displayMetrics
-        val expectedWidthPx = displayMetrics.widthPixels.coerceAtMost(SampleWidth).toDouble()
+        val expectedWidthPx = displaySize.width.toDouble().coerceAtMost(SampleWidth.toDouble())
         val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
-            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -397,9 +393,13 @@ class AsyncImageTest {
         composeTestRule.waitForIdle()
     }
 
-    private fun Dp.toPx(): Int {
-        return (value * composeTestRule.activity.resources.displayMetrics.density).toInt()
-    }
+    private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }
+
+    private fun Double.toDp() = with(composeTestRule.density) { toInt().toDp() }
+
+    private val displaySize: PixelSize
+        get() = composeTestRule.activity.resources.displayMetrics
+            .run { PixelSize(widthPixels, heightPixels) }
 
     private class LoadingFetcher : Fetcher {
 

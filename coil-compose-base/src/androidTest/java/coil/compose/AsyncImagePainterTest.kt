@@ -625,9 +625,7 @@ class AsyncImagePainterTest {
         composeTestRule.waitForIdle()
     }
 
-    private fun Dp.toPx(): Int {
-        return (value * composeTestRule.activity.resources.displayMetrics.density).toInt()
-    }
+    private fun Dp.toPx() = with(composeTestRule.density) { toPx() }.toInt()
 
     companion object {
         private const val Image = "image"
