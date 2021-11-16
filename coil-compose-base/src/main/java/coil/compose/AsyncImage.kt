@@ -2,7 +2,7 @@ package coil.compose
 
 import android.content.Context
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
@@ -65,35 +64,30 @@ fun AsyncImage(
     val painter = rememberAsyncImagePainter(request, imageLoader)
 
     // Draw the content.
-    Layout(
-        content = {
-            // Skip drawing the image if the current state is overridden.
-            var draw = true
-            when (val state = painter.state) {
-                is State.Loading -> if (loading != null) loading(state).also { draw = false }
-                is State.Success -> if (success != null) success(state).also { draw = false }
-                is State.Error -> if (error != null) error(state).also { draw = false }
-            }
+    BoxWithConstraints(modifier = modifier) {
+        // Resolve the size for the image request.
+        (request.sizeResolver as? ConstraintsSizeResolver)?.setConstraints(constraints)
 
-            // Draw the image.
-            if (draw) {
-                Image(
-                    painter = painter,
-                    contentDescription = contentDescription,
-                    modifier = Modifier.fillMaxSize(),
-                    alignment = alignment,
-                    contentScale = contentScale,
-                    alpha = alpha,
-                    colorFilter = colorFilter
-                )
-            }
-        },
-        modifier = modifier,
-        measurePolicy = { _, constraints ->
-            (request.sizeResolver as? ConstraintsSizeResolver)?.setConstraints(constraints)
-            layout(constraints.minWidth, constraints.minHeight) {}
+        // Skip drawing the image if the current state is overridden.
+        var draw = true
+        when (val state = painter.state) {
+            is State.Loading -> if (loading != null) loading(state).also { draw = false }
+            is State.Success -> if (success != null) success(state).also { draw = false }
+            is State.Error -> if (error != null) error(state).also { draw = false }
         }
-    )
+
+        // Draw the image.
+        if (draw) {
+            Image(
+                painter = painter,
+                contentDescription = contentDescription,
+                alignment = alignment,
+                contentScale = contentScale,
+                alpha = alpha,
+                colorFilter = colorFilter
+            )
+        }
+    }
 }
 
 @Composable
