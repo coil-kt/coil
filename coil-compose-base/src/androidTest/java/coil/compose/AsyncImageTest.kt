@@ -317,6 +317,38 @@ class AsyncImageTest {
         expected.assertIsSimilarTo(actual)
     }
 
+    @Test
+    fun listener() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(server.url("/image"))
+                    // Ensure this doesn't constantly recompose or restart image requests.
+                    .listener { _, _ -> }
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader,
+                modifier = Modifier
+                    .testTag(Image),
+            )
+        }
+
+        waitForRequestComplete()
+
+        val displayMetrics = composeTestRule.activity.resources.displayMetrics
+        val expectedWidthPx = displayMetrics.widthPixels.toDouble().coerceAtMost(1024.0)
+        val expectedHeightPx = expectedWidthPx * 1326 / 1024
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo((expectedWidthPx / displayMetrics.density).dp)
+            .assertHeightIsEqualTo((expectedHeightPx / displayMetrics.density).dp)
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
     private fun waitForRequestComplete(requestNumber: Int = 1) {
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(10_000) {
