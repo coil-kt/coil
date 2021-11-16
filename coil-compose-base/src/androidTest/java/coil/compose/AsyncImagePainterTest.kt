@@ -1,5 +1,6 @@
 package coil.compose
 
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,7 @@ import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.size.PixelSize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -310,7 +312,7 @@ class AsyncImagePainterTest {
     }
 
     @Test
-    fun basicLoad_nosize() {
+    fun basicLoad_noSize() {
         composeTestRule.setContent {
             Image(
                 painter = rememberAsyncImagePainter(
@@ -543,10 +545,8 @@ class AsyncImagePainterTest {
 
         waitForRequestComplete()
 
-        val displayWidthDp = composeTestRule.activity.resources.displayMetrics
-            .run { widthPixels / density }.dp
         composeTestRule.onNodeWithTag(Image)
-            .assertWidthIsEqualTo(displayWidthDp)
+            .assertWidthIsEqualTo(displaySize.width.toDp())
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
@@ -625,7 +625,13 @@ class AsyncImagePainterTest {
         composeTestRule.waitForIdle()
     }
 
-    private fun Dp.toPx() = with(composeTestRule.density) { toPx() }.toInt()
+    private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }
+
+    private fun Int.toDp() = with(composeTestRule.density) { toDp() }
+
+    private val displaySize: PixelSize
+        get() = composeTestRule.activity.requireViewById<View>(android.R.id.content)
+            .run { PixelSize(width, height) }
 
     companion object {
         private const val Image = "image"
