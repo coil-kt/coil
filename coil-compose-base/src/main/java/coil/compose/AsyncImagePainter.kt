@@ -109,7 +109,7 @@ class AsyncImagePainter internal constructor(
     internal var isPreview = false
 
     /** The current [AsyncImagePainter.State]. */
-    var state: State by mutableStateOf(State.Loading(null))
+    var state: State by mutableStateOf(InitialState)
         private set
 
     /** The current [ImageRequest]. */
@@ -350,6 +350,9 @@ internal fun requestOf(model: Any?): ImageRequest {
         ImageRequest.Builder(LocalContext.current).data(model).build()
     }
 }
+
+/** A transient state value that's replaced before [rememberAsyncImagePainter] returns. */
+private val InitialState = State.Loading(null)
 
 @Deprecated(
     message = "ImagePainter has been renamed to AsyncImagePainter.",
