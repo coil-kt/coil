@@ -15,10 +15,10 @@ import coil.request.Options
 import coil.size.OriginalSize
 import coil.size.PixelSize
 import coil.util.assertIsSimilarTo
+import coil.util.assumeTrue
 import coil.util.getDrawableCompat
 import coil.util.withTestActivity
 import kotlinx.coroutines.runBlocking
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

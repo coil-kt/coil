@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit
  * @param responseDelayMillis Allows the setting of a response delay to simulate 'real-world'
  * network conditions. Defaults to 0ms.
  */
-@Suppress("TestFunctionName")
 fun ImageMockWebServer(responseDelayMillis: Long = 0): MockWebServer {
     val dispatcher = object : Dispatcher() {
         override fun dispatch(request: RecordedRequest) = when (request.path) {

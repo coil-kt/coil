@@ -21,11 +21,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import coil.ImageLoader
 import coil.request.Options
+import coil.util.assumeTrue
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.sink
 import okio.source
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

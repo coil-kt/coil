@@ -9,11 +9,11 @@ import coil.request.Options
 import coil.request.Parameters
 import coil.size.PixelSize
 import coil.util.assertIsSimilarTo
+import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.source
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse

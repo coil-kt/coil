@@ -13,9 +13,9 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.request.animatedTransformation
 import coil.util.assertIsSimilarTo
+import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
 import kotlinx.coroutines.runBlocking
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue

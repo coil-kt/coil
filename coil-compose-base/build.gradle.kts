@@ -30,12 +30,11 @@ dependencies {
 
     implementation(Library.ACCOMPANIST_DRAWABLE_PAINTER)
 
-    api(Library.COMPOSE_UI)
+    api(Library.COMPOSE_FOUNDATION)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
 
-    androidTestImplementation(Library.COMPOSE_FOUNDATION)
     androidTestImplementation(Library.COMPOSE_UI_TEST_JUNIT)
     androidTestImplementation(Library.COMPOSE_UI_TEST_MANIFEST)
 }

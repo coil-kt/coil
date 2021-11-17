@@ -14,12 +14,12 @@ import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
 import coil.util.assertIsSimilarTo
+import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.source
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
