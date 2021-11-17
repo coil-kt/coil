@@ -369,11 +369,12 @@ class AsyncImageTest {
         assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
+            val value = "" // Use a fake value inside the listener to make it stateful.
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(server.url("/image"))
                     // Ensure this doesn't constantly recompose or restart image requests.
-                    .listener { _, _ -> }
+                    .listener { _, _ -> value + "" }
                     .build(),
                 contentDescription = null,
                 imageLoader = imageLoader,
