@@ -1,6 +1,6 @@
 package coil.compose
 
-import android.os.Build.VERSION.SDK_INT
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -35,20 +35,23 @@ import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import coil.EventListener
 import coil.ImageLoader
-import coil.compose.ImagePainter.ExecuteCallback
-import coil.compose.ImagePainter.State
+import coil.compose.AsyncImagePainter.State
 import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
 import coil.compose.utils.ImageMockWebServer
 import coil.compose.utils.assertIsSimilarTo
+import coil.compose.utils.assumeSupportsCaptureToImage
 import coil.compose.utils.resourceUri
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.size.PixelSize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -59,7 +62,6 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -68,7 +70,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ImagePainterTest {
+class AsyncImagePainterTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -99,12 +101,14 @@ class ImagePainterTest {
 
     @Test
     fun basicLoad_http() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(server.url("/image")),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp, 166.dp)
@@ -113,6 +117,8 @@ class ImagePainterTest {
         }
 
         waitForRequestComplete()
+
+        assertLoadedBitmapSize(128.dp, 166.dp)
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
@@ -124,12 +130,14 @@ class ImagePainterTest {
 
     @Test
     fun basicLoad_drawableId() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(R.drawable.sample),
+                painter = rememberAsyncImagePainter(
+                    model = R.drawable.sample,
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp, 166.dp)
@@ -138,6 +146,8 @@ class ImagePainterTest {
         }
 
         waitForRequestComplete()
+
+        assertLoadedBitmapSize(128.dp, 166.dp)
 
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
@@ -149,12 +159,14 @@ class ImagePainterTest {
 
     @Test
     fun basicLoad_drawableUri() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(resourceUri(R.drawable.sample)),
+                painter = rememberAsyncImagePainter(
+                    model = resourceUri(R.drawable.sample),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp, 166.dp)
@@ -163,6 +175,8 @@ class ImagePainterTest {
         }
 
         waitForRequestComplete()
+
+        assertLoadedBitmapSize(128.dp, 166.dp)
 
         composeTestRule.onNodeWithTag(Image)
             .assertWidthIsEqualTo(128.dp)
@@ -192,8 +206,8 @@ class ImagePainterTest {
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image"),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
                     imageLoader = imageLoader,
                 ),
                 contentDescription = null,
@@ -211,14 +225,16 @@ class ImagePainterTest {
 
     @Test
     fun basicLoad_switchData() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         var data by mutableStateOf(server.url("/image"))
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(data),
+                painter = rememberAsyncImagePainter(
+                    model = data,
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp)
@@ -226,7 +242,7 @@ class ImagePainterTest {
             )
         }
 
-        waitForRequestComplete(requestNumber = 1)
+        waitForRequestComplete(finishedRequests = 1)
 
         // Assert that the content is completely red.
         composeTestRule.onNodeWithTag(Image)
@@ -239,7 +255,7 @@ class ImagePainterTest {
         // Now switch the data URI to the blue drawable.
         data = server.url("/blue")
 
-        waitForRequestComplete(requestNumber = 2)
+        waitForRequestComplete(finishedRequests = 2)
 
         // Assert that the content is completely blue.
         composeTestRule.onNodeWithTag(Image)
@@ -258,7 +274,10 @@ class ImagePainterTest {
             var size by mutableStateOf(128.dp)
 
             composeTestRule.setContent {
-                val painter = rememberImagePainter(server.url("/image"))
+                val painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
+                    imageLoader = imageLoader
+                )
 
                 Image(
                     painter = painter,
@@ -294,10 +313,13 @@ class ImagePainterTest {
     }
 
     @Test
-    fun basicLoad_nosize() {
+    fun basicLoad_noSize() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(server.url("/image")),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier.testTag(Image),
             )
@@ -312,7 +334,7 @@ class ImagePainterTest {
     }
 
     @Test
-    fun lazycolumn() {
+    fun lazyColumn() {
         composeTestRule.setContent {
             LazyColumn(
                 modifier = Modifier
@@ -320,7 +342,10 @@ class ImagePainterTest {
             ) {
                 item {
                     Image(
-                        painter = rememberImagePainter(server.url("/image")),
+                        painter = rememberAsyncImagePainter(
+                            model = server.url("/image"),
+                            imageLoader = imageLoader
+                        ),
                         contentDescription = null,
                         modifier = Modifier
                             .fillParentMaxHeight()
@@ -340,14 +365,16 @@ class ImagePainterTest {
 
     @Test
     fun basicLoad_error() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/noimage"),
-                    builder = { error(R.drawable.red_rectangle) }
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/noimage"))
+                        .error(R.drawable.red_rectangle)
+                        .build(),
+                    imageLoader = imageLoader
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -369,15 +396,17 @@ class ImagePainterTest {
 
     @Test
     fun previewPlaceholder() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 Image(
-                    painter = rememberImagePainter(
-                        data = server.url("/image"),
-                        builder = { placeholder(R.drawable.red_rectangle) }
+                    painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(server.url("/image"))
+                            .placeholder(R.drawable.red_rectangle)
+                            .build(),
+                        imageLoader = imageLoader
                     ),
                     contentDescription = null,
                     modifier = Modifier
@@ -404,7 +433,10 @@ class ImagePainterTest {
     fun errorStillHasSize() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(server.url("/noimage")),
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/noimage"),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(128.dp)
@@ -425,8 +457,9 @@ class ImagePainterTest {
     fun data_imagebitmap_throws() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    painterResource(R.drawable.sample),
+                painter = rememberAsyncImagePainter(
+                    model = painterResource(R.drawable.sample),
+                    imageLoader = imageLoader
                 ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
@@ -438,8 +471,9 @@ class ImagePainterTest {
     fun data_imagevector_throws() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    painterResource(R.drawable.black_rectangle_vector),
+                painter = rememberAsyncImagePainter(
+                    model = painterResource(R.drawable.black_rectangle_vector),
+                    imageLoader = imageLoader,
                 ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
@@ -451,7 +485,10 @@ class ImagePainterTest {
     fun data_painter_throws() {
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(ColorPainter(Color.Magenta)),
+                painter = rememberAsyncImagePainter(
+                    model = ColorPainter(Color.Magenta),
+                    imageLoader = imageLoader
+                ),
                 contentDescription = null,
                 modifier = Modifier.size(128.dp),
             )
@@ -460,17 +497,17 @@ class ImagePainterTest {
 
     @Test
     fun crossfade() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image"),
-                    builder = {
-                        placeholder(R.drawable.red_rectangle)
-                        crossfade(true)
-                    }
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/image"))
+                        .placeholder(R.drawable.red_rectangle)
+                        .crossfade(true)
+                        .build(),
+                    imageLoader = imageLoader
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -491,13 +528,13 @@ class ImagePainterTest {
 
     @Test
     fun fillMaxWidth() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image")
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
+                    imageLoader = imageLoader
                 ),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
@@ -509,10 +546,8 @@ class ImagePainterTest {
 
         waitForRequestComplete()
 
-        val displayWidthDp = composeTestRule.activity.resources.displayMetrics
-            .run { widthPixels / density }.dp
         composeTestRule.onNodeWithTag(Image)
-            .assertWidthIsEqualTo(displayWidthDp)
+            .assertWidthIsEqualTo(displaySize.width.toDp())
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
@@ -520,8 +555,7 @@ class ImagePainterTest {
 
     @Test
     fun columnWithHeight() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Box(
@@ -534,8 +568,9 @@ class ImagePainterTest {
                         .verticalScroll(rememberScrollState())
                 ) {
                     Image(
-                        painter = rememberImagePainter(
-                            data = server.url("/image"),
+                        painter = rememberAsyncImagePainter(
+                            model = server.url("/image"),
+                            imageLoader = imageLoader
                         ),
                         contentDescription = null,
                         contentScale = ContentScale.Fit,
@@ -557,16 +592,17 @@ class ImagePainterTest {
     }
 
     @Test
-    fun immediateExecuteCallbackExecutesWithoutSpecifiedSize() {
-        // captureToImage is SDK_INT >= 26.
-        assumeTrue(SDK_INT >= 26)
+    fun specifiedSizeResolverExecutesWithoutSpecifiedSize() {
+        assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
             Image(
-                painter = rememberImagePainter(
-                    data = server.url("/image"),
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/image"))
+                        .size(100, 100)
+                        .build(),
                     imageLoader = imageLoader,
-                    onExecute = ExecuteCallback.Immediate
                 ),
                 contentDescription = null,
                 modifier = Modifier
@@ -582,19 +618,27 @@ class ImagePainterTest {
             .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
 
-    @Composable
-    private inline fun rememberImagePainter(
-        data: Any,
-        builder: ImageRequest.Builder.() -> Unit = {}
-    ) = rememberImagePainter(data, imageLoader, builder = builder)
-
-    private fun waitForRequestComplete(requestNumber: Int = 1) {
+    private fun waitForRequestComplete(finishedRequests: Int = 1) {
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(10_000) {
-            requestTracker.finishedRequests >= requestNumber
+            requestTracker.finishedRequests >= finishedRequests
         }
         composeTestRule.waitForIdle()
     }
+
+    private fun assertLoadedBitmapSize(width: Dp, height: Dp, requestNumber: Int = 0) {
+        val bitmap = (requestTracker.results[requestNumber] as SuccessResult).drawable.toBitmap()
+        assertEquals(bitmap.width, width.toPx())
+        assertEquals(bitmap.height, height.toPx())
+    }
+
+    private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }
+
+    private fun Int.toDp() = with(composeTestRule.density) { toDp() }
+
+    private val displaySize: PixelSize
+        get() = composeTestRule.activity.findViewById<View>(android.R.id.content)!!
+            .run { PixelSize(width, height) }
 
     companion object {
         private const val Image = "image"

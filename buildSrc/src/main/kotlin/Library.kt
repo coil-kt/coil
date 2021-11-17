@@ -26,7 +26,6 @@ object Library {
 
     const val COMPOSE_VERSION = "1.0.5"
     const val COMPOSE_FOUNDATION = "androidx.compose.foundation:foundation:$COMPOSE_VERSION"
-    const val COMPOSE_UI = "androidx.compose.ui:ui:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_JUNIT = "androidx.compose.ui:ui-test-junit4:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest:$COMPOSE_VERSION"
 

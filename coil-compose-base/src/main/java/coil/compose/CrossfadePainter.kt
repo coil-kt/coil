@@ -27,7 +27,9 @@ internal fun rememberCrossfadePainter(
     scale: Scale,
     durationMillis: Int,
     fadeStart: Boolean
-): Painter = remember(key) { CrossfadePainter(start, end, scale, durationMillis, fadeStart) }
+): Painter = remember(key) {
+    CrossfadePainter(start, end, scale, durationMillis, fadeStart)
+}
 
 /**
  * A [Painter] that crossfades from [start] to [end].
@@ -118,7 +120,9 @@ private class CrossfadePainter(
                 inset(
                     horizontal = (size.width - drawSize.width) / 2,
                     vertical = (size.height - drawSize.height) / 2
-                ) { draw(drawSize, alpha, colorFilter) }
+                ) {
+                    draw(drawSize, alpha, colorFilter)
+                }
             }
         }
     }
