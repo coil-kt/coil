@@ -21,6 +21,7 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
@@ -38,7 +39,6 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
-import coil.size.PixelSize
 import coil.size.Scale
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
@@ -467,9 +467,9 @@ class AsyncImageTest {
 
     private fun Double.toDp() = with(composeTestRule.density) { toInt().toDp() }
 
-    private val displaySize: PixelSize
+    private val displaySize: IntSize
         get() = composeTestRule.activity.findViewById<View>(android.R.id.content)!!
-            .run { PixelSize(width, height) }
+            .run { IntSize(width, height) }
 
     private class LoadingFetcher : Fetcher {
 
