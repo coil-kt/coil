@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
@@ -32,6 +34,8 @@ import coil.request.ImageRequest
  *  onscreen.
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
  *  rendered onscreen.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
+ *  into the destination.
  */
 @Composable
 fun AsyncImage(
@@ -45,6 +49,7 @@ fun AsyncImage(
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
@@ -57,4 +62,5 @@ fun AsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
+    filterQuality = filterQuality
 )
