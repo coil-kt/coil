@@ -36,9 +36,12 @@ fun rememberAsyncImagePainter(
     replaceWith = ReplaceWith(
         expression = "rememberAsyncImagePainter(" +
             "ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build())",
-        imports = ["coil.compose.rememberAsyncImagePainter", "coil.request.ImageRequest"]
-    ),
-    level = DeprecationLevel.ERROR
+        imports = [
+            "androidx.compose.ui.platform.LocalContext",
+            "coil.compose.rememberAsyncImagePainter",
+            "coil.request.ImageRequest",
+        ]
+    )
 )
 @Composable
 inline fun rememberImagePainter(
@@ -57,8 +60,7 @@ inline fun rememberImagePainter(
     replaceWith = ReplaceWith(
         expression = "rememberAsyncImagePainter(request)",
         imports = ["coil.compose.rememberAsyncImagePainter"]
-    ),
-    level = DeprecationLevel.ERROR
+    )
 )
 @Composable
 fun rememberImagePainter(
