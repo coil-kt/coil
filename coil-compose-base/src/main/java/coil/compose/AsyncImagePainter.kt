@@ -180,7 +180,7 @@ class AsyncImagePainter internal constructor(
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
-                    state = State.Loading(placeholder?.toPainter(filterQuality))
+                    state = State.Loading(placeholder?.toPainter())
                 }
             )
             .apply {
@@ -195,8 +195,15 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun ImageResult.toState() = when (this) {
-        is SuccessResult -> State.Success(drawable.toPainter(filterQuality), this)
-        is ErrorResult -> State.Error(drawable?.toPainter(filterQuality), this)
+        is SuccessResult -> State.Success(drawable.toPainter(), this)
+        is ErrorResult -> State.Error(drawable?.toPainter(), this)
+    }
+
+    /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
+    internal fun Drawable.toPainter() = when (this) {
+        is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
+        is ColorDrawable -> ColorPainter(Color(color))
+        else -> DrawablePainter(mutate())
     }
 
     /** Suspends until the draw size for this [AsyncImagePainter] is unspecified or positive. */
@@ -287,7 +294,7 @@ private fun updatePainter(
     // that without executing an image request.
     if (imagePainter.isPreview) {
         val newRequest = request.newBuilder().defaults(imageLoader.defaults).build()
-        imagePainter.painter = newRequest.placeholder?.toPainter(imagePainter.filterQuality)
+        imagePainter.painter = with(imagePainter) { newRequest.placeholder?.toPainter() }
         return
     }
 
@@ -338,13 +345,6 @@ private fun unsupportedData(name: String): Nothing {
         "Unsupported type: $name. If you wish to display this $name, " +
             "use androidx.compose.foundation.Image."
     )
-}
-
-/** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
-private fun Drawable.toPainter(filterQuality: FilterQuality): Painter = when (this) {
-    is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
-    is ColorDrawable -> ColorPainter(Color(color))
-    else -> DrawablePainter(mutate())
 }
 
 private val Size.isPositive get() = width >= 0.5 && height >= 0.5

@@ -92,7 +92,7 @@ fun AsyncImage(
             is State.Loading -> if (loading != null) loading(state).also { draw = false }
             is State.Success -> if (success != null) success(state).also { draw = false }
             is State.Error -> if (error != null) error(state).also { draw = false }
-            is State.Empty -> {} // This shouldn't happen if rendering on the main thread.
+            is State.Empty -> draw = false // This shouldn't happen if rendering on the main thread.
         }
 
         // Draw the image.
