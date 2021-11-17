@@ -41,10 +41,12 @@ fun resourceUri(@IdRes resId: Int): Uri {
 
 fun ImageBitmap.assertIsSimilarTo(
     @IdRes resId: Int,
+    scale: Scale = Scale.FIT,
     @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.9 // Use a lower threshold by default.
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val expected = AppCompatResources.getDrawable(context, resId)!!.toBitmap().fitCenter(width, height)
+    val expected = AppCompatResources.getDrawable(context, resId)!!
+        .toBitmap().scale(width, height, scale)
     asAndroidBitmap().assertIsSimilarTo(expected, threshold)
 }
 
@@ -55,25 +57,25 @@ fun ImageBitmap.assertIsSimilarTo(
     asAndroidBitmap().assertIsSimilarTo(bitmap.asAndroidBitmap(), threshold)
 }
 
-private fun Bitmap.fitCenter(width: Int, height: Int): Bitmap {
+private fun Bitmap.scale(width: Int, height: Int, scale: Scale = Scale.FIT): Bitmap {
     val input = apply { density = Bitmap.DENSITY_NONE }
 
     return createBitmap(width, height).applyCanvas {
         // Draw the white background to match the test background.
         drawColor(Color.WHITE)
 
-        val scale = DecodeUtils.computeSizeMultiplier(
+        val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = input.width,
             srcHeight = input.height,
             dstWidth = width,
             dstHeight = height,
-            scale = Scale.FIT
+            scale = scale
         ).toFloat()
-        val dx = (width - scale * input.width) / 2
-        val dy = (height - scale * input.height) / 2
+        val dx = (width - multiplier * input.width) / 2
+        val dy = (height - multiplier * input.height) / 2
 
         translate(dx, dy)
-        scale(scale, scale)
+        scale(multiplier, multiplier)
         drawBitmap(input, 0f, 0f, null)
     }
 }

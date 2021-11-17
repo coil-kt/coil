@@ -6,12 +6,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
@@ -395,6 +397,37 @@ class AsyncImageTest {
             .assertIsSimilarTo(R.drawable.sample)
     }
 
+    @Test
+    fun fillMaxSize_scaleFill() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            AsyncImage(
+                model = server.url("/image"),
+                contentDescription = null,
+                imageLoader = imageLoader,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag(Image),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        waitForRequestComplete()
+
+        val expectedWidthPx = displaySize.width.toDouble()
+        val expectedHeightPx = displaySize.height.toDouble()
+
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx, scale = Scale.FILL)
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
+    }
+
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(10_000) {
@@ -412,18 +445,19 @@ class AsyncImageTest {
     private fun assertSampleLoadedBitmapSize(
         composableWidth: Double,
         composableHeight: Double,
+        scale: Scale = Scale.FIT,
         requestNumber: Int = 0
     ) {
-        val scale = DecodeUtils.computeSizeMultiplier(
+        val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = SampleWidth.toDouble(),
             srcHeight = SampleHeight.toDouble(),
             dstWidth = composableWidth,
             dstHeight = composableHeight,
-            scale = Scale.FIT
+            scale = scale
         ).coerceAtMost(1.0)
         assertLoadedBitmapSize(
-            width = (scale * SampleWidth).toInt(),
-            height = (scale * SampleHeight).toInt(),
+            width = (multiplier * SampleWidth).toInt(),
+            height = (multiplier * SampleHeight).toInt(),
             requestNumber = requestNumber
         )
     }
