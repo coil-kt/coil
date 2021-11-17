@@ -15,6 +15,8 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -54,6 +56,8 @@ import kotlinx.coroutines.flow.first
  *  onscreen.
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
  *  rendered onscreen.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
+ *  into the destination.
  */
 @Composable
 fun AsyncImage(
@@ -68,10 +72,11 @@ fun AsyncImage(
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
-    val painter = rememberAsyncImagePainter(request, imageLoader)
+    val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
 
     // Draw the content.
     BoxWithConstraints(
@@ -87,7 +92,7 @@ fun AsyncImage(
             is State.Loading -> if (loading != null) loading(state).also { draw = false }
             is State.Success -> if (success != null) success(state).also { draw = false }
             is State.Error -> if (error != null) error(state).also { draw = false }
-            is State.Empty -> {} // This shouldn't happen.
+            is State.Empty -> {} // This shouldn't happen if rendering on the main thread.
         }
 
         // Draw the image.

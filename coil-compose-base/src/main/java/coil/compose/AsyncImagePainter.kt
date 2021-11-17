@@ -19,9 +19,11 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
@@ -67,11 +69,14 @@ import kotlin.math.roundToInt
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
+ *  into the destination.
  */
 @Composable
 fun rememberAsyncImagePainter(
     model: Any?,
     imageLoader: ImageLoader,
+    filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter {
     val request = requestOf(model)
     requireSupportedData(request.data)
@@ -81,6 +86,7 @@ fun rememberAsyncImagePainter(
     val painter = remember(scope) { AsyncImagePainter(scope, request, imageLoader) }
     painter.request = request
     painter.imageLoader = imageLoader
+    painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
     painter.onRemembered() // Invoke this manually so `painter.state` is up to date immediately.
     updatePainter(painter, request, imageLoader)
@@ -105,6 +111,7 @@ class AsyncImagePainter internal constructor(
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     internal var painter: Painter? by mutableStateOf(null)
+    internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
 
     /** The current [AsyncImagePainter.State]. */
@@ -173,7 +180,7 @@ class AsyncImagePainter internal constructor(
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
-                    state = State.Loading(painter = placeholder?.toPainter())
+                    state = State.Loading(placeholder?.toPainter(filterQuality))
                 }
             )
             .apply {
@@ -185,6 +192,11 @@ class AsyncImagePainter internal constructor(
                 }
             }
             .build()
+    }
+
+    private fun ImageResult.toState() = when (this) {
+        is SuccessResult -> State.Success(drawable.toPainter(filterQuality), this)
+        is ErrorResult -> State.Error(drawable?.toPainter(filterQuality), this)
     }
 
     /** Suspends until the draw size for this [AsyncImagePainter] is unspecified or positive. */
@@ -275,7 +287,7 @@ private fun updatePainter(
     // that without executing an image request.
     if (imagePainter.isPreview) {
         val newRequest = request.newBuilder().defaults(imageLoader.defaults).build()
-        imagePainter.painter = newRequest.placeholder?.toPainter()
+        imagePainter.painter = newRequest.placeholder?.toPainter(imagePainter.filterQuality)
         return
     }
 
@@ -328,14 +340,9 @@ private fun unsupportedData(name: String): Nothing {
     )
 }
 
-private fun ImageResult.toState(): State = when (this) {
-    is SuccessResult -> State.Success(drawable.toPainter(), this)
-    is ErrorResult -> State.Error(drawable?.toPainter(), this)
-}
-
 /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
-private fun Drawable.toPainter(): Painter = when (this) {
-    is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap())
+private fun Drawable.toPainter(filterQuality: FilterQuality): Painter = when (this) {
+    is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
     is ColorDrawable -> ColorPainter(Color(color))
     else -> DrawablePainter(mutate())
 }
