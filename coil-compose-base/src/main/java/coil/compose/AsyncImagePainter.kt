@@ -368,8 +368,7 @@ internal fun requestOf(model: Any?): ImageRequest {
     replaceWith = ReplaceWith(
         expression = "AsyncImagePainter",
         imports = ["coil.compose.AsyncImagePainter"]
-    ),
-    level = DeprecationLevel.ERROR
+    )
 )
 typealias ImagePainter = AsyncImagePainter
 
@@ -379,9 +378,12 @@ typealias ImagePainter = AsyncImagePainter
         expression = "rememberAsyncImagePainter(" +
             "ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(), " +
             "imageLoader)",
-        imports = ["coil.compose.rememberAsyncImagePainter", "coil.request.ImageRequest"]
-    ),
-    level = DeprecationLevel.ERROR
+        imports = [
+            "androidx.compose.ui.platform.LocalContext",
+            "coil.compose.rememberAsyncImagePainter",
+            "coil.request.ImageRequest",
+        ]
+    )
 )
 @Composable
 inline fun rememberImagePainter(
@@ -399,8 +401,7 @@ inline fun rememberImagePainter(
     replaceWith = ReplaceWith(
         expression = "rememberAsyncImagePainter(request, imageLoader)",
         imports = ["coil.compose.rememberAsyncImagePainter"]
-    ),
-    level = DeprecationLevel.ERROR
+    )
 )
 @Composable
 fun rememberImagePainter(
