@@ -72,7 +72,6 @@ fun AsyncImage(
  *  represents. This should always be provided unless this image is used for decorative purposes,
  *  and does not represent a meaningful action that a user can take.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param content A callback to draw the content for the current [AsyncImagePainter.State].
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -83,18 +82,19 @@ fun AsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
  *  into the destination.
+ * @param content A callback to draw the content for the current [AsyncImagePainter.State].
  */
 @Composable
 fun AsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    content: @Composable (AsyncImageScope.(State) -> Unit) = DefaultContent,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    content: @Composable (AsyncImageScope.(State) -> Unit) = DefaultContent,
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
