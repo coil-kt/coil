@@ -171,8 +171,8 @@ interface AsyncImageScope : BoxScope {
 
     companion object {
         /**
-         * The default content composable only draws [AsyncImageContent]
-         * for all [AsyncImagePainter] states.
+         * The default content composable only draws [AsyncImageContent] for all
+         * [AsyncImagePainter] states.
          */
         val DefaultContent: @Composable (AsyncImageScope.(State) -> Unit) = { AsyncImageContent() }
     }
