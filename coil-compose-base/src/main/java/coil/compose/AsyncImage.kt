@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Constraints.Companion.Infinity
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
+import coil.compose.AsyncImageScope.Companion.DefaultContent
 import coil.decode.DecodeUtils
 import coil.request.ImageRequest
 import coil.size.OriginalSize
@@ -167,6 +168,14 @@ interface AsyncImageScope : BoxScope {
     val alpha: Float
 
     val colorFilter: ColorFilter?
+
+    companion object {
+        /**
+         * The default content composable only draws [AsyncImageContent]
+         * for all [AsyncImagePainter] states.
+         */
+        val DefaultContent: @Composable (AsyncImageScope.(State) -> Unit) = { AsyncImageContent() }
+    }
 }
 
 /**
@@ -198,8 +207,6 @@ fun AsyncImageScope.AsyncImageContent(
     alpha = alpha,
     colorFilter = colorFilter
 )
-
-val DefaultContent: @Composable (AsyncImageScope.(State) -> Unit) = { AsyncImageContent() }
 
 @Stable
 private fun contentOf(

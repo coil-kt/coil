@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImagePainter.State
+import coil.compose.AsyncImageScope.Companion.DefaultContent
 import coil.request.ImageRequest
 
 /**
