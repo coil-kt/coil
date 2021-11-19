@@ -216,7 +216,7 @@ private fun contentOf(
             is State.Loading -> if (loading != null) loading(state).also { draw = false }
             is State.Success -> if (success != null) success(state).also { draw = false }
             is State.Error -> if (error != null) error(state).also { draw = false }
-            is State.Empty -> draw = false // Skipped if rendering on the main thread.
+            is State.Empty -> {} // Skipped if rendering on the main thread.
         }
         if (draw) AsyncImageContent()
     }
