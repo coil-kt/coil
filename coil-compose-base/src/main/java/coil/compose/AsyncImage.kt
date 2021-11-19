@@ -258,12 +258,11 @@ private fun computeContentSize(constraints: Constraints, intrinsicSize: Size): S
         dstWidth = dstWidth.toFloat(),
         dstHeight = dstHeight.toFloat(),
         scale = Scale.FILL
+    ).coerceAtLeast(1f)
+    return constraints.constrain(
+        width = scale * srcWidth,
+        height = scale * srcHeight
     )
-    if (scale > 1) {
-        return Size(scale * srcWidth, scale * srcHeight)
-    } else {
-        return Size.Unspecified
-    }
 }
 
 @Stable
@@ -271,6 +270,12 @@ private fun ContentScale.toScale() = when (this) {
     ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
     else -> Scale.FILL
 }
+
+@Stable
+private fun Constraints.constrain(width: Float, height: Float) = Size(
+    width = width.coerceIn(minWidth.toFloat(), maxWidth.toFloat()),
+    height = height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
+)
 
 private class ConstraintsSizeResolver(private val context: Context) : SizeResolver {
 
