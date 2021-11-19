@@ -171,7 +171,7 @@ interface AsyncImageScope : BoxScope {
 }
 
 /**
- * A composable that draws an [AsyncImageScope]'s content with its current attributes.
+ * A composable that draws an [AsyncImage]'s content with its current attributes.
  */
 @Composable
 fun AsyncImageScope.AsyncImageContent(
