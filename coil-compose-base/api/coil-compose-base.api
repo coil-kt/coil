@@ -104,7 +104,7 @@ public abstract interface class coil/compose/AsyncImageScope : androidx/compose/
 	public abstract fun getContentDescription ()Ljava/lang/String;
 	public abstract fun getContentScale ()Landroidx/compose/ui/layout/ContentScale;
 	public abstract fun getContentSize-NH-jbRc ()J
-	public abstract fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public abstract fun getPainter ()Lcoil/compose/AsyncImagePainter;
 }
 
 public final class coil/compose/ComposableSingletons$AsyncImageKt {

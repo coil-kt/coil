@@ -18,7 +18,6 @@ import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -157,7 +156,7 @@ interface AsyncImageScope : BoxScope {
 
     val contentSize: Size
 
-    val painter: Painter?
+    val painter: AsyncImagePainter
 
     val contentDescription: String?
 
@@ -176,14 +175,14 @@ interface AsyncImageScope : BoxScope {
 @Composable
 fun AsyncImageScope.AsyncImageContent(
     modifier: Modifier = Modifier,
-    painter: Painter? = this.painter,
+    painter: Painter = this.painter,
     contentDescription: String? = this.contentDescription,
     alignment: Alignment = this.alignment,
     contentScale: ContentScale = this.contentScale,
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
 ) = Image(
-    painter = painter ?: EmptyPainter,
+    painter = painter,
     contentDescription = contentDescription,
     modifier = Modifier
         .apply {
@@ -304,15 +303,10 @@ private class ConstraintsSizeResolver(private val context: Context) : SizeResolv
 private data class RealAsyncImageScope(
     private val parent: BoxScope,
     override val contentSize: Size,
-    override val painter: Painter?,
+    override val painter: AsyncImagePainter,
     override val contentDescription: String?,
     override val alignment: Alignment,
     override val contentScale: ContentScale,
     override val alpha: Float,
     override val colorFilter: ColorFilter?,
 ) : AsyncImageScope, BoxScope by parent
-
-private object EmptyPainter : Painter() {
-    override val intrinsicSize get() = Size.Unspecified
-    override fun DrawScope.onDraw() {}
-}
