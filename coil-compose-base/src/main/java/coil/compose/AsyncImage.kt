@@ -250,9 +250,9 @@ private fun computeContentSize(constraints: Constraints, intrinsicSize: Size): S
         return Size.Unspecified
     }
 
-    val dstWidth = constraints.minWidth
-    val dstHeight = constraints.minHeight
-    if (dstWidth == Infinity || dstHeight == Infinity) {
+    val minWidth = constraints.minWidth
+    val minHeight = constraints.minHeight
+    if (minWidth == Infinity || minHeight == Infinity) {
         return Size.Unspecified
     }
 
@@ -261,8 +261,8 @@ private fun computeContentSize(constraints: Constraints, intrinsicSize: Size): S
     val scale = DecodeUtils.computeSizeMultiplier(
         srcWidth = srcWidth,
         srcHeight = srcHeight,
-        dstWidth = dstWidth.toFloat(),
-        dstHeight = dstHeight.toFloat(),
+        dstWidth = minWidth.toFloat(),
+        dstHeight = minHeight.toFloat(),
         scale = Scale.FILL
     ).coerceAtLeast(1f)
     return constraints.constrain(
