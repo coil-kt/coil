@@ -193,15 +193,14 @@ fun AsyncImageScope.AsyncImageContent(
 ) = Image(
     painter = painter,
     contentDescription = contentDescription,
-    modifier = Modifier
-        .apply {
-            if (contentSize.isSpecified) {
-                with(LocalDensity.current) {
-                    size(contentSize.toDpSize())
-                }
-            }
-        }
-        .then(modifier),
+    modifier = if (contentSize.isSpecified) {
+        // Apply `modifier` second to allow overriding `size`.
+        Modifier
+            .size(with(LocalDensity.current) { contentSize.toDpSize() })
+            .then(modifier)
+    } else {
+        modifier
+    },
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,
