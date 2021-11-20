@@ -155,18 +155,25 @@ fun AsyncImage(
 @Immutable
 interface AsyncImageScope : BoxScope {
 
+    /** The size [AsyncImageContent] will be drawn at. */
     val contentSize: Size
 
+    /** The painter that is drawn by [AsyncImageContent]. */
     val painter: AsyncImagePainter
 
+    /** The content description for [AsyncImageContent]. */
     val contentDescription: String?
 
+    /** The default alignment for any composables drawn in this scope. */
     val alignment: Alignment
 
+    /** The content scale for [AsyncImageContent]. */
     val contentScale: ContentScale
 
+    /** The alpha for [AsyncImageContent]. */
     val alpha: Float
 
+    /** The color filter for [AsyncImageContent]. */
     val colorFilter: ColorFilter?
 
     companion object {
