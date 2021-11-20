@@ -2,6 +2,7 @@ package coil.compose
 
 import android.view.View
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -11,11 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -25,6 +30,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
+import coil.compose.AsyncImagePainter.State
 import coil.compose.base.test.R
 import coil.compose.utils.ImageLoaderIdlingResource
 import coil.compose.utils.ImageMockWebServer
@@ -46,6 +52,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AsyncImageTest {
@@ -274,9 +283,9 @@ class AsyncImageTest {
             requestTracker.startedRequests >= 1
         }
 
-        val expected = composeTestRule.onNodeWithTag(Loading).captureToImage()
         val actual = composeTestRule.onNodeWithTag(Image).captureToImage()
-        expected.assertIsSimilarTo(actual)
+        val expected = composeTestRule.onNodeWithTag(Loading).captureToImage()
+        actual.assertIsSimilarTo(expected)
     }
 
     @Test
@@ -318,9 +327,9 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val expected = composeTestRule.onNodeWithTag(Error).captureToImage()
         val actual = composeTestRule.onNodeWithTag(Image).captureToImage()
-        expected.assertIsSimilarTo(actual)
+        val expected = composeTestRule.onNodeWithTag(Error).captureToImage()
+        actual.assertIsSimilarTo(expected)
     }
 
     @Test
@@ -359,9 +368,72 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        val expected = composeTestRule.onNodeWithTag(Success).captureToImage()
         val actual = composeTestRule.onNodeWithTag(Image).captureToImage()
-        expected.assertIsSimilarTo(actual)
+        val expected = composeTestRule.onNodeWithTag(Success).captureToImage()
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
+    fun overwriteContent() {
+        assumeSupportsCaptureToImage()
+
+        var index = 0
+
+        composeTestRule.setContent {
+            AsyncImage(
+                model = server.url("/image"),
+                contentDescription = null,
+                imageLoader = imageLoader,
+                modifier = Modifier
+                    .size(100.dp)
+                    .testTag(Image)
+            ) { state ->
+                SideEffect {
+                    when (index) {
+                        0 -> {
+                            assertIs<State.Loading>(state)
+                            assertEquals(painter.state, state)
+                            assertNull(state.painter)
+                        }
+                        1 -> {
+                            assertIs<State.Success>(state)
+                            assertEquals(painter.state, state)
+                        }
+                        else -> error("Recomposed too many times. State: $state")
+                    }
+                    index++
+                }
+                AsyncImageContent(
+                    modifier = Modifier.clip(CircleShape)
+                )
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .height(8.dp)
+                    .fillMaxWidth()
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .testTag(Content),
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.sample),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(CircleShape)
+                )
+            }
+        }
+
+        waitForRequestComplete()
+
+        val actual = composeTestRule.onNodeWithTag(Image).captureToImage()
+        val expected = composeTestRule.onNodeWithTag(Content).captureToImage()
+        actual.assertIsSimilarTo(expected)
     }
 
     @Test
@@ -498,6 +570,7 @@ class AsyncImageTest {
         private const val Loading = "loading"
         private const val Error = "error"
         private const val Success = "success"
+        private const val Content = "content"
         private const val SampleWidth = 1024
         private const val SampleHeight = 1326
     }

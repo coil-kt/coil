@@ -1,5 +1,7 @@
 public final class coil/compose/AsyncImageKt {
+	public static final fun AsyncImage-HtA5bXE (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
 	public static final fun AsyncImage-h7wOGxc (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+	public static final fun AsyncImageContent (Lcoil/compose/AsyncImageScope;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Ljava/lang/String;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class coil/compose/AsyncImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
@@ -92,5 +94,27 @@ public final class coil/compose/AsyncImagePainterKt {
 	public static final fun rememberAsyncImagePainter-ycFWDq0 (Ljava/lang/Object;Lcoil/ImageLoader;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/ImageLoader;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
+}
+
+public abstract interface class coil/compose/AsyncImageScope : androidx/compose/foundation/layout/BoxScope {
+	public static final field Companion Lcoil/compose/AsyncImageScope$Companion;
+	public abstract fun getAlignment ()Landroidx/compose/ui/Alignment;
+	public abstract fun getAlpha ()F
+	public abstract fun getColorFilter ()Landroidx/compose/ui/graphics/ColorFilter;
+	public abstract fun getContentDescription ()Ljava/lang/String;
+	public abstract fun getContentScale ()Landroidx/compose/ui/layout/ContentScale;
+	public abstract fun getContentSize-NH-jbRc ()J
+	public abstract fun getPainter ()Lcoil/compose/AsyncImagePainter;
+}
+
+public final class coil/compose/AsyncImageScope$Companion {
+	public final fun getDefaultContent ()Lkotlin/jvm/functions/Function4;
+}
+
+public final class coil/compose/ComposableSingletons$AsyncImageKt {
+	public static final field INSTANCE Lcoil/compose/ComposableSingletons$AsyncImageKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function4;
+	public fun <init> ()V
+	public final fun getLambda-1$coil_compose_base_release ()Lkotlin/jvm/functions/Function4;
 }
 

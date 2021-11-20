@@ -47,7 +47,7 @@ internal class EmptyWeakMemoryCache : WeakMemoryCache {
     override fun trimMemory(level: Int) {}
 }
 
-/** A [WeakMemoryCache] implementation backed by a [HashMap]. */
+/** A [WeakMemoryCache] implementation backed by a [LinkedHashMap]. */
 internal class RealWeakMemoryCache : WeakMemoryCache {
 
     @VisibleForTesting internal val cache = LinkedHashMap<Key, ArrayList<InternalValue>>()
