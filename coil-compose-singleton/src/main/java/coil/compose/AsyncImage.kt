@@ -62,7 +62,7 @@ fun AsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )
 
 /**
@@ -101,10 +101,10 @@ fun AsyncImage(
     contentDescription = contentDescription,
     imageLoader = LocalImageLoader.current,
     modifier = modifier,
-    content = content,
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
+    content = content,
 )
