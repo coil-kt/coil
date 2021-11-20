@@ -5,6 +5,7 @@ package coil.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
@@ -23,7 +24,9 @@ value class ImageLoaderProvidableCompositionLocal internal constructor(
 ) {
 
     val current: ImageLoader
-        @Composable get() = delegate.current ?: LocalContext.current.imageLoader
+        @Composable
+        @ReadOnlyComposable
+        get() = delegate.current ?: LocalContext.current.imageLoader
 
     infix fun provides(value: ImageLoader) = delegate provides value
 
