@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -355,11 +356,12 @@ private class ValueHolder<T>(@JvmField var value: T)
 
 /** Create an [ImageRequest] using the [model]. */
 @Composable
+@ReadOnlyComposable
 internal fun requestOf(model: Any?): ImageRequest {
-    return if (model is ImageRequest) {
+    if (model is ImageRequest) {
         return model
     } else {
-        ImageRequest.Builder(LocalContext.current).data(model).build()
+        return ImageRequest.Builder(LocalContext.current).data(model).build()
     }
 }
 

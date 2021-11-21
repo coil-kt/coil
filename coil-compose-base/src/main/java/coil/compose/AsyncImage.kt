@@ -127,10 +127,7 @@ fun AsyncImage(
     val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
 
-    BoxWithConstraints(
-        modifier = modifier,
-        contentAlignment = alignment
-    ) {
+    BoxWithConstraints(modifier, alignment) {
         // Resolve the size for the image request.
         (request.sizeResolver as? ConstraintsSizeResolver)?.setConstraints(constraints)
 
@@ -177,6 +174,7 @@ interface AsyncImageScope : BoxScope {
     val colorFilter: ColorFilter?
 
     companion object {
+
         /**
          * The default content composable only draws [AsyncImageContent] for all
          * [AsyncImagePainter] states.
@@ -187,6 +185,8 @@ interface AsyncImageScope : BoxScope {
 
 /**
  * A composable that draws an [AsyncImage]'s content with its current attributes.
+ *
+ * @see AsyncImageScope
  */
 @Composable
 fun AsyncImageScope.AsyncImageContent(
@@ -240,8 +240,7 @@ private fun updateRequest(request: ImageRequest, contentScale: ContentScale): Im
         .apply {
             if (request.defined.sizeResolver == null) {
                 val context = LocalContext.current
-                val sizeResolver = remember(context) { ConstraintsSizeResolver(context) }
-                size(sizeResolver)
+                size(remember(context) { ConstraintsSizeResolver(context) })
             }
             if (request.defined.scale == null) {
                 scale(contentScale.toScale())
