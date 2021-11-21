@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0-alpha04] - November 20, 2021
+## [2.0.0-alpha04] - November 21, 2021
 
 - **New**: Add `AsyncImage` to `coil-compose`.
     - `AsyncImage` is a composable that executes an `ImageRequest` asynchronously and renders the result.
