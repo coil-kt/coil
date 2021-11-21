@@ -53,9 +53,8 @@
 
 - **Important**: Rename `ImagePainter` to `AsyncImagePainter` and `rememberImagePainter` to `rememberAsyncImagePainter`.
     - `ExecuteCallback` is no longer supported. To have the `AsyncImagePainter` skip waiting for `onDraw` to be called, set `ImageRequest.size(OriginalSize)` (or any size) instead.
-    - `AsyncImagePainter` now sets placeholders synchronously and returns images from the memory cache synchronously.
     - Add an optional `FilterQuality` argument to `rememberAsyncImagePainter`.
-- Mark `LocalImageLoader.current` with `@ReadOnlyComposable` to generate slightly more efficient code.
+- Mark `LocalImageLoader.current` with `@ReadOnlyComposable` to generate more efficient code.
 - Update Compose to 1.1.0-beta03 and depend on `compose.foundation` instead of `compose.ui`.
 - Update `androidx.appcompat-resources` to 1.4.0.
 
