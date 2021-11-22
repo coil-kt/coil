@@ -13,9 +13,9 @@ import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.util.CoilUtils
-import okhttp3.HttpUrl
 import java.io.File
 import java.nio.ByteBuffer
+import okhttp3.HttpUrl
 
 /**
  * Get the singleton [ImageLoader].
@@ -99,3 +99,14 @@ inline fun ImageView.loadAny(
     level = DeprecationLevel.ERROR // Temporary migration aid.
 )
 inline fun ImageView.clear() = dispose()
+
+@Deprecated(
+    message = "Migrate to 'result'.",
+    replaceWith = ReplaceWith(
+        expression = "result",
+        imports = ["coil.result"]
+    ),
+    level = DeprecationLevel.ERROR // Temporary migration aid.
+)
+inline val ImageView.metadata: ImageResult?
+    get() = CoilUtils.result(this)
