@@ -1,4 +1,4 @@
-@file:Suppress("ComposableNaming", "DEPRECATION_ERROR", "unused", "UNUSED_PARAMETER")
+@file:Suppress("ComposableNaming", "unused")
 
 package coil.compose
 
