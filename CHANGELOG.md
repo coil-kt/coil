@@ -5,7 +5,7 @@
 - **New**: Add `AsyncImage` to `coil-compose`.
     - `AsyncImage` is a composable that executes an `ImageRequest` asynchronously and renders the result.
     - **`AsyncImage` is intended to replace `rememberImagePainter` for most use cases.**
-    - Its API is non-final and may change before the final 2.0 release.
+    - Its API is not final and may change before the final 2.0 release.
     - It has a similar API to `Image` and supports the same arguments: `Alignment`, `ContentScale`, `alpha`, `ColorFilter`, and `FilterQuality`.
     - It supports overwriting what's drawn for each `AsyncImagePainter` state using the `content`, `loading`, `success`, and `error` arguments.
     - It fixes a number of design issues that `rememberImagePainter` has with resolving image size and scale.
