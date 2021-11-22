@@ -1,4 +1,4 @@
-@file:Suppress("ComposableNaming", "DEPRECATION_ERROR", "unused", "UNUSED_PARAMETER")
+@file:Suppress("ComposableNaming", "unused")
 
 package coil.compose
 
@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
-import coil.compose.AsyncImagePainter.ExecuteCallback
 import coil.compose.AsyncImagePainter.State
 import coil.decode.DataSource
 import coil.request.ErrorResult
@@ -221,33 +220,6 @@ class AsyncImagePainter internal constructor(
             .first()
     }
 
-    @Deprecated(
-        message = "ExecuteCallback no longer has any effect. To skip waiting for size resolution " +
-            "use ImageRequest.Builder.size(OriginalSize).",
-        level = DeprecationLevel.ERROR
-    )
-    fun interface ExecuteCallback {
-
-        operator fun invoke(previous: Snapshot?, current: Snapshot): Boolean
-
-        companion object {
-            @JvmField val Default = ExecuteCallback { previous, current ->
-                previous?.request != current.request
-            }
-        }
-    }
-
-    @Deprecated(
-        message = "ExecuteCallback no longer has any effect. To skip waiting for size resolution " +
-            "use ImageRequest.Builder.size(OriginalSize).",
-        level = DeprecationLevel.ERROR
-    )
-    data class Snapshot(
-        val state: State,
-        val request: ImageRequest,
-        val size: Size,
-    )
-
     /**
      * The current state of the [AsyncImagePainter].
      */
@@ -354,7 +326,7 @@ private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 /** A simple mutable value holder that avoids recomposition. */
 private class ValueHolder<T>(@JvmField var value: T)
 
-/** Create an [ImageRequest] using the [model]. */
+/** Create an [ImageRequest] from the [model]. */
 @Composable
 @ReadOnlyComposable
 internal fun requestOf(model: Any?): ImageRequest {
@@ -364,53 +336,3 @@ internal fun requestOf(model: Any?): ImageRequest {
         return ImageRequest.Builder(LocalContext.current).data(model).build()
     }
 }
-
-@Deprecated(
-    message = "ImagePainter has been renamed to AsyncImagePainter.",
-    replaceWith = ReplaceWith(
-        expression = "AsyncImagePainter",
-        imports = ["coil.compose.AsyncImagePainter"]
-    )
-)
-typealias ImagePainter = AsyncImagePainter
-
-@Deprecated(
-    message = "ImagePainter has been renamed to AsyncImagePainter.",
-    replaceWith = ReplaceWith(
-        expression = "rememberAsyncImagePainter(" +
-            "ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(), " +
-            "imageLoader)",
-        imports = [
-            "androidx.compose.ui.platform.LocalContext",
-            "coil.compose.rememberAsyncImagePainter",
-            "coil.request.ImageRequest",
-        ]
-    )
-)
-@Composable
-inline fun rememberImagePainter(
-    data: Any?,
-    imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
-    builder: ImageRequest.Builder.() -> Unit = {},
-) = rememberAsyncImagePainter(
-    model = ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build(),
-    imageLoader = imageLoader
-)
-
-@Deprecated(
-    message = "ImagePainter has been renamed to AsyncImagePainter.",
-    replaceWith = ReplaceWith(
-        expression = "rememberAsyncImagePainter(request, imageLoader)",
-        imports = ["coil.compose.rememberAsyncImagePainter"]
-    )
-)
-@Composable
-fun rememberImagePainter(
-    request: ImageRequest,
-    imageLoader: ImageLoader,
-    onExecute: ExecuteCallback = ExecuteCallback.Default
-) = rememberAsyncImagePainter(
-    model = request,
-    imageLoader = imageLoader
-)
