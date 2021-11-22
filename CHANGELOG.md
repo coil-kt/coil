@@ -11,46 +11,46 @@
     - It fixes a number of design issues that `rememberImagePainter` has with resolving image size and scale.
     - Example usages:
 
-    ```kotlin
-    // Only draw the image.
-    AsyncImage(
-        model = "https://example.com/image.jpg",
-        contentDescription = null // Avoid `null` and set this to a localized string if possible.
-    )
+```kotlin
+// Only draw the image.
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null // Avoid `null` and set this to a localized string if possible.
+)
 
-    // Draw the image with a circle crop, crossfade, and overwrite the `loading` state.
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data("https://example.com/image.jpg")
-            .crossfade(true)
-            .build(),
-        contentDescription = null,
-        modifier = Modifier
-            .clip(CircleShape),
-        loading = {
-            CircularProgressIndicator()
-        },
-        contentScale = ContentScale.Crop
-    )
+// Draw the image with a circle crop, crossfade, and overwrite the `loading` state.
+AsyncImage(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data("https://example.com/image.jpg")
+        .crossfade(true)
+        .build(),
+    contentDescription = null,
+    modifier = Modifier
+        .clip(CircleShape),
+    loading = {
+        CircularProgressIndicator()
+    },
+    contentScale = ContentScale.Crop
+)
 
-    // Draw the image with a circle crop, crossfade, and overwrite all states.
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data("https://example.com/image.jpg")
-            .crossfade(true)
-            .build(),
-        contentDescription = null,
-        modifier = Modifier
-            .clip(CircleShape),
-        contentScale = ContentScale.Crop
-    ) { state ->
-        if (state is AsyncImagePainter.State.Loading) {
-            CircularProgressIndicator()
-        } else {
-            AsyncImageContent() // Draws the image.
-        }
+// Draw the image with a circle crop, crossfade, and overwrite all states.
+AsyncImage(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data("https://example.com/image.jpg")
+        .crossfade(true)
+        .build(),
+    contentDescription = null,
+    modifier = Modifier
+        .clip(CircleShape),
+    contentScale = ContentScale.Crop
+) { state ->
+    if (state is AsyncImagePainter.State.Loading) {
+        CircularProgressIndicator()
+    } else {
+        AsyncImageContent() // Draws the image.
     }
-    ```
+}
+```
 
 - **Important**: Rename `ImagePainter` to `AsyncImagePainter` and `rememberImagePainter` to `rememberAsyncImagePainter`.
     - `ExecuteCallback` is no longer supported. To have the `AsyncImagePainter` skip waiting for `onDraw` to be called, set `ImageRequest.size(OriginalSize)` (or any size) instead.
