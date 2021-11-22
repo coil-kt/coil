@@ -120,6 +120,6 @@ inline fun rememberImagePainter(
     onExecute: ExecuteCallback,
 ) = rememberAsyncImagePainter(request, imageLoader)
 
-private typealias ExecuteCallback = (Snapshot, Snapshot) -> Unit
+private typealias ExecuteCallback = (Snapshot, Snapshot) -> Boolean
 
 private typealias Snapshot = Triple<State, ImageRequest, Size>
