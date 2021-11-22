@@ -13,9 +13,9 @@ import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.util.CoilUtils
+import okhttp3.HttpUrl
 import java.io.File
 import java.nio.ByteBuffer
-import okhttp3.HttpUrl
 
 /**
  * Get the singleton [ImageLoader].
