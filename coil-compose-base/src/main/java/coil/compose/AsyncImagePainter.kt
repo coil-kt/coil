@@ -326,7 +326,7 @@ private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 /** A simple mutable value holder that avoids recomposition. */
 private class ValueHolder<T>(@JvmField var value: T)
 
-/** Create an [ImageRequest] using the [model]. */
+/** Create an [ImageRequest] from the [model]. */
 @Composable
 @ReadOnlyComposable
 internal fun requestOf(model: Any?): ImageRequest {
