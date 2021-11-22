@@ -1,7 +1,5 @@
 public final class coil/compose/AsyncImagePainterSingletonKt {
 	public static final fun rememberAsyncImagePainter-8BXIMaA (Ljava/lang/Object;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
-	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
-	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 }
 
 public final class coil/compose/AsyncImageSingletonKt {
@@ -23,6 +21,15 @@ public final class coil/compose/ImageLoaderProvidableCompositionLocal {
 	public fun toString ()Ljava/lang/String;
 	public static fun toString-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)Ljava/lang/String;
 	public final synthetic fun unbox-impl ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class coil/compose/ImagePainterSingletonKt {
+	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 }
 
 public final class coil/compose/LocalImageLoaderKt {

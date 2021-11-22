@@ -14,31 +14,6 @@ public final class coil/compose/AsyncImagePainter : androidx/compose/ui/graphics
 	public fun onRemembered ()V
 }
 
-public abstract interface class coil/compose/AsyncImagePainter$ExecuteCallback {
-	public static final field Companion Lcoil/compose/AsyncImagePainter$ExecuteCallback$Companion;
-	public static final field Default Lcoil/compose/AsyncImagePainter$ExecuteCallback;
-	public abstract fun invoke (Lcoil/compose/AsyncImagePainter$Snapshot;Lcoil/compose/AsyncImagePainter$Snapshot;)Z
-}
-
-public final class coil/compose/AsyncImagePainter$ExecuteCallback$Companion {
-}
-
-public final class coil/compose/AsyncImagePainter$Snapshot {
-	public static final field $stable I
-	public synthetic fun <init> (Lcoil/compose/AsyncImagePainter$State;Lcoil/request/ImageRequest;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Lcoil/compose/AsyncImagePainter$State;
-	public final fun component2 ()Lcoil/request/ImageRequest;
-	public final fun component3-NH-jbRc ()J
-	public final fun copy-cSwnlzA (Lcoil/compose/AsyncImagePainter$State;Lcoil/request/ImageRequest;J)Lcoil/compose/AsyncImagePainter$Snapshot;
-	public static synthetic fun copy-cSwnlzA$default (Lcoil/compose/AsyncImagePainter$Snapshot;Lcoil/compose/AsyncImagePainter$State;Lcoil/request/ImageRequest;JILjava/lang/Object;)Lcoil/compose/AsyncImagePainter$Snapshot;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getRequest ()Lcoil/request/ImageRequest;
-	public final fun getSize-NH-jbRc ()J
-	public final fun getState ()Lcoil/compose/AsyncImagePainter$State;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public abstract class coil/compose/AsyncImagePainter$State {
 	public static final field $stable I
 	public abstract fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
@@ -92,8 +67,6 @@ public final class coil/compose/AsyncImagePainter$State$Success : coil/compose/A
 
 public final class coil/compose/AsyncImagePainterKt {
 	public static final fun rememberAsyncImagePainter-ycFWDq0 (Ljava/lang/Object;Lcoil/ImageLoader;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
-	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/ImageLoader;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
-	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lcoil/compose/AsyncImagePainter$ExecuteCallback;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 }
 
 public abstract interface class coil/compose/AsyncImageScope : androidx/compose/foundation/layout/BoxScope {
@@ -116,5 +89,14 @@ public final class coil/compose/ComposableSingletons$AsyncImageKt {
 	public static field lambda-1 Lkotlin/jvm/functions/Function4;
 	public fun <init> ()V
 	public final fun getLambda-1$coil_compose_base_release ()Lkotlin/jvm/functions/Function4;
+}
+
+public final class coil/compose/ImagePainterKt {
+	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/ImageLoader;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 }
 

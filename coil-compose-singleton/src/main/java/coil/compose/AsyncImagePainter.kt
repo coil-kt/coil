@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
-import coil.compose.AsyncImagePainter.ExecuteCallback
 import coil.request.ImageRequest
 
 /**
@@ -30,40 +28,3 @@ fun rememberAsyncImagePainter(
     model: Any?,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter = rememberAsyncImagePainter(model, LocalImageLoader.current, filterQuality)
-
-@Deprecated(
-    message = "ImagePainter has been renamed to AsyncImagePainter.",
-    replaceWith = ReplaceWith(
-        expression = "rememberAsyncImagePainter(" +
-            "ImageRequest.Builder(LocalContext.current).data(data).apply(builder).build())",
-        imports = [
-            "androidx.compose.ui.platform.LocalContext",
-            "coil.compose.rememberAsyncImagePainter",
-            "coil.request.ImageRequest",
-        ]
-    )
-)
-@Composable
-inline fun rememberImagePainter(
-    data: Any?,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
-    builder: ImageRequest.Builder.() -> Unit = {},
-): AsyncImagePainter = rememberAsyncImagePainter(
-    model = ImageRequest.Builder(LocalContext.current)
-        .data(data)
-        .apply(builder)
-        .build()
-)
-
-@Deprecated(
-    message = "ImagePainter has been renamed to AsyncImagePainter.",
-    replaceWith = ReplaceWith(
-        expression = "rememberAsyncImagePainter(request)",
-        imports = ["coil.compose.rememberAsyncImagePainter"]
-    )
-)
-@Composable
-fun rememberImagePainter(
-    request: ImageRequest,
-    onExecute: ExecuteCallback = ExecuteCallback.Default,
-): AsyncImagePainter = rememberAsyncImagePainter(request)
