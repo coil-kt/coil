@@ -5,6 +5,7 @@ package coil.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 
 @Deprecated(
@@ -101,6 +102,6 @@ inline fun rememberImagePainter(
     onExecute: ExecuteCallback,
 ) = rememberAsyncImagePainter(request)
 
-private typealias ExecuteCallback = (Snapshot, Snapshot) -> Unit
+private typealias ExecuteCallback = (Snapshot, Snapshot) -> Boolean
 
-private typealias Snapshot = Triple<AsyncImagePainter.State, ImageRequest, Size>
+private typealias Snapshot = Triple<State, ImageRequest, Size>
