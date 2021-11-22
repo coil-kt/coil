@@ -1,12 +1,3 @@
-public final class coil/compose/AsyncImagePainterSingletonKt {
-	public static final fun rememberAsyncImagePainter-8BXIMaA (Ljava/lang/Object;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
-}
-
-public final class coil/compose/AsyncImageSingletonKt {
-	public static final fun AsyncImage-MvsnxeU (Ljava/lang/Object;Ljava/lang/String;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
-	public static final fun AsyncImage-_kETKwk (Ljava/lang/Object;Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
-}
-
 public final class coil/compose/ImageLoaderProvidableCompositionLocal {
 	public static final synthetic fun box-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)Lcoil/compose/ImageLoaderProvidableCompositionLocal;
 	public static synthetic fun constructor-impl$default (Landroidx/compose/runtime/ProvidableCompositionLocal;ILkotlin/jvm/internal/DefaultConstructorMarker;)Landroidx/compose/runtime/ProvidableCompositionLocal;
@@ -23,16 +14,25 @@ public final class coil/compose/ImageLoaderProvidableCompositionLocal {
 	public final synthetic fun unbox-impl ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
-public final class coil/compose/ImagePainterSingletonKt {
+public final class coil/compose/LocalImageLoaderKt {
+	public static final fun getLocalImageLoader ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class coil/compose/SingletonAsyncImageKt {
+	public static final fun AsyncImage-MvsnxeU (Ljava/lang/Object;Ljava/lang/String;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+	public static final fun AsyncImage-_kETKwk (Ljava/lang/Object;Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class coil/compose/SingletonAsyncImagePainterKt {
+	public static final fun rememberAsyncImagePainter-8BXIMaA (Ljava/lang/Object;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
+}
+
+public final class coil/compose/SingletonImagePainterKt {
 	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Lcoil/request/ImageRequest;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
-}
-
-public final class coil/compose/LocalImageLoaderKt {
-	public static final fun getLocalImageLoader ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 

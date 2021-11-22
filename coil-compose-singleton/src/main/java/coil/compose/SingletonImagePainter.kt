@@ -1,4 +1,3 @@
-@file:JvmName("ImagePainterSingletonKt")
 @file:Suppress("NOTHING_TO_INLINE", "unused", "UNUSED_PARAMETER")
 
 package coil.compose
