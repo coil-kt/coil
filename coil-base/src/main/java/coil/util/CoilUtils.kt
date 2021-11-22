@@ -12,7 +12,7 @@ import okhttp3.Cache
 object CoilUtils {
 
     /**
-     * Dispose the request attached to this view (if there is one).
+     * Dispose the request that's attached to this view (if there is one).
      *
      * NOTE: Typically you should use [Disposable.dispose] to cancel requests and clear resources,
      * however this method is provided for convenience.
@@ -25,7 +25,7 @@ object CoilUtils {
     }
 
     /**
-     * Get the [ImageResult] of the most recent executed image request attached to this view.
+     * Get the [ImageResult] of the most recent executed image request that's attached to this view.
      */
     @JvmStatic
     fun result(view: View): ImageResult? {
