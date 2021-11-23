@@ -9,7 +9,7 @@ object Library {
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.4.0"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.3.0"
-    const val ANDROIDX_COLLECTION = "androidx.collection:collection-ktx:1.1.0"
+    const val ANDROIDX_COLLECTION = "androidx.collection:collection:1.1.0"
     const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:2.1.1"
     const val ANDROIDX_CORE = "androidx.core:core-ktx:1.7.0"
     const val ANDROIDX_EXIF_INTERFACE = "androidx.exifinterface:exifinterface:1.3.3"

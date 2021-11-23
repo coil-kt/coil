@@ -2,7 +2,6 @@ package coil.memory
 
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.collection.arraySetOf
 import androidx.test.core.app.ApplicationProvider
 import coil.memory.MemoryCache.Key
 import coil.util.allocationByteCountCompat
@@ -29,7 +28,7 @@ class WeakMemoryCacheTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         weakMemoryCache = RealWeakMemoryCache()
-        references = arraySetOf()
+        references = mutableSetOf()
     }
 
     @Test
