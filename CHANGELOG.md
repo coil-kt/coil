@@ -55,7 +55,7 @@ AsyncImage(
 - **Important**: Rename `ImagePainter` to `AsyncImagePainter` and `rememberImagePainter` to `rememberAsyncImagePainter`.
     - `ExecuteCallback` is no longer supported. To have the `AsyncImagePainter` skip waiting for `onDraw` to be called, set `ImageRequest.size(OriginalSize)` (or any size) instead.
     - Add an optional `FilterQuality` argument to `rememberAsyncImagePainter`.
-- Use coroutines for cleanup operations in `DiskLruCache` and add `DiskLruCache.Builder.cleanupDispatcher`.
+- Use coroutines for cleanup operations in `DiskCache` and add `DiskCache.Builder.cleanupDispatcher`.
 - Fix Compose preview for placeholder set using `ImageLoader.Builder.placeholder`.
 - Mark `LocalImageLoader.current` with `@ReadOnlyComposable` to generate more efficient code.
 - Update Compose to 1.1.0-beta03 and depend on `compose.foundation` instead of `compose.ui`.
