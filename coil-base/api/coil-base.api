@@ -707,6 +707,7 @@ public abstract class coil/size/Dimension {
 
 public final class coil/size/Dimension$Original : coil/size/Dimension {
 	public static final field INSTANCE Lcoil/size/Dimension$Original;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/size/Dimension$Pixels : coil/size/Dimension {

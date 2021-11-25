@@ -35,7 +35,9 @@ sealed class Dimension {
      * i.e. if the image's original dimensions are 400x600 and this is used as the width, this
      * should be treated as 400 pixels.
      */
-    object Original : Dimension()
+    object Original : Dimension() {
+        override fun toString() = "Dimension.Original"
+    }
 }
 
 /**
