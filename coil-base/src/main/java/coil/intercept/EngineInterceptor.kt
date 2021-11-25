@@ -408,9 +408,8 @@ internal class EngineInterceptor(
         request: ImageRequest,
         result: ExecuteResult
     ): Boolean {
-        if (!request.memoryCachePolicy.writeEnabled) {
-            return false
-        }
+        val memoryCache = imageLoader.memoryCache ?: return false
+        if (!request.memoryCachePolicy.writeEnabled) return false
 
         if (key != null) {
             val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
@@ -418,7 +417,7 @@ internal class EngineInterceptor(
                 val extras = mutableMapOf<String, Any>()
                 extras[EXTRA_IS_SAMPLED] = result.isSampled
                 result.diskCacheKey?.let { extras[EXTRA_DISK_CACHE_KEY] = it }
-                imageLoader.memoryCache?.let { it[key] = MemoryCache.Value(bitmap, extras) }
+                memoryCache[key] = MemoryCache.Value(bitmap, extras)
                 return true
             }
         }
