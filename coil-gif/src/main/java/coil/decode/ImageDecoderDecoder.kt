@@ -5,8 +5,6 @@ import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
-import androidx.core.util.component1
-import androidx.core.util.component2
 import coil.ImageLoader
 import coil.drawable.ScaleDrawable
 import coil.fetch.SourceResult
@@ -15,7 +13,7 @@ import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
-import coil.size.PixelSize
+import coil.size.pxOrElse
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
 import coil.util.isHardware
@@ -60,14 +58,16 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 }
 
                 decoderSource.decodeDrawable { info, _ ->
-                    val size = options.size
-                    if (size is PixelSize) {
-                        val (srcWidth, srcHeight) = info.size
+                    val srcWidth = info.size.width.coerceAtLeast(1)
+                    val srcHeight = info.size.height.coerceAtLeast(1)
+                    val dstWidth = options.size.width.pxOrElse { srcWidth }
+                    val dstHeight = options.size.height.pxOrElse { srcHeight }
+                    if (srcWidth != dstWidth || srcHeight != dstHeight) {
                         val multiplier = DecodeUtils.computeSizeMultiplier(
                             srcWidth = srcWidth,
                             srcHeight = srcHeight,
-                            dstWidth = size.width,
-                            dstHeight = size.height,
+                            dstWidth = dstWidth,
+                            dstHeight = dstHeight,
                             scale = options.scale
                         )
 

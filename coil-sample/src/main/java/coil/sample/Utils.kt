@@ -4,6 +4,7 @@ package coil.sample
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
-import coil.size.PixelSize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlin.random.Random
@@ -37,8 +37,8 @@ inline fun WindowInsets.toCompat(): WindowInsetsCompat {
     return WindowInsetsCompat.toWindowInsetsCompat(this)
 }
 
-fun Context.getDisplaySize(): PixelSize {
-    return resources.displayMetrics.run { PixelSize(widthPixels, heightPixels) }
+fun Context.getDisplaySize(): Size {
+    return resources.displayMetrics.run { Size(widthPixels, heightPixels) }
 }
 
 fun Int.dp(context: Context): Float {

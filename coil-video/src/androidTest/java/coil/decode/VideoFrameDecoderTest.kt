@@ -7,7 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Options
 import coil.request.Parameters
-import coil.size.PixelSize
+import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
@@ -91,7 +91,7 @@ class VideoFrameDecoderTest {
                     source = context.assets.open("video_rotated.mp4").source().buffer(),
                     context = context
                 ),
-                options = Options(context, size = PixelSize(150, 150))
+                options = Options(context, size = Size(150, 150))
             ).decode()
         }
 

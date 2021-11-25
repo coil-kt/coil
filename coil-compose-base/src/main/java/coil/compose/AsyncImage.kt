@@ -1,6 +1,5 @@
 package coil.compose
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -21,7 +20,6 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Constraints.Companion.Infinity
@@ -30,8 +28,7 @@ import coil.compose.AsyncImagePainter.State
 import coil.compose.AsyncImageScope.Companion.DefaultContent
 import coil.decode.DecodeUtils
 import coil.request.ImageRequest
-import coil.size.OriginalSize
-import coil.size.PixelSize
+import coil.size.Dimension
 import coil.size.Scale
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -174,7 +171,6 @@ interface AsyncImageScope : BoxScope {
     val colorFilter: ColorFilter?
 
     companion object {
-
         /**
          * The default content composable only draws [AsyncImageContent] for all
          * [AsyncImagePainter] states.
@@ -239,8 +235,7 @@ private fun updateRequest(request: ImageRequest, contentScale: ContentScale): Im
     return request.newBuilder()
         .apply {
             if (request.defined.sizeResolver == null) {
-                val context = LocalContext.current
-                size(remember(context) { ConstraintsSizeResolver(context) })
+                size(remember { ConstraintsSizeResolver() })
             }
             if (request.defined.scale == null) {
                 scale(contentScale.toScale())
@@ -288,7 +283,15 @@ private fun Constraints.constrain(width: Float, height: Float) = Size(
     height = height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
 )
 
-private class ConstraintsSizeResolver(private val context: Context) : SizeResolver {
+@Stable
+private fun Constraints.toSize(): CoilSize {
+    if (isZero) return CoilSize.ORIGINAL
+    val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original
+    val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
+    return CoilSize(width, height)
+}
+
+private class ConstraintsSizeResolver : SizeResolver {
 
     private val constraints = MutableStateFlow<Constraints?>(null)
 
@@ -296,19 +299,6 @@ private class ConstraintsSizeResolver(private val context: Context) : SizeResolv
 
     fun setConstraints(constraints: Constraints) {
         this.constraints.value = constraints
-    }
-
-    private fun Constraints.toSize(): CoilSize {
-        if (isZero) return OriginalSize
-
-        val hasBoundedWidth = hasBoundedWidth
-        val hasBoundedHeight = hasBoundedHeight
-        return when {
-            hasBoundedWidth && hasBoundedHeight -> PixelSize(maxWidth, maxHeight)
-            hasBoundedWidth -> PixelSize(maxWidth, context.resources.displayMetrics.heightPixels)
-            hasBoundedHeight -> PixelSize(context.resources.displayMetrics.widthPixels, maxHeight)
-            else -> OriginalSize
-        }
     }
 }
 

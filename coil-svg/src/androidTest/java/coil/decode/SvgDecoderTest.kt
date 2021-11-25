@@ -6,8 +6,8 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
-import coil.size.PixelSize
 import coil.size.Scale
+import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
 import kotlinx.coroutines.runBlocking
@@ -79,7 +79,7 @@ class SvgDecoderTest {
         val (drawable, isSampled) = runBlocking {
             val options = Options(
                 context = context,
-                size = PixelSize(400, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
+                size = Size(400, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
                 scale = Scale.FIT
             )
             assertNotNull(decoderFactory.create(source.asSourceResult(), options, ImageLoader(context))?.decode())
@@ -98,7 +98,7 @@ class SvgDecoderTest {
         val (drawable, isSampled) = runBlocking {
             val options = Options(
                 context = context,
-                size = PixelSize(326, 50),
+                size = Size(326, 50),
                 scale = Scale.FILL
             )
             assertNotNull(decoderFactory.create(source.asSourceResult(), options, ImageLoader(context))?.decode())

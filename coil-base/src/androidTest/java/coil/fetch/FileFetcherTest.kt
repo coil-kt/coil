@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.request.Options
-import coil.size.PixelSize
+import coil.size.Size
 import coil.util.copyAssetToFile
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -25,7 +25,7 @@ class FileFetcherTest {
     @Test
     fun basic() {
         val file = context.copyAssetToFile("normal.jpg")
-        val options = Options(context, size = PixelSize(100, 100))
+        val options = Options(context, size = Size(100, 100))
         val fetcher = FileFetcher.Factory().create(file, options, ImageLoader(context))
 
         assertNotNull(fetcher)
