@@ -710,19 +710,16 @@ public final class coil/size/Dimension$Original : coil/size/Dimension {
 }
 
 public final class coil/size/Dimension$Pixels : coil/size/Dimension {
+	public final field px I
 	public fun <init> (I)V
-	public final fun component1 ()I
-	public final fun copy (I)Lcoil/size/Dimension$Pixels;
-	public static synthetic fun copy$default (Lcoil/size/Dimension$Pixels;IILjava/lang/Object;)Lcoil/size/Dimension$Pixels;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getPixels ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/size/Dimensions {
 	public static final fun create (I)Lcoil/size/Dimension$Pixels;
-	public static final fun pixelsOrElse (Lcoil/size/Dimension;Lkotlin/jvm/functions/Function0;)I
+	public static final fun pxOrElse (Lcoil/size/Dimension;Lkotlin/jvm/functions/Function0;)I
 }
 
 public final class coil/size/Precision : java/lang/Enum {

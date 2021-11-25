@@ -196,8 +196,8 @@ internal fun DiskCache.Editor.abortQuietly() {
     } catch (_: Exception) {}
 }
 
-internal fun Dimension.pixelsString(): String {
-    return if (this is Dimension.Pixels) pixels.toString() else toString()
+internal fun Dimension.valueString(): String {
+    return if (this is Dimension.Pixels) px.toString() else toString()
 }
 
 internal fun unsupported(): Nothing = error("Unsupported")

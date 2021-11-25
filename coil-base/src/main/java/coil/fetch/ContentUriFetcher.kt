@@ -74,8 +74,8 @@ internal class ContentUriFetcher(
     }
 
     private fun newMusicThumbnailSizeOptions(): Bundle? {
-        val width = (options.size.width as? Dimension.Pixels)?.pixels ?: return null
-        val height = (options.size.height as? Dimension.Pixels)?.pixels ?: return null
+        val width = (options.size.width as? Dimension.Pixels)?.px ?: return null
+        val height = (options.size.height as? Dimension.Pixels)?.px ?: return null
         return Bundle(1).apply { putParcelable(EXTRA_SIZE, Point(width, height)) }
     }
 

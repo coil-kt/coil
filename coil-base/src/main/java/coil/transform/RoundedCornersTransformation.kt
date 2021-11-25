@@ -17,7 +17,7 @@ import androidx.core.graphics.createBitmap
 import coil.decode.DecodeUtils
 import coil.size.Scale
 import coil.size.Size
-import coil.size.pixelsOrElse
+import coil.size.pxOrElse
 import coil.util.safeConfig
 import kotlin.math.roundToInt
 
@@ -50,8 +50,8 @@ class RoundedCornersTransformation(
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-        val dstWidth = size.width.pixelsOrElse { input.width }
-        val dstHeight = size.height.pixelsOrElse { input.height }
+        val dstWidth = size.width.pxOrElse { input.width }
+        val dstHeight = size.height.pxOrElse { input.height }
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = input.width,
             srcHeight = input.height,

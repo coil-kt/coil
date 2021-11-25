@@ -44,8 +44,8 @@ private class LimitedFileDescriptorHardwareBitmapService(
 ) : HardwareBitmapService() {
 
     override fun allowHardwareMainThread(size: Size) = with(size) {
-        (width !is Dimension.Pixels || width.pixels > MIN_SIZE_DIMENSION) &&
-            (height !is Dimension.Pixels || height.pixels > MIN_SIZE_DIMENSION)
+        (width !is Dimension.Pixels || width.px > MIN_SIZE_DIMENSION) &&
+            (height !is Dimension.Pixels || height.px > MIN_SIZE_DIMENSION)
     }
 
     override fun allowHardwareWorkerThread(): Boolean {

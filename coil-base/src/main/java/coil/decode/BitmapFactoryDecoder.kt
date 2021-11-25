@@ -12,7 +12,7 @@ import androidx.exifinterface.media.ExifInterface
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
-import coil.size.pixelsOrElse
+import coil.size.pxOrElse
 import coil.util.toDrawable
 import coil.util.toSoftware
 import kotlinx.coroutines.runInterruptible
@@ -88,8 +88,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
             }
             else -> {
                 val (width, height) = options.size
-                val dstWidth = width.pixelsOrElse { srcWidth }
-                val dstHeight = height.pixelsOrElse { srcHeight }
+                val dstWidth = width.pxOrElse { srcWidth }
+                val dstHeight = height.pxOrElse { srcHeight }
                 inSampleSize = DecodeUtils.calculateInSampleSize(
                     srcWidth = srcWidth,
                     srcHeight = srcHeight,

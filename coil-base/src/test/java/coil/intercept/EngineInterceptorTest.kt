@@ -532,8 +532,8 @@ class EngineInterceptorTest {
                 put(MEMORY_CACHE_KEY_TRANSFORMATIONS, transformationString)
             }
             val (width, height) = size
-            if (width is Dimension.Pixels) put(MEMORY_CACHE_KEY_WIDTH, width.pixels.toString())
-            if (height is Dimension.Pixels) put(MEMORY_CACHE_KEY_HEIGHT, height.pixels.toString())
+            if (width is Dimension.Pixels) put(MEMORY_CACHE_KEY_WIDTH, width.px.toString())
+            if (height is Dimension.Pixels) put(MEMORY_CACHE_KEY_HEIGHT, height.px.toString())
             putAll(parameters.cacheKeys())
         }
         return Key(key, extras)

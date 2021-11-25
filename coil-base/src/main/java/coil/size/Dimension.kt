@@ -13,11 +13,20 @@ sealed class Dimension {
     /**
      * Represents a fixed, positive number of pixels.
      */
-    data class Pixels(@Px val pixels: Int) : Dimension() {
+    class Pixels(@JvmField @Px val px: Int) : Dimension() {
 
         init {
-            require(pixels > 0) { "pixels must be > 0." }
+            require(px > 0) { "value must be > 0." }
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Pixels && px == other.px
+        }
+
+        override fun hashCode() = px
+
+        override fun toString() = "Dimension.Pixels(px=$px)"
     }
 
     /**
@@ -39,6 +48,6 @@ inline fun Dimension(@Px pixels: Int) = Dimension.Pixels(pixels)
  * If this is a [Dimension.Pixels] value, return its number of pixels. Else, invoke and return
  * the value from [block].
  */
-inline fun Dimension.pixelsOrElse(block: () -> Int): Int {
-    return if (this is Dimension.Pixels) pixels else block()
+inline fun Dimension.pxOrElse(block: () -> Int): Int {
+    return if (this is Dimension.Pixels) px else block()
 }

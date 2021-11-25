@@ -18,7 +18,7 @@ import coil.request.videoFrameMicros
 import coil.request.videoFrameOption
 import coil.size.Dimension.Pixels
 import coil.size.Size
-import coil.size.pixelsOrElse
+import coil.size.pxOrElse
 import coil.util.use
 import kotlin.math.roundToInt
 
@@ -54,8 +54,8 @@ class VideoFrameDecoder(
             val rawScale = DecodeUtils.computeSizeMultiplier(
                 srcWidth = srcWidth,
                 srcHeight = srcHeight,
-                dstWidth = options.size.width.pixelsOrElse { srcWidth },
-                dstHeight = options.size.height.pixelsOrElse { srcHeight },
+                dstWidth = options.size.width.pxOrElse { srcWidth },
+                dstHeight = options.size.height.pxOrElse { srcHeight },
                 scale = options.scale
             )
             val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
@@ -71,7 +71,7 @@ class VideoFrameDecoder(
 
         val (dstWidth, dstHeight) = dstSize
         val rawBitmap: Bitmap? = if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
-            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.pixels, dstHeight.pixels)
+            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.px, dstHeight.px)
         } else {
             retriever.getFrameAtTime(frameMicros, option)?.also {
                 srcWidth = it.width
@@ -119,8 +119,8 @@ class VideoFrameDecoder(
         val scale = DecodeUtils.computeSizeMultiplier(
             srcWidth = inBitmap.width,
             srcHeight = inBitmap.height,
-            dstWidth = size.width.pixelsOrElse { inBitmap.width },
-            dstHeight = size.height.pixelsOrElse { inBitmap.height },
+            dstWidth = size.width.pxOrElse { inBitmap.width },
+            dstHeight = size.height.pxOrElse { inBitmap.height },
             scale = options.scale
         ).toFloat()
         val dstWidth = (scale * inBitmap.width).roundToInt()
@@ -151,8 +151,8 @@ class VideoFrameDecoder(
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = bitmap.width,
             srcHeight = bitmap.height,
-            dstWidth = size.width.pixelsOrElse { bitmap.width },
-            dstHeight = size.height.pixelsOrElse { bitmap.height },
+            dstWidth = size.width.pxOrElse { bitmap.width },
+            dstHeight = size.height.pxOrElse { bitmap.height },
             scale = options.scale
         )
         return multiplier == 1.0

@@ -13,7 +13,7 @@ import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
-import coil.size.pixelsOrElse
+import coil.size.pxOrElse
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
 import coil.util.isHardware
@@ -60,8 +60,8 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 decoderSource.decodeDrawable { info, _ ->
                     val srcWidth = info.size.width.coerceAtLeast(1)
                     val srcHeight = info.size.height.coerceAtLeast(1)
-                    val dstWidth = options.size.width.pixelsOrElse { srcWidth }
-                    val dstHeight = options.size.height.pixelsOrElse { srcHeight }
+                    val dstWidth = options.size.width.pxOrElse { srcWidth }
+                    val dstHeight = options.size.height.pxOrElse { srcHeight }
                     if (srcWidth != dstWidth || srcHeight != dstHeight) {
                         val multiplier = DecodeUtils.computeSizeMultiplier(
                             srcWidth = srcWidth,
