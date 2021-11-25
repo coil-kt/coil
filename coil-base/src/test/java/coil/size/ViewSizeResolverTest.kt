@@ -48,7 +48,7 @@ class ViewSizeResolverTest {
             resolver.size()
         }
 
-        assertEquals(PixelSize(80, 80), size)
+        assertEquals(Size(80, 80), size)
     }
 
     @Test
@@ -61,7 +61,7 @@ class ViewSizeResolverTest {
             resolver.size()
         }
 
-        assertEquals(PixelSize(100, 100), size)
+        assertEquals(Size(100, 100), size)
     }
 
     @Test
@@ -85,12 +85,11 @@ class ViewSizeResolverTest {
         val size = runBlocking {
             deferred.await()
         }
-        assertEquals(PixelSize(120, 120), size)
+        assertEquals(Size(120, 120), size)
     }
 
     @Test
-    fun `wrap_content is resolved to the size of the display`() {
-        val expectedWidth = view.context.resources.displayMetrics.widthPixels
+    fun `wrap_content is resolved to the size of the image`() {
         val deferred = scope.async(Dispatchers.Main.immediate) {
             resolver.size()
         }
@@ -103,6 +102,6 @@ class ViewSizeResolverTest {
         val size = runBlocking {
             deferred.await()
         }
-        assertEquals(PixelSize(expectedWidth, 100), size)
+        assertEquals(Size(Dimension.Original, Dimension(100)), size)
     }
 }

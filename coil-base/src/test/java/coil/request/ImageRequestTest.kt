@@ -8,10 +8,9 @@ import android.widget.ImageView.ScaleType.MATRIX
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.lifecycle.FakeLifecycle
-import coil.size.OriginalSize
-import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.Scale
+import coil.size.Size
 import coil.size.ViewSizeResolver
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
@@ -197,10 +196,10 @@ class ImageRequestTest {
             .build()
 
         runBlocking {
-            assertEquals(OriginalSize, request1.sizeResolver.size())
-            assertEquals(OriginalSize, request2.sizeResolver.size())
-            assertEquals(PixelSize(100, 100), request3.sizeResolver.size())
-            assertEquals(PixelSize(100, 100), request4.sizeResolver.size())
+            assertEquals(Size.ORIGINAL, request1.sizeResolver.size())
+            assertEquals(Size.ORIGINAL, request2.sizeResolver.size())
+            assertEquals(Size(100, 100), request3.sizeResolver.size())
+            assertEquals(Size(100, 100), request4.sizeResolver.size())
         }
     }
 }

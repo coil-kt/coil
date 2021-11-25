@@ -64,56 +64,44 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         }
     }
 
-    private fun getSize(): PixelSize? {
-        val width = getWidth().also { if (it <= 0) return null }
-        val height = getHeight().also { if (it <= 0) return null }
-        return PixelSize(width, height)
+    private fun getSize(): Size? {
+        val width = getWidth() ?: return null
+        val height = getHeight() ?: return null
+        return Size(width, height)
     }
 
-    private fun getWidth(): Int {
-        return getDimension(
-            paramSize = view.layoutParams?.width ?: -1,
-            viewSize = view.width,
-            paddingSize = if (subtractPadding) view.paddingLeft + view.paddingRight else 0,
-            isWidth = true
-        )
-    }
+    private fun getWidth() = getDimension(
+        paramSize = view.layoutParams?.width ?: -1,
+        viewSize = view.width,
+        paddingSize = if (subtractPadding) view.paddingLeft + view.paddingRight else 0
+    )
 
-    private fun getHeight(): Int {
-        return getDimension(
-            paramSize = view.layoutParams?.height ?: -1,
-            viewSize = view.height,
-            paddingSize = if (subtractPadding) view.paddingTop + view.paddingBottom else 0,
-            isWidth = false
-        )
-    }
+    private fun getHeight() = getDimension(
+        paramSize = view.layoutParams?.height ?: -1,
+        viewSize = view.height,
+        paddingSize = if (subtractPadding) view.paddingTop + view.paddingBottom else 0
+    )
 
-    private fun getDimension(
-        paramSize: Int,
-        viewSize: Int,
-        paddingSize: Int,
-        isWidth: Boolean
-    ): Int {
+    private fun getDimension(paramSize: Int, viewSize: Int, paddingSize: Int): Dimension? {
         // Assume the dimension will match the value in the view's layout params.
         val insetParamSize = paramSize - paddingSize
         if (insetParamSize > 0) {
-            return insetParamSize
+            return Dimension(insetParamSize)
         }
 
         // Fallback to the view's current size.
         val insetViewSize = viewSize - paddingSize
         if (insetViewSize > 0) {
-            return insetViewSize
+            return Dimension(insetViewSize)
         }
 
-        // If the dimension is set to WRAP_CONTENT, fall back to the size of the display.
+        // If the dimension is set to WRAP_CONTENT, fall back to the original size of the image.
         if (paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            return view.context.resources.displayMetrics
-                .run { if (isWidth) widthPixels else heightPixels }
+            return Dimension.Original
         }
 
         // Unable to resolve the dimension's size.
-        return -1
+        return null
     }
 
     private fun ViewTreeObserver.removePreDrawListenerSafe(victim: ViewTreeObserver.OnPreDrawListener) {

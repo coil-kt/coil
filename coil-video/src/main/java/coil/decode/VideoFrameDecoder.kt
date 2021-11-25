@@ -16,9 +16,9 @@ import coil.fetch.SourceResult
 import coil.request.Options
 import coil.request.videoFrameMicros
 import coil.request.videoFrameOption
-import coil.size.OriginalSize
-import coil.size.PixelSize
+import coil.size.Dimension.Pixels
 import coil.size.Size
+import coil.size.pxOrElse
 import coil.util.use
 import kotlin.math.roundToInt
 
@@ -39,43 +39,39 @@ class VideoFrameDecoder(
 
         // Resolve the dimensions to decode the video frame at accounting
         // for the source's aspect ratio and the target's size.
-        var srcWidth = 0
-        var srcHeight = 0
-        val destSize = when (val size = options.size) {
-            is PixelSize -> {
-                val rotation = retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
-                if (rotation == 90 || rotation == 270) {
-                    srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
-                    srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
-                } else {
-                    srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
-                    srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
-                }
-
-                if (srcWidth > 0 && srcHeight > 0) {
-                    val rawScale = DecodeUtils.computeSizeMultiplier(
-                        srcWidth = srcWidth,
-                        srcHeight = srcHeight,
-                        dstWidth = size.width,
-                        dstHeight = size.height,
-                        scale = options.scale
-                    )
-                    val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
-                    val width = (scale * srcWidth).roundToInt()
-                    val height = (scale * srcHeight).roundToInt()
-                    PixelSize(width, height)
-                } else {
-                    // We were unable to decode the video's dimensions.
-                    // Fall back to decoding the video frame at the original size.
-                    // We'll scale the resulting bitmap after decoding if necessary.
-                    OriginalSize
-                }
-            }
-            is OriginalSize -> OriginalSize
+        var srcWidth: Int
+        var srcHeight: Int
+        val rotation = retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
+        if (rotation == 90 || rotation == 270) {
+            srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+            srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+        } else {
+            srcWidth = retriever.extractMetadata(METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+            srcHeight = retriever.extractMetadata(METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
         }
 
-        val rawBitmap: Bitmap? = if (SDK_INT >= 27 && destSize is PixelSize) {
-            retriever.getScaledFrameAtTime(frameMicros, option, destSize.width, destSize.height)
+        val dstSize = if (srcWidth > 0 && srcHeight > 0) {
+            val rawScale = DecodeUtils.computeSizeMultiplier(
+                srcWidth = srcWidth,
+                srcHeight = srcHeight,
+                dstWidth = options.size.width.pxOrElse { srcWidth },
+                dstHeight = options.size.height.pxOrElse { srcHeight },
+                scale = options.scale
+            )
+            val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
+            val width = (scale * srcWidth).roundToInt()
+            val height = (scale * srcHeight).roundToInt()
+            Size(width, height)
+        } else {
+            // We were unable to decode the video's dimensions.
+            // Fall back to decoding the video frame at the original size.
+            // We'll scale the resulting bitmap after decoding if necessary.
+            Size.ORIGINAL
+        }
+
+        val (dstWidth, dstHeight) = dstSize
+        val rawBitmap: Bitmap? = if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
+            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.px, dstHeight.px)
         } else {
             retriever.getFrameAtTime(frameMicros, option)?.also {
                 srcWidth = it.width
@@ -87,10 +83,16 @@ class VideoFrameDecoder(
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
         checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
-        val bitmap = normalizeBitmap(rawBitmap, destSize, options)
+        val bitmap = normalizeBitmap(rawBitmap, dstSize, options)
 
         val isSampled = if (srcWidth > 0 && srcHeight > 0) {
-            DecodeUtils.computeSizeMultiplier(srcWidth, srcHeight, bitmap.width, bitmap.height, options.scale) < 1.0
+            DecodeUtils.computeSizeMultiplier(
+                srcWidth = srcWidth,
+                srcHeight = srcHeight,
+                dstWidth = bitmap.width,
+                dstHeight = bitmap.height,
+                scale = options.scale
+            ) < 1.0
         } else {
             // We were unable to determine the original size of the video. Assume it is sampled.
             true
@@ -114,27 +116,15 @@ class VideoFrameDecoder(
         }
 
         // Slow path: re-render the bitmap with the correct size + config.
-        val scale: Float
-        val dstWidth: Int
-        val dstHeight: Int
-        when (size) {
-            is PixelSize -> {
-                scale = DecodeUtils.computeSizeMultiplier(
-                    srcWidth = inBitmap.width,
-                    srcHeight = inBitmap.height,
-                    dstWidth = size.width,
-                    dstHeight = size.height,
-                    scale = options.scale
-                ).toFloat()
-                dstWidth = (scale * inBitmap.width).roundToInt()
-                dstHeight = (scale * inBitmap.height).roundToInt()
-            }
-            is OriginalSize -> {
-                scale = 1f
-                dstWidth = inBitmap.width
-                dstHeight = inBitmap.height
-            }
-        }
+        val scale = DecodeUtils.computeSizeMultiplier(
+            srcWidth = inBitmap.width,
+            srcHeight = inBitmap.height,
+            dstWidth = size.width.pxOrElse { inBitmap.width },
+            dstHeight = size.height.pxOrElse { inBitmap.height },
+            scale = options.scale
+        ).toFloat()
+        val dstWidth = (scale * inBitmap.width).roundToInt()
+        val dstHeight = (scale * inBitmap.height).roundToInt()
         val safeConfig = when {
             SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
             else -> options.config
@@ -151,12 +141,21 @@ class VideoFrameDecoder(
     }
 
     private fun isConfigValid(bitmap: Bitmap, options: Options): Boolean {
-        return SDK_INT < 26 || bitmap.config != Bitmap.Config.HARDWARE || options.config == Bitmap.Config.HARDWARE
+        return SDK_INT < 26 ||
+            bitmap.config != Bitmap.Config.HARDWARE ||
+            options.config == Bitmap.Config.HARDWARE
     }
 
     private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {
-        return options.allowInexactSize || size is OriginalSize ||
-            size == DecodeUtils.computePixelSize(bitmap.width, bitmap.height, size, options.scale)
+        if (options.allowInexactSize) return true
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = bitmap.width,
+            srcHeight = bitmap.height,
+            dstWidth = size.width.pxOrElse { bitmap.width },
+            dstHeight = size.height.pxOrElse { bitmap.height },
+            scale = options.scale
+        )
+        return multiplier == 1.0
     }
 
     class Factory : Decoder.Factory {

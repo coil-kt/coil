@@ -22,9 +22,10 @@ import coil.request.ImageResult
 import coil.request.Options
 import coil.request.RequestService
 import coil.request.SuccessResult
-import coil.size.OriginalSize
-import coil.size.PixelSize
+import coil.size.Dimension
 import coil.size.Size
+import coil.size.isOriginal
+import coil.size.pxOrElse
 import coil.transform.Transformation
 import coil.util.DrawableUtils
 import coil.util.Logger
@@ -37,6 +38,7 @@ import coil.util.forEachIndices
 import coil.util.log
 import coil.util.safeConfig
 import coil.util.toDrawable
+import coil.util.valueString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -137,10 +139,8 @@ internal class EngineInterceptor(
             extras[MEMORY_CACHE_KEY_TRANSFORMATIONS] = transformations.toString()
 
             val size = options.size
-            if (size is PixelSize) {
-                extras[MEMORY_CACHE_KEY_WIDTH] = size.width.toString()
-                extras[MEMORY_CACHE_KEY_HEIGHT] = size.height.toString()
-            }
+            if (size.width is Dimension.Pixels) extras[MEMORY_CACHE_KEY_WIDTH] = size.width.px.toString()
+            if (size.height is Dimension.Pixels) extras[MEMORY_CACHE_KEY_HEIGHT] = size.height.px.toString()
         }
         return MemoryCache.Key(base, extras)
     }
@@ -177,8 +177,8 @@ internal class EngineInterceptor(
         request: ImageRequest,
         size: Size
     ): Boolean {
-        when (size) {
-            is OriginalSize -> {
+        when {
+            size.isOriginal -> {
                 if (cacheValue.isSampled) {
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Requested original size, but cached image is sampled."
@@ -186,20 +186,16 @@ internal class EngineInterceptor(
                     return false
                 }
             }
-            is PixelSize -> {
-                var cachedWidth = cacheKey.extras[MEMORY_CACHE_KEY_WIDTH]?.toInt()
-                var cachedHeight = cacheKey.extras[MEMORY_CACHE_KEY_HEIGHT]?.toInt()
-                if (cachedWidth == null || cachedHeight == null) {
-                    val bitmap = cacheValue.bitmap
-                    cachedWidth = bitmap.width
-                    cachedHeight = bitmap.height
-                }
-
+            else -> {
+                val cachedWidth = cacheKey.extras[MEMORY_CACHE_KEY_WIDTH]?.toInt() ?: cacheValue.bitmap.width
+                val cachedHeight = cacheKey.extras[MEMORY_CACHE_KEY_HEIGHT]?.toInt() ?: cacheValue.bitmap.height
+                val dstWidth = size.width.pxOrElse { cachedWidth }
+                val dstHeight = size.height.pxOrElse { cachedHeight }
                 val multiple = DecodeUtils.computeSizeMultiplier(
                     srcWidth = cachedWidth,
                     srcHeight = cachedHeight,
-                    dstWidth = size.width,
-                    dstHeight = size.height,
+                    dstWidth = dstWidth,
+                    dstHeight = dstHeight,
                     scale = request.scale
                 )
 
@@ -209,12 +205,12 @@ internal class EngineInterceptor(
                 val allowInexactSize = request.allowInexactSize
                 if (allowInexactSize) {
                     val downsampleMultiplier = multiple.coerceAtMost(1.0)
-                    if (abs(size.width - (downsampleMultiplier * cachedWidth)) <= 1 ||
-                        abs(size.height - (downsampleMultiplier * cachedHeight)) <= 1) {
+                    if (abs(dstWidth - (downsampleMultiplier * cachedWidth)) <= 1 ||
+                        abs(dstHeight - (downsampleMultiplier * cachedHeight)) <= 1) {
                         return true
                     }
                 } else {
-                    if (abs(size.width - cachedWidth) <= 1 && abs(size.height - cachedHeight) <= 1) {
+                    if (abs(dstWidth - cachedWidth) <= 1 && abs(dstHeight - cachedHeight) <= 1) {
                         return true
                     }
                 }
@@ -223,7 +219,7 @@ internal class EngineInterceptor(
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size " +
                             "($cachedWidth, $cachedHeight) does not exactly match the requested size " +
-                            "(${size.width}, ${size.height}, ${request.scale})."
+                            "(${size.width.valueString()}, ${size.height.valueString()}, ${request.scale})."
                     }
                     return false
                 }
@@ -231,7 +227,7 @@ internal class EngineInterceptor(
                     logger?.log(TAG, Log.DEBUG) {
                         "${request.data}: Cached image's request size " +
                             "($cachedWidth, $cachedHeight) is smaller than the requested size " +
-                            "(${size.width}, ${size.height}, ${request.scale})."
+                            "(${size.width.valueString()}, ${size.height.valueString()}, ${request.scale})."
                     }
                     return false
                 }

@@ -38,8 +38,6 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
-import coil.size.OriginalSize
-import coil.size.PixelSize
 import coil.size.Precision
 import coil.size.SizeResolver
 import coil.transition.CrossfadeTransition
@@ -57,6 +55,7 @@ import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlin.math.roundToInt
+import coil.size.Size as CoilSize
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and
@@ -212,8 +211,8 @@ class AsyncImagePainter internal constructor(
         override suspend fun size() = drawSize
             .mapNotNull { size ->
                 when {
-                    size.isUnspecified -> OriginalSize
-                    size.isPositive -> PixelSize(size.width.roundToInt(), size.height.roundToInt())
+                    size.isUnspecified -> CoilSize.ORIGINAL
+                    size.isPositive -> CoilSize(size.width.roundToInt(), size.height.roundToInt())
                     else -> null
                 }
             }

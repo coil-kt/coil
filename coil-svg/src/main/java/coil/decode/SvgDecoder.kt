@@ -7,14 +7,14 @@ import androidx.core.graphics.drawable.toDrawable
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
-import coil.size.OriginalSize
-import coil.size.PixelSize
+import coil.size.Dimension
 import coil.util.indexOf
 import coil.util.toSoftware
 import com.caverock.androidsvg.SVG
 import kotlinx.coroutines.runInterruptible
 import okio.BufferedSource
 import okio.ByteString.Companion.encodeUtf8
+import kotlin.math.roundToInt
 
 /**
  * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG files.
@@ -33,49 +33,33 @@ class SvgDecoder @JvmOverloads constructor(
 
         val svgWidth: Float
         val svgHeight: Float
+        val viewBox: RectF? = svg.documentViewBox
+        if (useViewBoundsAsIntrinsicSize && viewBox != null) {
+            svgWidth = viewBox.width()
+            svgHeight = viewBox.height()
+        } else {
+            svgWidth = svg.documentWidth
+            svgHeight = svg.documentHeight
+        }
+
         val bitmapWidth: Int
         val bitmapHeight: Int
-        val viewBox: RectF? = svg.documentViewBox
-        when (val size = options.size) {
-            is PixelSize -> {
-                if (useViewBoundsAsIntrinsicSize && viewBox != null) {
-                    svgWidth = viewBox.width()
-                    svgHeight = viewBox.height()
-                } else {
-                    svgWidth = svg.documentWidth
-                    svgHeight = svg.documentHeight
-                }
-
-                if (svgWidth > 0 && svgHeight > 0) {
-                    val multiplier = DecodeUtils.computeSizeMultiplier(
-                        srcWidth = svgWidth,
-                        srcHeight = svgHeight,
-                        dstWidth = size.width.toFloat(),
-                        dstHeight = size.height.toFloat(),
-                        scale = options.scale
-                    )
-                    bitmapWidth = (multiplier * svgWidth).toInt()
-                    bitmapHeight = (multiplier * svgHeight).toInt()
-                } else {
-                    bitmapWidth = size.width
-                    bitmapHeight = size.height
-                }
-            }
-            is OriginalSize -> {
-                svgWidth = svg.documentWidth
-                svgHeight = svg.documentHeight
-
-                if (svgWidth > 0 && svgHeight > 0) {
-                    bitmapWidth = svgWidth.toInt()
-                    bitmapHeight = svgHeight.toInt()
-                } else if (useViewBoundsAsIntrinsicSize && viewBox != null) {
-                    bitmapWidth = viewBox.width().toInt()
-                    bitmapHeight = viewBox.height().toInt()
-                } else {
-                    bitmapWidth = DEFAULT_SIZE
-                    bitmapHeight = DEFAULT_SIZE
-                }
-            }
+        val size = options.size
+        val dstWidth = size.width.pixelsOrElse(svgWidth)
+        val dstHeight = size.height.pixelsOrElse(svgHeight)
+        if (svgWidth > 0 && svgHeight > 0) {
+            val multiplier = DecodeUtils.computeSizeMultiplier(
+                srcWidth = svgWidth,
+                srcHeight = svgHeight,
+                dstWidth = dstWidth,
+                dstHeight = dstHeight,
+                scale = options.scale
+            )
+            bitmapWidth = (multiplier * svgWidth).toInt()
+            bitmapHeight = (multiplier * svgHeight).toInt()
+        } else {
+            bitmapWidth = dstWidth.roundToInt()
+            bitmapHeight = dstHeight.roundToInt()
         }
 
         // Set the SVG's view box to enable scaling if it is not set.
@@ -93,6 +77,14 @@ class SvgDecoder @JvmOverloads constructor(
             drawable = bitmap.toDrawable(options.context.resources),
             isSampled = true // SVGs can always be re-decoded at a higher resolution.
         )
+    }
+
+    private fun Dimension.pixelsOrElse(value: Float): Float {
+        return if (this is Dimension.Pixels) {
+            this.px.toFloat()
+        } else {
+            if (value > 0) value else DEFAULT_SIZE
+        }
     }
 
     class Factory @JvmOverloads constructor(
@@ -123,7 +115,7 @@ class SvgDecoder @JvmOverloads constructor(
 
     private companion object {
         private const val MIME_TYPE_SVG = "image/svg+xml"
-        private const val DEFAULT_SIZE = 512
+        private const val DEFAULT_SIZE = 512f
         private const val SVG_TAG_SEARCH_THRESHOLD_BYTES = 1024L
         private val SVG_TAG = "<svg ".encodeUtf8()
         private val LEFT_ANGLE_BRACKET = "<".encodeUtf8()

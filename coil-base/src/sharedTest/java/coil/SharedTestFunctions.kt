@@ -1,7 +1,7 @@
 package coil
 
 import android.graphics.Bitmap
-import coil.size.PixelSize
+import coil.size.Size
 
-val Bitmap.size: PixelSize
-    get() = PixelSize(width, height)
+val Bitmap.size: Size
+    get() = Size(width, height)

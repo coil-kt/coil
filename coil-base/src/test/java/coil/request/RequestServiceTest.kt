@@ -112,7 +112,7 @@ class RequestServiceTest {
     }
 
     @Test
-    fun `allowInexactSize - PixelSizeResolver explicit`() {
+    fun `allowInexactSize - SizeResolver explicit`() {
         val request = createRequest(context) {
             size(100, 100)
         }

@@ -24,8 +24,7 @@ import coil.request.Options
 import coil.request.Parameters
 import coil.request.RequestService
 import coil.size
-import coil.size.OriginalSize
-import coil.size.PixelSize
+import coil.size.Dimension
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
@@ -61,7 +60,7 @@ class EngineInterceptorTest {
     fun `computeMemoryCacheKey - null key`() {
         val interceptor = newInterceptor(key = null)
         val request = createRequest(context)
-        val options = Options(context, size = OriginalSize)
+        val options = Options(context, size = Size.ORIGINAL)
         val key = runBlocking {
             interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
@@ -73,7 +72,7 @@ class EngineInterceptorTest {
     fun `computeMemoryCacheKey - simple key`() {
         val interceptor = newInterceptor()
         val request = createRequest(context)
-        val options = Options(context, size = OriginalSize)
+        val options = Options(context, size = Size.ORIGINAL)
         val actual = runBlocking {
             interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
@@ -88,7 +87,7 @@ class EngineInterceptorTest {
         val request = createRequest(context) {
             parameters(parameters)
         }
-        val options = Options(context, size = OriginalSize)
+        val options = Options(context, size = Size.ORIGINAL)
         val actual = runBlocking {
             interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
@@ -103,7 +102,7 @@ class EngineInterceptorTest {
         val request = createRequest(context) {
             transformations(transformations)
         }
-        val size = PixelSize(123, 332)
+        val size = Size(123, 332)
         val options = Options(context, size = size)
         val actual = runBlocking {
             interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
@@ -121,7 +120,7 @@ class EngineInterceptorTest {
             parameters(parameters)
             transformations(transformations)
         }
-        val options = Options(context, size = OriginalSize)
+        val options = Options(context, size = Size.ORIGINAL)
         val actual = runBlocking {
             interceptor.getMemoryCacheKey(request, Unit, options, EventListener.NONE)
         }
@@ -142,37 +141,37 @@ class EngineInterceptorTest {
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(200, 200)
+            size = Size(200, 200)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(150, 50)
+            size = Size(150, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(100, 100)
+            size = Size(100, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(50, 100)
+            size = Size(50, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(50, 50)
+            size = Size(50, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
             request = request,
-            size = PixelSize(400, 200)
+            size = Size(400, 200)
         ))
     }
 
@@ -189,37 +188,37 @@ class EngineInterceptorTest {
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(200, 200)
+            size = Size(200, 200)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(150, 50)
+            size = Size(150, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(100, 100)
+            size = Size(100, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(50, 100)
+            size = Size(50, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = cached,
             isSampled = true,
             request = request,
-            size = PixelSize(50, 50)
+            size = Size(50, 50)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 200, height = 400),
             isSampled = true,
             request = request,
-            size = PixelSize(400, 800)
+            size = Size(400, 800)
         ))
     }
 
@@ -234,7 +233,7 @@ class EngineInterceptorTest {
                 precision(Precision.INEXACT)
                 scale(Scale.FILL)
             },
-            size = PixelSize(200, 200)
+            size = Size(200, 200)
         )
         assertTrue(isValid)
     }
@@ -251,7 +250,7 @@ class EngineInterceptorTest {
                     allowHardware(false)
                     scale(Scale.FILL)
                 },
-                size = PixelSize(100, 100)
+                size = Size(100, 100)
             )
         }
 
@@ -271,7 +270,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FILL)
             },
-            size = PixelSize(50, 50)
+            size = Size(50, 50)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
@@ -280,7 +279,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(50, 50)
+            size = Size(50, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
@@ -289,7 +288,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FILL)
             },
-            size = PixelSize(100, 50)
+            size = Size(100, 50)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
@@ -298,7 +297,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(100, 50)
+            size = Size(100, 50)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
@@ -307,7 +306,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FILL)
             },
-            size = PixelSize(100, 100)
+            size = Size(100, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 100, height = 100),
@@ -316,7 +315,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(100, 100)
+            size = Size(100, 100)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 400, height = 200),
@@ -325,7 +324,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FILL)
             },
-            size = PixelSize(400, 200)
+            size = Size(400, 200)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 200, height = 400),
@@ -334,7 +333,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(400, 800)
+            size = Size(400, 800)
         ))
     }
 
@@ -348,7 +347,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(245, 600)
+            size = Size(245, 600)
         ))
         assertTrue(interceptor.isCachedValueValid(
             cached = createBitmap(width = 244, height = 600),
@@ -357,7 +356,7 @@ class EngineInterceptorTest {
                 precision(Precision.INEXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(245, 600)
+            size = Size(245, 600)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 243, height = 595),
@@ -366,7 +365,7 @@ class EngineInterceptorTest {
                 precision(Precision.EXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(245, 600)
+            size = Size(245, 600)
         ))
         assertFalse(interceptor.isCachedValueValid(
             cached = createBitmap(width = 243, height = 595),
@@ -375,7 +374,7 @@ class EngineInterceptorTest {
                 precision(Precision.INEXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(245, 600)
+            size = Size(245, 600)
         ))
         // Regression test: https://github.com/coil-kt/coil/issues/817
         assertTrue(interceptor.isCachedValueValid(
@@ -385,7 +384,7 @@ class EngineInterceptorTest {
                 precision(Precision.INEXACT)
                 scale(Scale.FIT)
             },
-            size = PixelSize(176, 176)
+            size = Size(176, 176)
         ))
     }
 
@@ -395,7 +394,7 @@ class EngineInterceptorTest {
         val key = newMemoryCacheKey(
             key = "key",
             transformations = listOf(CircleCropTransformation()),
-            size = PixelSize(1000, 500) // The size of the previous request.
+            size = Size(1000, 500) // The size of the previous request.
         )
         val value = Value(
             bitmap = createBitmap(width = 200, height = 200), // The small cached bitmap.
@@ -407,28 +406,28 @@ class EngineInterceptorTest {
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
-            size = PixelSize(650, 400)
+            size = Size(650, 400)
         ))
 
         assertTrue(interceptor.isCachedValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.EXACT).scale(Scale.FIT).build(),
-            size = PixelSize(1000, 500)
+            size = Size(1000, 500)
         ))
 
         assertFalse(interceptor.isCachedValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
-            size = PixelSize(1500, 1000)
+            size = Size(1500, 1000)
         ))
 
         assertFalse(interceptor.isCachedValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.EXACT).scale(Scale.FIT).build(),
-            size = PixelSize(800, 500)
+            size = Size(800, 500)
         ))
     }
 
@@ -443,7 +442,7 @@ class EngineInterceptorTest {
     fun `applyTransformations - transformations convert drawable to bitmap`() {
         val interceptor = newInterceptor()
         val drawable = ColorDrawable(Color.BLACK)
-        val size = PixelSize(100, 100)
+        val size = Size(100, 100)
         val result = runBlocking {
             interceptor.transform(
                 result = ExecuteResult(
@@ -476,7 +475,7 @@ class EngineInterceptorTest {
                     diskCacheKey = null
                 ),
                 request = createRequest(context) { transformations(emptyList()) },
-                options = Options(context, size = PixelSize(100, 100)),
+                options = Options(context, size = Size(100, 100)),
                 eventListener = EventListener.NONE
             )
         }
@@ -522,7 +521,7 @@ class EngineInterceptorTest {
     private fun newMemoryCacheKey(
         key: String = TEST_KEY,
         transformations: List<Transformation> = emptyList(),
-        size: Size = OriginalSize,
+        size: Size = Size.ORIGINAL,
         parameters: Parameters = Parameters.EMPTY
     ): Key {
         val extras = buildMap<String, String> {
@@ -532,10 +531,9 @@ class EngineInterceptorTest {
                 }
                 put(MEMORY_CACHE_KEY_TRANSFORMATIONS, transformationString)
             }
-            if (size is PixelSize) {
-                put(MEMORY_CACHE_KEY_WIDTH, size.width.toString())
-                put(MEMORY_CACHE_KEY_HEIGHT, size.height.toString())
-            }
+            val (width, height) = size
+            if (width is Dimension.Pixels) put(MEMORY_CACHE_KEY_WIDTH, width.px.toString())
+            if (height is Dimension.Pixels) put(MEMORY_CACHE_KEY_HEIGHT, height.px.toString())
             putAll(parameters.cacheKeys())
         }
         return Key(key, extras)
