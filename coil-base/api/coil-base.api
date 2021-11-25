@@ -767,9 +767,9 @@ public final class coil/size/SizeResolver$Companion {
 }
 
 public final class coil/size/Sizes {
+	public static final fun OriginalSize ()Lcoil/size/Size;
+	public static final fun PixelSize (II)Lcoil/size/Size;
 	public static final fun create (II)Lcoil/size/Size;
-	public static final fun createDeprecated (II)Lcoil/size/Size;
-	public static final fun getOriginalSize ()Lcoil/size/Size;
 	public static final fun isOriginal (Lcoil/size/Size;)Z
 }
 

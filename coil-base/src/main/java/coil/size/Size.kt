@@ -47,11 +47,13 @@ typealias PixelSize = Size
     message = "Migrate to 'coil.size.Size'.",
     replaceWith = ReplaceWith("Size(width, height)", "coil.size.Size")
 )
-@JvmName("createDeprecated")
+@JvmName("PixelSize")
 inline fun PixelSize(@Px width: Int, @Px height: Int) = Size(width, height)
 
 @Deprecated(
     message = "Migrate to 'coil.size.Size.ORIGINAL'.",
     replaceWith = ReplaceWith("Size.ORIGINAL", "coil.size.Size")
 )
-inline val OriginalSize get() = Size.ORIGINAL
+
+inline val OriginalSize: Size
+    @JvmName("OriginalSize") get() = Size.ORIGINAL
