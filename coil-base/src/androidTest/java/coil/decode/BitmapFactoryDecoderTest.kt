@@ -9,6 +9,7 @@ import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
 import coil.size
+import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
 import coil.util.assertIsSimilarTo
@@ -23,6 +24,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class BitmapFactoryDecoderTest {
@@ -44,7 +46,35 @@ class BitmapFactoryDecoderTest {
         )
 
         assertTrue(isSampled)
-        assertTrue(drawable is BitmapDrawable)
+        assertIs<BitmapDrawable>(drawable)
+        assertEquals(Size(100, 125), drawable.bitmap.size)
+        assertEquals(Bitmap.Config.ARGB_8888, drawable.bitmap.config)
+    }
+
+    @Test
+    fun unboundedWidth() {
+        val (drawable, isSampled) = decode(
+            assetName = "normal.jpg",
+            size = Size(Dimension.Original, Dimension(100)),
+            scale = Scale.FIT
+        )
+
+        assertTrue(isSampled)
+        assertIs<BitmapDrawable>(drawable)
+        assertEquals(Size(80, 100), drawable.bitmap.size)
+        assertEquals(Bitmap.Config.ARGB_8888, drawable.bitmap.config)
+    }
+
+    @Test
+    fun unboundedHeight() {
+        val (drawable, isSampled) = decode(
+            assetName = "normal.jpg",
+            size = Size(Dimension(100), Dimension.Original),
+            scale = Scale.FIT
+        )
+
+        assertTrue(isSampled)
+        assertIs<BitmapDrawable>(drawable)
         assertEquals(Size(100, 125), drawable.bitmap.size)
         assertEquals(Bitmap.Config.ARGB_8888, drawable.bitmap.config)
     }
@@ -67,7 +97,7 @@ class BitmapFactoryDecoderTest {
         )
 
         assertTrue(isSampled)
-        assertTrue(drawable is BitmapDrawable)
+        assertIs<BitmapDrawable>(drawable)
         assertEquals(Size(600, 750), drawable.bitmap.size)
     }
 
@@ -211,7 +241,7 @@ class BitmapFactoryDecoderTest {
         val (drawable, isSampled) = decode("16_bit.png", Size(250, 250))
 
         assertTrue(isSampled)
-        assertTrue(drawable is BitmapDrawable)
+        assertIs<BitmapDrawable>(drawable)
         assertEquals(Size(250, 250), drawable.bitmap.size)
 
         val expectedConfig = if (SDK_INT >= 26) Bitmap.Config.RGBA_F16 else Bitmap.Config.ARGB_8888
@@ -249,8 +279,8 @@ class BitmapFactoryDecoderTest {
     private fun decodeBitmap(assetName: String, options: Options): Bitmap =
         (decode(assetName, options).drawable as BitmapDrawable).bitmap
 
-    private fun decode(assetName: String, size: Size): DecodeResult =
-        decode(assetName, Options(context = context, size = size, scale = Scale.FILL))
+    private fun decode(assetName: String, size: Size, scale: Scale = Scale.FILL): DecodeResult =
+        decode(assetName, Options(context = context, size = size, scale = scale))
 
     private fun decode(assetName: String, options: Options): DecodeResult = runBlocking {
         val source = context.assets.open(assetName).source().buffer()
