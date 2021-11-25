@@ -35,7 +35,7 @@ object Library {
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
-    private const val OKHTTP_VERSION = "4.9.2"
+    private const val OKHTTP_VERSION = "4.9.3"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
     const val OKIO = "com.squareup.okio:okio:3.0.0"
