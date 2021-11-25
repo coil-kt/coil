@@ -171,7 +171,6 @@ interface AsyncImageScope : BoxScope {
     val colorFilter: ColorFilter?
 
     companion object {
-
         /**
          * The default content composable only draws [AsyncImageContent] for all
          * [AsyncImagePainter] states.
