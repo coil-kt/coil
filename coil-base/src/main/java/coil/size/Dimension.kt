@@ -16,7 +16,7 @@ sealed class Dimension {
     data class Pixels(@Px val pixels: Int) : Dimension() {
 
         init {
-            require(pixels > 0) { "value must be > 0." }
+            require(pixels > 0) { "pixels must be > 0." }
         }
     }
 
