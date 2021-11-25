@@ -12,9 +12,10 @@ import androidx.exifinterface.media.ExifInterface
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
-import coil.size.PixelSize
+import coil.size.pixelsOrElse
 import coil.util.toDrawable
 import coil.util.toSoftware
+import java.io.InputStream
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -22,7 +23,6 @@ import okio.Buffer
 import okio.ForwardingSource
 import okio.Source
 import okio.buffer
-import java.io.InputStream
 import kotlin.math.roundToInt
 
 /** The base [Decoder] that uses [BitmapFactory] to decode a given [ImageSource]. */
@@ -86,22 +86,24 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
                 inScaled = false
                 inBitmap = null
             }
-            options.size !is PixelSize -> {
-                // This occurs if size is OriginalSize.
-                inSampleSize = 1
-                inScaled = false
-            }
             else -> {
                 val (width, height) = options.size
-                inSampleSize = DecodeUtils
-                    .calculateInSampleSize(srcWidth, srcHeight, width, height, options.scale)
+                val dstWidth = width.pixelsOrElse { srcWidth }
+                val dstHeight = height.pixelsOrElse { srcHeight }
+                inSampleSize = DecodeUtils.calculateInSampleSize(
+                    srcWidth = srcWidth,
+                    srcHeight = srcHeight,
+                    dstWidth = dstWidth,
+                    dstHeight = dstHeight,
+                    scale = options.scale
+                )
 
                 // Calculate the image's density scaling multiple.
                 val rawScale = DecodeUtils.computeSizeMultiplier(
                     srcWidth = srcWidth / inSampleSize.toDouble(),
                     srcHeight = srcHeight / inSampleSize.toDouble(),
-                    dstWidth = width.toDouble(),
-                    dstHeight = height.toDouble(),
+                    dstWidth = dstWidth.toDouble(),
+                    dstHeight = dstHeight.toDouble(),
                     scale = options.scale
                 )
 

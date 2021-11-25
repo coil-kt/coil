@@ -25,8 +25,7 @@ import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.request.ImageRequest.Builder
-import coil.size.OriginalSize
-import coil.size.PixelSize
+import coil.size.Dimension
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
@@ -45,11 +44,11 @@ import coil.util.getLifecycle
 import coil.util.orEmpty
 import coil.util.scale
 import coil.util.unsupported
+import java.io.File
+import java.nio.ByteBuffer
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okhttp3.HttpUrl
-import java.io.File
-import java.nio.ByteBuffer
 
 /**
  * An immutable value object that represents a request for an image.
@@ -575,7 +574,12 @@ class ImageRequest private constructor(
         /**
          * Set the requested width/height.
          */
-        fun size(@Px width: Int, @Px height: Int) = size(PixelSize(width, height))
+        fun size(@Px width: Int, @Px height: Int) = size(Size(width, height))
+
+        /**
+         * Set the requested width/height.
+         */
+        fun size(width: Dimension, height: Dimension) = size(Size(width, height))
 
         /**
          * Set the requested width/height.
@@ -606,7 +610,7 @@ class ImageRequest private constructor(
          * The default value is [Precision.AUTOMATIC], which uses the logic in [allowInexactSize]
          * to determine if output image's dimensions must match the input [size] and [scale] exactly.
          *
-         * NOTE: If [size] is [OriginalSize], the returned image's size will always be equal to or
+         * NOTE: If [size] is [Size.ORIGINAL], the returned image's size will always be equal to or
          * greater than the image's original size.
          *
          * @see Precision
@@ -978,7 +982,7 @@ class ImageRequest private constructor(
                     return ViewSizeResolver(view)
                 }
             }
-            return SizeResolver(OriginalSize)
+            return SizeResolver(Size.ORIGINAL)
         }
 
         private fun resolveScale(): Scale {

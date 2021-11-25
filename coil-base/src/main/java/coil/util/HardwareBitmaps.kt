@@ -9,7 +9,7 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import coil.size.PixelSize
+import coil.size.Dimension
 import coil.size.Size
 import java.io.File
 
@@ -43,9 +43,9 @@ private class LimitedFileDescriptorHardwareBitmapService(
     private val logger: Logger?
 ) : HardwareBitmapService() {
 
-    override fun allowHardwareMainThread(size: Size): Boolean {
-        return size !is PixelSize ||
-            (size.width >= MIN_SIZE_DIMENSION && size.height >= MIN_SIZE_DIMENSION)
+    override fun allowHardwareMainThread(size: Size) = with(size) {
+        (width !is Dimension.Pixels || width.pixels > MIN_SIZE_DIMENSION) &&
+            (height !is Dimension.Pixels || height.pixels > MIN_SIZE_DIMENSION)
     }
 
     override fun allowHardwareWorkerThread(): Boolean {

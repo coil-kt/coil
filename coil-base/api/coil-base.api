@@ -177,7 +177,6 @@ public final class coil/decode/DecodeResult {
 public final class coil/decode/DecodeUtils {
 	public static final field INSTANCE Lcoil/decode/DecodeUtils;
 	public static final fun calculateInSampleSize (IIIILcoil/size/Scale;)I
-	public static final fun computePixelSize (IILcoil/size/Size;Lcoil/size/Scale;)Lcoil/size/PixelSize;
 	public static final fun computeSizeMultiplier (DDDDLcoil/size/Scale;)D
 	public static final fun computeSizeMultiplier (FFFFLcoil/size/Scale;)F
 	public static final fun computeSizeMultiplier (IIIILcoil/size/Scale;)D
@@ -585,6 +584,7 @@ public final class coil/request/ImageRequest$Builder {
 	public static synthetic fun setParameter$default (Lcoil/request/ImageRequest$Builder;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;ILjava/lang/Object;)Lcoil/request/ImageRequest$Builder;
 	public final fun size (I)Lcoil/request/ImageRequest$Builder;
 	public final fun size (II)Lcoil/request/ImageRequest$Builder;
+	public final fun size (Lcoil/size/Dimension;Lcoil/size/Dimension;)Lcoil/request/ImageRequest$Builder;
 	public final fun size (Lcoil/size/Size;)Lcoil/request/ImageRequest$Builder;
 	public final fun size (Lcoil/size/SizeResolver;)Lcoil/request/ImageRequest$Builder;
 	public final fun target (Landroid/widget/ImageView;)Lcoil/request/ImageRequest$Builder;
@@ -702,22 +702,27 @@ public final class coil/request/SuccessResult : coil/request/ImageResult {
 	public final fun isSampled ()Z
 }
 
-public final class coil/size/OriginalSize : coil/size/Size {
-	public static final field INSTANCE Lcoil/size/OriginalSize;
+public abstract class coil/size/Dimension {
+}
+
+public final class coil/size/Dimension$Original : coil/size/Dimension {
+	public static final field INSTANCE Lcoil/size/Dimension$Original;
+}
+
+public final class coil/size/Dimension$Pixels : coil/size/Dimension {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcoil/size/Dimension$Pixels;
+	public static synthetic fun copy$default (Lcoil/size/Dimension$Pixels;IILjava/lang/Object;)Lcoil/size/Dimension$Pixels;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPixels ()I
+	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class coil/size/PixelSize : coil/size/Size {
-	public fun <init> (II)V
-	public final fun component1 ()I
-	public final fun component2 ()I
-	public final fun copy (II)Lcoil/size/PixelSize;
-	public static synthetic fun copy$default (Lcoil/size/PixelSize;IIILjava/lang/Object;)Lcoil/size/PixelSize;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getHeight ()I
-	public final fun getWidth ()I
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+public final class coil/size/Dimensions {
+	public static final fun create (I)Lcoil/size/Dimension$Pixels;
+	public static final fun pixelsOrElse (Lcoil/size/Dimension;Lkotlin/jvm/functions/Function0;)I
 }
 
 public final class coil/size/Precision : java/lang/Enum {
@@ -735,7 +740,22 @@ public final class coil/size/Scale : java/lang/Enum {
 	public static fun values ()[Lcoil/size/Scale;
 }
 
-public abstract class coil/size/Size {
+public final class coil/size/Size {
+	public static final field Companion Lcoil/size/Size$Companion;
+	public static final field ORIGINAL Lcoil/size/Size;
+	public fun <init> (Lcoil/size/Dimension;Lcoil/size/Dimension;)V
+	public final fun component1 ()Lcoil/size/Dimension;
+	public final fun component2 ()Lcoil/size/Dimension;
+	public final fun copy (Lcoil/size/Dimension;Lcoil/size/Dimension;)Lcoil/size/Size;
+	public static synthetic fun copy$default (Lcoil/size/Size;Lcoil/size/Dimension;Lcoil/size/Dimension;ILjava/lang/Object;)Lcoil/size/Size;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHeight ()Lcoil/size/Dimension;
+	public final fun getWidth ()Lcoil/size/Dimension;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/size/Size$Companion {
 }
 
 public abstract interface class coil/size/SizeResolver {
@@ -746,6 +766,13 @@ public abstract interface class coil/size/SizeResolver {
 
 public final class coil/size/SizeResolver$Companion {
 	public final fun create (Lcoil/size/Size;)Lcoil/size/SizeResolver;
+}
+
+public final class coil/size/Sizes {
+	public static final fun create (II)Lcoil/size/Size;
+	public static final fun createDeprecated (II)Lcoil/size/Size;
+	public static final fun getOriginalSize ()Lcoil/size/Size;
+	public static final fun isOriginal (Lcoil/size/Size;)Z
 }
 
 public abstract interface class coil/size/ViewSizeResolver : coil/size/SizeResolver {

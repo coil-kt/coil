@@ -34,15 +34,16 @@ import coil.memory.MemoryCache
 import coil.request.DefaultRequestOptions
 import coil.request.Parameters
 import coil.request.ViewTargetRequestManager
+import coil.size.Dimension
 import coil.size.Scale
 import coil.transform.Transformation
+import java.io.Closeable
+import java.io.File
+import java.util.Optional
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
-import java.io.Closeable
-import java.io.File
-import java.util.Optional
 import kotlin.coroutines.CoroutineContext
 
 internal val View.requestManager: ViewTargetRequestManager
@@ -193,6 +194,10 @@ internal fun DiskCache.Editor.abortQuietly() {
     try {
         abort()
     } catch (_: Exception) {}
+}
+
+internal fun Dimension.pixelsString(): String {
+    return if (this is Dimension.Pixels) pixels.toString() else toString()
 }
 
 internal fun unsupported(): Nothing = error("Unsupported")

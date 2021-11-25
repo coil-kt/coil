@@ -11,9 +11,10 @@ import androidx.core.graphics.component3
 import androidx.core.graphics.component4
 import androidx.core.graphics.createBitmap
 import coil.decode.DecodeUtils
-import coil.size.OriginalSize
 import coil.size.Scale
 import coil.size.Size
+import coil.size.pixelsOrElse
+import kotlin.math.roundToInt
 
 internal object DrawableUtils {
 
@@ -48,12 +49,20 @@ internal object DrawableUtils {
         val safeDrawable = drawable.mutate()
         val srcWidth = safeDrawable.width.let { if (it > 0) it else DEFAULT_SIZE }
         val srcHeight = safeDrawable.height.let { if (it > 0) it else DEFAULT_SIZE }
-        val (width, height) = DecodeUtils.computePixelSize(srcWidth, srcHeight, size, scale)
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = srcWidth,
+            srcHeight = srcHeight,
+            dstWidth = size.width.pixelsOrElse { srcWidth },
+            dstHeight = size.height.pixelsOrElse { srcHeight },
+            scale = scale
+        )
+        val bitmapWidth = (multiplier * srcWidth).roundToInt()
+        val bitmapHeight = (multiplier * srcHeight).roundToInt()
 
-        val bitmap = createBitmap(width, height, config.toSoftware())
+        val bitmap = createBitmap(bitmapWidth, bitmapHeight, config.toSoftware())
         safeDrawable.apply {
             val (oldLeft, oldTop, oldRight, oldBottom) = safeDrawable.bounds
-            setBounds(0, 0, width, height)
+            setBounds(0, 0, bitmapHeight, bitmapHeight)
             draw(Canvas(bitmap))
             setBounds(oldLeft, oldTop, oldRight, oldBottom)
         }
@@ -66,7 +75,14 @@ internal object DrawableUtils {
     }
 
     private fun isSizeValid(allowInexactSize: Boolean, size: Size, bitmap: Bitmap, scale: Scale): Boolean {
-        return allowInexactSize || size is OriginalSize ||
-            size == DecodeUtils.computePixelSize(bitmap.width, bitmap.height, size, scale)
+        if (allowInexactSize) return true
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = bitmap.width,
+            srcHeight = bitmap.height,
+            dstWidth = size.width.pixelsOrElse { bitmap.width },
+            dstHeight = size.height.pixelsOrElse { bitmap.height },
+            scale = scale
+        )
+        return multiplier == 1.0
     }
 }

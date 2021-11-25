@@ -14,7 +14,7 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
-import coil.size.PixelSize
+import coil.size.Dimension
 import okio.buffer
 import okio.source
 
@@ -74,7 +74,8 @@ internal class ContentUriFetcher(
     }
 
     private fun newMusicThumbnailSizeOptions(): Bundle? {
-        val (width, height) = options.size as? PixelSize ?: return null
+        val width = (options.size.width as? Dimension.Pixels)?.pixels ?: return null
+        val height = (options.size.height as? Dimension.Pixels)?.pixels ?: return null
         return Bundle(1).apply { putParcelable(EXTRA_SIZE, Point(width, height)) }
     }
 

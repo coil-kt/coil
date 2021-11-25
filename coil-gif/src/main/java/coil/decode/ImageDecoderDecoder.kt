@@ -5,8 +5,6 @@ import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
-import androidx.core.util.component1
-import androidx.core.util.component2
 import coil.ImageLoader
 import coil.drawable.ScaleDrawable
 import coil.fetch.SourceResult
@@ -15,16 +13,16 @@ import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
-import coil.size.PixelSize
+import coil.size.pixelsOrElse
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
 import coil.util.isHardware
+import java.nio.ByteBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.buffer
-import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
 /**
@@ -60,14 +58,16 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 }
 
                 decoderSource.decodeDrawable { info, _ ->
-                    val size = options.size
-                    if (size is PixelSize) {
-                        val (srcWidth, srcHeight) = info.size
+                    val srcWidth = info.size.width.coerceAtLeast(1)
+                    val srcHeight = info.size.height.coerceAtLeast(1)
+                    val dstWidth = options.size.width.pixelsOrElse { srcWidth }
+                    val dstHeight = options.size.height.pixelsOrElse { srcHeight }
+                    if (srcWidth != dstWidth || srcHeight != dstHeight) {
                         val multiplier = DecodeUtils.computeSizeMultiplier(
                             srcWidth = srcWidth,
                             srcHeight = srcHeight,
-                            dstWidth = size.width,
-                            dstHeight = size.height,
+                            dstWidth = dstWidth,
+                            dstHeight = dstHeight,
                             scale = options.scale
                         )
 

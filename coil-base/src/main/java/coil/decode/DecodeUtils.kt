@@ -2,16 +2,12 @@ package coil.decode
 
 import android.graphics.BitmapFactory
 import androidx.annotation.Px
-import coil.size.OriginalSize
-import coil.size.PixelSize
 import coil.size.Scale
-import coil.size.Size
 import okio.BufferedSource
 import okio.ByteString.Companion.encodeUtf8
 import kotlin.experimental.and
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 /** A collection of useful utility methods for decoding images. */
 object DecodeUtils {
@@ -138,37 +134,6 @@ object DecodeUtils {
         return when (scale) {
             Scale.FILL -> max(widthPercent, heightPercent)
             Scale.FIT -> min(widthPercent, heightPercent)
-        }
-    }
-
-    /**
-     * Calculate the pixel size required to fit/fill the source dimensions inside the
-     * destination size while preserving aspect ratio.
-     */
-    @JvmStatic
-    fun computePixelSize(
-        srcWidth: Int,
-        srcHeight: Int,
-        dstSize: Size,
-        scale: Scale
-    ): PixelSize {
-        return when (dstSize) {
-            is OriginalSize -> {
-                PixelSize(srcWidth, srcHeight)
-            }
-            is PixelSize -> {
-                val multiplier = computeSizeMultiplier(
-                    srcWidth = srcWidth,
-                    srcHeight = srcHeight,
-                    dstWidth = dstSize.width,
-                    dstHeight = dstSize.height,
-                    scale = scale
-                )
-                PixelSize(
-                    width = (multiplier * srcWidth).roundToInt(),
-                    height = (multiplier * srcHeight).roundToInt()
-                )
-            }
         }
     }
 }

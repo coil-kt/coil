@@ -7,7 +7,6 @@ import android.os.Build.VERSION.SDK_INT
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.Decoder
 import coil.fetch.Fetcher
-import coil.size.OriginalSize
 import coil.size.Scale
 import coil.size.Size
 import coil.util.EMPTY_HEADERS
@@ -38,7 +37,7 @@ class Options(
     /**
      * The requested output size for the image request.
      */
-    val size: Size = OriginalSize,
+    val size: Size = Size.ORIGINAL,
 
     /**
      * The scaling algorithm for how to fit the source image's dimensions into the target's
