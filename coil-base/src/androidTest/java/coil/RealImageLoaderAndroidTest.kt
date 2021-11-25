@@ -455,6 +455,40 @@ class RealImageLoaderAndroidTest {
         assertTrue(isInitialized)
     }
 
+    @Test
+    fun noMemoryCacheReturnsNoMemoryCacheKey() {
+        val imageLoader = ImageLoader.Builder(context)
+            .memoryCache(null)
+            .build()
+
+        server.enqueueImage(IMAGE)
+        val result = runBlocking {
+            val request = ImageRequest.Builder(context)
+                .data(server.url(IMAGE))
+                .build()
+            imageLoader.execute(request) as SuccessResult
+        }
+
+        assertNull(result.memoryCacheKey)
+    }
+
+    @Test
+    fun noDiskCacheReturnsNoDiskCacheKey() {
+        val imageLoader = ImageLoader.Builder(context)
+            .diskCache(null)
+            .build()
+
+        server.enqueueImage(IMAGE)
+        val result = runBlocking {
+            val request = ImageRequest.Builder(context)
+                .data(server.url(IMAGE))
+                .build()
+            imageLoader.execute(request) as SuccessResult
+        }
+
+        assertNull(result.diskCacheKey)
+    }
+
     private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
         val imageView = activityRule.scenario.activity.imageView
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
