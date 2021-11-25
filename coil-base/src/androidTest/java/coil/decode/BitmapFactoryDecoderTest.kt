@@ -9,8 +9,6 @@ import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
 import coil.size
-import coil.size.OriginalSize
-import coil.size.PixelSize
 import coil.size.Scale
 import coil.size.Size
 import coil.util.assertIsSimilarTo
@@ -42,12 +40,12 @@ class BitmapFactoryDecoderTest {
     fun basic() {
         val (drawable, isSampled) = decode(
             assetName = "normal.jpg",
-            size = PixelSize(100, 100)
+            size = Size(100, 100)
         )
 
         assertTrue(isSampled)
         assertTrue(drawable is BitmapDrawable)
-        assertEquals(PixelSize(100, 125), drawable.bitmap.size)
+        assertEquals(Size(100, 125), drawable.bitmap.size)
         assertEquals(Bitmap.Config.ARGB_8888, drawable.bitmap.config)
     }
 
@@ -56,7 +54,7 @@ class BitmapFactoryDecoderTest {
         assertFailsWith<IllegalStateException> {
             decode(
                 assetName = "malformed.jpg",
-                size = PixelSize(100, 100)
+                size = Size(100, 100)
             )
         }
     }
@@ -65,24 +63,24 @@ class BitmapFactoryDecoderTest {
     fun resultIsSampledIfGreaterThanHalfSize() {
         val (drawable, isSampled) = decode(
             assetName = "normal.jpg",
-            size = PixelSize(600, 600)
+            size = Size(600, 600)
         )
 
         assertTrue(isSampled)
         assertTrue(drawable is BitmapDrawable)
-        assertEquals(PixelSize(600, 750), drawable.bitmap.size)
+        assertEquals(Size(600, 750), drawable.bitmap.size)
     }
 
     @Test
     fun originalSizeDimensionsAreResolvedCorrectly() {
-        val size = OriginalSize
+        val size = Size.ORIGINAL
         val normal = decodeBitmap("normal.jpg", size)
-        assertEquals(PixelSize(1080, 1350), normal.size)
+        assertEquals(Size(1080, 1350), normal.size)
     }
 
     @Test
     fun exifTransformationsAreAppliedCorrectly() {
-        val size = PixelSize(500, 500)
+        val size = Size(500, 500)
         val normal = decodeBitmap("normal.jpg", size)
 
         for (index in 1..8) {
@@ -93,7 +91,7 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun largeExifMetadata() {
-        val size = PixelSize(500, 500)
+        val size = Size(500, 500)
         val expected = decodeBitmap("exif/large_metadata_normalized.jpg", size)
         val actual = decodeBitmap("exif/large_metadata.jpg", size)
         expected.assertIsSimilarTo(actual)
@@ -107,7 +105,7 @@ class BitmapFactoryDecoderTest {
 
         // Ensure this completes and doesn't end up in an infinite loop.
         val normal = context.decodeBitmapAsset("exif/basic.heic")
-        val actual = decodeBitmap("exif/basic.heic", OriginalSize)
+        val actual = decodeBitmap("exif/basic.heic", Size.ORIGINAL)
         normal.assertIsSimilarTo(actual)
     }
 
@@ -117,12 +115,12 @@ class BitmapFactoryDecoderTest {
             assetName = "normal.jpg",
             options = Options(
                 context = context,
-                size = PixelSize(1500, 1500),
+                size = Size(1500, 1500),
                 scale = Scale.FIT,
                 allowInexactSize = true
             )
         )
-        assertEquals(PixelSize(1080, 1350), result.size)
+        assertEquals(Size(1080, 1350), result.size)
     }
 
     @Test
@@ -131,12 +129,12 @@ class BitmapFactoryDecoderTest {
             assetName = "normal.jpg",
             options = Options(
                 context = context,
-                size = PixelSize(1500, 1500),
+                size = Size(1500, 1500),
                 scale = Scale.FIT,
                 allowInexactSize = false
             )
         )
-        assertEquals(PixelSize(1200, 1500), result.size)
+        assertEquals(Size(1200, 1500), result.size)
     }
 
     @Test
@@ -145,12 +143,12 @@ class BitmapFactoryDecoderTest {
             assetName = "normal.jpg",
             options = Options(
                 context = context,
-                size = PixelSize(500, 500),
+                size = Size(500, 500),
                 scale = Scale.FILL,
                 allowRgb565 = true
             )
         )
-        assertEquals(PixelSize(500, 625), result.size)
+        assertEquals(Size(500, 625), result.size)
         assertEquals(Bitmap.Config.RGB_565, result.config)
     }
 
@@ -160,12 +158,12 @@ class BitmapFactoryDecoderTest {
             assetName = "normal.jpg",
             options = Options(
                 context = context,
-                size = PixelSize(500, 500),
+                size = Size(500, 500),
                 scale = Scale.FILL,
                 allowRgb565 = false
             )
         )
-        assertEquals(PixelSize(500, 625), result.size)
+        assertEquals(Size(500, 625), result.size)
         assertEquals(Bitmap.Config.ARGB_8888, result.config)
     }
 
@@ -175,12 +173,12 @@ class BitmapFactoryDecoderTest {
             assetName = "normal_alpha.png",
             options = Options(
                 context = context,
-                size = PixelSize(400, 200),
+                size = Size(400, 200),
                 scale = Scale.FILL,
                 premultipliedAlpha = true
             )
         )
-        assertEquals(PixelSize(400, 200), result.size)
+        assertEquals(Size(400, 200), result.size)
         assertTrue(result.isPremultiplied)
     }
 
@@ -190,19 +188,19 @@ class BitmapFactoryDecoderTest {
             assetName = "normal_alpha.png",
             options = Options(
                 context = context,
-                size = PixelSize(400, 200),
+                size = Size(400, 200),
                 scale = Scale.FILL,
                 premultipliedAlpha = false
             )
         )
-        assertEquals(PixelSize(400, 200), result.size)
+        assertEquals(Size(400, 200), result.size)
         assertFalse(result.isPremultiplied)
     }
 
     @Test
     fun lossyWebP() {
-        val expected = decodeBitmap("normal.jpg", PixelSize(450, 675))
-        decodeBitmap("lossy.webp", PixelSize(450, 675)).assertIsSimilarTo(expected)
+        val expected = decodeBitmap("normal.jpg", Size(450, 675))
+        decodeBitmap("lossy.webp", Size(450, 675)).assertIsSimilarTo(expected)
     }
 
     @Test
@@ -210,11 +208,11 @@ class BitmapFactoryDecoderTest {
         // The emulator runs out of memory on pre-23.
         assumeTrue(SDK_INT >= 23)
 
-        val (drawable, isSampled) = decode("16_bit.png", PixelSize(250, 250))
+        val (drawable, isSampled) = decode("16_bit.png", Size(250, 250))
 
         assertTrue(isSampled)
         assertTrue(drawable is BitmapDrawable)
-        assertEquals(PixelSize(250, 250), drawable.bitmap.size)
+        assertEquals(Size(250, 250), drawable.bitmap.size)
 
         val expectedConfig = if (SDK_INT >= 26) Bitmap.Config.RGBA_F16 else Bitmap.Config.ARGB_8888
         assertEquals(expectedConfig, drawable.bitmap.config)
@@ -222,19 +220,19 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun largeJpeg() {
-        decodeBitmap("large.jpg", PixelSize(1080, 1920))
+        decodeBitmap("large.jpg", Size(1080, 1920))
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/368 */
     @Test
     fun largePng() {
         // Ensure that this doesn't cause an OOM exception - particularly on API 23 and below.
-        decodeBitmap("large.png", PixelSize(1080, 1920))
+        decodeBitmap("large.png", Size(1080, 1920))
     }
 
     @Test
     fun largeWebP() {
-        decodeBitmap("large.webp", PixelSize(1080, 1920))
+        decodeBitmap("large.webp", Size(1080, 1920))
     }
 
     @Test
@@ -242,7 +240,7 @@ class BitmapFactoryDecoderTest {
         // HEIC files are not supported before API 30.
         assumeTrue(SDK_INT >= 30)
 
-        decodeBitmap("large.heic", PixelSize(1080, 1920))
+        decodeBitmap("large.heic", Size(1080, 1920))
     }
 
     private fun decodeBitmap(assetName: String, size: Size): Bitmap =

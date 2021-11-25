@@ -54,8 +54,8 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import coil.size.Size as CoilSize
 import kotlin.math.roundToInt
+import coil.size.Size as CoilSize
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and

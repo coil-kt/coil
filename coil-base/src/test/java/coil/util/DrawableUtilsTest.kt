@@ -3,8 +3,8 @@ package coil.util
 import android.graphics.Bitmap
 import android.graphics.drawable.VectorDrawable
 import coil.size
-import coil.size.PixelSize
 import coil.size.Scale
+import coil.size.Size
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -15,7 +15,7 @@ class DrawableUtilsTest {
 
     @Test
     fun `vector with hardware config is converted correctly`() {
-        val size = PixelSize(200, 200)
+        val size = Size(200, 200)
         val input = object : VectorDrawable() {
             override fun getIntrinsicWidth() = 100
             override fun getIntrinsicHeight() = 100
@@ -34,7 +34,7 @@ class DrawableUtilsTest {
 
     @Test
     fun `unimplemented intrinsic size does not crash`() {
-        val size = PixelSize(200, 200)
+        val size = Size(200, 200)
         val input = object : VectorDrawable() {
             override fun getIntrinsicWidth() = -1
             override fun getIntrinsicHeight() = -1
@@ -59,13 +59,13 @@ class DrawableUtilsTest {
         }
         val output = DrawableUtils.convertToBitmap(
             drawable = input,
-            size = PixelSize(200, 200),
+            size = Size(200, 200),
             config = Bitmap.Config.ARGB_8888,
             scale = Scale.FIT,
             allowInexactSize = true
         )
 
         assertEquals(Bitmap.Config.ARGB_8888, output.config)
-        assertEquals(PixelSize(100, 200), output.size)
+        assertEquals(Size(100, 200), output.size)
     }
 }

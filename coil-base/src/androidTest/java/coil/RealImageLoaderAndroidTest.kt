@@ -22,8 +22,8 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import coil.request.SuccessResult
-import coil.size.PixelSize
 import coil.size.Precision
+import coil.size.Size
 import coil.util.TestActivity
 import coil.util.activity
 import coil.util.createMockWebServer
@@ -123,8 +123,8 @@ class RealImageLoaderAndroidTest {
     @Test
     fun resourceIntVector() {
         val data = R.drawable.ic_android
-        testEnqueue(data, PixelSize(100, 100))
-        testExecute(data, PixelSize(100, 100))
+        testEnqueue(data, Size(100, 100))
+        testExecute(data, Size(100, 100))
     }
 
     @Test
@@ -137,8 +137,8 @@ class RealImageLoaderAndroidTest {
     @Test
     fun resourceUriIntVector() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
-        testEnqueue(data, PixelSize(100, 100))
-        testExecute(data, PixelSize(100, 100))
+        testEnqueue(data, Size(100, 100))
+        testExecute(data, Size(100, 100))
     }
 
     @Test
@@ -151,8 +151,8 @@ class RealImageLoaderAndroidTest {
     @Test
     fun resourceUriStringVector() {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/ic_android".toUri()
-        testEnqueue(data, PixelSize(100, 100))
-        testExecute(data, PixelSize(100, 100))
+        testEnqueue(data, Size(100, 100))
+        testExecute(data, Size(100, 100))
     }
 
     @Test
@@ -172,8 +172,8 @@ class RealImageLoaderAndroidTest {
     @Test
     fun assetUri() {
         val data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
-        testEnqueue(data, PixelSize(75, 100))
-        testExecute(data, PixelSize(75, 100))
+        testEnqueue(data, Size(75, 100))
+        testExecute(data, Size(75, 100))
     }
 
     @Test
@@ -186,7 +186,7 @@ class RealImageLoaderAndroidTest {
     @Test
     fun drawable() {
         val data = context.getDrawableCompat(R.drawable.normal)
-        val expectedSize = PixelSize(1080, 1350)
+        val expectedSize = Size(1080, 1350)
         testEnqueue(data, expectedSize)
         testExecute(data, expectedSize)
     }
@@ -194,7 +194,7 @@ class RealImageLoaderAndroidTest {
     @Test
     fun bitmap() {
         val data = (context.getDrawableCompat(R.drawable.normal) as BitmapDrawable).bitmap
-        val expectedSize = PixelSize(1080, 1350)
+        val expectedSize = Size(1080, 1350)
         testEnqueue(data, expectedSize)
         testExecute(data, expectedSize)
     }
@@ -489,7 +489,7 @@ class RealImageLoaderAndroidTest {
         assertNull(result.diskCacheKey)
     }
 
-    private fun testEnqueue(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
+    private fun testEnqueue(data: Any, expectedSize: Size = Size(80, 100)) {
         val imageView = activityRule.scenario.activity.imageView
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
@@ -516,7 +516,7 @@ class RealImageLoaderAndroidTest {
         assertEquals(expectedSize, drawable.bitmap.size)
     }
 
-    private fun testExecute(data: Any, expectedSize: PixelSize = PixelSize(80, 100)) {
+    private fun testExecute(data: Any, expectedSize: Size = Size(80, 100)) {
         val result = runBlocking {
             val request = ImageRequest.Builder(context)
                 .data(data)

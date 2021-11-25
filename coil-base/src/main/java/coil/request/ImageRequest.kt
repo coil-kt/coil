@@ -44,11 +44,11 @@ import coil.util.getLifecycle
 import coil.util.orEmpty
 import coil.util.scale
 import coil.util.unsupported
-import java.io.File
-import java.nio.ByteBuffer
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okhttp3.HttpUrl
+import java.io.File
+import java.nio.ByteBuffer
 
 /**
  * An immutable value object that represents a request for an image.

@@ -17,12 +17,12 @@ import coil.size.pixelsOrElse
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
 import coil.util.isHardware
-import java.nio.ByteBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.buffer
+import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 
 /**

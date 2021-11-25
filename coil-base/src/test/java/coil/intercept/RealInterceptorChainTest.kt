@@ -11,8 +11,6 @@ import coil.lifecycle.FakeLifecycle
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import coil.request.ImageResult
-import coil.size.OriginalSize
-import coil.size.PixelSize
 import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.util.createRequest
@@ -79,7 +77,7 @@ class RealInterceptorChainTest {
     fun `interceptor cannot modify sizeResolver`() {
         val request = createRequest(context)
         val interceptor = Interceptor { chain ->
-            chain.proceed(chain.request.newBuilder().size(PixelSize(100, 100)).build())
+            chain.proceed(chain.request.newBuilder().size(Size(100, 100)).build())
         }
         assertFailsWith<IllegalStateException> {
             testChain(request, listOf(interceptor))
@@ -113,28 +111,28 @@ class RealInterceptorChainTest {
 
     @Test
     fun `withSize is passed to subsequent interceptors`() {
-        var size: Size = PixelSize(100, 100)
+        var size = Size(100, 100)
         val request = createRequest(context) {
             size(size)
         }
         val interceptor1 = Interceptor { chain ->
             assertEquals(size, chain.size)
-            size = PixelSize(123, 456)
+            size = Size(123, 456)
             chain.withSize(size).proceed(chain.request)
         }
         val interceptor2 = Interceptor { chain ->
             assertEquals(size, chain.size)
-            size = PixelSize(1728, 400)
+            size = Size(1728, 400)
             chain.withSize(size).proceed(chain.request)
         }
         val interceptor3 = Interceptor { chain ->
             assertEquals(size, chain.size)
-            size = OriginalSize
+            size = Size.ORIGINAL
             chain.withSize(size).proceed(chain.request)
         }
         val result = testChain(request, listOf(interceptor1, interceptor2, interceptor3))
 
-        assertEquals(OriginalSize, size)
+        assertEquals(Size.ORIGINAL, size)
         assertSame(request, result.request)
     }
 
@@ -144,7 +142,7 @@ class RealInterceptorChainTest {
             interceptors = interceptors + FakeInterceptor(),
             index = 0,
             request = request,
-            size = PixelSize(100, 100),
+            size = Size(100, 100),
             eventListener = EventListener.NONE,
             isPlaceholderCached = false
         )

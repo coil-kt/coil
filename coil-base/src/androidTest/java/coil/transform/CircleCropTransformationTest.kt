@@ -2,7 +2,7 @@ package coil.transform
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import coil.size.OriginalSize
+import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
 import kotlinx.coroutines.runBlocking
@@ -26,7 +26,7 @@ class CircleCropTransformationTest {
         val expected = context.decodeBitmapAsset("normal_small_circle.png")
 
         val actual = runBlocking {
-            transformation.transform(input, OriginalSize)
+            transformation.transform(input, Size.ORIGINAL)
         }
 
         actual.assertIsSimilarTo(expected)

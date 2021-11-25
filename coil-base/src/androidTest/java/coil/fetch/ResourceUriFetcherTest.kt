@@ -12,8 +12,7 @@ import coil.base.test.R
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.request.Options
-import coil.size.OriginalSize
-import coil.size.PixelSize
+import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import coil.util.getDrawableCompat
@@ -40,7 +39,7 @@ class ResourceUriFetcherTest {
     @Test
     fun rasterDrawable() {
         val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
-        val options = Options(context, size = PixelSize(100, 100))
+        val options = Options(context, size = Size(100, 100))
 
         val result = runBlocking {
             fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
@@ -54,7 +53,7 @@ class ResourceUriFetcherTest {
     @Test
     fun vectorDrawable() {
         val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
-        val options = Options(context, size = PixelSize(100, 100))
+        val options = Options(context, size = Size(100, 100))
 
         val result = runBlocking {
             fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
@@ -70,7 +69,7 @@ class ResourceUriFetcherTest {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable-xhdpi
         val resource = if (SDK_INT >= 23) "msg_bubble_incoming" else "ic_power_system"
         val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/$resource".toUri()
-        val options = Options(context, size = PixelSize(100, 100))
+        val options = Options(context, size = Size(100, 100))
         val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
 
         val result = runBlocking {
@@ -89,7 +88,7 @@ class ResourceUriFetcherTest {
 
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable/ic_cancel.xml
         val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/ic_cancel".toUri()
-        val options = Options(context, size = PixelSize(100, 100))
+        val options = Options(context, size = Size(100, 100))
         val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
 
         val result = runBlocking {
@@ -105,7 +104,7 @@ class ResourceUriFetcherTest {
     @Test
     fun colorAttributeIsApplied() = withTestActivity { activity ->
         val imageLoader = ImageLoader(context) // Intentionally use the application context.
-        val options = Options(context = activity, size = OriginalSize)
+        val options = Options(context = activity, size = Size.ORIGINAL)
         val result = runBlocking {
             val uri = assertNotNull(ResourceIntMapper().map(R.drawable.ic_tinted_vector, options))
             fetcherFactory.create(uri, options, imageLoader)?.fetch()

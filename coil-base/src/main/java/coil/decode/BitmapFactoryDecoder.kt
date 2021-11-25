@@ -15,7 +15,6 @@ import coil.request.Options
 import coil.size.pixelsOrElse
 import coil.util.toDrawable
 import coil.util.toSoftware
-import java.io.InputStream
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -23,6 +22,7 @@ import okio.Buffer
 import okio.ForwardingSource
 import okio.Source
 import okio.buffer
+import java.io.InputStream
 import kotlin.math.roundToInt
 
 /** The base [Decoder] that uses [BitmapFactory] to decode a given [ImageSource]. */

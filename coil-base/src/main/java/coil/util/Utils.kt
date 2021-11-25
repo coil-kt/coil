@@ -37,13 +37,13 @@ import coil.request.ViewTargetRequestManager
 import coil.size.Dimension
 import coil.size.Scale
 import coil.transform.Transformation
-import java.io.Closeable
-import java.io.File
-import java.util.Optional
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
+import java.io.Closeable
+import java.io.File
+import java.util.Optional
 import kotlin.coroutines.CoroutineContext
 
 internal val View.requestManager: ViewTargetRequestManager
