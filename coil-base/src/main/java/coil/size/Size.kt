@@ -54,6 +54,5 @@ inline fun PixelSize(@Px width: Int, @Px height: Int) = Size(width, height)
     message = "Migrate to 'coil.size.Size.ORIGINAL'.",
     replaceWith = ReplaceWith("Size.ORIGINAL", "coil.size.Size")
 )
-
 inline val OriginalSize: Size
     @JvmName("OriginalSize") get() = Size.ORIGINAL
