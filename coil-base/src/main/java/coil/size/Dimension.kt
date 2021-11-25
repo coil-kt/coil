@@ -16,7 +16,7 @@ sealed class Dimension {
     class Pixels(@JvmField @Px val px: Int) : Dimension() {
 
         init {
-            require(px > 0) { "value must be > 0." }
+            require(px > 0) { "px must be > 0." }
         }
 
         override fun equals(other: Any?): Boolean {
