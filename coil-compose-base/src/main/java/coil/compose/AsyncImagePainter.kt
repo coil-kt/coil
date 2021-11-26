@@ -147,10 +147,16 @@ class AsyncImagePainter internal constructor(
     }
 
     override fun onRemembered() {
-        if (isPreview) return
-        if (rememberScope != null) return
+        // If we're in inspection mode (preview) and we have a placeholder, just draw
+        // that without executing an image request.
+        if (isPreview) {
+            val request = request.newBuilder().defaults(imageLoader.defaults).build()
+            state = State.Loading(request.placeholder?.toPainter())
+            return
+        }
 
         // Create a new scope to observe state and execute requests while we're remembered.
+        if (rememberScope != null) return
         val scope = parentScope + SupervisorJob(parentScope.coroutineContext.job)
         rememberScope = scope
 
@@ -199,7 +205,7 @@ class AsyncImagePainter internal constructor(
     }
 
     /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
-    internal fun Drawable.toPainter() = when (this) {
+    private fun Drawable.toPainter() = when (this) {
         is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
         is ColorDrawable -> ColorPainter(Color(color))
         else -> DrawablePainter(mutate())
@@ -262,14 +268,6 @@ private fun updatePainter(
     request: ImageRequest,
     imageLoader: ImageLoader
 ) {
-    // If we're in inspection mode (preview) and we have a placeholder, just draw
-    // that without executing an image request.
-    if (imagePainter.isPreview) {
-        val newRequest = request.newBuilder().defaults(imageLoader.defaults).build()
-        imagePainter.painter = with(imagePainter) { newRequest.placeholder?.toPainter() }
-        return
-    }
-
     // This may look like a useless remember, but this allows any painter instances
     // to receive remember events (if it implements RememberObserver). Do not remove.
     val state = imagePainter.state
