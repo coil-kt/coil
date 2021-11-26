@@ -61,11 +61,7 @@ class CrossfadeTransitionTest {
         val result = SuccessResult(
             drawable = drawable,
             request = createRequest(context),
-            dataSource = DataSource.MEMORY_CACHE,
-            memoryCacheKey = null,
-            diskCacheKey = null,
-            isSampled = false,
-            isPlaceholderCached = false
+            dataSource = DataSource.MEMORY_CACHE
         )
         transitionFactory.create(target, result).transition()
 
@@ -91,11 +87,7 @@ class CrossfadeTransitionTest {
         val result = SuccessResult(
             drawable = drawable,
             request = createRequest(context),
-            dataSource = DataSource.DISK,
-            memoryCacheKey = null,
-            diskCacheKey = null,
-            isSampled = false,
-            isPlaceholderCached = false
+            dataSource = DataSource.DISK
         )
         transitionFactory.create(target, result).transition()
 
