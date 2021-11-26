@@ -261,12 +261,14 @@ public final class coil/drawable/CrossfadeDrawable : android/graphics/drawable/D
 	public fun getAlpha ()I
 	public fun getColorFilter ()Landroid/graphics/ColorFilter;
 	public final fun getDurationMillis ()I
+	public final fun getEnd ()Landroid/graphics/drawable/Drawable;
 	public final fun getFadeStart ()Z
 	public fun getIntrinsicHeight ()I
 	public fun getIntrinsicWidth ()I
 	public fun getOpacity ()I
 	public final fun getPreferExactIntrinsicSize ()Z
 	public final fun getScale ()Lcoil/size/Scale;
+	public final fun getStart ()Landroid/graphics/drawable/Drawable;
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isRunning ()Z
 	public fun registerAnimationCallback (Landroidx/vectordrawable/graphics/drawable/Animatable2Compat$AnimationCallback;)V
