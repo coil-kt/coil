@@ -760,13 +760,11 @@ public final class coil/size/Size$Companion {
 }
 
 public abstract interface class coil/size/SizeResolver {
-	public static final field Companion Lcoil/size/SizeResolver$Companion;
-	public static fun create (Lcoil/size/Size;)Lcoil/size/SizeResolver;
 	public abstract fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil/size/SizeResolver$Companion {
-	public final fun create (Lcoil/size/Size;)Lcoil/size/SizeResolver;
+public final class coil/size/SizeResolvers {
+	public static final fun create (Lcoil/size/Size;)Lcoil/size/SizeResolver;
 }
 
 public final class coil/size/Sizes {
@@ -777,18 +775,15 @@ public final class coil/size/Sizes {
 }
 
 public abstract interface class coil/size/ViewSizeResolver : coil/size/SizeResolver {
-	public static final field Companion Lcoil/size/ViewSizeResolver$Companion;
-	public static fun create (Landroid/view/View;)Lcoil/size/ViewSizeResolver;
-	public static fun create (Landroid/view/View;Z)Lcoil/size/ViewSizeResolver;
 	public fun getSubtractPadding ()Z
 	public abstract fun getView ()Landroid/view/View;
 	public fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil/size/ViewSizeResolver$Companion {
-	public final fun create (Landroid/view/View;)Lcoil/size/ViewSizeResolver;
-	public final fun create (Landroid/view/View;Z)Lcoil/size/ViewSizeResolver;
-	public static synthetic fun create$default (Lcoil/size/ViewSizeResolver$Companion;Landroid/view/View;ZILjava/lang/Object;)Lcoil/size/ViewSizeResolver;
+public final class coil/size/ViewSizeResolvers {
+	public static final fun create (Landroid/view/View;)Lcoil/size/ViewSizeResolver;
+	public static final fun create (Landroid/view/View;Z)Lcoil/size/ViewSizeResolver;
+	public static synthetic fun create$default (Landroid/view/View;ZILjava/lang/Object;)Lcoil/size/ViewSizeResolver;
 }
 
 public abstract class coil/target/GenericViewTarget : androidx/lifecycle/DefaultLifecycleObserver, coil/target/ViewTarget, coil/transition/TransitionTarget {

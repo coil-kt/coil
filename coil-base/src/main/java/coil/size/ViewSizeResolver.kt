@@ -1,29 +1,31 @@
+@file:JvmName("ViewSizeResolvers")
+
 package coil.size
 
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.ViewTreeObserver.OnPreDrawListener
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-/** A [SizeResolver] that measures the size of a [View]. */
-interface ViewSizeResolver<T : View> : SizeResolver {
+/**
+ * Create a [ViewSizeResolver] using the default [View] measurement implementation.
+ *
+ * @param view The view to measure.
+ * @param subtractPadding If true, the view's padding will be subtracted from its size.
+ */
+@JvmOverloads
+@JvmName("create")
+fun <T : View> ViewSizeResolver(
+    view: T,
+    subtractPadding: Boolean = true
+): ViewSizeResolver<T> = RealViewSizeResolver(view, subtractPadding)
 
-    companion object {
-        /**
-         * Create a [ViewSizeResolver] using the default [View] measurement implementation.
-         *
-         * @param view The view to measure.
-         * @param subtractPadding If true, the view's padding will be subtracted from its size.
-         */
-        @JvmStatic
-        @JvmOverloads
-        @JvmName("create")
-        operator fun <T : View> invoke(
-            view: T,
-            subtractPadding: Boolean = true
-        ): ViewSizeResolver<T> = RealViewSizeResolver(view, subtractPadding)
-    }
+/**
+ * A [SizeResolver] that measures the size of a [View].
+ */
+interface ViewSizeResolver<T : View> : SizeResolver {
 
     /** The [View] to measure. This field should be immutable. */
     val view: T
@@ -39,7 +41,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         return suspendCancellableCoroutine { continuation ->
             val viewTreeObserver = view.viewTreeObserver
 
-            val preDrawListener = object : ViewTreeObserver.OnPreDrawListener {
+            val preDrawListener = object : OnPreDrawListener {
                 private var isResumed = false
 
                 override fun onPreDraw(): Boolean {
@@ -104,7 +106,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
         return null
     }
 
-    private fun ViewTreeObserver.removePreDrawListenerSafe(victim: ViewTreeObserver.OnPreDrawListener) {
+    private fun ViewTreeObserver.removePreDrawListenerSafe(victim: OnPreDrawListener) {
         if (isAlive) {
             removeOnPreDrawListener(victim)
         } else {

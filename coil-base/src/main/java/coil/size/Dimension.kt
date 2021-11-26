@@ -1,5 +1,5 @@
 @file:JvmName("Dimensions")
-@file:Suppress("FunctionName", "NOTHING_TO_INLINE")
+@file:Suppress("NOTHING_TO_INLINE")
 
 package coil.size
 
