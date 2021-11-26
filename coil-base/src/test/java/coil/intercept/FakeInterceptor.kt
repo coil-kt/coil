@@ -11,11 +11,7 @@ class FakeInterceptor : Interceptor {
         return SuccessResult(
             drawable = ColorDrawable(),
             request = chain.request,
-            dataSource = DataSource.MEMORY,
-            memoryCacheKey = null,
-            diskCacheKey = null,
-            isSampled = false,
-            isPlaceholderCached = false,
+            dataSource = DataSource.MEMORY
         )
     }
 }

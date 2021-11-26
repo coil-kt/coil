@@ -39,23 +39,23 @@ class SuccessResult(
      * The cache key for the image in the memory cache.
      * It is 'null' if the image was not written to the memory cache.
      */
-    val memoryCacheKey: MemoryCache.Key?,
+    val memoryCacheKey: MemoryCache.Key? = null,
 
     /**
      * The cache key for the image in the disk cache.
      * It is 'null' if the image was not written to the disk cache.
      */
-    val diskCacheKey: String?,
+    val diskCacheKey: String? = null,
 
     /**
      * 'true' if the image is sampled (i.e. loaded into memory at less than its original size).
      */
-    val isSampled: Boolean,
+    val isSampled: Boolean = false,
 
     /**
      * 'true' if [ImageRequest.placeholderMemoryCacheKey] was present in the memory cache.
      */
-    val isPlaceholderCached: Boolean,
+    val isPlaceholderCached: Boolean = false,
 ) : ImageResult() {
 
     fun copy(
