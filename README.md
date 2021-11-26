@@ -2,9 +2,9 @@
 
 An image loading library for Android backed by Kotlin Coroutines. Coil is:
 
-- **Fast**: Coil performs a number of optimizations including memory and disk caching, downsampling the image in memory, re-using bitmaps, automatically pausing/cancelling requests, and more.
+- **Fast**: Coil performs a number of optimizations including memory and disk caching, downsampling the image in memory, automatically pausing/cancelling requests, and more.
 - **Lightweight**: Coil adds ~2000 methods to your APK (for apps that already use OkHttp and Coroutines), which is comparable to Picasso and significantly less than Glide and Fresco.
-- **Easy to use**: Coil's API leverages Kotlin's language features for simplicity and minimal boilerplate.
+- **Simple**: Coil's API leverages Kotlin's language features for simplicity and minimal boilerplate.
 - **Modern**: Coil is Kotlin-first and uses modern libraries including Coroutines, OkHttp, Okio, and AndroidX Lifecycles.
 
 Coil is an acronym for: **Co**routine **I**mage **L**oader.
@@ -21,14 +21,13 @@ implementation("io.coil-kt:coil:1.4.0")
 
 ## Quick Start
 
+#### ImageViews
+
 To load an image into an `ImageView`, use the `load` extension function:
 
 ```kotlin
 // URL
 imageView.load("https://www.example.com/image.jpg")
-
-// Resource
-imageView.load(R.drawable.image)
 
 // File
 imageView.load(File("/path/to/image.jpg"))
@@ -46,9 +45,26 @@ imageView.load("https://www.example.com/image.jpg") {
 }
 ```
 
+#### Jetpack Compose
+
+Import the [Jetpack Compose](https://developer.android.com/jetpack/compose) extension library:
+
+```kotlin
+implementation("io.coil-kt:coil-compose:1.4.0")
+```
+
+To load an image, use the `AsyncImage` composable:
+
+```kotlin
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null // Avoid null and set this to a localized string if possible.
+)
+```
+
 #### Image Loaders
 
-`imageView.load` uses the singleton `ImageLoader` to enqueue an `ImageRequest`. The singleton `ImageLoader` can be accessed using an extension function:
+Both `imageView.load` and `AsyncImage` use the singleton `ImageLoader` to execute image requests. The singleton `ImageLoader` can be accessed using an extension function:
 
 ```kotlin
 val imageLoader = context.imageLoader
@@ -56,11 +72,13 @@ val imageLoader = context.imageLoader
 
 Optionally, you can create your own `ImageLoader` instance(s) and inject them with dependency injection:
 
+`ImageLoader`s are designed to be shareable and are most efficient when you create a single instance and share it throughout your app. That said, you can also create your own `ImageLoader` instance(s):
+
 ```kotlin
 val imageLoader = ImageLoader(context)
 ```
 
-If you do not want the singleton `ImageLoader`, depend on `io.coil-kt:coil-base`.
+If you do not want the singleton `ImageLoader`, depend on `io.coil-kt:coil-base` instead of `io.coil-kt:coil`.
 
 #### Requests
 
@@ -90,7 +108,7 @@ Check out Coil's [full documentation here](https://coil-kt.github.io/coil/gettin
 ## Requirements
 
 - AndroidX
-- Min SDK 14+
+- Min SDK 21+
 - [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
 
 ## R8 / Proguard
