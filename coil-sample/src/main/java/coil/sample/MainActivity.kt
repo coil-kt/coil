@@ -33,7 +33,9 @@ class MainActivity : AppCompatActivity() {
         if (SDK_INT >= 29) {
             window.setDecorFitsSystemWindowsCompat(false)
             binding.toolbar.setOnApplyWindowInsetsListener { view, insets ->
-                view.updatePadding(top = insets.toCompat().getInsets(WindowInsetsCompat.Type.systemBars()).top)
+                view.updatePadding(
+                    top = insets.toCompat().getInsets(WindowInsetsCompat.Type.systemBars()).top
+                )
                 insets
             }
         }
