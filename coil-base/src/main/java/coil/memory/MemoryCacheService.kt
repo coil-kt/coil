@@ -34,8 +34,8 @@ internal class MemoryCacheService(
     private val logger: Logger?,
 ) {
 
-    /** Get the [MemoryCache.Key] for this request. */
-    fun getKey(
+    /** Create a [MemoryCache.Key] for this request. */
+    fun newKey(
         request: ImageRequest,
         mappedData: Any,
         options: Options,
@@ -50,14 +50,21 @@ internal class MemoryCacheService(
         eventListener.keyEnd(request, base)
         if (base == null) return null
 
-        val extras = mutableMapOf<String, String>()
-        if (request.transformations.isNotEmpty()) {
-            request.transformations.forEachIndexedIndices { index, transformation ->
-                extras["coil#transformation_$index"] = transformation.cacheKey
-            }
-            extras["coil#request_size"] = options.size.toString()
+        // Optimize for the typical case where there are no transformations or parameters.
+        val transformations = request.transformations
+        val parameterKeys = request.parameters.cacheKeys()
+        if (transformations.isEmpty() && parameterKeys.isEmpty()) {
+            return MemoryCache.Key(base)
         }
-        extras.putAll(request.parameters.cacheKeys())
+
+        // Else, create a complex cache key with extras.
+        val extras = parameterKeys.toMutableMap()
+        if (transformations.isNotEmpty()) {
+            request.transformations.forEachIndexedIndices { index, transformation ->
+                extras[EXTRA_TRANSFORMATION_INDEX + index] = transformation.cacheKey
+            }
+            extras[EXTRA_TRANSFORMATION_SIZE] = options.size.toString()
+        }
         return MemoryCache.Key(base, extras)
     }
 
@@ -68,14 +75,15 @@ internal class MemoryCacheService(
         size: Size
     ): MemoryCache.Value? {
         if (!request.memoryCachePolicy.readEnabled) return null
-        val candidate = imageLoader.memoryCache?.get(cacheKey)
-        return candidate?.takeIf { isValueValid(request, it, size) }
+        val cacheValue = imageLoader.memoryCache?.get(cacheKey)
+        return cacheValue?.takeIf { isValueValid(request, cacheKey, it, size) }
     }
 
     /** Return 'true' if [cacheValue] satisfies the [request]. */
     @VisibleForTesting
     internal fun isValueValid(
         request: ImageRequest,
+        cacheKey: MemoryCache.Key,
         cacheValue: MemoryCache.Value,
         size: Size
     ): Boolean {
@@ -89,18 +97,20 @@ internal class MemoryCacheService(
         }
 
         // Ensure the size of the cached bitmap is valid for the request.
-        return isSizeValid(cacheValue, request, size)
+        return isSizeValid(request, cacheKey, cacheValue, size)
     }
 
     /** Return 'true' if [cacheValue]'s size satisfies the [request]. */
     private fun isSizeValid(
-        cacheValue: MemoryCache.Value,
         request: ImageRequest,
+        cacheKey: MemoryCache.Key,
+        cacheValue: MemoryCache.Value,
         size: Size
     ): Boolean {
         // The cached value must not be sampled if the image's original size is requested.
+        val isSampled = cacheValue.isSampled
         if (size.isOriginal) {
-            if (cacheValue.isSampled) {
+            if (isSampled) {
                 logger?.log(TAG, Log.DEBUG) {
                     "${request.data}: Requested original size, but cached image is sampled."
                 }
@@ -110,26 +120,19 @@ internal class MemoryCacheService(
             }
         }
 
+        // The requested dimensions must match the transformation size exactly if it is present.
+        // Unlike standard, requests we can't assume transformed bitmaps for the same image have
+        // the same aspect ratio.
+        val transformationSize = cacheKey.extras[EXTRA_TRANSFORMATION_SIZE]
+        if (transformationSize != null) {
+            // 'Size.toString' is safe to use to determine equality.
+            return transformationSize == size.toString()
+        }
+
         val srcWidth = cacheValue.bitmap.width
         val srcHeight = cacheValue.bitmap.height
-        val dstWidth = size.width.pxOrElse {
-            when {
-                !cacheValue.isSampled -> srcWidth
-                else -> when (request.scale) {
-                    Scale.FIT -> Int.MAX_VALUE
-                    Scale.FILL -> Int.MIN_VALUE
-                }
-            }
-        }
-        val dstHeight = size.height.pxOrElse {
-            when {
-                !cacheValue.isSampled -> srcHeight
-                else -> when (request.scale) {
-                    Scale.FIT -> Int.MAX_VALUE
-                    Scale.FILL -> Int.MIN_VALUE
-                }
-            }
-        }
+        val dstWidth = size.width.pxOrElse(isSampled, request.scale, srcWidth)
+        val dstHeight = size.height.pxOrElse(isSampled, request.scale, srcHeight)
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = srcWidth,
             srcHeight = srcHeight,
@@ -141,10 +144,11 @@ internal class MemoryCacheService(
         // Short circuit the size check if the size is at most 1 pixel off in either dimension.
         // This accounts for the fact that downsampling can often produce images with dimensions
         // at most one pixel off due to rounding.
-        if (request.allowInexactSize) {
+        val allowInexactSize = request.allowInexactSize
+        if (allowInexactSize) {
             val downsampleMultiplier = multiplier.coerceAtMost(1.0)
-            if ((size.width is Dimension.Original || abs(dstWidth - (downsampleMultiplier * srcWidth)) <= 1) ||
-                (size.height is Dimension.Original || abs(dstHeight - (downsampleMultiplier * srcHeight)) <= 1)) {
+            if (abs(dstWidth - (downsampleMultiplier * srcWidth)) <= 1 ||
+                abs(dstHeight - (downsampleMultiplier * srcHeight)) <= 1) {
                 return true
             }
         } else {
@@ -153,8 +157,8 @@ internal class MemoryCacheService(
             }
         }
 
-        // The cached value must be equal to the requested size if exact size is requested.
-        if (multiplier != 1.0 && !request.allowInexactSize) {
+        // The cached value must be equal to the requested size if precision == exact.
+        if (multiplier != 1.0 && !allowInexactSize) {
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) does not exactly match the requested size " +
@@ -164,7 +168,7 @@ internal class MemoryCacheService(
         }
 
         // The cached value must be larger than the requested size if the cached value is sampled.
-        if (multiplier >= 1.0 && cacheValue.isSampled) {
+        if (multiplier >= 1.0 && isSampled) {
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) is smaller than the requested size " +
@@ -180,8 +184,7 @@ internal class MemoryCacheService(
     fun setValue(
         cacheKey: MemoryCache.Key?,
         request: ImageRequest,
-        result: ExecuteResult,
-        size: Size
+        result: ExecuteResult
     ): Boolean {
         if (!request.memoryCachePolicy.writeEnabled) return false
         val memoryCache = imageLoader.memoryCache
@@ -190,8 +193,6 @@ internal class MemoryCacheService(
 
         // Create and set the memory cache value.
         val extras = mutableMapOf<String, Any>()
-        extras[EXTRA_REQUEST_WIDTH] = size.width
-        extras[EXTRA_REQUEST_HEIGHT] = size.height
         extras[EXTRA_IS_SAMPLED] = result.isSampled
         result.diskCacheKey?.let { extras[EXTRA_DISK_CACHE_KEY] = it }
         memoryCache[cacheKey] = MemoryCache.Value(bitmap, extras)
@@ -214,6 +215,14 @@ internal class MemoryCacheService(
         isPlaceholderCached = chain.isPlaceholderCached,
     )
 
+    private fun Dimension.pxOrElse(isSampled: Boolean, scale: Scale, srcPx: Int) = pxOrElse {
+        if (!isSampled) return srcPx
+        when (scale) {
+            Scale.FIT -> Int.MAX_VALUE
+            Scale.FILL -> Int.MIN_VALUE
+        }
+    }
+
     private val MemoryCache.Value.isSampled: Boolean
         get() = (extras[EXTRA_IS_SAMPLED] as? Boolean) ?: false
 
@@ -222,8 +231,8 @@ internal class MemoryCacheService(
 
     companion object {
         private const val TAG = "MemoryCacheService"
-        @VisibleForTesting internal const val EXTRA_REQUEST_WIDTH = "coil#request_width"
-        @VisibleForTesting internal const val EXTRA_REQUEST_HEIGHT = "coil#request_height"
+        @VisibleForTesting internal const val EXTRA_TRANSFORMATION_INDEX = "coil#transformation_"
+        @VisibleForTesting internal const val EXTRA_TRANSFORMATION_SIZE = "coil#transformation_size"
         @VisibleForTesting internal const val EXTRA_IS_SAMPLED = "coil#is_sampled"
         @VisibleForTesting internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
     }

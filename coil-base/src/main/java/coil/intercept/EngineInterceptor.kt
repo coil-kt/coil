@@ -60,7 +60,7 @@ internal class EngineInterceptor(
             eventListener.mapEnd(request, mappedData)
 
             // Check the memory cache.
-            val cacheKey = memoryCacheService.getKey(request, mappedData, options, eventListener)
+            val cacheKey = memoryCacheService.newKey(request, mappedData, options, eventListener)
             val cacheValue = cacheKey?.let { memoryCacheService.getValue(request, it, size) }
 
             // Fast path: return the value from the memory cache.
@@ -74,7 +74,7 @@ internal class EngineInterceptor(
                 val result = execute(request, mappedData, options, eventListener)
 
                 // Write the result to the memory cache.
-                val isCached = memoryCacheService.setValue(cacheKey, request, result, options.size)
+                val isCached = memoryCacheService.setValue(cacheKey, request, result)
 
                 // Return the result.
                 SuccessResult(
