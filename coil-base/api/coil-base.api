@@ -64,8 +64,6 @@ public final class coil/EventListener$Factory$Companion {
 }
 
 public abstract interface class coil/ImageLoader {
-	public static final field Companion Lcoil/ImageLoader$Companion;
-	public static fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 	public abstract fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
 	public abstract fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getComponents ()Lcoil/ComponentRegistry;
@@ -125,11 +123,8 @@ public final class coil/ImageLoader$Builder {
 	public final fun transitionFactory (Lcoil/transition/Transition$Factory;)Lcoil/ImageLoader$Builder;
 }
 
-public final class coil/ImageLoader$Companion {
-	public final fun create (Landroid/content/Context;)Lcoil/ImageLoader;
-}
-
 public final class coil/ImageLoaders {
+	public static final fun create (Landroid/content/Context;)Lcoil/ImageLoader;
 	public static final fun executeBlocking (Lcoil/ImageLoader;Lcoil/request/ImageRequest;)Lcoil/request/ImageResult;
 }
 
