@@ -69,12 +69,12 @@ internal class MemoryCacheService(
     ): MemoryCache.Value? {
         if (!request.memoryCachePolicy.readEnabled) return null
         val candidate = imageLoader.memoryCache?.get(cacheKey)
-        return candidate?.takeIf { valueSatisfiesRequest(request, it, size) }
+        return candidate?.takeIf { isValueValid(request, it, size) }
     }
 
     /** Return 'true' if [cacheValue] satisfies the [request]. */
     @VisibleForTesting
-    internal fun valueSatisfiesRequest(
+    internal fun isValueValid(
         request: ImageRequest,
         cacheValue: MemoryCache.Value,
         size: Size
