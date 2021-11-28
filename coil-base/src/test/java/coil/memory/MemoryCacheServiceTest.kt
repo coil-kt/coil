@@ -426,7 +426,7 @@ class MemoryCacheServiceTest {
         isSampled: Boolean,
         request: ImageRequest,
         size: Size
-    ): Boolean = isCacheValueValid(
+    ) = isCacheValueValid(
         request = request,
         cacheKey = MemoryCache.Key("key"),
         cacheValue = MemoryCache.Value(cached, mapOf(EXTRA_IS_SAMPLED to isSampled)),
