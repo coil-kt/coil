@@ -486,7 +486,7 @@ class MemoryCacheServiceTest {
     }
 
     private fun MemoryCacheService.isCacheValueValid(
-        request: ImageRequest = createRequest(context),
+        request: ImageRequest,
         cached: Bitmap,
         isSampled: Boolean,
         size: Size
