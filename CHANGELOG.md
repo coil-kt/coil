@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.0-alpha05] - November 28, 2021
+
+- **Important**: Refactor `Size` to support using the image's original size for either dimension.
+    - `Size` is now composed of two `Dimension` values for its width and height. `Dimension` can either be a positive pixel value or `Dimension.Original`.
+    - This change was made to better support unbounded width/height values (e.g. `wrap_content`, `Constraints.Infinity`) when one dimension is a fixed pixel value.
+- Fix: Support inspection mode (preview) for `AsyncImage`.
+- Fix: `SuccessResult.memoryCacheKey` should always be `null` if `imageLoader.memoryCache` is null.
+- Convert `ImageLoader`, `SizeResolver`, and `ViewSizeResolver` constructor-like `invoke` functions to top level functions.
+- Make `CrossfadeDrawable` start and end drawables public API.
+- Mutate `ImageLoader` placeholder/error/fallback drawables.
+- Add default arguments to `SuccessResult`'s constructor.
+- Depend on `androidx.collection` instead of `androidx.collection-ktx`.
+- Update Okhttp to 4.9.3.
+
 ## [2.0.0-alpha04] - November 22, 2021
 
 - **New**: Add `AsyncImage` to `coil-compose`.
