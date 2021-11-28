@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package coil.intercept
 
 import android.graphics.Bitmap
@@ -10,53 +12,45 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.DecodeResult
-import coil.decode.DecodeUtils
 import coil.decode.FileImageSource
 import coil.fetch.DrawableResult
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
-import coil.memory.MemoryCache
+import coil.memory.MemoryCacheService
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.Options
 import coil.request.RequestService
 import coil.request.SuccessResult
-import coil.size.Dimension
-import coil.size.Scale
-import coil.size.Size
-import coil.size.isOriginal
-import coil.size.pxOrElse
 import coil.transform.Transformation
 import coil.util.DrawableUtils
 import coil.util.Logger
 import coil.util.VALID_TRANSFORMATION_CONFIGS
 import coil.util.addFirst
-import coil.util.allowInexactSize
 import coil.util.closeQuietly
+import coil.util.eventListener
 import coil.util.foldIndices
-import coil.util.forEachIndexedIndices
+import coil.util.isPlaceholderCached
 import coil.util.log
-import coil.util.pxString
 import coil.util.safeConfig
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import kotlin.collections.set
-import kotlin.math.abs
 
 /** The last interceptor in the chain which executes the [ImageRequest]. */
 internal class EngineInterceptor(
     private val imageLoader: ImageLoader,
     private val requestService: RequestService,
-    private val logger: Logger?
+    private val logger: Logger?,
 ) : Interceptor {
+
+    private val memoryCacheService = MemoryCacheService(imageLoader, requestService, logger)
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         try {
             val request = chain.request
-            val context = request.context
             val data = request.data
             val size = chain.size
             val eventListener = chain.eventListener
@@ -68,20 +62,12 @@ internal class EngineInterceptor(
             eventListener.mapEnd(request, mappedData)
 
             // Check the memory cache.
-            val cacheKey = getMemoryCacheKey(request, mappedData, options, eventListener)
-            val cacheValue = getMemoryCacheValue(request, cacheKey)
+            val cacheKey = memoryCacheService.getKey(request, mappedData, options, eventListener)
+            val cacheValue = cacheKey?.let { memoryCacheService.getValue(request, it, size) }
 
             // Fast path: return the value from the memory cache.
-            if (cacheValue != null && isMemoryCacheValueValid(cacheValue, request, size)) {
-                return SuccessResult(
-                    drawable = cacheValue.bitmap.toDrawable(context),
-                    request = request,
-                    dataSource = DataSource.MEMORY_CACHE,
-                    memoryCacheKey = cacheKey,
-                    diskCacheKey = cacheValue.diskCacheKey,
-                    isSampled = cacheValue.isSampled,
-                    isPlaceholderCached = chain.isPlaceholderCached,
-                )
+            if (cacheValue != null) {
+                return memoryCacheService.newResult(chain, request, cacheKey, cacheValue)
             }
 
             // Slow path: fetch, decode, transform, and cache the image.
@@ -90,14 +76,14 @@ internal class EngineInterceptor(
                 val result = execute(request, mappedData, options, eventListener)
 
                 // Write the result to the memory cache.
-                val isMemoryCached = setMemoryCacheValue(cacheKey, request, result, options)
+                val isCached = memoryCacheService.setValue(cacheKey, request, result, options.size)
 
                 // Return the result.
                 SuccessResult(
                     drawable = result.drawable,
                     request = request,
                     dataSource = result.dataSource,
-                    memoryCacheKey = cacheKey.takeIf { isMemoryCached },
+                    memoryCacheKey = cacheKey.takeIf { isCached },
                     diskCacheKey = result.diskCacheKey,
                     isSampled = result.isSampled,
                     isPlaceholderCached = chain.isPlaceholderCached,
@@ -112,145 +98,14 @@ internal class EngineInterceptor(
         }
     }
 
-    /** Get the memory cache key for this request. */
-    @VisibleForTesting
-    internal fun getMemoryCacheKey(
-        request: ImageRequest,
-        mappedData: Any,
-        options: Options,
-        eventListener: EventListener
-    ): MemoryCache.Key? {
-        // Fast path: an explicit memory cache key has been set.
-        request.memoryCacheKey?.let { return it }
-
-        // Slow path: create a new memory cache key.
-        eventListener.keyStart(request, mappedData)
-        val base = imageLoader.components.key(mappedData, options)
-        eventListener.keyEnd(request, base)
-        if (base == null) return null
-
-        val extras = mutableMapOf<String, String>()
-        if (request.transformations.isNotEmpty()) {
-            request.transformations.forEachIndexedIndices { index, transformation ->
-                extras["coil#transformation_$index"] = transformation.cacheKey
-            }
-            extras["coil#request_size"] = options.size.toString()
-        }
-        extras.putAll(request.parameters.cacheKeys())
-        return MemoryCache.Key(base, extras)
-    }
-
-    /** Return 'true' if [cacheValue] satisfies the [request]. */
-    @VisibleForTesting
-    internal fun isMemoryCacheValueValid(
-        cacheValue: MemoryCache.Value,
-        request: ImageRequest,
-        size: Size
-    ): Boolean {
-        // Ensure we don't return a hardware bitmap if the request doesn't allow it.
-        if (!requestService.isConfigValidForHardware(request, cacheValue.bitmap.safeConfig)) {
-            logger?.log(TAG, Log.DEBUG) {
-                "${request.data}: Cached bitmap is hardware-backed, which is incompatible with the request."
-            }
-            return false
-        }
-
-        // Ensure the size of the cached bitmap is valid for the request.
-        return isSizeValid(cacheValue, request, size)
-    }
-
-    /** Return 'true' if [cacheValue]'s size satisfies the [request]. */
-    private fun isSizeValid(
-        cacheValue: MemoryCache.Value,
-        request: ImageRequest,
-        size: Size
-    ): Boolean {
-        // The cached value must not be sampled if the image's original size is requested.
-        if (size.isOriginal) {
-            if (cacheValue.isSampled) {
-                logger?.log(TAG, Log.DEBUG) {
-                    "${request.data}: Requested original size, but cached image is sampled."
-                }
-                return false
-            } else {
-                return true
-            }
-        }
-
-        val srcWidth = cacheValue.bitmap.width
-        val srcHeight = cacheValue.bitmap.height
-        val dstWidth = size.width.pxOrElse {
-            when {
-                !cacheValue.isSampled -> srcWidth
-                else -> when (request.scale) {
-                    Scale.FIT -> Int.MAX_VALUE
-                    Scale.FILL -> Int.MIN_VALUE
-                }
-            }
-        }
-        val dstHeight = size.height.pxOrElse {
-            when {
-                !cacheValue.isSampled -> srcHeight
-                else -> when (request.scale) {
-                    Scale.FIT -> Int.MAX_VALUE
-                    Scale.FILL -> Int.MIN_VALUE
-                }
-            }
-        }
-        val multiplier = DecodeUtils.computeSizeMultiplier(
-            srcWidth = srcWidth,
-            srcHeight = srcHeight,
-            dstWidth = dstWidth,
-            dstHeight = dstHeight,
-            scale = request.scale
-        )
-
-        // Short circuit the size check if the size is at most 1 pixel off in either dimension.
-        // This accounts for the fact that downsampling can often produce images with dimensions
-        // at most one pixel off due to rounding.
-        if (request.allowInexactSize) {
-            val downsampleMultiplier = multiplier.coerceAtMost(1.0)
-            if ((size.width is Dimension.Original || abs(dstWidth - (downsampleMultiplier * srcWidth)) <= 1) ||
-                (size.height is Dimension.Original || abs(dstHeight - (downsampleMultiplier * srcHeight)) <= 1)) {
-                return true
-            }
-        } else {
-            if (abs(dstWidth - srcWidth) <= 1 && abs(dstHeight - srcHeight) <= 1) {
-                return true
-            }
-        }
-
-        // The cached value must be equal to the requested size if exact size is requested.
-        if (multiplier != 1.0 && !request.allowInexactSize) {
-            logger?.log(TAG, Log.DEBUG) {
-                "${request.data}: Cached image's request size " +
-                    "($srcWidth, $srcHeight) does not exactly match the requested size " +
-                    "(${size.width.pxString()}, ${size.height.pxString()}, ${request.scale})."
-            }
-            return false
-        }
-
-        // The cached value must be larger than the requested size if the cached value is sampled.
-        if (multiplier >= 1.0 && cacheValue.isSampled) {
-            logger?.log(TAG, Log.DEBUG) {
-                "${request.data}: Cached image's request size " +
-                    "($srcWidth, $srcHeight) is smaller than the requested size " +
-                    "(${size.width.pxString()}, ${size.height.pxString()}, ${request.scale})."
-            }
-            return false
-        }
-
-        return true
-    }
-
     /** Execute the [Fetcher], decode any data into a [Drawable], and apply any [Transformation]s. */
     private suspend inline fun execute(
         request: ImageRequest,
         mappedData: Any,
-        requestOptions: Options,
+        options: Options,
         eventListener: EventListener
     ): ExecuteResult {
-        var options = requestOptions
+        var options = options
         var components = imageLoader.components
         var fetchResult: FetchResult? = null
         val executeResult = try {
@@ -392,39 +247,6 @@ internal class EngineInterceptor(
         }
     }
 
-    /** Get the memory cache value for this request. */
-    private fun getMemoryCacheValue(
-        request: ImageRequest,
-        cacheKey: MemoryCache.Key?
-    ): MemoryCache.Value? {
-        if (!request.memoryCachePolicy.readEnabled) return null
-        val memoryCache = imageLoader.memoryCache
-        if (memoryCache == null || cacheKey == null) return null
-        return memoryCache[cacheKey]
-    }
-
-    /** Write [drawable] to the memory cache. Return 'true' if it was added to the cache. */
-    private fun setMemoryCacheValue(
-        cacheKey: MemoryCache.Key?,
-        request: ImageRequest,
-        result: ExecuteResult,
-        options: Options
-    ): Boolean {
-        if (!request.memoryCachePolicy.writeEnabled) return false
-        val memoryCache = imageLoader.memoryCache
-        if (memoryCache == null || cacheKey == null) return false
-        val bitmap = (result.drawable as? BitmapDrawable)?.bitmap ?: return false
-
-        // Create and set the memory cache value.
-        val extras = mutableMapOf<String, Any>()
-        extras[EXTRA_REQUEST_WIDTH] = options.size.width
-        extras[EXTRA_REQUEST_HEIGHT] = options.size.height
-        extras[EXTRA_IS_SAMPLED] = result.isSampled
-        result.diskCacheKey?.let { extras[EXTRA_DISK_CACHE_KEY] = it }
-        memoryCache[cacheKey] = MemoryCache.Value(bitmap, extras)
-        return true
-    }
-
     /** Convert [drawable] to a [Bitmap]. */
     private fun convertDrawableToBitmap(
         drawable: Drawable,
@@ -453,20 +275,7 @@ internal class EngineInterceptor(
         )
     }
 
-    private val MemoryCache.Value.isSampled: Boolean
-        get() = (extras[EXTRA_IS_SAMPLED] as? Boolean) ?: false
-
-    private val MemoryCache.Value.diskCacheKey: String?
-        get() = extras[EXTRA_DISK_CACHE_KEY] as? String
-
-    private val Interceptor.Chain.isPlaceholderCached: Boolean
-        get() = this is RealInterceptorChain && isPlaceholderCached
-
-    private val Interceptor.Chain.eventListener: EventListener
-        get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
-
-    @VisibleForTesting
-    internal class ExecuteResult(
+    class ExecuteResult(
         val drawable: Drawable,
         val isSampled: Boolean,
         val dataSource: DataSource,
@@ -482,9 +291,5 @@ internal class EngineInterceptor(
 
     companion object {
         private const val TAG = "EngineInterceptor"
-        @VisibleForTesting internal const val EXTRA_REQUEST_WIDTH = "coil#request_width"
-        @VisibleForTesting internal const val EXTRA_REQUEST_HEIGHT = "coil#request_height"
-        @VisibleForTesting internal const val EXTRA_IS_SAMPLED = "coil#is_sampled"
-        @VisibleForTesting internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
     }
 }

@@ -705,6 +705,18 @@ public final class coil/request/SuccessResult : coil/request/ImageResult {
 	public final fun isSampled ()Z
 }
 
+public final class coil/size/-Dimensions {
+	public static final fun Dimension (I)Lcoil/size/Dimension$Pixels;
+	public static final fun pxOrElse (Lcoil/size/Dimension;Lkotlin/jvm/functions/Function0;)I
+}
+
+public final class coil/size/-Sizes {
+	public static final fun OriginalSize ()Lcoil/size/Size;
+	public static final fun PixelSize (II)Lcoil/size/Size;
+	public static final fun Size (II)Lcoil/size/Size;
+	public static final fun isOriginal (Lcoil/size/Size;)Z
+}
+
 public abstract class coil/size/Dimension {
 }
 
@@ -719,11 +731,6 @@ public final class coil/size/Dimension$Pixels : coil/size/Dimension {
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-}
-
-public final class coil/size/Dimensions {
-	public static final fun create (I)Lcoil/size/Dimension$Pixels;
-	public static final fun pxOrElse (Lcoil/size/Dimension;Lkotlin/jvm/functions/Function0;)I
 }
 
 public final class coil/size/Precision : java/lang/Enum {
@@ -765,13 +772,6 @@ public abstract interface class coil/size/SizeResolver {
 
 public final class coil/size/SizeResolvers {
 	public static final fun create (Lcoil/size/Size;)Lcoil/size/SizeResolver;
-}
-
-public final class coil/size/Sizes {
-	public static final fun OriginalSize ()Lcoil/size/Size;
-	public static final fun PixelSize (II)Lcoil/size/Size;
-	public static final fun create (II)Lcoil/size/Size;
-	public static final fun isOriginal (Lcoil/size/Size;)Z
 }
 
 public abstract interface class coil/size/ViewSizeResolver : coil/size/SizeResolver {

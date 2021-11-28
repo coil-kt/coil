@@ -24,12 +24,15 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.ComponentRegistry
+import coil.EventListener
 import coil.ImageLoader
 import coil.base.R
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.disk.DiskCache
 import coil.fetch.Fetcher
+import coil.intercept.Interceptor
+import coil.intercept.RealInterceptorChain
 import coil.memory.MemoryCache
 import coil.request.DefaultRequestOptions
 import coil.request.Parameters
@@ -199,6 +202,12 @@ internal fun DiskCache.Editor.abortQuietly() {
 internal fun Dimension.pxString(): String {
     return if (this is Dimension.Pixels) px.toString() else toString()
 }
+
+internal val Interceptor.Chain.isPlaceholderCached: Boolean
+    get() = this is RealInterceptorChain && isPlaceholderCached
+
+internal val Interceptor.Chain.eventListener: EventListener
+    get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
 
 internal fun unsupported(): Nothing = error("Unsupported")
 
