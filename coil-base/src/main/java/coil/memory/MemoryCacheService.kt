@@ -129,6 +129,7 @@ internal class MemoryCacheService(
             return transformationSize == size.toString()
         }
 
+        // Compute the scaling factor between the source dimensions and the requested dimensions.
         val srcWidth = cacheValue.bitmap.width
         val srcHeight = cacheValue.bitmap.height
         val dstWidth = size.width.pxOrElse(isSampled, request.scale, srcWidth)
