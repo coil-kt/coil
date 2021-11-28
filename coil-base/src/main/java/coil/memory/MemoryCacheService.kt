@@ -153,7 +153,11 @@ internal class MemoryCacheService(
                 return true
             }
         } else {
-            if (abs(dstWidth - srcWidth) <= 1 && abs(dstHeight - srcHeight) <= 1) {
+            val widthMatches = (dstWidth == Int.MIN_VALUE || dstWidth == Int.MAX_VALUE) ||
+                abs(dstWidth - srcWidth) <= 1
+            val heightMatches = (dstHeight == Int.MIN_VALUE || dstHeight == Int.MAX_VALUE) ||
+                abs(dstHeight - srcHeight) <= 1
+            if (widthMatches && heightMatches) {
                 return true
             }
         }
