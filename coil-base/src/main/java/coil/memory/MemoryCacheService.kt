@@ -133,8 +133,8 @@ internal class MemoryCacheService(
         // Compute the scaling factor between the source dimensions and the requested dimensions.
         val srcWidth = cacheValue.bitmap.width
         val srcHeight = cacheValue.bitmap.height
-        val dstWidth = size.width.pxOrElse(isSampled, request.scale, srcWidth)
-        val dstHeight = size.height.pxOrElse(isSampled, request.scale, srcHeight)
+        val dstWidth = size.width.pxOrMinMax(request.scale)
+        val dstHeight = size.height.pxOrMinMax(request.scale)
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = srcWidth,
             srcHeight = srcHeight,
@@ -218,8 +218,7 @@ internal class MemoryCacheService(
         isPlaceholderCached = chain.isPlaceholderCached,
     )
 
-    private fun Dimension.pxOrElse(isSampled: Boolean, scale: Scale, srcPx: Int) = pxOrElse {
-        if (!isSampled) return srcPx
+    private fun Dimension.pxOrMinMax(scale: Scale) = pxOrElse {
         when (scale) {
             Scale.FIT -> Int.MAX_VALUE
             Scale.FILL -> Int.MIN_VALUE
