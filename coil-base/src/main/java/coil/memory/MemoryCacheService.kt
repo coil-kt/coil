@@ -21,6 +21,7 @@ import coil.size.pxOrElse
 import coil.util.Logger
 import coil.util.allowInexactSize
 import coil.util.forEachIndexedIndices
+import coil.util.isMinOrMax
 import coil.util.isPlaceholderCached
 import coil.util.log
 import coil.util.pxString
@@ -153,11 +154,8 @@ internal class MemoryCacheService(
                 return true
             }
         } else {
-            val widthMatches = (dstWidth == Int.MIN_VALUE || dstWidth == Int.MAX_VALUE) ||
-                abs(dstWidth - srcWidth) <= 1
-            val heightMatches = (dstHeight == Int.MIN_VALUE || dstHeight == Int.MAX_VALUE) ||
-                abs(dstHeight - srcHeight) <= 1
-            if (widthMatches && heightMatches) {
+            if ((dstWidth.isMinOrMax() || abs(dstWidth - srcWidth) <= 1) &&
+                (dstHeight.isMinOrMax() || abs(dstHeight - srcHeight) <= 1)) {
                 return true
             }
         }

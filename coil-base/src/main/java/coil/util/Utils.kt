@@ -209,6 +209,8 @@ internal val Interceptor.Chain.isPlaceholderCached: Boolean
 internal val Interceptor.Chain.eventListener: EventListener
     get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
 
+internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
+
 internal fun unsupported(): Nothing = error("Unsupported")
 
 /** A simple [Optional] replacement. */
