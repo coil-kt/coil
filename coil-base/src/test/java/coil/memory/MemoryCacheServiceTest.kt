@@ -392,7 +392,7 @@ class MemoryCacheServiceTest {
         )
         val request = createRequest(context)
 
-        assertTrue(service.isCacheValueValid(
+        assertFalse(service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
