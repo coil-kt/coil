@@ -47,7 +47,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `computeMemoryCacheKey - null key`() {
+    fun `newCacheKey - null key`() {
         val service = newService(key = null)
         val request = createRequest(context)
         val options = Options(context, size = Size.ORIGINAL)
@@ -59,7 +59,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `computeMemoryCacheKey - simple key`() {
+    fun `newCacheKey - simple key`() {
         val service = newService()
         val request = createRequest(context)
         val options = Options(context, size = Size.ORIGINAL)
@@ -71,7 +71,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `computeMemoryCacheKey - params only`() {
+    fun `newCacheKey - params only`() {
         val service = newService()
         val parameters = createFakeParameters()
         val request = createRequest(context) {
@@ -86,7 +86,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `computeMemoryCacheKey - transformations only`() {
+    fun `newCacheKey - transformations only`() {
         val service = newService()
         val transformations = createFakeTransformations()
         val request = createRequest(context) {
@@ -102,7 +102,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `computeMemoryCacheKey - complex key`() {
+    fun `newCacheKey - complex key`() {
         val service = newService(key = TEST_KEY)
         val parameters = createFakeParameters()
         val transformations = createFakeTransformations()
@@ -119,7 +119,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedValueValid - fill`() {
+    fun `isCacheValueValid - fill`() {
         val service = newService()
         val request = createRequest(context) {
             size(100, 100)
@@ -166,7 +166,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedValueValid - fit`() {
+    fun `isCacheValueValid - fit`() {
         val service = newService()
         val request = createRequest(context) {
             size(100, 100)
@@ -213,7 +213,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedValueValid - small not sampled cached drawable is valid`() {
+    fun `isCacheValueValid - small not sampled cached drawable is valid`() {
         val service = newService()
         val cached = createBitmap()
         val isValid = service.isCacheValueValid(
@@ -229,7 +229,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedValueValid - allowHardware=false prevents using cached hardware bitmap`() {
+    fun `isCacheValueValid - allowHardware=false prevents using cached hardware bitmap`() {
         val service = newService()
         fun isBitmapConfigValid(config: Bitmap.Config): Boolean {
             val cached = createBitmap(config = config)
@@ -251,7 +251,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedValueValid - exact precision`() {
+    fun `isCacheValueValid - exact precision`() {
         val service = newService()
         assertFalse(service.isCacheValueValid(
             cached = createBitmap(width = 100, height = 100),
@@ -328,7 +328,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedValueValid - one pixel off`() {
+    fun `isCacheValueValid - one pixel off`() {
         val service = newService()
         assertTrue(service.isCacheValueValid(
             cached = createBitmap(width = 244, height = 600),
@@ -379,7 +379,7 @@ class MemoryCacheServiceTest {
     }
 
     @Test
-    fun `isCachedValueValid - transformation that reduces size of output bitmap`() {
+    fun `isCacheValueValid - transformation that reduces size of output bitmap`() {
         val service = newService()
         val key = newMemoryCacheKey(
             key = "key",
