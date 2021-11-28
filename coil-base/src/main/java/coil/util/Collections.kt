@@ -15,6 +15,16 @@ internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
 }
 
 /**
+ * Functionally the same as [Iterable.forEachIndexed] except it generates
+ * an index-based loop that doesn't use an [Iterator].
+ */
+internal inline fun <T> List<T>.forEachIndexedIndices(action: (Int, T) -> Unit) {
+    for (i in indices) {
+        action(i, get(i))
+    }
+}
+
+/**
  * Functionally the same as [Iterable.fold] except it generates
  * an index-based loop that doesn't use an [Iterator].
  */
