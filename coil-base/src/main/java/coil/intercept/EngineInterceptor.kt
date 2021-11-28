@@ -254,16 +254,23 @@ internal class EngineInterceptor(
         // Fast path: return the existing bitmap.
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
-            if (bitmap.safeConfig in VALID_TRANSFORMATION_CONFIGS) {
+            val config = bitmap.safeConfig
+            if (config in VALID_TRANSFORMATION_CONFIGS) {
                 return bitmap
+            } else {
+                logger?.log(TAG, Log.INFO) {
+                    "Converting bitmap with config $config " +
+                        "to apply transformations: $transformations."
+                }
+            }
+        } else {
+            logger?.log(TAG, Log.INFO) {
+                "Converting drawable of type ${drawable::class.java.canonicalName} " +
+                    "to apply transformations: $transformations."
             }
         }
 
         // Slow path: draw the drawable on a canvas.
-        logger?.log(TAG, Log.INFO) {
-            val type = drawable::class.java.canonicalName
-            "Converting drawable of type $type to apply transformations: $transformations."
-        }
         return DrawableUtils.convertToBitmap(
             drawable = drawable,
             config = options.config,
