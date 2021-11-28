@@ -1,5 +1,3 @@
-@file:Suppress("NAME_SHADOWING")
-
 package coil.intercept
 
 import android.graphics.Bitmap
@@ -102,10 +100,10 @@ internal class EngineInterceptor(
     private suspend inline fun execute(
         request: ImageRequest,
         mappedData: Any,
-        options: Options,
+        _options: Options,
         eventListener: EventListener
     ): ExecuteResult {
-        var options = options
+        var options = _options
         var components = imageLoader.components
         var fetchResult: FetchResult? = null
         val executeResult = try {
