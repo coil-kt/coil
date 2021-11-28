@@ -36,7 +36,7 @@ internal class MemoryCacheService(
 ) {
 
     /** Create a [MemoryCache.Key] for this request. */
-    fun newKey(
+    fun newCacheKey(
         request: ImageRequest,
         mappedData: Any,
         options: Options,
@@ -70,19 +70,19 @@ internal class MemoryCacheService(
     }
 
     /** Get the [MemoryCache.Value] for this request. */
-    fun getValue(
+    fun getCacheValue(
         request: ImageRequest,
         cacheKey: MemoryCache.Key,
         size: Size
     ): MemoryCache.Value? {
         if (!request.memoryCachePolicy.readEnabled) return null
         val cacheValue = imageLoader.memoryCache?.get(cacheKey)
-        return cacheValue?.takeIf { isValueValid(request, cacheKey, it, size) }
+        return cacheValue?.takeIf { isCacheValueValid(request, cacheKey, it, size) }
     }
 
     /** Return 'true' if [cacheValue] satisfies the [request]. */
     @VisibleForTesting
-    internal fun isValueValid(
+    internal fun isCacheValueValid(
         request: ImageRequest,
         cacheKey: MemoryCache.Key,
         cacheValue: MemoryCache.Value,
@@ -184,7 +184,7 @@ internal class MemoryCacheService(
     }
 
     /** Write [drawable] to the memory cache. Return 'true' if it was added to the cache. */
-    fun setValue(
+    fun setCacheValue(
         cacheKey: MemoryCache.Key?,
         request: ImageRequest,
         result: ExecuteResult
