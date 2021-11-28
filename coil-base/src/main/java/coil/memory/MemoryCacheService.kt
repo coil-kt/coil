@@ -171,7 +171,7 @@ internal class MemoryCacheService(
         }
 
         // The cached value must be larger than the requested size if the cached value is sampled.
-        if (multiplier >= 1.0 && isSampled) {
+        if (multiplier > 1.0 && isSampled) {
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) is smaller than the requested size " +
