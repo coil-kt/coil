@@ -16,6 +16,7 @@ import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.Parameters
 import coil.request.RequestService
+import coil.size.Dimension
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
@@ -439,8 +440,53 @@ class MemoryCacheServiceTest {
         ))
     }
 
+    @Test
+    fun `isCacheValueValid - Dimension_Original`() {
+        val service = newService()
+        val request = createRequest(context) {
+            precision(Precision.INEXACT)
+        }
+
+        assertTrue(service.isCacheValueValid(
+            request = request,
+            cached = createBitmap(width = 400, height = 200),
+            isSampled = true,
+            size = Size(400, Dimension.Original)
+        ))
+        assertTrue(service.isCacheValueValid(
+            request = request,
+            cached = createBitmap(width = 400, height = 200),
+            isSampled = true,
+            size = Size(Dimension.Original, 200)
+        ))
+        assertFalse(service.isCacheValueValid(
+            request = request,
+            cached = createBitmap(width = 400, height = 200),
+            isSampled = true,
+            size = Size(450, Dimension.Original)
+        ))
+        assertFalse(service.isCacheValueValid(
+            request = request,
+            cached = createBitmap(width = 400, height = 200),
+            isSampled = true,
+            size = Size(Dimension.Original, 250)
+        ))
+        assertTrue(service.isCacheValueValid(
+            request = request,
+            cached = createBitmap(width = 400, height = 200),
+            isSampled = false,
+            size = Size(450, Dimension.Original)
+        ))
+        assertTrue(service.isCacheValueValid(
+            request = request,
+            cached = createBitmap(width = 400, height = 200),
+            isSampled = false,
+            size = Size(Dimension.Original, 250)
+        ))
+    }
+
     private fun MemoryCacheService.isCacheValueValid(
-        request: ImageRequest,
+        request: ImageRequest = createRequest(context),
         cached: Bitmap,
         isSampled: Boolean,
         size: Size
