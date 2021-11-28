@@ -579,11 +579,4 @@ interface ImageLoader {
         )
         fun transition(transition: Transition): Builder = unsupported()
     }
-
-    companion object {
-        /** Create a new [ImageLoader] without configuration. */
-        @JvmStatic
-        @JvmName("create")
-        operator fun invoke(context: Context) = Builder(context).build()
-    }
 }
