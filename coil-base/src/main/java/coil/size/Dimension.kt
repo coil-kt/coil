@@ -1,4 +1,4 @@
-@file:JvmName("Dimensions")
+@file:JvmName("-Dimensions")
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil.size
@@ -43,8 +43,7 @@ sealed class Dimension {
 /**
  * Convenience function to create a [Dimension.Pixels].
  */
-@JvmName("create")
-inline fun Dimension(@Px pixels: Int) = Dimension.Pixels(pixels)
+inline fun Dimension(@Px px: Int) = Dimension.Pixels(px)
 
 /**
  * If this is a [Dimension.Pixels] value, return its number of pixels. Else, invoke and return

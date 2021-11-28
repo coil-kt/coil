@@ -156,8 +156,8 @@ internal inline val Any.identityHashCode: Int
     get() = System.identityHashCode(this)
 
 @OptIn(ExperimentalStdlibApi::class)
-internal inline val CoroutineContext.dispatcher: CoroutineDispatcher
-    get() = get(CoroutineDispatcher) ?: error("Current context doesn't contain CoroutineDispatcher in it: $this")
+internal val CoroutineContext.dispatcher: CoroutineDispatcher?
+    get() = get(CoroutineDispatcher)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
@@ -196,7 +196,7 @@ internal fun DiskCache.Editor.abortQuietly() {
     } catch (_: Exception) {}
 }
 
-internal fun Dimension.valueString(): String {
+internal fun Dimension.pxString(): String {
     return if (this is Dimension.Pixels) px.toString() else toString()
 }
 

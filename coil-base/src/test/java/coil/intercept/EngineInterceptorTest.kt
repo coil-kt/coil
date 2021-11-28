@@ -46,7 +46,6 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
-@OptIn(ExperimentalStdlibApi::class)
 class EngineInterceptorTest {
 
     private lateinit var context: Context
@@ -402,28 +401,28 @@ class EngineInterceptorTest {
         )
         val request = createRequest(context)
 
-        assertTrue(interceptor.isCachedValueValid(
+        assertTrue(interceptor.isMemoryCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
             size = Size(650, 400)
         ))
 
-        assertTrue(interceptor.isCachedValueValid(
+        assertTrue(interceptor.isMemoryCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.EXACT).scale(Scale.FIT).build(),
             size = Size(1000, 500)
         ))
 
-        assertFalse(interceptor.isCachedValueValid(
+        assertFalse(interceptor.isMemoryCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
             size = Size(1500, 1000)
         ))
 
-        assertFalse(interceptor.isCachedValueValid(
+        assertFalse(interceptor.isMemoryCacheValueValid(
             cacheKey = key,
             cacheValue = value,
             request = request.newBuilder().precision(Precision.EXACT).scale(Scale.FIT).build(),

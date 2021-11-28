@@ -1,4 +1,4 @@
-@file:JvmName("Sizes")
+@file:JvmName("-Sizes")
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil.size
@@ -28,7 +28,6 @@ data class Size(
 /**
  * Create a [Size] with pixel values for both width and height.
  */
-@JvmName("create")
 fun Size(@Px width: Int, @Px height: Int) = Size(Dimension(width), Dimension(height))
 
 /**
@@ -54,5 +53,4 @@ inline fun PixelSize(@Px width: Int, @Px height: Int) = Size(width, height)
     message = "Migrate to 'coil.size.Size.ORIGINAL'.",
     replaceWith = ReplaceWith("Size.ORIGINAL", "coil.size.Size")
 )
-inline val OriginalSize: Size
-    @JvmName("OriginalSize") get() = Size.ORIGINAL
+inline val OriginalSize get() = Size.ORIGINAL
