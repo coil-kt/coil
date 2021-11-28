@@ -1,4 +1,4 @@
-@file:JvmName("Sizes")
+@file:JvmName("-Sizes")
 @file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil.size
@@ -17,6 +17,15 @@ data class Size(
     val height: Dimension,
 ) {
 
+    /** Create a [Size] with a pixel value for width. */
+    constructor(@Px width: Int, height: Dimension) : this(Dimension(width), height)
+
+    /** Create a [Size] with a pixel value for height. */
+    constructor(width: Dimension, @Px height: Int) : this(width, Dimension(height))
+
+    /** Create a [Size] with pixel values for both width and height. */
+    constructor(@Px width: Int, @Px height: Int) : this(Dimension(width), Dimension(height))
+
     companion object {
         /**
          * A [Size] whose width and height are equal to the original dimensions of the source image.
@@ -24,12 +33,6 @@ data class Size(
         @JvmField val ORIGINAL = Size(Dimension.Original, Dimension.Original)
     }
 }
-
-/**
- * Create a [Size] with pixel values for both width and height.
- */
-@JvmName("create")
-fun Size(@Px width: Int, @Px height: Int) = Size(Dimension(width), Dimension(height))
 
 /**
  * Return true if this size is equal to [Size.ORIGINAL]. Else, return false.
@@ -42,13 +45,6 @@ val Size.isOriginal: Boolean
     replaceWith = ReplaceWith("Size", "coil.size.Size")
 )
 typealias PixelSize = Size
-
-@Deprecated(
-    message = "Migrate to 'coil.size.Size'.",
-    replaceWith = ReplaceWith("Size(width, height)", "coil.size.Size")
-)
-@JvmName("PixelSize")
-inline fun PixelSize(@Px width: Int, @Px height: Int) = Size(width, height)
 
 @Deprecated(
     message = "Migrate to 'coil.size.Size.ORIGINAL'.",

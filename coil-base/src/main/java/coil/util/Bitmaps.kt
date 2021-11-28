@@ -5,7 +5,6 @@ package coil.util
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toDrawable
 
@@ -43,8 +42,7 @@ internal val Bitmap.Config.isHardware: Boolean
 internal val Bitmap.safeConfig: Bitmap.Config
     get() = config ?: Bitmap.Config.ARGB_8888
 
-internal inline fun Bitmap.toDrawable(context: Context): BitmapDrawable =
-    toDrawable(context.resources)
+internal inline fun Bitmap.toDrawable(context: Context) = toDrawable(context.resources)
 
 /** Convert null and [Bitmap.Config.HARDWARE] configs to [Bitmap.Config.ARGB_8888]. */
 internal fun Bitmap.Config?.toSoftware(): Bitmap.Config {

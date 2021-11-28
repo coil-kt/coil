@@ -30,7 +30,7 @@ internal interface StrongMemoryCache {
     fun trimMemory(level: Int)
 }
 
-/** A [StrongMemoryCache] implementation that caches nothing and only delegates [set]s to a [WeakMemoryCache]. */
+/** A [StrongMemoryCache] implementation that caches nothing. */
 internal class EmptyStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
 ) : StrongMemoryCache {
