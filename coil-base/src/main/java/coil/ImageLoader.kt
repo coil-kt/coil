@@ -449,7 +449,7 @@ interface ImageLoader {
          * Set the default placeholder drawable to use when a request starts.
          */
         fun placeholder(drawable: Drawable?) = apply {
-            this.defaults = this.defaults.copy(placeholder = drawable)
+            this.defaults = this.defaults.copy(placeholder = drawable?.mutate())
         }
 
         /**
@@ -462,7 +462,7 @@ interface ImageLoader {
          * Set the default error drawable to use when a request fails.
          */
         fun error(drawable: Drawable?) = apply {
-            this.defaults = this.defaults.copy(error = drawable)
+            this.defaults = this.defaults.copy(error = drawable?.mutate())
         }
 
         /**
@@ -475,7 +475,7 @@ interface ImageLoader {
          * Set the default fallback drawable to use if [ImageRequest.data] is null.
          */
         fun fallback(drawable: Drawable?) = apply {
-            this.defaults = this.defaults.copy(fallback = drawable)
+            this.defaults = this.defaults.copy(fallback = drawable?.mutate())
         }
 
         /**
