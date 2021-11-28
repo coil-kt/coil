@@ -421,10 +421,28 @@ class MemoryCacheServiceTest {
         ))
     }
 
+    @Test
+    fun `isCacheValueValid - Size_ORIGINAL`() {
+        val service = newService()
+
+        assertFalse(service.isCacheValueValid(
+            cached = createBitmap(width = 200, height = 400),
+            isSampled = true,
+            request = createRequest(context),
+            size = Size.ORIGINAL
+        ))
+        assertTrue(service.isCacheValueValid(
+            cached = createBitmap(width = 200, height = 400),
+            isSampled = false,
+            request = createRequest(context),
+            size = Size.ORIGINAL
+        ))
+    }
+
     private fun MemoryCacheService.isCacheValueValid(
+        request: ImageRequest,
         cached: Bitmap,
         isSampled: Boolean,
-        request: ImageRequest,
         size: Size
     ) = isCacheValueValid(
         request = request,
