@@ -147,8 +147,8 @@ class AsyncImagePainter internal constructor(
     }
 
     override fun onRemembered() {
-        // If we're in inspection mode (preview) and we have a placeholder, just draw
-        // that without executing an image request.
+        // If we're in inspection mode (preview) skip executing the image request
+        // and set the state to loading.
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
             state = State.Loading(request.placeholder?.toPainter())
