@@ -75,12 +75,12 @@ object DecodeUtils {
         @Px dstHeight: Int,
         scale: Scale
     ): Int {
-        val widthInSampleSize = Integer.highestOneBit(srcWidth / dstWidth).coerceAtLeast(1)
-        val heightInSampleSize = Integer.highestOneBit(srcHeight / dstHeight).coerceAtLeast(1)
+        val widthInSampleSize = Integer.highestOneBit(srcWidth / dstWidth)
+        val heightInSampleSize = Integer.highestOneBit(srcHeight / dstHeight)
         return when (scale) {
             Scale.FILL -> min(widthInSampleSize, heightInSampleSize)
             Scale.FIT -> max(widthInSampleSize, heightInSampleSize)
-        }
+        }.coerceAtLeast(1)
     }
 
     /**
