@@ -34,7 +34,6 @@ import coil.util.isMainThread
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
@@ -53,6 +52,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
@@ -92,7 +92,7 @@ class RealImageLoaderAndroidTest {
     // region Test all the supported data types.
 
     @Test
-    fun string() {
+    fun string() = runTest {
         val data = server.url(IMAGE).toString()
         server.enqueueImage(IMAGE)
         testEnqueue(data)
@@ -100,7 +100,7 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun httpUri() {
+    fun httpUri() = runTest {
         val data = server.url(IMAGE).toString().toUri()
         server.enqueueImage(IMAGE)
         testEnqueue(data)
@@ -108,7 +108,7 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun httpUrl() {
+    fun httpUrl() = runTest {
         val data = server.url(IMAGE)
         server.enqueueImage(IMAGE)
         testEnqueue(data)
@@ -116,77 +116,77 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun resourceInt() {
+    fun resourceInt() = runTest {
         val data = R.drawable.normal
         testEnqueue(data)
         testExecute(data)
     }
 
     @Test
-    fun resourceIntVector() {
+    fun resourceIntVector() = runTest {
         val data = R.drawable.ic_android
         testEnqueue(data, Size(100, 100))
         testExecute(data, Size(100, 100))
     }
 
     @Test
-    fun resourceUriInt() {
+    fun resourceUriInt() = runTest {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
         testEnqueue(data)
         testExecute(data)
     }
 
     @Test
-    fun resourceUriIntVector() {
+    fun resourceUriIntVector() = runTest {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
         testEnqueue(data, Size(100, 100))
         testExecute(data, Size(100, 100))
     }
 
     @Test
-    fun resourceUriString() {
+    fun resourceUriString() = runTest {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/normal".toUri()
         testEnqueue(data)
         testExecute(data)
     }
 
     @Test
-    fun resourceUriStringVector() {
+    fun resourceUriStringVector() = runTest {
         val data = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/drawable/ic_android".toUri()
         testEnqueue(data, Size(100, 100))
         testExecute(data, Size(100, 100))
     }
 
     @Test
-    fun file() {
+    fun file() = runTest {
         val data = copyNormalImageAssetToCacheDir()
         testEnqueue(data)
         testExecute(data)
     }
 
     @Test
-    fun fileUri() {
+    fun fileUri() = runTest {
         val data = copyNormalImageAssetToCacheDir().toUri()
         testEnqueue(data)
         testExecute(data)
     }
 
     @Test
-    fun assetUri() {
+    fun assetUri() = runTest {
         val data = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
         testEnqueue(data, Size(75, 100))
         testExecute(data, Size(75, 100))
     }
 
     @Test
-    fun contentUri() {
+    fun contentUri() = runTest {
         val data = "$SCHEME_CONTENT://coil/$IMAGE".toUri()
         testEnqueue(data)
         testExecute(data)
     }
 
     @Test
-    fun drawable() {
+    fun drawable() = runTest {
         val data = context.getDrawableCompat(R.drawable.normal)
         val expectedSize = Size(1080, 1350)
         testEnqueue(data, expectedSize)
@@ -194,7 +194,7 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun bitmap() {
+    fun bitmap() = runTest {
         val data = (context.getDrawableCompat(R.drawable.normal) as BitmapDrawable).bitmap
         val expectedSize = Size(1080, 1350)
         testEnqueue(data, expectedSize)
@@ -202,7 +202,7 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun byteBuffer() {
+    fun byteBuffer() = runTest {
         val data = ByteBuffer.wrap(context.resources.openRawResource(R.drawable.normal).readBytes())
         testEnqueue(data)
         testExecute(data)
@@ -211,7 +211,7 @@ class RealImageLoaderAndroidTest {
     // endregion
 
     @Test
-    fun unsupportedDataThrows() {
+    fun unsupportedDataThrows() = runTest {
         val data = Any()
         assertFailsWith<IllegalStateException> { testEnqueue(data) }
         assertFailsWith<IllegalStateException> { testExecute(data) }
@@ -271,39 +271,37 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun placeholderKeyReturnsCorrectMemoryCacheEntry() {
+    fun placeholderKeyReturnsCorrectMemoryCacheEntry() = runTest {
         val key = MemoryCache.Key("fake_key")
         val fileName = IMAGE
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
 
-        runBlocking {
-            suspendCancellableCoroutine<Unit> { continuation ->
-                val request = ImageRequest.Builder(context)
-                    .memoryCacheKey(key)
-                    .placeholderMemoryCacheKey(key)
-                    .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
-                    .size(100, 100)
-                    .precision(Precision.INEXACT)
-                    .allowHardware(true)
-                    .dispatcher(Dispatchers.Main.immediate)
-                    .target(
-                        onStart = {
-                            // The drawable in the memory cache should be returned here.
-                            assertEquals(bitmap, (it as BitmapDrawable).bitmap)
-                        },
-                        onSuccess = {
-                            // The same drawable should be returned since the drawable is valid for this request.
-                            assertEquals(bitmap, (it as BitmapDrawable).bitmap)
-                        }
-                    )
-                    .listener(
-                        onSuccess = { _, _ -> continuation.resume(Unit) },
-                        onError = { _, result -> continuation.resumeWithException(result.throwable) },
-                        onCancel = { continuation.cancel() }
-                    )
-                    .build()
-                imageLoader.enqueue(request)
-            }
+        suspendCancellableCoroutine<Unit> { continuation ->
+            val request = ImageRequest.Builder(context)
+                .memoryCacheKey(key)
+                .placeholderMemoryCacheKey(key)
+                .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/$fileName")
+                .size(100, 100)
+                .precision(Precision.INEXACT)
+                .allowHardware(true)
+                .dispatcher(Dispatchers.Main.immediate)
+                .target(
+                    onStart = {
+                        // The drawable in the memory cache should be returned here.
+                        assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                    },
+                    onSuccess = {
+                        // The same drawable should be returned since the drawable is valid for this request.
+                        assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                    }
+                )
+                .listener(
+                    onSuccess = { _, _ -> continuation.resume(Unit) },
+                    onError = { _, result -> continuation.resumeWithException(result.throwable) },
+                    onCancel = { continuation.cancel() }
+                )
+                .build()
+            imageLoader.enqueue(request)
         }
     }
 
@@ -342,18 +340,16 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun customMemoryCacheKey() {
+    fun customMemoryCacheKey() = runTest {
         val imageLoader = ImageLoader(context)
         val key = MemoryCache.Key("fake_key")
 
         server.enqueueImage(IMAGE)
-        val result = runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE))
-                .memoryCacheKey(key)
-                .build()
-            imageLoader.execute(request) as SuccessResult
-        }
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE))
+            .memoryCacheKey(key)
+            .build()
+        val result = imageLoader.execute(request) as SuccessResult
 
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(key, result.memoryCacheKey)
@@ -361,18 +357,16 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun customDiskCacheKey() {
+    fun customDiskCacheKey() = runTest {
         val imageLoader = ImageLoader(context)
         val key = "fake_key"
 
         server.enqueueImage(IMAGE)
-        val result = runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE))
-                .diskCacheKey(key)
-                .build()
-            imageLoader.execute(request) as SuccessResult
-        }
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE))
+            .diskCacheKey(key)
+            .build()
+        val result = imageLoader.execute(request) as SuccessResult
 
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(key, result.diskCacheKey)
@@ -380,7 +374,7 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun callFactoryIsInitializedLazily() {
+    fun callFactoryIsInitializedLazily() = runTest {
         var isInitialized = false
         val imageLoader = ImageLoader.Builder(context)
             .callFactory {
@@ -394,18 +388,17 @@ class RealImageLoaderAndroidTest {
         assertFalse(isInitialized)
 
         server.enqueueImage(IMAGE)
-        runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE))
-                .build()
-            imageLoader.execute(request) as SuccessResult
-        }
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE))
+            .build()
+        val result = imageLoader.execute(request)
 
+        assertIs<SuccessResult>(result)
         assertTrue(isInitialized)
     }
 
     @Test
-    fun memoryCacheIsInitializedLazily() {
+    fun memoryCacheIsInitializedLazily() = runTest {
         var isInitialized = false
         val imageLoader = ImageLoader.Builder(context)
             .memoryCache {
@@ -418,18 +411,17 @@ class RealImageLoaderAndroidTest {
         assertFalse(isInitialized)
 
         server.enqueueImage(IMAGE)
-        runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE))
-                .build()
-            imageLoader.execute(request) as SuccessResult
-        }
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE))
+            .build()
+        val result = imageLoader.execute(request)
 
+        assertIs<SuccessResult>(result)
         assertTrue(isInitialized)
     }
 
     @Test
-    fun diskCacheIsInitializedLazily() {
+    fun diskCacheIsInitializedLazily() = runTest {
         var isInitialized = false
         val imageLoader = ImageLoader.Builder(context)
             .diskCache {
@@ -443,70 +435,65 @@ class RealImageLoaderAndroidTest {
         assertFalse(isInitialized)
 
         server.enqueueImage(IMAGE)
-        runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE))
-                .build()
-            imageLoader.execute(request) as SuccessResult
-        }
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE))
+            .build()
+        val result = imageLoader.execute(request)
 
+        assertIs<SuccessResult>(result)
         assertTrue(isInitialized)
     }
 
     @Test
-    fun noMemoryCacheReturnsNoMemoryCacheKey() {
+    fun noMemoryCacheReturnsNoMemoryCacheKey() = runTest {
         val imageLoader = ImageLoader.Builder(context)
             .memoryCache(null)
             .build()
 
         server.enqueueImage(IMAGE)
-        val result = runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE))
-                .build()
-            imageLoader.execute(request) as SuccessResult
-        }
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE))
+            .build()
+        val result = imageLoader.execute(request)
 
+        assertIs<SuccessResult>(result)
         assertNull(result.memoryCacheKey)
     }
 
     @Test
-    fun noDiskCacheReturnsNoDiskCacheKey() {
+    fun noDiskCacheReturnsNoDiskCacheKey() = runTest {
         val imageLoader = ImageLoader.Builder(context)
             .diskCache(null)
             .build()
 
         server.enqueueImage(IMAGE)
-        val result = runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE))
-                .build()
-            imageLoader.execute(request) as SuccessResult
-        }
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE))
+            .build()
+        val result = imageLoader.execute(request)
 
+        assertIs<SuccessResult>(result)
         assertNull(result.diskCacheKey)
     }
 
-    private fun testEnqueue(data: Any, expectedSize: Size = Size(80, 100)) {
+    private suspend fun testEnqueue(data: Any, expectedSize: Size = Size(80, 100)) {
         val imageView = activityRule.scenario.activity.imageView
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
         assertNull(imageView.drawable)
 
-        runBlocking {
-            suspendCancellableCoroutine<Unit> { continuation ->
-                val request = ImageRequest.Builder(context)
-                    .data(data)
-                    .target(imageView)
-                    .size(100, 100)
-                    .listener(
-                        onSuccess = { _, _ -> continuation.resume(Unit) },
-                        onError = { _, result -> continuation.resumeWithException(result.throwable) },
-                        onCancel = { continuation.resumeWithException(CancellationException()) }
-                    )
-                    .build()
-                imageLoader.enqueue(request)
-            }
+        suspendCancellableCoroutine<Unit> { continuation ->
+            val request = ImageRequest.Builder(context)
+                .data(data)
+                .target(imageView)
+                .size(100, 100)
+                .listener(
+                    onSuccess = { _, _ -> continuation.resume(Unit) },
+                    onError = { _, result -> continuation.resumeWithException(result.throwable) },
+                    onCancel = { continuation.resumeWithException(CancellationException()) }
+                )
+                .build()
+            imageLoader.enqueue(request)
         }
 
         val drawable = imageView.drawable
@@ -514,14 +501,12 @@ class RealImageLoaderAndroidTest {
         assertEquals(expectedSize, drawable.bitmap.size)
     }
 
-    private fun testExecute(data: Any, expectedSize: Size = Size(80, 100)) {
-        val result = runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(data)
-                .size(100, 100)
-                .build()
-            imageLoader.execute(request)
-        }
+    private suspend fun testExecute(data: Any, expectedSize: Size = Size(80, 100)) {
+        val request = ImageRequest.Builder(context)
+            .data(data)
+            .size(100, 100)
+            .build()
+        val result = imageLoader.execute(request)
 
         if (result is ErrorResult) {
             throw result.throwable

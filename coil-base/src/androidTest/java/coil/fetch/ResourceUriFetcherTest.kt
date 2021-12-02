@@ -94,7 +94,8 @@ class ResourceUriFetcherTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/469 */
     @Test
     fun colorAttributeIsApplied() = withTestActivity { activity ->
-        val imageLoader = ImageLoader(context) // Intentionally use the application context.
+        // Intentionally use the application context.
+        val imageLoader = ImageLoader(context.applicationContext)
         val options = Options(context = activity, size = Size.ORIGINAL)
         val result = runBlocking {
             val uri = assertNotNull(ResourceIntMapper().map(R.drawable.ic_tinted_vector, options))

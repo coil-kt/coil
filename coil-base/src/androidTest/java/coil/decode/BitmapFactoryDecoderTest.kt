@@ -16,7 +16,8 @@ import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import okio.buffer
 import okio.source
 import org.junit.Before
@@ -27,6 +28,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BitmapFactoryDecoderTest {
 
     private lateinit var context: Context
@@ -39,7 +41,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun basic() {
+    fun basic() = runTest {
         val (drawable, isSampled) = decode(
             assetName = "normal.jpg",
             size = Size(100, 100)
@@ -52,7 +54,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun unboundedWidth() {
+    fun unboundedWidth() = runTest {
         val (drawable, isSampled) = decode(
             assetName = "normal.jpg",
             size = Size(Dimension.Original, Dimension(100)),
@@ -66,7 +68,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun unboundedHeight() {
+    fun unboundedHeight() = runTest {
         val (drawable, isSampled) = decode(
             assetName = "normal.jpg",
             size = Size(Dimension(100), Dimension.Original),
@@ -80,7 +82,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun malformedImageThrows() {
+    fun malformedImageThrows() = runTest {
         assertFailsWith<IllegalStateException> {
             decode(
                 assetName = "malformed.jpg",
@@ -90,7 +92,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun resultIsSampledIfGreaterThanHalfSize() {
+    fun resultIsSampledIfGreaterThanHalfSize() = runTest {
         val (drawable, isSampled) = decode(
             assetName = "normal.jpg",
             size = Size(600, 600)
@@ -102,14 +104,14 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun originalSizeDimensionsAreResolvedCorrectly() {
+    fun originalSizeDimensionsAreResolvedCorrectly() = runTest {
         val size = Size.ORIGINAL
         val normal = decodeBitmap("normal.jpg", size)
         assertEquals(Size(1080, 1350), normal.size)
     }
 
     @Test
-    fun exifTransformationsAreAppliedCorrectly() {
+    fun exifTransformationsAreAppliedCorrectly() = runTest {
         val size = Size(500, 500)
         val normal = decodeBitmap("normal.jpg", size)
 
@@ -120,7 +122,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun largeExifMetadata() {
+    fun largeExifMetadata() = runTest {
         val size = Size(500, 500)
         val expected = decodeBitmap("exif/large_metadata_normalized.jpg", size)
         val actual = decodeBitmap("exif/large_metadata.jpg", size)
@@ -129,7 +131,7 @@ class BitmapFactoryDecoderTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/619 */
     @Test
-    fun heicExifMetadata() {
+    fun heicExifMetadata() = runTest {
         // HEIC files are not supported before API 30.
         assumeTrue(SDK_INT >= 30)
 
@@ -140,7 +142,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun allowInexactSize_true() {
+    fun allowInexactSize_true() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
@@ -154,7 +156,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun allowInexactSize_false() {
+    fun allowInexactSize_false() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
@@ -168,7 +170,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun allowRgb565_true() {
+    fun allowRgb565_true() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
@@ -183,7 +185,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun allowRgb565_false() {
+    fun allowRgb565_false() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
@@ -198,7 +200,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun premultipliedAlpha_true() {
+    fun premultipliedAlpha_true() = runTest {
         val result = decodeBitmap(
             assetName = "normal_alpha.png",
             options = Options(
@@ -213,7 +215,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun premultipliedAlpha_false() {
+    fun premultipliedAlpha_false() = runTest {
         val result = decodeBitmap(
             assetName = "normal_alpha.png",
             options = Options(
@@ -228,13 +230,13 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun lossyWebP() {
+    fun lossyWebP() = runTest {
         val expected = decodeBitmap("normal.jpg", Size(450, 675))
         decodeBitmap("lossy.webp", Size(450, 675)).assertIsSimilarTo(expected)
     }
 
     @Test
-    fun png_16bit() {
+    fun png_16bit() = runTest {
         // The emulator runs out of memory on pre-23.
         assumeTrue(SDK_INT >= 23)
 
@@ -249,40 +251,48 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun largeJpeg() {
+    fun largeJpeg() = runTest {
         decodeBitmap("large.jpg", Size(1080, 1920))
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/368 */
     @Test
-    fun largePng() {
+    fun largePng() = runTest {
         // Ensure that this doesn't cause an OOM exception - particularly on API 23 and below.
         decodeBitmap("large.png", Size(1080, 1920))
     }
 
     @Test
-    fun largeWebP() {
+    fun largeWebP() = runTest {
         decodeBitmap("large.webp", Size(1080, 1920))
     }
 
     @Test
-    fun largeHeic() {
+    fun largeHeic() = runTest {
         // HEIC files are not supported before API 30.
         assumeTrue(SDK_INT >= 30)
 
         decodeBitmap("large.heic", Size(1080, 1920))
     }
 
-    private fun decodeBitmap(assetName: String, size: Size): Bitmap =
-        decodeBitmap(assetName, Options(context = context, size = size, scale = Scale.FILL))
+    private suspend fun decodeBitmap(
+        assetName: String,
+        size: Size,
+        scale: Scale = Scale.FILL
+    ): Bitmap = decodeBitmap(assetName, Options(context = context, size = size, scale = scale))
 
-    private fun decodeBitmap(assetName: String, options: Options): Bitmap =
-        (decode(assetName, options).drawable as BitmapDrawable).bitmap
+    private suspend fun decodeBitmap(
+        assetName: String,
+        options: Options
+    ): Bitmap = (decode(assetName, options).drawable as BitmapDrawable).bitmap
 
-    private fun decode(assetName: String, size: Size, scale: Scale = Scale.FILL): DecodeResult =
-        decode(assetName, Options(context = context, size = size, scale = scale))
+    private suspend fun decode(
+        assetName: String,
+        size: Size,
+        scale: Scale = Scale.FILL
+    ): DecodeResult = decode(assetName, Options(context = context, size = size, scale = scale))
 
-    private fun decode(assetName: String, options: Options): DecodeResult = runBlocking {
+    private suspend fun decode(assetName: String, options: Options): DecodeResult {
         val source = context.assets.open(assetName).source().buffer()
         val decoder = decoderFactory.create(
             result = SourceResult(
@@ -299,6 +309,6 @@ class BitmapFactoryDecoderTest {
         val exception = assertFailsWith<IllegalStateException> { source.exhausted() }
         assertEquals("closed", exception.message)
 
-        return@runBlocking result
+        return result
     }
 }
