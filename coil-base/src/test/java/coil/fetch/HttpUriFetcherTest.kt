@@ -19,7 +19,7 @@ import coil.util.enqueueImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
 import okhttp3.Call
 import okhttp3.Headers
@@ -52,7 +52,7 @@ import kotlin.test.assertTrue
 class HttpUriFetcherTest {
 
     private lateinit var context: Context
-    private lateinit var mainDispatcher: TestCoroutineDispatcher
+    private lateinit var mainDispatcher: TestDispatcher
     private lateinit var server: MockWebServer
     private lateinit var diskCache: DiskCache
     private lateinit var callFactory: Call.Factory

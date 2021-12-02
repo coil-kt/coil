@@ -4,12 +4,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import coil.util.awaitStarted
 import coil.util.createTestMainDispatcher
-import coil.util.runBlockingTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -23,12 +23,12 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class LifecyclesTest {
 
-    private lateinit var mainDispatcher: TestCoroutineDispatcher
+    private lateinit var mainDispatcher: TestDispatcher
     private lateinit var lifecycle: FakeLifecycleRegistry
 
     @Before
     fun before() {
-        mainDispatcher = createTestMainDispatcher()
+        mainDispatcher = createTestMainDispatcher(standard = true)
         lifecycle = FakeLifecycleRegistry()
     }
 
@@ -38,7 +38,7 @@ class LifecyclesTest {
     }
 
     @Test
-    fun `does not observe if already started`() = runBlockingTest {
+    fun `does not observe if already started`() = runTest {
         val lifecycle = object : Lifecycle() {
             override fun getCurrentState() = State.STARTED
             override fun addObserver(observer: LifecycleObserver) = error("Should not observe.")
@@ -48,7 +48,7 @@ class LifecyclesTest {
     }
 
     @Test
-    fun `dispatches after start event`() = runBlockingTest {
+    fun `dispatches after start event`() = runTest {
         assertEquals(0, lifecycle.observerCount)
 
         val job = launch { lifecycle.awaitStarted() }
@@ -63,7 +63,7 @@ class LifecyclesTest {
     }
 
     @Test
-    fun `observer is removed if cancelled`() = runBlockingTest {
+    fun `observer is removed if cancelled`() = runTest {
         assertEquals(0, lifecycle.observerCount)
 
         val job = launch { lifecycle.awaitStarted() }

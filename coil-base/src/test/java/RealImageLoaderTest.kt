@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
 import org.junit.After
 import org.junit.Before
@@ -30,7 +30,7 @@ import kotlin.test.assertTrue
 class RealImageLoaderTest {
 
     private lateinit var context: Context
-    private lateinit var mainDispatcher: TestCoroutineDispatcher
+    private lateinit var mainDispatcher: TestDispatcher
     private lateinit var imageLoader: ImageLoader
 
     @Before

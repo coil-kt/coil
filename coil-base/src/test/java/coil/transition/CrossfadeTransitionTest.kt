@@ -14,7 +14,7 @@ import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
 import org.junit.After
 import org.junit.Before
@@ -31,7 +31,7 @@ import kotlin.test.fail
 class CrossfadeTransitionTest {
 
     private lateinit var context: Context
-    private lateinit var mainDispatcher: TestCoroutineDispatcher
+    private lateinit var mainDispatcher: TestDispatcher
     private lateinit var transitionFactory: CrossfadeTransition.Factory
 
     @Before
