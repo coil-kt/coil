@@ -17,7 +17,9 @@ import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import coil.util.getDrawableCompat
 import coil.util.withTestActivity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -25,6 +27,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ResourceUriFetcherTest {
 
     private lateinit var context: Context
@@ -37,13 +40,10 @@ class ResourceUriFetcherTest {
     }
 
     @Test
-    fun rasterDrawable() {
+    fun rasterDrawable() = runTest {
         val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}".toUri()
         val options = Options(context, size = Size(100, 100))
-
-        val result = runBlocking {
-            fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
-        }
+        val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
         assertTrue(result is SourceResult)
         assertEquals("image/jpeg", result.mimeType)
@@ -51,13 +51,10 @@ class ResourceUriFetcherTest {
     }
 
     @Test
-    fun vectorDrawable() {
+    fun vectorDrawable() = runTest {
         val uri = "$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.ic_android}".toUri()
         val options = Options(context, size = Size(100, 100))
-
-        val result = runBlocking {
-            fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
-        }
+        val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
         assertTrue(result is DrawableResult)
         assertTrue(result.drawable is BitmapDrawable)
@@ -65,16 +62,13 @@ class ResourceUriFetcherTest {
     }
 
     @Test
-    fun externalPackageRasterDrawable() {
+    fun externalPackageRasterDrawable() = runTest {
         // https://android.googlesource.com/platform/packages/apps/Settings/+/master/res/drawable-xhdpi
         val resource = if (SDK_INT >= 23) "msg_bubble_incoming" else "ic_power_system"
         val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/$resource".toUri()
         val options = Options(context, size = Size(100, 100))
         val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
-
-        val result = runBlocking {
-            fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
-        }
+        val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
         assertTrue(result is SourceResult)
         assertEquals("image/png", result.mimeType)
@@ -82,7 +76,7 @@ class ResourceUriFetcherTest {
     }
 
     @Test
-    fun externalPackageVectorDrawable() {
+    fun externalPackageVectorDrawable() = runTest {
         // com.android.settings/drawable/ic_cancel was added in API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -90,10 +84,7 @@ class ResourceUriFetcherTest {
         val rawUri = "$SCHEME_ANDROID_RESOURCE://com.android.settings/drawable/ic_cancel".toUri()
         val options = Options(context, size = Size(100, 100))
         val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
-
-        val result = runBlocking {
-            fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
-        }
+        val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
         assertTrue(result is DrawableResult)
         assertTrue(result.drawable is BitmapDrawable)
