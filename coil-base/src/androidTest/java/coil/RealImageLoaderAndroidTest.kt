@@ -33,8 +33,10 @@ import coil.util.getDrawableCompat
 import coil.util.isMainThread
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import okio.buffer
@@ -56,6 +58,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RealImageLoaderAndroidTest {
 
     private lateinit var context: Context
@@ -215,55 +218,51 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun nullRequestDataShowsFallbackDrawable() {
+    fun nullRequestDataShowsFallbackDrawable() = runTest {
         val error = ColorDrawable(Color.BLUE)
         val fallback = ColorDrawable(Color.BLACK)
 
-        runBlocking {
-            suspendCancellableCoroutine<Unit> { continuation ->
-                var hasCalledTargetOnError = false
+        suspendCancellableCoroutine<Unit> { continuation ->
+            var hasCalledTargetOnError = false
 
-                val request = ImageRequest.Builder(context)
-                    .data(null)
-                    .size(100, 100)
-                    .error(error)
-                    .fallback(fallback)
-                    .target(
-                        onStart = { throw IllegalStateException() },
-                        onError = { drawable ->
-                            check(drawable === fallback)
-                            hasCalledTargetOnError = true
-                        },
-                        onSuccess = { throw IllegalStateException() }
-                    )
-                    .listener(
-                        onStart = { throw IllegalStateException() },
-                        onSuccess = { _, _ -> throw IllegalStateException() },
-                        onCancel = { throw IllegalStateException() },
-                        onError = { _, result ->
-                            if (hasCalledTargetOnError && result.throwable is NullRequestDataException) {
-                                continuation.resume(Unit)
-                            } else {
-                                continuation.resumeWithException(result.throwable)
-                            }
+            val request = ImageRequest.Builder(context)
+                .data(null)
+                .size(100, 100)
+                .error(error)
+                .fallback(fallback)
+                .target(
+                    onStart = { throw IllegalStateException() },
+                    onError = { drawable ->
+                        check(drawable === fallback)
+                        hasCalledTargetOnError = true
+                    },
+                    onSuccess = { throw IllegalStateException() }
+                )
+                .listener(
+                    onStart = { throw IllegalStateException() },
+                    onSuccess = { _, _ -> throw IllegalStateException() },
+                    onCancel = { throw IllegalStateException() },
+                    onError = { _, result ->
+                        if (hasCalledTargetOnError && result.throwable is NullRequestDataException) {
+                            continuation.resume(Unit)
+                        } else {
+                            continuation.resumeWithException(result.throwable)
                         }
-                    )
-                    .build()
-                imageLoader.enqueue(request)
-            }
+                    }
+                )
+                .build()
+            imageLoader.enqueue(request)
         }
     }
 
     @Test
-    fun loadedImageIsPresentInMemoryCache() {
+    fun loadedImageIsPresentInMemoryCache() = runTest {
         server.enqueueImage(IMAGE)
-        val result = runBlocking {
-            val request = ImageRequest.Builder(context)
-                .data(server.url(IMAGE))
-                .size(100, 100)
-                .build()
-            imageLoader.execute(request)
-        }
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE))
+            .size(100, 100)
+            .build()
+        val result = imageLoader.execute(request)
 
         assertTrue(result is SuccessResult)
         val bitmap = (result.drawable as BitmapDrawable).bitmap

@@ -18,9 +18,10 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
-@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class LifecyclesTest {
 
     private lateinit var mainDispatcher: TestDispatcher
@@ -41,8 +42,8 @@ class LifecyclesTest {
     fun `does not observe if already started`() = runTest {
         val lifecycle = object : Lifecycle() {
             override fun getCurrentState() = State.STARTED
-            override fun addObserver(observer: LifecycleObserver) = error("Should not observe.")
-            override fun removeObserver(observer: LifecycleObserver) = error("Should not observe.")
+            override fun addObserver(observer: LifecycleObserver) = fail("Should not observe.")
+            override fun removeObserver(observer: LifecycleObserver) = fail("Should not observe.")
         }
         lifecycle.awaitStarted()
     }

@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -25,8 +25,8 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class RealImageLoaderTest {
 
     private lateinit var context: Context
@@ -49,7 +49,7 @@ class RealImageLoaderTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/933 */
     @Test
-    fun executeIsCancelledIfScopeIsCancelled() {
+    fun executeIsCancelledIfScopeIsCancelled() = runTest {
         val isCancelled = MutableStateFlow(false)
 
         val scope = CoroutineScope(mainDispatcher)
@@ -74,8 +74,6 @@ class RealImageLoaderTest {
         scope.cancel()
 
         // Suspend until the request is cancelled.
-        runBlocking {
-            isCancelled.first { it }
-        }
+        isCancelled.first { it }
     }
 }

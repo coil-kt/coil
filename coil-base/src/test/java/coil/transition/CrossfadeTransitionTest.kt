@@ -13,9 +13,9 @@ import coil.util.createRequest
 import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -26,8 +26,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
-@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class CrossfadeTransitionTest {
 
     private lateinit var context: Context
@@ -95,26 +95,24 @@ class CrossfadeTransitionTest {
     }
 
     @Test
-    fun `failure - disk`() {
+    fun `failure - disk`() = runTest {
         val drawable = ColorDrawable()
         var onSuccessCalled = false
 
-        runBlocking {
-            transitionFactory.create(
-                target = createTransitionTarget(
-                    onError = { error ->
-                        assertFalse(onSuccessCalled)
-                        assertTrue(error !is CrossfadeDrawable)
-                        onSuccessCalled = true
-                    }
-                ),
-                result = ErrorResult(
-                    drawable = drawable,
-                    request = createRequest(context),
-                    throwable = Throwable()
-                )
-            ).transition()
-        }
+        transitionFactory.create(
+            target = createTransitionTarget(
+                onError = { error ->
+                    assertFalse(onSuccessCalled)
+                    assertTrue(error !is CrossfadeDrawable)
+                    onSuccessCalled = true
+                }
+            ),
+            result = ErrorResult(
+                drawable = drawable,
+                request = createRequest(context),
+                throwable = Throwable()
+            )
+        ).transition()
 
         assertTrue(onSuccessCalled)
     }
