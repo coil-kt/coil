@@ -24,12 +24,14 @@ import coil.request.SuccessResult
 import coil.request.animatedTransformation
 import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AnimatedAndNormalTransformationTest {
 
     private lateinit var context: Context
@@ -59,13 +61,11 @@ class AnimatedAndNormalTransformationTest {
     }
 
     @Test
-    fun animatedGifStillAnimated() {
-        val actual = runBlocking {
-            val imageRequest = imageRequestBuilder
-                .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.gif")
-                .build()
-            imageLoader.execute(imageRequest)
-        }
+    fun animatedGifStillAnimated() = runTest {
+        val imageRequest = imageRequestBuilder
+            .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.gif")
+            .build()
+        val actual = imageLoader.execute(imageRequest)
         assertTrue(actual is SuccessResult)
         // Make sure this is still an animated result (has not been flattened to
         // apply CircleCropTransformation).
@@ -73,14 +73,12 @@ class AnimatedAndNormalTransformationTest {
     }
 
     @Test
-    fun staticImageStillTransformed() {
-        val actual = runBlocking {
-            val imageRequest = imageRequestBuilder
-                .data("${ContentResolver.SCHEME_FILE}:///android_asset/normal_small.jpg")
-                .build()
-            imageLoader.execute(imageRequest)
-        }
+    fun staticImageStillTransformed() = runTest {
         val expected = context.decodeBitmapAsset("normal_small_circle.png")
+        val imageRequest = imageRequestBuilder
+            .data("${ContentResolver.SCHEME_FILE}:///android_asset/normal_small.jpg")
+            .build()
+        val actual = imageLoader.execute(imageRequest)
         assertTrue(actual is SuccessResult)
         // Make sure this is not an animated result.
         assertFalse(actual.drawable is Animatable)

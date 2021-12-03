@@ -3,11 +3,7 @@ package coil
 import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import coil.util.createTestMainDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -19,22 +15,19 @@ import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class ImageLoaderFactoryTest {
 
     private lateinit var context: Context
-    private lateinit var mainDispatcher: TestCoroutineDispatcher
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        mainDispatcher = createTestMainDispatcher()
     }
 
     @After
     fun after() {
-        Dispatchers.resetMain()
         Coil.reset()
     }
 

@@ -57,8 +57,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -267,49 +266,45 @@ class AsyncImagePainterTest {
     }
 
     @Test
-    fun basicLoad_changeSize() {
-        val scope = TestCoroutineScope()
-        scope.launch {
-            val states = Channel<State>()
-            var size by mutableStateOf(128.dp)
+    fun basicLoad_changeSize() = runTest {
+        val states = Channel<State>()
+        var size by mutableStateOf(128.dp)
 
-            composeTestRule.setContent {
-                val painter = rememberAsyncImagePainter(
-                    model = server.url("/image"),
-                    imageLoader = imageLoader
-                )
+        composeTestRule.setContent {
+            val painter = rememberAsyncImagePainter(
+                model = server.url("/image"),
+                imageLoader = imageLoader
+            )
 
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(size)
-                        .testTag(Image)
-                )
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(size)
+                    .testTag(Image)
+            )
 
-                LaunchedEffect(painter) {
-                    snapshotFlow { painter.state }
-                        .filter { it is State.Success || it is State.Error }
-                        .onCompletion { states.cancel() }
-                        .collect(states::send)
-                }
+            LaunchedEffect(painter) {
+                snapshotFlow { painter.state }
+                    .filter { it is State.Success || it is State.Error }
+                    .onCompletion { states.cancel() }
+                    .collect(states::send)
             }
-
-            // Await the first load.
-            assertNotNull(states.receive())
-
-            // Now change the size.
-            size = 256.dp
-            composeTestRule.awaitIdle()
-
-            // Await any potential subsequent load (which shouldn't come).
-            val result = withTimeoutOrNull(3_000) { states.receive() }
-            assertNull(result)
-
-            // Close the signal channel.
-            states.close()
         }
-        scope.cleanupTestCoroutines()
+
+        // Await the first load.
+        assertNotNull(states.receive())
+
+        // Now change the size.
+        size = 256.dp
+        composeTestRule.awaitIdle()
+
+        // Await any potential subsequent load (which shouldn't come).
+        val result = withTimeoutOrNull(3_000) { states.receive() }
+        assertNull(result)
+
+        // Close the signal channel.
+        states.close()
     }
 
     @Test

@@ -15,8 +15,8 @@ internal class FileUriMapper : Mapper<Uri, File> {
     }
 
     private fun isApplicable(data: Uri): Boolean {
-        if (isAssetUri(data)) return false
-        return data.scheme.let { it == null || it == ContentResolver.SCHEME_FILE } &&
+        return !isAssetUri(data) &&
+            data.scheme.let { it == null || it == ContentResolver.SCHEME_FILE } &&
             data.path.orEmpty().startsWith('/') && data.firstPathSegment != null
     }
 

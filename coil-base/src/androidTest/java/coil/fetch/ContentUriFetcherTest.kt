@@ -22,7 +22,8 @@ import androidx.test.rule.GrantPermissionRule
 import coil.ImageLoader
 import coil.request.Options
 import coil.util.assumeTrue
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import okio.buffer
 import okio.sink
 import okio.source
@@ -34,6 +35,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ContentUriFetcherTest {
 
     private lateinit var context: Context
@@ -52,7 +54,7 @@ class ContentUriFetcherTest {
     }
 
     @Test
-    fun contactsThumbnail() {
+    fun contactsThumbnail() = runTest {
         // This test is flaky on API 30+.
         assumeTrue(SDK_INT < 30)
 
@@ -64,7 +66,7 @@ class ContentUriFetcherTest {
     }
 
     @Test
-    fun contactsDisplayPhoto() {
+    fun contactsDisplayPhoto() = runTest {
         // This test is flaky on API 30+.
         assumeTrue(SDK_INT < 30)
 
@@ -85,8 +87,8 @@ class ContentUriFetcherTest {
         assertTrue(fetcher.isMusicThumbnailUri(uri))
     }
 
-    private fun assertUriFetchesCorrectly(fetcher: ContentUriFetcher) {
-        val result = runBlocking { fetcher.fetch() }
+    private suspend fun assertUriFetchesCorrectly(fetcher: ContentUriFetcher) {
+        val result = fetcher.fetch()
 
         assertTrue(result is SourceResult)
         assertEquals("image/jpeg", result.mimeType)

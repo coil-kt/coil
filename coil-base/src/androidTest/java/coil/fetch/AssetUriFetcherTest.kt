@@ -8,7 +8,8 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.request.Options
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -16,6 +17,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AssetUriFetcherTest {
 
     private lateinit var context: Context
@@ -28,21 +30,25 @@ class AssetUriFetcherTest {
     }
 
     @Test
-    fun basic() {
+    fun basic() = runTest {
         val uri = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg".toUri()
         assertUriFetchesCorrectly(uri)
     }
 
     @Test
-    fun nestedPath() {
+    fun nestedPath() = runTest {
         val uri = "$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/exif/large_metadata.jpg".toUri()
         assertUriFetchesCorrectly(uri)
     }
 
-    private fun assertUriFetchesCorrectly(uri: Uri) {
-        val result = runBlocking {
-            assertNotNull(fetcherFactory.create(uri, Options(context), ImageLoader(context))).fetch()
-        }
+    private suspend fun assertUriFetchesCorrectly(uri: Uri) {
+        val result = assertNotNull(
+            fetcherFactory.create(
+                data = uri,
+                options = Options(context),
+                imageLoader = ImageLoader(context)
+            )
+        ).fetch()
 
         assertTrue(result is SourceResult)
         assertEquals("image/jpeg", result.mimeType)

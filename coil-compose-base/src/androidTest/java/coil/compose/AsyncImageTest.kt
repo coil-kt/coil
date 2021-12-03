@@ -56,6 +56,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class AsyncImageTest {
 
@@ -399,7 +400,7 @@ class AsyncImageTest {
                             assertIs<State.Success>(state)
                             assertEquals(painter.state, state)
                         }
-                        else -> error("Recomposed too many times. State: $state")
+                        else -> fail("Recomposed too many times. State: $state")
                     }
                     index++
                 }

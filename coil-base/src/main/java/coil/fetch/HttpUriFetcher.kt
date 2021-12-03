@@ -17,9 +17,8 @@ import coil.request.Parameters
 import coil.util.abortQuietly
 import coil.util.await
 import coil.util.closeQuietly
-import coil.util.dispatcher
 import coil.util.getMimeTypeFromUrl
-import kotlinx.coroutines.MainCoroutineDispatcher
+import coil.util.isMainThread
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.MediaType
@@ -31,7 +30,6 @@ import okio.buffer
 import okio.sink
 import okio.source
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
-import kotlin.coroutines.coroutineContext
 
 internal class HttpUriFetcher(
     private val url: String,
@@ -180,7 +178,7 @@ internal class HttpUriFetcher(
     }
 
     private suspend fun executeNetworkRequest(request: Request): Response {
-        val response = if (coroutineContext.dispatcher is MainCoroutineDispatcher) {
+        val response = if (isMainThread()) {
             if (options.networkCachePolicy.readEnabled) {
                 // Prevent executing requests on the main thread that could block due to a
                 // networking operation.

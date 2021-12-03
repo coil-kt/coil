@@ -26,7 +26,6 @@ import coil.util.SystemCallbacks
 import coil.util.createBitmap
 import coil.util.createRequest
 import coil.util.forEachIndexedIndices
-import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,9 +51,7 @@ class MemoryCacheServiceTest {
         val service = newService(key = null)
         val request = createRequest(context)
         val options = Options(context, size = Size.ORIGINAL)
-        val key = runBlocking {
-            service.newCacheKey(request, Unit, options, EventListener.NONE)
-        }
+        val key = service.newCacheKey(request, Unit, options, EventListener.NONE)
 
         assertNull(key)
     }
@@ -64,9 +61,7 @@ class MemoryCacheServiceTest {
         val service = newService()
         val request = createRequest(context)
         val options = Options(context, size = Size.ORIGINAL)
-        val actual = runBlocking {
-            service.newCacheKey(request, Unit, options, EventListener.NONE)
-        }
+        val actual = service.newCacheKey(request, Unit, options, EventListener.NONE)
 
         assertEquals(newMemoryCacheKey(), actual)
     }
@@ -79,9 +74,7 @@ class MemoryCacheServiceTest {
             parameters(parameters)
         }
         val options = Options(context, size = Size.ORIGINAL)
-        val actual = runBlocking {
-            service.newCacheKey(request, Unit, options, EventListener.NONE)
-        }
+        val actual = service.newCacheKey(request, Unit, options, EventListener.NONE)
 
         assertEquals(newMemoryCacheKey(parameters = parameters), actual)
     }
@@ -95,9 +88,7 @@ class MemoryCacheServiceTest {
         }
         val size = Size(123, 332)
         val options = Options(context, size = size)
-        val actual = runBlocking {
-            service.newCacheKey(request, Unit, options, EventListener.NONE)
-        }
+        val actual = service.newCacheKey(request, Unit, options, EventListener.NONE)
 
         assertEquals(newMemoryCacheKey(transformations = transformations, size = size), actual)
     }
@@ -112,9 +103,7 @@ class MemoryCacheServiceTest {
             transformations(transformations)
         }
         val options = Options(context, size = Size.ORIGINAL)
-        val actual = runBlocking {
-            service.newCacheKey(request, Unit, options, EventListener.NONE)
-        }
+        val actual = service.newCacheKey(request, Unit, options, EventListener.NONE)
 
         assertEquals(newMemoryCacheKey(transformations = transformations, parameters = parameters), actual)
     }

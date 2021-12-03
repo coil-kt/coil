@@ -10,7 +10,8 @@ import coil.size.Scale
 import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import okio.BufferedSource
 import okio.buffer
 import okio.source
@@ -22,6 +23,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SvgDecoderTest {
 
     private lateinit var context: Context
@@ -74,16 +76,20 @@ class SvgDecoderTest {
     }
 
     @Test
-    fun basic() {
+    fun basic() = runTest {
         val source = context.assets.open("coil_logo.svg").source().buffer()
-        val (drawable, isSampled) = runBlocking {
-            val options = Options(
-                context = context,
-                size = Size(400, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
-                scale = Scale.FIT
-            )
-            assertNotNull(decoderFactory.create(source.asSourceResult(), options, ImageLoader(context))?.decode())
-        }
+        val options = Options(
+            context = context,
+            size = Size(400, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
+            scale = Scale.FIT
+        )
+        val (drawable, isSampled) = assertNotNull(
+            decoderFactory.create(
+                result = source.asSourceResult(),
+                options = options,
+                imageLoader = ImageLoader(context)
+            )?.decode()
+        )
 
         assertTrue(isSampled)
         assertTrue(drawable is BitmapDrawable)
@@ -93,16 +99,20 @@ class SvgDecoderTest {
     }
 
     @Test
-    fun noViewBox() {
+    fun noViewBox() = runTest {
         val source = context.assets.open("instacart_logo.svg").source().buffer()
-        val (drawable, isSampled) = runBlocking {
-            val options = Options(
-                context = context,
-                size = Size(326, 50),
-                scale = Scale.FILL
-            )
-            assertNotNull(decoderFactory.create(source.asSourceResult(), options, ImageLoader(context))?.decode())
-        }
+        val options = Options(
+            context = context,
+            size = Size(326, 50),
+            scale = Scale.FILL
+        )
+        val (drawable, isSampled) = assertNotNull(
+            decoderFactory.create(
+                result = source.asSourceResult(),
+                options = options,
+                imageLoader = ImageLoader(context)
+            )?.decode()
+        )
 
         assertTrue(isSampled)
         assertTrue(drawable is BitmapDrawable)
