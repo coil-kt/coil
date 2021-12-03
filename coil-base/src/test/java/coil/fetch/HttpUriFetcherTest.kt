@@ -14,12 +14,9 @@ import coil.request.CachePolicy
 import coil.request.Options
 import coil.util.Time
 import coil.util.createMockWebServer
-import coil.util.createTestMainDispatcher
 import coil.util.enqueueImage
-import kotlinx.coroutines.Dispatchers
+import coil.util.runTestAsync
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import okhttp3.Call
 import okhttp3.Headers
@@ -52,7 +49,6 @@ import kotlin.test.assertTrue
 class HttpUriFetcherTest {
 
     private lateinit var context: Context
-    private lateinit var mainDispatcher: TestDispatcher
     private lateinit var server: MockWebServer
     private lateinit var diskCache: DiskCache
     private lateinit var callFactory: Call.Factory
@@ -61,7 +57,6 @@ class HttpUriFetcherTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        mainDispatcher = createTestMainDispatcher()
         server = createMockWebServer()
         diskCache = DiskCache.Builder(context)
             .directory(File("build/cache"))
@@ -76,7 +71,6 @@ class HttpUriFetcherTest {
 
     @After
     fun after() {
-        Dispatchers.resetMain()
         Time.reset()
         server.shutdown()
         imageLoader.shutdown()
@@ -85,7 +79,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `basic network fetch`() = runTest {
+    fun `basic network fetch`() = runTestAsync {
         val expectedSize = server.enqueueImage(IMAGE)
         val url = server.url(IMAGE).toString()
         val result = newFetcher(url).fetch()
@@ -96,7 +90,13 @@ class HttpUriFetcherTest {
 
     @Test
     fun `mime type is parsed correctly from content type`() {
-        val fetcher = HttpUriFetcher("error", Options(context), lazyOf(callFactory), lazyOf(diskCache), true)
+        val fetcher = HttpUriFetcher(
+            url = "error",
+            options = Options(context),
+            callFactory = lazyOf(callFactory),
+            diskCache = lazyOf(diskCache),
+            respectCacheHeaders = true
+        )
 
         // https://android.googlesource.com/platform/frameworks/base/+/61ae88e/core/java/android/webkit/MimeTypeMap.java#407
         Shadows.shadowOf(MimeTypeMap.getSingleton())
@@ -133,7 +133,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `no disk cache - fetcher returns a source result`() = runTest {
+    fun `no disk cache - fetcher returns a source result`() = runTestAsync {
         val expectedSize = server.enqueueImage(IMAGE)
         val url = server.url(IMAGE).toString()
         val result = newFetcher(url, diskCache = null).fetch()
@@ -144,7 +144,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `request on main thread with network cache policy disabled executes without throwing`() = runTest {
+    fun `request on main thread with network cache policy disabled executes without throwing`() = runTestAsync {
         val expectedSize = server.enqueueImage(IMAGE)
         val url = server.url(IMAGE).toString()
 
@@ -168,7 +168,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `no cached file - fetcher returns the file`() = runTest {
+    fun `no cached file - fetcher returns the file`() = runTestAsync {
         val expectedSize = server.enqueueImage(IMAGE)
         val url = server.url(IMAGE).toString()
         val result = newFetcher(url).fetch()
@@ -188,7 +188,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `existing cached file - fetcher returns the file`() = runTest {
+    fun `existing cached file - fetcher returns the file`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
         // Run the fetcher once to create the disk cache file.
@@ -212,7 +212,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - empty metadata is always returned`() = runTest {
+    fun `cache control - empty metadata is always returned`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
         val editor = diskCache.edit(url)!!
@@ -229,7 +229,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - no-store is never cached or returned`() = runTest {
+    fun `cache control - no-store is never cached or returned`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
         val headers = Headers.Builder()
@@ -254,7 +254,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - respectCacheHeaders=false is always cached and returned`() = runTest {
+    fun `cache control - respectCacheHeaders=false is always cached and returned`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
         val headers = Headers.Builder()
@@ -279,7 +279,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - cached response is verified and returned from the cache`() = runTest {
+    fun `cache control - cached response is verified and returned from the cache`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
         val etag = UUID.randomUUID().toString()
@@ -311,7 +311,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - unexpired max-age is returned from cache`() = runTest {
+    fun `cache control - unexpired max-age is returned from cache`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
         val headers = Headers.Builder()
@@ -336,7 +336,7 @@ class HttpUriFetcherTest {
     }
 
     @Test
-    fun `cache control - expired max-age is not returned from cache`() = runTest {
+    fun `cache control - expired max-age is not returned from cache`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
         val now = System.currentTimeMillis()

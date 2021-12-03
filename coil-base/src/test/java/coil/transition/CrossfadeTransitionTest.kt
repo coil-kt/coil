@@ -10,13 +10,8 @@ import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
 import coil.request.SuccessResult
 import coil.util.createRequest
-import coil.util.createTestMainDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,19 +26,12 @@ import kotlin.test.fail
 class CrossfadeTransitionTest {
 
     private lateinit var context: Context
-    private lateinit var mainDispatcher: TestDispatcher
     private lateinit var transitionFactory: CrossfadeTransition.Factory
 
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        mainDispatcher = createTestMainDispatcher()
         transitionFactory = CrossfadeTransition.Factory()
-    }
-
-    @After
-    fun after() {
-        Dispatchers.resetMain()
     }
 
     @Test

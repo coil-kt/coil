@@ -4,12 +4,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import okhttp3.Headers
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.mockwebserver.MockResponse
@@ -19,6 +22,8 @@ import okio.buffer
 import okio.sink
 import okio.source
 import java.io.File
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 fun createMockWebServer(vararg images: String): MockWebServer {
     val server = MockWebServer()
@@ -51,4 +56,12 @@ fun Context.copyAssetToFile(fileName: String): File {
 fun createTestMainDispatcher(standard: Boolean = false): TestDispatcher {
     val dispatcher = if (standard) StandardTestDispatcher() else UnconfinedTestDispatcher()
     return dispatcher.apply { Dispatchers.setMain(this) }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun runTestAsync(
+    context: CoroutineContext = EmptyCoroutineContext,
+    block: suspend CoroutineScope.() -> Unit
+) = runTest(context) {
+    withContext(Dispatchers.IO, block)
 }

@@ -3,14 +3,11 @@ package coil.lifecycle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import coil.util.awaitStarted
-import coil.util.createTestMainDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,22 +21,17 @@ import kotlin.test.fail
 @RunWith(RobolectricTestRunner::class)
 class LifecyclesTest {
 
-    private lateinit var mainDispatcher: TestDispatcher
+    private lateinit var testDispatcher: TestDispatcher
     private lateinit var lifecycle: FakeLifecycleRegistry
 
     @Before
     fun before() {
-        mainDispatcher = createTestMainDispatcher(standard = true)
+        testDispatcher = UnconfinedTestDispatcher()
         lifecycle = FakeLifecycleRegistry()
     }
 
-    @After
-    fun after() {
-        Dispatchers.resetMain()
-    }
-
     @Test
-    fun `does not observe if already started`() = runTest {
+    fun `does not observe if already started`() = runTest(testDispatcher) {
         val lifecycle = object : Lifecycle() {
             override fun getCurrentState() = State.STARTED
             override fun addObserver(observer: LifecycleObserver) = fail("Should not observe.")
@@ -49,7 +41,7 @@ class LifecyclesTest {
     }
 
     @Test
-    fun `dispatches after start event`() = runTest {
+    fun `dispatches after start event`() = runTest(testDispatcher) {
         assertEquals(0, lifecycle.observerCount)
 
         val job = launch { lifecycle.awaitStarted() }
@@ -64,7 +56,7 @@ class LifecyclesTest {
     }
 
     @Test
-    fun `observer is removed if cancelled`() = runTest {
+    fun `observer is removed if cancelled`() = runTest(testDispatcher) {
         assertEquals(0, lifecycle.observerCount)
 
         val job = launch { lifecycle.awaitStarted() }
