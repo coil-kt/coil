@@ -7,11 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
 import okhttp3.Headers
 import okhttp3.Headers.Companion.headersOf
@@ -50,12 +46,6 @@ fun Context.copyAssetToFile(fileName: String): File {
     val sink = file.sink().buffer()
     source.use { sink.use { sink.writeAll(source) } }
     return file
-}
-
-@OptIn(ExperimentalCoroutinesApi::class)
-fun createTestMainDispatcher(standard: Boolean = false): TestDispatcher {
-    val dispatcher = if (standard) StandardTestDispatcher() else UnconfinedTestDispatcher()
-    return dispatcher.apply { Dispatchers.setMain(this) }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)

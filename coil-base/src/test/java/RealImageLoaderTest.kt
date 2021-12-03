@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import coil.fetch.Fetcher
 import coil.request.ImageRequest
-import coil.util.createTestMainDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,8 +14,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -36,7 +37,8 @@ class RealImageLoaderTest {
     @Before
     fun before() {
         context = ApplicationProvider.getApplicationContext()
-        mainDispatcher = createTestMainDispatcher()
+        mainDispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(mainDispatcher)
         imageLoader = ImageLoader.Builder(context)
             .diskCache(null)
             .build()
