@@ -31,6 +31,7 @@ import coil.util.decodeBitmapAsset
 import coil.util.enqueueImage
 import coil.util.getDrawableCompat
 import coil.util.isMainThread
+import coil.util.runTestMain
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -306,7 +307,7 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun cachedValueIsResolvedSynchronously() {
+    fun cachedValueIsResolvedSynchronously() = runTestMain {
         val key = MemoryCache.Key("fake_key")
         val fileName = IMAGE
         decodeAssetAndAddToMemoryCache(key, fileName)
