@@ -21,8 +21,9 @@ import coil.transition.Transition
 import coil.util.TestActivity
 import coil.util.activity
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -31,6 +32,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class EventListenerTest {
 
     private lateinit var context: Context
@@ -45,7 +47,7 @@ class EventListenerTest {
     }
 
     @Test
-    fun basic() {
+    fun basic() = runTest {
         val eventListener = TestEventListener(
             transformStart = MethodChecker(false),
             transformEnd = MethodChecker(false),
@@ -59,17 +61,15 @@ class EventListenerTest {
             .eventListener(eventListener)
             .build()
 
-        runBlocking {
-            imageLoader.testEnqueue {
-                data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
-            }
+        imageLoader.testEnqueue {
+            data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
         }
 
         eventListener.complete()
     }
 
     @Test
-    fun transformations() {
+    fun transformations() = runTest {
         val eventListener = TestEventListener(
             transitionStart = MethodChecker(false),
             transitionEnd = MethodChecker(false),
@@ -83,18 +83,16 @@ class EventListenerTest {
 
         var transformationIsCalled = false
 
-        runBlocking {
-            imageLoader.testEnqueue {
-                data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
-                transformations(object : Transformation {
-                    override val cacheKey = "test_transformation"
+        imageLoader.testEnqueue {
+            data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
+            transformations(object : Transformation {
+                override val cacheKey = "test_transformation"
 
-                    override suspend fun transform(input: Bitmap, size: Size): Bitmap {
-                        transformationIsCalled = true
-                        return input
-                    }
-                })
-            }
+                override suspend fun transform(input: Bitmap, size: Size): Bitmap {
+                    transformationIsCalled = true
+                    return input
+                }
+            })
         }
 
         assertTrue(transformationIsCalled)
@@ -102,7 +100,7 @@ class EventListenerTest {
     }
 
     @Test
-    fun transitions() {
+    fun transitions() = runTest {
         val eventListener = TestEventListener(
             transformStart = MethodChecker(false),
             transformEnd = MethodChecker(false),
@@ -116,16 +114,14 @@ class EventListenerTest {
 
         var transitionIsCalled = false
 
-        runBlocking {
-            imageLoader.testEnqueue {
-                data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
-                transitionFactory { target, result ->
-                    Transition {
-                        transitionIsCalled = true
-                        when (result) {
-                            is SuccessResult -> target.onSuccess(result.drawable)
-                            is ErrorResult -> target.onError(result.drawable)
-                        }
+        imageLoader.testEnqueue {
+            data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
+            transitionFactory { target, result ->
+                Transition {
+                    transitionIsCalled = true
+                    when (result) {
+                        is SuccessResult -> target.onSuccess(result.drawable)
+                        is ErrorResult -> target.onError(result.drawable)
                     }
                 }
             }
@@ -136,7 +132,7 @@ class EventListenerTest {
     }
 
     @Test
-    fun error() {
+    fun error() = runTest {
         val eventListener = TestEventListener(
             fetchStart = MethodChecker(false),
             fetchEnd = MethodChecker(false),
@@ -154,19 +150,17 @@ class EventListenerTest {
             .eventListener(eventListener)
             .build()
 
-        runBlocking {
-            try {
-                imageLoader.testEnqueue {
-                    data("fake_data")
-                }
-            } catch (_: Exception) {}
-        }
+        try {
+            imageLoader.testEnqueue {
+                data("fake_data")
+            }
+        } catch (_: Exception) {}
 
         eventListener.complete()
     }
 
     @Test
-    fun nullData() {
+    fun nullData() = runTest {
         val eventListener = TestEventListener(
             onStart = MethodChecker(false),
             resolveSizeStart = MethodChecker(false),
@@ -191,13 +185,11 @@ class EventListenerTest {
             .eventListener(eventListener)
             .build()
 
-        runBlocking {
-            try {
-                imageLoader.testEnqueue {
-                    data(null)
-                }
-            } catch (_: Exception) {}
-        }
+        try {
+            imageLoader.testEnqueue {
+                data(null)
+            }
+        } catch (_: Exception) {}
 
         eventListener.complete()
     }

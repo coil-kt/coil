@@ -16,7 +16,8 @@ import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.scale
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +28,7 @@ import kotlin.test.assertNotSame
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class ImageRequestTest {
 
@@ -175,7 +177,7 @@ class ImageRequestTest {
     }
 
     @Test
-    fun `ImageView with scale type MATRIX or CENTER should default to original size`() {
+    fun `ImageView with scale type MATRIX or CENTER should default to original size`() = runTest {
         val request1 = ImageRequest.Builder(context)
             .data("https://www.example.com/image.jpg")
             .target(ImageView(context).apply { scaleType = MATRIX })
@@ -195,11 +197,9 @@ class ImageRequestTest {
             .size(100, 100)
             .build()
 
-        runBlocking {
-            assertEquals(Size.ORIGINAL, request1.sizeResolver.size())
-            assertEquals(Size.ORIGINAL, request2.sizeResolver.size())
-            assertEquals(Size(100, 100), request3.sizeResolver.size())
-            assertEquals(Size(100, 100), request4.sizeResolver.size())
-        }
+        assertEquals(Size.ORIGINAL, request1.sizeResolver.size())
+        assertEquals(Size.ORIGINAL, request2.sizeResolver.size())
+        assertEquals(Size(100, 100), request3.sizeResolver.size())
+        assertEquals(Size(100, 100), request4.sizeResolver.size())
     }
 }

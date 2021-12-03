@@ -16,7 +16,8 @@ import coil.util.CoilUtils
 import coil.util.TestActivity
 import coil.util.activity
 import coil.util.requestManager
-import coil.util.runBlockingTest
+import coil.util.runTestMain
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import org.junit.After
@@ -28,6 +29,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DisposableTest {
 
     private lateinit var context: Context
@@ -51,7 +53,7 @@ class DisposableTest {
     }
 
     @Test
-    fun baseTargetDisposable_dispose() = runBlockingTest {
+    fun baseTargetDisposable_dispose() = runTestMain {
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             .size(100, 100)
@@ -67,7 +69,7 @@ class DisposableTest {
     }
 
     @Test
-    fun baseTargetDisposable_await() = runBlockingTest {
+    fun baseTargetDisposable_await() = runTestMain {
         val transformation = GateTransformation()
         var result: Drawable? = null
         val request = ImageRequest.Builder(context)
@@ -86,7 +88,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetDisposable_dispose() = runBlockingTest {
+    fun viewTargetDisposable_dispose() = runTestMain {
         val imageView = activityRule.scenario.activity.imageView
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
@@ -104,7 +106,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetDisposable_await() = runBlockingTest {
+    fun viewTargetDisposable_await() = runTestMain {
         val transformation = GateTransformation()
         val imageView = activityRule.scenario.activity.imageView
         val request = ImageRequest.Builder(context)
@@ -124,7 +126,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetDisposable_restart() = runBlockingTest {
+    fun viewTargetDisposable_restart() = runTestMain {
         val transformation = GateTransformation()
         val imageView = activityRule.scenario.activity.imageView
         val request = ImageRequest.Builder(context)
@@ -154,7 +156,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetDisposable_replace() = runBlockingTest {
+    fun viewTargetDisposable_replace() = runTestMain {
         val imageView = activityRule.scenario.activity.imageView
 
         fun launchNewRequest(): Disposable {
@@ -181,7 +183,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetDisposable_clear() = runBlockingTest {
+    fun viewTargetDisposable_clear() = runTestMain {
         val imageView = activityRule.scenario.activity.imageView
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
@@ -198,7 +200,7 @@ class DisposableTest {
     }
 
     @Test
-    fun viewTargetDisposable_detachedViewIsImmediatelyCancelled() = runBlockingTest {
+    fun viewTargetDisposable_detachedViewIsImmediatelyCancelled() = runTestMain {
         val imageView = ImageView(context)
 
         assertFalse(imageView.isAttachedToWindow)

@@ -7,9 +7,8 @@ import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import okhttp3.Headers
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.mockwebserver.MockResponse
@@ -20,6 +19,7 @@ import okio.sink
 import okio.source
 import java.io.File
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 fun createMockWebServer(vararg images: String): MockWebServer {
     val server = MockWebServer()
@@ -48,13 +48,18 @@ fun Context.copyAssetToFile(fileName: String): File {
     return file
 }
 
-/** Runs the given [block] on the main thread by default. */
-fun runBlockingTest(
-    context: CoroutineContext = Dispatchers.Main.immediate,
+@OptIn(ExperimentalCoroutinesApi::class)
+fun runTestMain(
+    context: CoroutineContext = EmptyCoroutineContext,
     block: suspend CoroutineScope.() -> Unit
-) = runBlocking(context, block)
+) = runTest(context) {
+    withContext(Dispatchers.Main.immediate, block)
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun createTestMainDispatcher(): TestCoroutineDispatcher {
-    return TestCoroutineDispatcher().apply { Dispatchers.setMain(this) }
+fun runTestAsync(
+    context: CoroutineContext = EmptyCoroutineContext,
+    block: suspend CoroutineScope.() -> Unit
+) = runTest(context) {
+    withContext(Dispatchers.IO, block)
 }

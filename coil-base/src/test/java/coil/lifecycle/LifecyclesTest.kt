@@ -3,14 +3,11 @@ package coil.lifecycle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import coil.util.awaitStarted
-import coil.util.createTestMainDispatcher
-import coil.util.runBlockingTest
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import org.junit.After
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,37 +15,33 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
-@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class LifecyclesTest {
 
-    private lateinit var mainDispatcher: TestCoroutineDispatcher
+    private lateinit var testDispatcher: TestDispatcher
     private lateinit var lifecycle: FakeLifecycleRegistry
 
     @Before
     fun before() {
-        mainDispatcher = createTestMainDispatcher()
+        testDispatcher = UnconfinedTestDispatcher()
         lifecycle = FakeLifecycleRegistry()
     }
 
-    @After
-    fun after() {
-        Dispatchers.resetMain()
-    }
-
     @Test
-    fun `does not observe if already started`() = runBlockingTest {
+    fun `does not observe if already started`() = runTest(testDispatcher) {
         val lifecycle = object : Lifecycle() {
             override fun getCurrentState() = State.STARTED
-            override fun addObserver(observer: LifecycleObserver) = error("Should not observe.")
-            override fun removeObserver(observer: LifecycleObserver) = error("Should not observe.")
+            override fun addObserver(observer: LifecycleObserver) = fail("Should not observe.")
+            override fun removeObserver(observer: LifecycleObserver) = fail("Should not observe.")
         }
         lifecycle.awaitStarted()
     }
 
     @Test
-    fun `dispatches after start event`() = runBlockingTest {
+    fun `dispatches after start event`() = runTest(testDispatcher) {
         assertEquals(0, lifecycle.observerCount)
 
         val job = launch { lifecycle.awaitStarted() }
@@ -63,7 +56,7 @@ class LifecyclesTest {
     }
 
     @Test
-    fun `observer is removed if cancelled`() = runBlockingTest {
+    fun `observer is removed if cancelled`() = runTest(testDispatcher) {
         assertEquals(0, lifecycle.observerCount)
 
         val job = launch { lifecycle.awaitStarted() }

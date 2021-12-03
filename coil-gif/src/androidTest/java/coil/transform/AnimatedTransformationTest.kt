@@ -15,11 +15,13 @@ import coil.request.animatedTransformation
 import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AnimatedTransformationTest {
 
     private lateinit var context: Context
@@ -32,59 +34,53 @@ class AnimatedTransformationTest {
     }
 
     @Test
-    fun gifTransformationTest() {
-        val actual = runBlocking {
-            val decoderFactory = if (SDK_INT >= 28) {
-                ImageDecoderDecoder.Factory()
-            } else {
-                GifDecoder.Factory()
-            }
-            val imageRequest = ImageRequest.Builder(context)
-                .data("$SCHEME_FILE:///android_asset/animated.gif")
-                .animatedTransformation(RoundedCornersAnimatedTransformation())
-                .bitmapConfig(Bitmap.Config.ARGB_8888)
-                .decoderFactory(decoderFactory)
-                .build()
-            imageLoader.execute(imageRequest)
+    fun gifTransformationTest() = runTest {
+        val decoderFactory = if (SDK_INT >= 28) {
+            ImageDecoderDecoder.Factory()
+        } else {
+            GifDecoder.Factory()
         }
+        val imageRequest = ImageRequest.Builder(context)
+            .data("$SCHEME_FILE:///android_asset/animated.gif")
+            .animatedTransformation(RoundedCornersAnimatedTransformation())
+            .bitmapConfig(Bitmap.Config.ARGB_8888)
+            .decoderFactory(decoderFactory)
+            .build()
+        val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_gif_rounded.png")
         assertTrue(actual is SuccessResult)
         actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
-    fun heifTransformationTest() {
+    fun heifTransformationTest() = runTest {
         // Animated HEIF is only support on API 28+.
         assumeTrue(SDK_INT >= 28)
 
-        val actual = runBlocking {
-            val imageRequest = ImageRequest.Builder(context)
-                .data("$SCHEME_FILE:///android_asset/animated.heif")
-                .animatedTransformation(RoundedCornersAnimatedTransformation())
-                .bitmapConfig(Bitmap.Config.ARGB_8888)
-                .decoderFactory(ImageDecoderDecoder.Factory())
-                .build()
-            imageLoader.execute(imageRequest)
-        }
+        val imageRequest = ImageRequest.Builder(context)
+            .data("$SCHEME_FILE:///android_asset/animated.heif")
+            .animatedTransformation(RoundedCornersAnimatedTransformation())
+            .bitmapConfig(Bitmap.Config.ARGB_8888)
+            .decoderFactory(ImageDecoderDecoder.Factory())
+            .build()
+        val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_heif_rounded.png")
         assertTrue(actual is SuccessResult)
         actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
-    fun animatedWebpTransformationTest() {
+    fun animatedWebpTransformationTest() = runTest {
         // Animated WebP is only support on API 28+.
         assumeTrue(SDK_INT >= 28)
 
-        val actual = runBlocking {
-            val imageRequest = ImageRequest.Builder(context)
-                .data("$SCHEME_FILE:///android_asset/animated.webp")
-                .animatedTransformation(RoundedCornersAnimatedTransformation())
-                .bitmapConfig(Bitmap.Config.ARGB_8888)
-                .decoderFactory(ImageDecoderDecoder.Factory())
-                .build()
-            imageLoader.execute(imageRequest)
-        }
+        val imageRequest = ImageRequest.Builder(context)
+            .data("$SCHEME_FILE:///android_asset/animated.webp")
+            .animatedTransformation(RoundedCornersAnimatedTransformation())
+            .bitmapConfig(Bitmap.Config.ARGB_8888)
+            .decoderFactory(ImageDecoderDecoder.Factory())
+            .build()
+        val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_webp_rounded.png")
         assertTrue(actual is SuccessResult)
         actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)

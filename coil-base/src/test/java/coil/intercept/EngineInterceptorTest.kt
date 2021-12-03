@@ -18,7 +18,8 @@ import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.util.SystemCallbacks
 import coil.util.createRequest
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +28,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class EngineInterceptorTest {
 
@@ -38,25 +40,23 @@ class EngineInterceptorTest {
     }
 
     @Test
-    fun `applyTransformations - transformations convert drawable to bitmap`() {
+    fun `applyTransformations - transformations convert drawable to bitmap`() = runTest {
         val interceptor = newInterceptor()
         val drawable = ColorDrawable(Color.BLACK)
         val size = Size(100, 100)
-        val result = runBlocking {
-            interceptor.transform(
-                result = ExecuteResult(
-                    drawable = drawable,
-                    isSampled = false,
-                    dataSource = DataSource.MEMORY,
-                    diskCacheKey = null
-                ),
-                request = createRequest(context) {
-                    transformations(CircleCropTransformation())
-                },
-                options = Options(context, size = size),
-                eventListener = EventListener.NONE
-            )
-        }
+        val result = interceptor.transform(
+            result = ExecuteResult(
+                drawable = drawable,
+                isSampled = false,
+                dataSource = DataSource.MEMORY,
+                diskCacheKey = null
+            ),
+            request = createRequest(context) {
+                transformations(CircleCropTransformation())
+            },
+            options = Options(context, size = size),
+            eventListener = EventListener.NONE
+        )
 
         val resultDrawable = result.drawable
         assertTrue(resultDrawable is BitmapDrawable)
@@ -64,24 +64,22 @@ class EngineInterceptorTest {
     }
 
     @Test
-    fun `applyTransformations - empty transformations does not convert drawable to bitmap`() {
+    fun `applyTransformations - empty transformations does not convert drawable to bitmap`() = runTest {
         val interceptor = newInterceptor()
         val drawable = ColorDrawable(Color.BLACK)
-        val result = runBlocking {
-            interceptor.transform(
-                result = ExecuteResult(
-                    drawable = drawable,
-                    isSampled = false,
-                    dataSource = DataSource.MEMORY,
-                    diskCacheKey = null
-                ),
-                request = createRequest(context) {
-                    transformations(emptyList())
-                },
-                options = Options(context, size = Size(100, 100)),
-                eventListener = EventListener.NONE
-            )
-        }
+        val result = interceptor.transform(
+            result = ExecuteResult(
+                drawable = drawable,
+                isSampled = false,
+                dataSource = DataSource.MEMORY,
+                diskCacheKey = null
+            ),
+            request = createRequest(context) {
+                transformations(emptyList())
+            },
+            options = Options(context, size = Size(100, 100)),
+            eventListener = EventListener.NONE
+        )
 
         assertSame(drawable, result.drawable)
     }
