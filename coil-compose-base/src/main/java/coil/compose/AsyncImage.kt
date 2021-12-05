@@ -283,8 +283,8 @@ private fun computeContentSize(
     val dstHeight: Float
     when {
         constraints.hasFixedWidth && constraints.hasFixedHeight -> {
-            dstWidth = constraints.maxWidth.toFloat()
-            dstHeight = constraints.maxWidth.toFloat()
+            dstWidth = constraints.minWidth.toFloat()
+            dstHeight = constraints.minHeight.toFloat()
         }
         constraints.hasFixedWidth -> {
             dstWidth = constraints.minWidth.toFloat()
