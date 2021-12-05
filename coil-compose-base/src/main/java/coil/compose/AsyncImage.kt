@@ -222,6 +222,7 @@ fun AsyncImageScope.AsyncImageContent(
         modifier = if (contentSize != Size.Unspecified) {
             with(LocalDensity.current) {
                 Modifier
+                    // Apply `modifier` second to allow overriding `contentSize`.
                     .size(contentSize.toDpSize())
                     .then(modifier)
             }
