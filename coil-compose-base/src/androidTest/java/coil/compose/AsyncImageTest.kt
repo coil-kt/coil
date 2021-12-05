@@ -506,8 +506,6 @@ class AsyncImageTest {
 
     @Test
     fun intrinsicMeasurements() {
-        assumeSupportsCaptureToImage()
-
         composeTestRule.setContent {
             Layout(
                 content = {
@@ -538,10 +536,7 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        composeTestRule.onNodeWithTag(Image)
-            .assertIsDisplayed()
-            .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample)
+        composeTestRule.onNodeWithTag(Image).assertIsDisplayed()
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
