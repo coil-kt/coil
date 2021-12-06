@@ -13,17 +13,11 @@ import kotlin.coroutines.resume
 
 /** Suspend until [Lifecycle.getCurrentState] is at least [STARTED] */
 @MainThread
-internal suspend inline fun Lifecycle.awaitStarted() {
+internal suspend fun Lifecycle.awaitStarted() {
     // Fast path: we're already started.
     if (currentState.isAtLeast(STARTED)) return
 
     // Slow path: observe the lifecycle until we're started.
-    observeStarted()
-}
-
-/** Cannot be 'inline' due to a compiler bug. There is a test that guards against this bug. */
-@MainThread
-internal suspend fun Lifecycle.observeStarted() {
     var observer: LifecycleObserver? = null
     try {
         suspendCancellableCoroutine<Unit> { continuation ->
