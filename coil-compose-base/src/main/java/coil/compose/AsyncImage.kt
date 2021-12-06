@@ -285,9 +285,9 @@ private fun Constraints.toSize(): CoilSize {
 }
 
 private val AsyncImageScope.constraints: Constraints
-    @Stable get() = if (this is RealAsyncImageScope) parentScope.constraints else EmptyConstraints
+    @Stable get() = if (this is RealAsyncImageScope) parentScope.constraints else ZeroConstraints
 
-private val EmptyConstraints = Constraints(0, 0, 0, 0)
+private val ZeroConstraints = Constraints(0, 0, 0, 0)
 
 private class ConstraintsSizeResolver : SizeResolver {
 
