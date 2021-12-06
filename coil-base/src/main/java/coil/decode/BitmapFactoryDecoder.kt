@@ -99,7 +99,7 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
                 scale = options.scale
             )
 
-            // Only upscale the image if the request requests an exact size.
+            // Only upscale the image if the options require an exact size.
             if (options.allowInexactSize) {
                 scale = scale.coerceAtMost(1.0)
             }
