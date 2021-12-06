@@ -3,6 +3,7 @@ package coil.compose
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -20,13 +21,12 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.times
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Constraints.Companion.Infinity
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
 import coil.compose.AsyncImageScope.Companion.DefaultContent
-import coil.decode.DecodeUtils
 import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Scale
@@ -130,8 +130,7 @@ fun AsyncImage(
 
         // Draw the content.
         RealAsyncImageScope(
-            parent = this,
-            contentSize = computeContentSize(constraints, painter.intrinsicSize),
+            parentScope = this,
             painter = painter,
             contentDescription = contentDescription,
             alignment = alignment,
@@ -148,9 +147,6 @@ fun AsyncImage(
 @LayoutScopeMarker
 @Immutable
 interface AsyncImageScope : BoxScope {
-
-    /** The size [AsyncImageContent] will be drawn at. */
-    val contentSize: Size
 
     /** The painter that is drawn by [AsyncImageContent]. */
     val painter: AsyncImagePainter
@@ -193,22 +189,31 @@ fun AsyncImageScope.AsyncImageContent(
     contentScale: ContentScale = this.contentScale,
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
-) = Image(
-    painter = painter,
-    contentDescription = contentDescription,
-    modifier = if (contentSize.isSpecified) {
-        // Apply `modifier` second to allow overriding `size`.
-        Modifier
-            .size(with(LocalDensity.current) { contentSize.toDpSize() })
-            .then(modifier)
-    } else {
-        modifier
-    },
-    alignment = alignment,
-    contentScale = contentScale,
-    alpha = alpha,
-    colorFilter = colorFilter
-)
+) {
+    // Compute the intrinsic size of the content.
+    val contentSize = computeContentSize(
+        constraints = constraints,
+        srcSize = painter.intrinsicSize,
+        contentScale = contentScale
+    )
+
+    Image(
+        painter = painter,
+        contentDescription = contentDescription,
+        modifier = if (contentSize.isSpecified) {
+            // Apply `modifier` second to allow overriding `contentSize`.
+            Modifier
+                .size(with(LocalDensity.current) { contentSize.toDpSize() })
+                .then(modifier)
+        } else {
+            modifier
+        },
+        alignment = alignment,
+        contentScale = contentScale,
+        alpha = alpha,
+        colorFilter = colorFilter
+    )
+}
 
 @Stable
 private fun contentOf(
@@ -245,30 +250,24 @@ private fun updateRequest(request: ImageRequest, contentScale: ContentScale): Im
 }
 
 @Stable
-private fun computeContentSize(constraints: Constraints, intrinsicSize: Size): Size {
-    if (intrinsicSize.isUnspecified) {
+private fun computeContentSize(
+    constraints: Constraints,
+    srcSize: Size,
+    contentScale: ContentScale
+): Size {
+    if (constraints.isZero || srcSize.isUnspecified) {
         return Size.Unspecified
     }
 
-    val minWidth = constraints.minWidth
-    val minHeight = constraints.minHeight
-    if (minWidth == Infinity || minHeight == Infinity) {
+    // Only set a specific content size if at least one dimension is fixed.
+    val hasFixedAndBoundedWidth = constraints.hasFixedWidth && constraints.hasBoundedWidth
+    val hasFixedAndBoundedHeight = constraints.hasFixedHeight && constraints.hasBoundedHeight
+    if (!hasFixedAndBoundedWidth && !hasFixedAndBoundedHeight) {
         return Size.Unspecified
     }
 
-    val srcWidth = intrinsicSize.width
-    val srcHeight = intrinsicSize.height
-    val scale = DecodeUtils.computeSizeMultiplier(
-        srcWidth = srcWidth,
-        srcHeight = srcHeight,
-        dstWidth = minWidth.toFloat(),
-        dstHeight = minHeight.toFloat(),
-        scale = Scale.FILL
-    ).coerceAtLeast(1f)
-    return constraints.constrain(
-        width = scale * srcWidth,
-        height = scale * srcHeight
-    )
+    val dstSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
+    return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
 }
 
 @Stable
@@ -278,18 +277,17 @@ private fun ContentScale.toScale() = when (this) {
 }
 
 @Stable
-private fun Constraints.constrain(width: Float, height: Float) = Size(
-    width = width.coerceIn(minWidth.toFloat(), maxWidth.toFloat()),
-    height = height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
-)
-
-@Stable
 private fun Constraints.toSize(): CoilSize {
     if (isZero) return CoilSize.ORIGINAL
     val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original
     val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
     return CoilSize(width, height)
 }
+
+private val AsyncImageScope.constraints: Constraints
+    @Stable get() = if (this is RealAsyncImageScope) parentScope.constraints else ZeroConstraints
+
+private val ZeroConstraints = Constraints(0, 0, 0, 0)
 
 private class ConstraintsSizeResolver : SizeResolver {
 
@@ -303,12 +301,11 @@ private class ConstraintsSizeResolver : SizeResolver {
 }
 
 private data class RealAsyncImageScope(
-    private val parent: BoxScope,
-    override val contentSize: Size,
+    val parentScope: BoxWithConstraintsScope,
     override val painter: AsyncImagePainter,
     override val contentDescription: String?,
     override val alignment: Alignment,
     override val contentScale: ContentScale,
     override val alpha: Float,
     override val colorFilter: ColorFilter?,
-) : AsyncImageScope, BoxScope by parent
+) : AsyncImageScope, BoxScope by parentScope
