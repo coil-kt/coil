@@ -97,7 +97,7 @@ internal class EngineInterceptor(
     }
 
     /** Execute the [Fetcher], decode any data into a [Drawable], and apply any [Transformation]s. */
-    private suspend inline fun execute(
+    private suspend fun execute(
         request: ImageRequest,
         mappedData: Any,
         _options: Options,
@@ -145,7 +145,7 @@ internal class EngineInterceptor(
         return finalResult
     }
 
-    private suspend inline fun fetch(
+    private suspend fun fetch(
         components: ComponentRegistry,
         request: ImageRequest,
         mappedData: Any,
@@ -178,7 +178,7 @@ internal class EngineInterceptor(
         return fetchResult
     }
 
-    private suspend inline fun decode(
+    private suspend fun decode(
         fetchResult: SourceResult,
         components: ComponentRegistry,
         request: ImageRequest,
@@ -215,7 +215,7 @@ internal class EngineInterceptor(
 
     /** Apply any [Transformation]s and return an updated [ExecuteResult]. */
     @VisibleForTesting
-    internal suspend inline fun transform(
+    internal suspend fun transform(
         result: ExecuteResult,
         request: ImageRequest,
         options: Options,
