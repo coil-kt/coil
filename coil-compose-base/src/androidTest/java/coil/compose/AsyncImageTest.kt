@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -47,12 +46,10 @@ import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
 import coil.size.Scale
-import coil.size.Size
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -503,42 +500,6 @@ class AsyncImageTest {
             .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
-    }
-
-    @Ignore("Intrinsic measurements are not currently supported.")
-    @Test
-    fun intrinsicMeasurements() {
-        composeTestRule.setContent {
-            Layout(
-                content = {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(server.url("/image"))
-                            .size(Size.ORIGINAL)
-                            .build(),
-                        contentDescription = null,
-                        imageLoader = imageLoader,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .testTag(Image)
-                    )
-                },
-                measurePolicy = { measurables, constraints ->
-                    val placeables = measurables.map { measurable ->
-                        // This will throw an exception if using `SubcomposeLayout`.
-                        measurable.minIntrinsicWidth(100)
-                        measurable.measure(constraints)
-                    }
-                    layout(constraints.maxWidth, constraints.maxHeight) {
-                        placeables.forEach { it.placeRelative(0, 0) }
-                    }
-                }
-            )
-        }
-
-        waitForRequestComplete()
-
-        composeTestRule.onNodeWithTag(Image).assertIsDisplayed()
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
