@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
@@ -199,13 +200,11 @@ fun AsyncImageScope.AsyncImageContent(
     Image(
         painter = painter,
         contentDescription = contentDescription,
-        modifier = if (contentSize != Size.Unspecified) {
-            with(LocalDensity.current) {
-                Modifier
-                    // Apply `modifier` second to allow overriding `contentSize`.
-                    .size(contentSize.toDpSize())
-                    .then(modifier)
-            }
+        modifier = if (contentSize.isSpecified) {
+            // Apply `modifier` second to allow overriding `contentSize`.
+            Modifier
+                .size(with(LocalDensity.current) { contentSize.toDpSize() })
+                .then(modifier)
         } else {
             modifier
         },
