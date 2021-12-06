@@ -12,7 +12,7 @@ import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-internal suspend inline fun Call.await(): Response {
+internal suspend fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
         val callback = ContinuationCallback(this, continuation)
         enqueue(callback)
@@ -20,7 +20,7 @@ internal suspend inline fun Call.await(): Response {
     }
 }
 
-internal class ContinuationCallback(
+private class ContinuationCallback(
     private val call: Call,
     private val continuation: CancellableContinuation<Response>
 ) : Callback, CompletionHandler {
