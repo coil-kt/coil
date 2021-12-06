@@ -259,24 +259,15 @@ private fun computeContentSize(
         return Size.Unspecified
     }
 
-    val dstWidth: Float
-    val dstHeight: Float
-    when {
-        constraints.hasFixedWidth && constraints.hasFixedHeight -> {
-            dstWidth = constraints.minWidth.toFloat()
-            dstHeight = constraints.minHeight.toFloat()
-        }
-        constraints.hasFixedWidth -> {
-            dstWidth = constraints.minWidth.toFloat()
-            dstHeight = constraints.maxHeight.toFloat()
-        }
-        constraints.hasFixedHeight -> {
-            dstWidth = constraints.maxWidth.toFloat()
-            dstHeight = constraints.minHeight.toFloat()
-        }
-        else -> return Size.Unspecified
+    // Only set a specific content size if at least one dimension is fixed.
+    val hasFixedAndBoundedWidth = constraints.hasFixedWidth && constraints.hasBoundedWidth
+    val hasFixedAndBoundedHeight = constraints.hasFixedHeight && constraints.hasBoundedHeight
+    if (!hasFixedAndBoundedWidth && !hasFixedAndBoundedHeight) {
+        return Size.Unspecified
     }
-    return srcSize * contentScale.computeScaleFactor(srcSize, Size(dstWidth, dstHeight))
+
+    val dstSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
+    return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
 }
 
 @Stable
