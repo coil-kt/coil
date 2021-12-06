@@ -52,6 +52,7 @@ import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -504,6 +505,7 @@ class AsyncImageTest {
             .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
     }
 
+    @Ignore("Intrinsic measurements are not currently supported.")
     @Test
     fun intrinsicMeasurements() {
         composeTestRule.setContent {

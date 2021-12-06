@@ -1,7 +1,6 @@
 package coil.compose
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
@@ -124,40 +123,20 @@ fun AsyncImage(
     val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
 
-    // Only use `BoxWithConstraints` if necessary as it uses `SubcomposeLayout` internally, which
-    // doesn't support querying its intrinsic measurements. To work around this, we can use a
-    // standard `Box` if a custom `SizeResolver` has been set on the `ImageRequest`. I.e. setting
-    // `ImageRequest.Builder.size(Size.ORIGINAL)` will avoid using `BoxWithConstraints`.
-    val sizeResolver = request.sizeResolver
-    if (sizeResolver is ConstraintsSizeResolver) {
-        BoxWithConstraints(modifier, alignment) {
-            // Resolve the size for the image request.
-            sizeResolver.setConstraints(constraints)
+    BoxWithConstraints(modifier, alignment) {
+        // Resolve the size for the image request.
+        (request.sizeResolver as? ConstraintsSizeResolver)?.setConstraints(constraints)
 
-            // Draw the content.
-            RealAsyncImageScope(
-                boxScope = this,
-                painter = painter,
-                contentDescription = contentDescription,
-                alignment = alignment,
-                contentScale = contentScale,
-                alpha = alpha,
-                colorFilter = colorFilter
-            ).content(painter.state)
-        }
-    } else {
-        Box(modifier, alignment) {
-            // Draw the content.
-            RealAsyncImageScope(
-                boxScope = this,
-                painter = painter,
-                contentDescription = contentDescription,
-                alignment = alignment,
-                contentScale = contentScale,
-                alpha = alpha,
-                colorFilter = colorFilter
-            ).content(painter.state)
-        }
+        // Draw the content.
+        RealAsyncImageScope(
+            parentScope = this,
+            painter = painter,
+            contentDescription = contentDescription,
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+            colorFilter = colorFilter
+        ).content(painter.state)
     }
 }
 
@@ -210,6 +189,7 @@ fun AsyncImageScope.AsyncImageContent(
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
 ) {
+    // Compute the intrinsic size of the content.
     val contentSize = computeContentSize(
         constraints = constraints,
         srcSize = painter.intrinsicSize,
@@ -276,7 +256,7 @@ private fun computeContentSize(
     srcSize: Size,
     contentScale: ContentScale
 ): Size {
-    if (srcSize.isUnspecified || constraints.isZero) {
+    if (constraints.isZero || srcSize.isUnspecified) {
         return Size.Unspecified
     }
 
@@ -314,13 +294,8 @@ private fun Constraints.toSize(): CoilSize {
     return CoilSize(width, height)
 }
 
-
 private val AsyncImageScope.constraints: Constraints
-    @Stable get() = if (this is RealAsyncImageScope && boxScope is BoxWithConstraintsScope) {
-        boxScope.constraints
-    } else {
-        EmptyConstraints
-    }
+    @Stable get() = if (this is RealAsyncImageScope) parentScope.constraints else EmptyConstraints
 
 private val EmptyConstraints = Constraints(0, 0, 0, 0)
 
@@ -336,11 +311,11 @@ private class ConstraintsSizeResolver : SizeResolver {
 }
 
 private data class RealAsyncImageScope(
-    val boxScope: BoxScope,
+    val parentScope: BoxWithConstraintsScope,
     override val painter: AsyncImagePainter,
     override val contentDescription: String?,
     override val alignment: Alignment,
     override val contentScale: ContentScale,
     override val alpha: Float,
     override val colorFilter: ColorFilter?,
-) : AsyncImageScope, BoxScope by boxScope
+) : AsyncImageScope, BoxScope by parentScope
