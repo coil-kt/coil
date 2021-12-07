@@ -220,9 +220,7 @@ private fun contentOf(
     loading: @Composable (AsyncImageScope.(State.Loading) -> Unit)?,
     success: @Composable (AsyncImageScope.(State.Success) -> Unit)?,
     error: @Composable (AsyncImageScope.(State.Error) -> Unit)?,
-) = if (loading != null && success != null && error != null) {
-    DefaultContent
-} else {
+) = if (loading != null || success != null || error != null) {
     { state ->
         var draw = true
         when (state) {
@@ -233,6 +231,8 @@ private fun contentOf(
         }
         if (draw) AsyncImageContent()
     }
+} else {
+    DefaultContent
 }
 
 @Composable
