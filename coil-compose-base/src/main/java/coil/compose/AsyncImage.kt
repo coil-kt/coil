@@ -32,8 +32,8 @@ import coil.size.Dimension
 import coil.size.Scale
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 import coil.size.Size as CoilSize
 
 /**
@@ -277,11 +277,14 @@ private fun ContentScale.toScale() = when (this) {
 }
 
 @Stable
-private fun Constraints.toSize(): CoilSize {
-    if (isZero) return CoilSize.ORIGINAL
-    val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original
-    val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
-    return CoilSize(width, height)
+private fun Constraints.toSizeOrNull(): CoilSize? {
+    if (isZero) {
+        return null
+    } else {
+        val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original
+        val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
+        return CoilSize(width, height)
+    }
 }
 
 private val AsyncImageScope.constraints: Constraints
@@ -291,9 +294,9 @@ private val ZeroConstraints = Constraints(0, 0, 0, 0)
 
 private class ConstraintsSizeResolver : SizeResolver {
 
-    private val constraints = MutableStateFlow<Constraints?>(null)
+    private val constraints = MutableStateFlow(ZeroConstraints)
 
-    override suspend fun size() = constraints.filterNotNull().first().toSize()
+    override suspend fun size() = constraints.mapNotNull { it.toSizeOrNull() }.first()
 
     fun setConstraints(constraints: Constraints) {
         this.constraints.value = constraints
