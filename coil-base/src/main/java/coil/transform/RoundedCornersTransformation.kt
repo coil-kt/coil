@@ -22,8 +22,11 @@ import coil.util.safeConfig
 import kotlin.math.roundToInt
 
 /**
- * A [Transformation] that crops the image to fit the target's dimensions and rounds
- * the corners of the image.
+ * A [Transformation] that crops the image to fit the target's dimensions and rounds the corners of
+ * the image.
+ *
+ * If you're using Jetpack Compose, use `Modifier.clip(RoundedCornerShape(radius))` instead of this
+ * transformation as it's more efficient.
  *
  * @param topLeft The radius for the top left corner.
  * @param topRight The radius for the top right corner.
