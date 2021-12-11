@@ -4,7 +4,7 @@ object Library {
 
     // CORE
 
-    private const val COROUTINES_VERSION = "1.6.0-RC"
+    private const val COROUTINES_VERSION = "1.6.0-RC2"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.4.0"
@@ -29,7 +29,7 @@ object Library {
     const val COMPOSE_UI_TEST_JUNIT = "androidx.compose.ui:ui-test-junit4:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest:$COMPOSE_VERSION"
 
-    const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:0.20.2"
+    const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:0.21.4-beta"
 
     const val MATERIAL = "com.google.android.material:material:1.4.0"
 
