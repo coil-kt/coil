@@ -4,7 +4,7 @@ object Library {
 
     // CORE
 
-    private const val COROUTINES_VERSION = "1.6.0-RC2"
+    private const val COROUTINES_VERSION = "1.6.0-RC1"
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.4.0"

@@ -44,7 +44,6 @@ import coil.transition.CrossfadeTransition
 import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -146,7 +145,6 @@ class AsyncImagePainter internal constructor(
         return true
     }
 
-    @OptIn(InternalCoroutinesApi::class) // https://github.com/Kotlin/kotlinx.coroutines/issues/3078
     override fun onRemembered() {
         // If we're in inspection mode (preview) skip executing the image request
         // and set the state to loading.
