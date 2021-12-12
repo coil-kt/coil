@@ -5,7 +5,6 @@ package coil.compose
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.view.View
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -311,7 +310,7 @@ private fun Size.toSizeOrNull() = when {
 private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
 private val FakeTransitionTarget = object : TransitionTarget {
-    override val view: View get() = throw UnsupportedOperationException()
+    override val view get() = throw UnsupportedOperationException()
     override val drawable: Drawable? get() = null
 }
 
