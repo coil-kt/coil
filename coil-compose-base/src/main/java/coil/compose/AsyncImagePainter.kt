@@ -15,7 +15,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
@@ -53,9 +52,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlin.math.roundToInt
 import coil.size.Size as CoilSize
 
@@ -80,11 +77,9 @@ fun rememberAsyncImagePainter(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter {
     val request = requestOf(model)
-    requireSupportedData(request.data)
-    require(request.target == null) { "request.target must be null." }
+    assertRequestIsValid(request)
 
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
-    val painter = remember(scope) { AsyncImagePainter(scope, request, imageLoader) }
+    val painter = remember { AsyncImagePainter(request, imageLoader) }
     painter.request = request
     painter.imageLoader = imageLoader
     painter.filterQuality = filterQuality
@@ -98,7 +93,6 @@ fun rememberAsyncImagePainter(
  */
 @Stable
 class AsyncImagePainter internal constructor(
-    private val parentScope: CoroutineScope,
     request: ImageRequest,
     imageLoader: ImageLoader
 ) : Painter(), RememberObserver {
@@ -160,14 +154,14 @@ class AsyncImagePainter internal constructor(
         if (rememberScope != null) return
 
         // Create a new scope to observe state and execute requests while we're remembered.
-        val scope = parentScope + SupervisorJob(parentScope.coroutineContext.job)
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         rememberScope = scope
 
         // Observe the current request + request size and launch new requests as necessary.
         scope.launch {
             snapshotFlow { request }.collect { request ->
                 requestJob?.cancel()
-                requestJob = launch {
+                requestJob = scope.launch {
                     updateState(imageLoader.execute(updateRequest(request)).toState())
                 }
             }
@@ -285,11 +279,13 @@ class AsyncImagePainter internal constructor(
     }
 }
 
-private fun requireSupportedData(data: Any?) = when (data) {
-    is ImageBitmap -> unsupportedData("ImageBitmap")
-    is ImageVector -> unsupportedData("ImageVector")
-    is Painter -> unsupportedData("Painter")
-    else -> data
+private fun assertRequestIsValid(request: ImageRequest) {
+    when (request.data) {
+        is ImageBitmap -> unsupportedData("ImageBitmap")
+        is ImageVector -> unsupportedData("ImageVector")
+        is Painter -> unsupportedData("Painter")
+    }
+    require(request.target == null) { "request.target must be null." }
 }
 
 private fun unsupportedData(name: String): Nothing {
