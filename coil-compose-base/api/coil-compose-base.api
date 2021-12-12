@@ -1,5 +1,5 @@
 public final class coil/compose/AsyncImageKt {
-	public static final fun AsyncImage-HtA5bXE (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
+	public static final fun AsyncImage-HtA5bXE (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun AsyncImage-h7wOGxc (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
 	public static final fun AsyncImageContent (Lcoil/compose/AsyncImageScope;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Ljava/lang/String;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;II)V
 }
@@ -80,14 +80,14 @@ public abstract interface class coil/compose/AsyncImageScope : androidx/compose/
 }
 
 public final class coil/compose/AsyncImageScope$Companion {
-	public final fun getDefaultContent ()Lkotlin/jvm/functions/Function4;
+	public final fun getDefaultContent ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class coil/compose/ComposableSingletons$AsyncImageKt {
 	public static final field INSTANCE Lcoil/compose/ComposableSingletons$AsyncImageKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function4;
+	public static field lambda-1 Lkotlin/jvm/functions/Function3;
 	public fun <init> ()V
-	public final fun getLambda-1$coil_compose_base_release ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda-1$coil_compose_base_release ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class coil/compose/ImagePainterKt {

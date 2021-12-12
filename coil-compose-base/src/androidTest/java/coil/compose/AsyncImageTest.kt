@@ -388,7 +388,8 @@ class AsyncImageTest {
                 modifier = Modifier
                     .size(100.dp)
                     .testTag(Image)
-            ) { state ->
+            ) {
+                val state = painter.state
                 SideEffect {
                     when (index) {
                         0 -> {

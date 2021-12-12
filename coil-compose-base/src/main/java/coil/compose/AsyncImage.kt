@@ -115,7 +115,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    content: @Composable (AsyncImageScope.(State) -> Unit) = DefaultContent,
+    content: @Composable (AsyncImageScope.() -> Unit) = DefaultContent,
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
@@ -130,7 +130,7 @@ fun AsyncImage(
     }
 
     if (content === DefaultContent) {
-        // Fast path: don't recompose when `painter.state` changes.
+        // Fast path: skip creating the box and child scope.
         Image(
             painter = painter,
             contentDescription = contentDescription,
@@ -141,7 +141,7 @@ fun AsyncImage(
             colorFilter = colorFilter
         )
     } else {
-        // Slow path: recompose when `painter.state` changes and redraw the `content` composable.
+        // Slow path: create the box and child scope.
         Box(
             modifier = modifierWithConstraintsResolver,
             contentAlignment = alignment,
@@ -155,7 +155,7 @@ fun AsyncImage(
                 contentScale = contentScale,
                 alpha = alpha,
                 colorFilter = colorFilter
-            ).content(painter.state)
+            ).content()
         }
     }
 }
@@ -190,7 +190,7 @@ interface AsyncImageScope : BoxScope {
          * The default content composable only draws [AsyncImageContent] for all
          * [AsyncImagePainter] states.
          */
-        val DefaultContent: @Composable (AsyncImageScope.(State) -> Unit) = { AsyncImageContent() }
+        val DefaultContent: @Composable (AsyncImageScope.() -> Unit) = { AsyncImageContent() }
     }
 }
 
@@ -224,9 +224,9 @@ private fun contentOf(
     success: @Composable (AsyncImageScope.(State.Success) -> Unit)?,
     error: @Composable (AsyncImageScope.(State.Error) -> Unit)?,
 ) = if (loading != null || success != null || error != null) {
-    { state ->
+    {
         var draw = true
-        when (state) {
+        when (val state = painter.state) {
             is State.Loading -> if (loading != null) loading(state).also { draw = false }
             is State.Success -> if (success != null) success(state).also { draw = false }
             is State.Error -> if (error != null) error(state).also { draw = false }

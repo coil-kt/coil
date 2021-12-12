@@ -94,7 +94,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    content: @Composable (AsyncImageScope.(State) -> Unit) = DefaultContent,
+    content: @Composable (AsyncImageScope.() -> Unit) = DefaultContent,
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
