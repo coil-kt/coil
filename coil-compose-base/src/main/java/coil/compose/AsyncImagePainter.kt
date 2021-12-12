@@ -38,7 +38,6 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
-import coil.size.SizeResolver
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.transition.TransitionTarget
@@ -99,7 +98,7 @@ class AsyncImagePainter internal constructor(
 
     private var rememberScope: CoroutineScope? = null
     private var requestJob: Job? = null
-    private var drawSize = MutableStateFlow(Size.Zero)
+    private val drawSize = MutableStateFlow(Size.Zero)
 
     private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float by mutableStateOf(1f)
@@ -153,6 +152,9 @@ class AsyncImagePainter internal constructor(
         // Short circuit if we're already remembered.
         if (rememberScope != null) return
 
+        // Manually notify the child painter that we're remembered.
+        (painter as? RememberObserver)?.onForgotten()
+
         // Create a new scope to observe state and execute requests while we're remembered.
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         rememberScope = scope
@@ -169,13 +171,21 @@ class AsyncImagePainter internal constructor(
     }
 
     override fun onForgotten() {
+        clear()
+        (painter as? RememberObserver)?.onForgotten()
+    }
+
+    override fun onAbandoned() {
+        clear()
+        (painter as? RememberObserver)?.onAbandoned()
+    }
+
+    private fun clear() {
         rememberScope?.cancel()
         rememberScope = null
         requestJob?.cancel()
         requestJob = null
     }
-
-    override fun onAbandoned() = onForgotten()
 
     /** Update the [request] to work with [AsyncImagePainter]. */
     private fun updateRequest(request: ImageRequest): ImageRequest {
@@ -187,7 +197,8 @@ class AsyncImagePainter internal constructor(
             )
             .apply {
                 if (request.defined.sizeResolver == null) {
-                    size(DrawSizeResolver())
+                    // If no other size resolver is set, suspend until the canvas size is positive.
+                    size { drawSize.mapNotNull { it.toSizeOrNull() }.first() }
                 }
                 if (request.defined.precision != Precision.EXACT) {
                     precision(Precision.INEXACT)
@@ -196,27 +207,31 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
-    private fun updateState(currentState: State) {
-        val previousState = state
-        state = currentState
-        painter = getPainter(previousState, currentState)
+    private fun updateState(current: State) {
+        val previous = state
+        state = current
+        if (rememberScope != null) {
+            (previous.painter as? RememberObserver)?.onForgotten()
+            (current.painter as? RememberObserver)?.onRemembered()
+        }
+        painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
     }
 
-    /** Wrap the current state's painter in a [CrossfadePainter] if necessary and return it. */
-    private fun getPainter(previous: State, current: State): Painter? {
+    /** Create and return a [CrossfadePainter] if necessary. */
+    private fun maybeNewCrossfadePainter(previous: State, current: State): CrossfadePainter? {
         // We can only invoke the transition factory if the state is success or error.
         val result = when (current) {
             is State.Success -> current.result
             is State.Error -> current.result
-            else -> return current.painter
+            else -> return null
         }
 
         // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
         // a `CrossfadeTransformation`.
         val factory = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
         val transition = factory.create(newTransitionTarget(request.context), result)
-        return if (transition is CrossfadeTransition) {
-            CrossfadePainter(
+        if (transition is CrossfadeTransition) {
+            return CrossfadePainter(
                 start = (previous as? State.Loading)?.painter,
                 end = painter,
                 scale = request.scale,
@@ -225,7 +240,7 @@ class AsyncImagePainter internal constructor(
                 preferExactIntrinsicSize = transition.preferExactIntrinsicSize
             )
         } else {
-            current.painter
+            return null
         }
     }
 
@@ -239,12 +254,6 @@ class AsyncImagePainter internal constructor(
         is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
         is ColorDrawable -> ColorPainter(Color(color))
         else -> DrawablePainter(mutate())
-    }
-
-    /** Suspends until the draw size for this [AsyncImagePainter] is unspecified or positive. */
-    private inner class DrawSizeResolver : SizeResolver {
-
-        override suspend fun size() = drawSize.mapNotNull { it.toSizeOrNull() }.first()
     }
 
     /**
