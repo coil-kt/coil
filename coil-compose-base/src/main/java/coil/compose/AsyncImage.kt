@@ -127,17 +127,9 @@ fun AsyncImage(
     val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
 
-    // Avoid subcomposition by resolving the constraints with a layout modifier.
-    val sizeResolver = request.sizeResolver
-    val modifierWithConstraintsResolver = if (sizeResolver is ConstraintsSizeResolver) {
-        modifier.then(sizeResolver)
-    } else {
-        modifier
-    }
-
     // Draw the content.
     Box(
-        modifier = modifierWithConstraintsResolver,
+        modifier = modifier.constraintsResolver(request.sizeResolver),
         contentAlignment = alignment,
         propagateMinConstraints = true
     ) {
@@ -271,6 +263,14 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
             this.contentDescription = contentDescription
             this.role = Role.Image
         }
+    } else {
+        this
+    }
+}
+
+private fun Modifier.constraintsResolver(sizeResolver: SizeResolver): Modifier {
+    return if (sizeResolver is ConstraintsSizeResolver) {
+        then(sizeResolver)
     } else {
         this
     }
