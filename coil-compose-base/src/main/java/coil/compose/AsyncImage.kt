@@ -4,16 +4,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.LayoutScopeMarker
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
@@ -24,8 +20,6 @@ import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.layout.times
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
@@ -144,11 +138,11 @@ fun AsyncImage(
         // Slow path: recompose when `painter.state` changes and redraw the `content` composable.
         Box(
             modifier = modifier.then(constraintsModifier),
-            contentAlignment = alignment
+            contentAlignment = alignment,
+            propagateMinConstraints = true
         ) {
             RealAsyncImageScope(
                 parentScope = this,
-                constraintsModifier = constraintsModifier,
                 painter = painter,
                 contentDescription = contentDescription,
                 alignment = alignment,
@@ -211,10 +205,7 @@ fun AsyncImageScope.AsyncImageContent(
 ) = Image(
     painter = painter,
     contentDescription = contentDescription,
-    modifier = Modifier
-        // Apply `modifier` second to allow overriding `contentSize`.
-        .contentSize(this, painter.intrinsicSize, contentScale)
-        .then(modifier),
+    modifier = modifier,
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,
@@ -257,37 +248,6 @@ private fun updateRequest(
             }
         }
         .build()
-}
-
-@Stable
-private fun Modifier.contentSize(
-    scope: AsyncImageScope,
-    srcSize: Size,
-    contentScale: ContentScale
-): Modifier {
-    if (scope !is RealAsyncImageScope) {
-        return this
-    }
-
-    val constraints = scope.constraintsModifier.constraints.value
-    if (constraints.isZero || srcSize.isUnspecified) {
-        return this
-    }
-
-    // Only set a specific content size if at least one dimension is fixed.
-    val hasFixedAndBoundedWidth = constraints.hasFixedWidth && constraints.hasBoundedWidth
-    val hasFixedAndBoundedHeight = constraints.hasFixedHeight && constraints.hasBoundedHeight
-    if (!hasFixedAndBoundedWidth && !hasFixedAndBoundedHeight) {
-        return this
-    }
-
-    val dstSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
-    val contentSize = srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
-    return composed {
-        with(LocalDensity.current) {
-            size(contentSize.toDpSize())
-        }
-    }
 }
 
 @Stable
@@ -337,7 +297,6 @@ private class ConstraintsModifier : LayoutModifier {
 
 private data class RealAsyncImageScope(
     val parentScope: BoxScope,
-    val constraintsModifier: ConstraintsModifier,
     override val painter: AsyncImagePainter,
     override val contentDescription: String?,
     override val alignment: Alignment,
