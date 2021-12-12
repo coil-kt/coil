@@ -229,8 +229,8 @@ class AsyncImagePainter internal constructor(
         val transition = factory.create(FakeTransitionTarget, result)
         if (transition is CrossfadeTransition) {
             return CrossfadePainter(
-                start = (previous as? State.Loading)?.painter,
-                end = painter,
+                start = previous.painter.takeIf { previous is State.Loading },
+                end = current.painter,
                 scale = request.scale,
                 durationMillis = transition.durationMillis,
                 fadeStart = !(result is SuccessResult && result.isPlaceholderCached),
