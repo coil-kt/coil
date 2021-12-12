@@ -129,34 +129,21 @@ fun AsyncImage(
         modifier
     }
 
-    if (content === DefaultContent) {
-        // Fast path: skip creating the box and child scope.
-        Image(
+    // Draw the content.
+    Box(
+        modifier = modifierWithConstraintsResolver,
+        contentAlignment = alignment,
+        propagateMinConstraints = true
+    ) {
+        RealAsyncImageScope(
+            parentScope = this,
             painter = painter,
             contentDescription = contentDescription,
-            modifier = modifierWithConstraintsResolver,
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
             colorFilter = colorFilter
-        )
-    } else {
-        // Slow path: create the box and child scope.
-        Box(
-            modifier = modifierWithConstraintsResolver,
-            contentAlignment = alignment,
-            propagateMinConstraints = true
-        ) {
-            RealAsyncImageScope(
-                parentScope = this,
-                painter = painter,
-                contentDescription = contentDescription,
-                alignment = alignment,
-                contentScale = contentScale,
-                alpha = alpha,
-                colorFilter = colorFilter
-            ).content()
-        }
+        ).content()
     }
 }
 
