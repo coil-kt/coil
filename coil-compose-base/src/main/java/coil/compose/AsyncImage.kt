@@ -123,7 +123,7 @@ fun AsyncImage(
 
     // Avoid subcomposition by resolving the constraints with a layout modifier.
     val sizeResolver = request.sizeResolver
-    val modifierWithConstraints = if (sizeResolver is ConstraintsSizeResolver) {
+    val modifierWithConstraintsResolver = if (sizeResolver is ConstraintsSizeResolver) {
         modifier.then(sizeResolver)
     } else {
         modifier
@@ -134,7 +134,7 @@ fun AsyncImage(
         Image(
             painter = painter,
             contentDescription = contentDescription,
-            modifier = modifierWithConstraints,
+            modifier = modifierWithConstraintsResolver,
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
@@ -143,7 +143,7 @@ fun AsyncImage(
     } else {
         // Slow path: recompose when `painter.state` changes and redraw the `content` composable.
         Box(
-            modifier = modifierWithConstraints,
+            modifier = modifierWithConstraintsResolver,
             contentAlignment = alignment,
             propagateMinConstraints = true
         ) {
