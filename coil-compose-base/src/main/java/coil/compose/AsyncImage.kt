@@ -29,7 +29,6 @@ import coil.size.Dimension
 import coil.size.Scale
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import coil.size.Size as CoilSize
@@ -119,16 +118,23 @@ fun AsyncImage(
     content: @Composable (AsyncImageScope.(State) -> Unit) = DefaultContent,
 ) {
     // Create and execute the image request.
-    val constraintsModifier = remember { ConstraintsModifier() }
-    val request = updateRequest(requestOf(model), contentScale, constraintsModifier)
+    val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
+
+    // Avoid subcomposition by resolving the constraints with a layout modifier.
+    val sizeResolver = request.sizeResolver
+    val modifierWithConstraints = if (sizeResolver is ConstraintsSizeResolver) {
+        modifier.then(sizeResolver)
+    } else {
+        modifier
+    }
 
     if (content === DefaultContent) {
         // Fast path: don't recompose when `painter.state` changes.
         Image(
             painter = painter,
             contentDescription = contentDescription,
-            modifier = modifier.then(constraintsModifier),
+            modifier = modifierWithConstraints,
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
@@ -137,7 +143,7 @@ fun AsyncImage(
     } else {
         // Slow path: recompose when `painter.state` changes and redraw the `content` composable.
         Box(
-            modifier = modifier.then(constraintsModifier),
+            modifier = modifierWithConstraints,
             contentAlignment = alignment,
             propagateMinConstraints = true
         ) {
@@ -233,15 +239,11 @@ private fun contentOf(
 }
 
 @Composable
-private fun updateRequest(
-    request: ImageRequest,
-    contentScale: ContentScale,
-    constraintsModifier: ConstraintsModifier
-): ImageRequest {
+private fun updateRequest(request: ImageRequest, contentScale: ContentScale): ImageRequest {
     return request.newBuilder()
         .apply {
             if (request.defined.sizeResolver == null) {
-                size(remember { ConstraintsSizeResolver(constraintsModifier) })
+                size(remember { ConstraintsSizeResolver() })
             }
             if (request.defined.scale == null) {
                 scale(contentScale.toScale())
@@ -265,17 +267,11 @@ private fun Constraints.toSizeOrNull() = when {
     )
 }
 
-/** Uses the [Constraints] from [modifier] to determine the image request size. */
-private class ConstraintsSizeResolver(private val modifier: ConstraintsModifier) : SizeResolver {
-
-    override suspend fun size() = modifier.constraints.mapNotNull { it.toSizeOrNull() }.first()
-}
-
-/** Gets and caches the current [Constraints]. */
-private class ConstraintsModifier : LayoutModifier {
+private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
-    val constraints: StateFlow<Constraints> get() = _constraints
+
+    override suspend fun size() = _constraints.mapNotNull { it.toSizeOrNull() }.first()
 
     override fun MeasureScope.measure(
         measurable: Measurable,
