@@ -209,11 +209,13 @@ class AsyncImagePainter internal constructor(
     private fun updateState(current: State) {
         val previous = state
         state = current
+        painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
+
+        // Manually forget and remember the old/new painters if we're already remembered.
         if (rememberScope != null) {
             (previous.painter as? RememberObserver)?.onForgotten()
             (current.painter as? RememberObserver)?.onRemembered()
         }
-        painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
     }
 
     /** Create and return a [CrossfadePainter] if requested. */
