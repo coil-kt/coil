@@ -142,7 +142,7 @@ class AsyncImagePainter internal constructor(
         // and set the state to loading.
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
-            state = State.Loading(request.placeholder?.toPainter())
+            updateState(State.Loading(request.placeholder?.toPainter()))
             return
         }
 
