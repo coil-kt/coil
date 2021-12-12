@@ -42,6 +42,7 @@ import coil.size.Dimension
 import coil.size.Scale
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import coil.size.Size as CoilSize
@@ -293,7 +294,7 @@ private fun Modifier.contentSize(
         return this
     }
 
-    val constraints = scope.constraintsModifier.currentConstraints.value
+    val constraints = scope.constraintsModifier.constraints.value
     if (constraints.isZero || srcSize.isUnspecified) {
         return this
     }
@@ -332,21 +333,21 @@ private fun Constraints.toSizeOrNull() = when {
 /** Uses the [Constraints] from [modifier] to determine the image request size. */
 private class ConstraintsSizeResolver(private val modifier: ConstraintsModifier) : SizeResolver {
 
-    override suspend fun size() =
-        modifier.currentConstraints.mapNotNull { it.toSizeOrNull() }.first()
+    override suspend fun size() = modifier.constraints.mapNotNull { it.toSizeOrNull() }.first()
 }
 
 /** Gets and caches the current [Constraints]. */
 private class ConstraintsModifier : LayoutModifier {
 
-    val currentConstraints = MutableStateFlow(ZeroConstraints)
+    private val _constraints = MutableStateFlow(ZeroConstraints)
+    val constraints: StateFlow<Constraints> get() = _constraints
 
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints
     ): MeasureResult {
         // Set the current constraints.
-        currentConstraints.value = constraints
+        _constraints.value = constraints
 
         // Measure and layout the content.
         val placeable = measurable.measure(constraints)
