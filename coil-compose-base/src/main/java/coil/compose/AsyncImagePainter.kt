@@ -305,13 +305,13 @@ private fun unsupportedData(name: String): Nothing {
     )
 }
 
+private val Size.isPositive get() = width >= 0.5 && height >= 0.5
+
 private fun Size.toSizeOrNull() = when {
     isUnspecified -> CoilSize.ORIGINAL
     isPositive -> CoilSize(width.roundToInt(), height.roundToInt())
     else -> null
 }
-
-private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
 private val FakeTransitionTarget = object : TransitionTarget {
     override val view get() = throw UnsupportedOperationException()
