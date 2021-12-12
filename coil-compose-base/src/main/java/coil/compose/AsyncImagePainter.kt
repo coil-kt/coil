@@ -155,8 +155,10 @@ class AsyncImagePainter internal constructor(
             return
         }
 
-        // Create a new scope to observe state and execute requests while we're remembered.
+        // Short circuit if we're already remembered.
         if (rememberScope != null) return
+
+        // Create a new scope to observe state and execute requests while we're remembered.
         val scope = parentScope + SupervisorJob(parentScope.coroutineContext.job)
         rememberScope = scope
 

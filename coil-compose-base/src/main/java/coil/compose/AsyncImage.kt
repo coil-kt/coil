@@ -137,7 +137,7 @@ fun AsyncImage(
     val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
 
     if (content === DefaultContent) {
-        // Fast path: don't recompose for each AsyncImagePainter state change.
+        // Fast path: don't recompose when `painter.state` changes.
         Layout(
             modifier = modifier
                 .then(constraintsModifier)
@@ -155,7 +155,7 @@ fun AsyncImage(
             }
         )
     } else {
-        // Slow path: recompose for each AsyncImagePainter state change.
+        // Slow path: recompose when `painter.state` changes and draw the custom `content` composable.
         Box(
             modifier = modifier.then(constraintsModifier),
             contentAlignment = alignment
