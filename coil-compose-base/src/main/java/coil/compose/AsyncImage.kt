@@ -155,7 +155,7 @@ fun AsyncImage(
             }
         )
     } else {
-        // Slow path: recompose when `painter.state` changes and draw the custom `content` composable.
+        // Slow path: recompose when `painter.state` changes and redraw the `content` composable.
         Box(
             modifier = modifier.then(constraintsModifier),
             contentAlignment = alignment
