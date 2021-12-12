@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
-import coil.compose.AsyncImagePainter.State
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -209,8 +208,17 @@ class AsyncImagePainter internal constructor(
         painter = getPainter(previousState, currentState)
     }
 
+    /** Wrap the current state's painter in a [CrossfadePainter] if necessary and return it. */
     private fun getPainter(previous: State, current: State): Painter? {
-        val result = current.result ?: return current.painter
+        // We can only invoke the transition factory if the state is success or error.
+        val result = when (current) {
+            is State.Success -> current.result
+            is State.Error -> current.result
+            else -> return current.painter
+        }
+
+        // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
+        // a `CrossfadeTransformation`.
         val factory = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
         val transition = factory.create(newTransitionTarget(request.context), result)
         return if (transition is CrossfadeTransition) {
@@ -290,13 +298,6 @@ private fun unsupportedData(name: String): Nothing {
             "use androidx.compose.foundation.Image."
     )
 }
-
-private val State.result: ImageResult?
-    get() = when (this) {
-        is State.Success -> result
-        is State.Error -> result
-        else -> null
-    }
 
 private fun Size.toSizeOrNull() = when {
     isUnspecified -> CoilSize.ORIGINAL
