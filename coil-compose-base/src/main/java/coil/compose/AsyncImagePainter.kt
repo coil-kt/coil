@@ -107,10 +107,10 @@ class AsyncImagePainter internal constructor(
     private var requestJob: Job? = null
     private var drawSize = MutableStateFlow(Size.Zero)
 
+    private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float by mutableStateOf(1f)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
-    internal var painter: Painter? by mutableStateOf(null)
     internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
 
