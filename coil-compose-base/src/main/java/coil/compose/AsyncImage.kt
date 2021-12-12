@@ -281,10 +281,7 @@ private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
         // Measure and layout the content.
         val placeable = measurable.measure(constraints)
-        return layout(
-            width = constraints.maxWidth,
-            height = constraints.maxHeight
-        ) {
+        return layout(placeable.width, placeable.height) {
             placeable.place(0, 0)
         }
     }
