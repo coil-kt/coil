@@ -211,18 +211,16 @@ class AsyncImagePainter internal constructor(
         else -> DrawablePainter(mutate())
     }
 
+    private fun Size.toSizeOrNull() = when {
+        isUnspecified -> CoilSize.ORIGINAL
+        isPositive -> CoilSize(width.roundToInt(), height.roundToInt())
+        else -> null
+    }
+
     /** Suspends until the draw size for this [AsyncImagePainter] is unspecified or positive. */
     private inner class DrawSizeResolver : SizeResolver {
 
-        override suspend fun size() = drawSize
-            .mapNotNull { size ->
-                when {
-                    size.isUnspecified -> CoilSize.ORIGINAL
-                    size.isPositive -> CoilSize(size.width.roundToInt(), size.height.roundToInt())
-                    else -> null
-                }
-            }
-            .first()
+        override suspend fun size() = drawSize.mapNotNull { it.toSizeOrNull() }.first()
     }
 
     /**
@@ -258,9 +256,8 @@ class AsyncImagePainter internal constructor(
 }
 
 /**
- * Allows us to observe the current [AsyncImagePainter.painter]. This function allows us to
- * minimize the amount of recomposition needed such that this function only needs to be restarted
- * when the [AsyncImagePainter.state] changes.
+ * Observer the [AsyncImagePainter]'s state and update [AsyncImagePainter.painter] when it changes.
+ * This function is invoked each time the painter's state changes.
  */
 @Composable
 private fun updatePainter(

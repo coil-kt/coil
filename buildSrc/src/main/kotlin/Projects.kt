@@ -51,7 +51,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
         }
         kotlinOptions {
             jvmTarget = "1.8"
-            allWarningsAsErrors = true
+            allWarningsAsErrors = false
 
             val arguments = mutableListOf(
                 // https://kotlinlang.org/docs/compiler-reference.html#progressive
