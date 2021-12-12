@@ -2,7 +2,6 @@
 
 package coil.compose
 
-import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -39,7 +38,6 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
 import coil.transition.CrossfadeTransition
-import coil.transition.Transition
 import coil.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineScope
@@ -229,7 +227,7 @@ class AsyncImagePainter internal constructor(
         // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
         // a `CrossfadeTransformation`.
         val factory = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
-        val transition = factory.create(newTransitionTarget(request.context), result)
+        val transition = factory.create(FakeTransitionTarget, result)
         if (transition is CrossfadeTransition) {
             return CrossfadePainter(
                 start = (previous as? State.Loading)?.painter,
@@ -312,9 +310,8 @@ private fun Size.toSizeOrNull() = when {
 
 private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
-/** Create a fake [TransitionTarget] so we can call [Transition.Factory.create] */
-private fun newTransitionTarget(context: Context) = object : TransitionTarget {
-    override val view: View get() = View(context)
+private val FakeTransitionTarget = object : TransitionTarget {
+    override val view: View get() = throw UnsupportedOperationException()
     override val drawable: Drawable? get() = null
 }
 
