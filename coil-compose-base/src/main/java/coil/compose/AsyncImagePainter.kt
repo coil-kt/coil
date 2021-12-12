@@ -150,7 +150,7 @@ class AsyncImagePainter internal constructor(
         if (rememberScope != null) return
 
         // Manually notify the child painter that we're remembered.
-        (painter as? RememberObserver)?.onForgotten()
+        (painter as? RememberObserver)?.onRemembered()
 
         // Create a new scope to observe state and execute requests while we're remembered.
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
