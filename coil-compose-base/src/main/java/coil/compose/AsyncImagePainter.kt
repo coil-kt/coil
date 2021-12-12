@@ -214,7 +214,7 @@ class AsyncImagePainter internal constructor(
         painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
     }
 
-    /** Create and return a [CrossfadePainter] if necessary. */
+    /** Create and return a [CrossfadePainter] if requested. */
     private fun maybeNewCrossfadePainter(previous: State, current: State): CrossfadePainter? {
         // We can only invoke the transition factory if the state is success or error.
         val result = when (current) {
