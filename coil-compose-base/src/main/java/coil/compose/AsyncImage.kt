@@ -11,10 +11,10 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
@@ -131,22 +131,15 @@ fun AsyncImage(
     content: @Composable (AsyncImageScope.(State) -> Unit) = DefaultContent,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(requestOf(model), contentScale)
+    val constraintsModifier = remember { ConstraintsModifier() }
+    val request = updateRequest(requestOf(model), contentScale, constraintsModifier)
     val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
 
-    // Avoid subcomposition by resolving the constraints using a layout modifier.
-    val sizeResolver = request.sizeResolver
-    val modifierWithConstraintsResolver = if (sizeResolver is ConstraintsSizeResolver) {
-        modifier.then(sizeResolver)
-    } else {
-        modifier
-    }
-
-    // Draw the content.
     if (content === DefaultContent) {
         // Fast path: don't recompose for each AsyncImagePainter state change.
         Layout(
-            modifier = modifierWithConstraintsResolver
+            modifier = modifier
+                .then(constraintsModifier)
                 .contentDescription(contentDescription)
                 .clipToBounds()
                 .paint(
@@ -163,11 +156,12 @@ fun AsyncImage(
     } else {
         // Slow path: recompose for each AsyncImagePainter state change.
         Box(
-            modifier = modifierWithConstraintsResolver,
+            modifier = modifier.then(constraintsModifier),
             contentAlignment = alignment
         ) {
             RealAsyncImageScope(
                 parentScope = this,
+                constraintsModifier = constraintsModifier,
                 painter = painter,
                 contentDescription = contentDescription,
                 alignment = alignment,
@@ -227,32 +221,18 @@ fun AsyncImageScope.AsyncImageContent(
     contentScale: ContentScale = this.contentScale,
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
-) {
-    // Compute the intrinsic size of the content.
-    /*val contentSize = computeContentSize(
-        constraints = constraints,
-        srcSize = painter.intrinsicSize,
-        contentScale = contentScale
-    )*/
-    val contentSize = Size.Unspecified
-
-    Image(
-        painter = painter,
-        contentDescription = contentDescription,
-        modifier = if (contentSize.isSpecified) {
-            // Apply `modifier` second to allow overriding `contentSize`.
-            Modifier
-                .size(with(LocalDensity.current) { contentSize.toDpSize() })
-                .then(modifier)
-        } else {
-            modifier
-        },
-        alignment = alignment,
-        contentScale = contentScale,
-        alpha = alpha,
-        colorFilter = colorFilter
-    )
-}
+) = Image(
+    painter = painter,
+    contentDescription = contentDescription,
+    modifier = Modifier
+        // Apply `modifier` second to allow overriding `contentSize`.
+        .contentSize(this, painter.intrinsicSize, contentScale)
+        .then(modifier),
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter
+)
 
 @Stable
 private fun contentOf(
@@ -286,11 +266,15 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
 }
 
 @Composable
-private fun updateRequest(request: ImageRequest, contentScale: ContentScale): ImageRequest {
+private fun updateRequest(
+    request: ImageRequest,
+    contentScale: ContentScale,
+    constraintsModifier: ConstraintsModifier
+): ImageRequest {
     return request.newBuilder()
         .apply {
             if (request.defined.sizeResolver == null) {
-                size(remember { ConstraintsSizeResolver() })
+                size(remember { ConstraintsSizeResolver(constraintsModifier) })
             }
             if (request.defined.scale == null) {
                 scale(contentScale.toScale())
@@ -300,24 +284,34 @@ private fun updateRequest(request: ImageRequest, contentScale: ContentScale): Im
 }
 
 @Stable
-private fun computeContentSize(
-    constraints: Constraints,
+private fun Modifier.contentSize(
+    scope: AsyncImageScope,
     srcSize: Size,
     contentScale: ContentScale
-): Size {
+): Modifier {
+    if (scope !is RealAsyncImageScope) {
+        return this
+    }
+
+    val constraints = scope.constraintsModifier.currentConstraints.value
     if (constraints.isZero || srcSize.isUnspecified) {
-        return Size.Unspecified
+        return this
     }
 
     // Only set a specific content size if at least one dimension is fixed.
     val hasFixedAndBoundedWidth = constraints.hasFixedWidth && constraints.hasBoundedWidth
     val hasFixedAndBoundedHeight = constraints.hasFixedHeight && constraints.hasBoundedHeight
     if (!hasFixedAndBoundedWidth && !hasFixedAndBoundedHeight) {
-        return Size.Unspecified
+        return this
     }
 
     val dstSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
-    return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
+    val contentSize = srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
+    return composed {
+        with(LocalDensity.current) {
+            size(contentSize.toDpSize())
+        }
+    }
 }
 
 @Stable
@@ -335,18 +329,24 @@ private fun Constraints.toSizeOrNull() = when {
     )
 }
 
-private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
+/** Uses the [Constraints] from [modifier] to determine the image request size. */
+private class ConstraintsSizeResolver(private val modifier: ConstraintsModifier) : SizeResolver {
 
-    private val constraintsFlow = MutableStateFlow(ZeroConstraints)
+    override suspend fun size() =
+        modifier.currentConstraints.mapNotNull { it.toSizeOrNull() }.first()
+}
 
-    override suspend fun size() = constraintsFlow.mapNotNull { it.toSizeOrNull() }.first()
+/** Gets and caches the current [Constraints]. */
+private class ConstraintsModifier : LayoutModifier {
+
+    val currentConstraints = MutableStateFlow(ZeroConstraints)
 
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints
     ): MeasureResult {
         // Set the current constraints.
-        constraintsFlow.value = constraints
+        currentConstraints.value = constraints
 
         // Measure and layout the content.
         val placeable = measurable.measure(constraints)
@@ -361,6 +361,7 @@ private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
 private data class RealAsyncImageScope(
     val parentScope: BoxScope,
+    val constraintsModifier: ConstraintsModifier,
     override val painter: AsyncImagePainter,
     override val contentDescription: String?,
     override val alignment: Alignment,
