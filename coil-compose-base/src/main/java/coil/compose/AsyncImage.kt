@@ -1,6 +1,5 @@
 package coil.compose
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.LayoutScopeMarker
@@ -10,16 +9,23 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
@@ -194,14 +200,20 @@ fun AsyncImageScope.AsyncImageContent(
     contentScale: ContentScale = this.contentScale,
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
-) = Image(
-    painter = painter,
-    contentDescription = contentDescription,
-    modifier = modifier,
-    alignment = alignment,
-    contentScale = contentScale,
-    alpha = alpha,
-    colorFilter = colorFilter
+) = Layout(
+    modifier = modifier
+        .contentDescription(contentDescription)
+        .clipToBounds()
+        .paint(
+            painter = painter,
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+            colorFilter = colorFilter
+        ),
+    measurePolicy = { _, constraints ->
+        layout(constraints.minWidth, constraints.minHeight) {}
+    }
 )
 
 @Stable
@@ -251,6 +263,17 @@ private fun Constraints.toSizeOrNull() = when {
         width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original,
         height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
     )
+}
+
+private fun Modifier.contentDescription(contentDescription: String?): Modifier {
+    return if (contentDescription != null) {
+        semantics {
+            this.contentDescription = contentDescription
+            this.role = Role.Image
+        }
+    } else {
+        this
+    }
 }
 
 private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
