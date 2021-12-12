@@ -12,8 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
@@ -22,17 +20,12 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.times
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
@@ -138,21 +131,14 @@ fun AsyncImage(
 
     if (content === DefaultContent) {
         // Fast path: don't recompose when `painter.state` changes.
-        Layout(
-            modifier = modifier
-                .then(constraintsModifier)
-                .contentDescription(contentDescription)
-                .clipToBounds()
-                .paint(
-                    painter = painter,
-                    alignment = alignment,
-                    contentScale = contentScale,
-                    alpha = alpha,
-                    colorFilter = colorFilter
-                ),
-            measurePolicy = { _, constraints ->
-                layout(constraints.minWidth, constraints.minHeight) {}
-            }
+        Image(
+            painter = painter,
+            contentDescription = contentDescription,
+            modifier = modifier.then(constraintsModifier),
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+            colorFilter = colorFilter
         )
     } else {
         // Slow path: recompose when `painter.state` changes and redraw the `content` composable.
@@ -253,17 +239,6 @@ private fun contentOf(
     }
 } else {
     DefaultContent
-}
-
-private fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    return if (contentDescription != null) {
-        semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        this
-    }
 }
 
 @Composable
