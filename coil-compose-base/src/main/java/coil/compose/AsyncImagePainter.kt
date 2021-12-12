@@ -2,9 +2,11 @@
 
 package coil.compose
 
+import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.view.View
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -33,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.State
-import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -41,6 +42,8 @@ import coil.request.SuccessResult
 import coil.size.Precision
 import coil.size.SizeResolver
 import coil.transition.CrossfadeTransition
+import coil.transition.Transition
+import coil.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -88,7 +91,6 @@ fun rememberAsyncImagePainter(
     painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
     painter.onRemembered() // Invoke this manually so `painter.state` is up to date immediately.
-    updatePainter(painter, request, imageLoader)
     return painter
 }
 
@@ -167,7 +169,7 @@ class AsyncImagePainter internal constructor(
             snapshotFlow { request }.collect { request ->
                 requestJob?.cancel()
                 requestJob = launch {
-                    state = imageLoader.execute(updateRequest(request)).toState()
+                    updateState(imageLoader.execute(updateRequest(request)).toState())
                 }
             }
         }
@@ -187,7 +189,7 @@ class AsyncImagePainter internal constructor(
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
-                    state = State.Loading(placeholder?.toPainter())
+                    updateState(State.Loading(placeholder?.toPainter()))
                 }
             )
             .apply {
@@ -201,6 +203,30 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
+    private fun updateState(currentState: State) {
+        val previousState = state
+        state = currentState
+        painter = getPainter(previousState, currentState)
+    }
+
+    private fun getPainter(previous: State, current: State): Painter? {
+        val result = current.result ?: return current.painter
+        val factory = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
+        val transition = factory.create(newTransitionTarget(request.context), result)
+        return if (transition is CrossfadeTransition) {
+            CrossfadePainter(
+                start = (previous as? State.Loading)?.painter,
+                end = painter,
+                scale = request.scale,
+                durationMillis = transition.durationMillis,
+                fadeStart = result is SuccessResult && !result.isPlaceholderCached,
+                preferExactIntrinsicSize = transition.preferExactIntrinsicSize
+            )
+        } else {
+            current.painter
+        }
+    }
+
     private fun ImageResult.toState() = when (this) {
         is SuccessResult -> State.Success(drawable.toPainter(), this)
         is ErrorResult -> State.Error(drawable?.toPainter(), this)
@@ -211,12 +237,6 @@ class AsyncImagePainter internal constructor(
         is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
         is ColorDrawable -> ColorPainter(Color(color))
         else -> DrawablePainter(mutate())
-    }
-
-    private fun Size.toSizeOrNull() = when {
-        isUnspecified -> CoilSize.ORIGINAL
-        isPositive -> CoilSize(width.roundToInt(), height.roundToInt())
-        else -> null
     }
 
     /** Suspends until the draw size for this [AsyncImagePainter] is unspecified or positive. */
@@ -257,52 +277,6 @@ class AsyncImagePainter internal constructor(
     }
 }
 
-/**
- * Observer the [AsyncImagePainter]'s state and update [AsyncImagePainter.painter] when it changes.
- * This function is invoked each time the painter's state changes.
- */
-@Composable
-private fun updatePainter(
-    imagePainter: AsyncImagePainter,
-    request: ImageRequest,
-    imageLoader: ImageLoader
-) {
-    // This may look like a useless remember, but this allows any painter instances
-    // to receive remember events (if it implements RememberObserver). Do not remove.
-    val state = imagePainter.state
-    val painter = remember(state) { state.painter }
-
-    // Short circuit if the crossfade transition isn't set.
-    // Check `imageLoader.defaults.transitionFactory` specifically as the default isn't set
-    // until the request is executed.
-    val transition = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
-    if (transition !is CrossfadeTransition.Factory) {
-        imagePainter.painter = painter
-        return
-    }
-
-    // Keep track of the most recent loading painter to crossfade from it.
-    val loading = remember(request) { ValueHolder<Painter?>(null) }
-    if (state is State.Loading) loading.value = state.painter
-
-    // Short circuit if the request isn't successful or if it's returned by the memory cache.
-    if (state !is State.Success || state.result.dataSource == DataSource.MEMORY_CACHE) {
-        imagePainter.painter = painter
-        return
-    }
-
-    // Set the crossfade painter.
-    imagePainter.painter = rememberCrossfadePainter(
-        key = state,
-        start = loading.value,
-        end = painter,
-        scale = request.scale,
-        durationMillis = transition.durationMillis,
-        fadeStart = !state.result.isPlaceholderCached,
-        preferExactIntrinsicSize = transition.preferExactIntrinsicSize
-    )
-}
-
 private fun requireSupportedData(data: Any?) = when (data) {
     is ImageBitmap -> unsupportedData("ImageBitmap")
     is ImageVector -> unsupportedData("ImageVector")
@@ -317,10 +291,26 @@ private fun unsupportedData(name: String): Nothing {
     )
 }
 
+private val State.result: ImageResult?
+    get() = when (this) {
+        is State.Success -> result
+        is State.Error -> result
+        else -> null
+    }
+
+private fun Size.toSizeOrNull() = when {
+    isUnspecified -> CoilSize.ORIGINAL
+    isPositive -> CoilSize(width.roundToInt(), height.roundToInt())
+    else -> null
+}
+
 private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
-/** A simple mutable value holder that avoids recomposition. */
-private class ValueHolder<T>(@JvmField var value: T)
+/** Create a fake [TransitionTarget] so we can call [Transition.Factory.create] */
+private fun newTransitionTarget(context: Context) = object : TransitionTarget {
+    override val view: View get() = View(context)
+    override val drawable: Drawable? get() = null
+}
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
