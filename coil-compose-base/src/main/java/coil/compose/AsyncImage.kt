@@ -286,7 +286,7 @@ private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
         measurable: Measurable,
         constraints: Constraints
     ): MeasureResult {
-        // Set the current constraints.
+        // Cache the current constraints.
         _constraints.value = constraints
 
         // Measure and layout the content.
