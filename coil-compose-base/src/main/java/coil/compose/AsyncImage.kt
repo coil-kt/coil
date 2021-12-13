@@ -410,18 +410,16 @@ private data class ContentSizeModifier(
             }
         }
 
-        val intrinsicWidth = if (intrinsicSize.width.isFinite()) {
-            intrinsicSize.width.roundToInt()
+        val constrainedWidth = if (intrinsicSize.width.isFinite()) {
+            constraints.constrainWidth(intrinsicSize.width.roundToInt())
         } else {
             constraints.minWidth
         }
-        val intrinsicHeight = if (intrinsicSize.height.isFinite()) {
-            intrinsicSize.height.roundToInt()
+        val constrainedHeight = if (intrinsicSize.height.isFinite()) {
+            constraints.constrainHeight(intrinsicSize.height.roundToInt())
         } else {
             constraints.minHeight
         }
-        val constrainedWidth = constraints.constrainWidth(intrinsicWidth)
-        val constrainedHeight = constraints.constrainHeight(intrinsicHeight)
         val constrainedSize = Size(constrainedWidth.toFloat(), constrainedHeight.toFloat())
 
         val scaledSize = calculateScaledSize(constrainedSize)
