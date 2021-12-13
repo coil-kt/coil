@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
 import coil.request.ErrorResult
@@ -312,4 +314,15 @@ private fun Size.toSizeOrNull() = when {
 private val FakeTransitionTarget = object : TransitionTarget {
     override val view get() = throw UnsupportedOperationException()
     override val drawable: Drawable? get() = null
+}
+
+/** Create an [ImageRequest] from the [model]. */
+@Composable
+@ReadOnlyComposable
+internal fun requestOf(model: Any?): ImageRequest {
+    if (model is ImageRequest) {
+        return model
+    } else {
+        return ImageRequest.Builder(LocalContext.current).data(model).build()
+    }
 }
