@@ -198,6 +198,7 @@ fun AsyncImageScope.AsyncImageContent(
         .clipToBounds()
         .paint(
             painter = painter,
+            sizeToIntrinsics = false, // Make layout more efficient.
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
