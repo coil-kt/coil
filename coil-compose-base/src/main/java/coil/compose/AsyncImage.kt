@@ -209,7 +209,7 @@ fun AsyncImageScope.AsyncImageContent(
         .then(ContentSizeModifier(painter, contentScale))
         .paint(
             painter = painter,
-            sizeToIntrinsics = false, // The painter is scaled by `ContentSizeModifier`.
+            sizeToIntrinsics = false, // `ContentSizeModifier` scales the image.
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
