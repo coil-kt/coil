@@ -128,7 +128,7 @@ fun AsyncImage(
 
     // Draw the content.
     Box(
-        modifier = modifier.constraintsResolver(request.sizeResolver),
+        modifier = modifier.sizeResolver(request.sizeResolver),
         contentAlignment = alignment,
         propagateMinConstraints = true
     ) {
@@ -269,7 +269,7 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
     }
 }
 
-private fun Modifier.constraintsResolver(sizeResolver: SizeResolver): Modifier {
+private fun Modifier.sizeResolver(sizeResolver: SizeResolver): Modifier {
     return if (sizeResolver is ConstraintsSizeResolver) {
         then(sizeResolver)
     } else {
