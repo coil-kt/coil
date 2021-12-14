@@ -25,6 +25,10 @@ import androidx.compose.ui.unit.constrainWidth
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+/**
+ * A custom `PainterModifier` implementation that fills the remaining space if one dimension of the
+ * incoming constraints is fixed.
+ */
 internal data class ContentPainterModifier(
     private val painter: Painter,
     private val alignment: Alignment,
@@ -127,14 +131,11 @@ internal data class ContentPainterModifier(
         }
 
         if (intrinsicSize.isUnspecified) {
-            if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
-                return constraints.copy(
-                    minWidth = constraints.maxWidth,
-                    minHeight = constraints.maxHeight
-                )
-            } else {
-                return constraints
-            }
+            // Fill the available space if the painter has no intrinsic size.
+            return constraints.copy(
+                minWidth = constraints.maxWidth,
+                minHeight = constraints.maxHeight
+            )
         }
 
         val srcWidth = intrinsicSize.width.takeOrElse { constraints.minWidth.toFloat() }
