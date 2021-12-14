@@ -45,8 +45,8 @@ class SvgDecoder @JvmOverloads constructor(
         val bitmapWidth: Int
         val bitmapHeight: Int
         val size = options.size
-        val dstWidth = size.width.pixelsOrElse(svgWidth)
-        val dstHeight = size.height.pixelsOrElse(svgHeight)
+        val dstWidth = size.width.pxOrElse(svgWidth)
+        val dstHeight = size.height.pxOrElse(svgHeight)
         if (svgWidth > 0 && svgHeight > 0) {
             val multiplier = DecodeUtils.computeSizeMultiplier(
                 srcWidth = svgWidth,
@@ -79,9 +79,9 @@ class SvgDecoder @JvmOverloads constructor(
         )
     }
 
-    private fun Dimension.pixelsOrElse(value: Float): Float {
+    private fun Dimension.pxOrElse(value: Float): Float {
         return if (this is Dimension.Pixels) {
-            this.px.toFloat()
+            px.toFloat()
         } else {
             if (value > 0) value else DEFAULT_SIZE
         }
