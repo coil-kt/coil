@@ -308,4 +308,4 @@ private data class RealAsyncImageScope(
     override val colorFilter: ColorFilter?,
 ) : AsyncImageScope, BoxScope by parentScope
 
-private val ZeroConstraints = Constraints(0, 0, 0, 0)
+private val ZeroConstraints = Constraints.fixed(0, 0)
