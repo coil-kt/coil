@@ -115,8 +115,8 @@ internal data class ContentPainterModifier(
     }
 
     private fun calculateScaledSize(dstSize: Size): Size {
-        if (dstSize.isUnspecified) return dstSize
         if (dstSize.isEmpty()) return Size.Zero
+        if (intrinsicSize.isUnspecified) return dstSize
 
         val srcSize = Size(
             width = intrinsicSize.width.takeOrElse { dstSize.width },
@@ -132,10 +132,14 @@ internal data class ContentPainterModifier(
 
         if (intrinsicSize.isUnspecified) {
             // Fill the available space if the painter has no intrinsic size.
-            return constraints.copy(
-                minWidth = constraints.maxWidth,
-                minHeight = constraints.maxHeight
-            )
+            if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+                return constraints.copy(
+                    minWidth = constraints.maxWidth,
+                    minHeight = constraints.maxHeight
+                )
+            } else {
+                return constraints
+            }
         }
 
         val srcWidth = intrinsicSize.width.takeOrElse { constraints.minWidth.toFloat() }
