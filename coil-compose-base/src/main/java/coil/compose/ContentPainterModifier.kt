@@ -26,8 +26,8 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * A custom `PainterModifier` implementation that fills the remaining space if one dimension of the
- * incoming constraints is fixed.
+ * A custom `PainterModifier` implementation that fills the remaining space if
+ * one dimension of the incoming constraints is fixed.
  */
 internal data class ContentPainterModifier(
     private val painter: Painter,
@@ -125,7 +125,9 @@ internal data class ContentPainterModifier(
     }
 
     private fun modifyConstraints(constraints: Constraints): Constraints {
-        if (constraints.hasFixedWidth && constraints.hasFixedHeight) {
+        val hasFixedWidth = constraints.hasFixedWidth
+        val hasFixedHeight = constraints.hasFixedHeight
+        if (hasFixedWidth && hasFixedHeight) {
             return constraints
         }
 
@@ -142,13 +144,24 @@ internal data class ContentPainterModifier(
             }
         }
 
-        val srcWidth = intrinsicSize.width.takeOrElse { constraints.minWidth.toFloat() }
-        val srcHeight = intrinsicSize.height.takeOrElse { constraints.minHeight.toFloat() }
-        val dstSize = Size(
+        // Changed from `PainterModifier`: scale the image to fill the maximum space
+        // if one dimension is fixed.
+        val srcWidth = if (hasFixedHeight) {
+            constraints.maxWidth.toFloat()
+        } else {
+            intrinsicSize.width.takeOrElse { constraints.minWidth.toFloat() }
+        }
+        val srcHeight = if (hasFixedWidth) {
+            constraints.maxHeight.toFloat()
+        } else {
+            intrinsicSize.height.takeOrElse { constraints.minHeight.toFloat() }
+        }
+
+        val constrainedSize = Size(
             width = constraints.constrainWidth(srcWidth),
             height = constraints.constrainHeight(srcHeight)
         )
-        val scaledSize = calculateScaledSize(dstSize)
+        val scaledSize = calculateScaledSize(constrainedSize)
         return constraints.copy(
             minWidth = constraints.constrainWidth(scaledSize.width.roundToInt()),
             minHeight = constraints.constrainHeight(scaledSize.height.roundToInt())
