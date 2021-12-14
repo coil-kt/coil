@@ -299,7 +299,7 @@ private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 }
 
 private data class RealAsyncImageScope(
-    val parentScope: BoxScope,
+    private val parentScope: BoxScope,
     override val painter: AsyncImagePainter,
     override val contentDescription: String?,
     override val alignment: Alignment,
