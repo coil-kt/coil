@@ -20,7 +20,6 @@ import androidx.compose.ui.layout.times
 import androidx.compose.ui.platform.InspectorValueInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
 import kotlin.math.max
@@ -170,13 +169,3 @@ internal data class ContentPainterModifier(
         drawContent()
     }
 }
-
-fun Constraints.constrainWidth(width: Float) =
-    width.coerceIn(minWidth.toFloat(), maxWidth.toFloat())
-
-fun Constraints.constrainHeight(height: Float) =
-    height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
-
-private inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
-
-private fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
