@@ -132,7 +132,7 @@ fun AsyncImage(
 
     val sizeResolver = request.sizeResolver
     if (content === DefaultContent) {
-        // Fast path: draw the content without parent composables or subcomposition.
+        // Fastest path: draw the content without parent composables or subcomposition.
         InternalAsyncImageContent(
             modifier = if (sizeResolver is ConstraintsSizeResolver) {
                 modifier.then(sizeResolver)
