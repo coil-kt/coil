@@ -2,6 +2,7 @@ package coil.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -126,21 +127,57 @@ fun AsyncImage(
     val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
 
-    // Draw the content.
-    Box(
-        modifier = modifier.sizeResolver(request.sizeResolver),
-        contentAlignment = alignment,
-        propagateMinConstraints = true
-    ) {
-        RealAsyncImageScope(
-            parentScope = this,
+    val sizeResolver = request.sizeResolver
+    if (content === DefaultContent) {
+        // Fast path: draw the content without parent composables or subcomposition.
+        InternalAsyncImageContent(
+            modifier = if (sizeResolver is ConstraintsSizeResolver) {
+                modifier.then(sizeResolver)
+            } else {
+                modifier
+            },
             painter = painter,
             contentDescription = contentDescription,
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
             colorFilter = colorFilter
-        ).content()
+        )
+    } else if (sizeResolver !is ConstraintsSizeResolver) {
+        // Fast path: draw the content inside a parent composable without subcomposition.
+        Box(
+            contentAlignment = alignment,
+            propagateMinConstraints = true
+        ) {
+            RealAsyncImageScope(
+                parentScope = this,
+                painter = painter,
+                contentDescription = contentDescription,
+                alignment = alignment,
+                contentScale = contentScale,
+                alpha = alpha,
+                colorFilter = colorFilter
+            ).content()
+        }
+    } else {
+        // Slow path: draw the content inside a parent composable with subcomposition.
+        BoxWithConstraints(
+            contentAlignment = alignment,
+            propagateMinConstraints = true
+        ) {
+            // Ensure the painter's state is up to date before invoking `content`.
+            sizeResolver.setConstraints(constraints)
+
+            RealAsyncImageScope(
+                parentScope = this,
+                painter = painter,
+                contentDescription = contentDescription,
+                alignment = alignment,
+                contentScale = contentScale,
+                alpha = alpha,
+                colorFilter = colorFilter
+            ).content()
+        }
     }
 }
 
@@ -178,7 +215,7 @@ interface AsyncImageScope : BoxScope {
 }
 
 /**
- * A composable that draws an [AsyncImage]'s content with its current attributes.
+ * A composable that draws [AsyncImage]'s content with [AsyncImageScope]'s properties.
  *
  * @see AsyncImageScope
  */
@@ -191,6 +228,26 @@ fun AsyncImageScope.AsyncImageContent(
     contentScale: ContentScale = this.contentScale,
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
+) = InternalAsyncImageContent(
+    modifier = modifier,
+    painter = painter,
+    contentDescription = contentDescription,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter
+)
+
+/** Draws the current content without an [AsyncImageScope]. */
+@Composable
+private fun InternalAsyncImageContent(
+    modifier: Modifier,
+    painter: Painter,
+    contentDescription: String?,
+    alignment: Alignment,
+    contentScale: ContentScale,
+    alpha: Float,
+    colorFilter: ColorFilter?,
 ) = Layout(
     modifier = modifier
         .contentDescription(contentDescription)
@@ -269,14 +326,6 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
     }
 }
 
-private fun Modifier.sizeResolver(sizeResolver: SizeResolver): Modifier {
-    return if (sizeResolver is ConstraintsSizeResolver) {
-        then(sizeResolver)
-    } else {
-        this
-    }
-}
-
 private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
@@ -295,6 +344,10 @@ private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
         return layout(placeable.width, placeable.height) {
             placeable.place(0, 0)
         }
+    }
+
+    fun setConstraints(constraints: Constraints) {
+        _constraints.value = constraints
     }
 }
 
