@@ -306,10 +306,10 @@ private fun updateRequest(
             if (request.defined.scale == null) {
                 scale(contentScale.toScale())
             }
-            placeholder(placeholder)
-            error(error)
-            fallback(fallback)
         }
+        .placeholder(placeholder)
+        .error(error)
+        .fallback(fallback)
         .build()
 }
 
