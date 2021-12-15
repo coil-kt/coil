@@ -208,7 +208,7 @@ class AsyncImagePainter internal constructor(
         painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
 
         // Manually forget and remember the old/new painters if we're already remembered.
-        if (rememberScope != null) {
+        if (rememberScope != null && previous.painter !== current.painter) {
             (previous.painter as? RememberObserver)?.onForgotten()
             (current.painter as? RememberObserver)?.onRemembered()
         }
