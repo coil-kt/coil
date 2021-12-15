@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImagePainter.State
 import coil.compose.AsyncImageScope.Companion.DefaultContent
@@ -89,6 +90,9 @@ fun AsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
@@ -100,6 +104,9 @@ fun AsyncImage(
     contentDescription = contentDescription,
     imageLoader = LocalImageLoader.current,
     modifier = modifier,
+    placeholder = placeholder,
+    error = error,
+    fallback = fallback,
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,

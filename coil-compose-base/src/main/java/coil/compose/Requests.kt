@@ -1,0 +1,51 @@
+package coil.compose
+
+import androidx.compose.ui.graphics.painter.Painter
+import coil.request.ImageRequest
+import coil.request.Parameters
+
+/**
+ * Set a [Painter] to display while the request is loading.
+ *
+ * This will only work if this request is executed by [AsyncImage] or [AsyncImagePainter].
+ */
+fun ImageRequest.Builder.placeholder(placeholder: Painter?) = apply {
+    if (placeholder != null) setParameter(PLACEHOLDER_PAINTER, placeholder, cacheKey = null)
+}
+
+/**
+ * Set a [Painter] to display when the request is unsuccessful.
+ *
+ * This will only work if this request is executed by [AsyncImage] or [AsyncImagePainter].
+ */
+fun ImageRequest.Builder.error(error: Painter?) = apply {
+    if (error != null) setParameter(ERROR_PAINTER, error, cacheKey = null)
+}
+
+/**
+ * Set a [Painter] to display when the request's [ImageRequest.data] is null'.
+ *
+ * This will only work if this request is executed by [AsyncImage] or [AsyncImagePainter].
+ */
+fun ImageRequest.Builder.fallback(fallback: Painter?) = apply {
+    if (fallback != null) setParameter(FALLBACK_PAINTER, fallback, cacheKey = null)
+}
+
+/**
+ * Get the placeholder painter.
+ */
+fun Parameters.placeholder(): Painter? = value(PLACEHOLDER_PAINTER) as Painter?
+
+/**
+ * Get the error painter.
+ */
+fun Parameters.error(): Painter? = value(ERROR_PAINTER) as Painter?
+
+/**
+ * Get the fallback painter.
+ */
+fun Parameters.fallback(): Painter? = value(FALLBACK_PAINTER) as Painter?
+
+private const val PLACEHOLDER_PAINTER = "placeholder_painter"
+private const val ERROR_PAINTER = "error_painter"
+private const val FALLBACK_PAINTER = "fallback_painter"
