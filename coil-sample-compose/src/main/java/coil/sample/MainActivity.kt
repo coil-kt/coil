@@ -118,6 +118,7 @@ private fun ListScreen(viewModel: MainViewModel) {
                     DpSize(width.toDp(), height.toDp())
                 }
             }
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(image.uri)
