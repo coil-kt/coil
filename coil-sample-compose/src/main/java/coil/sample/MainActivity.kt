@@ -13,13 +13,16 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -35,11 +38,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Scaffold(
-                topBar = { Toolbar(viewModel) },
-                content = { Content(viewModel) }
-            )
-            BackHandler { viewModel.onBackPressed() }
+            MaterialTheme(
+                colors = lightColors(
+                    primary = Color.White,
+                    onPrimary = Color.Black
+                )
+            ) {
+                Scaffold(
+                    topBar = { Toolbar(viewModel) },
+                    content = { Content(viewModel) }
+                )
+                BackHandler { viewModel.onBackPressed() }
+            }
         }
     }
 }
