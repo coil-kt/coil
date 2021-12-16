@@ -13,7 +13,6 @@ dependencies {
     implementation(Library.KOTLINX_COROUTINES_ANDROID)
     implementation(Library.KOTLINX_COROUTINES_TEST)
 
-    implementation(Library.ANDROIDX_APPCOMPAT)
     implementation(Library.ANDROIDX_CORE)
 
     implementation(Library.MATERIAL)

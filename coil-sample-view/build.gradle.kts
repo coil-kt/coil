@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":coil-video"))
 
     implementation(Library.ANDROIDX_ACTIVITY)
+    implementation(Library.ANDROIDX_CONSTRAINT_LAYOUT)
     implementation(Library.ANDROIDX_RECYCLER_VIEW)
     implementation(Library.MATERIAL)
 }

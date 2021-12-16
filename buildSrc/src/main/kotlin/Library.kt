@@ -9,6 +9,7 @@ object Library {
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.4.0"
     const val ANDROIDX_ACTIVITY_COMPOSE = "androidx.activity:activity-compose:1.4.0"
+    const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:1.4.0"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.3.0"
     const val ANDROIDX_COLLECTION = "androidx.collection:collection:1.2.0"
     const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:2.1.2"
@@ -16,10 +17,6 @@ object Library {
     const val ANDROIDX_EXIF_INTERFACE = "androidx.exifinterface:exifinterface:1.3.3"
     const val ANDROIDX_RECYCLER_VIEW = "androidx.recyclerview:recyclerview:1.2.1"
     const val ANDROIDX_VECTOR_DRAWABLE_ANIMATED = "androidx.vectordrawable:vectordrawable-animated:1.1.0"
-
-    private const val APPCOMPAT_VERSION = "1.4.0"
-    const val ANDROIDX_APPCOMPAT = "androidx.appcompat:appcompat:$APPCOMPAT_VERSION"
-    const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:$APPCOMPAT_VERSION"
 
     private const val LIFECYCLE_VERSION = "2.4.0"
     const val ANDROIDX_LIFECYCLE_RUNTIME = "androidx.lifecycle:lifecycle-runtime:$LIFECYCLE_VERSION"
