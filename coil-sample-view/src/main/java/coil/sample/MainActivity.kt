@@ -40,10 +40,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        listAdapter = ImageListAdapter(this) { viewModel.screen.value = it }
+        val numColumns = numberOfColumns(this)
+        listAdapter = ImageListAdapter(numColumns) { viewModel.screen.value = it }
         binding.list.apply {
             setHasFixedSize(true)
-            layoutManager = StaggeredGridLayoutManager(listAdapter.numColumns, VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(numColumns, VERTICAL)
             adapter = listAdapter
         }
 
@@ -93,10 +94,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_toggle_asset_type -> {
-                val values = AssetType.values()
-                val currentAssetType = viewModel.assetType.value
-                val newAssetType = values[(values.indexOf(currentAssetType) + 1) % values.count()]
-                viewModel.assetType.value = newAssetType
+                viewModel.assetType.value = nextAssetType(viewModel.assetType.value)
             }
             else -> return super.onOptionsItemSelected(item)
         }

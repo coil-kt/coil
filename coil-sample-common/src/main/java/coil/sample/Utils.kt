@@ -5,44 +5,17 @@ package coil.sample
 import android.content.Context
 import android.graphics.Color
 import android.util.Size
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowInsets
 import androidx.annotation.ColorInt
-import androidx.annotation.LayoutRes
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.AndroidViewModel
-import androidx.recyclerview.widget.AsyncDifferConfig
-import androidx.recyclerview.widget.DiffUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.asExecutor
+import kotlin.math.ceil
+import kotlin.math.roundToInt
 import kotlin.random.Random
-
-inline fun <reified V : View> ViewGroup.inflate(
-    @LayoutRes layoutRes: Int,
-    attachToRoot: Boolean = false
-): V = LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot) as V
 
 inline val AndroidViewModel.context: Context
     get() = getApplication()
 
-inline fun Window.setDecorFitsSystemWindowsCompat(decorFitsSystemWindows: Boolean) {
-    WindowCompat.setDecorFitsSystemWindows(this, decorFitsSystemWindows)
-}
-
-inline fun WindowInsets.toCompat(): WindowInsetsCompat {
-    return WindowInsetsCompat.toWindowInsetsCompat(this)
-}
-
 fun Context.getDisplaySize(): Size {
     return resources.displayMetrics.run { Size(widthPixels, heightPixels) }
-}
-
-fun Int.dp(context: Context): Float {
-    return this * context.resources.displayMetrics.density
 }
 
 @ColorInt
@@ -50,8 +23,20 @@ fun randomColor(): Int {
     return Color.argb(128, Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
 }
 
-fun <T> DiffUtil.ItemCallback<T>.asConfig(): AsyncDifferConfig<T> {
-    return AsyncDifferConfig.Builder(this)
-        .setBackgroundThreadExecutor(Dispatchers.IO.asExecutor())
-        .build()
+fun nextAssetType(current: AssetType): AssetType {
+    val values = AssetType.values()
+    return values[(values.indexOf(current) + 1) % values.size]
+}
+
+fun numberOfColumns(context: Context): Int {
+    val maxColumnWidth = 320 * context.resources.displayMetrics.density
+    val displayWidth = context.getDisplaySize().width
+    return ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(4)
+}
+
+fun scaledImageSize(context: Context, numColumns: Int, width: Int, height: Int): Size {
+    val displayWidth = context.getDisplaySize().width
+    val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
+    val scale = columnWidth / width.toDouble()
+    return Size(width, (scale * height).roundToInt())
 }
