@@ -27,9 +27,7 @@ dependencies {
     api(project(":coil-base"))
 
     implementation(Library.ANDROIDX_CORE)
-
     implementation(Library.ACCOMPANIST_DRAWABLE_PAINTER)
-
     api(Library.COMPOSE_FOUNDATION)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
