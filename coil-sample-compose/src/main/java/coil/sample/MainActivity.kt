@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.util.component1
 import androidx.core.util.component2
 import coil.compose.AsyncImage
+import coil.memory.MemoryCache
 import coil.request.ImageRequest
 
 class MainActivity : ComponentActivity() {
@@ -105,6 +106,7 @@ private fun ListScreen(viewModel: MainViewModel) {
         cells = GridCells.Fixed(numColumns)
     ) {
         items(images) { image ->
+            var placeholder: MemoryCache.Key? = null
             val (scaledWidth, scaledHeight) = scaledImageSize(
                 context = LocalContext.current,
                 numColumns = numColumns,
@@ -115,13 +117,14 @@ private fun ListScreen(viewModel: MainViewModel) {
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(image.uri)
                     .parameters(image.parameters)
+                    .listener { _, result -> placeholder = result.memoryCacheKey }
                     .build(),
                 contentDescription = null,
                 modifier = with(LocalDensity.current) {
                     Modifier
                         .size(scaledWidth.toDp(), scaledHeight.toDp())
                         .clickable {
-                            viewModel.screen.value = Screen.Detail(image, null)
+                            viewModel.screen.value = Screen.Detail(image, placeholder)
                         }
                 }
             )
