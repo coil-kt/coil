@@ -29,8 +29,8 @@ class ImageListAdapter(
 
             updateLayoutParams {
                 val size = scaledImageSize(context, numColumns, item.width, item.height)
-                height = size.width
-                width = size.height
+                width = size.width
+                height = size.height
             }
 
             load(item.uri) {

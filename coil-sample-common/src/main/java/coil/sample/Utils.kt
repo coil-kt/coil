@@ -29,8 +29,8 @@ fun nextAssetType(current: AssetType): AssetType {
 }
 
 fun numberOfColumns(context: Context): Int {
-    val maxColumnWidth = 320 * context.resources.displayMetrics.density
     val displayWidth = context.getDisplaySize().width
+    val maxColumnWidth = 320 * context.resources.displayMetrics.density
     return ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(4)
 }
 
@@ -38,5 +38,5 @@ fun scaledImageSize(context: Context, numColumns: Int, width: Int, height: Int):
     val displayWidth = context.getDisplaySize().width
     val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
     val scale = columnWidth / width.toDouble()
-    return Size(width, (scale * height).roundToInt())
+    return Size(columnWidth, (scale * height).roundToInt())
 }
