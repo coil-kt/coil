@@ -15,9 +15,7 @@ dependencies {
     api(project(":coil-video"))
 
     api(Library.ANDROIDX_ACTIVITY)
-    api(Library.ANDROIDX_APPCOMPAT)
     api(Library.ANDROIDX_CORE)
     api(Library.ANDROIDX_LIFECYCLE_VIEW_MODEL)
-    api(Library.ANDROIDX_RECYCLER_VIEW)
     api(Library.MATERIAL)
 }

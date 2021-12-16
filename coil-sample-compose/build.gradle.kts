@@ -32,4 +32,7 @@ dependencies {
     implementation(project(":coil-gif"))
     implementation(project(":coil-svg"))
     implementation(project(":coil-video"))
+
+    implementation(Library.ANDROIDX_ACTIVITY_COMPOSE)
+    implementation(Library.COMPOSE_MATERIAL)
 }

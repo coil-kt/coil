@@ -1,3 +1,4 @@
+import coil.Library
 import coil.setupAppModule
 
 plugins {
@@ -28,4 +29,7 @@ dependencies {
     implementation(project(":coil-gif"))
     implementation(project(":coil-svg"))
     implementation(project(":coil-video"))
+
+    implementation(Library.ANDROIDX_RECYCLER_VIEW)
+    implementation(Library.MATERIAL)
 }

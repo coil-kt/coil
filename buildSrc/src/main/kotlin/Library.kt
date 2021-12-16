@@ -8,6 +8,7 @@ object Library {
     const val KOTLINX_COROUTINES_ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.4.0"
+    const val ANDROIDX_ACTIVITY_COMPOSE = "androidx.activity:activity-compose:1.4.0"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.3.0"
     const val ANDROIDX_COLLECTION = "androidx.collection:collection:1.2.0"
     const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:2.1.2"
@@ -26,6 +27,7 @@ object Library {
 
     const val COMPOSE_VERSION = "1.1.0-rc01"
     const val COMPOSE_FOUNDATION = "androidx.compose.foundation:foundation:$COMPOSE_VERSION"
+    const val COMPOSE_MATERIAL = "androidx.compose.material:material:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_JUNIT = "androidx.compose.ui:ui-test-junit4:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest:$COMPOSE_VERSION"
 
