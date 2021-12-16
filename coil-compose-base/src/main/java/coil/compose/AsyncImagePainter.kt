@@ -31,6 +31,7 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
+import coil.size.Dimension
 import coil.size.Precision
 import coil.transition.CrossfadeTransition
 import coil.transition.TransitionTarget
@@ -306,7 +307,10 @@ private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
 private fun Size.toSizeOrNull() = when {
     isUnspecified -> CoilSize.ORIGINAL
-    isPositive -> CoilSize(width.roundToInt(), height.roundToInt())
+    isPositive -> CoilSize(
+        width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Original,
+        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Original
+    )
     else -> null
 }
 
