@@ -106,7 +106,9 @@ private fun ListScreen(viewModel: MainViewModel) {
         cells = GridCells.Fixed(numColumns)
     ) {
         items(images) { image ->
+            // Intentionally not a State to avoid recomposition.
             var placeholder: MemoryCache.Key? = null
+
             val (scaledWidth, scaledHeight) = scaledImageSize(
                 context = LocalContext.current,
                 numColumns = numColumns,
