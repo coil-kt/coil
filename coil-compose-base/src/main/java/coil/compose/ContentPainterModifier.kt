@@ -144,8 +144,8 @@ internal data class ContentPainterModifier(
             }
         }
 
-        // Changed from `PainterModifier`: scale the image to fill the maximum space
-        // if one dimension is fixed.
+        // Changed from PainterModifier:
+        // Scale the image to fill the maximum space if one dimension is fixed.
         val srcWidth = if (hasFixedHeight) {
             constraints.maxWidth.toFloat()
         } else {
