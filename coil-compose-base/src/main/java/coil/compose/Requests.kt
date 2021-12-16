@@ -10,7 +10,7 @@ import coil.request.Parameters
  * This will only work if this request is executed by [AsyncImage] or [AsyncImagePainter].
  */
 fun ImageRequest.Builder.placeholder(placeholder: Painter?) = apply {
-    if (placeholder != null) setParameter(PLACEHOLDER_PAINTER, placeholder, cacheKey = null)
+    setParameter(PLACEHOLDER_PAINTER, placeholder, cacheKey = null)
 }
 
 /**
@@ -19,7 +19,7 @@ fun ImageRequest.Builder.placeholder(placeholder: Painter?) = apply {
  * This will only work if this request is executed by [AsyncImage] or [AsyncImagePainter].
  */
 fun ImageRequest.Builder.error(error: Painter?) = apply {
-    if (error != null) setParameter(ERROR_PAINTER, error, cacheKey = null)
+    setParameter(ERROR_PAINTER, error, cacheKey = null)
 }
 
 /**
@@ -28,7 +28,7 @@ fun ImageRequest.Builder.error(error: Painter?) = apply {
  * This will only work if this request is executed by [AsyncImage] or [AsyncImagePainter].
  */
 fun ImageRequest.Builder.fallback(fallback: Painter?) = apply {
-    if (fallback != null) setParameter(FALLBACK_PAINTER, fallback, cacheKey = null)
+    setParameter(FALLBACK_PAINTER, fallback, cacheKey = null)
 }
 
 /**
