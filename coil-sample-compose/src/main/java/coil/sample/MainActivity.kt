@@ -108,6 +108,7 @@ private fun ListScreen(viewModel: MainViewModel) {
             // Intentionally not a State to avoid recomposition.
             var placeholder: MemoryCache.Key? = null
 
+            // Scale the image to the width of the column.
             val imageSize = scaledImageSize(
                 context = LocalContext.current,
                 numColumns = numColumns,
