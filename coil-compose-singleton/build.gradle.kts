@@ -16,7 +16,7 @@ setupLibraryModule {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Library.COMPOSE_VERSION
+        kotlinCompilerExtensionVersion = Library.COMPOSE_COMPILER_VERSION
     }
 }
 
