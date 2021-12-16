@@ -23,7 +23,7 @@ fun ImageRequest.Builder.error(error: Painter?) = apply {
 }
 
 /**
- * Set a [Painter] to display when the request's [ImageRequest.data] is null'.
+ * Set a [Painter] to display when the request's [ImageRequest.data] is null.
  *
  * This will only work if this request is executed by [AsyncImage] or [AsyncImagePainter].
  */
