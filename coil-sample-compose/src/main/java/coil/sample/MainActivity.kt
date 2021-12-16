@@ -99,6 +99,8 @@ private fun DetailScreen(screen: Screen.Detail) {
 private fun ListScreen(viewModel: MainViewModel) {
     val numColumns = numberOfColumns(LocalContext.current)
     val images by viewModel.images.collectAsState()
+
+    // TODO: Migrate to LazyStaggeredVerticalGrid when it's implemented.
     LazyVerticalGrid(
         cells = GridCells.Fixed(numColumns)
     ) {
