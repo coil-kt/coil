@@ -1,3 +1,4 @@
+import coil.Library
 import coil.setupAppModule
 
 plugins {
@@ -16,6 +17,12 @@ setupAppModule {
             proguardFiles("shrinker-rules.pro", "shrinker-rules-android.pro")
             signingConfig = signingConfigs["debug"]
         }
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Library.COMPOSE_VERSION
     }
 }
 

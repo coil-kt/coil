@@ -12,9 +12,6 @@ plugins {
 }
 
 setupLibraryModule {
-    defaultConfig {
-        minSdk = 21
-    }
     buildFeatures {
         compose = true
     }
