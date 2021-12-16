@@ -17,8 +17,8 @@ buildscript {
     dependencies {
         classpath(rootProject.extra["androidPlugin"].toString())
         classpath(rootProject.extra["kotlinPlugin"].toString())
-        classpath(rootProject.extra["mavenPublishPlugin"].toString())
         classpath(rootProject.extra["dokkaPlugin"].toString())
+        classpath(rootProject.extra["mavenPublishPlugin"].toString())
         classpath(rootProject.extra["binaryCompatibilityPlugin"].toString())
         classpath(rootProject.extra["ktlintPlugin"].toString())
     }
@@ -48,8 +48,8 @@ allprojects {
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    extensions.configure<KtlintExtension>("ktlint") {
-        version by "0.43.1"
+    extensions.configure<KtlintExtension> {
+        version by "0.43.2"
         disabledRules by setOf("indent", "max-line-length", "parameter-list-wrapping")
     }
 
