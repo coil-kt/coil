@@ -14,8 +14,6 @@ dependencies {
     api(project(":coil-svg"))
     api(project(":coil-video"))
 
-    api(Library.ANDROIDX_ACTIVITY)
     api(Library.ANDROIDX_CORE)
     api(Library.ANDROIDX_LIFECYCLE_VIEW_MODEL)
-    api(Library.MATERIAL)
 }

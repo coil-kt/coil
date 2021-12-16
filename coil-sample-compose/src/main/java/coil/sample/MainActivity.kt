@@ -1,10 +1,10 @@
 package coil.sample
 
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +28,7 @@ import androidx.core.util.component2
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -36,19 +36,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text(stringResource(R.string.app_name)) },
-                        actions = { AssetTypeButton(viewModel) }
-                    )
-                },
-                content = {
-                    Content(viewModel)
-                }
+                topBar = { Toolbar(viewModel) },
+                content = { Content(viewModel) }
             )
             BackHandler { viewModel.onBackPressed() }
         }
     }
+}
+
+@Composable
+private fun Toolbar(viewModel: MainViewModel) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.app_name)) },
+        actions = { AssetTypeButton(viewModel) }
+    )
 }
 
 @Composable
@@ -107,7 +108,9 @@ private fun ListScreen(viewModel: MainViewModel) {
                 modifier = with(LocalDensity.current) {
                     Modifier
                         .size(scaledWidth.toDp(), scaledHeight.toDp())
-                        .clickable { viewModel.screen.value = Screen.Detail(image, null) }
+                        .clickable {
+                            viewModel.screen.value = Screen.Detail(image, null)
+                        }
                 }
             )
         }
