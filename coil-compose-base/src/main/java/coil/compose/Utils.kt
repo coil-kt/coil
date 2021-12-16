@@ -3,6 +3,7 @@ package coil.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
@@ -32,8 +33,9 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
-internal fun ErrorResult.errorOrFallbackPainter() = if (throwable is NullRequestDataException) {
-    request.parameters.fallback()
-} else {
-    request.parameters.error()
-}
+internal val ErrorResult.painter: Painter?
+    get() = if (throwable is NullRequestDataException) {
+        request.parameters.fallback()
+    } else {
+        request.parameters.error()
+    }

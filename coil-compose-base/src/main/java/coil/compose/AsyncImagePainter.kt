@@ -245,7 +245,7 @@ class AsyncImagePainter internal constructor(
 
     private fun ImageResult.toState() = when (this) {
         is SuccessResult -> State.Success(drawable.toPainter(), this)
-        is ErrorResult -> State.Error(drawable?.toPainter() ?: errorOrFallbackPainter(), this)
+        is ErrorResult -> State.Error(drawable?.toPainter() ?: painter, this)
     }
 
     /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
