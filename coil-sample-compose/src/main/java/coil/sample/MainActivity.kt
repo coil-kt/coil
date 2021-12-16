@@ -26,8 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.core.util.component1
-import androidx.core.util.component2
+import androidx.compose.ui.unit.DpSize
 import coil.compose.AsyncImage
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
@@ -109,12 +108,16 @@ private fun ListScreen(viewModel: MainViewModel) {
             // Intentionally not a State to avoid recomposition.
             var placeholder: MemoryCache.Key? = null
 
-            val (scaledWidth, scaledHeight) = scaledImageSize(
+            val imageSize = scaledImageSize(
                 context = LocalContext.current,
                 numColumns = numColumns,
                 width = image.width,
                 height = image.height
-            )
+            ).run {
+                with(LocalDensity.current) {
+                    DpSize(width.toDp(), height.toDp())
+                }
+            }
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(image.uri)
@@ -122,13 +125,11 @@ private fun ListScreen(viewModel: MainViewModel) {
                     .listener { _, result -> placeholder = result.memoryCacheKey }
                     .build(),
                 contentDescription = null,
-                modifier = with(LocalDensity.current) {
-                    Modifier
-                        .size(scaledWidth.toDp(), scaledHeight.toDp())
-                        .clickable {
-                            viewModel.screen.value = Screen.Detail(image, placeholder)
-                        }
-                }
+                modifier = Modifier
+                    .size(imageSize)
+                    .clickable {
+                        viewModel.screen.value = Screen.Detail(image, placeholder)
+                    }
             )
         }
     }
