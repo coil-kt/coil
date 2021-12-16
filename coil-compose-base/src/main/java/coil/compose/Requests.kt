@@ -46,6 +46,6 @@ fun Parameters.error(): Painter? = value(ERROR_PAINTER) as Painter?
  */
 fun Parameters.fallback(): Painter? = value(FALLBACK_PAINTER) as Painter?
 
-private const val PLACEHOLDER_PAINTER = "placeholder_painter"
-private const val ERROR_PAINTER = "error_painter"
-private const val FALLBACK_PAINTER = "fallback_painter"
+private const val PLACEHOLDER_PAINTER = "coil#placeholder_painter"
+private const val ERROR_PAINTER = "coil#error_painter"
+private const val FALLBACK_PAINTER = "coil#fallback_painter"
