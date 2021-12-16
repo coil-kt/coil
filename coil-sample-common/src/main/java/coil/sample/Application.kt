@@ -13,7 +13,6 @@ import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
-import coil.sample.common.BuildConfig
 import coil.util.DebugLogger
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
