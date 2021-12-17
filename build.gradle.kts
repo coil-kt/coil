@@ -27,14 +27,24 @@ buildscript {
 apply(plugin = "binary-compatibility-validator")
 
 extensions.configure<ApiValidationExtension> {
-    ignoredProjects = mutableSetOf("coil-sample", "coil-test")
+    ignoredProjects = mutableSetOf(
+        "coil-sample-common",
+        "coil-sample-compose",
+        "coil-sample-view",
+        "coil-test"
+    )
 }
 
 apply(plugin = "org.jetbrains.dokka")
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
     outputDirectory by file("$rootDir/docs/api")
-    removeChildTasks(listOf(project(":coil-sample"), project(":coil-test")))
+    removeChildTasks(listOf(
+        project(":coil-sample-common"),
+        project(":coil-sample-compose"),
+        project(":coil-sample-view"),
+        project(":coil-test")
+    ))
 }
 
 allprojects {

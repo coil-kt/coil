@@ -8,10 +8,15 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 
-fun Project.setupLibraryModule(block: LibraryExtension.() -> Unit = {}) {
+fun Project.setupLibraryModule(
+    enableBuildConfig: Boolean = false,
+    block: LibraryExtension.() -> Unit = {}
+) {
     setupBaseModule<LibraryExtension> {
-        libraryVariants.all {
-            generateBuildConfigProvider?.configure { enabled = false }
+        if (!enableBuildConfig) {
+            libraryVariants.all {
+                generateBuildConfigProvider?.configure { enabled = false }
+            }
         }
         packagingOptions {
             // https://github.com/Kotlin/kotlinx.coroutines/issues/2023
