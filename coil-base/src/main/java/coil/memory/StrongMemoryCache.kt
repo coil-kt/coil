@@ -5,7 +5,6 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import androidx.collection.LruCache
-import androidx.core.util.lruCache
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
 import coil.util.allocationByteCountCompat
@@ -60,13 +59,15 @@ internal class RealStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
 ) : StrongMemoryCache {
 
-    private val cache = lruCache<Key, InternalValue>(
-        maxSize = maxSize,
-        sizeOf = { _, value -> value.size },
-        onEntryRemoved = { _, key, oldValue, _ ->
-            weakMemoryCache.set(key, oldValue.bitmap, oldValue.extras, oldValue.size)
-        }
-    )
+    private val cache = object : LruCache<Key, InternalValue>(maxSize) {
+        override fun sizeOf(key: Key, value: InternalValue) = value.size
+        override fun entryRemoved(
+            evicted: Boolean,
+            key: Key,
+            oldValue: InternalValue,
+            newValue: InternalValue?
+        ) = weakMemoryCache.set(key, oldValue.bitmap, oldValue.extras, oldValue.size)
+    }
 
     override val size get() = cache.size()
 
