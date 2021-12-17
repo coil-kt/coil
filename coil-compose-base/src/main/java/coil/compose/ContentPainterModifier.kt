@@ -27,8 +27,8 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * A custom [paint] modifier that fills the remaining space if one dimension of
- * the incoming constraints is fixed.
+ * A custom [paint] modifier used by [AsyncImageContent] that fills the remaining space
+ * if one dimension of the incoming constraints is fixed.
  */
 internal data class ContentPainterModifier(
     private val painter: Painter,
