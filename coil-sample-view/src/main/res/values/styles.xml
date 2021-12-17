@@ -1,11 +1,11 @@
 <resources>
 
-    <style name="AppTheme.v16" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme.v21" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#FFF</item>
         <item name="colorPrimaryDark">#AAA</item>
         <item name="colorAccent">#CCC</item>
     </style>
 
-    <style name="AppTheme" parent="AppTheme.v16"/>
+    <style name="AppTheme" parent="AppTheme.v21"/>
 
 </resources>

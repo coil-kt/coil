@@ -88,7 +88,6 @@ fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String) {
 
     androidTestImplementation(Library.KOTLINX_COROUTINES_TEST)
 
-    androidTestImplementation(Library.ANDROIDX_APPCOMPAT)
     androidTestImplementation(Library.MATERIAL)
 
     androidTestImplementation(Library.ANDROIDX_TEST_CORE)
