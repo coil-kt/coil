@@ -1,0 +1,13 @@
+<resources>
+
+    <style name="AppTheme.v21" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#121212</item>
+        <item name="colorPrimaryDark">#121212</item>
+        <item name="colorAccent">#121212</item>
+
+        <item name="android:statusBarColor">#00000000</item>
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.v21"/>
+
+</resources>

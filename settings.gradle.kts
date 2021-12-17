@@ -12,6 +12,8 @@ include(
 
 // Private modules
 include(
-    "coil-sample",
+    "coil-sample-common",
+    "coil-sample-compose",
+    "coil-sample-view",
     "coil-test",
 )

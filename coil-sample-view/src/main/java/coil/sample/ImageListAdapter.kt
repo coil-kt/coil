@@ -1,6 +1,5 @@
 package coil.sample
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
@@ -14,18 +13,11 @@ import coil.load
 import coil.request.SuccessResult
 import coil.result
 import coil.sample.ImageListAdapter.ViewHolder
-import kotlin.math.ceil
-import kotlin.math.roundToInt
 
 class ImageListAdapter(
-    context: Context,
+    private val numColumns: Int,
     private val setScreen: (Screen) -> Unit
 ) : ListAdapter<Image, ViewHolder>(Callback.asConfig()) {
-
-    private val maxColumnWidth = 320.dp(context)
-    private val displayWidth = context.getDisplaySize().width
-    val numColumns = ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(5)
-    private val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(parent.inflate(R.layout.list_item))
@@ -36,9 +28,9 @@ class ImageListAdapter(
             val item = getItem(position)
 
             updateLayoutParams {
-                val scale = columnWidth / item.width.toDouble()
-                height = (scale * item.height).roundToInt()
-                width = columnWidth
+                val size = scaledImageSize(context, numColumns, item.width, item.height)
+                width = size.width
+                height = size.height
             }
 
             load(item.uri) {
