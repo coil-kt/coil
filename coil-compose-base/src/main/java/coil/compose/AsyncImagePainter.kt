@@ -159,7 +159,7 @@ class AsyncImagePainter internal constructor(
         scope.launch {
             snapshotFlow { request }.collect { request ->
                 requestJob?.cancel()
-                requestJob = scope.launch {
+                requestJob = launch {
                     updateState(imageLoader.execute(updateRequest(request)).toState())
                 }
             }
