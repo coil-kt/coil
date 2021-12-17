@@ -35,7 +35,7 @@ internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val ErrorResult.painter: Painter?
     get() = if (throwable is NullRequestDataException) {
-        request.parameters.fallback()
+        request.parameters.fallback() ?: request.parameters.error()
     } else {
         request.parameters.error()
     }
