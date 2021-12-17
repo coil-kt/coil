@@ -136,7 +136,7 @@ fun AsyncImage(
     val sizeResolver = request.sizeResolver
     if (content === DefaultContent) {
         // Fastest path: draw the content without a parent composable or subcomposition.
-        InternalAsyncImageContent(
+        Content(
             modifier = if (sizeResolver is ConstraintsSizeResolver) {
                 modifier.then(sizeResolver)
             } else {
@@ -235,7 +235,7 @@ fun AsyncImageScope.AsyncImageContent(
     contentScale: ContentScale = this.contentScale,
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
-) = InternalAsyncImageContent(
+) = Content(
     modifier = modifier,
     painter = painter,
     contentDescription = contentDescription,
@@ -247,7 +247,7 @@ fun AsyncImageScope.AsyncImageContent(
 
 /** Draws the current content without an [AsyncImageScope]. */
 @Composable
-private fun InternalAsyncImageContent(
+private fun Content(
     modifier: Modifier,
     painter: Painter,
     contentDescription: String?,
