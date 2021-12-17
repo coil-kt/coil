@@ -2,6 +2,7 @@ package coil.compose
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.DrawModifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
@@ -26,7 +27,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * A custom `PainterModifier` that fills the remaining space if one dimension of
+ * A custom [paint] modifier that fills the remaining space if one dimension of
  * the incoming constraints is fixed.
  */
 internal data class ContentPainterModifier(
