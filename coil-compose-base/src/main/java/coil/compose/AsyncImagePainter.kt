@@ -203,7 +203,7 @@ class AsyncImagePainter internal constructor(
     private fun updateState(request: ImageRequest, current: State) {
         val previous = state
         state = current
-        painter = maybeNewCrossfadePainter(request, previous, current) ?: current.painter
+        painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
 
         // Manually forget and remember the old/new painters if we're already remembered.
         if (rememberScope != null && previous.painter !== current.painter) {
@@ -222,7 +222,6 @@ class AsyncImagePainter internal constructor(
 
     /** Create and return a [CrossfadePainter] if requested. */
     private fun maybeNewCrossfadePainter(
-        request: ImageRequest,
         previous: State,
         current: State
     ): CrossfadePainter? {
@@ -238,13 +237,12 @@ class AsyncImagePainter internal constructor(
 
         // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
         // a `CrossfadeTransformation`.
-        val factory = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
-        val transition = factory.create(FakeTransitionTarget, result)
+        val transition = result.request.transitionFactory.create(FakeTransitionTarget, result)
         if (transition is CrossfadeTransition) {
             return CrossfadePainter(
                 start = previous.painter.takeIf { previous is State.Loading },
                 end = current.painter,
-                scale = request.scale,
+                scale = result.request.scale,
                 durationMillis = transition.durationMillis,
                 fadeStart = !(result is SuccessResult && result.isPlaceholderCached),
                 preferExactIntrinsicSize = transition.preferExactIntrinsicSize
