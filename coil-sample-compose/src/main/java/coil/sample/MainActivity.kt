@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -124,9 +125,11 @@ private fun ListScreen(viewModel: MainViewModel) {
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(image.uri)
                     .parameters(image.parameters)
-                    .listener { _, result -> placeholder = result.memoryCacheKey }
                     .build(),
                 contentDescription = null,
+                placeholder = rememberColorPainter(image.color),
+                contentScale = ContentScale.Crop,
+                onSuccess = { _, state -> placeholder = state.result.memoryCacheKey },
                 modifier = Modifier
                     .size(imageSize)
                     .clickable {
