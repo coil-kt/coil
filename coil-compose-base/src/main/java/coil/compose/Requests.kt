@@ -34,15 +34,15 @@ fun ImageRequest.Builder.fallback(fallback: Painter?) = apply {
     setParameter(FALLBACK_PAINTER, fallback, cacheKey = null)
 }
 
-fun ImageRequest.Builder.onLoading(callback: (ImageRequest, State.Loading) -> Unit) = apply {
+fun ImageRequest.Builder.onLoading(callback: (State.Loading) -> Unit) = apply {
     setParameter(LOADING_CALLBACK, callback, cacheKey = null)
 }
 
-fun ImageRequest.Builder.onSuccess(callback: (ImageRequest, State.Success) -> Unit) = apply {
+fun ImageRequest.Builder.onSuccess(callback: (State.Success) -> Unit) = apply {
     setParameter(SUCCESS_CALLBACK, callback, cacheKey = null)
 }
 
-fun ImageRequest.Builder.onError(callback: (ImageRequest, State.Error) -> Unit) = apply {
+fun ImageRequest.Builder.onError(callback: (State.Error) -> Unit) = apply {
     setParameter(ERROR_CALLBACK, callback, cacheKey = null)
 }
 
@@ -61,14 +61,14 @@ fun Parameters.error(): Painter? = value(ERROR_PAINTER) as Painter?
  */
 fun Parameters.fallback(): Painter? = value(FALLBACK_PAINTER) as Painter?
 
-fun Parameters.loadingCallback(): ((ImageRequest, State.Loading) -> Unit)? =
-    value(LOADING_CALLBACK) as ((ImageRequest, State.Loading) -> Unit)?
+fun Parameters.loadingCallback(): ((State.Loading) -> Unit)? =
+    value(LOADING_CALLBACK) as ((State.Loading) -> Unit)?
 
-fun Parameters.successCallback(): ((ImageRequest, State.Success) -> Unit)? =
-    value(SUCCESS_CALLBACK) as ((ImageRequest, State.Success) -> Unit)?
+fun Parameters.successCallback(): ((State.Success) -> Unit)? =
+    value(SUCCESS_CALLBACK) as ((State.Success) -> Unit)?
 
-fun Parameters.errorCallback(): ((ImageRequest, State.Error) -> Unit)? =
-    value(ERROR_CALLBACK) as ((ImageRequest, State.Error) -> Unit)?
+fun Parameters.errorCallback(): ((State.Error) -> Unit)? =
+    value(ERROR_CALLBACK) as ((State.Error) -> Unit)?
 
 private const val PLACEHOLDER_PAINTER = "coil#placeholder_painter"
 private const val ERROR_PAINTER = "coil#error_painter"

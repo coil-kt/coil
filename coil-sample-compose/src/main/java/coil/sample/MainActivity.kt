@@ -128,8 +128,8 @@ private fun ListScreen(viewModel: MainViewModel) {
                     .build(),
                 contentDescription = null,
                 placeholder = rememberColorPainter(image.color),
+                onSuccess = { placeholder = it.result.memoryCacheKey },
                 contentScale = ContentScale.Crop,
-                onSuccess = { _, state -> placeholder = state.result.memoryCacheKey },
                 modifier = Modifier
                     .size(imageSize)
                     .clickable {

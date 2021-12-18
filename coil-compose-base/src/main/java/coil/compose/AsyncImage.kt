@@ -74,9 +74,9 @@ fun AsyncImage(
     loading: @Composable (AsyncImageScope.(State.Loading) -> Unit)? = null,
     success: @Composable (AsyncImageScope.(State.Success) -> Unit)? = null,
     error: @Composable (AsyncImageScope.(State.Error) -> Unit)? = null,
-    onLoading: ((ImageRequest, State.Loading) -> Unit)? = null,
-    onSuccess: ((ImageRequest, State.Success) -> Unit)? = null,
-    onError: ((ImageRequest, State.Error) -> Unit)? = null,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
@@ -134,9 +134,9 @@ fun AsyncImage(
     placeholder: Painter? = null,
     error: Painter? = null,
     fallback: Painter? = null,
-    onLoading: ((ImageRequest, State.Loading) -> Unit)? = null,
-    onSuccess: ((ImageRequest, State.Success) -> Unit)? = null,
-    onError: ((ImageRequest, State.Error) -> Unit)? = null,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
@@ -324,9 +324,9 @@ private fun updateRequest(
     placeholder: Painter?,
     error: Painter?,
     fallback: Painter?,
-    onLoading: ((ImageRequest, State.Loading) -> Unit)?,
-    onSuccess: ((ImageRequest, State.Success) -> Unit)?,
-    onError: ((ImageRequest, State.Error) -> Unit)?
+    onLoading: ((State.Loading) -> Unit)?,
+    onSuccess: ((State.Success) -> Unit)?,
+    onError: ((State.Error) -> Unit)?,
 ): ImageRequest {
     return request.newBuilder()
         .apply {

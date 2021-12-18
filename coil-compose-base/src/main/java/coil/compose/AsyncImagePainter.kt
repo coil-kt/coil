@@ -184,12 +184,10 @@ class AsyncImagePainter internal constructor(
     /** Update the [request] to work with [AsyncImagePainter]. */
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
-            .target(
-                onStart = { placeholder ->
-                    val painter = placeholder?.toPainter() ?: request.parameters.placeholder()
-                    updateState(request, State.Loading(painter))
-                }
-            )
+            .target(onStart = { placeholder ->
+                val painter = placeholder?.toPainter() ?: request.parameters.placeholder()
+                updateState(request, State.Loading(painter))
+            })
             .apply {
                 if (request.defined.sizeResolver == null) {
                     // If no other size resolver is set, suspend until the canvas size is positive.
@@ -215,9 +213,9 @@ class AsyncImagePainter internal constructor(
 
         // Notify any listeners.
         when (current) {
-            is State.Loading -> request.parameters.loadingCallback()?.invoke(request, current)
-            is State.Success -> request.parameters.successCallback()?.invoke(request, current)
-            is State.Error -> request.parameters.errorCallback()?.invoke(request, current)
+            is State.Loading -> request.parameters.loadingCallback()?.invoke(current)
+            is State.Success -> request.parameters.successCallback()?.invoke(current)
+            is State.Error -> request.parameters.errorCallback()?.invoke(current)
             is State.Empty -> {}
         }
     }
