@@ -16,6 +16,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -94,7 +95,7 @@ class AsyncImagePainter internal constructor(
     private val drawSize = MutableStateFlow(Size.Zero)
 
     private var painter: Painter? by mutableStateOf(null)
-    private var alpha: Float by mutableStateOf(1f)
+    private var alpha: Float by mutableStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     internal var filterQuality = DefaultFilterQuality
