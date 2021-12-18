@@ -65,10 +65,10 @@ fun Parameters.loadingCallback(): ((ImageRequest, State.Loading) -> Unit)? =
     value(LOADING_CALLBACK) as ((ImageRequest, State.Loading) -> Unit)?
 
 fun Parameters.successCallback(): ((ImageRequest, State.Success) -> Unit)? =
-    value(LOADING_CALLBACK) as ((ImageRequest, State.Success) -> Unit)?
+    value(SUCCESS_CALLBACK) as ((ImageRequest, State.Success) -> Unit)?
 
 fun Parameters.errorCallback(): ((ImageRequest, State.Error) -> Unit)? =
-    value(LOADING_CALLBACK) as ((ImageRequest, State.Error) -> Unit)?
+    value(ERROR_CALLBACK) as ((ImageRequest, State.Error) -> Unit)?
 
 private const val PLACEHOLDER_PAINTER = "coil#placeholder_painter"
 private const val ERROR_PAINTER = "coil#error_painter"
