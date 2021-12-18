@@ -33,7 +33,7 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
-internal val ErrorResult.painter: Painter?
+internal val ErrorResult.errorPainter: Painter?
     get() = if (throwable is NullRequestDataException) {
         request.parameters.fallback() ?: request.parameters.error()
     } else {

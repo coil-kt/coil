@@ -26,6 +26,9 @@ import coil.request.ImageRequest
  * @param loading An optional callback to overwrite what's drawn while the image request is loading.
  * @param success An optional callback to overwrite what's drawn when the image request succeeds.
  * @param error An optional callback to overwrite what's drawn when the image request fails.
+ * @param onLoading Called when the image request begins loading.
+ * @param onSuccess Called when the image request finishes loading successfully.
+ * @param onError Called when the image request finishes unsuccessfully.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -45,6 +48,9 @@ fun AsyncImage(
     loading: @Composable (AsyncImageScope.(State.Loading) -> Unit)? = null,
     success: @Composable (AsyncImageScope.(State.Success) -> Unit)? = null,
     error: @Composable (AsyncImageScope.(State.Error) -> Unit)? = null,
+    onLoading: ((ImageRequest, State.Loading) -> Unit)? = null,
+    onSuccess: ((ImageRequest, State.Success) -> Unit)? = null,
+    onError: ((ImageRequest, State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
@@ -58,6 +64,9 @@ fun AsyncImage(
     loading = loading,
     success = success,
     error = error,
+    onLoading = onLoading,
+    onSuccess = onSuccess,
+    onError = onError,
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,
@@ -74,8 +83,11 @@ fun AsyncImage(
  *  and does not represent a meaningful action that a user can take.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
  * @param placeholder A [Painter] that is displayed while the image is loading.
- * @param error A [Painter] that is displayed when the image request is unsucessful.
+ * @param error A [Painter] that is displayed when the image request is unsuccessful.
  * @param fallback A [Painter] that is displayed when  the request's [ImageRequest.data] is null.
+ * @param onLoading Called when the image request begins loading.
+ * @param onSuccess Called when the image request finishes loading successfully.
+ * @param onError Called when the image request finishes unsuccessfully.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -96,6 +108,9 @@ fun AsyncImage(
     placeholder: Painter? = null,
     error: Painter? = null,
     fallback: Painter? = null,
+    onLoading: ((ImageRequest, State.Loading) -> Unit)? = null,
+    onSuccess: ((ImageRequest, State.Success) -> Unit)? = null,
+    onError: ((ImageRequest, State.Error) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
@@ -110,6 +125,9 @@ fun AsyncImage(
     placeholder = placeholder,
     error = error,
     fallback = fallback,
+    onLoading = onLoading,
+    onSuccess = onSuccess,
+    onError = onError,
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,

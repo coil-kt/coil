@@ -42,7 +42,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -140,8 +139,7 @@ class AsyncImagePainter internal constructor(
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
             val painter = request.placeholder?.toPainter()
-            this.state = State.Loading(painter)
-            this.painter = painter
+            updateState(request, State.Loading(painter))
             return
         }
 
@@ -160,7 +158,7 @@ class AsyncImagePainter internal constructor(
             snapshotFlow { request }.collect { request ->
                 requestJob?.cancel()
                 requestJob = launch {
-                    updateState(imageLoader.execute(updateRequest(request)).toState())
+                    updateState(request, imageLoader.execute(updateRequest(request)).toState())
                 }
             }
         }
@@ -189,7 +187,7 @@ class AsyncImagePainter internal constructor(
             .target(
                 onStart = { placeholder ->
                     val painter = placeholder?.toPainter() ?: request.parameters.placeholder()
-                    updateState(State.Loading(painter))
+                    updateState(request, State.Loading(painter))
                 }
             )
             .apply {
@@ -204,20 +202,35 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
-    private fun updateState(current: State) {
+    private fun updateState(request: ImageRequest, current: State) {
         val previous = state
         state = current
-        painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
+        painter = maybeNewCrossfadePainter(request, previous, current) ?: current.painter
 
         // Manually forget and remember the old/new painters if we're already remembered.
         if (rememberScope != null && previous.painter !== current.painter) {
             (previous.painter as? RememberObserver)?.onForgotten()
             (current.painter as? RememberObserver)?.onRemembered()
         }
+
+        // Notify any listeners.
+        when (current) {
+            is State.Loading -> request.parameters.loadingCallback()?.invoke(request, current)
+            is State.Success -> request.parameters.successCallback()?.invoke(request, current)
+            is State.Error -> request.parameters.errorCallback()?.invoke(request, current)
+            is State.Empty -> {}
+        }
     }
 
     /** Create and return a [CrossfadePainter] if requested. */
-    private fun maybeNewCrossfadePainter(previous: State, current: State): CrossfadePainter? {
+    private fun maybeNewCrossfadePainter(
+        request: ImageRequest,
+        previous: State,
+        current: State
+    ): CrossfadePainter? {
+        // Skip crossfading if we're in preview mode.
+        if (isPreview) return null
+
         // We can only invoke the transition factory if the state is success or error.
         val result = when (current) {
             is State.Success -> current.result
@@ -245,7 +258,7 @@ class AsyncImagePainter internal constructor(
 
     private fun ImageResult.toState() = when (this) {
         is SuccessResult -> State.Success(drawable.toPainter(), this)
-        is ErrorResult -> State.Error(drawable?.toPainter() ?: painter, this)
+        is ErrorResult -> State.Error(drawable?.toPainter() ?: errorPainter, this)
     }
 
     /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
