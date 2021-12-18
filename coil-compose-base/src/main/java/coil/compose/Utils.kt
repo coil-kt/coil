@@ -3,13 +3,10 @@ package coil.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
-import coil.request.ErrorResult
 import coil.request.ImageRequest
-import coil.request.NullRequestDataException
 import kotlin.math.roundToInt
 
 /** Create an [ImageRequest] from the [model]. */
@@ -32,10 +29,3 @@ internal fun Constraints.constrainHeight(height: Float) =
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
-
-internal val ErrorResult.errorPainter: Painter?
-    get() = if (throwable is NullRequestDataException) {
-        request.parameters.fallback() ?: request.parameters.error()
-    } else {
-        request.parameters.error()
-    }

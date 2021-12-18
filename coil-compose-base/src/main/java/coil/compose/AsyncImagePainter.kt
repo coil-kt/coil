@@ -31,6 +31,7 @@ import coil.ImageLoader
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
+import coil.request.NullRequestDataException
 import coil.request.SuccessResult
 import coil.size.Dimension
 import coil.size.Precision
@@ -255,7 +256,7 @@ class AsyncImagePainter internal constructor(
 
     private fun ImageResult.toState() = when (this) {
         is SuccessResult -> State.Success(drawable.toPainter(), this)
-        is ErrorResult -> State.Error(drawable?.toPainter() ?: errorPainter, this)
+        is ErrorResult -> State.Error(painter, this)
     }
 
     /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
@@ -264,6 +265,13 @@ class AsyncImagePainter internal constructor(
         is ColorDrawable -> ColorPainter(Color(color))
         else -> DrawablePainter(mutate())
     }
+
+    private val ErrorResult.painter: Painter?
+        get() = drawable?.toPainter() ?: if (throwable is NullRequestDataException) {
+            request.parameters.fallback() ?: request.parameters.error()
+        } else {
+            request.parameters.error()
+        }
 
     /**
      * The current state of the [AsyncImagePainter].
