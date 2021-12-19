@@ -54,7 +54,6 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.test.runTest
@@ -64,6 +63,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -611,6 +611,64 @@ class AsyncImagePainterTest {
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
+    }
+
+    @Test
+    fun successCallbackIsCalled() {
+        val loadingCount = AtomicInteger()
+        val successCount = AtomicInteger()
+        val errorCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/image"))
+                        .size(100, 100)
+                        .onLoading { loadingCount.getAndIncrement() }
+                        .onSuccess { successCount.getAndIncrement() }
+                        .onError { errorCount.getAndIncrement() }
+                        .build(),
+                    imageLoader = imageLoader,
+                ),
+                contentDescription = null
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, loadingCount.get())
+        assertEquals(1, successCount.get())
+        assertEquals(0, errorCount.get())
+    }
+
+    @Test
+    fun errorCallbackIsCalled() {
+        val loadingCount = AtomicInteger()
+        val successCount = AtomicInteger()
+        val errorCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/incorrect_path"))
+                        .size(100, 100)
+                        .onLoading { loadingCount.getAndIncrement() }
+                        .onSuccess { successCount.getAndIncrement() }
+                        .onError { errorCount.getAndIncrement() }
+                        .build(),
+                    imageLoader = imageLoader,
+                ),
+                contentDescription = null
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, loadingCount.get())
+        assertEquals(0, successCount.get())
+        assertEquals(1, errorCount.get())
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
