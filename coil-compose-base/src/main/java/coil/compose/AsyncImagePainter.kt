@@ -141,7 +141,7 @@ class AsyncImagePainter internal constructor(
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
             val painter = request.placeholder?.toPainter()
-            updateState(request, State.Loading(painter))
+            updateState(request, State.Empty, State.Loading(painter))
             return
         }
 
@@ -160,7 +160,8 @@ class AsyncImagePainter internal constructor(
             snapshotFlow { request }.collect { request ->
                 requestJob?.cancel()
                 requestJob = launch {
-                    updateState(request, imageLoader.execute(updateRequest(request)).toState())
+                    val current = imageLoader.execute(updateRequest(request)).toState()
+                    updateState(request, state, current)
                 }
             }
         }
@@ -188,7 +189,7 @@ class AsyncImagePainter internal constructor(
         return request.newBuilder()
             .target(onStart = { placeholder ->
                 val painter = placeholder?.toPainter() ?: request.parameters.placeholderPainter()
-                updateState(request, State.Loading(painter))
+                updateState(request, state, State.Loading(painter))
             })
             .apply {
                 if (request.defined.sizeResolver == null) {
@@ -202,8 +203,7 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
-    private fun updateState(request: ImageRequest, current: State) {
-        val previous = state
+    private fun updateState(request: ImageRequest, previous: State, current: State) {
         state = current
         painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
 
@@ -223,13 +223,7 @@ class AsyncImagePainter internal constructor(
     }
 
     /** Create and return a [CrossfadePainter] if requested. */
-    private fun maybeNewCrossfadePainter(
-        previous: State,
-        current: State
-    ): CrossfadePainter? {
-        // Skip crossfading if we're in preview mode.
-        if (isPreview) return null
-
+    private fun maybeNewCrossfadePainter(previous: State, current: State): CrossfadePainter? {
         // We can only invoke the transition factory if the state is success or error.
         val result = when (current) {
             is State.Success -> current.result
