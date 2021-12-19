@@ -94,8 +94,11 @@ sealed class ImageSource : Closeable {
      * image data.
      *
      * Heavily prefer using [source] or [file] to decode the image's data instead of this method,
-     * as there's no standard way to read the data for a [Uri], which is the responsibility of a
-     * [Fetcher]. This method is provided as a way to use decoders that don't support decoding a
+     * as there's no standard way to read the data for a [Uri]. It's the responsibility of a
+     * [Fetcher] to create a [BufferedSource] or [File] that can be easily read irrespective of
+     * where the image data is located.
+     *
+     * This method is provided as a way to use decoders that don't support decoding a
      * [BufferedSource] and want to avoid creating a temporary file (e.g. [MediaMetadataRetriever],
      * [ImageDecoder], etc.).
      */
