@@ -50,8 +50,10 @@ class ImageDecoderDecoder @JvmOverloads constructor(
             }
             imageSource.use {
                 val file = imageSource.fileOrNull()
+                val uri = imageSource.uriOrNull()
                 val decoderSource = when {
                     file != null -> ImageDecoder.createSource(file)
+                    uri != null -> ImageDecoder.createSource(options.context.contentResolver, uri)
                     // https://issuetracker.google.com/issues/139371066
                     SDK_INT < 30 -> ImageDecoder.createSource(imageSource.file())
                     else -> ImageDecoder.createSource(ByteBuffer.wrap(imageSource.source().readByteArray()))

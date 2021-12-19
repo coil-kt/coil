@@ -3,6 +3,11 @@
 package coil.decode
 
 import android.content.Context
+import android.graphics.ImageDecoder
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import coil.annotation.ExperimentalCoilApi
+import coil.fetch.Fetcher
 import coil.util.closeQuietly
 import coil.util.safeCacheDir
 import okio.BufferedSource
@@ -37,8 +42,9 @@ fun ImageSource(
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
-    context: Context
-): ImageSource = SourceImageSource(source, context.safeCacheDir)
+    context: Context,
+    uri: Uri? = null
+): ImageSource = SourceImageSource(source, context.safeCacheDir, uri)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -50,8 +56,9 @@ fun ImageSource(
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
-    cacheDirectory: File
-): ImageSource = SourceImageSource(source, cacheDirectory)
+    cacheDirectory: File,
+    uri: Uri? = null
+): ImageSource = SourceImageSource(source, cacheDirectory, uri)
 
 /**
  * Provides access to the image data to be decoded.
@@ -81,6 +88,19 @@ sealed class ImageSource : Closeable {
      * Else, return 'null'.
      */
     abstract fun fileOrNull(): File?
+
+    /**
+     * If available, return a [Uri] (typically a `content` URI) which points to the location of the
+     * image data.
+     *
+     * Heavily prefer using [source] or [file] to decode the image's data instead of this method,
+     * as there's no standard way to read the data for a [Uri], which is the responsibility of a
+     * [Fetcher]. This method is provided as a way to use decoders that don't support decoding a
+     * [BufferedSource] and want to avoid creating a temporary file (e.g. [MediaMetadataRetriever],
+     * [ImageDecoder], etc.).
+     */
+    @ExperimentalCoilApi
+    abstract fun uriOrNull(): Uri?
 }
 
 internal class FileImageSource(
@@ -114,6 +134,12 @@ internal class FileImageSource(
     override fun fileOrNull() = file()
 
     @Synchronized
+    override fun uriOrNull(): Uri? {
+        assertNotClosed()
+        return null
+    }
+
+    @Synchronized
     override fun close() {
         isClosed = true
         source?.closeQuietly()
@@ -127,7 +153,8 @@ internal class FileImageSource(
 
 internal class SourceImageSource(
     source: BufferedSource,
-    private val cacheDirectory: File
+    private val cacheDirectory: File,
+    private val uri: Uri?
 ) : ImageSource() {
 
     private var isClosed = false
@@ -163,6 +190,12 @@ internal class SourceImageSource(
     override fun fileOrNull(): File? {
         assertNotClosed()
         return file
+    }
+
+    @Synchronized
+    override fun uriOrNull(): Uri? {
+        assertNotClosed()
+        return uri
     }
 
     @Synchronized

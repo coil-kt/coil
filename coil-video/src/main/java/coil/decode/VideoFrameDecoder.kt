@@ -33,7 +33,7 @@ class VideoFrameDecoder(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     override suspend fun decode() = MediaMetadataRetriever().use { retriever ->
-        retriever.setDataSource(source.file().path)
+        retriever.setDataSource(source)
         val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
         val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
@@ -156,6 +156,16 @@ class VideoFrameDecoder(
             scale = options.scale
         )
         return multiplier == 1.0
+    }
+
+    private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
+        val file = source.fileOrNull()
+        val uri = source.uriOrNull()
+        when {
+            file != null -> setDataSource(file.path)
+            uri != null -> setDataSource(options.context, uri)
+            else -> setDataSource(source.file().path)
+        }
     }
 
     class Factory : Decoder.Factory {
