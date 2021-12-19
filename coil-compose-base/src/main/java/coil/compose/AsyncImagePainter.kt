@@ -187,7 +187,7 @@ class AsyncImagePainter internal constructor(
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
             .target(onStart = { placeholder ->
-                val painter = placeholder?.toPainter() ?: request.parameters.placeholder()
+                val painter = placeholder?.toPainter() ?: request.parameters.placeholderPainter()
                 updateState(request, State.Loading(painter))
             })
             .apply {
@@ -255,8 +255,17 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun ImageResult.toState() = when (this) {
-        is SuccessResult -> State.Success(drawable.toPainter(), this)
-        is ErrorResult -> State.Error(painter, this)
+        is SuccessResult -> {
+            State.Success(drawable.toPainter(), this)
+        }
+        is ErrorResult -> {
+            val painter = drawable?.toPainter() ?: if (throwable is NullRequestDataException) {
+                request.parameters.fallbackPainter() ?: request.parameters.errorPainter()
+            } else {
+                request.parameters.errorPainter()
+            }
+            State.Error(painter, this)
+        }
     }
 
     /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
@@ -265,13 +274,6 @@ class AsyncImagePainter internal constructor(
         is ColorDrawable -> ColorPainter(Color(color))
         else -> DrawablePainter(mutate())
     }
-
-    private val ErrorResult.painter: Painter?
-        get() = drawable?.toPainter() ?: if (throwable is NullRequestDataException) {
-            request.parameters.fallback() ?: request.parameters.error()
-        } else {
-            request.parameters.error()
-        }
 
     /**
      * The current state of the [AsyncImagePainter].

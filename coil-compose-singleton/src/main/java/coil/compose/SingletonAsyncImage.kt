@@ -27,8 +27,8 @@ import coil.request.ImageRequest
  * @param success An optional callback to overwrite what's drawn when the image request succeeds.
  * @param error An optional callback to overwrite what's drawn when the image request fails.
  * @param onLoading Called when the image request begins loading.
- * @param onSuccess Called when the image request finishes loading successfully.
- * @param onError Called when the image request finishes unsuccessfully.
+ * @param onSuccess Called when the image request completes successfully.
+ * @param onError Called when the image request completes unsuccessfully.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -86,8 +86,8 @@ fun AsyncImage(
  * @param error A [Painter] that is displayed when the image request is unsuccessful.
  * @param fallback A [Painter] that is displayed when  the request's [ImageRequest.data] is null.
  * @param onLoading Called when the image request begins loading.
- * @param onSuccess Called when the image request finishes loading successfully.
- * @param onError Called when the image request finishes unsuccessfully.
+ * @param onSuccess Called when the image request completes successfully.
+ * @param onError Called when the image request completes unsuccessfully.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be

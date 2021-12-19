@@ -1,5 +1,5 @@
 @file:JvmName("-Parameters")
-@file:Suppress("NOTHING_TO_INLINE", "unused")
+@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST", "unused")
 
 package coil.request
 
@@ -19,7 +19,7 @@ class Parameters private constructor(
     val size: Int @JvmName("size") get() = map.size
 
     /** Returns the value associated with [key] or null if [key] has no mapping. */
-    fun value(key: String): Any? = map[key]?.value
+    fun <T : Any> value(key: String): T? = map[key]?.value as T?
 
     /** Returns the cache key associated with [key] or null if [key] has no mapping. */
     fun cacheKey(key: String): String? = map[key]?.cacheKey
@@ -119,4 +119,4 @@ inline fun Parameters.count(): Int = size
 inline fun Parameters.isNotEmpty(): Boolean = !isEmpty()
 
 /** Returns the value associated with [key] or null if [key] has no mapping. */
-inline operator fun Parameters.get(key: String): Any? = value(key)
+inline operator fun <T : Any> Parameters.get(key: String): T? = value(key)

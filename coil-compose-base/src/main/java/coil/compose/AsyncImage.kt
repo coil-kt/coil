@@ -52,8 +52,8 @@ import coil.size.Size as CoilSize
  * @param success An optional callback to overwrite what's drawn when the image request succeeds.
  * @param error An optional callback to overwrite what's drawn when the image request fails.
  * @param onLoading Called when the image request begins loading.
- * @param onSuccess Called when the image request finishes loading successfully.
- * @param onError Called when the image request finishes unsuccessfully.
+ * @param onSuccess Called when the image request completes successfully.
+ * @param onError Called when the image request completes unsuccessfully.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -111,8 +111,8 @@ fun AsyncImage(
  * @param error A [Painter] that is displayed when the image request is unsuccessful.
  * @param fallback A [Painter] that is displayed when  the request's [ImageRequest.data] is null.
  * @param onLoading Called when the image request begins loading.
- * @param onSuccess Called when the image request finishes loading successfully.
- * @param onError Called when the image request finishes unsuccessfully.
+ * @param onSuccess Called when the image request completes successfully.
+ * @param onError Called when the image request completes unsuccessfully.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -145,16 +145,8 @@ fun AsyncImage(
     content: @Composable (AsyncImageScope.() -> Unit) = DefaultContent,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(
-        request = requestOf(model),
-        contentScale = contentScale,
-        placeholder = placeholder,
-        error = error,
-        fallback = fallback,
-        onLoading = onLoading,
-        onSuccess = onSuccess,
-        onError = onError
-    )
+    val request = updateRequest(requestOf(model), contentScale, placeholder, error, fallback,
+        onLoading, onSuccess, onError)
     val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
 
     val sizeResolver = request.sizeResolver
@@ -327,24 +319,22 @@ private fun updateRequest(
     onLoading: ((State.Loading) -> Unit)?,
     onSuccess: ((State.Success) -> Unit)?,
     onError: ((State.Error) -> Unit)?,
-): ImageRequest {
-    return request.newBuilder()
-        .apply {
-            if (request.defined.sizeResolver == null) {
-                size(remember { ConstraintsSizeResolver() })
-            }
-            if (request.defined.scale == null) {
-                scale(contentScale.toScale())
-            }
-            placeholder?.let(::placeholder)
-            error?.let(::error)
-            fallback?.let(::fallback)
-            onLoading?.let(::onLoading)
-            onSuccess?.let(::onSuccess)
-            onError?.let(::onError)
+) = request.newBuilder()
+    .apply {
+        if (request.defined.sizeResolver == null) {
+            size(remember { ConstraintsSizeResolver() })
         }
-        .build()
-}
+        if (request.defined.scale == null) {
+            scale(contentScale.toScale())
+        }
+        placeholder?.let(::placeholder)
+        error?.let(::error)
+        fallback?.let(::fallback)
+        onLoading?.let(::onLoading)
+        onSuccess?.let(::onSuccess)
+        onError?.let(::onError)
+    }
+    .build()
 
 @Stable
 private fun ContentScale.toScale() = when (this) {
