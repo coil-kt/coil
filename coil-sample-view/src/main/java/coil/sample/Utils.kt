@@ -1,3 +1,4 @@
+@file:JvmName("-ViewUtils")
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil.sample

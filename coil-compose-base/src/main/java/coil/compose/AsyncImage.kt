@@ -123,7 +123,7 @@ fun AsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
  *  into the destination.
- * @param content A callback to draw the content for the current [AsyncImagePainter.State].
+ * @param content A callback to draw the content inside an [AsyncImageScope].
  */
 @Composable
 fun AsyncImage(
