@@ -43,7 +43,7 @@ internal class ContentUriFetcher(
         }
 
         return SourceResult(
-            source = ImageSource(inputStream.source().buffer(), options.context),
+            source = ImageSource(inputStream.source().buffer(), options.context, data),
             mimeType = contentResolver.getType(data),
             dataSource = DataSource.DISK
         )

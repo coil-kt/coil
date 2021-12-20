@@ -1,5 +1,7 @@
 package coil.decode
 
+import android.content.ContentResolver.SCHEME_CONTENT
+import android.content.ContentResolver.SCHEME_FILE
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.media.MediaMetadataRetriever
@@ -33,7 +35,7 @@ class VideoFrameDecoder(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     override suspend fun decode() = MediaMetadataRetriever().use { retriever ->
-        retriever.setDataSource(source.file().path)
+        retriever.setDataSource(source)
         val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
         val frameMicros = options.parameters.videoFrameMicros() ?: 0L
 
@@ -158,6 +160,14 @@ class VideoFrameDecoder(
         return multiplier == 1.0
     }
 
+    private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
+        val uri = source.uriOrNull()?.takeIf { it.scheme in SUPPORTED_SCHEMES }
+        when {
+            uri != null -> setDataSource(options.context, uri)
+            else -> setDataSource(source.file().path)
+        }
+    }
+
     class Factory : Decoder.Factory {
 
         override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
@@ -177,5 +187,6 @@ class VideoFrameDecoder(
     companion object {
         const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
         const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
+        private val SUPPORTED_SCHEMES = arrayOf(SCHEME_CONTENT, SCHEME_FILE)
     }
 }

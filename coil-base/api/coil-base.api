@@ -195,15 +195,21 @@ public abstract class coil/decode/ImageSource : java/io/Closeable {
 	public abstract fun fileOrNull ()Ljava/io/File;
 	public abstract fun source ()Lokio/BufferedSource;
 	public abstract fun sourceOrNull ()Lokio/BufferedSource;
+	public abstract fun uriOrNull ()Landroid/net/Uri;
 }
 
 public final class coil/decode/ImageSources {
 	public static final fun create (Ljava/io/File;)Lcoil/decode/ImageSource;
 	public static final fun create (Ljava/io/File;Ljava/lang/String;)Lcoil/decode/ImageSource;
 	public static final fun create (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;)Lcoil/decode/ImageSource;
+	public static final fun create (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;Landroid/net/Uri;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;)Lcoil/decode/ImageSource;
+	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;Landroid/net/Uri;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Ljava/io/File;)Lcoil/decode/ImageSource;
-	public static synthetic fun create$default (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static final fun create (Lokio/BufferedSource;Ljava/io/File;Landroid/net/Uri;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;Landroid/net/Uri;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Lokio/BufferedSource;Landroid/content/Context;Landroid/net/Uri;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Lokio/BufferedSource;Ljava/io/File;Landroid/net/Uri;ILjava/lang/Object;)Lcoil/decode/ImageSource;
 }
 
 public abstract interface class coil/disk/DiskCache {

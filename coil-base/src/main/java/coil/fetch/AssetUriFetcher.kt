@@ -19,12 +19,10 @@ internal class AssetUriFetcher(
 
     override suspend fun fetch(): FetchResult {
         val path = data.pathSegments.drop(1).joinToString("/")
+        val inputStream = options.context.assets.open(path)
 
         return SourceResult(
-            source = ImageSource(
-                source = options.context.assets.open(path).source().buffer(),
-                context = options.context
-            ),
+            source = ImageSource(inputStream.source().buffer(), options.context, data),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(path),
             dataSource = DataSource.DISK
         )
