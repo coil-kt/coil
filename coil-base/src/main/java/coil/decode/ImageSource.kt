@@ -30,8 +30,9 @@ import java.io.File
 fun ImageSource(
     file: File,
     diskCacheKey: String? = null,
-    closeable: Closeable? = null
-): ImageSource = FileImageSource(file, diskCacheKey, closeable)
+    closeable: Closeable? = null,
+    uri: Uri? = null
+): ImageSource = FileImageSource(file, diskCacheKey, closeable, uri)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -111,7 +112,8 @@ sealed class ImageSource : Closeable {
 internal class FileImageSource(
     internal val file: File,
     internal val diskCacheKey: String?,
-    private val closeable: Closeable?
+    private val closeable: Closeable?,
+    private val uri: Uri?
 ) : ImageSource() {
 
     private var isClosed = false
@@ -141,7 +143,7 @@ internal class FileImageSource(
     @Synchronized
     override fun uriOrNull(): Uri? {
         assertNotClosed()
-        return null
+        return uri
     }
 
     @Synchronized
