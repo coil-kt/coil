@@ -23,7 +23,8 @@ internal class AssetUriFetcher(
         return SourceResult(
             source = ImageSource(
                 source = options.context.assets.open(path).source().buffer(),
-                context = options.context
+                context = options.context,
+                uri = data
             ),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(path),
             dataSource = DataSource.DISK
