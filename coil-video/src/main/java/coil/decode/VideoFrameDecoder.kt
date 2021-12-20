@@ -159,10 +159,8 @@ class VideoFrameDecoder(
     }
 
     private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
-        val file = source.fileOrNull()
         val uri = source.uriOrNull()
         when {
-            file != null -> setDataSource(file.path)
             uri != null -> setDataSource(options.context, uri)
             else -> setDataSource(source.file().path)
         }
