@@ -1,5 +1,7 @@
 package coil.decode
 
+import android.content.ContentResolver.SCHEME_CONTENT
+import android.content.ContentResolver.SCHEME_FILE
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.media.MediaMetadataRetriever
@@ -159,7 +161,7 @@ class VideoFrameDecoder(
     }
 
     private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
-        val uri = source.uriOrNull()
+        val uri = source.uriOrNull()?.takeIf { it.scheme in SUPPORTED_SCHEMES }
         when {
             uri != null -> setDataSource(options.context, uri)
             else -> setDataSource(source.file().path)
@@ -185,5 +187,6 @@ class VideoFrameDecoder(
     companion object {
         const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
         const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
+        private val SUPPORTED_SCHEMES = arrayOf(SCHEME_CONTENT, SCHEME_FILE)
     }
 }

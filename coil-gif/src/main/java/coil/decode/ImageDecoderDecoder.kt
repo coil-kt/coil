@@ -1,7 +1,10 @@
 package coil.decode
 
+import android.content.ContentResolver.SCHEME_CONTENT
+import android.content.ContentResolver.SCHEME_FILE
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -49,15 +52,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 source
             }
             imageSource.use {
-                val uri = imageSource.uriOrNull()
-                val decoderSource = when {
-                    uri != null -> ImageDecoder.createSource(options.context.contentResolver, uri)
-                    // https://issuetracker.google.com/issues/139371066
-                    SDK_INT < 30 -> ImageDecoder.createSource(imageSource.file())
-                    else -> ImageDecoder.createSource(ByteBuffer.wrap(imageSource.source().readByteArray()))
-                }
-
-                decoderSource.decodeDrawable { info, _ ->
+                imageSource.toImageDecoderSource().decodeDrawable { info, _ ->
                     val srcWidth = info.size.width.coerceAtLeast(1)
                     val srcHeight = info.size.height.coerceAtLeast(1)
                     val dstWidth = options.size.width.pxOrElse { srcWidth }
@@ -129,6 +124,34 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         )
     }
 
+    private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
+        val file = fileOrNull()
+        val uri = uriOrNull()?.takeIf { it.scheme in SUPPORTED_SCHEMES }
+        return when {
+            file != null -> ImageDecoder.createSource(file)
+            uri != null -> {
+                val assetFileName = uri.assetFileNameOrNull()
+                if (assetFileName != null) {
+                    ImageDecoder.createSource(options.context.assets, assetFileName)
+                } else {
+                    ImageDecoder.createSource(options.context.contentResolver, uri)
+                }
+            }
+            // https://issuetracker.google.com/issues/139371066
+            SDK_INT < 30 -> ImageDecoder.createSource(file())
+            else -> ImageDecoder.createSource(ByteBuffer.wrap(source().readByteArray()))
+        }
+    }
+
+    /** Modified from `AssetUriFetcher`. */
+    private fun Uri.assetFileNameOrNull(): String? {
+        if (scheme == SCHEME_FILE && pathSegments.firstOrNull() == "android_asset") {
+            return pathSegments.drop(1).lastOrNull()
+        } else {
+            return null
+        }
+    }
+
     @RequiresApi(28)
     class Factory @JvmOverloads constructor(
         private val enforceMinimumFrameDelay: Boolean = true
@@ -148,5 +171,9 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         override fun equals(other: Any?) = other is Factory
 
         override fun hashCode() = javaClass.hashCode()
+    }
+
+    private companion object {
+        val SUPPORTED_SCHEMES = arrayOf(SCHEME_CONTENT, SCHEME_FILE)
     }
 }
