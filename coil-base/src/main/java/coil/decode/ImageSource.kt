@@ -99,7 +99,7 @@ sealed class ImageSource : Closeable {
      * If available, return a [Uri] which resolves to the location of the image data.
      *
      * Heavily prefer using [source] or [file] to decode the image's data instead of this method,
-     * as there's no standard way to read the data for a [Uri]. It's the responsibility of a
+     * as there's no uniform way to read the data for a [Uri]. It's the responsibility of a
      * [Fetcher] to create a [BufferedSource] or [File] that can be easily read irrespective of
      * where the image data is located.
      *
