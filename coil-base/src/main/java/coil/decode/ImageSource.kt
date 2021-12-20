@@ -96,8 +96,7 @@ sealed class ImageSource : Closeable {
     abstract fun fileOrNull(): File?
 
     /**
-     * If available, return a [Uri] (typically a `content` URI) which resolves to the location of
-     * the image data.
+     * If available, return a [Uri] which resolves to the location of the image data.
      *
      * Heavily prefer using [source] or [file] to decode the image's data instead of this method,
      * as there's no standard way to read the data for a [Uri]. It's the responsibility of a
