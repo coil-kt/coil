@@ -39,6 +39,7 @@ fun ImageSource(
  * @param source The buffered source to read from.
  * @param context A context used to resolve a safe cache directory.
  */
+@JvmOverloads
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
@@ -53,6 +54,7 @@ fun ImageSource(
  * @param cacheDirectory The directory to create temporary files in
  *  if [ImageSource.file] is called.
  */
+@JvmOverloads
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
