@@ -24,6 +24,7 @@ import java.io.File
  * @param diskCacheKey An optional cache key for the [file] in the disk cache.
  * @param closeable An optional closeable reference that will
  *  be closed when the image source is closed.
+ * @param uri An optional [Uri] that resolves to the image data.
  */
 @JvmOverloads
 @JvmName("create")
@@ -39,6 +40,7 @@ fun ImageSource(
  *
  * @param source The buffered source to read from.
  * @param context A context used to resolve a safe cache directory.
+ * @param uri An optional [Uri] that resolves to the image data.
  */
 @JvmOverloads
 @JvmName("create")
@@ -54,6 +56,7 @@ fun ImageSource(
  * @param source The buffered source to read from.
  * @param cacheDirectory The directory to create temporary files in
  *  if [ImageSource.file] is called.
+ * @param uri An optional [Uri] that resolves to the image data.
  */
 @JvmOverloads
 @JvmName("create")
