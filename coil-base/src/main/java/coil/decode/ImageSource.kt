@@ -3,6 +3,11 @@
 package coil.decode
 
 import android.content.Context
+import android.graphics.ImageDecoder
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import coil.annotation.ExperimentalCoilApi
+import coil.fetch.Fetcher
 import coil.util.closeQuietly
 import coil.util.safeCacheDir
 import okio.BufferedSource
@@ -19,26 +24,31 @@ import java.io.File
  * @param diskCacheKey An optional cache key for the [file] in the disk cache.
  * @param closeable An optional closeable reference that will
  *  be closed when the image source is closed.
+ * @param uri An optional [Uri] that resolves to the image data.
  */
 @JvmOverloads
 @JvmName("create")
 fun ImageSource(
     file: File,
     diskCacheKey: String? = null,
-    closeable: Closeable? = null
-): ImageSource = FileImageSource(file, diskCacheKey, closeable)
+    closeable: Closeable? = null,
+    uri: Uri? = null
+): ImageSource = FileImageSource(file, diskCacheKey, closeable, uri)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
  *
  * @param source The buffered source to read from.
  * @param context A context used to resolve a safe cache directory.
+ * @param uri An optional [Uri] that resolves to the image data.
  */
+@JvmOverloads
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
-    context: Context
-): ImageSource = SourceImageSource(source, context.safeCacheDir)
+    context: Context,
+    uri: Uri? = null
+): ImageSource = SourceImageSource(source, context.safeCacheDir, uri)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -46,12 +56,15 @@ fun ImageSource(
  * @param source The buffered source to read from.
  * @param cacheDirectory The directory to create temporary files in
  *  if [ImageSource.file] is called.
+ * @param uri An optional [Uri] that resolves to the image data.
  */
+@JvmOverloads
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
-    cacheDirectory: File
-): ImageSource = SourceImageSource(source, cacheDirectory)
+    cacheDirectory: File,
+    uri: Uri? = null
+): ImageSource = SourceImageSource(source, cacheDirectory, uri)
 
 /**
  * Provides access to the image data to be decoded.
@@ -81,12 +94,28 @@ sealed class ImageSource : Closeable {
      * Else, return 'null'.
      */
     abstract fun fileOrNull(): File?
+
+    /**
+     * If available, return a [Uri] which resolves to the location of the image data.
+     *
+     * **Heavily prefer** using [source] or [file] to decode the image's data instead of this method
+     * as there's no uniform way to read the data for a [Uri]. It's the responsibility of a
+     * [Fetcher] to create a [BufferedSource] or [File] that can be easily read irrespective of
+     * where the image data is located.
+     *
+     * This method is provided as a way to use decoders that don't support decoding a
+     * [BufferedSource] and want to avoid creating a temporary file (e.g. [MediaMetadataRetriever],
+     * [ImageDecoder], etc.).
+     */
+    @ExperimentalCoilApi
+    abstract fun uriOrNull(): Uri?
 }
 
 internal class FileImageSource(
     internal val file: File,
     internal val diskCacheKey: String?,
-    private val closeable: Closeable?
+    private val closeable: Closeable?,
+    private val uri: Uri?
 ) : ImageSource() {
 
     private var isClosed = false
@@ -114,6 +143,12 @@ internal class FileImageSource(
     override fun fileOrNull() = file()
 
     @Synchronized
+    override fun uriOrNull(): Uri? {
+        assertNotClosed()
+        return uri
+    }
+
+    @Synchronized
     override fun close() {
         isClosed = true
         source?.closeQuietly()
@@ -127,7 +162,8 @@ internal class FileImageSource(
 
 internal class SourceImageSource(
     source: BufferedSource,
-    private val cacheDirectory: File
+    private val cacheDirectory: File,
+    private val uri: Uri?
 ) : ImageSource() {
 
     private var isClosed = false
@@ -163,6 +199,12 @@ internal class SourceImageSource(
     override fun fileOrNull(): File? {
         assertNotClosed()
         return file
+    }
+
+    @Synchronized
+    override fun uriOrNull(): Uri? {
+        assertNotClosed()
+        return uri
     }
 
     @Synchronized
