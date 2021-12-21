@@ -168,6 +168,7 @@ fun AsyncImage(
     } else if (sizeResolver !is ConstraintsSizeResolver) {
         // Fast path: draw the content inside a parent composable without subcomposition.
         Box(
+            modifier = modifier,
             contentAlignment = alignment,
             propagateMinConstraints = true
         ) {
@@ -184,6 +185,7 @@ fun AsyncImage(
     } else {
         // Slow path: draw the content inside a parent composable with subcomposition.
         BoxWithConstraints(
+            modifier = modifier,
             contentAlignment = alignment,
             propagateMinConstraints = true
         ) {
