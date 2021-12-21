@@ -207,8 +207,7 @@ class AsyncImagePainter internal constructor(
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
             .target(onStart = { placeholder ->
-                val painter = placeholder?.toPainter() ?: this.placeholder
-                updateState(state, State.Loading(painter))
+                updateState(state, State.Loading(placeholder?.toPainter() ?: this.placeholder))
             })
             .apply {
                 if (request.defined.sizeResolver == null) {
