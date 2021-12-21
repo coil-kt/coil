@@ -625,11 +625,11 @@ class AsyncImagePainterTest {
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(server.url("/image"))
                         .size(100, 100)
-                        .onLoading { loadingCount.getAndIncrement() }
-                        .onSuccess { successCount.getAndIncrement() }
-                        .onError { errorCount.getAndIncrement() }
                         .build(),
                     imageLoader = imageLoader,
+                    onLoading = { loadingCount.getAndIncrement() },
+                    onSuccess = { successCount.getAndIncrement() },
+                    onError = { errorCount.getAndIncrement() },
                 ),
                 contentDescription = null
             )
@@ -654,11 +654,11 @@ class AsyncImagePainterTest {
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(server.url("/incorrect_path"))
                         .size(100, 100)
-                        .onLoading { loadingCount.getAndIncrement() }
-                        .onSuccess { successCount.getAndIncrement() }
-                        .onError { errorCount.getAndIncrement() }
                         .build(),
                     imageLoader = imageLoader,
+                    onLoading = { loadingCount.getAndIncrement() },
+                    onSuccess = { successCount.getAndIncrement() },
+                    onError = { errorCount.getAndIncrement() },
                 ),
                 contentDescription = null
             )

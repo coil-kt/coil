@@ -24,7 +24,7 @@ public final class coil/compose/SingletonAsyncImageKt {
 }
 
 public final class coil/compose/SingletonAsyncImagePainterKt {
-	public static final fun rememberAsyncImagePainter-8BXIMaA (Ljava/lang/Object;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberAsyncImagePainter-5h-nEew (Ljava/lang/Object;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 }
 
 public final class coil/compose/SingletonImagePainterKt {

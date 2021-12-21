@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
+import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 
 /**
@@ -25,5 +26,21 @@ import coil.request.ImageRequest
 @Composable
 fun rememberAsyncImagePainter(
     model: Any?,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = null,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-): AsyncImagePainter = rememberAsyncImagePainter(model, LocalImageLoader.current, filterQuality)
+) = rememberAsyncImagePainter(
+    model = model,
+    imageLoader = LocalImageLoader.current,
+    placeholder = placeholder,
+    error = error,
+    fallback = fallback,
+    onLoading = onLoading,
+    onSuccess = onSuccess,
+    onError = onError,
+    filterQuality = filterQuality
+)

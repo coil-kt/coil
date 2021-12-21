@@ -145,9 +145,9 @@ fun AsyncImage(
     content: @Composable (AsyncImageScope.() -> Unit) = DefaultContent,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(requestOf(model), contentScale, placeholder, error, fallback,
-        onLoading, onSuccess, onError)
-    val painter = rememberAsyncImagePainter(request, imageLoader, filterQuality)
+    val request = updateRequest(requestOf(model), contentScale)
+    val painter = rememberAsyncImagePainter(request, imageLoader, placeholder, error, fallback,
+        onLoading, onSuccess, onError, filterQuality)
 
     val sizeResolver = request.sizeResolver
     if (content === DefaultContent) {
@@ -313,12 +313,6 @@ private fun contentOf(
 private fun updateRequest(
     request: ImageRequest,
     contentScale: ContentScale,
-    placeholder: Painter?,
-    error: Painter?,
-    fallback: Painter?,
-    onLoading: ((State.Loading) -> Unit)?,
-    onSuccess: ((State.Success) -> Unit)?,
-    onError: ((State.Error) -> Unit)?,
 ) = request.newBuilder()
     .apply {
         if (request.defined.sizeResolver == null) {
@@ -327,12 +321,6 @@ private fun updateRequest(
         if (request.defined.scale == null) {
             scale(contentScale.toScale())
         }
-        placeholder?.let(::placeholder)
-        error?.let(::error)
-        fallback?.let(::fallback)
-        onLoading?.let(::onLoading)
-        onSuccess?.let(::onSuccess)
-        onError?.let(::onError)
     }
     .build()
 

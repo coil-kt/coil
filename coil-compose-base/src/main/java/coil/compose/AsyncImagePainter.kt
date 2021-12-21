@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
+import coil.compose.AsyncImagePainter.State
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -68,16 +69,28 @@ import coil.size.Size as CoilSize
 fun rememberAsyncImagePainter(
     model: Any?,
     imageLoader: ImageLoader,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = null,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter {
     val request = requestOf(model)
     assertRequestIsValid(request)
 
     val painter = remember { AsyncImagePainter(request, imageLoader) }
-    painter.request = request
-    painter.imageLoader = imageLoader
+    painter.placeholder = placeholder
+    painter.error = error
+    painter.fallback = fallback
+    painter.onLoading = onLoading
+    painter.onSuccess = onSuccess
+    painter.onError = onError
     painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
+    painter.imageLoader = imageLoader
+    painter.request = request // Update request last so all other properties are up to date.
     painter.onRemembered() // Invoke this manually so `painter.state` is up to date immediately.
     return painter
 }
@@ -99,6 +112,12 @@ class AsyncImagePainter internal constructor(
     private var alpha: Float by mutableStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
+    internal var placeholder: Painter? = null
+    internal var error: Painter? = null
+    internal var fallback: Painter? = null
+    internal var onLoading: ((State.Loading) -> Unit)? = null
+    internal var onSuccess: ((State.Success) -> Unit)? = null
+    internal var onError: ((State.Error) -> Unit)? = null
     internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
 
@@ -141,7 +160,7 @@ class AsyncImagePainter internal constructor(
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
             val painter = request.placeholder?.toPainter()
-            updateState(request, State.Empty, State.Loading(painter))
+            updateState(State.Empty, State.Loading(painter))
             return
         }
 
@@ -161,7 +180,7 @@ class AsyncImagePainter internal constructor(
                 requestJob?.cancel()
                 requestJob = launch {
                     val current = imageLoader.execute(updateRequest(request)).toState()
-                    updateState(request, state, current)
+                    updateState(state, current)
                 }
             }
         }
@@ -188,8 +207,8 @@ class AsyncImagePainter internal constructor(
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
             .target(onStart = { placeholder ->
-                val painter = placeholder?.toPainter() ?: request.parameters.placeholderPainter()
-                updateState(request, state, State.Loading(painter))
+                val painter = placeholder?.toPainter() ?: this.placeholder
+                updateState(state, State.Loading(painter))
             })
             .apply {
                 if (request.defined.sizeResolver == null) {
@@ -203,7 +222,7 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
-    private fun updateState(request: ImageRequest, previous: State, current: State) {
+    private fun updateState(previous: State, current: State) {
         state = current
         painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
 
@@ -215,9 +234,9 @@ class AsyncImagePainter internal constructor(
 
         // Notify any listeners.
         when (current) {
-            is State.Loading -> request.parameters.loadingCallback()?.invoke(current)
-            is State.Success -> request.parameters.successCallback()?.invoke(current)
-            is State.Error -> request.parameters.errorCallback()?.invoke(current)
+            is State.Loading -> onLoading?.invoke(current)
+            is State.Success -> onSuccess?.invoke(current)
+            is State.Error -> onError?.invoke(current)
             is State.Empty -> {}
         }
     }
@@ -253,10 +272,11 @@ class AsyncImagePainter internal constructor(
             State.Success(drawable.toPainter(), this)
         }
         is ErrorResult -> {
-            val painter = drawable?.toPainter() ?: if (throwable is NullRequestDataException) {
-                request.parameters.fallbackPainter() ?: request.parameters.errorPainter()
-            } else {
-                request.parameters.errorPainter()
+            val drawable = drawable
+            val painter = when {
+                drawable != null -> drawable.toPainter()
+                throwable is NullRequestDataException -> fallback ?: error
+                else -> error
             }
             State.Error(painter, this)
         }

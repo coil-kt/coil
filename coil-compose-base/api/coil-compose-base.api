@@ -66,7 +66,7 @@ public final class coil/compose/AsyncImagePainter$State$Success : coil/compose/A
 }
 
 public final class coil/compose/AsyncImagePainterKt {
-	public static final fun rememberAsyncImagePainter-ycFWDq0 (Ljava/lang/Object;Lcoil/ImageLoader;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberAsyncImagePainter-MqR-F_0 (Ljava/lang/Object;Lcoil/ImageLoader;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 }
 
 public abstract interface class coil/compose/AsyncImageScope : androidx/compose/foundation/layout/BoxScope {
@@ -97,20 +97,5 @@ public final class coil/compose/ImagePainterKt {
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
-}
-
-public final class coil/compose/RequestsKt {
-	public static final fun error (Lcoil/request/ImageRequest$Builder;Landroidx/compose/ui/graphics/painter/Painter;)Lcoil/request/ImageRequest$Builder;
-	public static final fun errorCallback (Lcoil/request/Parameters;)Lkotlin/jvm/functions/Function1;
-	public static final fun errorPainter (Lcoil/request/Parameters;)Landroidx/compose/ui/graphics/painter/Painter;
-	public static final fun fallback (Lcoil/request/ImageRequest$Builder;Landroidx/compose/ui/graphics/painter/Painter;)Lcoil/request/ImageRequest$Builder;
-	public static final fun fallbackPainter (Lcoil/request/Parameters;)Landroidx/compose/ui/graphics/painter/Painter;
-	public static final fun loadingCallback (Lcoil/request/Parameters;)Lkotlin/jvm/functions/Function1;
-	public static final fun onError (Lcoil/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function1;)Lcoil/request/ImageRequest$Builder;
-	public static final fun onLoading (Lcoil/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function1;)Lcoil/request/ImageRequest$Builder;
-	public static final fun onSuccess (Lcoil/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function1;)Lcoil/request/ImageRequest$Builder;
-	public static final fun placeholder (Lcoil/request/ImageRequest$Builder;Landroidx/compose/ui/graphics/painter/Painter;)Lcoil/request/ImageRequest$Builder;
-	public static final fun placeholderPainter (Lcoil/request/Parameters;)Landroidx/compose/ui/graphics/painter/Painter;
-	public static final fun successCallback (Lcoil/request/Parameters;)Lkotlin/jvm/functions/Function1;
 }
 
