@@ -1,5 +1,3 @@
-@file:JvmName("-ComposeUtils")
-
 package coil.sample
 
 import androidx.annotation.ColorInt
