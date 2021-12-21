@@ -54,7 +54,6 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.test.runTest
