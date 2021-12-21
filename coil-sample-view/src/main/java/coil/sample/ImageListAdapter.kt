@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.request.SuccessResult
-import coil.result
+import coil.memory.MemoryCache
 import coil.sample.ImageListAdapter.ViewHolder
 
 class ImageListAdapter(
@@ -28,19 +27,22 @@ class ImageListAdapter(
             val item = getItem(position)
 
             updateLayoutParams {
-                val size = scaledImageSize(context, numColumns, item.width, item.height)
+                val size = item.computeScaledSize(context, numColumns)
                 width = size.width
                 height = size.height
             }
+
+            var placeholder: MemoryCache.Key? = null
 
             load(item.uri) {
                 placeholder(ColorDrawable(item.color))
                 error(ColorDrawable(Color.RED))
                 parameters(item.parameters)
+                listener { _, result -> placeholder = result.memoryCacheKey }
             }
 
             setOnClickListener {
-                setScreen(Screen.Detail(item, (result as? SuccessResult)?.memoryCacheKey))
+                setScreen(Screen.Detail(item, placeholder))
             }
         }
     }
