@@ -29,9 +29,11 @@ object Library {
     const val COMPOSE_UI_TEST_JUNIT = "androidx.compose.ui:ui-test-junit4:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest:$COMPOSE_VERSION"
 
-    const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:0.20.3"
+    private const val ACCOMPANIST_VERSION = "0.22.0-rc"
+    const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:$ACCOMPANIST_VERSION"
+    const val ACCOMPANIST_INSETS = "com.google.accompanist:accompanist-insets:$ACCOMPANIST_VERSION"
 
-    const val MATERIAL = "com.google.android.material:material:1.4.0"
+    const val MATERIAL = "com.google.android.material:material:1.5.0-rc01"
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 
