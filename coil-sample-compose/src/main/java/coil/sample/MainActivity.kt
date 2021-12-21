@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -91,9 +93,10 @@ private fun Content(
     screenFlow: MutableStateFlow<Screen>,
     imagesFlow: StateFlow<List<Image>>
 ) {
+    val listState = rememberLazyListState()
     when (val screen = screenFlow.collectAsState().value) {
         is Screen.Detail -> DetailScreen(screen)
-        is Screen.List -> ListScreen(screenFlow, imagesFlow)
+        is Screen.List -> ListScreen(listState, screenFlow, imagesFlow)
     }
 }
 
@@ -113,6 +116,7 @@ private fun DetailScreen(screen: Screen.Detail) {
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun ListScreen(
+    listState: LazyListState,
     screenFlow: MutableStateFlow<Screen>,
     imagesFlow: StateFlow<List<Image>>
 ) {
@@ -120,7 +124,10 @@ private fun ListScreen(
     val images by imagesFlow.collectAsState()
 
     // Migrate to LazyStaggeredVerticalGrid when it's implemented.
-    LazyVerticalGrid(cells = GridCells.Fixed(numColumns)) {
+    LazyVerticalGrid(
+        cells = GridCells.Fixed(numColumns),
+        state = listState
+    ) {
         items(images) { image ->
             // Scale the image to fit the width of a column.
             val size = with(LocalDensity.current) {
