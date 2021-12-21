@@ -124,7 +124,7 @@ private fun ListScreen(
             // Scale the image to fit the width of a column.
             val size = with(LocalDensity.current) {
                 image
-                    .toScaledSize(LocalContext.current, numColumns)
+                    .computeScaledSize(LocalContext.current, numColumns)
                     .run { DpSize(width.toDp(), height.toDp()) }
             }
 
