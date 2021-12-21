@@ -511,7 +511,7 @@ class AsyncImageTest {
         composeTestRule.setContent {
             compositionCount.getAndIncrement()
             AsyncImage(
-                model = server.url("/incorrect_path"),
+                model = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader
             )

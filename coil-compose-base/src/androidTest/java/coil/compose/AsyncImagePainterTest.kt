@@ -679,7 +679,7 @@ class AsyncImagePainterTest {
             compositionCount.getAndIncrement()
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = server.url("/incorrect_path"),
+                    model = server.url("/image"),
                     imageLoader = imageLoader
                 ),
                 contentDescription = null
