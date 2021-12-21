@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -31,6 +32,10 @@ import androidx.compose.ui.unit.DpSize
 import coil.compose.AsyncImage
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class MainActivity : ComponentActivity() {
 
@@ -38,6 +43,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setDecorFitsSystemWindowsCompat(false)
         setContent {
             MaterialTheme(
                 colors = lightColors(
@@ -45,49 +51,57 @@ class MainActivity : ComponentActivity() {
                     onPrimary = Color.Black
                 )
             ) {
-                Scaffold(
-                    topBar = { Toolbar(viewModel) },
-                    content = { Content(viewModel) }
-                )
-                BackHandler { viewModel.onBackPressed() }
+                ProvideWindowInsets {
+                    Scaffold(
+                        topBar = { Toolbar(viewModel.assetType) },
+                        content = { Content(viewModel.screen, viewModel.images) }
+                    )
+                    BackHandler { viewModel.onBackPressed() }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun Toolbar(viewModel: MainViewModel) {
+private fun Toolbar(assetType: MutableStateFlow<AssetType>) {
+    val topPadding = with(LocalDensity.current) {
+        LocalWindowInsets.current.systemBars.top.toDp()
+    }
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
-        actions = { AssetTypeButton(viewModel) }
+        actions = { AssetTypeButton(assetType) },
+        modifier = Modifier.padding(top = topPadding)
     )
 }
 
 @Composable
-private fun AssetTypeButton(viewModel: MainViewModel) {
-    val assetType by viewModel.assetType.collectAsState()
+private fun AssetTypeButton(assetTypeFlow: MutableStateFlow<AssetType>) {
+    val assetType by assetTypeFlow.collectAsState()
     IconButton(
-        onClick = { viewModel.assetType.value = nextAssetType(assetType) }
+        onClick = { assetTypeFlow.value = assetType.next() }
     ) {
         Text(text = assetType.name)
     }
 }
 
 @Composable
-private fun Content(viewModel: MainViewModel) {
-    when (val screen = viewModel.screen.collectAsState().value) {
+private fun Content(
+    screenFlow: MutableStateFlow<Screen>,
+    imagesFlow: StateFlow<List<Image>>
+) {
+    when (val screen = screenFlow.collectAsState().value) {
         is Screen.Detail -> DetailScreen(screen)
-        is Screen.List -> ListScreen(viewModel)
+        is Screen.List -> ListScreen(screenFlow, imagesFlow)
     }
 }
 
 @Composable
 private fun DetailScreen(screen: Screen.Detail) {
-    val image = screen.image
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
-            .data(image.uri)
-            .parameters(image.parameters)
+            .data(screen.image.uri)
+            .parameters(screen.image.parameters)
             .placeholderMemoryCacheKey(screen.placeholder)
             .build(),
         contentDescription = null,
@@ -97,29 +111,26 @@ private fun DetailScreen(screen: Screen.Detail) {
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-private fun ListScreen(viewModel: MainViewModel) {
+private fun ListScreen(
+    screenFlow: MutableStateFlow<Screen>,
+    imagesFlow: StateFlow<List<Image>>
+) {
     val numColumns = numberOfColumns(LocalContext.current)
-    val images by viewModel.images.collectAsState()
+    val images by imagesFlow.collectAsState()
 
     // TODO: Migrate to LazyStaggeredVerticalGrid when it's implemented.
     LazyVerticalGrid(
         cells = GridCells.Fixed(numColumns)
     ) {
         items(images) { image ->
-            // Intentionally not a State to avoid recomposition.
-            var placeholder: MemoryCache.Key? = null
-
-            // Scale the image to the width of the column.
-            val imageSize = scaledImageSize(
-                context = LocalContext.current,
-                numColumns = numColumns,
-                width = image.width,
-                height = image.height
-            ).run {
-                with(LocalDensity.current) {
-                    DpSize(width.toDp(), height.toDp())
-                }
+            // Scale the image to fit the width of a column.
+            val size = with(LocalDensity.current) {
+                image
+                    .toScaledSize(LocalContext.current, numColumns)
+                    .run { DpSize(width.toDp(), height.toDp()) }
             }
+
+            var placeholder: MemoryCache.Key? = null
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -130,9 +141,9 @@ private fun ListScreen(viewModel: MainViewModel) {
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(imageSize)
+                    .size(size)
                     .clickable {
-                        viewModel.screen.value = Screen.Detail(image, placeholder)
+                        screenFlow.value = Screen.Detail(image, placeholder)
                     }
             )
         }
