@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -136,14 +137,13 @@ private fun ListScreen(
                     .parameters(image.parameters)
                     .build(),
                 contentDescription = null,
-                placeholder = rememberColorPainter(image.color),
+                placeholder = ColorPainter(Color(image.color)),
+                error = ColorPainter(Color.Red),
                 onSuccess = { placeholder = it.result.memoryCacheKey },
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(size)
-                    .clickable {
-                        screenFlow.value = Screen.Detail(image, placeholder)
-                    }
+                    .clickable { screenFlow.value = Screen.Detail(image, placeholder) }
             )
         }
     }
