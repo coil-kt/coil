@@ -185,8 +185,7 @@ class AsyncImagePainter internal constructor(
             snapshotFlow { request }.collect { request ->
                 requestJob?.cancel()
                 requestJob = launch {
-                    val current = imageLoader.execute(updateRequest(request)).toState()
-                    updateState(state, current)
+                    updateState(state, imageLoader.execute(updateRequest(request)).toState())
                 }
             }
         }
