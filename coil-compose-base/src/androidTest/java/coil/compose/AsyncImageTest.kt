@@ -52,6 +52,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
@@ -501,6 +502,24 @@ class AsyncImageTest {
             .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
+    }
+
+    @Test
+    fun doesNotRecompose() {
+        val compositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            compositionCount.getAndIncrement()
+            AsyncImage(
+                model = server.url("/incorrect_path"),
+                contentDescription = null,
+                imageLoader = imageLoader
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, compositionCount.get())
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {

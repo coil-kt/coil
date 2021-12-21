@@ -671,6 +671,26 @@ class AsyncImagePainterTest {
         assertEquals(1, errorCount.get())
     }
 
+    @Test
+    fun doesNotRecompose() {
+        val compositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            compositionCount.getAndIncrement()
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/incorrect_path"),
+                    imageLoader = imageLoader
+                ),
+                contentDescription = null
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, compositionCount.get())
+    }
+
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(10_000) {
