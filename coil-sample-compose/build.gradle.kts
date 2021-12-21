@@ -34,5 +34,6 @@ dependencies {
     implementation(project(":coil-video"))
 
     implementation(Library.ANDROIDX_ACTIVITY_COMPOSE)
+    implementation(Library.ACCOMPANIST_INSETS)
     implementation(Library.COMPOSE_MATERIAL)
 }

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil.load
 import coil.sample.databinding.ActivityMainBinding
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -94,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_toggle_asset_type -> {
-                viewModel.assetType.value = nextAssetType(viewModel.assetType.value)
+                viewModel.assetType.value = viewModel.assetType.value.next()
             }
             else -> return super.onOptionsItemSelected(item)
         }
