@@ -118,10 +118,8 @@ private fun ListScreen(
     val numColumns = numberOfColumns(LocalContext.current)
     val images by imagesFlow.collectAsState()
 
-    // TODO: Migrate to LazyStaggeredVerticalGrid when it's implemented.
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(numColumns)
-    ) {
+    // Migrate to LazyStaggeredVerticalGrid when it's implemented.
+    LazyVerticalGrid(cells = GridCells.Fixed(numColumns)) {
         items(images) { image ->
             // Scale the image to fit the width of a column.
             val size = with(LocalDensity.current) {
