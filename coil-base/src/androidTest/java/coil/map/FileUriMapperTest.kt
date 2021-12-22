@@ -4,8 +4,8 @@ import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
-import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.request.Options
+import coil.util.ASSET_FILE_PATH_ROOT
 import org.junit.Before
 import org.junit.Test
 import java.io.File

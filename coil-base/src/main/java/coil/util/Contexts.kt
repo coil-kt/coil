@@ -77,9 +77,7 @@ internal fun Context?.getLifecycle(): Lifecycle? {
     }
 }
 
-internal inline fun <reified T : Any> Context.requireSystemService(): T {
-    return checkNotNull(getSystemService()) { "System service of type ${T::class.java} was not found." }
-}
+internal inline fun <reified T : Any> Context.requireSystemService(): T = getSystemService()!!
 
 internal fun Context.isPermissionGranted(permission: String): Boolean {
     return ContextCompat.checkSelfPermission(this, permission) == PERMISSION_GRANTED

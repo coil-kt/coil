@@ -9,9 +9,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.ImageLoader
-import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.size.Size
 import coil.transform.Transformation
+import coil.util.ASSET_FILE_PATH_ROOT
 import coil.util.CoilUtils
 import coil.util.TestActivity
 import coil.util.activity
