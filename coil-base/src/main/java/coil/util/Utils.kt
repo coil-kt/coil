@@ -4,6 +4,7 @@
 package coil.util
 
 import android.app.ActivityManager
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
@@ -207,54 +208,62 @@ internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
 
 internal fun unsupported(): Nothing = error("Unsupported")
 
+internal const val ASSET_FILE_PATH_ROOT = "android_asset"
+
+internal fun isAssetUri(uri: Uri): Boolean {
+    return uri.scheme == SCHEME_FILE && uri.firstPathSegment == ASSET_FILE_PATH_ROOT
+}
+
 /** A simple [Optional] replacement. */
 internal class Option<T : Any>(@JvmField val value: T?)
 
-/** Namespaced private utility methods for Coil. */
-internal object Utils {
+private const val STANDARD_MEMORY_MULTIPLIER = 0.2
+private const val LOW_MEMORY_MULTIPLIER = 0.15
 
-    private const val STANDARD_MEMORY_MULTIPLIER = 0.2
-    private const val LOW_MEMORY_MULTIPLIER = 0.15
-    private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
-    private const val SINGLETON_DISK_CACHE_NAME = "image_cache"
-
-    /**
-     * Holds the singleton instance of the disk cache. We need to have a singleton disk cache
-     * instance to support creating multiple [ImageLoader]s without specifying the disk cache
-     * directory.
-     *
-     * @see DiskCache.Builder.directory
-     */
-    private var singletonDiskCache: DiskCache? = null
-
-    fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
-        val memoryClassMegabytes = try {
-            val activityManager: ActivityManager = context.requireSystemService()
-            val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
-            if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
-        } catch (_: Exception) {
-            DEFAULT_MEMORY_CLASS_MEGABYTES
-        }
-        return (percent * memoryClassMegabytes * 1024 * 1024).toInt()
+/** Return the default percent of the application's total memory to use for the memory cache. */
+internal fun defaultMemoryCacheSizePercent(context: Context): Double {
+    return try {
+        val activityManager: ActivityManager = context.requireSystemService()
+        if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MEMORY_MULTIPLIER
+    } catch (_: Exception) {
+        STANDARD_MEMORY_MULTIPLIER
     }
+}
 
-    fun defaultMemoryCacheSizePercent(context: Context): Double {
-        return try {
-            val activityManager: ActivityManager = context.requireSystemService()
-            if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MEMORY_MULTIPLIER
-        } catch (_: Exception) {
-            STANDARD_MEMORY_MULTIPLIER
-        }
+private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
+
+/** Return a [percent] of the application's total memory in bytes. */
+internal fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
+    val memoryClassMegabytes = try {
+        val activityManager: ActivityManager = context.requireSystemService()
+        val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
+        if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
+    } catch (_: Exception) {
+        DEFAULT_MEMORY_CLASS_MEGABYTES
     }
+    return (percent * memoryClassMegabytes * 1024 * 1024).toInt()
+}
+
+/**
+ * Holds the singleton instance of the disk cache. We need to have a singleton disk cache
+ * instance to support creating multiple [ImageLoader]s without specifying the disk cache
+ * directory.
+ *
+ * @see DiskCache.Builder.directory
+ */
+internal object SingletonDiskCache {
+
+    private const val FOLDER_NAME = "image_cache"
+    private var instance: DiskCache? = null
 
     @Synchronized
-    fun singletonDiskCache(context: Context): DiskCache {
-        return singletonDiskCache ?: run {
+    fun get(context: Context): DiskCache {
+        return instance ?: run {
             // Create the singleton disk cache instance.
             DiskCache.Builder(context)
-                .directory(context.safeCacheDir.resolve(SINGLETON_DISK_CACHE_NAME))
+                .directory(context.safeCacheDir.resolve(FOLDER_NAME))
                 .build()
-                .also { singletonDiskCache = it }
+                .also { instance = it }
         }
     }
 }

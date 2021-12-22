@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -24,6 +23,7 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -56,8 +56,16 @@ class MainActivity : ComponentActivity() {
             ) {
                 ProvideWindowInsets {
                     Scaffold(
-                        topBar = { Toolbar(viewModel.assetType) },
-                        content = { Content(viewModel.screen, viewModel.images) }
+                        topBar = {
+                            Toolbar(viewModel.assetType)
+                        },
+                        content = {
+                            Content(
+                                assetTypeFlow = viewModel.assetType,
+                                screenFlow = viewModel.screen,
+                                imagesFlow = viewModel.images
+                            )
+                        }
                     )
                     BackHandler { viewModel.onBackPressed() }
                 }
@@ -90,10 +98,13 @@ private fun AssetTypeButton(assetTypeFlow: MutableStateFlow<AssetType>) {
 
 @Composable
 private fun Content(
+    assetTypeFlow: StateFlow<AssetType>,
     screenFlow: MutableStateFlow<Screen>,
     imagesFlow: StateFlow<List<Image>>
 ) {
-    val listState = rememberLazyListState()
+    // Reset the scroll position when assetType changes.
+    val assetType by assetTypeFlow.collectAsState()
+    val listState = rememberSaveable(assetType, saver = LazyListState.Saver) { LazyListState() }
     when (val screen = screenFlow.collectAsState().value) {
         is Screen.Detail -> DetailScreen(screen)
         is Screen.List -> ListScreen(listState, screenFlow, imagesFlow)
