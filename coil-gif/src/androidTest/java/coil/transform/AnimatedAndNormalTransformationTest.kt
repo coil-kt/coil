@@ -1,6 +1,6 @@
 package coil.transform
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -63,7 +63,7 @@ class AnimatedAndNormalTransformationTest {
     @Test
     fun animatedGifStillAnimated() = runTest {
         val imageRequest = imageRequestBuilder
-            .data("${ContentResolver.SCHEME_FILE}:///android_asset/animated.gif")
+            .data("$SCHEME_FILE:///android_asset/animated.gif")
             .build()
         val actual = imageLoader.execute(imageRequest)
         assertTrue(actual is SuccessResult)
@@ -76,7 +76,7 @@ class AnimatedAndNormalTransformationTest {
     fun staticImageStillTransformed() = runTest {
         val expected = context.decodeBitmapAsset("normal_small_circle.png")
         val imageRequest = imageRequestBuilder
-            .data("${ContentResolver.SCHEME_FILE}:///android_asset/normal_small.jpg")
+            .data("$SCHEME_FILE:///android_asset/normal_small.jpg")
             .build()
         val actual = imageLoader.execute(imageRequest)
         assertTrue(actual is SuccessResult)
