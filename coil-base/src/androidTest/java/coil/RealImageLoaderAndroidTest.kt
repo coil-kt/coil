@@ -16,7 +16,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.base.test.R
 import coil.decode.DataSource
-import coil.fetch.AssetUriFetcher.Companion.ASSET_FILE_PATH_ROOT
 import coil.memory.MemoryCache
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -24,6 +23,7 @@ import coil.request.NullRequestDataException
 import coil.request.SuccessResult
 import coil.size.Precision
 import coil.size.Size
+import coil.util.ASSET_FILE_PATH_ROOT
 import coil.util.TestActivity
 import coil.util.activity
 import coil.util.createMockWebServer

@@ -31,7 +31,7 @@ import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
-import coil.util.Utils
+import coil.util.SingletonDiskCache
 import coil.util.getDrawableCompat
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
@@ -518,7 +518,7 @@ interface ImageLoader {
                 context = applicationContext,
                 defaults = defaults,
                 memoryCacheLazy = memoryCache ?: lazy { MemoryCache.Builder(applicationContext).build() },
-                diskCacheLazy = diskCache ?: lazy { Utils.singletonDiskCache(applicationContext) },
+                diskCacheLazy = diskCache ?: lazy { SingletonDiskCache.get(applicationContext) },
                 callFactoryLazy = callFactory ?: lazy { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),

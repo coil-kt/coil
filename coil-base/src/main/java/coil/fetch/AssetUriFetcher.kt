@@ -1,14 +1,13 @@
 package coil.fetch
 
-import android.content.ContentResolver
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
-import coil.util.firstPathSegment
 import coil.util.getMimeTypeFromUrl
+import coil.util.isAssetUri
 import okio.buffer
 import okio.source
 
@@ -31,17 +30,8 @@ internal class AssetUriFetcher(
     class Factory : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
-            if (!isApplicable(data)) return null
+            if (!isAssetUri(data)) return null
             return AssetUriFetcher(data, options)
         }
-
-        private fun isApplicable(data: Uri): Boolean {
-            return data.scheme == ContentResolver.SCHEME_FILE &&
-                data.firstPathSegment == ASSET_FILE_PATH_ROOT
-        }
-    }
-
-    companion object {
-        const val ASSET_FILE_PATH_ROOT = "android_asset"
     }
 }
