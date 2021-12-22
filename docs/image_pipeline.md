@@ -1,6 +1,6 @@
 # Extending the Image Pipeline
 
-Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats#image-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, TIFF, etc.)
+Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats#image-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, MP4, etc.)
 
 Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of five main parts that are executed in the following order: [Interceptors](../api/coil-base/coil.intercept/-interceptor), [Mappers](../api/coil-base/coil.map/-mapper), [Keyers](../api/coil-base/coil.key/-keyer), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
 
@@ -11,7 +11,7 @@ val imageLoader = ImageLoader.Builder(context)
     .components {
         add(CustomCacheInterceptor())
         add(ItemMapper())
-        add()
+        add(HttpUrlKeyer())
         add(CronetFetcher())
         add(GifDecoder())
     }
@@ -87,15 +87,12 @@ See [Keyers](../api/coil-base/coil.key/-keyer) for more information.
 
 ## Fetchers
 
-Fetchers translate data (e.g. URL, URI, File, etc.) into either a `BufferedSource` or a `Drawable`.
+Fetchers translate data (e.g. URL, URI, File, etc.) into either an `ImageSource` or a `Drawable`. They typically convert the input data into a format that can then be consumed by a `Decoder`. Use this interface to add support for custom fetching mechanisms (e.g. Cronet, custom URI schemes, etc.)
 
 See [Fetcher](../api/coil-base/coil.fetch/-fetcher) for more information.
 
 ## Decoders
 
-Decoders read a `BufferedSource` as input and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
+Decoders read an `ImageSource` and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
 
 See [Decoder](../api/coil-base/coil.decode/-decoder) for more information.
-
-!!! Note
-    Decoders are responsible for closing the `BufferedSource` when finished. This allows custom decoders to return a `Drawable` while still reading the source. This can be useful to support file types such as [progressive JPEG](https://www.liquidweb.com/kb/what-is-a-progressive-jpeg/) where there is incremental information to show.
