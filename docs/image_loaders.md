@@ -8,7 +8,7 @@ val imageLoader = ImageLoader.Builder(context)
     .build()
 ```
 
-Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, disk cache, and network observer.
+Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, disk cache, and `OkHttpClient`.
 
 ## Caching
 
@@ -43,13 +43,13 @@ Coil performs best when you have a single `ImageLoader` that's shared throughout
 
 The singleton `ImageLoader` can be configured by implementing `ImageLoaderFactory` on your `Application` class.
 
-Optionally, you can create your own `ImageLoader` instance(s) and inject them using a dependency injector like [Dagger](https://github.com/google/dagger). If you do that, depend on `io.coil-kt:coil-base` and that artifact doesn't create the singleton `ImageLoader`.
+Optionally, you can create your own `ImageLoader` instance(s) and inject them using a dependency injector like [Dagger](https://github.com/google/dagger). If you do that, depend on `io.coil-kt:coil-base` as that artifact doesn't create the singleton `ImageLoader`.
 
 ## Testing
 
 `ImageLoader` is an interface, which you can replace with a fake implementation.
 
-For instance, you could inject a fake `ImageLoader` implementation which always returns the same `Drawable` synchronously:
+For instance, you could create a fake `ImageLoader` implementation which always returns the same `Drawable` synchronously:
 
 ```kotlin
 class FakeImageLoader(private val context: Context) : ImageLoader {

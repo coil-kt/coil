@@ -1,6 +1,6 @@
 # FAQ
 
-Have a question that isn't part of the FAQ? Check [StackOverflow](https://stackoverflow.com/questions/tagged/coil) with the tag #coil or search our [Github issues](https://github.com/coil-kt/coil/issues).
+Have a question that isn't part of the FAQ? Check [StackOverflow](https://stackoverflow.com/questions/tagged/coil) with the tag #coil or search [Github discussions](https://github.com/coil-kt/coil/discussions).
 
 ## Can Coil be used with Java projects or mixed Kotlin/Java projects?
 
@@ -9,10 +9,6 @@ Yes! [Read here](java_compatibility.md).
 ## How do I preload an image?
 
 [Read here](getting_started.md#preloading).
-
-## How do I set up disk caching?
-
-[Read here](image_loaders.md#caching).
 
 ## How do I enable logging?
 

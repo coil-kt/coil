@@ -27,7 +27,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs += "-Xjvm-default=all" // Only required for 2.x.
+        freeCompilerArgs += "-Xjvm-default=all"
     }
 }
 ```
@@ -42,20 +42,14 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs += "-Xjvm-default=all" // Only required for 2.x.
+        freeCompilerArgs += "-Xjvm-default=all"
     }
 }
 ```
 
 ## Image Loaders
 
-[`ImageLoader`](image_loaders.md)s are service classes that execute [`ImageRequest`](image_requests.md)s. `ImageLoader`s handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
-
-```kotlin
-val imageLoader = ImageLoader.Builder(context)
-    .crossfade(true)
-    .build()
-```
+[`ImageLoader`](image_loaders.md)s are service classes that execute [`ImageRequest`](image_requests.md)s. `ImageLoader`s handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more.
 
 The default Coil artifact (`io.coil-kt:coil`) includes the singleton `ImageLoader`, which can be accessed using an extension function: `context.imageLoader`.
 
