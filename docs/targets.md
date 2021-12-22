@@ -1,6 +1,6 @@
 # Targets
 
-Targets receive the result of an `ImageRequest`. They often act as "view adapters" by taking the placeholder/error/success drawables and applying them to a `View` (e.g. `ImageViewTarget`).
+Targets receive the `Drawable` result of an `ImageRequest`. They often act as "view adapters" by taking the placeholder/error/success drawables and applying them to a `View` (e.g. `ImageViewTarget`).
 
 Here's the easiest way to create a custom target:
 

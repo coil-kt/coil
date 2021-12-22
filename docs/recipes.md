@@ -8,116 +8,40 @@ See a common use case that isn't covered? Feel free to submit a PR with a new se
 
 [Palette](https://developer.android.com/training/material/palette-colors?hl=en) allows you to extract prominent colors from an image. To create a `Palette`, you'll need access to an image's `Bitmap`. This can be done in a number of ways:
 
-#### Enqueue
-
-You can get access to an image's bitmap by setting a `Target` and enqueuing `ImageRequest`:
+You can get access to an image's bitmap by setting a `ImageRequest.Listener` and enqueuing an `ImageRequest`:
 
 ```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .allowHardware(false) // Disable hardware bitmaps.
-    .target { drawable ->
-        // Generate the Palette on a background thread.
-        val task = Palette.Builder(drawable.toBitmap()).generate { palette ->
-            // Consume the palette.
-        }
-    }
-    .build()
-val disposable = imageLoader.enqueue(request)
-```
-
-#### Execute
-
-You can also execute an `ImageRequest`, which returns the drawable imperatively:
-
-```kotlin
-val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .allowHardware(false) // Disable hardware bitmaps.
-    .build()
-val drawable = (imageLoader.execute(request) as SuccessResult).drawable
-
-val palette = coroutineScope {
-    launch(Dispatchers.IO) {
-        Palette.Builder(drawable.toBitmap()).generate()
-    }
-}
-```
-
-#### Transition
-
-There may be cases where you want to load an image into a `PoolableViewTarget` (e.g. `ImageViewTarget`) while extracting the image's colors in parallel. For these cases, you can use a custom [`Transition`](transitions.md) to get access to the underlying bitmap:
-
-```kotlin
-class PaletteTransition(
-    private val delegate: Transition?,
-    private val onGenerated: (Palette) -> Unit
-) : Transition {
-
-    override suspend fun transition(target: TransitionTarget, result: RequestResult) {
-        // Execute the delegate transition.
-        val delegateJob = delegate?.let { delegate ->
-            coroutineScope {
-                launch(Dispatchers.Main.immediate) {
-                    delegate.transition(target, result)
-                }
-            }
-        }
-
-        // Compute the palette on a background thread.
-        if (result is SuccessResult) {
-            val bitmap = result.drawable.toBitmap()
-            val palette = withContext(Dispatchers.IO) {
-                Palette.Builder(bitmap).generate()
-            }
-            onGenerated(palette)
-        }
-
-        delegateJob?.join()
-    }
-}
-
-// ImageRequest
-val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .allowHardware(false) // Disable hardware bitmaps.
-    .transition(PaletteTransition(CrossfadeTransition()) { palette ->
-        // Consume the palette.
-    })
-    .target(imageView)
-    .build()
-imageLoader.enqueue(request)
-
-// ImageView.load
 imageView.load("https://www.example.com/image.jpg") {
+    // Disable hardware bitmaps as Palette needs to read the image's pixels.
     allowHardware(false)
-    transition(PaletteTransition(CrossfadeTransition()) { palette ->
-        // Consume the palette.
-    })
+    listener(
+        onSuccess = { _, result ->
+            // Create the palette on a background thread.
+            Palette.Builder(result.drawable.toBitmap()).generate { palette ->
+                // Consume the palette.
+            }
+        }
+    )
 }
 ```
-
-!!! Note
-    You should not pass the drawable outside the scope of `Transition.transition`. This can cause the drawable's underlying bitmap to be pooled while it is still in use, which can result in rendering issues and crashes.
 
 ## Using a custom OkHttpClient
 
-Coil uses [`OkHttp`](https://github.com/square/okhttp/) for all its networking operations. You can specify a custom `OkHttpClient` when creating your `ImageLoader`:
+Coil uses [OkHttp](https://github.com/square/okhttp/) for all its networking operations. You can specify a custom `OkHttpClient` when creating your `ImageLoader`:
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
     // Create the OkHttpClient inside a lambda so it will be initialized lazily on a background thread.
     .okHttpClient {
         OkHttpClient.Builder()
-            // You need to set the cache for disk caching to work.
-            .cache(CoilUtils.createDefaultCache(context))
+            .addInterceptor(CustomInterceptor())
             .build()
     }
     .build()
 ```
 
 !!! Note
-    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/new-builder/) to build a new client that shares resources with the original. Also, it's recommended to use a separate `Cache` instance for your Coil `OkHttpClient`. Image files can quickly evict more important cached network responses if they share the same cache.
+    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/new-builder/) to build a new client that shares resources with the original.
 
 #### Headers
 
@@ -149,7 +73,6 @@ class ResponseHeaderInterceptor(
 val imageLoader = ImageLoader.Builder(context)
     .okHttpClient {
         OkHttpClient.Builder()
-            .cache(CoilUtils.createDefaultCache(context))
             // This header will be added to every image request.
             .addNetworkInterceptor(ResponseHeaderInterceptor("Cache-Control", "max-age=31536000,public"))
             .build()
@@ -177,9 +100,9 @@ To achieve this effect, use the `MemoryCache.Key` of the first request as the `I
 // First request
 listImageView.load("https://www.example.com/image.jpg")
 
-// Second request
+// Second request (once the first request finishes)
 detailImageView.load("https://www.example.com/image.jpg") {
-    placeholderMemoryCacheKey(listImageView.metadata.memoryCacheKey)
+    placeholderMemoryCacheKey(listImageView.result.memoryCacheKey)
 }
 ```
 
@@ -224,10 +147,9 @@ class RemoteViewsTarget(
 Then `enqueue`/`execute` the request like normal:
 
 ```kotlin
-val target = RemoteViewsTarget(...)
 val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
-    .target(target)
+    .target(RemoteViewsTarget(...))
     .build()
 imageLoader.enqueue(request)
 ```
