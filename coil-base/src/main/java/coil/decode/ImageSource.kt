@@ -42,6 +42,7 @@ fun ImageSource(
  *  be closed when the image source is closed.
  * @param metadata Metadata about this image source.
  */
+@ExperimentalCoilApi
 @JvmName("create")
 fun ImageSource(
     file: File,
@@ -69,6 +70,7 @@ fun ImageSource(
  * @param context A context used to resolve a safe cache directory.
  * @param metadata Metadata about this image source.
  */
+@ExperimentalCoilApi
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
@@ -97,6 +99,7 @@ fun ImageSource(
  *  if [ImageSource.file] is called.
  * @param metadata Metadata about this image source.
  */
+@ExperimentalCoilApi
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
