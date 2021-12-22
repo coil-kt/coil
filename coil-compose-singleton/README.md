@@ -16,9 +16,9 @@ AsyncImage(
 )
 ```
 
-`model` can either be the `ImageRequest.data` to load or the `ImageRequest` itself for more complex requests.
+`model` can either be the `ImageRequest.data` to load or the `ImageRequest` itself for complex requests.
 
-`AsyncImage` supports the same arguments as the standard `Image` composable. Additionally, it supports overwriting what's shown for state. Here's an example that loads image with a circle crop, crossfade, and overwrites the `loading` state:
+`AsyncImage` supports the same arguments as the standard `Image` composable. Additionally, it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads image with a circle crop, crossfade, and sets a placeholder:
 
 ```kotlin
 AsyncImage(
@@ -27,18 +27,16 @@ AsyncImage(
         .crossfade(true)
         .build(),
     contentDescription = null,
+    contentScale = ContentScale.Crop,
+    placeholder = painterResource(R.drawable.placeholder),
     modifier = Modifier
-        .clip(CircleShape),
-    loading = {
-        CircularProgressIndicator()
-    },
-    contentScale = ContentScale.Crop
+        .clip(CircleShape)
 )
 ```
 
 ## AsyncImagePainter
 
-Internally, `AsyncImage` uses `AsyncImagePainter` to load the `model`. If you need a painter and can't use `AsyncImage`, you can load the image using `rememberAsyncImagePainter`:
+Internally, `AsyncImage` uses `AsyncImagePainter` to load the `model`. If you need a `Painter` and can't use `AsyncImage`, you can load the image using `rememberAsyncImagePainter`:
 
 ```kotlin
 val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
@@ -77,3 +75,6 @@ AsyncImage(
     }
 }
 ```
+
+!!! Note
+    Using the `loading`/`success`/`error`/`content` slot APIs is expensive as it uses subcomposition. Avoid using them in cases where high UI performance is necessary!
