@@ -40,7 +40,7 @@ fun ImageSource(
  * @param diskCacheKey An optional cache key for the [file] in the disk cache.
  * @param closeable An optional closeable reference that will
  *  be closed when the image source is closed.
- * @param metadata Metadata about this image source.
+ * @param metadata Metadata for this image source.
  */
 @ExperimentalCoilApi
 @JvmName("create")
@@ -68,7 +68,7 @@ fun ImageSource(
  *
  * @param source The buffered source to read from.
  * @param context A context used to resolve a safe cache directory.
- * @param metadata Metadata about this image source.
+ * @param metadata Metadata for this image source.
  */
 @ExperimentalCoilApi
 @JvmName("create")
@@ -97,7 +97,7 @@ fun ImageSource(
  * @param source The buffered source to read from.
  * @param cacheDirectory The directory to create temporary files in
  *  if [ImageSource.file] is called.
- * @param metadata Metadata about this image source.
+ * @param metadata Metadata for this image source.
  */
 @ExperimentalCoilApi
 @JvmName("create")
