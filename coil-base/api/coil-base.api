@@ -131,6 +131,11 @@ public final class coil/ImageLoaders {
 public abstract interface annotation class coil/annotation/ExperimentalCoilApi : java/lang/annotation/Annotation {
 }
 
+public final class coil/decode/AssetMetadata : coil/decode/ImageSource$Metadata {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun getFileName ()Ljava/lang/String;
+}
+
 public final class coil/decode/BitmapFactoryDecoder : coil/decode/Decoder {
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;)V
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;)V
@@ -145,6 +150,11 @@ public final class coil/decode/BitmapFactoryDecoder$Factory : coil/decode/Decode
 	public fun create (Lcoil/fetch/SourceResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
+}
+
+public final class coil/decode/ContentMetadata : coil/decode/ImageSource$Metadata {
+	public fun <init> (Landroid/net/Uri;)V
+	public final fun getUri ()Landroid/net/Uri;
 }
 
 public final class coil/decode/DataSource : java/lang/Enum {
@@ -193,23 +203,32 @@ public abstract interface class coil/decode/Decoder$Factory {
 public abstract class coil/decode/ImageSource : java/io/Closeable {
 	public abstract fun file ()Ljava/io/File;
 	public abstract fun fileOrNull ()Ljava/io/File;
+	public abstract fun getMetadata ()Lcoil/decode/ImageSource$Metadata;
 	public abstract fun source ()Lokio/BufferedSource;
 	public abstract fun sourceOrNull ()Lokio/BufferedSource;
-	public abstract fun uriOrNull ()Landroid/net/Uri;
+}
+
+public abstract class coil/decode/ImageSource$Metadata {
+	public fun <init> ()V
 }
 
 public final class coil/decode/ImageSources {
-	public static final fun create (Ljava/io/File;)Lcoil/decode/ImageSource;
-	public static final fun create (Ljava/io/File;Ljava/lang/String;)Lcoil/decode/ImageSource;
 	public static final fun create (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;)Lcoil/decode/ImageSource;
-	public static final fun create (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;Landroid/net/Uri;)Lcoil/decode/ImageSource;
+	public static final fun create (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;)Lcoil/decode/ImageSource;
-	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;Landroid/net/Uri;)Lcoil/decode/ImageSource;
+	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Ljava/io/File;)Lcoil/decode/ImageSource;
-	public static final fun create (Lokio/BufferedSource;Ljava/io/File;Landroid/net/Uri;)Lcoil/decode/ImageSource;
-	public static synthetic fun create$default (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;Landroid/net/Uri;ILjava/lang/Object;)Lcoil/decode/ImageSource;
-	public static synthetic fun create$default (Lokio/BufferedSource;Landroid/content/Context;Landroid/net/Uri;ILjava/lang/Object;)Lcoil/decode/ImageSource;
-	public static synthetic fun create$default (Lokio/BufferedSource;Ljava/io/File;Landroid/net/Uri;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static final fun create (Lokio/BufferedSource;Ljava/io/File;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Lokio/BufferedSource;Landroid/content/Context;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Lokio/BufferedSource;Ljava/io/File;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+}
+
+public final class coil/decode/ResourceMetadata : coil/decode/ImageSource$Metadata {
+	public fun <init> (Ljava/lang/String;I)V
+	public final fun getPackageName ()Ljava/lang/String;
+	public final fun getResId ()I
 }
 
 public abstract interface class coil/disk/DiskCache {

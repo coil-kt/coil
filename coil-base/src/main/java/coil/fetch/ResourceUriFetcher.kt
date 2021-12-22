@@ -1,12 +1,13 @@
 package coil.fetch
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.net.Uri
 import android.util.TypedValue
 import android.webkit.MimeTypeMap
 import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
+import coil.decode.ResourceMetadata
 import coil.request.Options
 import coil.util.DrawableUtils
 import coil.util.getDrawableCompat
@@ -65,7 +66,8 @@ internal class ResourceUriFetcher(
             SourceResult(
                 source = ImageSource(
                     source = resources.openRawResource(resId).source().buffer(),
-                    context = context
+                    context = context,
+                    metadata = ResourceMetadata(packageName, resId)
                 ),
                 mimeType = mimeType,
                 dataSource = DataSource.DISK
@@ -74,7 +76,7 @@ internal class ResourceUriFetcher(
     }
 
     private fun throwInvalidUriException(data: Uri): Nothing {
-        throw IllegalStateException("Invalid ${ContentResolver.SCHEME_ANDROID_RESOURCE} URI: $data")
+        throw IllegalStateException("Invalid $SCHEME_ANDROID_RESOURCE URI: $data")
     }
 
     class Factory : Fetcher.Factory<Uri> {
@@ -85,7 +87,7 @@ internal class ResourceUriFetcher(
         }
 
         private fun isApplicable(data: Uri): Boolean {
-            return data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE
+            return data.scheme == SCHEME_ANDROID_RESOURCE
         }
     }
 

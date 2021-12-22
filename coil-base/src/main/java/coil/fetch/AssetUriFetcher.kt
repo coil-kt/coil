@@ -3,6 +3,7 @@ package coil.fetch
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import coil.ImageLoader
+import coil.decode.AssetMetadata
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
@@ -18,10 +19,13 @@ internal class AssetUriFetcher(
 
     override suspend fun fetch(): FetchResult {
         val path = data.pathSegments.drop(1).joinToString("/")
-        val inputStream = options.context.assets.open(path)
 
         return SourceResult(
-            source = ImageSource(inputStream.source().buffer(), options.context, data),
+            source = ImageSource(
+                source = options.context.assets.open(path).source().buffer(),
+                context = options.context,
+                metadata = AssetMetadata(data.lastPathSegment!!)
+            ),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(path),
             dataSource = DataSource.DISK
         )
