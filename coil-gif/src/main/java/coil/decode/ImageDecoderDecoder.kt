@@ -1,10 +1,8 @@
 package coil.decode
 
-import android.content.ContentResolver.SCHEME_CONTENT
-import android.content.ContentResolver.SCHEME_FILE
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
-import android.net.Uri
+import android.graphics.drawable.AnimatedImageDrawable.REPEAT_INFINITE
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -52,12 +50,13 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 source
             }
             imageSource.use {
-                imageSource.toImageDecoderSource().decodeDrawable { info, _ ->
-                    val srcWidth = info.size.width.coerceAtLeast(1)
-                    val srcHeight = info.size.height.coerceAtLeast(1)
+                it.toImageDecoderSource().decodeDrawable { info, _ ->
+                    val srcWidth = info.size.width.coerceAtLeast(0)
+                    val srcHeight = info.size.height.coerceAtLeast(0)
                     val dstWidth = options.size.width.pxOrElse { srcWidth }
                     val dstHeight = options.size.height.pxOrElse { srcHeight }
-                    if (srcWidth != dstWidth || srcHeight != dstHeight) {
+                    if (srcWidth > 0 && srcHeight > 0 &&
+                        (srcWidth != dstWidth || srcHeight != dstHeight)) {
                         val multiplier = DecodeUtils.computeSizeMultiplier(
                             srcWidth = srcWidth,
                             srcHeight = srcHeight,
@@ -100,7 +99,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         }
 
         val drawable = if (baseDrawable is AnimatedImageDrawable) {
-            baseDrawable.repeatCount = options.parameters.repeatCount() ?: AnimatedImageDrawable.REPEAT_INFINITE
+            baseDrawable.repeatCount = options.parameters.repeatCount() ?: REPEAT_INFINITE
 
             // Set the start and end animation callbacks if any one is supplied through the request.
             val onStart = options.parameters.animationStartCallback()
@@ -126,29 +125,25 @@ class ImageDecoderDecoder @JvmOverloads constructor(
 
     private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
         val file = fileOrNull()
-        val uri = uriOrNull()?.takeIf { it.scheme in SUPPORTED_SCHEMES }
-        return when {
-            file != null -> ImageDecoder.createSource(file)
-            uri != null -> {
-                val assetFileName = uri.assetFileNameOrNull()
-                if (assetFileName != null) {
-                    ImageDecoder.createSource(options.context.assets, assetFileName)
-                } else {
-                    ImageDecoder.createSource(options.context.contentResolver, uri)
-                }
-            }
-            // https://issuetracker.google.com/issues/139371066
-            SDK_INT < 30 -> ImageDecoder.createSource(file())
-            else -> ImageDecoder.createSource(ByteBuffer.wrap(source().readByteArray()))
+        if (file != null) {
+            return ImageDecoder.createSource(file)
         }
-    }
 
-    /** Modified from `AssetUriFetcher`. */
-    private fun Uri.assetFileNameOrNull(): String? {
-        if (scheme == SCHEME_FILE && pathSegments.firstOrNull() == "android_asset") {
-            return pathSegments.drop(1).lastOrNull()
-        } else {
-            return null
+        val metadata = metadata
+        if (metadata is AssetMetadata) {
+            return ImageDecoder.createSource(options.context.assets, metadata.fileName)
+        }
+        if (metadata is ContentMetadata) {
+            return ImageDecoder.createSource(options.context.contentResolver, metadata.uri)
+        }
+        if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
+            return ImageDecoder.createSource(options.context.resources, metadata.resId)
+        }
+        return when {
+            SDK_INT >= 31 -> ImageDecoder.createSource(source().readByteArray())
+            SDK_INT == 30 -> ImageDecoder.createSource(ByteBuffer.wrap(source().readByteArray()))
+            // https://issuetracker.google.com/issues/139371066
+            else -> ImageDecoder.createSource(file())
         }
     }
 
@@ -171,9 +166,5 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         override fun equals(other: Any?) = other is Factory
 
         override fun hashCode() = javaClass.hashCode()
-    }
-
-    private companion object {
-        val SUPPORTED_SCHEMES = arrayOf(SCHEME_CONTENT, SCHEME_FILE)
     }
 }

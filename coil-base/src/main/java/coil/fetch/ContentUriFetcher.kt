@@ -2,6 +2,7 @@ package coil.fetch
 
 import android.content.ContentResolver
 import android.content.ContentResolver.EXTRA_SIZE
+import android.content.ContentResolver.SCHEME_CONTENT
 import android.graphics.Point
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
@@ -11,6 +12,7 @@ import android.provider.ContactsContract.Contacts
 import android.provider.MediaStore
 import androidx.annotation.VisibleForTesting
 import coil.ImageLoader
+import coil.decode.ContentMetadata
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
@@ -43,7 +45,11 @@ internal class ContentUriFetcher(
         }
 
         return SourceResult(
-            source = ImageSource(inputStream.source().buffer(), options.context, data),
+            source = ImageSource(
+                source = inputStream.source().buffer(),
+                context = options.context,
+                metadata = ContentMetadata(data)
+            ),
             mimeType = contentResolver.getType(data),
             dataSource = DataSource.DISK
         )
@@ -86,8 +92,6 @@ internal class ContentUriFetcher(
             return ContentUriFetcher(data, options)
         }
 
-        private fun isApplicable(data: Uri): Boolean {
-            return data.scheme == ContentResolver.SCHEME_CONTENT
-        }
+        private fun isApplicable(data: Uri) = data.scheme == SCHEME_CONTENT
     }
 }

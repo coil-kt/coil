@@ -1,6 +1,6 @@
 package coil.map
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.net.Uri
 import androidx.core.net.toUri
 import coil.request.Options
@@ -19,13 +19,13 @@ internal class ResourceUriMapper : Mapper<Uri, Uri> {
         val resources = options.context.packageManager.getResourcesForApplication(packageName)
         val (type, name) = data.pathSegments
         val id = resources.getIdentifier(name, type, packageName)
-        check(id != 0) { "Invalid ${ContentResolver.SCHEME_ANDROID_RESOURCE} URI: $data" }
+        check(id != 0) { "Invalid $SCHEME_ANDROID_RESOURCE URI: $data" }
 
-        return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/$id".toUri()
+        return "$SCHEME_ANDROID_RESOURCE://$packageName/$id".toUri()
     }
 
     private fun isApplicable(data: Uri): Boolean {
-        return data.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE &&
+        return data.scheme == SCHEME_ANDROID_RESOURCE &&
             !data.authority.isNullOrBlank() &&
             data.pathSegments.count() == 2
     }

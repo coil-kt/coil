@@ -1,6 +1,6 @@
 package coil.compose.utils
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
@@ -36,7 +36,7 @@ fun assumeSupportsCaptureToImage() {
 
 fun resourceUri(@IdRes resId: Int): Uri {
     val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName
-    return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://$packageName/$resId".toUri()
+    return "$SCHEME_ANDROID_RESOURCE://$packageName/$resId".toUri()
 }
 
 fun ImageBitmap.assertIsSimilarTo(
