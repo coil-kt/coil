@@ -157,6 +157,11 @@ internal class HttpUriFetcher(
             // Support attaching custom data to the network request.
             .tag(Parameters::class.java, options.parameters)
 
+        // Add custom tags
+        options.tags?.forEach {
+            request.tag(it.javaClass, it)
+        }
+
         val diskRead = options.diskCachePolicy.readEnabled
         val networkRead = options.networkCachePolicy.readEnabled
         when {

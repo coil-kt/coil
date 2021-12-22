@@ -86,6 +86,9 @@ class ImageRequest private constructor(
     /** @see Builder.transformations */
     val transformations: List<Transformation>,
 
+    /** @see Builder.tags */
+    val tags: List<Any>?,
+
     /** @see Builder.headers */
     val headers: Headers,
 
@@ -305,6 +308,7 @@ class ImageRequest private constructor(
         private var decoderFactory: Decoder.Factory?
         private var transformations: List<Transformation>
 
+        private var tags: List<Any>?
         private var headers: Headers.Builder?
         private var parameters: Parameters.Builder?
 
@@ -352,6 +356,7 @@ class ImageRequest private constructor(
             fetcherFactory = null
             decoderFactory = null
             transformations = emptyList()
+            tags = null
             headers = null
             parameters = null
             lifecycle = null
@@ -396,6 +401,7 @@ class ImageRequest private constructor(
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory
             transformations = request.transformations
+            tags = request.tags?.toList()
             headers = request.headers.newBuilder()
             parameters = request.parameters.newBuilder()
             lifecycle = request.defined.lifecycle
@@ -739,6 +745,15 @@ class ImageRequest private constructor(
         }
 
         /**
+         * Add a tag for any network operations performed by this request.
+         *
+         * @see Headers.Builder.add
+         */
+        fun addTag(tag: Any) = apply {
+            this.tags = this.tags?.plus(tag) ?: listOf(tag)
+        }
+
+        /**
          * Set the parameters for this request.
          */
         fun parameters(parameters: Parameters) = apply {
@@ -921,6 +936,7 @@ class ImageRequest private constructor(
                 fetcherFactory = fetcherFactory,
                 decoderFactory = decoderFactory,
                 transformations = transformations,
+                tags = tags,
                 headers = headers?.build().orEmpty(),
                 parameters = parameters?.build().orEmpty(),
                 lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
