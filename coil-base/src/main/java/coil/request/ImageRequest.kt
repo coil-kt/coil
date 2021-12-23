@@ -43,6 +43,7 @@ import coil.util.getDrawableCompat
 import coil.util.getLifecycle
 import coil.util.orEmpty
 import coil.util.scale
+import coil.util.toImmutableList
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
@@ -546,7 +547,7 @@ class ImageRequest private constructor(
          * Set the list of [Transformation]s to be applied to this request.
          */
         fun transformations(transformations: List<Transformation>) = apply {
-            this.transformations = transformations.toList()
+            this.transformations = transformations.toImmutableList()
         }
 
         /**
