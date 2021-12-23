@@ -44,6 +44,7 @@ import coil.util.getLifecycle
 import coil.util.orEmpty
 import coil.util.scale
 import coil.util.toImmutableList
+import coil.util.toImmutableMap
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
@@ -86,6 +87,9 @@ class ImageRequest private constructor(
 
     /** @see Builder.transformations */
     val transformations: List<Transformation>,
+
+    /** @see Builder.tag */
+    val tags: Map<Class<*>, Any>,
 
     /** @see Builder.headers */
     val headers: Headers,
@@ -307,6 +311,7 @@ class ImageRequest private constructor(
         private var transformations: List<Transformation>
 
         private var headers: Headers.Builder?
+        private var tags: MutableMap<Class<*>, Any>?
         private var parameters: Parameters.Builder?
 
         private var lifecycle: Lifecycle?
@@ -354,6 +359,7 @@ class ImageRequest private constructor(
             decoderFactory = null
             transformations = emptyList()
             headers = null
+            tags = null
             parameters = null
             lifecycle = null
             sizeResolver = null
@@ -398,6 +404,7 @@ class ImageRequest private constructor(
             decoderFactory = request.decoderFactory
             transformations = request.transformations
             headers = request.headers.newBuilder()
+            tags = request.tags.toMutableMap()
             parameters = request.parameters.newBuilder()
             lifecycle = request.defined.lifecycle
             sizeResolver = request.defined.sizeResolver
@@ -740,6 +747,22 @@ class ImageRequest private constructor(
         }
 
         /**
+         *
+         */
+        inline fun <reified T> tag(tag: T?) = tag(T::class.java, tag)
+
+        /**
+         *
+         */
+        fun <T> tag(type: Class<in T>, tag: T?) = apply {
+            if (tag == null) {
+                this.tags?.remove(type)
+            } else {
+                this.tags = (this.tags ?: mutableMapOf()).apply { put(type, tag) }
+            }
+        }
+
+        /**
          * Set the parameters for this request.
          */
         fun parameters(parameters: Parameters) = apply {
@@ -923,6 +946,7 @@ class ImageRequest private constructor(
                 decoderFactory = decoderFactory,
                 transformations = transformations,
                 headers = headers?.build().orEmpty(),
+                tags = tags?.toImmutableMap().orEmpty(),
                 parameters = parameters?.build().orEmpty(),
                 lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
                 sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
