@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0-alpha06] - December 24, 2021
+
+- Add `ImageSource.Metadata` to support decoding from assets, resources, and content URIs without buffering or temporary files. ([#1060](https://github.com/coil-kt/coil/pull/1060))
+- Delay executing the image request until `AsyncImage` has positive constraints. ([#1028](https://github.com/coil-kt/coil/pull/1028))
+- Fix using `DefaultContent` for `AsyncImage` if `loading`, `success`, and `error` are all set. ([#1026](https://github.com/coil-kt/coil/pull/1026))
+- Use androidx `LruCache` instead of the platform `LruCache`. ([#1047](https://github.com/coil-kt/coil/pull/1047))
+- Update Kotlin to 1.6.10.
+- Update Coroutines to 1.6.0.
+- Update Compose to 1.1.0-rc01.
+- Update `accompanist-drawablepainter` to 0.22.0-rc.
+- Update androidx.collection to 1.2.0.
+
 ## [2.0.0-alpha05] - November 28, 2021
 
 - **Important**: Refactor `Size` to support using the image's original size for either dimension.
