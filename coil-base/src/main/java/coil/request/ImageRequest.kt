@@ -49,9 +49,9 @@ import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okhttp3.HttpUrl
-import okhttp3.Request
 import java.io.File
 import java.nio.ByteBuffer
+import kotlin.reflect.KClass
 
 /**
  * An immutable value object that represents a request for an image.
@@ -301,32 +301,19 @@ class ImageRequest private constructor(
         private val context: Context
         private var defaults: DefaultRequestOptions
         private var data: Any?
-
         private var target: Target?
         private var listener: Listener?
         private var memoryCacheKey: MemoryCache.Key?
         private var diskCacheKey: String?
+        private var bitmapConfig: Bitmap.Config?
         private var colorSpace: ColorSpace? = null
+        private var precision: Precision?
         private var fetcherFactory: Pair<Fetcher.Factory<*>, Class<*>>?
         private var decoderFactory: Decoder.Factory?
         private var transformations: List<Transformation>
-
+        private var transitionFactory: Transition.Factory?
         private var headers: Headers.Builder?
         private var tags: MutableMap<Class<*>, Any>?
-        private var parameters: Parameters.Builder?
-
-        private var lifecycle: Lifecycle?
-        private var sizeResolver: SizeResolver?
-        private var scale: Scale?
-
-        private var interceptorDispatcher: CoroutineDispatcher?
-        private var fetcherDispatcher: CoroutineDispatcher?
-        private var decoderDispatcher: CoroutineDispatcher?
-        private var transformationDispatcher: CoroutineDispatcher?
-
-        private var transitionFactory: Transition.Factory?
-        private var precision: Precision?
-        private var bitmapConfig: Bitmap.Config?
         private var allowConversionToBitmap: Boolean
         private var allowHardware: Boolean?
         private var allowRgb565: Boolean?
@@ -334,6 +321,11 @@ class ImageRequest private constructor(
         private var memoryCachePolicy: CachePolicy?
         private var diskCachePolicy: CachePolicy?
         private var networkCachePolicy: CachePolicy?
+        private var interceptorDispatcher: CoroutineDispatcher?
+        private var fetcherDispatcher: CoroutineDispatcher?
+        private var decoderDispatcher: CoroutineDispatcher?
+        private var transformationDispatcher: CoroutineDispatcher?
+        private var parameters: Parameters.Builder?
 
         private var placeholderMemoryCacheKey: MemoryCache.Key?
         @DrawableRes private var placeholderResId: Int?
@@ -343,6 +335,9 @@ class ImageRequest private constructor(
         @DrawableRes private var fallbackResId: Int?
         private var fallbackDrawable: Drawable?
 
+        private var lifecycle: Lifecycle?
+        private var sizeResolver: SizeResolver?
+        private var scale: Scale?
         private var resolvedLifecycle: Lifecycle?
         private var resolvedSizeResolver: SizeResolver?
         private var resolvedScale: Scale?
@@ -749,16 +744,13 @@ class ImageRequest private constructor(
 
         /**
          * Set a tag that will be attached to any network requests.
-         *
-         * NOTE: Unlike OkHttp's [Request.Builder.tag], this method
-         * uses [T] as a key instead of [Any].
          */
-        inline fun <reified T> tag(tag: T?) = tag(T::class.java, tag)
+        fun <T : Any> tag(type: KClass<in T>, tag: T?) = tag(type.java, tag)
 
         /**
          * Set a tag that will be attached to any network requests.
          */
-        fun <T> tag(type: Class<in T>, tag: T?) = apply {
+        fun <T : Any> tag(type: Class<in T>, tag: T?) = apply {
             if (tag == null) {
                 this.tags?.remove(type)
             } else {
