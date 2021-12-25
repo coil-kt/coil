@@ -165,11 +165,11 @@ class ComponentRegistry private constructor(
 
         fun build(): ComponentRegistry {
             return ComponentRegistry(
-                interceptors.toImmutableList(),
-                mappers.toImmutableList(),
-                keyers.toImmutableList(),
-                fetcherFactories.toImmutableList(),
-                decoderFactories.toImmutableList()
+                interceptors = interceptors.toImmutableList(),
+                mappers = mappers.toImmutableList(),
+                keyers = keyers.toImmutableList(),
+                fetcherFactories = fetcherFactories.toImmutableList(),
+                decoderFactories = decoderFactories.toImmutableList()
             )
         }
     }

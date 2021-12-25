@@ -77,6 +77,8 @@ class Options(
      */
     val headers: Headers = EMPTY_HEADERS,
 
+    val tags: Map<Class<*>, Any> = emptyMap(),
+
     /**
      * A map of custom parameters. These are used to pass custom data to a component.
      */

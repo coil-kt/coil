@@ -49,6 +49,7 @@ import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
 import okhttp3.HttpUrl
+import okhttp3.Request
 import java.io.File
 import java.nio.ByteBuffer
 
@@ -88,11 +89,11 @@ class ImageRequest private constructor(
     /** @see Builder.transformations */
     val transformations: List<Transformation>,
 
-    /** @see Builder.tag */
-    val tags: Map<Class<*>, Any>,
-
     /** @see Builder.headers */
     val headers: Headers,
+
+    /** @see Builder.tag */
+    val tags: Map<Class<*>, Any>,
 
     /** @see Builder.parameters */
     val parameters: Parameters,
@@ -166,16 +167,16 @@ class ImageRequest private constructor(
 ) {
 
     /** @see Builder.placeholder */
-    val placeholder: Drawable? get() =
-        getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
+    val placeholder: Drawable?
+        get() = getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
 
     /** @see Builder.error */
-    val error: Drawable? get() =
-        getDrawableCompat(errorDrawable, errorResId, defaults.error)
+    val error: Drawable?
+        get() = getDrawableCompat(errorDrawable, errorResId, defaults.error)
 
     /** @see Builder.fallback */
-    val fallback: Drawable? get() =
-        getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
+    val fallback: Drawable?
+        get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
 
     @JvmOverloads
     fun newBuilder(context: Context = this.context) = Builder(this, context)
@@ -326,10 +327,10 @@ class ImageRequest private constructor(
         private var transitionFactory: Transition.Factory?
         private var precision: Precision?
         private var bitmapConfig: Bitmap.Config?
+        private var allowConversionToBitmap: Boolean
         private var allowHardware: Boolean?
         private var allowRgb565: Boolean?
         private var premultipliedAlpha: Boolean
-        private var allowConversionToBitmap: Boolean
         private var memoryCachePolicy: CachePolicy?
         private var diskCachePolicy: CachePolicy?
         private var networkCachePolicy: CachePolicy?
@@ -371,10 +372,10 @@ class ImageRequest private constructor(
             transitionFactory = null
             precision = null
             bitmapConfig = null
+            allowConversionToBitmap = true
             allowHardware = null
             allowRgb565 = null
             premultipliedAlpha = true
-            allowConversionToBitmap = true
             memoryCachePolicy = null
             diskCachePolicy = null
             networkCachePolicy = null
@@ -416,10 +417,10 @@ class ImageRequest private constructor(
             transitionFactory = request.defined.transitionFactory
             precision = request.defined.precision
             bitmapConfig = request.defined.bitmapConfig
+            allowConversionToBitmap = request.allowConversionToBitmap
             allowHardware = request.defined.allowHardware
             allowRgb565 = request.defined.allowRgb565
             premultipliedAlpha = request.premultipliedAlpha
-            allowConversionToBitmap = request.allowConversionToBitmap
             memoryCachePolicy = request.defined.memoryCachePolicy
             diskCachePolicy = request.defined.diskCachePolicy
             networkCachePolicy = request.defined.networkCachePolicy
@@ -747,12 +748,15 @@ class ImageRequest private constructor(
         }
 
         /**
+         * Set a tag that will be attached to any network requests.
          *
+         * NOTE: Unlike OkHttp's [Request.Builder.tag], this method
+         * uses [T] as a key instead of [Any].
          */
         inline fun <reified T> tag(tag: T?) = tag(T::class.java, tag)
 
         /**
-         *
+         * Set a tag that will be attached to any network requests.
          */
         fun <T> tag(type: Class<in T>, tag: T?) = apply {
             if (tag == null) {

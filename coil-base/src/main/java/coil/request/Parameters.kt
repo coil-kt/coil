@@ -1,5 +1,4 @@
-@file:JvmName("-Parameters")
-@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST", "unused")
+@file:Suppress("UNCHECKED_CAST", "unused")
 
 package coil.request
 
@@ -7,8 +6,11 @@ import coil.decode.Decoder
 import coil.fetch.Fetcher
 import coil.request.Parameters.Entry
 import coil.util.mapNotNullValues
+import coil.util.toImmutableMap
 
-/** A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s. */
+/**
+ * A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s.
+ */
 class Parameters private constructor(
     private val map: Map<String, Entry>
 ) : Iterable<Pair<String, Entry>> {
@@ -104,19 +106,10 @@ class Parameters private constructor(
         }
 
         /** Create a new [Parameters] instance. */
-        fun build() = Parameters(map.toMap())
+        fun build() = Parameters(map.toImmutableMap())
     }
 
     companion object {
         @JvmField val EMPTY = Parameters()
     }
 }
-
-/** Returns the number of parameters in this object. */
-inline fun Parameters.count(): Int = size
-
-/** Return true when the set contains elements. */
-inline fun Parameters.isNotEmpty(): Boolean = !isEmpty()
-
-/** Returns the value associated with [key] or null if [key] has no mapping. */
-inline operator fun <T : Any> Parameters.get(key: String): T? = value(key)
