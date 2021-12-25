@@ -21,6 +21,7 @@ import coil.util.deleteIfExists
 import coil.util.forEachIndices
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -144,8 +145,9 @@ internal class DiskLruCache(
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
 
-    private val cleanupScope = CoroutineScope(SupervisorJob() + cleanupDispatcher)
-    private var cleanupScheduled = false
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val cleanupScope = CoroutineScope(
+        SupervisorJob() + cleanupDispatcher.limitedParallelism(1))
 
     private val fileSystem = object : ForwardingFileSystem(fileSystem) {
         override fun sink(file: Path, mustCreate: Boolean): Sink {
@@ -632,14 +634,9 @@ internal class DiskLruCache(
     /**
      * Launch an asynchronous operation to trim files from the disk cache and update the journal.
      */
-    @Synchronized
     private fun scheduleCleanup() {
-        if (cleanupScheduled) return
-        cleanupScheduled = true
-
         cleanupScope.launch {
             synchronized(this@DiskLruCache) {
-                cleanupScheduled = false
                 if (!initialized || closed) return@launch
                 try {
                     trimToSize()
