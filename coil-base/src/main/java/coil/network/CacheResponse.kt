@@ -1,6 +1,5 @@
 package coil.network
 
-import coil.util.Option
 import okhttp3.CacheControl
 import okhttp3.Headers
 import okhttp3.MediaType
@@ -13,7 +12,8 @@ import okio.BufferedSource
 internal class CacheResponse {
 
     private var lazyCacheControl: CacheControl? = null
-    private var lazyContentType: Option<MediaType>? = null
+    private var lazyContentType: MediaType? = null
+    private var contentTypeInitialized = false
 
     val sentRequestAtMillis: Long
     val receivedResponseAtMillis: Long
@@ -57,8 +57,13 @@ internal class CacheResponse {
     }
 
     fun contentType(): MediaType? {
-        return (lazyContentType
-            ?: Option(responseHeaders["Content-Type"]?.toMediaTypeOrNull()).also { lazyContentType = it })
-            .value
+        if (contentTypeInitialized) {
+            return lazyContentType
+        } else {
+            val contentType = responseHeaders["Content-Type"]?.toMediaTypeOrNull()
+            lazyContentType = contentType
+            contentTypeInitialized = true
+            return contentType
+        }
     }
 }
