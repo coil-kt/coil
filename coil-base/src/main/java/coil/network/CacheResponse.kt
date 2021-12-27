@@ -7,14 +7,13 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Response
 import okio.BufferedSink
 import okio.BufferedSource
+import kotlin.LazyThreadSafetyMode.NONE
 
 /** Holds the response metadata for an image in the disk cache. */
 internal class CacheResponse {
 
-    private var lazyCacheControl: CacheControl? = null
-    private var lazyContentType: MediaType? = null
-    private var contentTypeInitialized = false
-
+    val cacheControl: CacheControl by lazy(NONE) { CacheControl.parse(responseHeaders) }
+    val contentType: MediaType? by lazy(NONE) { responseHeaders["Content-Type"]?.toMediaTypeOrNull() }
     val sentRequestAtMillis: Long
     val receivedResponseAtMillis: Long
     val isTls: Boolean
@@ -49,21 +48,6 @@ internal class CacheResponse {
                 .writeUtf8(": ")
                 .writeUtf8(responseHeaders.value(i))
                 .writeByte('\n'.code)
-        }
-    }
-
-    fun cacheControl(): CacheControl {
-        return lazyCacheControl ?: CacheControl.parse(responseHeaders).also { lazyCacheControl = it }
-    }
-
-    fun contentType(): MediaType? {
-        if (contentTypeInitialized) {
-            return lazyContentType
-        } else {
-            val contentType = responseHeaders["Content-Type"]?.toMediaTypeOrNull()
-            lazyContentType = contentType
-            contentTypeInitialized = true
-            return contentType
         }
     }
 }
