@@ -12,75 +12,75 @@ import coil.util.toImmutableMap
  * A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s.
  */
 class Parameters private constructor(
-    private val map: Map<String, Entry>
+    private val entries: Map<String, Entry>
 ) : Iterable<Pair<String, Entry>> {
 
     constructor() : this(emptyMap())
 
     /** Returns the number of parameters in this object. */
-    val size: Int @JvmName("size") get() = map.size
+    val size: Int @JvmName("size") get() = entries.size
 
     /** Returns the value associated with [key] or null if [key] has no mapping. */
-    fun <T : Any> value(key: String): T? = map[key]?.value as T?
+    fun <T : Any> value(key: String): T? = entries[key]?.value as T?
 
     /** Returns the cache key associated with [key] or null if [key] has no mapping. */
-    fun cacheKey(key: String): String? = map[key]?.cacheKey
+    fun memoryCacheKey(key: String): String? = entries[key]?.memoryCacheKey
 
     /** Returns the entry associated with [key] or null if [key] has no mapping. */
-    fun entry(key: String): Entry? = map[key]
+    fun entry(key: String): Entry? = entries[key]
 
     /** Returns 'true' if this object has no parameters. */
-    fun isEmpty(): Boolean = map.isEmpty()
+    fun isEmpty(): Boolean = entries.isEmpty()
 
     /** Returns a map of keys to values. */
-    fun values(): Map<String, Any?> {
+    fun values(): Map<String, Any> {
         return if (isEmpty()) {
             emptyMap()
         } else {
-            map.mapValues { it.value.value }
+            entries.mapValues { it.value.value }
         }
     }
 
-    /** Returns a map of keys to non-null cache keys. Keys with a null cache key are filtered. */
-    fun cacheKeys(): Map<String, String> {
+    /** Returns a map of keys to non-null memory cache keys. Entries with a null keys are filtered. */
+    fun memoryCacheKeys(): Map<String, String> {
         return if (isEmpty()) {
             emptyMap()
         } else {
-            map.mapNotNullValues { it.value.cacheKey }
+            entries.mapNotNullValues { it.value.memoryCacheKey }
         }
     }
 
     /** Returns an [Iterator] over the entries in the [Parameters]. */
     override operator fun iterator(): Iterator<Pair<String, Entry>> {
-        return map.map { (key, value) -> key to value }.iterator()
+        return entries.map { (key, value) -> key to value }.iterator()
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        return other is Parameters && map == other.map
+        return other is Parameters && entries == other.entries
     }
 
-    override fun hashCode() = map.hashCode()
+    override fun hashCode() = entries.hashCode()
 
-    override fun toString() = "Parameters(map=$map)"
+    override fun toString() = "Parameters(entries=$entries)"
 
     fun newBuilder() = Builder(this)
 
     data class Entry(
-        val value: Any?,
-        val cacheKey: String?,
+        val value: Any,
+        val memoryCacheKey: String?,
     )
 
     class Builder {
 
-        private val map: MutableMap<String, Entry>
+        private val entries: MutableMap<String, Entry>
 
         constructor() {
-            map = mutableMapOf()
+            entries = mutableMapOf()
         }
 
         constructor(parameters: Parameters) {
-            map = parameters.map.toMutableMap()
+            entries = parameters.entries.toMutableMap()
         }
 
         /**
@@ -88,25 +88,30 @@ class Parameters private constructor(
          *
          * @param key The parameter's key.
          * @param value The parameter's value.
-         * @param cacheKey The parameter's cache key.
-         *  If not null, this value will be added to a request's cache key.
+         * @param memoryCacheKey The parameter's memory cache key. If not
+         *  null, this value will be added to a request's memory cache key.
          */
         @JvmOverloads
-        fun set(key: String, value: Any?, cacheKey: String? = value?.toString()) = apply {
-            map[key] = Entry(value, cacheKey)
-        }
-
-        /**
-         * Remove a parameter.
-         *
-         * @param key The parameter's key.
-         */
-        fun remove(key: String) = apply {
-            map.remove(key)
+        fun set(
+            key: String,
+            value: Any?,
+            memoryCacheKey: String? = value?.toString()
+        ) = apply {
+            if (value == null) {
+                entries.remove(key)
+            } else {
+                entries[key] = Entry(value, memoryCacheKey)
+            }
         }
 
         /** Create a new [Parameters] instance. */
-        fun build() = Parameters(map.toImmutableMap())
+        fun build() = Parameters(entries.toImmutableMap())
+
+        @Deprecated(
+            message = "Migrate to 'set'.",
+            replaceWith = ReplaceWith("set(key, null)")
+        )
+        fun remove(key: String) = set(key, null)
     }
 
     companion object {

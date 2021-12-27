@@ -44,7 +44,6 @@ import coil.util.getLifecycle
 import coil.util.orEmpty
 import coil.util.scale
 import coil.util.toImmutableList
-import coil.util.toImmutableMap
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Headers
@@ -91,8 +90,8 @@ class ImageRequest private constructor(
     /** @see Builder.headers */
     val headers: Headers,
 
-    /** @see Builder.tag */
-    val tags: Map<Class<*>, Any>,
+    /** @see Builder.tags */
+    val tags: Tags,
 
     /** @see Builder.parameters */
     val parameters: Parameters,
@@ -177,10 +176,6 @@ class ImageRequest private constructor(
     val fallback: Drawable?
         get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
 
-    inline fun <reified T : Any> tag(): T? = tag(T::class.java)
-
-    fun <T : Any> tag(type: Class<out T>): T? = type.cast(tags[type])
-
     @JvmOverloads
     fun newBuilder(context: Context = this.context) = Builder(this, context)
 
@@ -198,6 +193,7 @@ class ImageRequest private constructor(
             decoderFactory == other.decoderFactory &&
             transformations == other.transformations &&
             headers == other.headers &&
+            tags == other.tags &&
             parameters == other.parameters &&
             lifecycle == other.lifecycle &&
             sizeResolver == other.sizeResolver &&
@@ -239,6 +235,7 @@ class ImageRequest private constructor(
         result = 31 * result + (decoderFactory?.hashCode() ?: 0)
         result = 31 * result + transformations.hashCode()
         result = 31 * result + headers.hashCode()
+        result = 31 * result + tags.hashCode()
         result = 31 * result + parameters.hashCode()
         result = 31 * result + lifecycle.hashCode()
         result = 31 * result + sizeResolver.hashCode()
@@ -403,7 +400,7 @@ class ImageRequest private constructor(
             decoderFactory = request.decoderFactory
             transformations = request.transformations
             headers = request.headers.newBuilder()
-            tags = request.tags.toMutableMap()
+            tags = request.tags.asMap().toMutableMap()
             parameters = request.parameters.newBuilder()
             lifecycle = request.defined.lifecycle
             sizeResolver = request.defined.sizeResolver
@@ -755,6 +752,10 @@ class ImageRequest private constructor(
             }
         }
 
+        fun tags(tags: Tags) = apply {
+            this.tags = tags.asMap().toMutableMap()
+        }
+
         /**
          * Set the memory cache [key] whose value will be used as the placeholder drawable.
          *
@@ -895,12 +896,8 @@ class ImageRequest private constructor(
             value: Any?,
             memoryCacheKey: String? = value?.toString()
         ) = apply {
-            if (value == null) {
-                this.parameters?.remove(key)
-            } else {
-                (this.parameters ?: Parameters.Builder().also { this.parameters = it })
-                    .set(key, value, memoryCacheKey)
-            }
+            (this.parameters ?: Parameters.Builder().also { this.parameters = it })
+                .set(key, value, memoryCacheKey)
         }
 
         /**
@@ -934,7 +931,7 @@ class ImageRequest private constructor(
                 decoderFactory = decoderFactory,
                 transformations = transformations,
                 headers = headers?.build().orEmpty(),
-                tags = tags?.toImmutableMap().orEmpty(),
+                tags = tags?.let(Tags::from).orEmpty(),
                 parameters = parameters?.build().orEmpty(),
                 lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
                 sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),

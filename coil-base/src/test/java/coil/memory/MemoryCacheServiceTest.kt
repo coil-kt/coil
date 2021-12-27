@@ -527,7 +527,7 @@ class MemoryCacheServiceTest {
         size: Size = Size.ORIGINAL,
         parameters: Parameters = Parameters.EMPTY
     ): MemoryCache.Key {
-        val extras = parameters.cacheKeys().toMutableMap()
+        val extras = parameters.memoryCacheKeys().toMutableMap()
         if (transformations.isNotEmpty()) {
             transformations.forEachIndexedIndices { index, transformation ->
                 extras[EXTRA_TRANSFORMATION_INDEX + index] = transformation.cacheKey

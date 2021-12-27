@@ -37,6 +37,7 @@ import coil.intercept.RealInterceptorChain
 import coil.memory.MemoryCache
 import coil.request.DefaultRequestOptions
 import coil.request.Parameters
+import coil.request.Tags
 import coil.request.ViewTargetRequestManager
 import coil.size.Dimension
 import coil.size.Scale
@@ -148,6 +149,8 @@ internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
 internal val EMPTY_HEADERS = Headers.Builder().build()
 
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
+
+internal fun Tags?.orEmpty() = this ?: Tags.EMPTY
 
 internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
