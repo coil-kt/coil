@@ -51,7 +51,6 @@ import okhttp3.Headers
 import okhttp3.HttpUrl
 import java.io.File
 import java.nio.ByteBuffer
-import kotlin.reflect.KClass
 
 /**
  * An immutable value object that represents a request for an image.
@@ -177,6 +176,10 @@ class ImageRequest private constructor(
     /** @see Builder.fallback */
     val fallback: Drawable?
         get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
+
+    inline fun <reified T : Any> tag(): T? = tag(T::class.java)
+
+    fun <T : Any> tag(type: Class<out T>): T? = type.cast(tags[type])
 
     @JvmOverloads
     fun newBuilder(context: Context = this.context) = Builder(this, context)
@@ -742,35 +745,14 @@ class ImageRequest private constructor(
             this.headers?.removeAll(name)
         }
 
-        fun <T : Any> tag(type: KClass<in T>, tag: T?) = tag(type.java, tag)
+        inline fun <reified T : Any> tag(tag: T?) = tag(T::class.java, tag)
 
         fun <T : Any> tag(type: Class<in T>, tag: T?) = apply {
             if (tag == null) {
-                tags?.remove(type)
+                this.tags?.remove(type)
             } else {
-                (tags ?: mutableMapOf<Class<*>, Any>().also { tags = it })[type] = tag
+                (this.tags ?: mutableMapOf<Class<*>, Any>().also { this.tags = it })[type] = tag
             }
-        }
-
-        @JvmOverloads
-        fun parameter(
-            key: String,
-            value: Any?,
-            memoryCacheKey: String? = value?.toString()
-        ) = apply {
-            if (value == null) {
-                this.parameters?.remove(key)
-            } else {
-                (this.parameters ?: Parameters.Builder().also { this.parameters = it })
-                    .set(key, value, memoryCacheKey)
-            }
-        }
-
-        /**
-         * Set the parameters for this request.
-         */
-        fun parameters(parameters: Parameters) = apply {
-            this.parameters = parameters.newBuilder()
         }
 
         /**
@@ -905,6 +887,27 @@ class ImageRequest private constructor(
          */
         fun lifecycle(lifecycle: Lifecycle?) = apply {
             this.lifecycle = lifecycle
+        }
+
+        @JvmOverloads
+        fun parameter(
+            key: String,
+            value: Any?,
+            memoryCacheKey: String? = value?.toString()
+        ) = apply {
+            if (value == null) {
+                this.parameters?.remove(key)
+            } else {
+                (this.parameters ?: Parameters.Builder().also { this.parameters = it })
+                    .set(key, value, memoryCacheKey)
+            }
+        }
+
+        /**
+         * Set the parameters for this request.
+         */
+        fun parameters(parameters: Parameters) = apply {
+            this.parameters = parameters.newBuilder()
         }
 
         /**
