@@ -149,11 +149,12 @@ internal class HttpUriFetcher(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun newRequest(): Request {
         val request = Request.Builder()
             .url(url)
             .headers(options.headers)
-            .apply { options.tags.forEach(::tag) }
+            .apply { options.tags.forEach { tag(it.key as Class<Any>, it.value) } }
 
         val diskRead = options.diskCachePolicy.readEnabled
         val networkRead = options.networkCachePolicy.readEnabled

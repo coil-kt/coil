@@ -27,7 +27,7 @@ fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long): ImageRequest.Build
  */
 fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Builder {
     require(frameMicros >= 0) { "frameMicros must be >= 0." }
-    return setParameter(VIDEO_FRAME_MICROS_KEY, frameMicros)
+    return parameter(VIDEO_FRAME_MICROS_KEY, frameMicros)
 }
 
 /**
@@ -44,7 +44,7 @@ fun ImageRequest.Builder.videoFrameOption(option: Int): ImageRequest.Builder {
         option == OPTION_NEXT_SYNC ||
         option == OPTION_CLOSEST_SYNC ||
         option == OPTION_CLOSEST) { "Invalid video frame option: $option." }
-    return setParameter(VIDEO_FRAME_OPTION_KEY, option)
+    return parameter(VIDEO_FRAME_OPTION_KEY, option)
 }
 
 /**

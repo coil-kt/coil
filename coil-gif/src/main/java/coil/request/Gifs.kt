@@ -24,7 +24,7 @@ import coil.transform.AnimatedTransformation
  */
 fun ImageRequest.Builder.repeatCount(repeatCount: Int): ImageRequest.Builder {
     require(repeatCount >= MovieDrawable.REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
-    return setParameter(REPEAT_COUNT_KEY, repeatCount)
+    return parameter(REPEAT_COUNT_KEY, repeatCount)
 }
 
 /**
@@ -42,7 +42,7 @@ fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY)
  */
 @ExperimentalCoilApi
 fun ImageRequest.Builder.animatedTransformation(animatedTransformation: AnimatedTransformation): ImageRequest.Builder {
-    return setParameter(ANIMATED_TRANSFORMATION_KEY, animatedTransformation)
+    return parameter(ANIMATED_TRANSFORMATION_KEY, animatedTransformation)
 }
 
 /**
@@ -55,7 +55,7 @@ fun Parameters.animatedTransformation(): AnimatedTransformation? = value(ANIMATE
  * Set the callback to be invoked at the start of the animation if the result is an animated [Drawable].
  */
 fun ImageRequest.Builder.onAnimationStart(callback: (() -> Unit)?): ImageRequest.Builder {
-    return setParameter(ANIMATION_START_CALLBACK_KEY, callback)
+    return parameter(ANIMATION_START_CALLBACK_KEY, callback)
 }
 
 /**
@@ -67,7 +67,7 @@ fun Parameters.animationStartCallback(): (() -> Unit)? = value(ANIMATION_START_C
  * Set the callback to be invoked at the end of the animation if the result is an animated [Drawable].
  */
 fun ImageRequest.Builder.onAnimationEnd(callback: (() -> Unit)?): ImageRequest.Builder {
-    return setParameter(ANIMATION_END_CALLBACK_KEY, callback)
+    return parameter(ANIMATION_END_CALLBACK_KEY, callback)
 }
 
 /**

@@ -723,7 +723,7 @@ class ImageRequest private constructor(
          * @see Headers.Builder.add
          */
         fun addHeader(name: String, value: String) = apply {
-            this.headers = (this.headers ?: Headers.Builder()).add(name, value)
+            (this.headers ?: Headers.Builder().also { this.headers = it }).add(name, value)
         }
 
         /**
@@ -732,29 +732,37 @@ class ImageRequest private constructor(
          * @see Headers.Builder.set
          */
         fun setHeader(name: String, value: String) = apply {
-            this.headers = (this.headers ?: Headers.Builder()).set(name, value)
+            (this.headers ?: Headers.Builder().also { this.headers = it })[name] = value
         }
 
         /**
          * Remove all network headers with the key [name].
          */
         fun removeHeader(name: String) = apply {
-            this.headers = this.headers?.removeAll(name)
+            this.headers?.removeAll(name)
         }
 
-        /**
-         * Set a tag that will be attached to any network requests.
-         */
         fun <T : Any> tag(type: KClass<in T>, tag: T?) = tag(type.java, tag)
 
-        /**
-         * Set a tag that will be attached to any network requests.
-         */
         fun <T : Any> tag(type: Class<in T>, tag: T?) = apply {
             if (tag == null) {
-                this.tags?.remove(type)
+                tags?.remove(type)
             } else {
-                this.tags = (this.tags ?: mutableMapOf()).apply { put(type, tag) }
+                (tags ?: mutableMapOf<Class<*>, Any>().also { tags = it })[type] = tag
+            }
+        }
+
+        @JvmOverloads
+        fun parameter(
+            key: String,
+            value: Any?,
+            memoryCacheKey: String? = value?.toString()
+        ) = apply {
+            if (value == null) {
+                this.parameters?.remove(key)
+            } else {
+                (this.parameters ?: Parameters.Builder().also { this.parameters = it })
+                    .set(key, value, memoryCacheKey)
             }
         }
 
@@ -763,25 +771,6 @@ class ImageRequest private constructor(
          */
         fun parameters(parameters: Parameters) = apply {
             this.parameters = parameters.newBuilder()
-        }
-
-        /**
-         * Set a parameter for this request.
-         *
-         * @see Parameters.Builder.set
-         */
-        @JvmOverloads
-        fun setParameter(key: String, value: Any?, cacheKey: String? = value?.toString()) = apply {
-            this.parameters = (this.parameters ?: Parameters.Builder()).apply { set(key, value, cacheKey) }
-        }
-
-        /**
-         * Remove a parameter from this request.
-         *
-         * @see Parameters.Builder.remove
-         */
-        fun removeParameter(key: String) = apply {
-            this.parameters?.remove(key)
         }
 
         /**
@@ -1021,6 +1010,23 @@ class ImageRequest private constructor(
 
             return Scale.FIT
         }
+
+        @Deprecated(
+            message = "Migrate to 'parameter'.",
+            replaceWith = ReplaceWith("parameter(key, value, cacheKey)")
+        )
+        @JvmOverloads
+        fun setParameter(
+            key: String,
+            value: Any?,
+            cacheKey: String? = value?.toString()
+        ) = parameter(key, value, cacheKey)
+
+        @Deprecated(
+            message = "Migrate to 'parameter'.",
+            replaceWith = ReplaceWith("parameter(key, null)")
+        )
+        fun removeParameter(key: String) = parameter(key, null)
 
         @Deprecated(
             message = "Migrate to 'fetcherFactory'.",
