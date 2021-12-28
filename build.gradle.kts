@@ -27,7 +27,7 @@ buildscript {
 apply(plugin = "binary-compatibility-validator")
 
 extensions.configure<ApiValidationExtension> {
-    ignoredProjects = mutableSetOf(
+    ignoredProjects += arrayOf(
         "coil-sample-common",
         "coil-sample-compose",
         "coil-sample-view",
