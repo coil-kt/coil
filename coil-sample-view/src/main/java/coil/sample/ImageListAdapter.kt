@@ -27,7 +27,7 @@ class ImageListAdapter(
             val item = getItem(position)
 
             updateLayoutParams {
-                val size = item.computeScaledSize(context, numColumns)
+                val size = item.calculateScaledSize(context, numColumns)
                 width = size.width
                 height = size.height
             }

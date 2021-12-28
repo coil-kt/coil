@@ -37,7 +37,7 @@ fun numberOfColumns(context: Context): Int {
     return ceil(displayWidth / maxColumnWidth).toInt().coerceAtLeast(4)
 }
 
-fun Image.computeScaledSize(context: Context, numColumns: Int): Size {
+fun Image.calculateScaledSize(context: Context, numColumns: Int): Size {
     val displayWidth = context.resources.displayMetrics.widthPixels
     val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
     val scale = columnWidth / width.toDouble()
