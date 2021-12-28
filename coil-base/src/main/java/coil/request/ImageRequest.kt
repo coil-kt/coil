@@ -742,16 +742,26 @@ class ImageRequest private constructor(
             this.headers?.removeAll(name)
         }
 
+        /**
+         * Attach [tag] to this request using [T] as the key.
+         */
         inline fun <reified T : Any> tag(tag: T?) = tag(T::class.java, tag)
 
+        /**
+         * Attach [tag] to this request using [type] as the key.
+         */
         fun <T : Any> tag(type: Class<in T>, tag: T?) = apply {
             if (tag == null) {
                 this.tags?.remove(type)
             } else {
-                (this.tags ?: mutableMapOf<Class<*>, Any>().also { this.tags = it })[type] = tag
+                val tags = this.tags ?: mutableMapOf<Class<*>, Any>().also { this.tags = it }
+                tags[type] = type.cast(tag)!!
             }
         }
 
+        /**
+         * Set the tags for this request.
+         */
         fun tags(tags: Tags) = apply {
             this.tags = tags.asMap().toMutableMap()
         }

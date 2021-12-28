@@ -2,7 +2,6 @@ package coil.network
 
 import okhttp3.CacheControl
 import okhttp3.Headers
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Response
 import okio.BufferedSink
@@ -12,8 +11,8 @@ import kotlin.LazyThreadSafetyMode.NONE
 /** Holds the response metadata for an image in the disk cache. */
 internal class CacheResponse {
 
-    val cacheControl: CacheControl by lazy(NONE) { CacheControl.parse(responseHeaders) }
-    val contentType: MediaType? by lazy(NONE) { responseHeaders["Content-Type"]?.toMediaTypeOrNull() }
+    val cacheControl by lazy(NONE) { CacheControl.parse(responseHeaders) }
+    val contentType by lazy(NONE) { responseHeaders["Content-Type"]?.toMediaTypeOrNull() }
     val sentRequestAtMillis: Long
     val receivedResponseAtMillis: Long
     val isTls: Boolean
