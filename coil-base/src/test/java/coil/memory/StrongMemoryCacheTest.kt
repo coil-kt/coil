@@ -54,4 +54,17 @@ class StrongMemoryCacheTest {
         assertNull(strongCache.get(Key("1")))
         assertNotNull(weakCache.get(Key("1")))
     }
+
+    @Test
+    fun `can clear memory`() {
+        val weakCache = RealWeakMemoryCache()
+        val strongCache = RealStrongMemoryCache(2 * DEFAULT_BITMAP_SIZE, weakCache)
+
+        val bitmap = createBitmap()
+        strongCache.set(Key("1"), bitmap, emptyMap())
+        strongCache.clearMemory()
+
+        assertNull(strongCache.get(Key("1")))
+        assertNotNull(weakCache.get(Key("1")))
+    }
 }
