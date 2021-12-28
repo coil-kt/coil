@@ -17,11 +17,10 @@ import coil.request.onAnimationStart
 import coil.request.repeatCount
 import coil.util.TestActivity
 import coil.util.activity
-import coil.util.runTestMain
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -53,7 +52,7 @@ class AnimationCallbacksTest {
     }
 
     @Test
-    fun callbacksTest() = runTestMain {
+    fun callbacksTest() = runTest(dispatchTimeoutMs = 30_000) {
         val imageView = activityRule.scenario.activity.imageView
         val isStartCalled = MutableStateFlow(false)
         val isEndCalled = MutableStateFlow(false)
@@ -77,7 +76,7 @@ class AnimationCallbacksTest {
             .build()
         val result = imageLoader.execute(request)
         if (result is ErrorResult) throw result.throwable
-        withTimeout(30_000) { isStartCalled.first { it } }
-        withTimeout(30_000) { isEndCalled.first { it } }
+        isStartCalled.first { it }
+        isEndCalled.first { it }
     }
 }
