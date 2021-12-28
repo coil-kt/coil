@@ -25,7 +25,6 @@ dependencies {
 
     implementation(Library.ANDROIDX_ANNOTATION)
     implementation(Library.ANDROIDX_APPCOMPAT_RESOURCES)
-    implementation(Library.ANDROIDX_COLLECTION)
     implementation(Library.ANDROIDX_CORE)
     implementation(Library.ANDROIDX_EXIF_INTERFACE)
     api(Library.ANDROIDX_LIFECYCLE_RUNTIME)

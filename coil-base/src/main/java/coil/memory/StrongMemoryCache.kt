@@ -4,7 +4,7 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
-import androidx.collection.LruCache
+import android.util.LruCache
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
 import coil.util.allocationByteCountCompat
