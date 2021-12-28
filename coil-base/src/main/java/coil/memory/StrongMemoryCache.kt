@@ -1,8 +1,8 @@
 package coil.memory
 
 import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
-import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
+import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.graphics.Bitmap
 import androidx.collection.LruCache
 import coil.memory.MemoryCache.Key
@@ -103,7 +103,7 @@ internal class RealStrongMemoryCache(
     override fun trimMemory(level: Int) {
         if (level >= TRIM_MEMORY_BACKGROUND) {
             clearMemory()
-        } else if (level in TRIM_MEMORY_RUNNING_LOW .. TRIM_MEMORY_RUNNING_CRITICAL) {
+        } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
             cache.trimToSize(size / 2)
         }
     }
