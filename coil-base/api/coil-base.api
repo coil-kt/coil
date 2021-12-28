@@ -585,9 +585,6 @@ public final class coil/request/ImageRequest$Builder {
 	public final fun memoryCacheKey (Ljava/lang/String;)Lcoil/request/ImageRequest$Builder;
 	public final fun memoryCachePolicy (Lcoil/request/CachePolicy;)Lcoil/request/ImageRequest$Builder;
 	public final fun networkCachePolicy (Lcoil/request/CachePolicy;)Lcoil/request/ImageRequest$Builder;
-	public final fun parameter (Ljava/lang/String;Ljava/lang/Object;)Lcoil/request/ImageRequest$Builder;
-	public final fun parameter (Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)Lcoil/request/ImageRequest$Builder;
-	public static synthetic fun parameter$default (Lcoil/request/ImageRequest$Builder;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;ILjava/lang/Object;)Lcoil/request/ImageRequest$Builder;
 	public final fun parameters (Lcoil/request/Parameters;)Lcoil/request/ImageRequest$Builder;
 	public final fun placeholder (I)Lcoil/request/ImageRequest$Builder;
 	public final fun placeholder (Landroid/graphics/drawable/Drawable;)Lcoil/request/ImageRequest$Builder;

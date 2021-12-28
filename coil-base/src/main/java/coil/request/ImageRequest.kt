@@ -900,14 +900,24 @@ class ImageRequest private constructor(
             this.lifecycle = lifecycle
         }
 
+        /**
+         * Set a parameter for this request.
+         *
+         * @see Parameters.Builder.set
+         */
         @JvmOverloads
-        fun parameter(
-            key: String,
-            value: Any?,
-            memoryCacheKey: String? = value?.toString()
-        ) = apply {
-            (this.parameters ?: Parameters.Builder().also { this.parameters = it })
-                .set(key, value, memoryCacheKey)
+        fun setParameter(key: String, value: Any?, memoryCacheKey: String? = value?.toString()) = apply {
+            val parameters = this.parameters ?: Parameters.Builder().also { this.parameters = it }
+            parameters.set(key, value, memoryCacheKey)
+        }
+
+        /**
+         * Remove a parameter from this request.
+         *
+         * @see Parameters.Builder.remove
+         */
+        fun removeParameter(key: String) = apply {
+            this.parameters?.remove(key)
         }
 
         /**
@@ -1020,23 +1030,6 @@ class ImageRequest private constructor(
 
             return Scale.FIT
         }
-
-        @Deprecated(
-            message = "Migrate to 'parameter'.",
-            replaceWith = ReplaceWith("parameter(key, value, cacheKey)")
-        )
-        @JvmOverloads
-        fun setParameter(
-            key: String,
-            value: Any?,
-            cacheKey: String? = value?.toString()
-        ) = parameter(key, value, cacheKey)
-
-        @Deprecated(
-            message = "Migrate to 'parameter'.",
-            replaceWith = ReplaceWith("parameter(key, null)")
-        )
-        fun removeParameter(key: String) = parameter(key, null)
 
         @Deprecated(
             message = "Migrate to 'fetcherFactory'.",

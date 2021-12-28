@@ -7,9 +7,14 @@ import coil.fetch.Fetcher
 import coil.request.Parameters.Entry
 import coil.util.mapNotNullValues
 import coil.util.toImmutableMap
+import okhttp3.Request
 
 /**
  * A map of generic values that can be used to pass custom data to [Fetcher]s and [Decoder]s.
+ *
+ * Parameters are different from [Tags] as parameters are used to add extensions to [ImageRequest]
+ * whereas [Tags] are used for custom user metadata. Parameters also are not attached to any OkHttp
+ * [Request]s and also modify the request's memory cache key by default.
  */
 class Parameters private constructor(
     private val entries: Map<String, Entry>
@@ -33,7 +38,7 @@ class Parameters private constructor(
     fun isEmpty(): Boolean = entries.isEmpty()
 
     /** Returns a map of keys to values. */
-    fun values(): Map<String, Any> {
+    fun values(): Map<String, Any?> {
         return if (isEmpty()) {
             emptyMap()
         } else {
@@ -67,7 +72,7 @@ class Parameters private constructor(
     fun newBuilder() = Builder(this)
 
     data class Entry(
-        val value: Any,
+        val value: Any?,
         val memoryCacheKey: String?,
     )
 
@@ -92,26 +97,21 @@ class Parameters private constructor(
          *  null, this value will be added to a request's memory cache key.
          */
         @JvmOverloads
-        fun set(
-            key: String,
-            value: Any?,
-            memoryCacheKey: String? = value?.toString()
-        ) = apply {
-            if (value == null) {
-                entries.remove(key)
-            } else {
-                entries[key] = Entry(value, memoryCacheKey)
-            }
+        fun set(key: String, value: Any?, memoryCacheKey: String? = value?.toString()) = apply {
+            entries[key] = Entry(value, memoryCacheKey)
+        }
+
+        /**
+         * Remove a parameter.
+         *
+         * @param key The parameter's key.
+         */
+        fun remove(key: String) = apply {
+            entries.remove(key)
         }
 
         /** Create a new [Parameters] instance. */
         fun build() = Parameters(entries.toImmutableMap())
-
-        @Deprecated(
-            message = "Migrate to 'set'.",
-            replaceWith = ReplaceWith("set(key, null)")
-        )
-        fun remove(key: String) = set(key, null)
     }
 
     companion object {
