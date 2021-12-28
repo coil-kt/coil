@@ -6,7 +6,7 @@ on:
     pull_request:
 env:
     # Increment this to manually invalidate the cache.
-    CACHE_VERSION: 4
+    CACHE_VERSION: 1
 jobs:
     checks:
         name: Checks
@@ -81,7 +81,7 @@ jobs:
                       ~/.gradle/wrapper
                   key: ${{ runner.os }}-gradle-${{ env.CACHE_VERSION }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/buildSrc/src/main/kotlin/Library.kt') }}
 
-            # API 31+ emulators only have Google API, x86_64 system images.
+            # API 30+ emulators only have x86_64 system images.
             - name: Get AVD info
               uses: ./.github/actions/get-avd-info
               id: avd-info
