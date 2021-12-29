@@ -1,5 +1,6 @@
 package coil.compose
 
+import android.graphics.BitmapFactory
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
@@ -41,6 +42,7 @@ import coil.compose.utils.assumeSupportsCaptureToImage
 import coil.decode.DecodeUtils
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
+import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.Options
@@ -520,6 +522,66 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         assertEquals(1, compositionCount.get())
+    }
+
+    @Test
+    fun painterState_notMemoryCached() {
+        val outerCompositionCount = AtomicInteger()
+        val innerCompositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            outerCompositionCount.getAndIncrement()
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(server.url("/image"))
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader
+            ) {
+                when (innerCompositionCount.getAndIncrement()) {
+                    0 -> assertIs<State.Loading>(painter.state)
+                    else -> assertIs<State.Success>(painter.state)
+                }
+                AsyncImageContent()
+            }
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, outerCompositionCount.get())
+        assertEquals(2, innerCompositionCount.get())
+    }
+
+    @Test
+    fun painterState_memoryCached() {
+        val url = server.url("/image")
+        val bitmap = BitmapFactory.decodeResource(composeTestRule.activity.resources, R.drawable.sample)
+        imageLoader.memoryCache!![MemoryCache.Key(url.toString())] = MemoryCache.Value(bitmap)
+
+        val outerCompositionCount = AtomicInteger()
+        val innerCompositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            outerCompositionCount.getAndIncrement()
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(url)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader
+            ) {
+                innerCompositionCount.getAndIncrement()
+                assertIs<State.Success>(painter.state)
+                AsyncImageContent()
+            }
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, outerCompositionCount.get())
+        assertEquals(1, innerCompositionCount.get())
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
