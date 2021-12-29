@@ -84,7 +84,7 @@ fun rememberAsyncImagePainter(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter {
     val request = requestOf(model)
-    assertRequestIsValid(request)
+    validateRequest(request)
 
     val painter = remember { AsyncImagePainter(request, imageLoader) }
     painter.placeholder = placeholder
@@ -325,12 +325,17 @@ class AsyncImagePainter internal constructor(
     }
 }
 
-private fun assertRequestIsValid(request: ImageRequest) {
+private fun validateRequest(request: ImageRequest) {
     when (request.data) {
+        is ImageRequest.Builder -> throw IllegalArgumentException(
+            "Unsupported type: ImageRequest.Builder. " +
+                "Did you forget to call ImageRequest.Builder.build()?"
+        )
         is ImageBitmap -> unsupportedData("ImageBitmap")
         is ImageVector -> unsupportedData("ImageVector")
         is Painter -> unsupportedData("Painter")
     }
+
     require(request.target == null) { "request.target must be null." }
 }
 
