@@ -55,9 +55,10 @@ import coil.size.Size as CoilSize
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and
  * renders the result.
  *
- * This is a lower-level API than [AsyncImage] and may not work as expected in all situations.
+ * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations.**
  * Notably, it will not finish loading if [AsyncImagePainter.onDraw] is not called, which can occur
- * for composables that don't have a fixed size (e.g. [LazyColumn]). It's recommended to use
+ * for composables that don't have a fixed size (e.g. [LazyColumn]). Also [AsyncImagePainter.state]
+ * will not be up to date immediately during the composition phase. It's highly recommended to use
  * [AsyncImage] unless you need a reference to a [Painter].
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
@@ -97,7 +98,6 @@ fun rememberAsyncImagePainter(
     painter.isPreview = LocalInspectionMode.current
     painter.imageLoader = imageLoader
     painter.request = request // Update request last so all other properties are up to date.
-    painter.onRemembered() // Invoke this manually so `painter.state` is up to date immediately.
     return painter
 }
 
@@ -161,15 +161,6 @@ class AsyncImagePainter internal constructor(
     }
 
     override fun onRemembered() {
-        // If we're in inspection mode (preview) skip executing the image request
-        // and set the state to loading.
-        if (isPreview) {
-            val request = request.newBuilder().defaults(imageLoader.defaults).build()
-            val painter = request.placeholder?.toPainter()
-            updateState(State.Empty, State.Loading(painter))
-            return
-        }
-
         // Short circuit if we're already remembered.
         if (rememberScope != null) return
 
@@ -179,6 +170,14 @@ class AsyncImagePainter internal constructor(
 
         // Manually notify the child painter that we're remembered.
         (painter as? RememberObserver)?.onRemembered()
+
+        // If we're in inspection mode skip the image request and set the state to loading.
+        if (isPreview) {
+            val request = request.newBuilder().defaults(imageLoader.defaults).build()
+            val painter = request.placeholder?.toPainter()
+            updateState(State.Empty, State.Loading(painter))
+            return
+        }
 
         // Observe the current request + request size and launch new requests as necessary.
         scope.launch {

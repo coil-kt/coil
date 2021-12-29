@@ -189,8 +189,9 @@ fun AsyncImage(
             contentAlignment = alignment,
             propagateMinConstraints = true
         ) {
-            // This is necessary to ensure that images from the memory cache are resolved
-            // synchronously before invoking `content`.
+            // Ensure `painter.state` is up to date immediately. This is necessary to ensure that
+            // images from the memory cache are resolved synchronously before invoking `content`.
+            painter.onRemembered()
             sizeResolver.setConstraints(constraints)
 
             RealAsyncImageScope(
