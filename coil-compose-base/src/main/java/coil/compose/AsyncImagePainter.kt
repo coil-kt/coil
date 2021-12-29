@@ -334,7 +334,6 @@ private fun validateRequest(request: ImageRequest) {
         is ImageVector -> unsupportedData("ImageVector")
         is Painter -> unsupportedData("Painter")
     }
-
     require(request.target == null) { "request.target must be null." }
 }
 
