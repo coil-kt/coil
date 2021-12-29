@@ -56,10 +56,11 @@ import coil.size.Size as CoilSize
  * renders the result.
  *
  * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations.**
- * Notably, it will not finish loading if [AsyncImagePainter.onDraw] is not called, which can occur
- * for composables that don't have a fixed size (e.g. [LazyColumn]). Also [AsyncImagePainter.state]
- * will not be up to date immediately during the composition phase. It's highly recommended to use
- * [AsyncImage] unless you need a reference to a [Painter].
+ *
+ * Notably, [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called,
+ * which can occur for composables that don't have a fixed size (e.g. [LazyColumn]). Also
+ * [AsyncImagePainter.state] will not be up to date immediately during the composition phase. It's
+ * highly recommended to use [AsyncImage] unless you need a reference to a [Painter].
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
