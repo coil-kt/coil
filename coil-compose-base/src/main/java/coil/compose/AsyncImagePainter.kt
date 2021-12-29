@@ -41,11 +41,12 @@ import coil.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -113,7 +114,6 @@ class AsyncImagePainter internal constructor(
 ) : Painter(), RememberObserver {
 
     private var rememberScope: CoroutineScope? = null
-    private var requestJob: Job? = null
     private val drawSize = MutableStateFlow(Size.Zero)
 
     private var painter: Painter? by mutableStateOf(null)
@@ -175,6 +175,7 @@ class AsyncImagePainter internal constructor(
         return true
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onRemembered() {
         // Short circuit if we're already remembered.
         if (rememberScope != null) return
@@ -195,12 +196,9 @@ class AsyncImagePainter internal constructor(
 
         // Observe the current request + request size and launch new requests as necessary.
         scope.launch {
-            snapshotFlow { request }.collect { request ->
-                requestJob?.cancel()
-                requestJob = launch {
-                    updateState(imageLoader.execute(updateRequest(request)).toState())
-                }
-            }
+            snapshotFlow { request }
+                .mapLatest { imageLoader.execute(updateRequest(request)).toState() }
+                .collect(::updateState)
         }
     }
 
@@ -217,8 +215,6 @@ class AsyncImagePainter internal constructor(
     private fun clear() {
         rememberScope?.cancel()
         rememberScope = null
-        requestJob?.cancel()
-        requestJob = null
     }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
