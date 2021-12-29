@@ -215,7 +215,7 @@ class EventListenerTest {
         private val callCount = AtomicInteger(0)
 
         fun call() {
-            callCount.incrementAndGet()
+            callCount.getAndIncrement()
         }
 
         fun complete(eventName: String) {
