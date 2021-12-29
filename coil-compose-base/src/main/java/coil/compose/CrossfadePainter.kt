@@ -9,6 +9,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.painter.Painter
@@ -36,7 +37,7 @@ internal class CrossfadePainter(
     private var startTimeMillis = -1L
     private var isDone = false
 
-    private var maxAlpha: Float by mutableStateOf(1f)
+    private var maxAlpha: Float by mutableStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     override val intrinsicSize get() = computeIntrinsicSize()
@@ -56,7 +57,7 @@ internal class CrossfadePainter(
         val percent = (uptimeMillis - startTimeMillis) / durationMillis.toFloat()
         val endAlpha = percent.coerceIn(0f, 1f) * maxAlpha
         val startAlpha = if (fadeStart) maxAlpha - endAlpha else maxAlpha
-        isDone = percent >= 1.0
+        isDone = percent >= 1f
 
         drawPainter(start, startAlpha)
         drawPainter(end, endAlpha)
