@@ -501,7 +501,7 @@ class MemoryCacheServiceTest {
 
     private fun createFakeParameters(): Parameters {
         return Parameters.Builder()
-            .set("key1", "no_cache", cacheKey = null)
+            .set("key1", "no_cache", memoryCacheKey = null)
             .set("key2", "cached2")
             .set("key3", "cached3")
             .build()
