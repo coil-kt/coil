@@ -147,6 +147,7 @@ private fun ListScreen(
                     .run { DpSize(width.toDp(), height.toDp()) }
             }
 
+            // Intentionally not a `State` object to avoid recomposition.
             var placeholder: MemoryCache.Key? = null
 
             AsyncImage(
