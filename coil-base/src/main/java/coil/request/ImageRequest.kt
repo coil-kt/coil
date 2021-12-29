@@ -350,23 +350,15 @@ class ImageRequest private constructor(
             listener = null
             memoryCacheKey = null
             diskCacheKey = null
+            bitmapConfig = null
             if (SDK_INT >= 26) colorSpace = null
+            precision = null
             fetcherFactory = null
             decoderFactory = null
             transformations = emptyList()
+            transitionFactory = null
             headers = null
             tags = null
-            parameters = null
-            lifecycle = null
-            sizeResolver = null
-            scale = null
-            interceptorDispatcher = null
-            fetcherDispatcher = null
-            decoderDispatcher = null
-            transformationDispatcher = null
-            transitionFactory = null
-            precision = null
-            bitmapConfig = null
             allowConversionToBitmap = true
             allowHardware = null
             allowRgb565 = null
@@ -374,6 +366,11 @@ class ImageRequest private constructor(
             memoryCachePolicy = null
             diskCachePolicy = null
             networkCachePolicy = null
+            interceptorDispatcher = null
+            fetcherDispatcher = null
+            decoderDispatcher = null
+            transformationDispatcher = null
+            parameters = null
             placeholderMemoryCacheKey = null
             placeholderResId = null
             placeholderDrawable = null
@@ -381,6 +378,9 @@ class ImageRequest private constructor(
             errorDrawable = null
             fallbackResId = null
             fallbackDrawable = null
+            lifecycle = null
+            sizeResolver = null
+            scale = null
             resolvedLifecycle = null
             resolvedSizeResolver = null
             resolvedScale = null
@@ -395,23 +395,15 @@ class ImageRequest private constructor(
             listener = request.listener
             memoryCacheKey = request.memoryCacheKey
             diskCacheKey = request.diskCacheKey
+            bitmapConfig = request.defined.bitmapConfig
             if (SDK_INT >= 26) colorSpace = request.colorSpace
+            precision = request.defined.precision
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory
             transformations = request.transformations
+            transitionFactory = request.defined.transitionFactory
             headers = request.headers.newBuilder()
             tags = request.tags.asMap().toMutableMap()
-            parameters = request.parameters.newBuilder()
-            lifecycle = request.defined.lifecycle
-            sizeResolver = request.defined.sizeResolver
-            scale = request.defined.scale
-            interceptorDispatcher = request.defined.interceptorDispatcher
-            fetcherDispatcher = request.defined.fetcherDispatcher
-            decoderDispatcher = request.defined.decoderDispatcher
-            transformationDispatcher = request.defined.transformationDispatcher
-            transitionFactory = request.defined.transitionFactory
-            precision = request.defined.precision
-            bitmapConfig = request.defined.bitmapConfig
             allowConversionToBitmap = request.allowConversionToBitmap
             allowHardware = request.defined.allowHardware
             allowRgb565 = request.defined.allowRgb565
@@ -419,6 +411,10 @@ class ImageRequest private constructor(
             memoryCachePolicy = request.defined.memoryCachePolicy
             diskCachePolicy = request.defined.diskCachePolicy
             networkCachePolicy = request.defined.networkCachePolicy
+            interceptorDispatcher = request.defined.interceptorDispatcher
+            fetcherDispatcher = request.defined.fetcherDispatcher
+            decoderDispatcher = request.defined.decoderDispatcher
+            transformationDispatcher = request.defined.transformationDispatcher
             placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
             placeholderResId = request.placeholderResId
             placeholderDrawable = request.placeholderDrawable
@@ -426,6 +422,10 @@ class ImageRequest private constructor(
             errorDrawable = request.errorDrawable
             fallbackResId = request.fallbackResId
             fallbackDrawable = request.fallbackDrawable
+            parameters = request.parameters.newBuilder()
+            lifecycle = request.defined.lifecycle
+            sizeResolver = request.defined.sizeResolver
+            scale = request.defined.scale
 
             // If the context changes, recompute the resolved values.
             if (request.context === context) {
