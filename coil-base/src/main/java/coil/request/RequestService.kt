@@ -82,6 +82,7 @@ internal class RequestService(
             premultipliedAlpha = request.premultipliedAlpha,
             diskCacheKey = request.diskCacheKey,
             headers = request.headers,
+            tags = request.tags,
             parameters = request.parameters,
             memoryCachePolicy = request.memoryCachePolicy,
             diskCachePolicy = request.diskCachePolicy,

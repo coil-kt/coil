@@ -53,12 +53,12 @@ internal class MemoryCacheService(
 
         // Optimize for the typical case where there are no transformations or parameters.
         val transformations = request.transformations
-        val parameterKeys = request.parameters.cacheKeys()
+        val parameterKeys = request.parameters.memoryCacheKeys()
         if (transformations.isEmpty() && parameterKeys.isEmpty()) {
             return MemoryCache.Key(base)
         }
 
-        // Else, create a complex cache key with extras.
+        // Else, create a memory cache key with extras.
         val extras = parameterKeys.toMutableMap()
         if (transformations.isNotEmpty()) {
             request.transformations.forEachIndexedIndices { index, transformation ->

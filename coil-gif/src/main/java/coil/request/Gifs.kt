@@ -30,7 +30,7 @@ fun ImageRequest.Builder.repeatCount(repeatCount: Int): ImageRequest.Builder {
 /**
  * Get the number of times to repeat the animation if the result is an animated [Drawable].
  */
-fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY) as Int?
+fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY)
 
 /**
  * Set the [AnimatedTransformation] that will be applied to the result if it is an animated [Drawable].
@@ -49,9 +49,7 @@ fun ImageRequest.Builder.animatedTransformation(animatedTransformation: Animated
  * Get the [AnimatedTransformation] that will be applied to the result if it is an animated [Drawable].
  */
 @ExperimentalCoilApi
-fun Parameters.animatedTransformation(): AnimatedTransformation? {
-    return value(ANIMATED_TRANSFORMATION_KEY) as AnimatedTransformation?
-}
+fun Parameters.animatedTransformation(): AnimatedTransformation? = value(ANIMATED_TRANSFORMATION_KEY)
 
 /**
  * Set the callback to be invoked at the start of the animation if the result is an animated [Drawable].
@@ -63,9 +61,7 @@ fun ImageRequest.Builder.onAnimationStart(callback: (() -> Unit)?): ImageRequest
 /**
  * Get the callback to be invoked at the start of the animation if the result is an animated [Drawable].
  */
-fun Parameters.animationStartCallback(): (() -> Unit)? {
-    return value(ANIMATION_START_CALLBACK_KEY) as (() -> Unit)?
-}
+fun Parameters.animationStartCallback(): (() -> Unit)? = value(ANIMATION_START_CALLBACK_KEY)
 
 /**
  * Set the callback to be invoked at the end of the animation if the result is an animated [Drawable].
@@ -77,6 +73,4 @@ fun ImageRequest.Builder.onAnimationEnd(callback: (() -> Unit)?): ImageRequest.B
 /**
  * Get the callback to be invoked at the end of the animation if the result is an animated [Drawable].
  */
-fun Parameters.animationEndCallback(): (() -> Unit)? {
-    return value(ANIMATION_END_CALLBACK_KEY) as (() -> Unit)?
-}
+fun Parameters.animationEndCallback(): (() -> Unit)? = value(ANIMATION_END_CALLBACK_KEY)
