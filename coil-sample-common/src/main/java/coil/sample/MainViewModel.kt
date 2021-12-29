@@ -18,7 +18,7 @@ import kotlin.random.Random
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _images = MutableStateFlow(emptyList<Image>())
+    private val _images: MutableStateFlow<List<Image>> = MutableStateFlow(emptyList())
     val images: StateFlow<List<Image>> get() = _images
 
     val assetType: MutableStateFlow<AssetType> = MutableStateFlow(AssetType.JPG)
