@@ -99,6 +99,7 @@ fun rememberAsyncImagePainter(
     painter.isPreview = LocalInspectionMode.current
     painter.imageLoader = imageLoader
     painter.request = request // Update request last so all other properties are up to date.
+    painter.onRemembered() // Invoke this manually so `painter.state` is set to `Loading` immediately.
     return painter
 }
 
@@ -118,6 +119,19 @@ class AsyncImagePainter internal constructor(
     private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float by mutableStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
+
+    // These fields allow access to the current value
+    // instead of the value in the current composition.
+    private var _state: State = State.Empty
+        set(value) {
+            field = value
+            state = value
+        }
+    private var _painter: Painter? = null
+        set(value) {
+            field = value
+            painter = value
+        }
 
     internal var placeholder: Painter? = null
     internal var error: Painter? = null
@@ -170,13 +184,12 @@ class AsyncImagePainter internal constructor(
         rememberScope = scope
 
         // Manually notify the child painter that we're remembered.
-        (painter as? RememberObserver)?.onRemembered()
+        (_painter as? RememberObserver)?.onRemembered()
 
         // If we're in inspection mode skip the image request and set the state to loading.
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
-            val painter = request.placeholder?.toPainter()
-            updateState(State.Empty, State.Loading(painter))
+            updateState(State.Loading(request.placeholder?.toPainter()))
             return
         }
 
@@ -185,7 +198,7 @@ class AsyncImagePainter internal constructor(
             snapshotFlow { request }.collect { request ->
                 requestJob?.cancel()
                 requestJob = launch {
-                    updateState(state, imageLoader.execute(updateRequest(request)).toState())
+                    updateState(imageLoader.execute(updateRequest(request)).toState())
                 }
             }
         }
@@ -193,12 +206,12 @@ class AsyncImagePainter internal constructor(
 
     override fun onForgotten() {
         clear()
-        (painter as? RememberObserver)?.onForgotten()
+        (_painter as? RememberObserver)?.onForgotten()
     }
 
     override fun onAbandoned() {
         clear()
-        (painter as? RememberObserver)?.onAbandoned()
+        (_painter as? RememberObserver)?.onAbandoned()
     }
 
     private fun clear() {
@@ -212,7 +225,7 @@ class AsyncImagePainter internal constructor(
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
             .target(onStart = { placeholder ->
-                updateState(state, State.Loading(placeholder?.toPainter() ?: this.placeholder))
+                updateState(State.Loading(placeholder?.toPainter() ?: this.placeholder))
             })
             .apply {
                 if (request.defined.sizeResolver == null) {
@@ -226,9 +239,10 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
-    private fun updateState(previous: State, current: State) {
-        state = current
-        painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
+    private fun updateState(current: State) {
+        val previous = _state
+        _state = current
+        _painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
 
         // Manually forget and remember the old/new painters if we're already remembered.
         if (rememberScope != null && previous.painter !== current.painter) {
