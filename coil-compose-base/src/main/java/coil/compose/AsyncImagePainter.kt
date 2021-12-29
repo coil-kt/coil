@@ -327,9 +327,9 @@ class AsyncImagePainter internal constructor(
 
 private fun validateRequest(request: ImageRequest) {
     when (request.data) {
-        is ImageRequest.Builder -> throw IllegalArgumentException(
-            "Unsupported type: ImageRequest.Builder. " +
-                "Did you forget to call ImageRequest.Builder.build()?"
+        is ImageRequest.Builder -> unsupportedData(
+            name = "ImageRequest.Builder",
+            description = "Did you forget to call ImageRequest.Builder.build()?"
         )
         is ImageBitmap -> unsupportedData("ImageBitmap")
         is ImageVector -> unsupportedData("ImageVector")
@@ -339,12 +339,10 @@ private fun validateRequest(request: ImageRequest) {
     require(request.target == null) { "request.target must be null." }
 }
 
-private fun unsupportedData(name: String): Nothing {
-    throw IllegalArgumentException(
-        "Unsupported type: $name. If you wish to display this $name, " +
-            "use androidx.compose.foundation.Image."
-    )
-}
+private fun unsupportedData(
+    name: String,
+    description: String = "If you wish to display this $name, use androidx.compose.foundation.Image."
+): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
 
 private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
