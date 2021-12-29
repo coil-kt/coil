@@ -32,6 +32,7 @@ import coil.util.decodeBitmapAsset
 import coil.util.enqueueImage
 import coil.util.getDrawableCompat
 import coil.util.isMainThread
+import coil.util.runTestAsync
 import coil.util.runTestMain
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -479,9 +480,9 @@ class RealImageLoaderAndroidTest {
     }
 
     @Test
-    fun requestTagsArePassedToOkHttpInterceptor() = runTest {
+    fun requestTagsArePassedToOkHttpInterceptor() = runTestAsync {
         val tags = Tags.from(mapOf(
-            Int::class.java to 5,
+            Map::class.java to emptyMap<String, String>(),
             String::class.java to "test"
         ))
         val callFactory = OkHttpClient.Builder()
@@ -497,10 +498,10 @@ class RealImageLoaderAndroidTest {
         server.enqueueImage(IMAGE)
         val request = ImageRequest.Builder(context)
             .data(server.url(IMAGE).toString())
+            .tags(tags)
             .build()
         val result = imageLoader.execute(request)
-
-        assertIs<SuccessResult>(result)
+        if (result is ErrorResult) throw result.throwable
     }
 
     private suspend fun testEnqueue(data: Any, expectedSize: Size = Size(80, 100)) {
