@@ -13,7 +13,6 @@ import coil.network.CacheStrategy
 import coil.network.CacheStrategy.Companion.combineHeaders
 import coil.network.HttpException
 import coil.request.Options
-import coil.request.Parameters
 import coil.util.abortQuietly
 import coil.util.await
 import coil.util.closeQuietly
@@ -60,7 +59,7 @@ internal class HttpUriFetcher(
                     if (cacheStrategy.networkRequest == null && cacheStrategy.cacheResponse != null) {
                         return SourceResult(
                             source = snapshot.toImageSource(),
-                            mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType()),
+                            mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType),
                             dataSource = DataSource.DISK
                         )
                     }
@@ -68,7 +67,7 @@ internal class HttpUriFetcher(
                     // Skip checking the cache headers if the option is disabled.
                     return SourceResult(
                         source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType()),
+                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType),
                         dataSource = DataSource.DISK
                     )
                 }
@@ -86,7 +85,7 @@ internal class HttpUriFetcher(
                 if (snapshot != null) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType()),
+                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType),
                         dataSource = DataSource.NETWORK
                     )
                 }
@@ -154,8 +153,10 @@ internal class HttpUriFetcher(
         val request = Request.Builder()
             .url(url)
             .headers(options.headers)
-            // Support attaching custom data to the network request.
-            .tag(Parameters::class.java, options.parameters)
+
+        // Attach all custom tags to this request.
+        @Suppress("UNCHECKED_CAST")
+        options.tags.asMap().forEach { request.tag(it.key as Class<Any>, it.value) }
 
         val diskRead = options.diskCachePolicy.readEnabled
         val networkRead = options.networkCachePolicy.readEnabled

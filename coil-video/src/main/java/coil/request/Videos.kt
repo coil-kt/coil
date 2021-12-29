@@ -50,9 +50,9 @@ fun ImageRequest.Builder.videoFrameOption(option: Int): ImageRequest.Builder {
 /**
  * Get the time **in microseconds** of the frame to extract from a video.
  */
-fun Parameters.videoFrameMicros(): Long? = value(VIDEO_FRAME_MICROS_KEY) as Long?
+fun Parameters.videoFrameMicros(): Long? = value(VIDEO_FRAME_MICROS_KEY)
 
 /**
  * Get the option for how to decode the video frame.
  */
-fun Parameters.videoFrameOption(): Int? = value(VIDEO_FRAME_OPTION_KEY) as Int?
+fun Parameters.videoFrameOption(): Int? = value(VIDEO_FRAME_OPTION_KEY)
