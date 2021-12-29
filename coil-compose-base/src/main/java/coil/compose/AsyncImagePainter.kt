@@ -60,7 +60,8 @@ import coil.size.Size as CoilSize
  *
  * Notably, [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called,
  * which can occur for composables that don't have a fixed size (e.g. [LazyColumn]). Also
- * [AsyncImagePainter.state] will not be up to date immediately during the composition phase.
+ * [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
+ * composition phase.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
