@@ -191,8 +191,8 @@ fun AsyncImage(
         ) {
             // Ensure `painter.state` is up to date immediately. This is necessary to ensure that
             // images from the memory cache are resolved synchronously before invoking `content`.
-            painter.onRemembered()
             sizeResolver.setConstraints(constraints)
+            painter.onRemembered()
 
             RealAsyncImageScope(
                 parentScope = this,
