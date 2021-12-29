@@ -23,6 +23,15 @@ class Tags private constructor(private val tags: Map<Class<*>, Any>) {
     /** Get the underlying **immutable** map used by this instance. */
     fun asMap(): Map<Class<*>, Any> = tags
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is Tags && tags == other.tags
+    }
+
+    override fun hashCode() = tags.hashCode()
+
+    override fun toString() = "Tags(tags=$tags)"
+
     companion object {
         @JvmField val EMPTY = Tags(emptyMap())
 

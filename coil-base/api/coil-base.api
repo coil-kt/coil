@@ -728,8 +728,11 @@ public final class coil/request/Tags {
 	public static final field EMPTY Lcoil/request/Tags;
 	public synthetic fun <init> (Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun asMap ()Ljava/util/Map;
+	public fun equals (Ljava/lang/Object;)Z
 	public static final fun from (Ljava/util/Map;)Lcoil/request/Tags;
+	public fun hashCode ()I
 	public final fun tag (Ljava/lang/Class;)Ljava/lang/Object;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/request/Tags$Companion {
