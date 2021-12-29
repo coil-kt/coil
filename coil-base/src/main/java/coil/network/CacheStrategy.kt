@@ -95,7 +95,7 @@ internal class CacheStrategy private constructor(
             // If this response shouldn't have been stored, it should never be used as a response
             // source. This check should be redundant as long as the persistence store is
             // well-behaved and the rules are constant.
-            val responseCaching = cacheResponse.cacheControl()
+            val responseCaching = cacheResponse.cacheControl
             if (!isCacheable(request, cacheResponse)) {
                 return CacheStrategy(request, null)
             }
@@ -161,7 +161,7 @@ internal class CacheStrategy private constructor(
          * starting from the served date.
          */
         private fun computeFreshnessLifetime(): Long {
-            val responseCaching = cacheResponse!!.cacheControl()
+            val responseCaching = cacheResponse!!.cacheControl
             if (responseCaching.maxAgeSeconds != -1) {
                 return SECONDS.toMillis(responseCaching.maxAgeSeconds.toLong())
             }
@@ -232,7 +232,7 @@ internal class CacheStrategy private constructor(
         /** Returns true if the response can be stored to later serve another request. */
         fun isCacheable(request: Request, response: CacheResponse): Boolean {
             // A 'no-store' directive on request or response prevents the response from being cached.
-            return !request.cacheControl.noStore && !response.cacheControl().noStore &&
+            return !request.cacheControl.noStore && !response.cacheControl.noStore &&
                 // Vary all responses cannot be cached.
                 response.responseHeaders["Vary"] != "*"
         }

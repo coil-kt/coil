@@ -368,6 +368,7 @@ class HttpUriFetcherTest {
         url: String,
         options: Options = Options(context),
         respectCacheHeaders: Boolean = true,
+        callFactory: Call.Factory = this.callFactory,
         diskCache: DiskCache? = this.diskCache
     ): Fetcher {
         val factory = HttpUriFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), respectCacheHeaders)

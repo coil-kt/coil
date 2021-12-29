@@ -97,7 +97,7 @@ internal class RealStrongMemoryCache(
     }
 
     override fun clearMemory() {
-        cache.trimToSize(-1)
+        cache.evictAll()
     }
 
     override fun trimMemory(level: Int) {

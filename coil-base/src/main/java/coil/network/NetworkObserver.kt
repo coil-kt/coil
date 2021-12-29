@@ -5,7 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
-import android.net.NetworkCapabilities
+import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import android.util.Log
 import androidx.annotation.MainThread
@@ -83,7 +83,7 @@ private class RealNetworkObserver(
 
     init {
         val request = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addCapability(NET_CAPABILITY_INTERNET)
             .build()
         connectivityManager.registerNetworkCallback(request, networkCallback)
     }
@@ -105,7 +105,7 @@ private class RealNetworkObserver(
     }
 
     private fun Network.isOnline(): Boolean {
-        val capabilities: NetworkCapabilities? = connectivityManager.getNetworkCapabilities(this)
-        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        val capabilities = connectivityManager.getNetworkCapabilities(this)
+        return capabilities != null && capabilities.hasCapability(NET_CAPABILITY_INTERNET)
     }
 }
