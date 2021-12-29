@@ -53,15 +53,14 @@ import kotlin.math.roundToInt
 import coil.size.Size as CoilSize
 
 /**
- * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and
- * renders the result.
+ * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
  * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations.**
+ * **It's highly recommended to use [AsyncImage] unless you need a reference to a [Painter].**
  *
  * Notably, [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called,
  * which can occur for composables that don't have a fixed size (e.g. [LazyColumn]). Also
- * [AsyncImagePainter.state] will not be up to date immediately during the composition phase. It's
- * highly recommended to use [AsyncImage] unless you need a reference to a [Painter].
+ * [AsyncImagePainter.state] will not be up to date immediately during the composition phase.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
