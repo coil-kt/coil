@@ -194,7 +194,7 @@ class AsyncImagePainter internal constructor(
             return
         }
 
-        // Observe the current request + request size and launch new requests as necessary.
+        // Observe the current request and launch new requests as necessary.
         scope.launch {
             snapshotFlow { request }
                 .mapLatest { imageLoader.execute(updateRequest(request)).toState() }
