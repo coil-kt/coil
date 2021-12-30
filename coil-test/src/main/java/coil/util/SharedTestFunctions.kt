@@ -17,9 +17,28 @@ import okio.Buffer
 import okio.buffer
 import okio.sink
 import okio.source
+import org.junit.Assume
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+
+/** Alias for [Assume.assumeTrue]. */
+fun assumeTrue(actual: Boolean, message: String = "") {
+    if (message.isBlank()) {
+        Assume.assumeTrue(actual)
+    } else {
+        Assume.assumeTrue(message, actual)
+    }
+}
+
+/** Alias for [Assume.assumeFalse]. */
+fun assumeFalse(actual: Boolean, message: String = "") {
+    if (message.isBlank()) {
+        Assume.assumeFalse(actual)
+    } else {
+        Assume.assumeFalse(message, actual)
+    }
+}
 
 fun createMockWebServer(vararg images: String): MockWebServer {
     val server = MockWebServer()
