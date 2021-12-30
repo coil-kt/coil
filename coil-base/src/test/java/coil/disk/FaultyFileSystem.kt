@@ -31,40 +31,40 @@ class FaultyFileSystem(delegate: FileSystem?) : ForwardingFileSystem(delegate!!)
 
     fun setFaultyWrite(file: Path, faulty: Boolean) {
         if (faulty) {
-            writeFaults.add(file)
+            writeFaults += file
         } else {
-            writeFaults.remove(file)
+            writeFaults -= file
         }
     }
 
     fun setFaultyDelete(file: Path, faulty: Boolean) {
         if (faulty) {
-            deleteFaults.add(file)
+            deleteFaults += file
         } else {
-            deleteFaults.remove(file)
+            deleteFaults -= file
         }
     }
 
     fun setFaultyRename(file: Path, faulty: Boolean) {
         if (faulty) {
-            renameFaults.add(file)
+            renameFaults += file
         } else {
-            renameFaults.remove(file)
+            renameFaults -= file
         }
     }
 
     override fun atomicMove(source: Path, target: Path) {
-        if (renameFaults.contains(source) || renameFaults.contains(target)) throw IOException("boom!")
+        if (source in renameFaults || target in renameFaults) throw IOException("boom!")
         super.atomicMove(source, target)
     }
 
     override fun delete(path: Path, mustExist: Boolean) {
-        if (deleteFaults.contains(path)) throw IOException("boom!")
+        if (path in deleteFaults) throw IOException("boom!")
         super.delete(path, mustExist)
     }
 
     override fun deleteRecursively(fileOrDirectory: Path, mustExist: Boolean) {
-        if (deleteFaults.contains(fileOrDirectory)) throw IOException("boom!")
+        if (fileOrDirectory in deleteFaults) throw IOException("boom!")
         super.deleteRecursively(fileOrDirectory, mustExist)
     }
 
@@ -76,11 +76,8 @@ class FaultyFileSystem(delegate: FileSystem?) : ForwardingFileSystem(delegate!!)
 
     inner class FaultySink(sink: Sink, private val file: Path) : ForwardingSink(sink) {
         override fun write(source: Buffer, byteCount: Long) {
-            if (file in writeFaults) {
-                throw IOException("boom!")
-            } else {
-                super.write(source, byteCount)
-            }
+            if (file in writeFaults) throw IOException("boom!")
+            super.write(source, byteCount)
         }
     }
 }
