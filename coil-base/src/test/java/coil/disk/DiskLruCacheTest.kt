@@ -301,7 +301,7 @@ class DiskLruCacheTest {
         val k1 = getCleanFile("k1", 0)
         assertThat(readFile(k1)).isEqualTo("ABC")
         cache.remove("k1")
-        assertThat(filesystem.exists(k1)).isFalse()
+        assertThat(filesystem.exists(k1)).isFalse
     }
 
     @Test
@@ -309,7 +309,7 @@ class DiskLruCacheTest {
         set("a", "a", "a")
         val a = cache.edit("a")!!
         a.setString(0, "a1")
-        assertThat(cache.remove("a")).isTrue()
+        assertThat(cache.remove("a")).isTrue
         a.setString(1, "a2")
         a.commit()
         assertAbsent("a")
@@ -362,10 +362,10 @@ class DiskLruCacheTest {
         writeFile(dirtyFile1, "D")
         createJournal("CLEAN k1 1 1", "DIRTY k1")
         createNewCache()
-        assertThat(filesystem.exists(cleanFile0)).isFalse()
-        assertThat(filesystem.exists(cleanFile1)).isFalse()
-        assertThat(filesystem.exists(dirtyFile0)).isFalse()
-        assertThat(filesystem.exists(dirtyFile1)).isFalse()
+        assertThat(filesystem.exists(cleanFile0)).isFalse
+        assertThat(filesystem.exists(cleanFile1)).isFalse
+        assertThat(filesystem.exists(dirtyFile0)).isFalse
+        assertThat(filesystem.exists(dirtyFile1)).isFalse
         assertThat(cache["k1"]).isNull()
     }
 
@@ -497,10 +497,10 @@ class DiskLruCacheTest {
             fail("")
         } catch (_: IllegalStateException) {
         }
-        assertThat(filesystem.exists(getCleanFile("k1", 0))).isFalse()
-        assertThat(filesystem.exists(getCleanFile("k1", 1))).isFalse()
-        assertThat(filesystem.exists(getDirtyFile("k1", 0))).isFalse()
-        assertThat(filesystem.exists(getDirtyFile("k1", 1))).isFalse()
+        assertThat(filesystem.exists(getCleanFile("k1", 0))).isFalse
+        assertThat(filesystem.exists(getCleanFile("k1", 1))).isFalse
+        assertThat(filesystem.exists(getDirtyFile("k1", 0))).isFalse
+        assertThat(filesystem.exists(getDirtyFile("k1", 1))).isFalse
         assertThat(cache["k1"]).isNull()
         val creator2 = cache.edit("k1")!!
         creator2.setString(0, "B")
@@ -513,10 +513,10 @@ class DiskLruCacheTest {
         val creator = cache.edit("k1")!!
         creator.setString(1, "A")
         creator.abort()
-        assertThat(filesystem.exists(getCleanFile("k1", 0))).isFalse()
-        assertThat(filesystem.exists(getCleanFile("k1", 1))).isFalse()
-        assertThat(filesystem.exists(getDirtyFile("k1", 0))).isFalse()
-        assertThat(filesystem.exists(getDirtyFile("k1", 1))).isFalse()
+        assertThat(filesystem.exists(getCleanFile("k1", 0))).isFalse
+        assertThat(filesystem.exists(getCleanFile("k1", 1))).isFalse
+        assertThat(filesystem.exists(getDirtyFile("k1", 0))).isFalse
+        assertThat(filesystem.exists(getDirtyFile("k1", 1))).isFalse
         assertThat(cache["k1"]).isNull()
     }
 
@@ -726,7 +726,7 @@ class DiskLruCacheTest {
     /** https://github.com/JakeWharton/DiskLruCache/issues/28 */
     @Test
     fun rebuildJournalOnRepeatedEditsWithOpenAndClose() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.key()) {
             set("a", "a", "a")
             set("b", "b", "b")
             cache.close()
@@ -847,7 +847,7 @@ class DiskLruCacheTest {
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
         taskFaker.runNextTask()
-        assertThat(cache.remove("a")).isTrue()
+        assertThat(cache.remove("a")).isTrue
         assertAbsent("a")
 
         // Let the rebuild complete successfully.
@@ -866,7 +866,7 @@ class DiskLruCacheTest {
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
         taskFaker.runNextTask()
-        assertThat(cache.remove("a")).isTrue()
+        assertThat(cache.remove("a")).isTrue
         assertAbsent("a")
         cache.close()
         createNewCache()
@@ -933,13 +933,13 @@ class DiskLruCacheTest {
         creator.commit()
         cache.close()
         filesystem.atomicMove(journalFile, journalBkpFile)
-        assertThat(filesystem.exists(journalFile)).isFalse()
+        assertThat(filesystem.exists(journalFile)).isFalse
         createNewCache()
         val snapshot = cache["k1"]!!
         snapshot.assertValue(0, "ABC")
         snapshot.assertValue(1, "DE")
-        assertThat(filesystem.exists(journalBkpFile)).isFalse()
-        assertThat(filesystem.exists(journalFile)).isTrue()
+        assertThat(filesystem.exists(journalBkpFile)).isFalse
+        assertThat(filesystem.exists(journalFile)).isTrue
     }
 
     @Test
@@ -955,8 +955,8 @@ class DiskLruCacheTest {
         creator.setString(1, "GH")
         creator.commit()
         cache.close()
-        assertThat(filesystem.exists(journalFile)).isTrue()
-        assertThat(filesystem.exists(journalBkpFile)).isTrue()
+        assertThat(filesystem.exists(journalFile)).isTrue
+        assertThat(filesystem.exists(journalBkpFile)).isTrue
         createNewCache()
         val snapshotA = cache["k1"]!!
         snapshotA.assertValue(0, "ABC")
@@ -964,8 +964,8 @@ class DiskLruCacheTest {
         val snapshotB = cache["k2"]!!
         snapshotB.assertValue(0, "F")
         snapshotB.assertValue(1, "GH")
-        assertThat(filesystem.exists(journalBkpFile)).isFalse()
-        assertThat(filesystem.exists(journalFile)).isTrue()
+        assertThat(filesystem.exists(journalBkpFile)).isFalse
+        assertThat(filesystem.exists(journalFile)).isTrue
     }
 
     @Test
@@ -974,9 +974,9 @@ class DiskLruCacheTest {
         val dir = (cacheDir / "testOpenCreatesDirectoryIfNecessary").also { filesystem.createDirectories(it) }
         cache = DiskLruCache(filesystem, dir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         set("a", "a", "a")
-        assertThat(filesystem.exists(dir / "a.0")).isTrue()
-        assertThat(filesystem.exists(dir / "a.1")).isTrue()
-        assertThat(filesystem.exists(dir / "journal")).isTrue()
+        assertThat(filesystem.exists(dir / "a.0")).isTrue
+        assertThat(filesystem.exists(dir / "a.1")).isTrue
+        assertThat(filesystem.exists(dir / "journal")).isTrue
     }
 
     @Test
@@ -1201,25 +1201,25 @@ class DiskLruCacheTest {
         set("b", "b1", "b2")
         set("c", "c1", "c2")
         val iterator = cache.snapshots()
-        assertThat(iterator.hasNext()).isTrue()
+        assertThat(iterator.hasNext()).isTrue
         iterator.next().use {
             assertThat(it.entry.key).isEqualTo("a")
             it.assertValue(0, "a1")
             it.assertValue(1, "a2")
         }
-        assertThat(iterator.hasNext()).isTrue()
+        assertThat(iterator.hasNext()).isTrue
         iterator.next().use {
             assertThat(it.entry.key).isEqualTo("b")
             it.assertValue(0, "b1")
             it.assertValue(1, "b2")
         }
-        assertThat(iterator.hasNext()).isTrue()
+        assertThat(iterator.hasNext()).isTrue
         iterator.next().use {
             assertThat(it.entry.key).isEqualTo("c")
             it.assertValue(0, "c1")
             it.assertValue(1, "c2")
         }
-        assertThat(iterator.hasNext()).isFalse()
+        assertThat(iterator.hasNext()).isFalse
         try {
             iterator.next()
             fail("")
@@ -1239,7 +1239,7 @@ class DiskLruCacheTest {
         iterator.next().use { b ->
             assertThat(b.entry.key).isEqualTo("b")
         }
-        assertThat(iterator.hasNext()).isFalse()
+        assertThat(iterator.hasNext()).isFalse
     }
 
     @Test
@@ -1267,7 +1267,7 @@ class DiskLruCacheTest {
         iterator.next().use {
             assertThat(it.entry.key).isEqualTo("a")
         }
-        assertThat(iterator.hasNext()).isFalse()
+        assertThat(iterator.hasNext()).isFalse
     }
 
     @Test
@@ -1310,7 +1310,7 @@ class DiskLruCacheTest {
         set("a", "a1", "a2")
         val iterator = cache.snapshots()
         cache.close()
-        assertThat(iterator.hasNext()).isFalse()
+        assertThat(iterator.hasNext()).isFalse
     }
 
     @Test
@@ -1406,7 +1406,7 @@ class DiskLruCacheTest {
 
         // Remove, but the journal write will fail.
         filesystem.setFaultyWrite(journalFile, true)
-        assertThat(cache.remove("a")).isTrue()
+        assertThat(cache.remove("a")).isTrue
 
         // Confirm that the entry was still removed.
         filesystem.setFaultyWrite(journalFile, false)
@@ -1713,12 +1713,12 @@ class DiskLruCacheTest {
         assertThat(creator.newSource(0)).isNull()
         assertThat(creator.newSource(1)).isNull()
         val snapshotWhileEditing = cache.snapshots()
-        assertThat(snapshotWhileEditing.hasNext()).isFalse() // entry still is being created/edited
+        assertThat(snapshotWhileEditing.hasNext()).isFalse // entry still is being created/edited
         creator.commit()
         val snapshotAfterCommit = cache.snapshots()
         assertThat(snapshotAfterCommit.hasNext()).withFailMessage(
             "Entry has been removed during creation."
-        ).isTrue()
+        ).isTrue
     }
 
     @Test
@@ -1825,7 +1825,7 @@ class DiskLruCacheTest {
         cache["k1"]!!.use {
             cache.remove("k1")
             val snapshots = cache.snapshots()
-            assertThat(snapshots.hasNext()).isFalse()
+            assertThat(snapshots.hasNext()).isFalse
         }
     }
 
@@ -1983,12 +1983,12 @@ class DiskLruCacheTest {
     }
 
     private fun assertGarbageFilesAllDeleted() {
-        assertThat(filesystem.exists(getCleanFile("g1", 0))).isFalse()
-        assertThat(filesystem.exists(getCleanFile("g1", 1))).isFalse()
-        assertThat(filesystem.exists(getCleanFile("g2", 0))).isFalse()
-        assertThat(filesystem.exists(getCleanFile("g2", 1))).isFalse()
-        assertThat(filesystem.exists(cacheDir / "otherFile0")).isFalse()
-        assertThat(filesystem.exists(cacheDir / "dir1")).isFalse()
+        assertThat(filesystem.exists(getCleanFile("g1", 0))).isFalse
+        assertThat(filesystem.exists(getCleanFile("g1", 1))).isFalse
+        assertThat(filesystem.exists(getCleanFile("g2", 0))).isFalse
+        assertThat(filesystem.exists(getCleanFile("g2", 1))).isFalse
+        assertThat(filesystem.exists(cacheDir / "otherFile0")).isFalse
+        assertThat(filesystem.exists(cacheDir / "dir1")).isFalse
     }
 
     private operator fun set(key: String, value0: String, value1: String) {
@@ -2004,18 +2004,18 @@ class DiskLruCacheTest {
             snapshot.close()
             fail("")
         }
-        assertThat(filesystem.exists(getCleanFile(key, 0))).isFalse()
-        assertThat(filesystem.exists(getCleanFile(key, 1))).isFalse()
-        assertThat(filesystem.exists(getDirtyFile(key, 0))).isFalse()
-        assertThat(filesystem.exists(getDirtyFile(key, 1))).isFalse()
+        assertThat(filesystem.exists(getCleanFile(key, 0))).isFalse
+        assertThat(filesystem.exists(getCleanFile(key, 1))).isFalse
+        assertThat(filesystem.exists(getDirtyFile(key, 0))).isFalse
+        assertThat(filesystem.exists(getDirtyFile(key, 1))).isFalse
     }
 
     private fun assertValue(key: String, value0: String, value1: String) {
         cache[key]!!.use {
             it.assertValue(0, value0)
             it.assertValue(1, value1)
-            assertThat(filesystem.exists(getCleanFile(key, 0))).isTrue()
-            assertThat(filesystem.exists(getCleanFile(key, 1))).isTrue()
+            assertThat(filesystem.exists(getCleanFile(key, 0))).isTrue
+            assertThat(filesystem.exists(getCleanFile(key, 1))).isTrue
         }
     }
 
