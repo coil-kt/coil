@@ -1824,9 +1824,9 @@ class DiskLruCacheTest {
     private fun DiskLruCache.isClosed(): Boolean {
         try {
             get("") // Intentionally use an invalid key.
-        } catch (e: IllegalStateException) {
+            return false
+        } catch (e: Exception) {
             return e.message == "cache is closed"
-        } catch (_: Exception) {}
-        return false
+        }
     }
 }
