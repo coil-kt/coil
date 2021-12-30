@@ -1592,13 +1592,12 @@ class DiskLruCacheTest {
         creator.setString(1, "DE")
         assertThat(creator.newSource(0)).isNull()
         assertThat(creator.newSource(1)).isNull()
-        val snapshotWhileEditing = cache.snapshots()
-        assertThat(snapshotWhileEditing.hasNext()).isFalse // entry still is being created/edited
+        val snapshotWhileEditing = cache["k1"]
+        assertThat(snapshotWhileEditing).isNull() // entry still is being created/edited
         creator.commit()
-        val snapshotAfterCommit = cache.snapshots()
-        assertThat(snapshotAfterCommit.hasNext()).withFailMessage(
-            "Entry has been removed during creation."
-        ).isTrue
+        val snapshotAfterCommit = cache["k1"]
+        assertThat(snapshotAfterCommit)
+            .withFailMessage("Entry has been removed during creation.").isNull()
     }
 
     @Test
@@ -1696,16 +1695,6 @@ class DiskLruCacheTest {
         cache["k1"]!!.use {
             cache.remove("k1")
             assertThat(cache.edit("k1")).isNull()
-        }
-    }
-
-    @Test
-    fun `removed entry absent when iterating`() {
-        set("k1", "a", "a")
-        cache["k1"]!!.use {
-            cache.remove("k1")
-            val snapshots = cache.snapshots()
-            assertThat(snapshots.hasNext()).isFalse
         }
     }
 
@@ -1947,8 +1936,6 @@ class DiskLruCacheTest {
     private fun DiskLruCache.Editor.newSource(index: Int) = file(index).source()
 
     private fun DiskLruCache.Snapshot.getSource(index: Int) = file(index).source()
-
-    private fun DiskLruCache.snapshots() = lruEntries.asSequence().map { get(it.key)!! }.iterator()
 
     private fun DiskLruCache.isClosed(): Boolean {
         try {

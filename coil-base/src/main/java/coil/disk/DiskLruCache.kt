@@ -134,6 +134,7 @@ internal class DiskLruCache(
     private val journalFile = directory / JOURNAL_FILE
     private val journalFileTmp = directory / JOURNAL_FILE_TMP
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
+    private val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
     private var size = 0L
     private var operationsSinceRewrite = 0
     private var journalWriter: BufferedSink? = null
@@ -142,9 +143,6 @@ internal class DiskLruCache(
     private var closed = false
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
-
-    @VisibleForTesting
-    internal val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val cleanupScope = CoroutineScope(SupervisorJob() +
