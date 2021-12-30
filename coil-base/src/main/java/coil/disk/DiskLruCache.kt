@@ -87,7 +87,7 @@ internal class DiskLruCache(
     cleanupDispatcher: CoroutineDispatcher,
     maxSize: Long,
     private val appVersion: Int,
-    private val valueCount: Int
+    private val valueCount: Int,
 ) : Closeable, Flushable {
 
     /*
