@@ -968,17 +968,6 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun editSnapshotAfterChangeCommitted() {
-        set("a", "a", "a")
-        val snapshot = cache["a"]!!
-        snapshot.close()
-        val toAbort = cache.edit(snapshot.entry.key)!!
-        toAbort.setString(0, "b")
-        toAbort.commit()
-        assertThat(cache.edit(snapshot.entry.key)).isNull()
-    }
-
-    @Test
     fun editSinceEvicted() {
         cache.close()
         createNewCache(10)
