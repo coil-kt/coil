@@ -1071,7 +1071,7 @@ class DiskLruCacheTest {
         assertThat(snapshot.edit()).isNull()
     }
 
-    /** @see [Issue 2](https://github.com/JakeWharton/DiskLruCache/issues/2) */
+    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
     fun aggressiveClearingHandlesWrite() {
         Assume.assumeFalse(windows) // Can't deleteContents while the journal is open.
@@ -1081,7 +1081,7 @@ class DiskLruCacheTest {
         assertValue("a", "a", "a")
     }
 
-    /** @see [Issue 2](https://github.com/JakeWharton/DiskLruCache/issues/2) */
+    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
     fun aggressiveClearingHandlesEdit() {
         Assume.assumeFalse(windows) // Can't deleteContents while the journal is open.
@@ -1100,7 +1100,7 @@ class DiskLruCacheTest {
         cache.remove("a")
     }
 
-    /** @see [Issue 2](https://github.com/JakeWharton/DiskLruCache/issues/2) */
+    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
     fun aggressiveClearingHandlesPartialEdit() {
         Assume.assumeFalse(windows) // Can't deleteContents while the journal is open.
