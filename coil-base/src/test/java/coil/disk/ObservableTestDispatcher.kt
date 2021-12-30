@@ -30,6 +30,8 @@ class ObservableTestDispatcher(
         }
     }
 
+    override fun isDispatchNeeded(context: CoroutineContext) = delegate.isDispatchNeeded(context)
+
     override fun dispatch(context: CoroutineContext, block: Runnable) {
         sync { tasks += context to block }
     }
