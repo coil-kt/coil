@@ -456,26 +456,25 @@ internal class DiskLruCache(
         check(entry.currentEditor == editor)
 
         val commit = success && !entry.zombie
-        for (i in 0 until valueCount) {
-            val dirty = entry.dirtyFiles[i]
-            if (commit) {
-                if (fileSystem.exists(dirty)) {
-                    val clean = entry.cleanFiles[i]
-                    fileSystem.atomicMove(dirty, clean)
-                    val oldLength = entry.lengths[i]
-                    val newLength = fileSystem.metadata(clean).size ?: 0
-                    entry.lengths[i] = newLength
-                    size = size - oldLength + newLength
-                }
-            } else {
-                fileSystem.delete(dirty)
-            }
-        }
-
-        // Ensure every entry is complete.
         if (commit) {
+            // Replace the clean files with the dirty ones.
             for (i in 0 until valueCount) {
-                fileSystem.createFile(entry.cleanFiles[i])
+                val dirty = entry.dirtyFiles[i]
+                val clean = entry.cleanFiles[i]
+                if (fileSystem.exists(dirty)) {
+                    fileSystem.atomicMove(dirty, clean)
+                } else {
+                    // Ensure every entry is complete.
+                    fileSystem.createFile(entry.cleanFiles[i])
+                }
+                val oldLength = entry.lengths[i]
+                val newLength = fileSystem.metadata(clean).size ?: 0
+                entry.lengths[i] = newLength
+                size = size - oldLength + newLength
+            }
+        } else {
+            for (i in 0 until valueCount) {
+                fileSystem.delete(entry.dirtyFiles[i])
             }
         }
 
