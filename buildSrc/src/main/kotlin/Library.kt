@@ -40,7 +40,9 @@ object Library {
     private const val OKHTTP_VERSION = "4.9.3"
     const val OKHTTP = "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
 
-    const val OKIO = "com.squareup.okio:okio:3.0.0"
+    private const val OKIO_VERSION = "3.0.0"
+    const val OKIO = "com.squareup.okio:okio:$OKIO_VERSION"
+    const val OKIO_FAKE_FILESYSTEM = "com.squareup.okio:okio-fakefilesystem:$OKIO_VERSION"
 
     // TEST
 

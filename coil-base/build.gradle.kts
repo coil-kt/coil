@@ -33,6 +33,7 @@ dependencies {
     api(Library.OKHTTP)
     api(Library.OKIO)
 
+    testImplementation("org.assertj:assertj-core:3.11.1")
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
 }

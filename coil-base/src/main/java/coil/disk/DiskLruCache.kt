@@ -15,6 +15,7 @@
  */
 package coil.disk
 
+import androidx.annotation.VisibleForTesting
 import coil.disk.DiskLruCache.Editor
 import coil.util.deleteContents
 import coil.util.forEachIndices
@@ -161,7 +162,7 @@ internal class DiskLruCache(
     }
 
     @Synchronized
-    private fun initialize() {
+    fun initialize() {
         if (initialized) return
 
         // If a temporary file exists, delete it.
@@ -838,11 +839,11 @@ internal class DiskLruCache(
     }
 
     companion object {
-        private const val JOURNAL_FILE = "journal"
-        private const val JOURNAL_FILE_TMP = "journal.tmp"
-        private const val JOURNAL_FILE_BACKUP = "journal.bkp"
-        private const val MAGIC = "libcore.io.DiskLruCache"
-        private const val VERSION = "1"
+        @VisibleForTesting internal const val JOURNAL_FILE = "journal"
+        @VisibleForTesting internal const val JOURNAL_FILE_TMP = "journal.tmp"
+        @VisibleForTesting internal const val JOURNAL_FILE_BACKUP = "journal.bkp"
+        @VisibleForTesting internal const val MAGIC = "libcore.io.DiskLruCache"
+        @VisibleForTesting internal const val VERSION = "1"
         private const val CLEAN = "CLEAN"
         private const val DIRTY = "DIRTY"
         private const val REMOVE = "REMOVE"
