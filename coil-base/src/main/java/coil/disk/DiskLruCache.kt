@@ -370,9 +370,9 @@ internal class DiskLruCache(
      */
     @Synchronized
     operator fun get(key: String): Snapshot? {
-        initialize()
         checkNotClosed()
         validateKey(key)
+        initialize()
 
         val snapshot = lruEntries[key]?.snapshot() ?: return null
 
@@ -394,9 +394,9 @@ internal class DiskLruCache(
     /** Returns an editor for the entry named [key], or null if another edit is in progress. */
     @Synchronized
     fun edit(key: String): Editor? {
-        initialize()
         checkNotClosed()
         validateKey(key)
+        initialize()
 
         var entry = lruEntries[key]
 
@@ -521,9 +521,9 @@ internal class DiskLruCache(
      */
     @Synchronized
     fun remove(key: String): Boolean {
-        initialize()
         checkNotClosed()
         validateKey(key)
+        initialize()
 
         val entry = lruEntries[key] ?: return false
         val removed = removeEntry(entry)
