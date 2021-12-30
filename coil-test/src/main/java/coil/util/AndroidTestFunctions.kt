@@ -19,6 +19,15 @@ fun assumeTrue(actual: Boolean, message: String = "") {
     }
 }
 
+/** Alias for [Assume.assumeFalse]. */
+fun assumeFalse(actual: Boolean, message: String = "") {
+    if (message.isBlank()) {
+        Assume.assumeFalse(actual)
+    } else {
+        Assume.assumeFalse(message, actual)
+    }
+}
+
 /** Launch [TestActivity] and invoke [action]. */
 fun withTestActivity(action: ActivityAction<TestActivity>) {
     launchActivity<TestActivity>().use { scenario ->

@@ -17,7 +17,11 @@ package coil.disk
 
 import coil.disk.DiskLruCache.Editor
 import coil.disk.DiskLruCache.Snapshot
+import coil.util.assumeFalse
+import coil.util.assumeTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import okio.FileNotFoundException
+import okio.IOException
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.Source
@@ -27,11 +31,8 @@ import okio.sink
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assume
 import org.junit.Before
 import org.junit.Test
-import java.io.FileNotFoundException
-import java.io.IOException
 import kotlin.test.assertFalse
 import kotlin.test.fail
 
@@ -319,7 +320,7 @@ class DiskLruCacheTest {
      */
     @Test
     fun readAndWriteOverlapsMaintainConsistency() {
-        Assume.assumeFalse(windows) // Can't edit while a read is in progress.
+        assumeFalse(windows) // Can't edit while a read is in progress.
 
         val v1Creator = cache.edit("k1")!!
         v1Creator.setString(0, "AAaa")
@@ -1050,7 +1051,7 @@ class DiskLruCacheTest {
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
     fun aggressiveClearingHandlesWrite() {
-        Assume.assumeFalse(windows) // Can't deleteContents while the journal is open.
+        assumeFalse(windows) // Can't deleteContents while the journal is open.
 
         filesystem.deleteRecursively(cacheDir)
         set("a", "a", "a")
@@ -1060,7 +1061,7 @@ class DiskLruCacheTest {
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
     fun aggressiveClearingHandlesEdit() {
-        Assume.assumeFalse(windows) // Can't deleteContents while the journal is open.
+        assumeFalse(windows) // Can't deleteContents while the journal is open.
 
         set("a", "a", "a")
         val a = cache.edit("a")!!
@@ -1079,7 +1080,7 @@ class DiskLruCacheTest {
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
     fun aggressiveClearingHandlesPartialEdit() {
-        Assume.assumeFalse(windows) // Can't deleteContents while the journal is open.
+        assumeFalse(windows) // Can't deleteContents while the journal is open.
 
         set("a", "a", "a")
         set("b", "b", "b")
@@ -1094,7 +1095,7 @@ class DiskLruCacheTest {
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
     fun aggressiveClearingHandlesRead() {
-        Assume.assumeFalse(windows) // Can't deleteContents while the journal is open.
+        assumeFalse(windows) // Can't deleteContents while the journal is open.
 
         filesystem.deleteRecursively(cacheDir)
         assertThat(cache["a"]).isNull()
@@ -1492,7 +1493,7 @@ class DiskLruCacheTest {
 
     @Test
     fun noSizeCorruptionAfterCreatorDetached() {
-        Assume.assumeFalse(windows) // Windows can't have two concurrent editors.
+        assumeFalse(windows) // Windows can't have two concurrent editors.
 
         // Create an editor for k1. Detach it by clearing the cache.
         val editor = cache.edit("k1")!!
@@ -1512,7 +1513,7 @@ class DiskLruCacheTest {
 
     @Test
     fun noSizeCorruptionAfterEditorDetached() {
-        Assume.assumeFalse(windows) // Windows can't have two concurrent editors.
+        assumeFalse(windows) // Windows can't have two concurrent editors.
 
         set("k1", "a", "a")
 
@@ -1557,7 +1558,7 @@ class DiskLruCacheTest {
 
     @Test
     fun `edit discarded after editor detached with concurrent write`() {
-        Assume.assumeFalse(windows) // Windows can't have two concurrent editors.
+        assumeFalse(windows) // Windows can't have two concurrent editors.
 
         set("k1", "a", "a")
 
@@ -1602,7 +1603,7 @@ class DiskLruCacheTest {
 
     @Test
     fun `Windows cannot read while writing`() {
-        Assume.assumeTrue(windows)
+        assumeTrue(windows)
 
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
@@ -1612,7 +1613,7 @@ class DiskLruCacheTest {
 
     @Test
     fun `Windows cannot write while reading`() {
-        Assume.assumeTrue(windows)
+        assumeTrue(windows)
 
         set("k1", "a", "a")
         val snapshot = cache["k1"]!!
@@ -1678,7 +1679,7 @@ class DiskLruCacheTest {
 
     @Test
     fun `Windows cannot read zombie entry`() {
-        Assume.assumeTrue(windows)
+        assumeTrue(windows)
 
         set("k1", "a", "a")
         cache["k1"]!!.use {
@@ -1689,7 +1690,7 @@ class DiskLruCacheTest {
 
     @Test
     fun `Windows cannot write zombie entry`() {
-        Assume.assumeTrue(windows)
+        assumeTrue(windows)
 
         set("k1", "a", "a")
         cache["k1"]!!.use {
