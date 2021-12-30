@@ -70,14 +70,7 @@ class DiskLruCacheTest {
     }
 
     private fun createNewCache(maxSize: Int = Int.MAX_VALUE) {
-        cache = DiskLruCache(
-            fileSystem = filesystem,
-            directory = cacheDir,
-            cleanupDispatcher = dispatcher,
-            maxSize = maxSize.toLong(),
-            appVersion = appVersion,
-            valueCount = 2
-        )
+        cache = DiskLruCache(filesystem, cacheDir, dispatcher, maxSize.toLong(), appVersion, 2)
         cache.initialize()
         toClose.add(cache)
     }
@@ -440,12 +433,12 @@ class DiskLruCacheTest {
         filesystem.write(journalFile) {
             writeUtf8(
                 """
-          |${DiskLruCache.MAGIC}
-          |${DiskLruCache.VERSION}
-          |100
-          |2
-          |
-          |CLEAN k1 1 1""".trimMargin() // no trailing newline
+                |${DiskLruCache.MAGIC}
+                |${DiskLruCache.VERSION}
+                |100
+                |2
+                |
+                |CLEAN k1 1 1""".trimMargin() // no trailing newline
             )
         }
         createNewCache()
@@ -1001,7 +994,7 @@ class DiskLruCacheTest {
     fun openCreatesDirectoryIfNecessary() {
         cache.close()
         val dir = (cacheDir / "testOpenCreatesDirectoryIfNecessary").also { filesystem.createDirectories(it) }
-        cache = DiskLruCache(filesystem, dir, appVersion, 2, Int.MAX_VALUE.toLong(), taskRunner)
+        cache = DiskLruCache(filesystem, dir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         set("a", "a", "a")
         assertThat(filesystem.exists(dir / "a.0")).isTrue()
         assertThat(filesystem.exists(dir / "a.1")).isTrue()
@@ -1367,7 +1360,7 @@ class DiskLruCacheTest {
 
         // Confirm that the fault didn't corrupt entries stored before the fault was introduced.
         cache.close()
-        cache = DiskLruCache(filesystem, cacheDir, appVersion, 2, Int.MAX_VALUE.toLong(), taskRunner)
+        cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         assertValue("a", "a", "a")
         assertValue("b", "b", "b")
         assertAbsent("c")
@@ -1396,7 +1389,7 @@ class DiskLruCacheTest {
 
         // Confirm that the fault didn't corrupt entries stored before the fault was introduced.
         cache.close()
-        cache = DiskLruCache(filesystem, cacheDir, appVersion, 2, Int.MAX_VALUE.toLong(), taskRunner)
+        cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         assertValue("a", "a", "a")
         assertValue("b", "b", "b")
         assertAbsent("c")
@@ -1421,7 +1414,7 @@ class DiskLruCacheTest {
 
         // Confirm that the fault didn't corrupt entries stored before the fault was introduced.
         cache.close()
-        cache = DiskLruCache(filesystem, cacheDir, appVersion, 2, Int.MAX_VALUE.toLong(), taskRunner)
+        cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         assertValue("a", "a", "a")
         assertValue("b", "b", "b")
         assertAbsent("c")
@@ -1440,7 +1433,7 @@ class DiskLruCacheTest {
         // Confirm that the entry was still removed.
         filesystem.setFaultyWrite(journalFile, false)
         cache.close()
-        cache = DiskLruCache(filesystem, cacheDir, appVersion, 2, Int.MAX_VALUE.toLong(), taskRunner)
+        cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         assertAbsent("a")
         assertValue("b", "b", "b")
     }
