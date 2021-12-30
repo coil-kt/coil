@@ -130,9 +130,10 @@ internal class DiskLruCache(
      */
 
     private val journalFile = directory / JOURNAL_FILE
-    private val journalFileTmp = directory / JOURNAL_FILE_TEMP
+    private val journalFileTmp = directory / JOURNAL_FILE_TMP
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
     private val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
+
     private var size = 0L
     private var operationsSinceRewrite = 0
     private var journalWriter: BufferedSink? = null
@@ -838,7 +839,7 @@ internal class DiskLruCache(
 
     companion object {
         private const val JOURNAL_FILE = "journal"
-        private const val JOURNAL_FILE_TEMP = "journal.tmp"
+        private const val JOURNAL_FILE_TMP = "journal.tmp"
         private const val JOURNAL_FILE_BACKUP = "journal.bkp"
         private const val MAGIC = "libcore.io.DiskLruCache"
         private const val VERSION = "1"
