@@ -17,7 +17,6 @@ package coil.disk
 
 import coil.disk.DiskLruCache.Editor
 import coil.disk.DiskLruCache.Snapshot
-import coil.util.assumeTrue
 import okio.FileNotFoundException
 import okio.IOException
 import okio.Path
@@ -47,7 +46,6 @@ class DiskLruCacheTest {
     private val appVersion = 100
     private val journalFile = cacheDir / DiskLruCache.JOURNAL_FILE
     private val journalFileBackup = cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP
-    private val windows = true
 
     @Before
     fun before() {
@@ -231,14 +229,14 @@ class DiskLruCacheTest {
         assertJournalEquals("DIRTY k1", "REMOVE k1")
     }
 
-    /** On Windows we have to wait until the edit is committed before we can delete its files. */
+    /** We have to wait until the edit is committed before we can delete its files. */
     @Test
     fun `unterminated edit is reverted on cache close`() {
         val editor = cache.edit("k1")!!
         editor.setString(0, "AB")
         editor.setString(1, "C")
         cache.close()
-        val expected = if (windows) arrayOf("DIRTY k1") else arrayOf("DIRTY k1", "REMOVE k1")
+        val expected = arrayOf("DIRTY k1")
         assertJournalEquals(*expected)
         editor.commit()
         assertJournalEquals(*expected) // 'REMOVE k1' not written because journal is closed.
@@ -1059,8 +1057,8 @@ class DiskLruCacheTest {
      */
     @Test
     fun trimToSizeWithActiveEdit() {
-        val expectedByteCount = if (windows) 10L else 0L
-        val afterRemoveFileContents = if (windows) "a1234" else null
+        val expectedByteCount = 10L
+        val afterRemoveFileContents = "a1234"
 
         set("a", "a1234", "a1234")
         val a = cache.edit("a")!!
@@ -1101,7 +1099,7 @@ class DiskLruCacheTest {
 
     @Test
     fun evictAllWithPartialEditDoesNotStoreAValue() {
-        val expectedByteCount = if (windows) 2L else 0L
+        val expectedByteCount = 2L
 
         set("a", "a", "a")
         val a = cache.edit("a")!!
@@ -1115,8 +1113,8 @@ class DiskLruCacheTest {
 
     @Test
     fun evictAllDoesntInterruptPartialRead() {
-        val expectedByteCount = if (windows) 2L else 0L
-        val afterRemoveFileContents = if (windows) "a" else null
+        val expectedByteCount = 2L
+        val afterRemoveFileContents = "a"
 
         set("a", "a", "a")
         cache["a"]!!.use {
@@ -1132,8 +1130,8 @@ class DiskLruCacheTest {
 
     @Test
     fun editSnapshotAfterEvictAllReturnsNullDueToStaleValue() {
-        val expectedByteCount = if (windows) 2L else 0L
-        val afterRemoveFileContents = if (windows) "a" else null
+        val expectedByteCount = 2L
+        val afterRemoveFileContents = "a"
 
         set("a", "a", "a")
         cache["a"]!!.use { snapshot ->
@@ -1496,9 +1494,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `Windows cannot read while writing`() {
-        assumeTrue(windows)
-
+    fun `cannot read while writing`() {
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
         assertThat(cache["k1"]).isNull()
@@ -1506,9 +1502,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `Windows cannot write while reading`() {
-        assumeTrue(windows)
-
+    fun `cannot write while reading`() {
         set("k1", "a", "a")
         val snapshot = cache["k1"]!!
         assertThat(cache.edit("k1")).isNull()
@@ -1530,7 +1524,7 @@ class DiskLruCacheTest {
 
     @Test
     fun `remove while reading creates zombie that is removed when read finishes`() {
-        val afterRemoveFileContents = if (windows) "a" else null
+        val afterRemoveFileContents = "a"
 
         set("k1", "a", "a")
         cache["k1"]!!.use { snapshot1 ->
@@ -1554,7 +1548,7 @@ class DiskLruCacheTest {
 
     @Test
     fun `remove while writing creates zombie that is removed when write finishes`() {
-        val afterRemoveFileContents = if (windows) "a" else null
+        val afterRemoveFileContents = "a"
 
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
@@ -1572,9 +1566,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `Windows cannot read zombie entry`() {
-        assumeTrue(windows)
-
+    fun `cannot read zombie entry`() {
         set("k1", "a", "a")
         cache["k1"]!!.use {
             cache.remove("k1")
@@ -1583,9 +1575,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `Windows cannot write zombie entry`() {
-        assumeTrue(windows)
-
+    fun `cannot write zombie entry`() {
         set("k1", "a", "a")
         cache["k1"]!!.use {
             cache.remove("k1")
@@ -1595,7 +1585,7 @@ class DiskLruCacheTest {
 
     @Test
     fun `close with zombie read`() {
-        val afterRemoveFileContents = if (windows) "a" else null
+        val afterRemoveFileContents = "a"
 
         set("k1", "a", "a")
         cache["k1"]!!.use {
@@ -1616,8 +1606,8 @@ class DiskLruCacheTest {
 
     @Test
     fun `close with zombie write`() {
-        val afterRemoveCleanFileContents = if (windows) "a" else null
-        val afterRemoveDirtyFileContents = if (windows) "" else null
+        val afterRemoveCleanFileContents = "a"
+        val afterRemoveDirtyFileContents = ""
 
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
@@ -1638,8 +1628,8 @@ class DiskLruCacheTest {
 
     @Test
     fun `close with completed zombie write`() {
-        val afterRemoveCleanFileContents = if (windows) "a" else null
-        val afterRemoveDirtyFileContents = if (windows) "b" else null
+        val afterRemoveCleanFileContents = "a"
+        val afterRemoveDirtyFileContents = "b"
 
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
