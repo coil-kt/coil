@@ -18,8 +18,6 @@ package coil.disk
 import coil.disk.DiskLruCache.Editor
 import coil.disk.DiskLruCache.Snapshot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.Source
@@ -41,7 +39,7 @@ import kotlin.test.fail
 class DiskLruCacheTest {
 
     private lateinit var filesystem: FaultyFileSystem
-    private lateinit var dispatcher: TestDispatcher
+    private lateinit var dispatcher: ObservableTestDispatcher
     private lateinit var cache: DiskLruCache
 
     private val cacheDir = "/cache".toPath()
@@ -57,7 +55,7 @@ class DiskLruCacheTest {
         if (filesystem.exists(cacheDir)) {
             filesystem.deleteRecursively(cacheDir)
         }
-        dispatcher = StandardTestDispatcher()
+        dispatcher = ObservableTestDispatcher()
         createNewCache()
     }
 
@@ -691,7 +689,7 @@ class DiskLruCacheTest {
     fun rebuildJournalOnRepeatedReads() {
         set("a", "a", "a")
         set("b", "b", "b")
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             assertValue("a", "a", "a")
             assertValue("b", "b", "b")
         }
@@ -699,11 +697,11 @@ class DiskLruCacheTest {
 
     @Test
     fun rebuildJournalOnRepeatedEdits() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
         }
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Sanity check that a rebuilt journal behaves normally.
         assertValue("a", "a", "a")
@@ -715,7 +713,7 @@ class DiskLruCacheTest {
     fun rebuildJournalOnRepeatedReadsWithOpenAndClose() {
         set("a", "a", "a")
         set("b", "b", "b")
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             assertValue("a", "a", "a")
             assertValue("b", "b", "b")
             cache.close()
@@ -726,7 +724,7 @@ class DiskLruCacheTest {
     /** https://github.com/JakeWharton/DiskLruCache/issues/28 */
     @Test
     fun rebuildJournalOnRepeatedEditsWithOpenAndClose() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
             cache.close()
@@ -736,14 +734,14 @@ class DiskLruCacheTest {
 
     @Test
     fun rebuildJournalFailurePreventsEditors() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
         }
 
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Don't allow edits under any circumstances.
         assertThat(cache.edit("a")).isNull()
@@ -755,34 +753,34 @@ class DiskLruCacheTest {
 
     @Test
     fun rebuildJournalFailureIsRetried() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
         }
 
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // The rebuild is retried on cache hits and on cache edits.
         val snapshot = cache["b"]!!
         snapshot.close()
         assertThat(cache.edit("d")).isNull()
-        assertThat(taskFaker.isIdle()).isFalse()
+        assertThat(dispatcher.isIdle()).isFalse
 
         // On cache misses, no retry job is queued.
         assertThat(cache["c"]).isNull()
-        assertThat(taskFaker.isIdle()).isFalse()
+        assertThat(dispatcher.isIdle()).isFalse
 
         // Let the rebuild complete successfully.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, false)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         assertJournalEquals("CLEAN a 1 1", "CLEAN b 1 1")
     }
 
     @Test
     fun rebuildJournalFailureWithInFlightEditors() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
         }
@@ -792,7 +790,7 @@ class DiskLruCacheTest {
 
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // In-flight editors can commit and have their values retained.
         commitEditor.setString(0, "c")
@@ -803,13 +801,13 @@ class DiskLruCacheTest {
 
         // Let the rebuild complete successfully.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, false)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         assertJournalEquals("CLEAN a 1 1", "CLEAN b 1 1", "DIRTY e", "CLEAN c 1 1")
     }
 
     @Test
     fun rebuildJournalFailureWithEditorsInFlightThenClose() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
         }
@@ -819,7 +817,7 @@ class DiskLruCacheTest {
 
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         commitEditor.setString(0, "c")
         commitEditor.setString(1, "c")
         commitEditor.commit()
@@ -839,33 +837,33 @@ class DiskLruCacheTest {
 
     @Test
     fun rebuildJournalFailureAllowsRemovals() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
         }
 
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         assertThat(cache.remove("a")).isTrue
         assertAbsent("a")
 
         // Let the rebuild complete successfully.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, false)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         assertJournalEquals("CLEAN b 1 1")
     }
 
     @Test
     fun rebuildJournalFailureWithRemovalThenClose() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
         }
 
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         assertThat(cache.remove("a")).isTrue
         assertAbsent("a")
         cache.close()
@@ -881,14 +879,14 @@ class DiskLruCacheTest {
 
     @Test
     fun rebuildJournalFailureAllowsEvictAll() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
         }
 
         // Cause the rebuild action to fail.
         filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         cache.evictAll()
         assertThat(cache.size()).isEqualTo(0)
         assertAbsent("a")
@@ -907,7 +905,7 @@ class DiskLruCacheTest {
 
     @Test
     fun rebuildJournalFailureWithCacheTrim() {
-        while (taskFaker.isIdle()) {
+        while (dispatcher.isIdle()) {
             set("a", "aa", "aa")
             set("b", "bb", "bb")
         }
@@ -916,11 +914,11 @@ class DiskLruCacheTest {
         filesystem.setFaultyRename(
             cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true
         )
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Trigger a job to trim the cache.
         cache.maxSize = 4
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         assertAbsent("a")
         assertValue("b", "bb", "bb")
     }
@@ -1419,13 +1417,13 @@ class DiskLruCacheTest {
     @Test
     fun cleanupTrimFailurePreventsNewEditors() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
         // Cause the cache trim job to fail.
         filesystem.setFaultyDelete(cacheDir / "a.0", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Confirm that edits are prevented after a cache trim failure.
         assertThat(cache.edit("a")).isNull()
@@ -1439,22 +1437,22 @@ class DiskLruCacheTest {
     @Test
     fun cleanupTrimFailureRetriedOnEditors() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
         // Cause the cache trim job to fail.
         filesystem.setFaultyDelete(cacheDir / "a.0", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // An edit should now add a job to clean up if the most recent trim failed.
         assertThat(cache.edit("b")).isNull()
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Confirm a successful cache trim now allows edits.
         filesystem.setFaultyDelete(cacheDir / "a.0", false)
         assertThat(cache.edit("c")).isNull()
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("c", "cc", "cc")
         assertValue("c", "cc", "cc")
     }
@@ -1462,14 +1460,14 @@ class DiskLruCacheTest {
     @Test
     fun cleanupTrimFailureWithInFlightEditor() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aaa")
         set("b", "bb", "bb")
         val inFlightEditor = cache.edit("c")!!
 
         // Cause the cache trim job to fail.
         filesystem.setFaultyDelete(cacheDir / "a.0", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // The in-flight editor can still write after a trim failure.
         inFlightEditor.setString(0, "cc")
@@ -1478,20 +1476,20 @@ class DiskLruCacheTest {
 
         // Confirm the committed values are present after a successful cache trim.
         filesystem.setFaultyDelete(cacheDir / "a.0", false)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         assertValue("c", "cc", "cc")
     }
 
     @Test
     fun cleanupTrimFailureAllowsSnapshotReads() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
         // Cause the cache trim job to fail.
         filesystem.setFaultyDelete(cacheDir / "a.0", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Confirm we still allow snapshot reads after a trim failure.
         assertValue("a", "aa", "aa")
@@ -1504,13 +1502,13 @@ class DiskLruCacheTest {
     @Test
     fun cleanupTrimFailurePreventsSnapshotWrites() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
         // Cause the cache trim job to fail.
         filesystem.setFaultyDelete(cacheDir / "a.0", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Confirm snapshot writes are prevented after a trim failure.
         cache["a"]!!.use {
@@ -1527,13 +1525,13 @@ class DiskLruCacheTest {
     @Test
     fun evictAllAfterCleanupTrimFailure() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
         // Cause the cache trim job to fail.
         filesystem.setFaultyDelete(cacheDir / "a.0", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Confirm we prevent edits after a trim failure.
         assertThat(cache.edit("c")).isNull()
@@ -1548,13 +1546,13 @@ class DiskLruCacheTest {
     @Test
     fun manualRemovalAfterCleanupTrimFailure() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
         // Cause the cache trim job to fail.
         filesystem.setFaultyDelete(cacheDir / "a.0", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Confirm we prevent edits after a trim failure.
         assertThat(cache.edit("c")).isNull()
@@ -1569,13 +1567,13 @@ class DiskLruCacheTest {
     @Test
     fun flushingAfterCleanupTrimFailure() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
         // Cause the cache trim job to fail.
         filesystem.setFaultyDelete(cacheDir / "a.0", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Confirm we prevent edits after a trim failure.
         assertThat(cache.edit("c")).isNull()
@@ -1590,13 +1588,13 @@ class DiskLruCacheTest {
     @Test
     fun cleanupTrimFailureWithPartialSnapshot() {
         cache.maxSize = 8
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
         // Cause the cache trim to fail on the second value leaving a partial snapshot.
         filesystem.setFaultyDelete(cacheDir / "a.1", true)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
 
         // Confirm the partial snapshot is not returned.
         assertThat(cache["a"]).isNull()
@@ -1606,7 +1604,7 @@ class DiskLruCacheTest {
 
         // Confirm the partial snapshot is not returned after a successful trim.
         filesystem.setFaultyDelete(cacheDir / "a.1", false)
-        taskFaker.runNextTask()
+        dispatcher.runNextTask()
         assertThat(cache["a"]).isNull()
     }
 
