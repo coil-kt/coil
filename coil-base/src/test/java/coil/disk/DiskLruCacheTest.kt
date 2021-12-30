@@ -726,7 +726,7 @@ class DiskLruCacheTest {
     /** https://github.com/JakeWharton/DiskLruCache/issues/28 */
     @Test
     fun rebuildJournalOnRepeatedEditsWithOpenAndClose() {
-        while (dispatcher.key()) {
+        while (taskFaker.isIdle()) {
             set("a", "a", "a")
             set("b", "b", "b")
             cache.close()
