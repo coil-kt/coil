@@ -1474,14 +1474,12 @@ class DiskLruCacheTest {
         val creator = cache.edit("k1")!!
         creator.setString(0, "ABC")
         creator.setString(1, "DE")
-        assertThat(creator.newSource(0)).isNull()
-        assertThat(creator.newSource(1)).isNull()
         val snapshotWhileEditing = cache["k1"]
         assertThat(snapshotWhileEditing).isNull() // entry still is being created/edited
         creator.commit()
         val snapshotAfterCommit = cache["k1"]
         assertThat(snapshotAfterCommit)
-            .withFailMessage("Entry has been removed during creation.").isNull()
+            .withFailMessage("Entry has been removed during creation.").isNotNull
     }
 
     @Test
