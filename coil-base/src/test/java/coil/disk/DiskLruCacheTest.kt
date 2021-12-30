@@ -47,7 +47,7 @@ class DiskLruCacheTest {
     private val cacheDir = "/cache".toPath()
     private val appVersion = 100
     private val journalFile = cacheDir / DiskLruCache.JOURNAL_FILE
-    private val journalBkpFile = cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP
+    private val journalFileBackup = cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP
     private val windows = true
 
     @Before
@@ -740,7 +740,7 @@ class DiskLruCacheTest {
         }
 
         // Cause the rebuild action to fail.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
+        filesystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
 
         // Don't allow edits under any circumstances.
@@ -759,7 +759,7 @@ class DiskLruCacheTest {
         }
 
         // Cause the rebuild action to fail.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
+        filesystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
 
         // The rebuild is retried on cache hits and on cache edits.
@@ -773,7 +773,7 @@ class DiskLruCacheTest {
         assertThat(dispatcher.isIdle()).isFalse
 
         // Let the rebuild complete successfully.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, false)
+        filesystem.setFaultyRename(journalFileBackup, false)
         dispatcher.runNextTask()
         assertJournalEquals("CLEAN a 1 1", "CLEAN b 1 1")
     }
@@ -789,7 +789,7 @@ class DiskLruCacheTest {
         cache.edit("e") // Grab an editor, but don't do anything with it.
 
         // Cause the rebuild action to fail.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
+        filesystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
 
         // In-flight editors can commit and have their values retained.
@@ -800,7 +800,7 @@ class DiskLruCacheTest {
         abortEditor.abort()
 
         // Let the rebuild complete successfully.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, false)
+        filesystem.setFaultyRename(journalFileBackup, false)
         dispatcher.runNextTask()
         assertJournalEquals("CLEAN a 1 1", "CLEAN b 1 1", "DIRTY e", "CLEAN c 1 1")
     }
@@ -816,7 +816,7 @@ class DiskLruCacheTest {
         cache.edit("e") // Grab an editor, but don't do anything with it.
 
         // Cause the rebuild action to fail.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
+        filesystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
         commitEditor.setString(0, "c")
         commitEditor.setString(1, "c")
@@ -843,13 +843,13 @@ class DiskLruCacheTest {
         }
 
         // Cause the rebuild action to fail.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
+        filesystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
         assertThat(cache.remove("a")).isTrue
         assertAbsent("a")
 
         // Let the rebuild complete successfully.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, false)
+        filesystem.setFaultyRename(journalFileBackup, false)
         dispatcher.runNextTask()
         assertJournalEquals("CLEAN b 1 1")
     }
@@ -862,7 +862,7 @@ class DiskLruCacheTest {
         }
 
         // Cause the rebuild action to fail.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
+        filesystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
         assertThat(cache.remove("a")).isTrue
         assertAbsent("a")
@@ -885,7 +885,7 @@ class DiskLruCacheTest {
         }
 
         // Cause the rebuild action to fail.
-        filesystem.setFaultyRename(cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true)
+        filesystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
         cache.evictAll()
         assertThat(cache.size()).isEqualTo(0)
@@ -911,9 +911,7 @@ class DiskLruCacheTest {
         }
 
         // Cause the rebuild action to fail.
-        filesystem.setFaultyRename(
-            cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP, true
-        )
+        filesystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
 
         // Trigger a job to trim the cache.
@@ -930,13 +928,13 @@ class DiskLruCacheTest {
         creator.setString(1, "DE")
         creator.commit()
         cache.close()
-        filesystem.atomicMove(journalFile, journalBkpFile)
+        filesystem.atomicMove(journalFile, journalFileBackup)
         assertThat(filesystem.exists(journalFile)).isFalse
         createNewCache()
         val snapshot = cache["k1"]!!
         snapshot.assertValue(0, "ABC")
         snapshot.assertValue(1, "DE")
-        assertThat(filesystem.exists(journalBkpFile)).isFalse
+        assertThat(filesystem.exists(journalFileBackup)).isFalse
         assertThat(filesystem.exists(journalFile)).isTrue
     }
 
@@ -947,14 +945,14 @@ class DiskLruCacheTest {
         creator.setString(1, "DE")
         creator.commit()
         cache.flush()
-        filesystem.copy(journalFile, journalBkpFile)
+        filesystem.copy(journalFile, journalFileBackup)
         creator = cache.edit("k2")!!
         creator.setString(0, "F")
         creator.setString(1, "GH")
         creator.commit()
         cache.close()
         assertThat(filesystem.exists(journalFile)).isTrue
-        assertThat(filesystem.exists(journalBkpFile)).isTrue
+        assertThat(filesystem.exists(journalFileBackup)).isTrue
         createNewCache()
         val snapshotA = cache["k1"]!!
         snapshotA.assertValue(0, "ABC")
@@ -962,7 +960,7 @@ class DiskLruCacheTest {
         val snapshotB = cache["k2"]!!
         snapshotB.assertValue(0, "F")
         snapshotB.assertValue(1, "GH")
-        assertThat(filesystem.exists(journalBkpFile)).isFalse
+        assertThat(filesystem.exists(journalFileBackup)).isFalse
         assertThat(filesystem.exists(journalFile)).isTrue
     }
 
