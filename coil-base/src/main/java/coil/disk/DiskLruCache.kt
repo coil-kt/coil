@@ -17,10 +17,10 @@ package coil.disk
 
 import coil.disk.DiskLruCache.Editor
 import coil.util.deleteContents
-import coil.util.deleteIfExists
 import coil.util.forEachIndices
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -129,23 +129,22 @@ internal class DiskLruCache(
      * compaction; that file should be deleted if it exists when the cache is opened.
      */
 
-    private val journalFile: Path
-    private val journalFileTmp: Path
-    private val journalFileBackup: Path
+    private val journalFile = directory / JOURNAL_FILE
+    private val journalFileTmp = directory / JOURNAL_FILE_TEMP
+    private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
     private val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
     private var size = 0L
     private var redundantOpCount = 0
     private var journalWriter: BufferedSink? = null
     private var hasJournalErrors = false
-
-    // Must be read and written when synchronized on 'this'.
     private var initialized = false
     private var closed = false
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
 
-    private val cleanupScope = CoroutineScope(SupervisorJob() + cleanupDispatcher)
-    private var cleanupScheduled = false
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val cleanupScope = CoroutineScope(SupervisorJob() +
+        cleanupDispatcher.limitedParallelism(1))
 
     private val fileSystem = object : ForwardingFileSystem(fileSystem) {
         override fun sink(file: Path, mustCreate: Boolean): Sink {
@@ -158,17 +157,16 @@ internal class DiskLruCache(
     init {
         require(maxSize > 0L) { "maxSize <= 0" }
         require(valueCount > 0) { "valueCount <= 0" }
-
-        journalFile = directory / JOURNAL_FILE
-        journalFileTmp = directory / JOURNAL_FILE_TEMP
-        journalFileBackup = directory / JOURNAL_FILE_BACKUP
     }
 
     @Synchronized
     private fun initialize() {
         if (initialized) return
 
-        // If a bkp file exists, use it instead.
+        // If a temporary file exists, delete it.
+        fileSystem.delete(journalFileTmp)
+
+        // If a backup file exists, use it instead.
         if (fileSystem.exists(journalFileBackup)) {
             // If journal file also exists just delete backup file.
             if (fileSystem.exists(journalFile)) {
@@ -189,9 +187,9 @@ internal class DiskLruCache(
                 // The journal is corrupt.
             }
 
-            // The cache is corrupted, attempt to delete the contents of the directory. This can
-            // throw and we'll let that propagate out as it likely means there is a severe
-            // filesystem problem.
+            // The cache is corrupted; attempt to delete the contents of the directory.
+            // This can throw and we'll let that propagate out as it likely means there
+            // is a severe filesystem problem.
             try {
                 delete()
             } finally {
@@ -199,10 +197,13 @@ internal class DiskLruCache(
             }
         }
 
-        rebuildJournal()
+        writeJournal()
         initialized = true
     }
 
+    /**
+     * Reads the journal and initializes [lruEntries].
+     */
     private fun readJournal() {
         fileSystem.read(journalFile) {
             val magic = readUtf8LineStrict()
@@ -235,7 +236,7 @@ internal class DiskLruCache(
 
             // If we ended on a truncated line, rebuild the journal before appending to it.
             if (!exhausted()) {
-                rebuildJournal()
+                writeJournal()
             } else {
                 journalWriter = newJournalWriter()
             }
@@ -286,35 +287,35 @@ internal class DiskLruCache(
     }
 
     /**
-     * Computes the initial size and collects garbage as a part of opening the cache.
+     * Computes the current size and collects garbage as a part of initializing the cache.
      * Dirty entries are assumed to be inconsistent and will be deleted.
      */
     private fun processJournal() {
-        fileSystem.deleteIfExists(journalFileTmp)
-        val i = lruEntries.values.iterator()
-        while (i.hasNext()) {
-            val entry = i.next()
+        var size = 0L
+        val iterator = lruEntries.values.iterator()
+        while (iterator.hasNext()) {
+            val entry = iterator.next()
             if (entry.currentEditor == null) {
-                for (t in 0 until valueCount) {
-                    size += entry.lengths[t]
+                for (i in 0 until valueCount) {
+                    size += entry.lengths[i]
                 }
             } else {
                 entry.currentEditor = null
-                for (t in 0 until valueCount) {
-                    fileSystem.deleteIfExists(entry.cleanFiles[t])
-                    fileSystem.deleteIfExists(entry.dirtyFiles[t])
+                for (i in 0 until valueCount) {
+                    fileSystem.delete(entry.cleanFiles[i])
+                    fileSystem.delete(entry.dirtyFiles[i])
                 }
-                i.remove()
+                iterator.remove()
             }
         }
+        this.size = size
     }
 
     /**
-     * Creates a new journal that omits redundant information.
-     * This replaces the current journal if it exists.
+     * Writes [lruEntries] to a new journal file. This replaces the current journal if it exists.
      */
     @Synchronized
-    private fun rebuildJournal() {
+    private fun writeJournal() {
         journalWriter?.close()
 
         fileSystem.write(journalFileTmp) {
@@ -326,11 +327,13 @@ internal class DiskLruCache(
 
             for (entry in lruEntries.values) {
                 if (entry.currentEditor != null) {
-                    writeUtf8(DIRTY).writeByte(' '.code)
+                    writeUtf8(DIRTY)
+                    writeByte(' '.code)
                     writeUtf8(entry.key)
                     writeByte('\n'.code)
                 } else {
-                    writeUtf8(CLEAN).writeByte(' '.code)
+                    writeUtf8(CLEAN)
+                    writeByte(' '.code)
                     writeUtf8(entry.key)
                     entry.writeLengths(this)
                     writeByte('\n'.code)
@@ -341,18 +344,19 @@ internal class DiskLruCache(
         if (fileSystem.exists(journalFile)) {
             fileSystem.atomicMove(journalFile, journalFileBackup)
             fileSystem.atomicMove(journalFileTmp, journalFile)
-            fileSystem.deleteIfExists(journalFileBackup)
+            fileSystem.delete(journalFileBackup)
         } else {
             fileSystem.atomicMove(journalFileTmp, journalFile)
         }
 
         journalWriter = newJournalWriter()
+        redundantOpCount = 0
         hasJournalErrors = false
         mostRecentRebuildFailed = false
     }
 
     /**
-     * Returns a snapshot of the entry named [key], or null if it doesn't exist is not currently
+     * Returns a snapshot of the entry named [key], or null if it doesn't exist or is not currently
      * readable. If a value is returned, it is moved to the head of the LRU queue.
      */
     @Synchronized
@@ -370,8 +374,9 @@ internal class DiskLruCache(
             writeUtf8(key)
             writeByte('\n'.code)
         }
+
         if (journalRebuildRequired()) {
-            scheduleCleanup()
+            launchCleanup()
         }
 
         return snapshot
@@ -400,7 +405,7 @@ internal class DiskLruCache(
             // any further. If the journal rebuild failed, the journal writer will not be active,
             // meaning we will not be able to record the edit, causing file leaks. In both cases,
             // we want to retry the clean up so we can get out of this state!
-            scheduleCleanup()
+            launchCleanup()
             return null
         }
 
@@ -453,7 +458,7 @@ internal class DiskLruCache(
                     size = size - oldLength + newLength
                 }
             } else {
-                fileSystem.deleteIfExists(dirty)
+                fileSystem.delete(dirty)
             }
         }
 
@@ -474,13 +479,15 @@ internal class DiskLruCache(
         journalWriter!!.apply {
             if (entry.readable || success) {
                 entry.readable = true
-                writeUtf8(CLEAN).writeByte(' '.code)
+                writeUtf8(CLEAN)
+                writeByte(' '.code)
                 writeUtf8(entry.key)
                 entry.writeLengths(this)
                 writeByte('\n'.code)
             } else {
                 lruEntries.remove(entry.key)
-                writeUtf8(REMOVE).writeByte(' '.code)
+                writeUtf8(REMOVE)
+                writeByte(' '.code)
                 writeUtf8(entry.key)
                 writeByte('\n'.code)
             }
@@ -488,16 +495,15 @@ internal class DiskLruCache(
         }
 
         if (size > maxSize || journalRebuildRequired()) {
-            scheduleCleanup()
+            launchCleanup()
         }
     }
 
     /**
-     * We only rebuild the journal when it will halve the size of the journal and eliminate at
-     * least 2000 ops.
+     * We only rebuild the journal when it has sufficient redundant journal lines.
      */
     private fun journalRebuildRequired(): Boolean {
-        return redundantOpCount >= 2000 && redundantOpCount >= lruEntries.size
+        return redundantOpCount >= MAX_REDUNDANT_OPS && redundantOpCount > lruEntries.size
     }
 
     /**
@@ -540,7 +546,7 @@ internal class DiskLruCache(
         entry.currentEditor?.detach()
 
         for (i in 0 until valueCount) {
-            fileSystem.deleteIfExists(entry.cleanFiles[i])
+            fileSystem.delete(entry.cleanFiles[i])
             size -= entry.lengths[i]
             entry.lengths[i] = 0
         }
@@ -555,7 +561,7 @@ internal class DiskLruCache(
         lruEntries.remove(entry.key)
 
         if (journalRebuildRequired()) {
-            scheduleCleanup()
+            launchCleanup()
         }
 
         return true
@@ -610,7 +616,7 @@ internal class DiskLruCache(
      * Closes the cache and deletes all of its stored values. This will delete all files in the
      * cache directory including files that weren't created by the cache.
      */
-    fun delete() {
+    private fun delete() {
         close()
         fileSystem.deleteContents(directory)
     }
@@ -632,14 +638,9 @@ internal class DiskLruCache(
     /**
      * Launch an asynchronous operation to trim files from the disk cache and update the journal.
      */
-    @Synchronized
-    private fun scheduleCleanup() {
-        if (cleanupScheduled) return
-        cleanupScheduled = true
-
+    private fun launchCleanup() {
         cleanupScope.launch {
             synchronized(this@DiskLruCache) {
-                cleanupScheduled = false
                 if (!initialized || closed) return@launch
                 try {
                     trimToSize()
@@ -648,8 +649,7 @@ internal class DiskLruCache(
                 }
                 try {
                     if (journalRebuildRequired()) {
-                        rebuildJournal()
-                        redundantOpCount = 0
+                        writeJournal()
                     }
                 } catch (_: IOException) {
                     mostRecentRebuildFailed = true
@@ -826,7 +826,7 @@ internal class DiskLruCache(
             cleanFiles.forEachIndices { file ->
                 if (!fileSystem.exists(file)) {
                     // Since the entry is no longer valid, remove it so the metadata is accurate
-                    // (i.e. the cache size.)
+                    // (i.e. the cache size).
                     try {
                         removeEntry(this)
                     } catch (_: IOException) {}
@@ -848,6 +848,7 @@ internal class DiskLruCache(
         private const val DIRTY = "DIRTY"
         private const val REMOVE = "REMOVE"
         private const val READ = "READ"
+        private const val MAX_REDUNDANT_OPS = 2000
         private val LEGAL_KEY_PATTERN = "[a-z0-9_-]{1,120}".toRegex()
     }
 }

@@ -22,13 +22,6 @@ import okio.FileSystem
 import okio.IOException
 import okio.Path
 
-/** Delete file we expect but don't require to exist. */
-internal fun FileSystem.deleteIfExists(path: Path) {
-    try {
-        delete(path)
-    } catch (_: FileNotFoundException) {}
-}
-
 /** Tolerant delete, try to clear as many files as possible even after a failure. */
 internal fun FileSystem.deleteContents(directory: Path) {
     var exception: IOException? = null
@@ -42,7 +35,6 @@ internal fun FileSystem.deleteContents(directory: Path) {
             if (metadata(file).isDirectory) {
                 deleteContents(file)
             }
-
             delete(file)
         } catch (e: IOException) {
             if (exception == null) {
