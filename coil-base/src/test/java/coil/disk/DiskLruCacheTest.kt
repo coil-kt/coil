@@ -1225,19 +1225,19 @@ class DiskLruCacheTest {
         val iterator = cache.snapshots()
         assertThat(iterator.hasNext()).isTrue()
         iterator.next().use {
-            assertThat(it.key()).isEqualTo("a")
+            assertThat(it.entry.key).isEqualTo("a")
             it.assertValue(0, "a1")
             it.assertValue(1, "a2")
         }
         assertThat(iterator.hasNext()).isTrue()
         iterator.next().use {
-            assertThat(it.key()).isEqualTo("b")
+            assertThat(it.entry.key).isEqualTo("b")
             it.assertValue(0, "b1")
             it.assertValue(1, "b2")
         }
         assertThat(iterator.hasNext()).isTrue()
         iterator.next().use {
-            assertThat(it.key()).isEqualTo("c")
+            assertThat(it.entry.key).isEqualTo("c")
             it.assertValue(0, "c1")
             it.assertValue(1, "c2")
         }
@@ -1255,11 +1255,11 @@ class DiskLruCacheTest {
         set("b", "b1", "b2")
         val iterator = cache.snapshots()
         iterator.next().use { a ->
-            assertThat(a.key()).isEqualTo("a")
+            assertThat(a.entry.key).isEqualTo("a")
         }
         set("c", "c1", "c2")
         iterator.next().use { b ->
-            assertThat(b.key()).isEqualTo("b")
+            assertThat(b.entry.key).isEqualTo("b")
         }
         assertThat(iterator.hasNext()).isFalse()
     }
@@ -1270,11 +1270,11 @@ class DiskLruCacheTest {
         set("b", "b1", "b2")
         val iterator = cache.snapshots()
         iterator.next().use {
-            assertThat(it.key()).isEqualTo("a")
+            assertThat(it.entry.key).isEqualTo("a")
         }
         set("b", "b3", "b4")
         iterator.next().use {
-            assertThat(it.key()).isEqualTo("b")
+            assertThat(it.entry.key).isEqualTo("b")
             it.assertValue(0, "b3")
             it.assertValue(1, "b4")
         }
@@ -1287,7 +1287,7 @@ class DiskLruCacheTest {
         val iterator = cache.snapshots()
         cache.remove("b")
         iterator.next().use {
-            assertThat(it.key()).isEqualTo("a")
+            assertThat(it.entry.key).isEqualTo("a")
         }
         assertThat(iterator.hasNext()).isFalse()
     }
@@ -1338,7 +1338,7 @@ class DiskLruCacheTest {
     @Test
     fun isClosed_uninitializedCache() {
         // Create an uninitialized cache.
-        cache = DiskLruCache(filesystem, cacheDir, appVersion, 2, Int.MAX_VALUE.toLong(), taskRunner)
+        cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         toClose.add(cache)
         assertThat(cache.isClosed()).isFalse()
         cache.close()
@@ -2089,4 +2089,6 @@ class DiskLruCacheTest {
     private fun DiskLruCache.Editor.newSource(index: Int) = file(index).source()
 
     private fun DiskLruCache.Snapshot.getSource(index: Int) = file(index).source()
+
+    private fun DiskLruCache.snapshots() = lruEntries.asSequence().map { get(it.key)!! }.iterator()
 }
