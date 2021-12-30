@@ -1530,6 +1530,7 @@ class DiskLruCacheTest {
 
             // On all platforms files are deleted when all sources are closed.
             snapshot.assertValue(1, "a")
+            snapshot.close()
             assertThat(readFileOrNull(getCleanFile("k1", 0))).isNull()
             assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
         }
