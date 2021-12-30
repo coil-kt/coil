@@ -36,6 +36,7 @@ import okio.Sink
 import okio.blackholeSink
 import okio.buffer
 import java.io.File
+import java.io.Flushable
 
 /**
  * A cache that uses a bounded amount of space on a filesystem. Each cache entry has a string key
@@ -88,7 +89,7 @@ internal class DiskLruCache(
     private val maxSize: Long,
     private val appVersion: Int,
     private val valueCount: Int
-) : Closeable {
+) : Closeable, Flushable {
 
     /*
      * This cache uses a journal file named "journal". A typical journal file looks like this:
@@ -592,6 +593,15 @@ internal class DiskLruCache(
         journalWriter!!.close()
         journalWriter = null
         closed = true
+    }
+
+    @Synchronized
+    override fun flush() {
+        if (!initialized) return
+
+        checkNotClosed()
+        trimToSize()
+        journalWriter!!.flush()
     }
 
     private fun trimToSize() {
