@@ -153,7 +153,7 @@ internal class DiskLruCache(
 
     private val fileSystem = object : ForwardingFileSystem(fileSystem) {
         override fun sink(file: Path, mustCreate: Boolean): Sink {
-            // Ensure the parent directory for the file exists.
+            // Ensure the parent directory exists.
             file.parent?.let(::createDirectories)
             return super.sink(file, mustCreate)
         }
