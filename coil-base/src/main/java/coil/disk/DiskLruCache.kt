@@ -163,7 +163,7 @@ internal class DiskLruCache(
     var maxSize = maxSize
         set(value) {
             field = value
-            if (initialized && size > value) {
+            if (initialized) {
                 launchCleanup()
             }
         }
