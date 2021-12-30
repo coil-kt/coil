@@ -86,7 +86,7 @@ internal class DiskLruCache(
     fileSystem: FileSystem,
     private val directory: Path,
     cleanupDispatcher: CoroutineDispatcher,
-    private val maxSize: Long,
+    maxSize: Long,
     private val appVersion: Int,
     private val valueCount: Int
 ) : Closeable, Flushable {
@@ -155,6 +155,15 @@ internal class DiskLruCache(
             return super.sink(file, mustCreate)
         }
     }
+
+    var maxSize = maxSize
+        @Synchronized get
+        @Synchronized set(value) {
+            field = value
+            if (initialized && size > maxSize) {
+                launchCleanup()
+            }
+        }
 
     init {
         require(maxSize > 0L) { "maxSize <= 0" }
