@@ -455,8 +455,7 @@ internal class DiskLruCache(
         val entry = editor.entry
         check(entry.currentEditor == editor)
 
-        val commit = success && !entry.zombie
-        if (commit) {
+        if (success && !entry.zombie) {
             // Replace the clean files with the dirty ones.
             for (i in 0 until valueCount) {
                 val dirty = entry.dirtyFiles[i]
@@ -473,6 +472,7 @@ internal class DiskLruCache(
                 size = size - oldLength + newLength
             }
         } else {
+            // Discard any dirty files.
             for (i in 0 until valueCount) {
                 fileSystem.delete(entry.dirtyFiles[i])
             }
