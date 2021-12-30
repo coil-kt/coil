@@ -311,40 +311,6 @@ class DiskLruCacheTest {
         assertAbsent("a")
     }
 
-    /**
-     * Each read sees a snapshot of the file at the time read was called. This means that two reads of
-     * the same key can see different data.
-     */
-    @Test
-    fun readAndWriteOverlapsMaintainConsistency() {
-        assumeFalse(windows) // Can't edit while a read is in progress.
-
-        val v1Creator = cache.edit("k1")!!
-        v1Creator.setString(0, "AAaa")
-        v1Creator.setString(1, "BBbb")
-        v1Creator.commit()
-
-        cache["k1"]!!.use { snapshot1 ->
-            val inV1 = snapshot1.getSource(0).buffer()
-            assertThat(inV1.readByte()).isEqualTo('A'.code.toByte())
-            assertThat(inV1.readByte()).isEqualTo('A'.code.toByte())
-
-            val v1Updater = cache.edit("k1")!!
-            v1Updater.setString(0, "CCcc")
-            v1Updater.setString(1, "DDdd")
-            v1Updater.commit()
-
-            cache["k1"]!!.use { snapshot2 ->
-                snapshot2.assertValue(0, "CCcc")
-                snapshot2.assertValue(1, "DDdd")
-            }
-
-            assertThat(inV1.readByte()).isEqualTo('a'.code.toByte())
-            assertThat(inV1.readByte()).isEqualTo('a'.code.toByte())
-            snapshot1.assertValue(1, "BBbb")
-        }
-    }
-
     @Test
     fun openWithDirtyKeyDeletesAllFilesForThatKey() {
         cache.close()
@@ -1044,28 +1010,6 @@ class DiskLruCacheTest {
         assertThat(cache.edit(snapshot.entry.key)).isNull()
     }
 
-    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
-    @Test
-    fun aggressiveClearingHandlesWrite() {
-        assumeFalse(windows) // Can't deleteContents while the journal is open.
-
-        fileSystem.deleteRecursively(cacheDir)
-        set("a", "a", "a")
-        assertValue("a", "a", "a")
-    }
-
-    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
-    @Test
-    fun aggressiveClearingHandlesEdit() {
-        assumeFalse(windows) // Can't deleteContents while the journal is open.
-
-        set("a", "a", "a")
-        val a = cache.edit("a")!!
-        fileSystem.deleteRecursively(cacheDir)
-        a.setString(1, "a2")
-        a.commit()
-    }
-
     @Test
     fun removeHandlesMissingFile() {
         set("a", "a", "a")
@@ -1085,15 +1029,6 @@ class DiskLruCacheTest {
         fileSystem.deleteRecursively(cacheDir)
         a.setString(1, "a2")
         a.commit()
-        assertThat(cache["a"]).isNull()
-    }
-
-    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
-    @Test
-    fun aggressiveClearingHandlesRead() {
-        assumeFalse(windows) // Can't deleteContents while the journal is open.
-
-        fileSystem.deleteRecursively(cacheDir)
         assertThat(cache["a"]).isNull()
     }
 
@@ -1492,48 +1427,6 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun noSizeCorruptionAfterCreatorDetached() {
-        assumeFalse(windows) // Windows can't have two concurrent editors.
-
-        // Create an editor for k1. Detach it by clearing the cache.
-        val editor = cache.edit("k1")!!
-        editor.setString(0, "a")
-        editor.setString(1, "a")
-        cache.evictAll()
-
-        // Create a new value in its place.
-        set("k1", "bb", "bb")
-        assertThat(cache.size()).isEqualTo(4)
-
-        // Committing the detached editor should not change the cache's size.
-        editor.commit()
-        assertThat(cache.size()).isEqualTo(4)
-        assertValue("k1", "bb", "bb")
-    }
-
-    @Test
-    fun noSizeCorruptionAfterEditorDetached() {
-        assumeFalse(windows) // Windows can't have two concurrent editors.
-
-        set("k1", "a", "a")
-
-        // Create an editor for k1. Detach it by clearing the cache.
-        val editor = cache.edit("k1")!!
-        editor.setString(0, "bb")
-        editor.setString(1, "bb")
-        cache.evictAll()
-
-        // Create a new value in its place.
-        set("k1", "ccc", "ccc")
-        assertThat(cache.size()).isEqualTo(6)
-
-        // Committing the detached editor should not change the cache's size.
-        editor.commit()
-        assertThat(cache.size()).isEqualTo(6)
-        assertValue("k1", "ccc", "ccc")
-    }
-
-    @Test
     fun noNewSourceAfterEditorDetached() {
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
@@ -1554,26 +1447,6 @@ class DiskLruCacheTest {
             sink.writeUtf8("bb")
         }
         assertThat(cache["k1"]).isNull()
-    }
-
-    @Test
-    fun `edit discarded after editor detached with concurrent write`() {
-        assumeFalse(windows) // Windows can't have two concurrent editors.
-
-        set("k1", "a", "a")
-
-        // Create an editor, then detach it.
-        val editor = cache.edit("k1")!!
-        editor.newSink(0).buffer().use { sink ->
-            cache.evictAll()
-
-            // Create another value in its place.
-            set("k1", "ccc", "ccc")
-
-            // Complete the original edit. It goes into a black hole.
-            sink.writeUtf8("bb")
-        }
-        assertValue("k1", "ccc", "ccc")
     }
 
     @Test
