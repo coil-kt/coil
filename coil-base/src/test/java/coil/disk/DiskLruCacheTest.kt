@@ -17,7 +17,9 @@ package coil.disk
 
 import coil.disk.DiskLruCache.Editor
 import coil.disk.DiskLruCache.Snapshot
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.Source
@@ -35,9 +37,11 @@ import java.io.IOException
 import kotlin.test.assertFalse
 import kotlin.test.fail
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DiskLruCacheTest {
 
     private lateinit var filesystem: FaultyFileSystem
+    private lateinit var dispatcher: TestDispatcher
     private lateinit var cache: DiskLruCache
 
     private val cacheDir = "/cache".toPath()
@@ -52,6 +56,7 @@ class DiskLruCacheTest {
         if (filesystem.exists(cacheDir)) {
             filesystem.deleteRecursively(cacheDir)
         }
+        dispatcher = StandardTestDispatcher()
         createNewCache()
     }
 
@@ -60,16 +65,14 @@ class DiskLruCacheTest {
         while (!toClose.isEmpty()) {
             toClose.removeFirst().close()
         }
-
-        // TODO uncomment after fixing up snapshot calls in this test
-        // (filesystem.delegate as? FakeFileSystem)?.checkNoOpenFiles()
+        (filesystem.delegate as FakeFileSystem).checkNoOpenFiles()
     }
 
     private fun createNewCache(maxSize: Int = Int.MAX_VALUE) {
         cache = DiskLruCache(
             fileSystem = filesystem,
             directory = cacheDir,
-            cleanupDispatcher = Dispatchers.IO,
+            cleanupDispatcher = dispatcher,
             maxSize = maxSize.toLong(),
             appVersion = appVersion,
             valueCount = 2
@@ -77,9 +80,6 @@ class DiskLruCacheTest {
         cache.initialize()
         toClose.add(cache)
     }
-
-    private fun DiskLruCache.Editor.newSink(index: Int) = file(index).sink()
-    private fun DiskLruCache.Editor.newSource(index: Int) = file(index).source()
 
     @Test
     fun emptyCache() {
@@ -100,7 +100,7 @@ class DiskLruCacheTest {
         // Simulate a severe Filesystem failure on the first initialization.
         filesystem.setFaultyDelete(cacheDir / "k1.0.tmp", true)
         filesystem.setFaultyDelete(cacheDir, true)
-        cache = DiskLruCache(filesystem, cacheDir, Dispatchers.IO, Int.MAX_VALUE.toLong(), appVersion, 2)
+        cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         toClose.add(cache)
         try {
             cache["k1"]
@@ -687,7 +687,7 @@ class DiskLruCacheTest {
     @Test
     fun constructorDoesNotAllowZeroCacheSize() {
         try {
-            DiskLruCache(filesystem, cacheDir, appVersion, 2, 0, taskRunner)
+            DiskLruCache(filesystem, cacheDir, dispatcher, 0, appVersion, 2)
             fail("")
         } catch (_: IllegalArgumentException) {
         }
@@ -696,7 +696,7 @@ class DiskLruCacheTest {
     @Test
     fun constructorDoesNotAllowZeroValuesPerEntry() {
         try {
-            DiskLruCache(filesystem, cacheDir, appVersion, 0, 10, taskRunner)
+            DiskLruCache(filesystem, cacheDir, dispatcher, 10, appVersion, 0)
             fail("")
         } catch (_: IllegalArgumentException) {
         }
@@ -1928,12 +1928,11 @@ class DiskLruCacheTest {
     }
 
     private fun createJournal(vararg bodyLines: String) {
-        createJournalWithHeader(
-            DiskLruCache.MAGIC,
-            DiskLruCache.VERSION, "100", "2", "", *bodyLines
-        )
+        createJournalWithHeader(DiskLruCache.MAGIC, DiskLruCache.VERSION, "100",
+            "2", "", *bodyLines)
     }
 
+    @Suppress("SameParameterValue")
     private fun createJournalWithHeader(
         magic: String,
         version: String,
@@ -1945,12 +1944,12 @@ class DiskLruCacheTest {
         filesystem.write(journalFile) {
             writeUtf8(
                 """
-        |$magic
-        |$version
-        |$appVersion
-        |$valueCount
-        |$blank
-        |""".trimMargin()
+                |$magic
+                |$version
+                |$appVersion
+                |$valueCount
+                |$blank
+                |""".trimMargin()
             )
             for (line in bodyLines) {
                 writeUtf8(line)
@@ -2049,9 +2048,9 @@ class DiskLruCacheTest {
     }
 
     private fun Snapshot.assertValue(index: Int, value: String) {
-        file(index).source().use { source ->
+        getSource(index).use { source ->
             assertThat(sourceAsString(source)).isEqualTo(value)
-            assertThat(entry.lengths(index)).isEqualTo(value.length.toLong())
+            assertThat(entry.lengths[index]).isEqualTo(value.length.toLong())
         }
     }
 
@@ -2090,4 +2089,10 @@ class DiskLruCacheTest {
             writer.writeUtf8(value)
         }
     }
+
+    private fun DiskLruCache.Editor.newSink(index: Int) = file(index).sink()
+
+    private fun DiskLruCache.Editor.newSource(index: Int) = file(index).source()
+
+    private fun DiskLruCache.Snapshot.getSource(index: Int) = file(index).source()
 }
