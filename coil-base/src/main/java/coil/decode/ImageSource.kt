@@ -176,12 +176,13 @@ class AssetMetadata(val fileName: String) : ImageSource.Metadata()
 class ContentMetadata(val uri: Uri) : ImageSource.Metadata()
 
 /**
- * Metadata containing the [packageName] and [resId] of an Android resource.
+ * Metadata containing the [packageName], [resId], and [density] of an Android resource.
  */
 @ExperimentalCoilApi
 class ResourceMetadata(
     val packageName: String,
-    @DrawableRes val resId: Int
+    @DrawableRes val resId: Int,
+    val density: Int
 ) : ImageSource.Metadata()
 
 internal class FileImageSource(

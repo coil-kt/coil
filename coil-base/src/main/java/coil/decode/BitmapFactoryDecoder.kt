@@ -12,6 +12,7 @@ import androidx.exifinterface.media.ExifInterface
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
+import coil.size.isOriginal
 import coil.size.pxOrElse
 import coil.util.toDrawable
 import coil.util.toSoftware
@@ -78,7 +79,15 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         // Always create immutable bitmaps as they have performance benefits.
         inMutable = false
 
-        if (outWidth > 0 && outHeight > 0) {
+        if (options.size.isOriginal && source.metadata is ResourceMetadata) {
+            inScaled = true
+            // Read the resource density if available
+            inDensity = (source.metadata as ResourceMetadata).density
+            inTargetDensity = options.context.resources.displayMetrics.densityDpi
+            // Clear outWidth and outHeight so that BitmapFactory will handle scaling itself.
+            outWidth = 0
+            outHeight = 0
+        } else if (outWidth > 0 && outHeight > 0) {
             val (width, height) = options.size
             val dstWidth = width.pxOrElse { srcWidth }
             val dstHeight = height.pxOrElse { srcHeight }
