@@ -29,10 +29,8 @@ import okio.BufferedSink
 import okio.Closeable
 import okio.EOFException
 import okio.FileSystem
-import okio.ForwardingFileSystem
 import okio.IOException
 import okio.Path
-import okio.Sink
 import okio.blackholeSink
 import okio.buffer
 import java.io.File
@@ -82,8 +80,9 @@ import java.io.Flushable
  * @param valueCount the number of values per cache entry. Must be positive.
  * @param maxSize the maximum number of bytes this cache should use to store.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class DiskLruCache(
-    fileSystem: FileSystem,
+    private val fileSystem: FileSystem,
     private val directory: Path,
     cleanupDispatcher: CoroutineDispatcher,
     maxSize: Long,
@@ -135,6 +134,7 @@ internal class DiskLruCache(
     private val journalFileTmp = directory / JOURNAL_FILE_TMP
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
     private val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
+    private val cleanupScope = CoroutineScope(SupervisorJob() + cleanupDispatcher.limitedParallelism(1))
     private var size = 0L
     private var operationsSinceRewrite = 0
     private var journalWriter: BufferedSink? = null
@@ -143,18 +143,6 @@ internal class DiskLruCache(
     private var closed = false
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val cleanupScope = CoroutineScope(SupervisorJob() +
-        cleanupDispatcher.limitedParallelism(1))
-
-    private val fileSystem = object : ForwardingFileSystem(fileSystem) {
-        override fun sink(file: Path, mustCreate: Boolean): Sink {
-            // Ensure the parent directory exists.
-            file.parent?.let(::createDirectories)
-            return super.sink(file, mustCreate)
-        }
-    }
 
     var maxSize = maxSize
         @Synchronized get
@@ -173,6 +161,9 @@ internal class DiskLruCache(
     @Synchronized
     fun initialize() {
         if (initialized) return
+
+        // Ensure the parent directory exists.
+        fileSystem.createDirectories(directory)
 
         // If a temporary file exists, delete it.
         fileSystem.delete(journalFileTmp)
