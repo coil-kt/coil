@@ -503,7 +503,7 @@ internal class DiskLruCache(
     /**
      * We rewrite [lruEntries] to the on-disk journal after a sufficient number of operations.
      */
-    private fun journalRewriteRequired() = operationsSinceRewrite >= OPERATIONS_THRESHOLD
+    private fun journalRewriteRequired() = operationsSinceRewrite >= 2000
 
     /**
      * Drops the entry for [key] if it exists and can be removed. If the entry for [key] is
@@ -847,7 +847,6 @@ internal class DiskLruCache(
         private const val DIRTY = "DIRTY"
         private const val REMOVE = "REMOVE"
         private const val READ = "READ"
-        private const val OPERATIONS_THRESHOLD = 2000
         private val LEGAL_KEY_PATTERN = "[a-z0-9_-]{1,120}".toRegex()
     }
 }
