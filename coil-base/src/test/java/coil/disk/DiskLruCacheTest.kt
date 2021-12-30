@@ -1017,6 +1017,7 @@ class DiskLruCacheTest {
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
     fun aggressiveClearingHandlesRead() {
+        set("a", "a", "a")
         fileSystem.deleteRecursively(cacheDir)
         assertThat(cache["a"]).isNull()
     }
