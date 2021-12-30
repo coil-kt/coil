@@ -640,10 +640,10 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun readingTheSameStreamMultipleTimes() {
+    fun readingTheSameFileMultipleTimes() {
         set("a", "a", "b")
         val snapshot = cache["a"]!!
-        assertThat(snapshot.getSource(0)).isSameAs(snapshot.getSource(0))
+        assertThat(snapshot.file(0)).isSameAs(snapshot.file(0))
         snapshot.close()
     }
 
