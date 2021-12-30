@@ -30,8 +30,10 @@ import okio.BufferedSink
 import okio.Closeable
 import okio.EOFException
 import okio.FileSystem
+import okio.ForwardingFileSystem
 import okio.IOException
 import okio.Path
+import okio.Sink
 import okio.blackholeSink
 import okio.buffer
 import java.io.Flushable
@@ -82,7 +84,7 @@ import java.io.Flushable
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DiskLruCache(
-    private val fileSystem: FileSystem,
+    fileSystem: FileSystem,
     private val directory: Path,
     cleanupDispatcher: CoroutineDispatcher,
     maxSize: Long,
@@ -148,6 +150,14 @@ internal class DiskLruCache(
     private var closed = false
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
+
+    private val fileSystem = object : ForwardingFileSystem(fileSystem) {
+        override fun sink(file: Path, mustCreate: Boolean): Sink {
+            // Ensure the parent directory for the file exists.
+            file.parent?.let(::createDirectories)
+            return super.sink(file, mustCreate)
+        }
+    }
 
     @get:Synchronized @set:Synchronized
     var maxSize = maxSize
