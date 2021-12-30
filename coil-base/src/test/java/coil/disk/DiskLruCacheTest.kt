@@ -453,19 +453,15 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun createNewEntryWithTooFewValuesFails() {
+    fun createNewEntryWithTooFewValuesSucceeds() {
         val creator = cache.edit("k1")!!
         creator.setString(1, "A")
-        try {
-            creator.commit()
-            fail("")
-        } catch (_: IllegalStateException) {
-        }
-        assertThat(fileSystem.exists(getCleanFile("k1", 0))).isFalse
-        assertThat(fileSystem.exists(getCleanFile("k1", 1))).isFalse
+        creator.commit()
+        assertThat(fileSystem.exists(getCleanFile("k1", 0))).isTrue
+        assertThat(fileSystem.exists(getCleanFile("k1", 1))).isTrue
         assertThat(fileSystem.exists(getDirtyFile("k1", 0))).isFalse
         assertThat(fileSystem.exists(getDirtyFile("k1", 1))).isFalse
-        assertThat(cache["k1"]).isNull()
+        assertThat(cache["k1"]?.run { close() }).isNotNull
         val creator2 = cache.edit("k1")!!
         creator2.setString(0, "B")
         creator2.setString(1, "C")
