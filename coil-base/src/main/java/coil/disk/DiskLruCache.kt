@@ -17,6 +17,7 @@ package coil.disk
 
 import androidx.annotation.VisibleForTesting
 import coil.disk.DiskLruCache.Editor
+import coil.util.createFile
 import coil.util.deleteContents
 import coil.util.forEachIndices
 import kotlinx.coroutines.CoroutineDispatcher
@@ -33,7 +34,6 @@ import okio.IOException
 import okio.Path
 import okio.blackholeSink
 import okio.buffer
-import java.io.File
 import java.io.Flushable
 
 /**
@@ -161,9 +161,6 @@ internal class DiskLruCache(
     @Synchronized
     fun initialize() {
         if (initialized) return
-
-        // Ensure the parent directory exists.
-        fileSystem.createDirectories(directory)
 
         // If a temporary file exists, delete it.
         fileSystem.delete(journalFileTmp)
@@ -467,7 +464,7 @@ internal class DiskLruCache(
         // Ensure every entry is complete.
         if (success) {
             for (i in 0 until valueCount) {
-                entry.cleanFiles[i].toFile().createNewFile()
+                fileSystem.createFile(entry.cleanFiles[i])
             }
         }
 
@@ -679,9 +676,9 @@ internal class DiskLruCache(
 
         private var closed = false
 
-        fun file(index: Int): File {
+        fun file(index: Int): Path {
             check(!closed) { "snapshot is closed" }
-            return entry.cleanFiles[index].toFile()
+            return entry.cleanFiles[index]
         }
 
         override fun close() {
@@ -713,10 +710,10 @@ internal class DiskLruCache(
          * Get the file to read from/write to for [index].
          * This file will become the new value for this index if committed.
          */
-        fun file(index: Int): File {
+        fun file(index: Int): Path {
             synchronized(this@DiskLruCache) {
                 check(!closed) { "editor is closed" }
-                return entry.dirtyFiles[index].toFile().apply { createNewFile() }
+                return entry.dirtyFiles[index].also(fileSystem::createFile)
             }
         }
 

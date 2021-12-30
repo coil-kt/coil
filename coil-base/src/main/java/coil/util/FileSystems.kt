@@ -22,6 +22,12 @@ import okio.FileSystem
 import okio.IOException
 import okio.Path
 
+/** Create a new empty file if one doesn't already exist. */
+internal fun FileSystem.createFile(file: Path) {
+    file.parent?.let(::createDirectories)
+    file.toFile().createNewFile()
+}
+
 /** Tolerant delete, try to clear as many files as possible even after a failure. */
 internal fun FileSystem.deleteContents(directory: Path) {
     var exception: IOException? = null
