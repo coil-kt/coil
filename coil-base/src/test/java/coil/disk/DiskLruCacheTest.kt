@@ -1316,9 +1316,9 @@ class DiskLruCacheTest {
         // Create an uninitialized cache.
         cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
         toClose.add(cache)
-        assertThat(cache.isClosed()).isFalse()
+        assertThat(cache.isClosed()).isFalse
         cache.close()
-        assertThat(cache.isClosed()).isTrue()
+        assertThat(cache.isClosed()).isTrue
     }
 
     @Test
@@ -2067,4 +2067,13 @@ class DiskLruCacheTest {
     private fun DiskLruCache.Snapshot.getSource(index: Int) = file(index).source()
 
     private fun DiskLruCache.snapshots() = lruEntries.asSequence().map { get(it.key)!! }.iterator()
+
+    private fun DiskLruCache.isClosed(): Boolean {
+        try {
+            flush()
+            return false
+        } catch (e: IllegalStateException) {
+            return e.message == "cache is closed"
+        }
+    }
 }
