@@ -134,7 +134,7 @@ internal class DiskLruCache(
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
     private val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
     private var size = 0L
-    private var redundantOpCount = 0
+    private var operationsSinceRewrite = 0
     private var journalWriter: BufferedSink? = null
     private var hasJournalErrors = false
     private var initialized = false
@@ -232,7 +232,7 @@ internal class DiskLruCache(
                 }
             }
 
-            redundantOpCount = lineCount - lruEntries.size
+            operationsSinceRewrite = lineCount - lruEntries.size
 
             // If we ended on a truncated line, rebuild the journal before appending to it.
             if (!exhausted()) {
@@ -350,7 +350,7 @@ internal class DiskLruCache(
         }
 
         journalWriter = newJournalWriter()
-        redundantOpCount = 0
+        operationsSinceRewrite = 0
         hasJournalErrors = false
         mostRecentRebuildFailed = false
     }
@@ -367,7 +367,7 @@ internal class DiskLruCache(
 
         val snapshot = lruEntries[key]?.snapshot() ?: return null
 
-        redundantOpCount++
+        operationsSinceRewrite++
         journalWriter!!.apply {
             writeUtf8(READ)
             writeByte(' '.code)
@@ -375,7 +375,7 @@ internal class DiskLruCache(
             writeByte('\n'.code)
         }
 
-        if (journalRebuildRequired()) {
+        if (journalRewriteRequired()) {
             launchCleanup()
         }
 
@@ -475,7 +475,7 @@ internal class DiskLruCache(
             return
         }
 
-        redundantOpCount++
+        operationsSinceRewrite++
         journalWriter!!.apply {
             if (entry.readable || success) {
                 entry.readable = true
@@ -494,17 +494,15 @@ internal class DiskLruCache(
             flush()
         }
 
-        if (size > maxSize || journalRebuildRequired()) {
+        if (size > maxSize || journalRewriteRequired()) {
             launchCleanup()
         }
     }
 
     /**
-     * We only rebuild the journal when it has sufficient redundant journal lines.
+     * We rewrite [lruEntries] to the on-disk journal after a sufficient number of operations.
      */
-    private fun journalRebuildRequired(): Boolean {
-        return redundantOpCount >= MAX_REDUNDANT_OPS && redundantOpCount > lruEntries.size
-    }
+    private fun journalRewriteRequired() = operationsSinceRewrite >= OPERATIONS_THRESHOLD
 
     /**
      * Drops the entry for [key] if it exists and can be removed. If the entry for [key] is
@@ -551,7 +549,7 @@ internal class DiskLruCache(
             entry.lengths[i] = 0
         }
 
-        redundantOpCount++
+        operationsSinceRewrite++
         journalWriter?.apply {
             writeUtf8(REMOVE)
             writeByte(' '.code)
@@ -560,7 +558,7 @@ internal class DiskLruCache(
         }
         lruEntries.remove(entry.key)
 
-        if (journalRebuildRequired()) {
+        if (journalRewriteRequired()) {
             launchCleanup()
         }
 
@@ -648,7 +646,7 @@ internal class DiskLruCache(
                     mostRecentTrimFailed = true
                 }
                 try {
-                    if (journalRebuildRequired()) {
+                    if (journalRewriteRequired()) {
                         writeJournal()
                     }
                 } catch (_: IOException) {
@@ -848,7 +846,7 @@ internal class DiskLruCache(
         private const val DIRTY = "DIRTY"
         private const val REMOVE = "REMOVE"
         private const val READ = "READ"
-        private const val MAX_REDUNDANT_OPS = 2000
+        private const val OPERATIONS_THRESHOLD = 2000
         private val LEGAL_KEY_PATTERN = "[a-z0-9_-]{1,120}".toRegex()
     }
 }
