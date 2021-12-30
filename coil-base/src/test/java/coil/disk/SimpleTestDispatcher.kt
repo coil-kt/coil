@@ -1,14 +1,15 @@
 package coil.disk
 
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Runnable
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class ObservableTestDispatcher : CoroutineDispatcher() {
+/**
+ * A simple test dispatcher that queues all tasks executes one when [runNextTask] is called.
+ */
+class SimpleTestDispatcher : CoroutineDispatcher() {
 
     private val tasks = ConcurrentLinkedQueue<Runnable>()
     private val inProgressTasks = AtomicInteger()

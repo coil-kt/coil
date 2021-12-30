@@ -38,7 +38,7 @@ import kotlin.test.fail
 class DiskLruCacheTest {
 
     private lateinit var fileSystem: FaultyFileSystem
-    private lateinit var dispatcher: ObservableTestDispatcher
+    private lateinit var dispatcher: SimpleTestDispatcher
     private lateinit var caches: MutableSet<DiskLruCache>
     private lateinit var cache: DiskLruCache
 
@@ -54,7 +54,7 @@ class DiskLruCacheTest {
         if (fileSystem.exists(cacheDir)) {
             fileSystem.deleteRecursively(cacheDir)
         }
-        dispatcher = ObservableTestDispatcher()
+        dispatcher = SimpleTestDispatcher()
         caches = mutableSetOf()
         createNewCache()
     }
