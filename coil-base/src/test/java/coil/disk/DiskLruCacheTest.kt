@@ -1991,7 +1991,7 @@ class DiskLruCacheTest {
         assertThat(filesystem.exists(cacheDir / "dir1")).isFalse
     }
 
-    private operator fun set(key: String, value0: String, value1: String) {
+    private fun set(key: String, value0: String, value1: String) {
         val editor = cache.edit(key)!!
         editor.setString(0, value0)
         editor.setString(1, value1)
