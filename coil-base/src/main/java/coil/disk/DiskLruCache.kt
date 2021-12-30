@@ -149,11 +149,11 @@ internal class DiskLruCache(
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
 
+    @get:Synchronized @set:Synchronized
     var maxSize = maxSize
-        @Synchronized get
-        @Synchronized set(value) {
+        set(value) {
             field = value
-            if (initialized && size > maxSize) {
+            if (initialized && size > value) {
                 launchCleanup()
             }
         }
