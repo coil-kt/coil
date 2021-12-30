@@ -19,7 +19,6 @@ import coil.disk.DiskLruCache.Editor
 import coil.disk.DiskLruCache.Snapshot
 import coil.util.assumeFalse
 import coil.util.assumeTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okio.FileNotFoundException
 import okio.IOException
 import okio.Path
@@ -34,7 +33,6 @@ import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.fail
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class DiskLruCacheTest {
 
     private lateinit var fileSystem: FaultyFileSystem
