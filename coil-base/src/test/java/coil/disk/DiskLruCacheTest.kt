@@ -173,8 +173,8 @@ class DiskLruCacheTest {
         val creator = cache.edit("k1")!!
         creator.setString(0, "ABC")
         creator.setString(1, "DE")
-        assertThat(creator.newSource(0)).isNull()
-        assertThat(creator.newSource(1)).isNull()
+        creator.file(0) // Access the file to read it.
+        creator.file(1) // Access the file to read it.
         creator.commit()
         val snapshot = cache["k1"]!!
         snapshot.assertValue(0, "ABC")
