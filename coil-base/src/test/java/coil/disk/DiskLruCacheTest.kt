@@ -33,7 +33,10 @@ import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.fail
 
-/** https://github.com/square/okhttp/blob/master/okhttp/src/jvmTest/java/okhttp3/internal/cache/DiskLruCacheTest.kt */
+/**
+ * Derived from OkHttp's DiskLruCache tests:
+ * https://github.com/square/okhttp/blob/master/okhttp/src/jvmTest/java/okhttp3/internal/cache/DiskLruCacheTest.kt
+ */
 class DiskLruCacheTest {
 
     private lateinit var fileSystem: FaultyFileSystem
