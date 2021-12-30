@@ -536,28 +536,6 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun growMaxSize() {
-        cache.close()
-        createNewCache(10)
-        set("a", "a", "aaa") // size 4
-        set("b", "bb", "bbbb") // size 6
-        cache.maxSize = 20
-        set("c", "c", "c") // size 12
-        assertThat(cache.size()).isEqualTo(12)
-    }
-
-    @Test
-    fun shrinkMaxSizeEvicts() {
-        cache.close()
-        createNewCache(20)
-        set("a", "a", "aaa") // size 4
-        set("b", "bb", "bbbb") // size 6
-        set("c", "c", "c") // size 12
-        cache.maxSize = 10
-        assertThat(taskFaker.isIdle()).isFalse()
-    }
-
-    @Test
     fun evictOnInsert() {
         cache.close()
         createNewCache(10)
