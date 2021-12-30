@@ -1445,14 +1445,6 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun noNewSourceAfterEditorDetached() {
-        set("k1", "a", "a")
-        val editor = cache.edit("k1")!!
-        cache.evictAll()
-        assertThat(editor.newSource(0)).isNull()
-    }
-
-    @Test
     fun `edit discarded after editor detached`() {
         set("k1", "a", "a")
 
@@ -1811,9 +1803,7 @@ class DiskLruCacheTest {
     }
 
     private fun Editor.setString(index: Int, value: String) {
-        newSink(index).buffer().use { writer ->
-            writer.writeUtf8(value)
-        }
+        newSink(index).buffer().use { it.writeUtf8(value) }
     }
 
     private fun DiskLruCache.Editor.newSink(index: Int) = fileSystem.sink(file(index))
