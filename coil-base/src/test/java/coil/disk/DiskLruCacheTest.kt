@@ -17,7 +17,6 @@ package coil.disk
 
 import coil.disk.DiskLruCache.Editor
 import coil.disk.DiskLruCache.Snapshot
-import coil.util.assumeFalse
 import coil.util.assumeTrue
 import okio.FileNotFoundException
 import okio.IOException
@@ -1017,9 +1016,32 @@ class DiskLruCacheTest {
 
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
     @Test
-    fun aggressiveClearingHandlesPartialEdit() {
-        assumeFalse(windows) // Can't deleteContents while the journal is open.
+    fun aggressiveClearingHandlesRead() {
+        fileSystem.deleteRecursively(cacheDir)
+        assertThat(cache["a"]).isNull()
+    }
 
+    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
+    @Test
+    fun aggressiveClearingHandlesWrite() {
+        fileSystem.deleteRecursively(cacheDir)
+        set("a", "a", "a")
+        assertValue("a", "a", "a")
+    }
+
+    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
+    @Test
+    fun aggressiveClearingHandlesEdit() {
+        set("a", "a", "a")
+        val a = cache.edit("a")!!
+        fileSystem.deleteRecursively(cacheDir)
+        a.setString(1, "a2")
+        a.commit()
+    }
+
+    /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
+    @Test
+    fun aggressiveClearingHandlesPartialEdit() {
         set("a", "a", "a")
         set("b", "b", "b")
         val a = cache.edit("a")!!
