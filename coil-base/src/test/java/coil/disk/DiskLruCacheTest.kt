@@ -1526,7 +1526,7 @@ class DiskLruCacheTest {
         val afterRemoveFileContents = "a"
 
         set("k1", "a", "a")
-        cache["k1"]!!.use { snapshot1 ->
+        cache["k1"]!!.use { snapshot ->
             cache.remove("k1")
 
             // On Windows files still exist with open with 2 open sources.
@@ -1534,12 +1534,12 @@ class DiskLruCacheTest {
             assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
 
             // On Windows files still exist with open with 1 open source.
-            snapshot1.assertValue(0, "a")
+            snapshot.assertValue(0, "a")
             assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
             assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
 
             // On all platforms files are deleted when all sources are closed.
-            snapshot1.assertValue(1, "a")
+            snapshot.assertValue(1, "a")
             assertThat(readFileOrNull(getCleanFile("k1", 0))).isNull()
             assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
         }
@@ -1587,7 +1587,7 @@ class DiskLruCacheTest {
         val afterRemoveFileContents = "a"
 
         set("k1", "a", "a")
-        cache["k1"]!!.use {
+        cache["k1"]!!.use { snapshot ->
             cache.remove("k1")
 
             // After we close the cache the files continue to exist!
@@ -1596,8 +1596,9 @@ class DiskLruCacheTest {
             assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
 
             // But they disappear when the sources are closed.
-            it.assertValue(0, "a")
-            it.assertValue(1, "a")
+            snapshot.assertValue(0, "a")
+            snapshot.assertValue(1, "a")
+            snapshot.close()
             assertThat(readFileOrNull(getCleanFile("k1", 0))).isNull()
             assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
         }
