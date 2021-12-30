@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 
 /**
- * A simple test dispatcher that queues all tasks executes one when [runNextTask] is called.
+ * A simple test dispatcher that queues all tasks and executes one when [runNextTask] is called.
  */
 class SimpleTestDispatcher : CoroutineDispatcher() {
 
