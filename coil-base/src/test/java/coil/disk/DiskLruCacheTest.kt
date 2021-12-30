@@ -41,13 +41,13 @@ class DiskLruCacheTest {
 
     private lateinit var filesystem: FaultyFileSystem
     private lateinit var dispatcher: ObservableTestDispatcher
+    private lateinit var caches: MutableSet<DiskLruCache>
     private lateinit var cache: DiskLruCache
 
     private val cacheDir = "/cache".toPath()
     private val appVersion = 100
     private val journalFile = cacheDir / DiskLruCache.JOURNAL_FILE
     private val journalBkpFile = cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP
-    private val toClose = ArrayDeque<DiskLruCache>()
     private val windows = true
 
     @Before
@@ -57,21 +57,20 @@ class DiskLruCacheTest {
             filesystem.deleteRecursively(cacheDir)
         }
         dispatcher = ObservableTestDispatcher()
+        caches = mutableSetOf()
         createNewCache()
     }
 
     @After
     fun after() {
-        while (!toClose.isEmpty()) {
-            toClose.removeFirst().close()
-        }
+        caches.forEach { it.close() }
         (filesystem.delegate as FakeFileSystem).checkNoOpenFiles()
     }
 
     private fun createNewCache(maxSize: Int = Int.MAX_VALUE) {
         cache = DiskLruCache(filesystem, cacheDir, dispatcher, maxSize.toLong(), appVersion, 2)
         cache.initialize()
-        toClose.add(cache)
+        caches += cache
     }
 
     @Test
@@ -94,7 +93,7 @@ class DiskLruCacheTest {
         filesystem.setFaultyDelete(cacheDir / "k1.0.tmp", true)
         filesystem.setFaultyDelete(cacheDir, true)
         cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
-        toClose.add(cache)
+        caches += cache
         try {
             cache["k1"]
             fail("")
@@ -1198,7 +1197,7 @@ class DiskLruCacheTest {
     fun isClosed_uninitializedCache() {
         // Create an uninitialized cache.
         cache = DiskLruCache(filesystem, cacheDir, dispatcher, Long.MAX_VALUE, appVersion, 2)
-        toClose.add(cache)
+        caches += cache
         assertThat(cache.isClosed()).isFalse
         cache.close()
         assertThat(cache.isClosed()).isTrue
