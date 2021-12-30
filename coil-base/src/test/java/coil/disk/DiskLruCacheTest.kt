@@ -749,7 +749,7 @@ class DiskLruCacheTest {
         assertThat(cache.edit("a")).isNull()
         assertThat(cache.edit("c")).isNull()
         cache["a"]!!.use {
-            assertThat(it.edit()).isNull()
+            assertThat(cache.edit(it.entry.key)).isNull()
         }
     }
 
@@ -992,7 +992,7 @@ class DiskLruCacheTest {
         set("a", "a", "a")
         val snapshot = cache["a"]!!
         snapshot.close()
-        val editor = snapshot.edit()!!
+        val editor = cache.edit(snapshot.entry.key)!!
         editor.setString(1, "a2")
         editor.commit()
         assertValue("a", "a", "a2")
@@ -1003,10 +1003,10 @@ class DiskLruCacheTest {
         set("a", "a", "a")
         val snapshot = cache["a"]!!
         snapshot.close()
-        val toAbort = snapshot.edit()!!
+        val toAbort = cache.edit(snapshot.entry.key)!!
         toAbort.setString(0, "b")
         toAbort.abort()
-        val editor = snapshot.edit()!!
+        val editor = cache.edit(snapshot.entry.key)!!
         editor.setString(1, "a2")
         editor.commit()
         assertValue("a", "a", "a2")
@@ -1017,10 +1017,10 @@ class DiskLruCacheTest {
         set("a", "a", "a")
         val snapshot = cache["a"]!!
         snapshot.close()
-        val toAbort = snapshot.edit()!!
+        val toAbort = cache.edit(snapshot.entry.key)!!
         toAbort.setString(0, "b")
         toAbort.commit()
-        assertThat(snapshot.edit()).isNull()
+        assertThat(cache.edit(snapshot.entry.key)).isNull()
     }
 
     @Test
@@ -1032,7 +1032,7 @@ class DiskLruCacheTest {
         set("b", "bb", "bbb") // size 5
         set("c", "cc", "ccc") // size 5; will evict 'A'
         cache.flush()
-        assertThat(snapshot.edit()).isNull()
+        assertThat(cache.edit(snapshot.entry.key)).isNull()
     }
 
     @Test
@@ -1046,7 +1046,7 @@ class DiskLruCacheTest {
         set("c", "cc", "ccc") // size 5; will evict 'A'
         set("a", "a", "aaaa") // size 5; will evict 'B'
         cache.flush()
-        assertThat(snapshot.edit()).isNull()
+        assertThat(cache.edit(snapshot.entry.key)).isNull()
     }
 
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
@@ -1185,12 +1185,12 @@ class DiskLruCacheTest {
         val afterRemoveFileContents = if (windows) "a" else null
 
         set("a", "a", "a")
-        cache["a"]!!.use {
+        cache["a"]!!.use { snapshot ->
             cache.evictAll()
             assertThat(cache.size()).isEqualTo(expectedByteCount)
             assertThat(readFileOrNull(getCleanFile("a", 0))).isEqualTo(afterRemoveFileContents)
             assertThat(readFileOrNull(getCleanFile("a", 1))).isEqualTo(afterRemoveFileContents)
-            assertThat(it.edit()).isNull()
+            assertThat(cache.edit(snapshot.entry.key)).isNull()
         }
         assertThat(cache.size()).isEqualTo(0L)
     }
@@ -1514,10 +1514,10 @@ class DiskLruCacheTest {
 
         // Confirm snapshot writes are prevented after a trim failure.
         cache["a"]!!.use {
-            assertThat(it.edit()).isNull()
+            assertThat(cache.edit(it.entry.key)).isNull()
         }
         cache["b"]!!.use {
-            assertThat(it.edit()).isNull()
+            assertThat(cache.edit(it.entry.key)).isNull()
         }
 
         // Allow the test to clean up.
