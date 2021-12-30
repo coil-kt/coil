@@ -130,6 +130,11 @@ internal class DiskLruCache(
      * compaction; that file should be deleted if it exists when the cache is opened.
      */
 
+    init {
+        require(maxSize > 0L) { "maxSize <= 0" }
+        require(valueCount > 0) { "valueCount <= 0" }
+    }
+
     private val journalFile = directory / JOURNAL_FILE
     private val journalFileTmp = directory / JOURNAL_FILE_TMP
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
@@ -152,11 +157,6 @@ internal class DiskLruCache(
                 launchCleanup()
             }
         }
-
-    init {
-        require(maxSize > 0L) { "maxSize <= 0" }
-        require(valueCount > 0) { "valueCount <= 0" }
-    }
 
     @Synchronized
     fun initialize() {
