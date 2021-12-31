@@ -867,6 +867,7 @@ class DiskLruCacheTest {
 
     @Test
     fun rebuildJournalFailureWithCacheTrim() {
+        createNewCache(4)
         while (dispatcher.isIdle()) {
             set("a", "aa", "aa")
             set("b", "bb", "bb")
@@ -876,9 +877,6 @@ class DiskLruCacheTest {
         fileSystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
 
-        // Trigger a job to trim the cache.
-        cache.maxSize = 4
-        dispatcher.runNextTask()
         assertAbsent("a")
         assertValue("b", "bb", "bb")
     }
@@ -1049,10 +1047,10 @@ class DiskLruCacheTest {
         val expectedByteCount = 10L
         val afterRemoveFileContents = "a1234"
 
+        createNewCache(8) // Smaller than the sum of active edits!
         set("a", "a1234", "a1234")
         val a = cache.edit("a")!!
         a.setString(0, "a123")
-        cache.maxSize = 8 // Smaller than the sum of active edits!
         cache.flush() // Force trimToSize().
         assertEquals(expectedByteCount, cache.size())
         assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("a", 0)))
@@ -1242,8 +1240,7 @@ class DiskLruCacheTest {
 
     @Test
     fun cleanupTrimFailurePreventsNewEditors() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
@@ -1262,8 +1259,7 @@ class DiskLruCacheTest {
 
     @Test
     fun cleanupTrimFailureRetriedOnEditors() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
@@ -1285,8 +1281,7 @@ class DiskLruCacheTest {
 
     @Test
     fun cleanupTrimFailureWithInFlightEditor() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aaa")
         set("b", "bb", "bb")
         val inFlightEditor = cache.edit("c")!!
@@ -1308,8 +1303,7 @@ class DiskLruCacheTest {
 
     @Test
     fun cleanupTrimFailureAllowsSnapshotReads() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
@@ -1327,8 +1321,7 @@ class DiskLruCacheTest {
 
     @Test
     fun cleanupTrimFailurePreventsSnapshotWrites() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
@@ -1350,8 +1343,7 @@ class DiskLruCacheTest {
 
     @Test
     fun evictAllAfterCleanupTrimFailure() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
@@ -1371,8 +1363,7 @@ class DiskLruCacheTest {
 
     @Test
     fun manualRemovalAfterCleanupTrimFailure() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
@@ -1392,8 +1383,7 @@ class DiskLruCacheTest {
 
     @Test
     fun flushingAfterCleanupTrimFailure() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
@@ -1413,8 +1403,7 @@ class DiskLruCacheTest {
 
     @Test
     fun cleanupTrimFailureWithPartialSnapshot() {
-        cache.maxSize = 8
-        dispatcher.runNextTask()
+        createNewCache(8)
         set("a", "aa", "aa")
         set("b", "bb", "bbb")
 
