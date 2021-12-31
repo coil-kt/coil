@@ -23,7 +23,7 @@ import okio.Path
 import okio.Sink
 import java.io.IOException
 
-class FaultyFileSystem(delegate: FileSystem?) : ForwardingFileSystem(delegate!!) {
+class FaultyFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
 
     private val writeFaults = mutableSetOf<Path>()
     private val deleteFaults = mutableSetOf<Path>()
