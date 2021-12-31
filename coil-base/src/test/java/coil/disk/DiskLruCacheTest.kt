@@ -29,6 +29,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.test.fail
 
 /**
@@ -100,7 +103,7 @@ class DiskLruCacheTest {
         fileSystem.setFaultyDelete(cacheDir / "k1.0.tmp", false)
         fileSystem.setFaultyDelete(cacheDir, false)
         val snapshot = cache["k1"]
-        assertThat(snapshot).isNull()
+        assertNull(snapshot)
     }
 
     @Test
@@ -244,7 +247,7 @@ class DiskLruCacheTest {
     @Test
     fun journalDoesNotIncludeReadOfYetUnpublishedValue() {
         val creator = cache.edit("k1")!!
-        assertThat(cache["k1"]).isNull()
+        assertNull(cache["k1"])
         creator.setString(0, "A")
         creator.setString(1, "BC")
         creator.commit()
@@ -295,7 +298,7 @@ class DiskLruCacheTest {
         val k1 = getCleanFile("k1", 0)
         assertThat(readFile(k1)).isEqualTo("ABC")
         cache.remove("k1")
-        assertThat(fileSystem.exists(k1)).isFalse
+        assertFalse(fileSystem.exists(k1))
     }
 
     @Test
@@ -303,7 +306,7 @@ class DiskLruCacheTest {
         set("a", "a", "a")
         val a = cache.edit("a")!!
         a.setString(0, "a1")
-        assertThat(cache.remove("a")).isTrue
+        assertTrue(cache.remove("a"))
         a.setString(1, "a2")
         a.commit()
         assertAbsent("a")
@@ -322,11 +325,11 @@ class DiskLruCacheTest {
         writeFile(dirtyFile1, "D")
         createJournal("CLEAN k1 1 1", "DIRTY k1")
         createNewCache()
-        assertThat(fileSystem.exists(cleanFile0)).isFalse
-        assertThat(fileSystem.exists(cleanFile1)).isFalse
-        assertThat(fileSystem.exists(dirtyFile0)).isFalse
-        assertThat(fileSystem.exists(dirtyFile1)).isFalse
-        assertThat(cache["k1"]).isNull()
+        assertFalse(fileSystem.exists(cleanFile0))
+        assertFalse(fileSystem.exists(cleanFile1))
+        assertFalse(fileSystem.exists(dirtyFile0))
+        assertFalse(fileSystem.exists(dirtyFile1))
+        assertNull(cache["k1"])
     }
 
     @Test
@@ -372,7 +375,7 @@ class DiskLruCacheTest {
         createJournal("CLEAN k1 1 1", "BOGUS")
         createNewCache()
         assertGarbageFilesAllDeleted()
-        assertThat(cache["k1"]).isNull()
+        assertNull(cache["k1"])
     }
 
     @Test
@@ -382,7 +385,7 @@ class DiskLruCacheTest {
         createJournal("CLEAN k1 0000x001 1")
         createNewCache()
         assertGarbageFilesAllDeleted()
-        assertThat(cache["k1"]).isNull()
+        assertNull(cache["k1"])
     }
 
     @Test
@@ -402,7 +405,7 @@ class DiskLruCacheTest {
             )
         }
         createNewCache()
-        assertThat(cache["k1"]).isNull()
+        assertNull(cache["k1"])
 
         // The journal is not corrupt when editing after a truncated line.
         set("k1", "C", "D")
@@ -418,7 +421,7 @@ class DiskLruCacheTest {
         createJournal("CLEAN k1 1 1 1")
         createNewCache()
         assertGarbageFilesAllDeleted()
-        assertThat(cache["k1"]).isNull()
+        assertNull(cache["k1"])
     }
 
     @Test
@@ -453,11 +456,11 @@ class DiskLruCacheTest {
         val creator = cache.edit("k1")!!
         creator.setString(1, "A")
         creator.commit()
-        assertThat(fileSystem.exists(getCleanFile("k1", 0))).isTrue
-        assertThat(fileSystem.exists(getCleanFile("k1", 1))).isTrue
-        assertThat(fileSystem.exists(getDirtyFile("k1", 0))).isFalse
-        assertThat(fileSystem.exists(getDirtyFile("k1", 1))).isFalse
-        assertThat(cache["k1"]?.run { close() }).isNotNull
+        assertTrue(fileSystem.exists(getCleanFile("k1", 0)))
+        assertTrue(fileSystem.exists(getCleanFile("k1", 1)))
+        assertFalse(fileSystem.exists(getDirtyFile("k1", 0)))
+        assertFalse(fileSystem.exists(getDirtyFile("k1", 1)))
+        assertNotNull(cache["k1"]).close()
         val creator2 = cache.edit("k1")!!
         creator2.setString(0, "B")
         creator2.setString(1, "C")
@@ -469,11 +472,11 @@ class DiskLruCacheTest {
         val creator = cache.edit("k1")!!
         creator.setString(1, "A")
         creator.abort()
-        assertThat(fileSystem.exists(getCleanFile("k1", 0))).isFalse
-        assertThat(fileSystem.exists(getCleanFile("k1", 1))).isFalse
-        assertThat(fileSystem.exists(getDirtyFile("k1", 0))).isFalse
-        assertThat(fileSystem.exists(getDirtyFile("k1", 1))).isFalse
-        assertThat(cache["k1"]).isNull()
+        assertFalse(fileSystem.exists(getCleanFile("k1", 0)))
+        assertFalse(fileSystem.exists(getCleanFile("k1", 1)))
+        assertFalse(fileSystem.exists(getDirtyFile("k1", 0)))
+        assertFalse(fileSystem.exists(getDirtyFile("k1", 1)))
+        assertNull(cache["k1"])
     }
 
     @Test
@@ -702,10 +705,10 @@ class DiskLruCacheTest {
         dispatcher.runNextTask()
 
         // Don't allow edits under any circumstances.
-        assertThat(cache.edit("a")).isNull()
-        assertThat(cache.edit("c")).isNull()
+        assertNull(cache.edit("a"))
+        assertNull(cache.edit("c"))
         cache["a"]!!.use {
-            assertThat(cache.edit(it.entry.key)).isNull()
+            assertNull(cache.edit(it.entry.key))
         }
     }
 
@@ -723,12 +726,12 @@ class DiskLruCacheTest {
         // The rebuild is retried on cache hits and on cache edits.
         val snapshot = cache["b"]!!
         snapshot.close()
-        assertThat(cache.edit("d")).isNull()
-        assertThat(dispatcher.isIdle()).isFalse
+        assertNull(cache.edit("d"))
+        assertFalse(dispatcher.isIdle())
 
         // On cache misses, no retry job is queued.
-        assertThat(cache["c"]).isNull()
-        assertThat(dispatcher.isIdle()).isFalse
+        assertNull(cache["c"])
+        assertFalse(dispatcher.isIdle())
 
         // Let the rebuild complete successfully.
         fileSystem.setFaultyRename(journalFileBackup, false)
@@ -803,7 +806,7 @@ class DiskLruCacheTest {
         // Cause the rebuild action to fail.
         fileSystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
-        assertThat(cache.remove("a")).isTrue
+        assertTrue(cache.remove("a"))
         assertAbsent("a")
 
         // Let the rebuild complete successfully.
@@ -822,7 +825,7 @@ class DiskLruCacheTest {
         // Cause the rebuild action to fail.
         fileSystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
-        assertThat(cache.remove("a")).isTrue
+        assertTrue(cache.remove("a"))
         assertAbsent("a")
         cache.close()
         createNewCache()
@@ -831,7 +834,7 @@ class DiskLruCacheTest {
         // it tries to read the cache files, it will find they were deleted. Once it encounters an entry
         // with missing cache files, it should remove it from the cache entirely.
         assertThat(cache.size()).isEqualTo(4)
-        assertThat(cache["a"]).isNull()
+        assertNull(cache["a"])
         assertThat(cache.size()).isEqualTo(2)
     }
 
@@ -856,8 +859,8 @@ class DiskLruCacheTest {
         // when it tries to read the cache files for either entry, it will discover the cache files are
         // missing and remove the entries from the cache.
         assertThat(cache.size()).isEqualTo(4)
-        assertThat(cache["a"]).isNull()
-        assertThat(cache["b"]).isNull()
+        assertNull(cache["a"])
+        assertNull(cache["b"])
         assertThat(cache.size()).isEqualTo(0)
     }
 
@@ -887,13 +890,13 @@ class DiskLruCacheTest {
         creator.commit()
         cache.close()
         fileSystem.atomicMove(journalFile, journalFileBackup)
-        assertThat(fileSystem.exists(journalFile)).isFalse
+        assertFalse(fileSystem.exists(journalFile))
         createNewCache()
         val snapshot = cache["k1"]!!
         snapshot.assertValue(0, "ABC")
         snapshot.assertValue(1, "DE")
-        assertThat(fileSystem.exists(journalFileBackup)).isFalse
-        assertThat(fileSystem.exists(journalFile)).isTrue
+        assertFalse(fileSystem.exists(journalFileBackup))
+        assertTrue(fileSystem.exists(journalFile))
     }
 
     @Test
@@ -909,8 +912,8 @@ class DiskLruCacheTest {
         creator.setString(1, "GH")
         creator.commit()
         cache.close()
-        assertThat(fileSystem.exists(journalFile)).isTrue
-        assertThat(fileSystem.exists(journalFileBackup)).isTrue
+        assertTrue(fileSystem.exists(journalFile))
+        assertTrue(fileSystem.exists(journalFileBackup))
         createNewCache()
         val snapshotA = cache["k1"]!!
         snapshotA.assertValue(0, "ABC")
@@ -918,8 +921,8 @@ class DiskLruCacheTest {
         val snapshotB = cache["k2"]!!
         snapshotB.assertValue(0, "F")
         snapshotB.assertValue(1, "GH")
-        assertThat(fileSystem.exists(journalFileBackup)).isFalse
-        assertThat(fileSystem.exists(journalFile)).isTrue
+        assertFalse(fileSystem.exists(journalFileBackup))
+        assertTrue(fileSystem.exists(journalFile))
     }
 
     @Test
@@ -929,16 +932,16 @@ class DiskLruCacheTest {
         cache = DiskLruCache(fileSystem, dir, dispatcher, Long.MAX_VALUE, 100, 2)
         caches += cache
         set("a", "a", "a")
-        assertThat(fileSystem.exists(dir / "a.0")).isTrue
-        assertThat(fileSystem.exists(dir / "a.1")).isTrue
-        assertThat(fileSystem.exists(dir / "journal")).isTrue
+        assertTrue(fileSystem.exists(dir / "a.0"))
+        assertTrue(fileSystem.exists(dir / "a.1"))
+        assertTrue(fileSystem.exists(dir / "journal"))
     }
 
     @Test
     fun fileDeletedExternally() {
         set("a", "a", "a")
         fileSystem.delete(getCleanFile("a", 1))
-        assertThat(cache["a"]).isNull()
+        assertNull(cache["a"])
         assertThat(cache.size()).isEqualTo(0)
     }
 
@@ -973,7 +976,7 @@ class DiskLruCacheTest {
         set("b", "bb", "bbb") // size 5
         set("c", "cc", "ccc") // size 5; will evict 'A'
         cache.flush()
-        assertThat(cache.edit("a")).isNotNull
+        assertNotNull(cache.edit("a"))
     }
 
     @Test
@@ -986,7 +989,7 @@ class DiskLruCacheTest {
         set("c", "cc", "ccc") // size 5; will evict 'A'
         set("a", "a", "aaaa") // size 5; will evict 'B'
         cache.flush()
-        assertThat(cache.edit("a")).isNotNull
+        assertNotNull(cache.edit("a"))
     }
 
     @Test
@@ -1001,7 +1004,7 @@ class DiskLruCacheTest {
     fun aggressiveClearingHandlesRead() {
         set("a", "a", "a")
         fileSystem.deleteRecursively(cacheDir)
-        assertThat(cache["a"]).isNull()
+        assertNull(cache["a"])
     }
 
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
@@ -1033,7 +1036,7 @@ class DiskLruCacheTest {
         fileSystem.deleteRecursively(cacheDir)
         a.setString(1, "a2")
         a.commit()
-        assertThat(cache["a"]).isNull()
+        assertNull(cache["a"])
     }
 
     /**
@@ -1124,7 +1127,7 @@ class DiskLruCacheTest {
             assertThat(cache.size()).isEqualTo(expectedByteCount)
             assertThat(readFileOrNull(getCleanFile("a", 0))).isEqualTo(afterRemoveFileContents)
             assertThat(readFileOrNull(getCleanFile("a", 1))).isEqualTo(afterRemoveFileContents)
-            assertThat(cache.edit(snapshot.entry.key)).isNull()
+            assertNull(cache.edit(snapshot.entry.key))
         }
         assertThat(cache.size()).isEqualTo(0L)
     }
@@ -1134,9 +1137,9 @@ class DiskLruCacheTest {
         // Create an uninitialized cache.
         cache = DiskLruCache(fileSystem, cacheDir, dispatcher, Long.MAX_VALUE, 100, 2)
         caches += cache
-        assertThat(cache.isClosed()).isFalse
+        assertFalse(cache.isClosed())
         cache.close()
-        assertThat(cache.isClosed()).isTrue
+        assertTrue(cache.isClosed())
     }
 
     @Test
@@ -1146,11 +1149,11 @@ class DiskLruCacheTest {
 
         // We can't begin the edit if writing 'DIRTY' fails.
         fileSystem.setFaultyWrite(journalFile, true)
-        assertThat(cache.edit("c")).isNull()
+        assertNull(cache.edit("c"))
 
         // Once the journal has a failure, subsequent writes aren't permitted.
         fileSystem.setFaultyWrite(journalFile, false)
-        assertThat(cache.edit("d")).isNull()
+        assertNull(cache.edit("d"))
 
         // Confirm that the fault didn't corrupt entries stored before the fault was introduced.
         cache.close()
@@ -1180,7 +1183,7 @@ class DiskLruCacheTest {
 
         // Once the journal has a failure, subsequent writes aren't permitted.
         fileSystem.setFaultyWrite(journalFile, false)
-        assertThat(cache.edit("d")).isNull()
+        assertNull(cache.edit("d"))
 
         // Confirm that the fault didn't corrupt entries stored before the fault was introduced.
         cache.close()
@@ -1206,7 +1209,7 @@ class DiskLruCacheTest {
 
         // Once the journal has a failure, subsequent writes aren't permitted.
         fileSystem.setFaultyWrite(journalFile, false)
-        assertThat(cache.edit("d")).isNull()
+        assertNull(cache.edit("d"))
 
         // Confirm that the fault didn't corrupt entries stored before the fault was introduced.
         cache.close()
@@ -1225,7 +1228,7 @@ class DiskLruCacheTest {
 
         // Remove, but the journal write will fail.
         fileSystem.setFaultyWrite(journalFile, true)
-        assertThat(cache.remove("a")).isTrue
+        assertTrue(cache.remove("a"))
 
         // Confirm that the entry was still removed.
         fileSystem.setFaultyWrite(journalFile, false)
@@ -1248,9 +1251,9 @@ class DiskLruCacheTest {
         dispatcher.runNextTask()
 
         // Confirm that edits are prevented after a cache trim failure.
-        assertThat(cache.edit("a")).isNull()
-        assertThat(cache.edit("b")).isNull()
-        assertThat(cache.edit("c")).isNull()
+        assertNull(cache.edit("a"))
+        assertNull(cache.edit("b"))
+        assertNull(cache.edit("c"))
 
         // Allow the test to clean up.
         fileSystem.setFaultyDelete(cacheDir / "a.0", false)
@@ -1268,12 +1271,12 @@ class DiskLruCacheTest {
         dispatcher.runNextTask()
 
         // An edit should now add a job to clean up if the most recent trim failed.
-        assertThat(cache.edit("b")).isNull()
+        assertNull(cache.edit("b"))
         dispatcher.runNextTask()
 
         // Confirm a successful cache trim now allows edits.
         fileSystem.setFaultyDelete(cacheDir / "a.0", false)
-        assertThat(cache.edit("c")).isNull()
+        assertNull(cache.edit("c"))
         dispatcher.runNextTask()
         set("c", "cc", "cc")
         assertValue("c", "cc", "cc")
@@ -1334,10 +1337,10 @@ class DiskLruCacheTest {
 
         // Confirm snapshot writes are prevented after a trim failure.
         cache["a"]!!.use {
-            assertThat(cache.edit(it.entry.key)).isNull()
+            assertNull(cache.edit(it.entry.key))
         }
         cache["b"]!!.use {
-            assertThat(cache.edit(it.entry.key)).isNull()
+            assertNull(cache.edit(it.entry.key))
         }
 
         // Allow the test to clean up.
@@ -1356,7 +1359,7 @@ class DiskLruCacheTest {
         dispatcher.runNextTask()
 
         // Confirm we prevent edits after a trim failure.
-        assertThat(cache.edit("c")).isNull()
+        assertNull(cache.edit("c"))
 
         // A successful eviction should allow new writes.
         fileSystem.setFaultyDelete(cacheDir / "a.0", false)
@@ -1377,7 +1380,7 @@ class DiskLruCacheTest {
         dispatcher.runNextTask()
 
         // Confirm we prevent edits after a trim failure.
-        assertThat(cache.edit("c")).isNull()
+        assertNull(cache.edit("c"))
 
         // A successful removal which trims the cache should allow new writes.
         fileSystem.setFaultyDelete(cacheDir / "a.0", false)
@@ -1398,7 +1401,7 @@ class DiskLruCacheTest {
         dispatcher.runNextTask()
 
         // Confirm we prevent edits after a trim failure.
-        assertThat(cache.edit("c")).isNull()
+        assertNull(cache.edit("c"))
 
         // A successful flush trims the cache and should allow new writes.
         fileSystem.setFaultyDelete(cacheDir / "a.0", false)
@@ -1419,15 +1422,15 @@ class DiskLruCacheTest {
         dispatcher.runNextTask()
 
         // Confirm the partial snapshot is not returned.
-        assertThat(cache["a"]).isNull()
+        assertNull(cache["a"])
 
         // Confirm we prevent edits after a trim failure.
-        assertThat(cache.edit("a")).isNull()
+        assertNull(cache.edit("a"))
 
         // Confirm the partial snapshot is not returned after a successful trim.
         fileSystem.setFaultyDelete(cacheDir / "a.1", false)
         dispatcher.runNextTask()
-        assertThat(cache["a"]).isNull()
+        assertNull(cache["a"])
     }
 
     @Test
@@ -1442,7 +1445,7 @@ class DiskLruCacheTest {
             // Complete the original edit. It goes into a black hole.
             sink.writeUtf8("bb")
         }
-        assertThat(cache["k1"]).isNull()
+        assertNull(cache["k1"])
     }
 
     @Test
@@ -1461,7 +1464,7 @@ class DiskLruCacheTest {
         creator.setString(0, "ABC")
         creator.setString(1, "DE")
         val snapshotWhileEditing = cache["k1"]
-        assertThat(snapshotWhileEditing).isNull() // entry still is being created/edited
+        assertNull(snapshotWhileEditing) // entry still is being created/edited
         creator.commit()
         val snapshotAfterCommit = cache["k1"]
         assertThat(snapshotAfterCommit)
@@ -1472,7 +1475,7 @@ class DiskLruCacheTest {
     fun `cannot read while writing`() {
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
-        assertThat(cache["k1"]).isNull()
+        assertNull(cache["k1"])
         editor.commit()
     }
 
@@ -1480,7 +1483,7 @@ class DiskLruCacheTest {
     fun `cannot write while reading`() {
         set("k1", "a", "a")
         val snapshot = cache["k1"]!!
-        assertThat(cache.edit("k1")).isNull()
+        assertNull(cache.edit("k1"))
         snapshot.close()
     }
 
@@ -1507,18 +1510,18 @@ class DiskLruCacheTest {
 
             // On Windows files still exist with open with 2 open sources.
             assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
-            assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+            assertNull(readFileOrNull(getDirtyFile("k1", 0)))
 
             // On Windows files still exist with open with 1 open source.
             snapshot.assertValue(0, "a")
             assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
-            assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+            assertNull(readFileOrNull(getDirtyFile("k1", 0)))
 
             // On all platforms files are deleted when all sources are closed.
             snapshot.assertValue(1, "a")
             snapshot.close()
-            assertThat(readFileOrNull(getCleanFile("k1", 0))).isNull()
-            assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+            assertNull(readFileOrNull(getCleanFile("k1", 0)))
+            assertNull(readFileOrNull(getDirtyFile("k1", 0)))
         }
     }
 
@@ -1529,16 +1532,16 @@ class DiskLruCacheTest {
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
         cache.remove("k1")
-        assertThat(cache["k1"]).isNull()
+        assertNull(cache["k1"])
 
         // On Windows files still exist while being edited.
         assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
-        assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+        assertNull(readFileOrNull(getDirtyFile("k1", 0)))
 
         // On all platforms files are deleted when the edit completes.
         editor.commit()
-        assertThat(readFileOrNull(getCleanFile("k1", 0))).isNull()
-        assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+        assertNull(readFileOrNull(getCleanFile("k1", 0)))
+        assertNull(readFileOrNull(getDirtyFile("k1", 0)))
     }
 
     @Test
@@ -1546,7 +1549,7 @@ class DiskLruCacheTest {
         set("k1", "a", "a")
         cache["k1"]!!.use {
             cache.remove("k1")
-            assertThat(cache["k1"]).isNull()
+            assertNull(cache["k1"])
         }
     }
 
@@ -1555,7 +1558,7 @@ class DiskLruCacheTest {
         set("k1", "a", "a")
         cache["k1"]!!.use {
             cache.remove("k1")
-            assertThat(cache.edit("k1")).isNull()
+            assertNull(cache.edit("k1"))
         }
     }
 
@@ -1570,14 +1573,14 @@ class DiskLruCacheTest {
             // After we close the cache the files continue to exist!
             cache.close()
             assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
-            assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+            assertNull(readFileOrNull(getDirtyFile("k1", 0)))
 
             // But they disappear when the sources are closed.
             snapshot.assertValue(0, "a")
             snapshot.assertValue(1, "a")
             snapshot.close()
-            assertThat(readFileOrNull(getCleanFile("k1", 0))).isNull()
-            assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+            assertNull(readFileOrNull(getCleanFile("k1", 0)))
+            assertNull(readFileOrNull(getDirtyFile("k1", 0)))
         }
     }
 
@@ -1599,8 +1602,8 @@ class DiskLruCacheTest {
         // But they disappear when the edit completes.
         sink0.close()
         editor.commit()
-        assertThat(readFileOrNull(getCleanFile("k1", 0))).isNull()
-        assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+        assertNull(readFileOrNull(getCleanFile("k1", 0)))
+        assertNull(readFileOrNull(getDirtyFile("k1", 0)))
     }
 
     @Test
@@ -1620,8 +1623,8 @@ class DiskLruCacheTest {
 
         // But they disappear when the edit completes.
         editor.commit()
-        assertThat(readFileOrNull(getCleanFile("k1", 0))).isNull()
-        assertThat(readFileOrNull(getDirtyFile("k1", 0))).isNull()
+        assertNull(readFileOrNull(getCleanFile("k1", 0)))
+        assertNull(readFileOrNull(getDirtyFile("k1", 0)))
     }
 
     private fun assertJournalEquals(vararg expectedBodyLines: String) {
@@ -1714,12 +1717,12 @@ class DiskLruCacheTest {
     }
 
     private fun assertGarbageFilesAllDeleted() {
-        assertThat(fileSystem.exists(getCleanFile("g1", 0))).isFalse
-        assertThat(fileSystem.exists(getCleanFile("g1", 1))).isFalse
-        assertThat(fileSystem.exists(getCleanFile("g2", 0))).isFalse
-        assertThat(fileSystem.exists(getCleanFile("g2", 1))).isFalse
-        assertThat(fileSystem.exists(cacheDir / "otherFile0")).isFalse
-        assertThat(fileSystem.exists(cacheDir / "dir1")).isFalse
+        assertFalse(fileSystem.exists(getCleanFile("g1", 0)))
+        assertFalse(fileSystem.exists(getCleanFile("g1", 1)))
+        assertFalse(fileSystem.exists(getCleanFile("g2", 0)))
+        assertFalse(fileSystem.exists(getCleanFile("g2", 1)))
+        assertFalse(fileSystem.exists(cacheDir / "otherFile0"))
+        assertFalse(fileSystem.exists(cacheDir / "dir1"))
     }
 
     private fun set(key: String, value0: String, value1: String) {
@@ -1735,18 +1738,18 @@ class DiskLruCacheTest {
             snapshot.close()
             fail("")
         }
-        assertThat(fileSystem.exists(getCleanFile(key, 0))).isFalse
-        assertThat(fileSystem.exists(getCleanFile(key, 1))).isFalse
-        assertThat(fileSystem.exists(getDirtyFile(key, 0))).isFalse
-        assertThat(fileSystem.exists(getDirtyFile(key, 1))).isFalse
+        assertFalse(fileSystem.exists(getCleanFile(key, 0)))
+        assertFalse(fileSystem.exists(getCleanFile(key, 1)))
+        assertFalse(fileSystem.exists(getDirtyFile(key, 0)))
+        assertFalse(fileSystem.exists(getDirtyFile(key, 1)))
     }
 
     private fun assertValue(key: String, value0: String, value1: String) {
         cache[key]!!.use { snapshot ->
             snapshot.assertValue(0, value0)
             snapshot.assertValue(1, value1)
-            assertThat(fileSystem.exists(getCleanFile(key, 0))).isTrue
-            assertThat(fileSystem.exists(getCleanFile(key, 1))).isTrue
+            assertTrue(fileSystem.exists(getCleanFile(key, 0)))
+            assertTrue(fileSystem.exists(getCleanFile(key, 1)))
         }
     }
 
