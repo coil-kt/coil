@@ -945,9 +945,8 @@ class DiskLruCacheTest {
     @Test
     fun editSameVersion() {
         set("a", "a", "a")
-        val snapshot = cache["a"]!!
-        snapshot.close()
-        val editor = cache.edit(snapshot.entry.key)!!
+        cache["a"]!!.close()
+        val editor = cache.edit("a")!!
         editor.setString(1, "a2")
         editor.commit()
         assertValue("a", "a", "a2")
@@ -956,12 +955,11 @@ class DiskLruCacheTest {
     @Test
     fun editSnapshotAfterChangeAborted() {
         set("a", "a", "a")
-        val snapshot = cache["a"]!!
-        snapshot.close()
-        val toAbort = cache.edit(snapshot.entry.key)!!
+        cache["a"]!!.close()
+        val toAbort = cache.edit("a")!!
         toAbort.setString(0, "b")
         toAbort.abort()
-        val editor = cache.edit(snapshot.entry.key)!!
+        val editor = cache.edit("a")!!
         editor.setString(1, "a2")
         editor.commit()
         assertValue("a", "a", "a2")
@@ -972,11 +970,10 @@ class DiskLruCacheTest {
         cache.close()
         createNewCache(10)
         set("a", "aa", "aaa") // size 5
-        val snapshot = cache["a"]!!
         set("b", "bb", "bbb") // size 5
         set("c", "cc", "ccc") // size 5; will evict 'A'
         cache.flush()
-        assertThat(cache.edit(snapshot.entry.key)).isNull()
+        assertThat(cache.edit("a")).isNotNull
     }
 
     @Test
@@ -984,13 +981,12 @@ class DiskLruCacheTest {
         cache.close()
         createNewCache(10)
         set("a", "aa", "aaa") // size 5
-        val snapshot = cache["a"]!!
-        snapshot.close()
+        cache["a"]!!.close()
         set("b", "bb", "bbb") // size 5
         set("c", "cc", "ccc") // size 5; will evict 'A'
         set("a", "a", "aaaa") // size 5; will evict 'B'
         cache.flush()
-        assertThat(cache.edit(snapshot.entry.key)).isNull()
+        assertThat(cache.edit("a")).isNotNull
     }
 
     @Test
