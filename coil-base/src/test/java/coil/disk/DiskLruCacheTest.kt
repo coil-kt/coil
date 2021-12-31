@@ -1024,6 +1024,7 @@ class DiskLruCacheTest {
         fileSystem.deleteRecursively(cacheDir)
         a.setString(1, "a2")
         a.commit()
+        assertValue("a", "", "a2")
     }
 
     /** https://github.com/JakeWharton/DiskLruCache/issues/2 */
@@ -1745,9 +1746,9 @@ class DiskLruCacheTest {
     }
 
     private fun assertValue(key: String, value0: String, value1: String) {
-        cache[key]!!.use {
-            it.assertValue(0, value0)
-            it.assertValue(1, value1)
+        cache[key]!!.use { snapshot ->
+            snapshot.assertValue(0, value0)
+            snapshot.assertValue(1, value1)
             assertThat(fileSystem.exists(getCleanFile(key, 0))).isTrue
             assertThat(fileSystem.exists(getCleanFile(key, 1))).isTrue
         }

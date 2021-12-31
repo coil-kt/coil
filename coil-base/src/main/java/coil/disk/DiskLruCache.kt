@@ -456,6 +456,14 @@ internal class DiskLruCache(
         check(entry.currentEditor == editor)
 
         if (success && !entry.zombie) {
+            // Ensure all files that have been written to have an associated dirty file.
+            for (i in 0 until valueCount) {
+                if (editor.written[i] && !fileSystem.exists(entry.dirtyFiles[i])) {
+                    editor.abort()
+                    return
+                }
+            }
+
             // Replace the clean files with the dirty ones.
             for (i in 0 until valueCount) {
                 val dirty = entry.dirtyFiles[i]
@@ -486,7 +494,7 @@ internal class DiskLruCache(
 
         operationsSinceRewrite++
         journalWriter!!.apply {
-            if (entry.readable || success) {
+            if (success || entry.readable) {
                 entry.readable = true
                 writeUtf8(CLEAN)
                 writeByte(' '.code)
@@ -717,12 +725,18 @@ internal class DiskLruCache(
         private var closed = false
 
         /**
+         * True for a given index if that index's file has been written to.
+         */
+        val written = BooleanArray(valueCount)
+
+        /**
          * Get the file to read from/write to for [index].
          * This file will become the new value for this index if committed.
          */
         fun file(index: Int): Path {
             synchronized(this@DiskLruCache) {
                 check(!closed) { "editor is closed" }
+                written[index] = true
                 return entry.dirtyFiles[index].also(fileSystem::createFile)
             }
         }
