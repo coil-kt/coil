@@ -9,7 +9,6 @@ import androidx.core.graphics.createBitmap
 import androidx.exifinterface.media.ExifInterface
 import java.io.InputStream
 
-
 internal object Exif {
 
     /**
