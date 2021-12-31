@@ -24,7 +24,6 @@ import okio.Path.Companion.toPath
 import okio.Source
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -32,6 +31,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -643,7 +643,7 @@ class DiskLruCacheTest {
     fun readingTheSameFileMultipleTimes() {
         set("a", "a", "b")
         val snapshot = cache["a"]!!
-        assertThat(snapshot.file(0)).isSameAs(snapshot.file(0))
+        assertSame(snapshot.file(0), snapshot.file(0))
         snapshot.close()
     }
 
@@ -1468,8 +1468,7 @@ class DiskLruCacheTest {
         assertNull(snapshotWhileEditing) // entry still is being created/edited
         creator.commit()
         val snapshotAfterCommit = cache["k1"]
-        assertThat(snapshotAfterCommit)
-            .withFailMessage("Entry has been removed during creation.").isNotNull
+        assertNotNull(snapshotAfterCommit, "Entry has been removed during creation.")
     }
 
     @Test
@@ -1629,9 +1628,9 @@ class DiskLruCacheTest {
     }
 
     private fun assertJournalEquals(vararg expectedBodyLines: String) {
-        assertThat(readJournalLines()).isEqualTo(
-            listOf(DiskLruCache.MAGIC, DiskLruCache.VERSION, "100", "2", "") + expectedBodyLines
-        )
+        val actual = readJournalLines()
+        val expected = listOf(DiskLruCache.MAGIC, DiskLruCache.VERSION, "100", "2", "") + expectedBodyLines
+        assertEquals(expected, actual)
     }
 
     private fun createJournal(vararg bodyLines: String) {
