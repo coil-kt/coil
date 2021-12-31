@@ -68,57 +68,7 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         // Always create immutable bitmaps as they have performance benefits.
         inMutable = false
 
-        if (options.size.isOriginal && source.metadata is ResourceMetadata) {
-            inScaled = true
-            // Read the resource density if available
-            inDensity = (source.metadata as ResourceMetadata).density
-            inTargetDensity = options.context.resources.displayMetrics.densityDpi
-            // Clear outWidth and outHeight so that BitmapFactory will handle scaling itself.
-            outWidth = 0
-            outHeight = 0
-        } else if (outWidth > 0 && outHeight > 0) {
-            val (width, height) = options.size
-            val dstWidth = width.pxOrElse { srcWidth }
-            val dstHeight = height.pxOrElse { srcHeight }
-            inSampleSize = DecodeUtils.calculateInSampleSize(
-                srcWidth = srcWidth,
-                srcHeight = srcHeight,
-                dstWidth = dstWidth,
-                dstHeight = dstHeight,
-                scale = options.scale
-            )
-
-            // Calculate the image's density scaling multiple.
-            var scale = DecodeUtils.computeSizeMultiplier(
-                srcWidth = srcWidth / inSampleSize.toDouble(),
-                srcHeight = srcHeight / inSampleSize.toDouble(),
-                dstWidth = dstWidth.toDouble(),
-                dstHeight = dstHeight.toDouble(),
-                scale = options.scale
-            )
-
-            // Only upscale the image if the options require an exact size.
-            if (options.allowInexactSize) {
-                scale = scale.coerceAtMost(1.0)
-            }
-
-            inScaled = scale != 1.0
-            if (inScaled) {
-                if (scale > 1) {
-                    // Upscale
-                    inDensity = (Int.MAX_VALUE / scale).roundToInt()
-                    inTargetDensity = Int.MAX_VALUE
-                } else {
-                    // Downscale
-                    inDensity = Int.MAX_VALUE
-                    inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
-                }
-            }
-        } else {
-            // This occurs if there was an error decoding the image's size.
-            inSampleSize = 1
-            inScaled = false
-        }
+        configureScale(srcWidth, srcHeight)
 
         // Decode the bitmap.
         val outBitmap: Bitmap? = safeBufferedSource.use {
@@ -166,6 +116,71 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         }
 
         return config
+    }
+
+    /**
+     * Configure scaling of the output bitmap by considering density, sample size and the given
+     * scaling algorithm.
+     */
+    private fun BitmapFactory.Options.configureScale(
+        srcWidth: Int,
+        srcHeight: Int
+    ) {
+        when {
+            options.size.isOriginal && source.metadata is ResourceMetadata -> {
+                inScaled = true
+                // Read the resource density if available
+                inDensity = (source.metadata as ResourceMetadata).density
+                inTargetDensity = options.context.resources.displayMetrics.densityDpi
+                // Clear outWidth and outHeight so that BitmapFactory will handle scaling itself.
+                outWidth = 0
+                outHeight = 0
+            }
+            outWidth > 0 && outHeight > 0 -> {
+                val (width, height) = options.size
+                val dstWidth = width.pxOrElse { srcWidth }
+                val dstHeight = height.pxOrElse { srcHeight }
+                inSampleSize = DecodeUtils.calculateInSampleSize(
+                    srcWidth = srcWidth,
+                    srcHeight = srcHeight,
+                    dstWidth = dstWidth,
+                    dstHeight = dstHeight,
+                    scale = options.scale
+                )
+
+                // Calculate the image's density scaling multiple.
+                var scale = DecodeUtils.computeSizeMultiplier(
+                    srcWidth = srcWidth / inSampleSize.toDouble(),
+                    srcHeight = srcHeight / inSampleSize.toDouble(),
+                    dstWidth = dstWidth.toDouble(),
+                    dstHeight = dstHeight.toDouble(),
+                    scale = options.scale
+                )
+
+                // Only upscale the image if the options require an exact size.
+                if (options.allowInexactSize) {
+                    scale = scale.coerceAtMost(1.0)
+                }
+
+                inScaled = scale != 1.0
+                if (inScaled) {
+                    if (scale > 1) {
+                        // Upscale
+                        inDensity = (Int.MAX_VALUE / scale).roundToInt()
+                        inTargetDensity = Int.MAX_VALUE
+                    } else {
+                        // Downscale
+                        inDensity = Int.MAX_VALUE
+                        inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
+                    }
+                }
+            }
+            else -> {
+                // This occurs if there was an error decoding the image's size.
+                inSampleSize = 1
+                inScaled = false
+            }
+        }
     }
 
     class Factory @JvmOverloads constructor(
