@@ -31,15 +31,6 @@ fun assumeTrue(actual: Boolean, message: String = "") {
     }
 }
 
-/** Alias for [Assume.assumeFalse]. */
-fun assumeFalse(actual: Boolean, message: String = "") {
-    if (message.isBlank()) {
-        Assume.assumeFalse(actual)
-    } else {
-        Assume.assumeFalse(message, actual)
-    }
-}
-
 fun createMockWebServer(vararg images: String): MockWebServer {
     val server = MockWebServer()
     images.forEach { server.enqueueImage(it) }
