@@ -13,12 +13,14 @@ import coil.util.scale
  * A [Transition] that crossfades from the current drawable to a new one.
  *
  * @param durationMillis The duration of the animation in milliseconds.
+ * @param fadeStart See [CrossfadeDrawable.fadeStart].
  * @param preferExactIntrinsicSize See [CrossfadeDrawable.preferExactIntrinsicSize].
  */
 class CrossfadeTransition @JvmOverloads constructor(
     private val target: TransitionTarget,
     private val result: ImageResult,
     val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
+    val fadeStart: Boolean = true,
     val preferExactIntrinsicSize: Boolean = false
 ) : Transition {
 
@@ -32,7 +34,7 @@ class CrossfadeTransition @JvmOverloads constructor(
             end = result.drawable,
             scale = (target.view as? ImageView)?.scale ?: Scale.FIT,
             durationMillis = durationMillis,
-            fadeStart = !(result is SuccessResult && result.isPlaceholderCached),
+            fadeStart = fadeStart && !(result is SuccessResult && result.isPlaceholderCached),
             preferExactIntrinsicSize = preferExactIntrinsicSize
         )
         when (result) {
@@ -43,6 +45,7 @@ class CrossfadeTransition @JvmOverloads constructor(
 
     class Factory @JvmOverloads constructor(
         val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
+        val fadeStart: Boolean = true,
         val preferExactIntrinsicSize: Boolean = false
     ) : Transition.Factory {
 
@@ -61,7 +64,13 @@ class CrossfadeTransition @JvmOverloads constructor(
                 return Transition.Factory.NONE.create(target, result)
             }
 
-            return CrossfadeTransition(target, result, durationMillis, preferExactIntrinsicSize)
+            return CrossfadeTransition(
+                target = target,
+                result = result,
+                durationMillis = durationMillis,
+                fadeStart = fadeStart,
+                preferExactIntrinsicSize = preferExactIntrinsicSize
+            )
         }
 
         override fun equals(other: Any?): Boolean {

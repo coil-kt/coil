@@ -880,8 +880,10 @@ public final class coil/transition/CrossfadeTransition : coil/transition/Transit
 	public fun <init> (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;)V
 	public fun <init> (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;I)V
 	public fun <init> (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZ)V
-	public synthetic fun <init> (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZZ)V
+	public synthetic fun <init> (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDurationMillis ()I
+	public final fun getFadeStart ()Z
 	public final fun getPreferExactIntrinsicSize ()Z
 	public fun transition ()V
 }
@@ -890,10 +892,12 @@ public final class coil/transition/CrossfadeTransition$Factory : coil/transition
 	public fun <init> ()V
 	public fun <init> (I)V
 	public fun <init> (IZ)V
-	public synthetic fun <init> (IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IZZ)V
+	public synthetic fun <init> (IZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;)Lcoil/transition/Transition;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDurationMillis ()I
+	public final fun getFadeStart ()Z
 	public final fun getPreferExactIntrinsicSize ()Z
 	public fun hashCode ()I
 }

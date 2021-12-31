@@ -298,7 +298,7 @@ private fun updatePainter(
         end = painter,
         scale = request.scale,
         durationMillis = transition.durationMillis,
-        fadeStart = !state.result.isPlaceholderCached,
+        fadeStart = transition.fadeStart && !state.result.isPlaceholderCached,
         preferExactIntrinsicSize = transition.preferExactIntrinsicSize
     )
 }
