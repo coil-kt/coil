@@ -28,6 +28,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -114,35 +115,35 @@ class DiskLruCacheTest {
             cache.edit(key)
             fail("Expecting an IllegalArgumentException as the key was invalid.")
         } catch (iae: IllegalArgumentException) {
-            assertThat(iae.message).isEqualTo("keys must match regex [a-z0-9_-]{1,120}: \"$key\"")
+            assertEquals("keys must match regex [a-z0-9_-]{1,120}: \"$key\"", iae.message)
         }
         try {
             key = "has_CR\r"
             cache.edit(key)
             fail("Expecting an IllegalArgumentException as the key was invalid.")
         } catch (iae: IllegalArgumentException) {
-            assertThat(iae.message).isEqualTo("keys must match regex [a-z0-9_-]{1,120}: \"$key\"")
+            assertEquals("keys must match regex [a-z0-9_-]{1,120}: \"$key\"", iae.message)
         }
         try {
             key = "has_LF\n"
             cache.edit(key)
             fail("Expecting an IllegalArgumentException as the key was invalid.")
         } catch (iae: IllegalArgumentException) {
-            assertThat(iae.message).isEqualTo("keys must match regex [a-z0-9_-]{1,120}: \"$key\"")
+            assertEquals("keys must match regex [a-z0-9_-]{1,120}: \"$key\"", iae.message)
         }
         try {
             key = "has_invalid/"
             cache.edit(key)
             fail("Expecting an IllegalArgumentException as the key was invalid.")
         } catch (iae: IllegalArgumentException) {
-            assertThat(iae.message).isEqualTo("keys must match regex [a-z0-9_-]{1,120}: \"$key\"")
+            assertEquals("keys must match regex [a-z0-9_-]{1,120}: \"$key\"", iae.message)
         }
         try {
             key = "has_invalid\u2603"
             cache.edit(key)
             fail("Expecting an IllegalArgumentException as the key was invalid.")
         } catch (iae: IllegalArgumentException) {
-            assertThat(iae.message).isEqualTo("keys must match regex [a-z0-9_-]{1,120}: \"$key\"")
+            assertEquals("keys must match regex [a-z0-9_-]{1,120}: \"$key\"", iae.message)
         }
         try {
             key = ("this_is_way_too_long_this_is_way_too_long_this_is_way_too_long_" +
@@ -150,7 +151,7 @@ class DiskLruCacheTest {
             cache.edit(key)
             fail("Expecting an IllegalArgumentException as the key was too long.")
         } catch (iae: IllegalArgumentException) {
-            assertThat(iae.message).isEqualTo("keys must match regex [a-z0-9_-]{1,120}: \"$key\"")
+            assertEquals("keys must match regex [a-z0-9_-]{1,120}: \"$key\"", iae.message)
         }
 
         // Test valid cases.
@@ -296,7 +297,7 @@ class DiskLruCacheTest {
         editor.setString(1, "B")
         editor.commit()
         val k1 = getCleanFile("k1", 0)
-        assertThat(readFile(k1)).isEqualTo("ABC")
+        assertEquals("ABC", readFile(k1))
         cache.remove("k1")
         assertFalse(fileSystem.exists(k1))
     }
@@ -500,12 +501,12 @@ class DiskLruCacheTest {
         createNewCache(10)
         set("a", "a", "aaa") // size 4
         set("b", "bb", "bbbb") // size 6
-        assertThat(cache.size()).isEqualTo(10)
+        assertEquals(10, cache.size())
 
         // Cause the size to grow to 12 should evict 'A'.
         set("c", "c", "c")
         cache.flush()
-        assertThat(cache.size()).isEqualTo(8)
+        assertEquals(8, cache.size())
         assertAbsent("a")
         assertValue("b", "bb", "bbbb")
         assertValue("c", "c", "c")
@@ -513,7 +514,7 @@ class DiskLruCacheTest {
         // Causing the size to grow to 10 should evict nothing.
         set("d", "d", "d")
         cache.flush()
-        assertThat(cache.size()).isEqualTo(10)
+        assertEquals(10, cache.size())
         assertAbsent("a")
         assertValue("b", "bb", "bbbb")
         assertValue("c", "c", "c")
@@ -522,7 +523,7 @@ class DiskLruCacheTest {
         // Causing the size to grow to 18 should evict 'B' and 'C'.
         set("e", "eeee", "eeee")
         cache.flush()
-        assertThat(cache.size()).isEqualTo(10)
+        assertEquals(10, cache.size())
         assertAbsent("a")
         assertAbsent("b")
         assertAbsent("c")
@@ -537,12 +538,12 @@ class DiskLruCacheTest {
         set("a", "a", "aa") // size 3
         set("b", "b", "bb") // size 3
         set("c", "c", "cc") // size 3
-        assertThat(cache.size()).isEqualTo(9)
+        assertEquals(9, cache.size())
 
         // Causing the size to grow to 11 should evict 'A'.
         set("b", "b", "bbbb")
         cache.flush()
-        assertThat(cache.size()).isEqualTo(8)
+        assertEquals(8, cache.size())
         assertAbsent("a")
         assertValue("b", "b", "bbbb")
         assertValue("c", "c", "cc")
@@ -564,7 +565,7 @@ class DiskLruCacheTest {
         // Causing the size to grow to 12 should evict 'C'.
         set("g", "g", "g")
         cache.flush()
-        assertThat(cache.size()).isEqualTo(10)
+        assertEquals(10, cache.size())
         assertAbsent("a")
         assertValue("b", "b", "b")
         assertAbsent("c")
@@ -582,12 +583,12 @@ class DiskLruCacheTest {
         set("e", "e", "e")
         set("f", "f", "f")
         cache["b"]!!.close() // 'B' is now least recently used.
-        assertThat(cache.size()).isEqualTo(12)
+        assertEquals(12, cache.size())
         cache.close()
         createNewCache(10)
         set("g", "g", "g")
         cache.flush()
-        assertThat(cache.size()).isEqualTo(10)
+        assertEquals(10, cache.size())
         assertAbsent("a")
         assertValue("b", "b", "b")
         assertAbsent("c")
@@ -790,7 +791,7 @@ class DiskLruCacheTest {
         // Although 'c' successfully committed above, the journal wasn't available to issue a CLEAN op.
         // Because the last state of 'c' was DIRTY before the journal failed, it should be removed
         // entirely on a subsequent open.
-        assertThat(cache.size()).isEqualTo(4)
+        assertEquals(4, cache.size())
         assertAbsent("c")
         assertAbsent("d")
         assertAbsent("e")
@@ -833,9 +834,9 @@ class DiskLruCacheTest {
         // The journal will have no record that 'a' was removed. It will have an entry for 'a', but when
         // it tries to read the cache files, it will find they were deleted. Once it encounters an entry
         // with missing cache files, it should remove it from the cache entirely.
-        assertThat(cache.size()).isEqualTo(4)
+        assertEquals(4, cache.size())
         assertNull(cache["a"])
-        assertThat(cache.size()).isEqualTo(2)
+        assertEquals(2, cache.size())
     }
 
     @Test
@@ -849,7 +850,7 @@ class DiskLruCacheTest {
         fileSystem.setFaultyRename(journalFileBackup, true)
         dispatcher.runNextTask()
         cache.evictAll()
-        assertThat(cache.size()).isEqualTo(0)
+        assertEquals(0, cache.size())
         assertAbsent("a")
         assertAbsent("b")
         cache.close()
@@ -858,10 +859,10 @@ class DiskLruCacheTest {
         // The journal has no record that 'a' and 'b' were removed. It will have an entry for both, but
         // when it tries to read the cache files for either entry, it will discover the cache files are
         // missing and remove the entries from the cache.
-        assertThat(cache.size()).isEqualTo(4)
+        assertEquals(4, cache.size())
         assertNull(cache["a"])
         assertNull(cache["b"])
-        assertThat(cache.size()).isEqualTo(0)
+        assertEquals(0, cache.size())
     }
 
     @Test
@@ -942,7 +943,7 @@ class DiskLruCacheTest {
         set("a", "a", "a")
         fileSystem.delete(getCleanFile("a", 1))
         assertNull(cache["a"])
-        assertThat(cache.size()).isEqualTo(0)
+        assertEquals(0, cache.size())
     }
 
     @Test
@@ -1053,15 +1054,15 @@ class DiskLruCacheTest {
         a.setString(0, "a123")
         cache.maxSize = 8 // Smaller than the sum of active edits!
         cache.flush() // Force trimToSize().
-        assertThat(cache.size()).isEqualTo(expectedByteCount)
-        assertThat(readFileOrNull(getCleanFile("a", 0))).isEqualTo(afterRemoveFileContents)
-        assertThat(readFileOrNull(getCleanFile("a", 1))).isEqualTo(afterRemoveFileContents)
+        assertEquals(expectedByteCount, cache.size())
+        assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("a", 0)))
+        assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("a", 1)))
 
         // After the edit is completed, its entry is still gone.
         a.setString(1, "a1")
         a.commit()
         assertAbsent("a")
-        assertThat(cache.size()).isEqualTo(0)
+        assertEquals(0, cache.size())
     }
 
     @Test
@@ -1069,7 +1070,7 @@ class DiskLruCacheTest {
         set("a", "a", "a")
         set("b", "b", "b")
         cache.evictAll()
-        assertThat(cache.size()).isEqualTo(0)
+        assertEquals(0, cache.size())
         assertAbsent("a")
         assertAbsent("b")
     }
@@ -1080,7 +1081,7 @@ class DiskLruCacheTest {
         a.setString(0, "a1")
         a.setString(1, "a2")
         cache.evictAll()
-        assertThat(cache.size()).isEqualTo(0)
+        assertEquals(0, cache.size())
         a.commit()
         assertAbsent("a")
     }
@@ -1094,7 +1095,7 @@ class DiskLruCacheTest {
         a.setString(0, "a1")
         a.setString(1, "a2")
         cache.evictAll()
-        assertThat(cache.size()).isEqualTo(expectedByteCount)
+        assertEquals(expectedByteCount, cache.size())
         a.commit()
         assertAbsent("a")
     }
@@ -1108,12 +1109,12 @@ class DiskLruCacheTest {
         cache["a"]!!.use {
             it.assertValue(0, "a")
             cache.evictAll()
-            assertThat(cache.size()).isEqualTo(expectedByteCount)
-            assertThat(readFileOrNull(getCleanFile("a", 0))).isEqualTo(afterRemoveFileContents)
-            assertThat(readFileOrNull(getCleanFile("a", 1))).isEqualTo(afterRemoveFileContents)
+            assertEquals(expectedByteCount, cache.size())
+            assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("a", 0)))
+            assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("a", 1)))
             it.assertValue(1, "a")
         }
-        assertThat(cache.size()).isEqualTo(0L)
+        assertEquals(0L, cache.size())
     }
 
     @Test
@@ -1124,12 +1125,12 @@ class DiskLruCacheTest {
         set("a", "a", "a")
         cache["a"]!!.use { snapshot ->
             cache.evictAll()
-            assertThat(cache.size()).isEqualTo(expectedByteCount)
-            assertThat(readFileOrNull(getCleanFile("a", 0))).isEqualTo(afterRemoveFileContents)
-            assertThat(readFileOrNull(getCleanFile("a", 1))).isEqualTo(afterRemoveFileContents)
+            assertEquals(expectedByteCount, cache.size())
+            assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("a", 0)))
+            assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("a", 1)))
             assertNull(cache.edit(snapshot.entry.key))
         }
-        assertThat(cache.size()).isEqualTo(0L)
+        assertEquals(0L, cache.size())
     }
 
     @Test
@@ -1454,7 +1455,7 @@ class DiskLruCacheTest {
         val editor = cache.edit("k1")!!
         cache.evictAll()
         editor.abort()
-        assertThat(cache.size()).isEqualTo(0)
+        assertEquals(0, cache.size())
         assertAbsent("k1")
     }
 
@@ -1509,12 +1510,12 @@ class DiskLruCacheTest {
             cache.remove("k1")
 
             // On Windows files still exist with open with 2 open sources.
-            assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
+            assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("k1", 0)))
             assertNull(readFileOrNull(getDirtyFile("k1", 0)))
 
             // On Windows files still exist with open with 1 open source.
             snapshot.assertValue(0, "a")
-            assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
+            assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("k1", 0)))
             assertNull(readFileOrNull(getDirtyFile("k1", 0)))
 
             // On all platforms files are deleted when all sources are closed.
@@ -1535,7 +1536,7 @@ class DiskLruCacheTest {
         assertNull(cache["k1"])
 
         // On Windows files still exist while being edited.
-        assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
+        assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("k1", 0)))
         assertNull(readFileOrNull(getDirtyFile("k1", 0)))
 
         // On all platforms files are deleted when the edit completes.
@@ -1572,7 +1573,7 @@ class DiskLruCacheTest {
 
             // After we close the cache the files continue to exist!
             cache.close()
-            assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveFileContents)
+            assertEquals(afterRemoveFileContents, readFileOrNull(getCleanFile("k1", 0)))
             assertNull(readFileOrNull(getDirtyFile("k1", 0)))
 
             // But they disappear when the sources are closed.
@@ -1596,8 +1597,8 @@ class DiskLruCacheTest {
 
         // After we close the cache the files continue to exist!
         cache.close()
-        assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveCleanFileContents)
-        assertThat(readFileOrNull(getDirtyFile("k1", 0))).isEqualTo(afterRemoveDirtyFileContents)
+        assertEquals(afterRemoveCleanFileContents, readFileOrNull(getCleanFile("k1", 0)))
+        assertEquals(afterRemoveDirtyFileContents, readFileOrNull(getDirtyFile("k1", 0)))
 
         // But they disappear when the edit completes.
         sink0.close()
@@ -1618,8 +1619,8 @@ class DiskLruCacheTest {
 
         // After we close the cache the files continue to exist!
         cache.close()
-        assertThat(readFileOrNull(getCleanFile("k1", 0))).isEqualTo(afterRemoveCleanFileContents)
-        assertThat(readFileOrNull(getDirtyFile("k1", 0))).isEqualTo(afterRemoveDirtyFileContents)
+        assertEquals(afterRemoveCleanFileContents, readFileOrNull(getCleanFile("k1", 0)))
+        assertEquals(afterRemoveDirtyFileContents, readFileOrNull(getDirtyFile("k1", 0)))
 
         // But they disappear when the edit completes.
         editor.commit()
@@ -1755,8 +1756,8 @@ class DiskLruCacheTest {
 
     private fun Snapshot.assertValue(index: Int, value: String) {
         getSource(index).use { source ->
-            assertThat(sourceAsString(source)).isEqualTo(value)
-            assertThat(entry.lengths[index]).isEqualTo(value.length.toLong())
+            assertEquals(value, sourceAsString(source))
+            assertEquals(value.length.toLong(), entry.lengths[index])
         }
     }
 
