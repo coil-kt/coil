@@ -15,7 +15,9 @@
  */
 package coil.disk
 
+import androidx.annotation.VisibleForTesting
 import coil.disk.DiskLruCache.Editor
+import coil.util.createFile
 import coil.util.deleteContents
 import coil.util.forEachIndices
 import kotlinx.coroutines.CoroutineDispatcher
@@ -34,7 +36,7 @@ import okio.Path
 import okio.Sink
 import okio.blackholeSink
 import okio.buffer
-import java.io.File
+import java.io.Flushable
 
 /**
  * A cache that uses a bounded amount of space on a filesystem. Each cache entry has a string key
@@ -80,14 +82,15 @@ import java.io.File
  * @param valueCount the number of values per cache entry. Must be positive.
  * @param maxSize the maximum number of bytes this cache should use to store.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class DiskLruCache(
     fileSystem: FileSystem,
     private val directory: Path,
     cleanupDispatcher: CoroutineDispatcher,
     private val maxSize: Long,
     private val appVersion: Int,
-    private val valueCount: Int
-) : Closeable {
+    private val valueCount: Int,
+) : Closeable, Flushable {
 
     /*
      * This cache uses a journal file named "journal". A typical journal file looks like this:
@@ -129,11 +132,16 @@ internal class DiskLruCache(
      * compaction; that file should be deleted if it exists when the cache is opened.
      */
 
+    init {
+        require(maxSize > 0L) { "maxSize <= 0" }
+        require(valueCount > 0) { "valueCount <= 0" }
+    }
+
     private val journalFile = directory / JOURNAL_FILE
     private val journalFileTmp = directory / JOURNAL_FILE_TMP
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
     private val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
-
+    private val cleanupScope = CoroutineScope(SupervisorJob() + cleanupDispatcher.limitedParallelism(1))
     private var size = 0L
     private var operationsSinceRewrite = 0
     private var journalWriter: BufferedSink? = null
@@ -143,25 +151,16 @@ internal class DiskLruCache(
     private var mostRecentTrimFailed = false
     private var mostRecentRebuildFailed = false
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val cleanupScope = CoroutineScope(SupervisorJob() +
-        cleanupDispatcher.limitedParallelism(1))
-
     private val fileSystem = object : ForwardingFileSystem(fileSystem) {
         override fun sink(file: Path, mustCreate: Boolean): Sink {
-            // Ensure the parent directory for the file exists.
+            // Ensure the parent directory exists.
             file.parent?.let(::createDirectories)
             return super.sink(file, mustCreate)
         }
     }
 
-    init {
-        require(maxSize > 0L) { "maxSize <= 0" }
-        require(valueCount > 0) { "valueCount <= 0" }
-    }
-
     @Synchronized
-    private fun initialize() {
+    fun initialize() {
         if (initialized) return
 
         // If a temporary file exists, delete it.
@@ -362,9 +361,9 @@ internal class DiskLruCache(
      */
     @Synchronized
     operator fun get(key: String): Snapshot? {
-        initialize()
         checkNotClosed()
         validateKey(key)
+        initialize()
 
         val snapshot = lruEntries[key]?.snapshot() ?: return null
 
@@ -386,9 +385,9 @@ internal class DiskLruCache(
     /** Returns an editor for the entry named [key], or null if another edit is in progress. */
     @Synchronized
     fun edit(key: String): Editor? {
-        initialize()
         checkNotClosed()
         validateKey(key)
+        initialize()
 
         var entry = lruEntries[key]
 
@@ -447,26 +446,34 @@ internal class DiskLruCache(
         val entry = editor.entry
         check(entry.currentEditor == editor)
 
-        for (i in 0 until valueCount) {
-            val dirty = entry.dirtyFiles[i]
-            if (success && !entry.zombie) {
-                if (fileSystem.exists(dirty)) {
-                    val clean = entry.cleanFiles[i]
-                    fileSystem.atomicMove(dirty, clean)
-                    val oldLength = entry.lengths[i]
-                    val newLength = fileSystem.metadata(clean).size ?: 0
-                    entry.lengths[i] = newLength
-                    size = size - oldLength + newLength
-                }
-            } else {
-                fileSystem.delete(dirty)
-            }
-        }
-
-        // Ensure every entry is complete.
-        if (success) {
+        if (success && !entry.zombie) {
+            // Ensure all files that have been written to have an associated dirty file.
             for (i in 0 until valueCount) {
-                entry.cleanFiles[i].toFile().createNewFile()
+                if (editor.written[i] && !fileSystem.exists(entry.dirtyFiles[i])) {
+                    editor.abort()
+                    return
+                }
+            }
+
+            // Replace the clean files with the dirty ones.
+            for (i in 0 until valueCount) {
+                val dirty = entry.dirtyFiles[i]
+                val clean = entry.cleanFiles[i]
+                if (fileSystem.exists(dirty)) {
+                    fileSystem.atomicMove(dirty, clean)
+                } else {
+                    // Ensure every entry is complete.
+                    fileSystem.createFile(entry.cleanFiles[i])
+                }
+                val oldLength = entry.lengths[i]
+                val newLength = fileSystem.metadata(clean).size ?: 0
+                entry.lengths[i] = newLength
+                size = size - oldLength + newLength
+            }
+        } else {
+            // Discard any dirty files.
+            for (i in 0 until valueCount) {
+                fileSystem.delete(entry.dirtyFiles[i])
             }
         }
 
@@ -478,7 +485,7 @@ internal class DiskLruCache(
 
         operationsSinceRewrite++
         journalWriter!!.apply {
-            if (entry.readable || success) {
+            if (success || entry.readable) {
                 entry.readable = true
                 writeUtf8(CLEAN)
                 writeByte(' '.code)
@@ -513,9 +520,9 @@ internal class DiskLruCache(
      */
     @Synchronized
     fun remove(key: String): Boolean {
-        initialize()
         checkNotClosed()
         validateKey(key)
+        initialize()
 
         val entry = lruEntries[key] ?: return false
         val removed = removeEntry(entry)
@@ -591,6 +598,15 @@ internal class DiskLruCache(
         journalWriter!!.close()
         journalWriter = null
         closed = true
+    }
+
+    @Synchronized
+    override fun flush() {
+        if (!initialized) return
+
+        checkNotClosed()
+        trimToSize()
+        journalWriter!!.flush()
     }
 
     private fun trimToSize() {
@@ -669,9 +685,9 @@ internal class DiskLruCache(
 
         private var closed = false
 
-        fun file(index: Int): File {
+        fun file(index: Int): Path {
             check(!closed) { "snapshot is closed" }
-            return entry.cleanFiles[index].toFile()
+            return entry.cleanFiles[index]
         }
 
         override fun close() {
@@ -700,13 +716,19 @@ internal class DiskLruCache(
         private var closed = false
 
         /**
+         * True for a given index if that index's file has been written to.
+         */
+        val written = BooleanArray(valueCount)
+
+        /**
          * Get the file to read from/write to for [index].
          * This file will become the new value for this index if committed.
          */
-        fun file(index: Int): File {
+        fun file(index: Int): Path {
             synchronized(this@DiskLruCache) {
                 check(!closed) { "editor is closed" }
-                return entry.dirtyFiles[index].toFile().apply { createNewFile() }
+                written[index] = true
+                return entry.dirtyFiles[index].also(fileSystem::createFile)
             }
         }
 
@@ -838,11 +860,11 @@ internal class DiskLruCache(
     }
 
     companion object {
-        private const val JOURNAL_FILE = "journal"
-        private const val JOURNAL_FILE_TMP = "journal.tmp"
-        private const val JOURNAL_FILE_BACKUP = "journal.bkp"
-        private const val MAGIC = "libcore.io.DiskLruCache"
-        private const val VERSION = "1"
+        @VisibleForTesting internal const val JOURNAL_FILE = "journal"
+        @VisibleForTesting internal const val JOURNAL_FILE_TMP = "journal.tmp"
+        @VisibleForTesting internal const val JOURNAL_FILE_BACKUP = "journal.bkp"
+        @VisibleForTesting internal const val MAGIC = "libcore.io.DiskLruCache"
+        @VisibleForTesting internal const val VERSION = "1"
         private const val CLEAN = "CLEAN"
         private const val DIRTY = "DIRTY"
         private const val REMOVE = "REMOVE"

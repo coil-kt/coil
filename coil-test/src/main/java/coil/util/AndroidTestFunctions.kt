@@ -8,16 +8,6 @@ import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import org.junit.Assume
-
-/** Alias for [Assume.assumeTrue]. */
-fun assumeTrue(actual: Boolean, message: String = "") {
-    if (message.isBlank()) {
-        Assume.assumeTrue(actual)
-    } else {
-        Assume.assumeTrue(message, actual)
-    }
-}
 
 /** Launch [TestActivity] and invoke [action]. */
 fun withTestActivity(action: ActivityAction<TestActivity>) {

@@ -27,7 +27,6 @@ internal class FaultHidingSink(
     }
 
     override fun flush() {
-        if (hasErrors) return
         try {
             super.flush()
         } catch (e: IOException) {
@@ -37,7 +36,6 @@ internal class FaultHidingSink(
     }
 
     override fun close() {
-        if (hasErrors) return
         try {
             super.close()
         } catch (e: IOException) {
