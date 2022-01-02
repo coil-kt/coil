@@ -21,6 +21,7 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import coil.request.SuccessResult
+import coil.request.Tags
 import coil.size.Precision
 import coil.size.Size
 import coil.util.ASSET_FILE_PATH_ROOT
@@ -31,6 +32,7 @@ import coil.util.decodeBitmapAsset
 import coil.util.enqueueImage
 import coil.util.getDrawableCompat
 import coil.util.isMainThread
+import coil.util.runTestAsync
 import coil.util.runTestMain
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -475,6 +477,31 @@ class RealImageLoaderAndroidTest {
 
         assertIs<SuccessResult>(result)
         assertNull(result.diskCacheKey)
+    }
+
+    @Test
+    fun requestTagsArePassedToOkHttpInterceptor() = runTestAsync {
+        val tags = Tags.from(mapOf(
+            Map::class.java to emptyMap<String, String>(),
+            String::class.java to "test"
+        ))
+        val callFactory = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                tags.asMap().forEach { (key, value) ->
+                    assertEquals(value, chain.request().tag(key))
+                }
+                chain.proceed(chain.request())
+            }
+            .build()
+        val imageLoader = ImageLoader.Builder(context).callFactory(callFactory).build()
+
+        server.enqueueImage(IMAGE)
+        val request = ImageRequest.Builder(context)
+            .data(server.url(IMAGE).toString())
+            .tags(tags)
+            .build()
+        val result = imageLoader.execute(request)
+        if (result is ErrorResult) throw result.throwable
     }
 
     private suspend fun testEnqueue(data: Any, expectedSize: Size = Size(80, 100)) {

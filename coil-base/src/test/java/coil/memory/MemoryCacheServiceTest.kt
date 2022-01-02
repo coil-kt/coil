@@ -501,7 +501,7 @@ class MemoryCacheServiceTest {
 
     private fun createFakeParameters(): Parameters {
         return Parameters.Builder()
-            .set("key1", "no_cache", cacheKey = null)
+            .set("key1", "no_cache", memoryCacheKey = null)
             .set("key2", "cached2")
             .set("key3", "cached3")
             .build()
@@ -527,7 +527,7 @@ class MemoryCacheServiceTest {
         size: Size = Size.ORIGINAL,
         parameters: Parameters = Parameters.EMPTY
     ): MemoryCache.Key {
-        val extras = parameters.cacheKeys().toMutableMap()
+        val extras = parameters.memoryCacheKeys().toMutableMap()
         if (transformations.isNotEmpty()) {
             transformations.forEachIndexedIndices { index, transformation ->
                 extras[EXTRA_TRANSFORMATION_INDEX + index] = transformation.cacheKey

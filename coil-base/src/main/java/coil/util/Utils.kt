@@ -37,6 +37,7 @@ import coil.intercept.RealInterceptorChain
 import coil.memory.MemoryCache
 import coil.request.DefaultRequestOptions
 import coil.request.Parameters
+import coil.request.Tags
 import coil.request.ViewTargetRequestManager
 import coil.size.Dimension
 import coil.size.Scale
@@ -46,7 +47,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
 import java.io.Closeable
 import java.io.File
-import java.util.Optional
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {
@@ -150,6 +150,8 @@ internal val EMPTY_HEADERS = Headers.Builder().build()
 
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
 
+internal fun Tags?.orEmpty() = this ?: Tags.EMPTY
+
 internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
@@ -213,9 +215,6 @@ internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 internal fun isAssetUri(uri: Uri): Boolean {
     return uri.scheme == SCHEME_FILE && uri.firstPathSegment == ASSET_FILE_PATH_ROOT
 }
-
-/** A simple [Optional] replacement. */
-internal class Option<T : Any>(@JvmField val value: T?)
 
 private const val STANDARD_MEMORY_MULTIPLIER = 0.2
 private const val LOW_MEMORY_MULTIPLIER = 0.15

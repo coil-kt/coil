@@ -76,6 +76,7 @@ fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
     testImplementation(Library.ANDROIDX_TEST_RUNNER)
 
     testImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
+    testImplementation(Library.OKIO_FAKE_FILESYSTEM)
 
     testImplementation(Library.ROBOLECTRIC)
 }

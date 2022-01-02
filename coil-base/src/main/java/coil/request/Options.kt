@@ -78,6 +78,11 @@ class Options(
     val headers: Headers = EMPTY_HEADERS,
 
     /**
+     * A map of custom objects. These are used to attach custom data to a request.
+     */
+    val tags: Tags = Tags.EMPTY,
+
+    /**
      * A map of custom parameters. These are used to pass custom data to a component.
      */
     val parameters: Parameters = Parameters.EMPTY,
@@ -109,6 +114,7 @@ class Options(
         premultipliedAlpha: Boolean = this.premultipliedAlpha,
         diskCacheKey: String? = this.diskCacheKey,
         headers: Headers = this.headers,
+        tags: Tags = this.tags,
         parameters: Parameters = this.parameters,
         memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
         diskCachePolicy: CachePolicy = this.diskCachePolicy,
@@ -124,6 +130,7 @@ class Options(
         premultipliedAlpha = premultipliedAlpha,
         diskCacheKey = diskCacheKey,
         headers = headers,
+        tags = tags,
         parameters = parameters,
         memoryCachePolicy = memoryCachePolicy,
         diskCachePolicy = diskCachePolicy,
@@ -143,6 +150,7 @@ class Options(
             premultipliedAlpha == other.premultipliedAlpha &&
             diskCacheKey == other.diskCacheKey &&
             headers == other.headers &&
+            tags == other.tags &&
             parameters == other.parameters &&
             memoryCachePolicy == other.memoryCachePolicy &&
             diskCachePolicy == other.diskCachePolicy &&
@@ -160,6 +168,7 @@ class Options(
         result = 31 * result + premultipliedAlpha.hashCode()
         result = 31 * result + (diskCacheKey?.hashCode() ?: 0)
         result = 31 * result + headers.hashCode()
+        result = 31 * result + tags.hashCode()
         result = 31 * result + parameters.hashCode()
         result = 31 * result + memoryCachePolicy.hashCode()
         result = 31 * result + diskCachePolicy.hashCode()

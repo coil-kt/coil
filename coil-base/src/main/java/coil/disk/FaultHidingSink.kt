@@ -6,7 +6,7 @@ import okio.IOException
 import okio.Sink
 
 /** A sink that never throws [IOException]s, even if the underlying sink does. */
-internal open class FaultHidingSink(
+internal class FaultHidingSink(
     delegate: Sink,
     private val onException: (IOException) -> Unit
 ) : ForwardingSink(delegate) {
@@ -27,7 +27,6 @@ internal open class FaultHidingSink(
     }
 
     override fun flush() {
-        if (hasErrors) return
         try {
             super.flush()
         } catch (e: IOException) {
@@ -37,7 +36,6 @@ internal open class FaultHidingSink(
     }
 
     override fun close() {
-        if (hasErrors) return
         try {
             super.close()
         } catch (e: IOException) {

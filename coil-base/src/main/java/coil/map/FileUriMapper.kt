@@ -1,6 +1,6 @@
 package coil.map
 
-import android.content.ContentResolver
+import android.content.ContentResolver.SCHEME_FILE
 import android.net.Uri
 import coil.request.Options
 import coil.util.firstPathSegment
@@ -16,7 +16,7 @@ internal class FileUriMapper : Mapper<Uri, File> {
 
     private fun isApplicable(data: Uri): Boolean {
         return !isAssetUri(data) &&
-            data.scheme.let { it == null || it == ContentResolver.SCHEME_FILE } &&
+            data.scheme.let { it == null || it == SCHEME_FILE } &&
             data.path.orEmpty().startsWith('/') && data.firstPathSegment != null
     }
 }
