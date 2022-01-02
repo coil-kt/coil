@@ -3,20 +3,17 @@
 To add support for [Jetpack Compose](https://developer.android.com/jetpack/compose), import the extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:1.4.0")
+implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 ```
 
 Then use the `AsyncImage` composable to load and display an image:
 
 ```kotlin
 // Basic
-AsyncImage(
-    model = "https://example.com/image.jpg",
-    contentDescription = null // Avoid null and set this to a localized string if possible.
-)
+AsyncImage("https://example.com/image.jpg")
 ```
 
-`model` can either be the `ImageRequest.data` to load or the `ImageRequest` itself for complex requests.
+`model` can either be the `ImageRequest.data` value - or the `ImageRequest` itself.
 
 `AsyncImage` supports the same arguments as the standard `Image` composable. Additionally, it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads image with a circle crop, crossfade, and sets a placeholder:
 
@@ -26,7 +23,6 @@ AsyncImage(
         .data("https://example.com/image.jpg")
         .crossfade(true)
         .build(),
-    contentDescription = null,
     contentScale = ContentScale.Crop,
     placeholder = painterResource(R.drawable.placeholder),
     modifier = Modifier
@@ -53,8 +49,7 @@ AsyncImage(
     model = ImageRequest.Builder(LocalContext.current)
         .data("https://example.com/image.jpg")
         .crossfade(true)
-        .build(),
-    contentDescription = null
+        .build()
 )
 ```
 
