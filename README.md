@@ -61,7 +61,7 @@ AsyncImage("https://example.com/image.jpg")
 
 #### Image Loaders
 
-Both `imageView.load` and `AsyncImage` use the singleton `ImageLoader` to execute image requests. The singleton `ImageLoader` can be accessed using an extension function:
+Both `imageView.load` and `AsyncImage` use the singleton `ImageLoader` to execute image requests. The singleton `ImageLoader` can be accessed using a `Context` extension function:
 
 ```kotlin
 val imageLoader = context.imageLoader

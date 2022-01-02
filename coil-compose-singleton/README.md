@@ -59,8 +59,7 @@ That said, it's possible to create custom transitions in Compose by observing th
 
 ```kotlin
 AsyncImage(
-    model = "https://example.com/image.jpg",
-    contentDescription = null
+    model = "https://example.com/image.jpg"
 ) { state ->
     if (state is AsyncImagePainter.State.Success && state.dataSource != DataSource.MEMORY_CACHE }) {
         // Perform the transition animation.
