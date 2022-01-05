@@ -50,12 +50,12 @@ fun Context.decodeBitmapAsset(
     options: BitmapFactory.Options = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.ARGB_8888 }
 ): Bitmap {
     // Retry multiple times as the emulator can be flaky.
-    var attempts = 0
+    var failures = 0
     while (true) {
         try {
             return BitmapFactory.decodeStream(assets.open(fileName), null, options)!!
         } catch (e: Exception) {
-            if (attempts++ > 5) throw e
+            if (failures++ > 5) throw e
         }
     }
 }
