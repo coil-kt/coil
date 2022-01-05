@@ -55,8 +55,7 @@ fun Context.decodeBitmapAsset(
         try {
             return BitmapFactory.decodeStream(assets.open(fileName), null, options)!!
         } catch (e: Exception) {
-            if (attempts >= 5) throw e
-            attempts++
+            if (attempts++ > 5) throw e
         }
     }
 }
