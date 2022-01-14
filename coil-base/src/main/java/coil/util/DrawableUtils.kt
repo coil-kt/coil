@@ -40,7 +40,7 @@ internal object DrawableUtils {
         // Fast path: return the underlying bitmap.
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
-            if (isConfigValid(bitmap, config) && isSizeValid(allowInexactSize, size, bitmap, scale)) {
+            if (isConfigValid(bitmap, config) && isSizeValid(allowInexactSize, bitmap, size, scale)) {
                 return bitmap
             }
         }
@@ -61,12 +61,11 @@ internal object DrawableUtils {
 
         val bitmap = createBitmap(bitmapWidth, bitmapHeight, config.toSoftware())
         safeDrawable.apply {
-            val (oldLeft, oldTop, oldRight, oldBottom) = safeDrawable.bounds
-            setBounds(0, 0, bitmapHeight, bitmapHeight)
+            val (oldLeft, oldTop, oldRight, oldBottom) = bounds
+            setBounds(0, 0, bitmapWidth, bitmapHeight)
             draw(Canvas(bitmap))
             setBounds(oldLeft, oldTop, oldRight, oldBottom)
         }
-
         return bitmap
     }
 
@@ -74,15 +73,24 @@ internal object DrawableUtils {
         return bitmap.config == config.toSoftware()
     }
 
-    private fun isSizeValid(allowInexactSize: Boolean, size: Size, bitmap: Bitmap, scale: Scale): Boolean {
-        if (allowInexactSize) return true
-        val multiplier = DecodeUtils.computeSizeMultiplier(
-            srcWidth = bitmap.width,
-            srcHeight = bitmap.height,
-            dstWidth = size.width.pxOrElse { bitmap.width },
-            dstHeight = size.height.pxOrElse { bitmap.height },
-            scale = scale
-        )
-        return multiplier == 1.0
+    private fun isSizeValid(
+        allowInexactSize: Boolean,
+        bitmap: Bitmap,
+        size: Size,
+        scale: Scale
+    ): Boolean {
+        if (allowInexactSize) {
+            // Any size is valid.
+            return true
+        } else {
+            // The bitmap must match the scaled dimensions of the destination.
+            return DecodeUtils.computeSizeMultiplier(
+                srcWidth = bitmap.width,
+                srcHeight = bitmap.height,
+                dstWidth = size.width.pxOrElse { bitmap.width },
+                dstHeight = size.height.pxOrElse { bitmap.height },
+                scale = scale
+            ) == 1.0
+        }
     }
 }
