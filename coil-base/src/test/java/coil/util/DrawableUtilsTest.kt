@@ -1,7 +1,16 @@
 package coil.util
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.VectorDrawable
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.component1
+import androidx.core.graphics.component2
+import androidx.core.graphics.component3
+import androidx.core.graphics.component4
+import androidx.test.core.app.ApplicationProvider
+import coil.base.R
 import coil.size
 import coil.size.Scale
 import coil.size.Size
@@ -30,6 +39,30 @@ class DrawableUtilsTest {
 
         assertEquals(Bitmap.Config.ARGB_8888, output.config)
         assertEquals(size, output.size)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1081 */
+    @Test
+    fun `rectangular vector is converted correctly`() {
+        val size = Size(200, 200)
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val vector = AppCompatResources.getDrawable(context, R.drawable.ic_100tb)!!
+
+        val expected = createBitmap(200, 74).applyCanvas {
+            val (oldLeft, oldTop, oldRight, oldBottom) = vector.bounds
+            vector.setBounds(0, 0, width, height)
+            vector.draw(this)
+            vector.setBounds(oldLeft, oldTop, oldRight, oldBottom)
+        }
+        val actual = DrawableUtils.convertToBitmap(
+            drawable = vector,
+            config = Bitmap.Config.HARDWARE,
+            size = size,
+            scale = Scale.FIT,
+            allowInexactSize = true
+        )
+
+        actual.assertIsSimilarTo(expected)
     }
 
     @Test
