@@ -83,7 +83,7 @@ internal object DrawableUtils {
             // Any size is valid.
             return true
         } else {
-            // The bitmap must match the scaled dimensions of the destination.
+            // The bitmap must match the scaled dimensions of the destination exactly.
             return DecodeUtils.computeSizeMultiplier(
                 srcWidth = bitmap.width,
                 srcHeight = bitmap.height,
