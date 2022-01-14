@@ -12,7 +12,7 @@ import java.io.Closeable
 import java.io.File
 
 /**
- * An on-disk cache of previously loaded images.
+ * An LRU cache of [File]s.
  */
 @ExperimentalCoilApi
 interface DiskCache {
@@ -61,10 +61,10 @@ interface DiskCache {
      */
     interface Snapshot : Closeable {
 
-        /** Get the metadata for the image. */
+        /** Get the metadata for this entry. */
         val metadata: File
 
-        /** Get the raw image data. */
+        /** Get the data for this entry. */
         val data: File
 
         /** Close the snapshot to allow editing. */
@@ -85,10 +85,10 @@ interface DiskCache {
      */
     interface Editor {
 
-        /** Get the metadata for the image. */
+        /** Get the metadata for this entry. */
         val metadata: File
 
-        /** Get the raw image data. */
+        /** Get the data for this entry. */
         val data: File
 
         /** Commit the edit so the changes are visible to readers. */
