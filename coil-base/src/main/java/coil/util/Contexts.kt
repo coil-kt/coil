@@ -2,7 +2,6 @@
 
 package coil.util
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -36,7 +35,6 @@ internal fun Resources.getDrawableCompat(@DrawableRes resId: Int, theme: Resourc
  *
  * Prefer using [Context.getDrawableCompat] for resources that are part of the current package.
  */
-@SuppressLint("ResourceType")
 internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes resId: Int): Drawable {
     // Find the XML's start tag.
     val parser = resources.getXml(resId)
@@ -52,12 +50,12 @@ internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes resId: I
     if (SDK_INT < 24) {
         when (parser.name) {
             "vector" -> {
-                val attrs = Xml.asAttributeSet(parser)
-                return VectorDrawableCompat.createFromXmlInner(resources, parser, attrs, theme)
+                return VectorDrawableCompat.createFromXmlInner(resources, parser,
+                    Xml.asAttributeSet(parser), theme)
             }
             "animated-vector" -> {
-                val attrs = Xml.asAttributeSet(parser)
-                return AnimatedVectorDrawableCompat.createFromXmlInner(this, resources, parser, attrs, theme)
+                return AnimatedVectorDrawableCompat.createFromXmlInner(this, resources,
+                    parser, Xml.asAttributeSet(parser), theme)
             }
         }
     }
