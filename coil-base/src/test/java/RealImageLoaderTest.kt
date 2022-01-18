@@ -25,7 +25,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import kotlin.test.fail
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -48,11 +47,6 @@ class RealImageLoaderTest {
     @After
     fun after() {
         Dispatchers.resetMain()
-    }
-
-    @Test
-    fun tempTest() {
-        fail()
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/933 */
