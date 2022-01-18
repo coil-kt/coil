@@ -60,6 +60,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RealImageLoaderAndroidTest {
@@ -90,6 +91,11 @@ class RealImageLoaderAndroidTest {
     fun after() {
         server.shutdown()
         imageLoader.shutdown()
+    }
+
+    @Test
+    fun tempTest() {
+        fail()
     }
 
     // region Test all the supported data types.
