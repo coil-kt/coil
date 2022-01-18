@@ -6,7 +6,7 @@ on:
     pull_request:
 env:
     # Increment this to manually invalidate the cache.
-    CACHE_VERSION: 1
+    CACHE_VERSION: 2
 jobs:
     checks:
         name: Checks
@@ -121,7 +121,7 @@ jobs:
                   force-avd-creation: false
                   ram-size: 4096M
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-                  script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
+                  script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest; ./gradlew uninstallAll
 
     deploy-snapshot:
         name: Deploy snapshot
