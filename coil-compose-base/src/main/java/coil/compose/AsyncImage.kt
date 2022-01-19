@@ -40,14 +40,14 @@ import coil.size.Size as CoilSize
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
- * @param contentDescription Text used by accessibility services to describe what this image
- *  represents. This should always be provided unless this image is used for decorative purposes,
- *  and does not represent a meaningful action that a user can take.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
  * @param loading An optional callback to overwrite what's drawn while the image request is loading.
  * @param success An optional callback to overwrite what's drawn when the image request succeeds.
  * @param error An optional callback to overwrite what's drawn when the image request fails.
+ * @param contentDescription Text used by accessibility services to describe what this image
+ *  represents. This should always be provided unless this image is used for decorative purposes,
+ *  and does not represent a meaningful action that a user can take.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -62,12 +62,12 @@ import coil.size.Size as CoilSize
 @Composable
 fun AsyncImage(
     model: Any?,
-    contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
     loading: @Composable (AsyncImageScope.(State.Loading) -> Unit)? = null,
     success: @Composable (AsyncImageScope.(State.Success) -> Unit)? = null,
     error: @Composable (AsyncImageScope.(State.Error) -> Unit)? = null,
+    contentDescription: String? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
@@ -75,9 +75,9 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) = AsyncImage(
     model = model,
-    contentDescription = contentDescription,
     imageLoader = imageLoader,
     modifier = modifier,
+    contentDescription = contentDescription,
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,
@@ -90,11 +90,11 @@ fun AsyncImage(
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
+ * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
  * @param contentDescription Text used by accessibility services to describe what this image
  *  represents. This should always be provided unless this image is used for decorative purposes,
  *  and does not represent a meaningful action that a user can take.
- * @param imageLoader The [ImageLoader] that will be used to execute the request.
- * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -110,9 +110,9 @@ fun AsyncImage(
 @Composable
 fun AsyncImage(
     model: Any?,
-    contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
+    contentDescription: String? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
