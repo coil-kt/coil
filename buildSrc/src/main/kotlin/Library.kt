@@ -10,7 +10,7 @@ object Library {
 
     const val ANDROIDX_ACTIVITY = "androidx.activity:activity-ktx:1.4.0"
     const val ANDROIDX_ACTIVITY_COMPOSE = "androidx.activity:activity-compose:1.4.0"
-    const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:1.4.0"
+    const val ANDROIDX_APPCOMPAT_RESOURCES = "androidx.appcompat:appcompat-resources:1.4.1"
     const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:1.3.0"
     const val ANDROIDX_COLLECTION = "androidx.collection:collection:1.2.0"
     const val ANDROIDX_CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout:2.1.2"
@@ -42,7 +42,7 @@ object Library {
     const val OKIO = "com.squareup.okio:okio:$OKIO_VERSION"
     const val OKIO_FAKE_FILESYSTEM = "com.squareup.okio:okio-fakefilesystem:$OKIO_VERSION"
 
-    const val MATERIAL = "com.google.android.material:material:1.5.0-rc01"
+    const val MATERIAL = "com.google.android.material:material:1.5.0"
 
     const val ANDROID_SVG = "com.caverock:androidsvg-aar:1.4"
 

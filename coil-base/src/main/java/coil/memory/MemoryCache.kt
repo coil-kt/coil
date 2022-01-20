@@ -13,7 +13,7 @@ import coil.util.defaultMemoryCacheSizePercent
 import kotlinx.parcelize.Parcelize
 
 /**
- * An in-memory cache of previously loaded images.
+ * An LRU cache of [Bitmap]s.
  */
 interface MemoryCache {
 
@@ -46,7 +46,7 @@ interface MemoryCache {
     fun trimMemory(level: Int)
 
     /**
-     * The cache key for an image in the memory cache.
+     * The cache key for a [Bitmap] in the memory cache.
      *
      * @param key The value returned by [Keyer.key] (or a custom value).
      * @param extras Extra values that differentiate the associated
@@ -60,7 +60,7 @@ interface MemoryCache {
     ) : Parcelable
 
     /**
-     * The value for an image in the memory cache.
+     * The value for a [Bitmap] in the memory cache.
      *
      * @param bitmap The cached [Bitmap].
      * @param extras Metadata for [bitmap]. This map **must be**
@@ -107,7 +107,7 @@ interface MemoryCache {
         /**
          * Enables/disables weak reference tracking of values added to this memory cache.
          * Weak references do not contribute to the current size of the memory cache.
-         * This ensures that if an image hasn't been garbage collected yet it will be
+         * This ensures that if a [Bitmap] hasn't been garbage collected yet it will be
          * returned from the memory cache.
          */
         fun weakReferencesEnabled(enable: Boolean) = apply {

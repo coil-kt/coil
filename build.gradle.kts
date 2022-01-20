@@ -84,4 +84,11 @@ allprojects {
             }
         }
     }
+
+    // Uninstall test APKs after running instrumentation tests.
+    tasks.whenTaskAdded {
+        if (name == "connectedDebugAndroidTest") {
+            finalizedBy("uninstallDebugAndroidTest")
+        }
+    }
 }
