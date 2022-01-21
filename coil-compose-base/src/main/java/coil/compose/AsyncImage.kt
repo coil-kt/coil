@@ -342,6 +342,7 @@ private fun Constraints.toSizeOrNull() = when {
     )
 }
 
+@Stable
 private fun Modifier.contentDescription(contentDescription: String?): Modifier {
     return if (contentDescription != null) {
         semantics {
@@ -353,6 +354,7 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
     }
 }
 
+/** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
 private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
