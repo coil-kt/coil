@@ -259,7 +259,7 @@ internal object SingletonDiskCache {
     fun get(context: Context): DiskCache {
         return instance ?: run {
             // Create the singleton disk cache instance.
-            DiskCache.Builder(context)
+            DiskCache.Builder()
                 .directory(context.safeCacheDir.resolve(FOLDER_NAME))
                 .build()
                 .also { instance = it }
