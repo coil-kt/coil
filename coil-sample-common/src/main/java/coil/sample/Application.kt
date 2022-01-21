@@ -41,7 +41,7 @@ class Application : Application(), ImageLoaderFactory {
                     .build()
             }
             .diskCache {
-                DiskCache.Builder(this)
+                DiskCache.Builder()
                     .directory(filesDir.resolve("image_cache"))
                     .maxSizeBytes(512L * 1024 * 1024) // 512MB
                     .build()

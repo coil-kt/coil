@@ -2,7 +2,6 @@
 
 package coil.disk
 
-import android.content.Context
 import android.os.StatFs
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
@@ -101,7 +100,7 @@ interface DiskCache {
         fun abort()
     }
 
-    class Builder(private val context: Context) {
+    class Builder {
 
         private var directory: File? = null
         private var maxSizePercent = 0.02 // 2%
