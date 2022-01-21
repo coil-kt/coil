@@ -84,7 +84,7 @@ fun AsyncImage(
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
  * @param placeholder A [Painter] that is displayed while the image is loading.
  * @param error A [Painter] that is displayed when the image request is unsuccessful.
- * @param fallback A [Painter] that is displayed when  the request's [ImageRequest.data] is null.
+ * @param fallback A [Painter] that is displayed when the request's [ImageRequest.data] is null.
  * @param onLoading Called when the image request begins loading.
  * @param onSuccess Called when the image request completes successfully.
  * @param onError Called when the image request completes unsuccessfully.
