@@ -1,7 +1,5 @@
 package coil.disk
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import okio.buffer
 import okio.sink
 import okio.source
@@ -19,13 +17,11 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class DiskCacheTest {
 
-    private lateinit var context: Context
     private lateinit var diskCache: DiskCache
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        diskCache = DiskCache.Builder(context).directory(File("build/cache")).build()
+        diskCache = DiskCache.Builder().directory(File("build/cache")).build()
     }
 
     @After

@@ -58,7 +58,7 @@ class HttpUriFetcherTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         server = createMockWebServer()
-        diskCache = DiskCache.Builder(context)
+        diskCache = DiskCache.Builder()
             .directory(File("build/cache"))
             .maxSizeBytes(10L * 1024 * 1024) // 10MB
             .build()
