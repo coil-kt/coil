@@ -8,7 +8,6 @@ public final class coil/compose/ImageLoaderProvidableCompositionLocal {
 	public fun hashCode ()I
 	public static fun hashCode-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)I
 	public static final fun provides-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;Lcoil/ImageLoader;)Landroidx/compose/runtime/ProvidedValue;
-	public static final fun providesDefault-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;Lcoil/ImageLoader;)Landroidx/compose/runtime/ProvidedValue;
 	public fun toString ()Ljava/lang/String;
 	public static fun toString-impl (Landroidx/compose/runtime/ProvidableCompositionLocal;)Ljava/lang/String;
 	public final synthetic fun unbox-impl ()Landroidx/compose/runtime/ProvidableCompositionLocal;
