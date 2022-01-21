@@ -328,6 +328,18 @@ private fun updateRequest(
     .build()
 
 @Stable
+private fun Modifier.contentDescription(contentDescription: String?): Modifier {
+    return if (contentDescription != null) {
+        semantics {
+            this.contentDescription = contentDescription
+            this.role = Role.Image
+        }
+    } else {
+        this
+    }
+}
+
+@Stable
 private fun ContentScale.toScale() = when (this) {
     ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
     else -> Scale.FILL
@@ -340,18 +352,6 @@ private fun Constraints.toSizeOrNull() = when {
         width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original,
         height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
     )
-}
-
-@Stable
-private fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    return if (contentDescription != null) {
-        semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        this
-    }
 }
 
 /** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
