@@ -3,6 +3,7 @@ package coil.decode
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.AnimatedImageDrawable.REPEAT_INFINITE
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -43,15 +44,60 @@ class ImageDecoderDecoder @JvmOverloads constructor(
     private val enforceMinimumFrameDelay: Boolean = true
 ) : Decoder {
 
-    override suspend fun decode(): DecodeResult {
+    override suspend fun decode(): DecodeResult = decode2()
+
+    private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
+        use { imageSource ->
+            val file = fileOrNull()
+            if (file != null) {
+                return ImageDecoder.createSource(file)
+            }
+
+            val metadata = metadata
+            if (metadata is AssetMetadata) {
+                return ImageDecoder.createSource(options.context.assets, metadata.fileName)
+            }
+            if (metadata is ContentMetadata) {
+                return ImageDecoder.createSource(options.context.contentResolver, metadata.uri)
+            }
+            if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
+                return ImageDecoder.createSource(options.context.resources, metadata.resId)
+            }
+            return when {
+                SDK_INT >= 31 -> ImageDecoder.createSource(
+                    imageSource.source().use { it.readByteArray() })
+                SDK_INT == 30 -> ImageDecoder.createSource(
+                    ByteBuffer.wrap(
+                        imageSource.source().use { it.readByteArray() })
+                )
+                // https://issuetracker.google.com/issues/139371066
+                else -> ImageDecoder.createSource(file())
+            }
+        }
+    }
+
+    private fun getImageDecoderSource(imageSource: ImageSource): ImageSource {
+        return if (enforceMinimumFrameDelay && DecodeUtils.isGif(imageSource.source())) {
+            // Wrap the source to rewrite its frame delay as it's read.
+            val rewritingSource = FrameDelayRewritingSource(imageSource.source())
+            ImageSource(rewritingSource.buffer(), options.context)
+        } else {
+            imageSource
+        }
+    }
+
+    private suspend fun decode2(): DecodeResult {
         var isSampled = false
-        val baseDrawable = withSource { source ->
-            source.toImageDecoderSource().decodeDrawable { info, _ ->
+
+        val baseDrawable = getImageDecoderSource(source)
+            .toImageDecoderSource()
+            .decodeDrawable { info, _ ->
                 val (srcWidth, srcHeight) = info.size
                 val dstWidth = options.size.width.pxOrElse { srcWidth }
                 val dstHeight = options.size.height.pxOrElse { srcHeight }
                 if (srcWidth > 0 && srcHeight > 0 &&
-                    (srcWidth != dstWidth || srcHeight != dstHeight)) {
+                    (srcWidth != dstWidth || srcHeight != dstHeight)
+                ) {
                     val multiplier = DecodeUtils.computeSizeMultiplier(
                         srcWidth = srcWidth,
                         srcHeight = srcHeight,
@@ -70,29 +116,39 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                     }
                 }
 
-                allocator = if (options.config.isHardware) {
-                    ImageDecoder.ALLOCATOR_HARDWARE
-                } else {
-                    ImageDecoder.ALLOCATOR_SOFTWARE
-                }
-
-                memorySizePolicy = if (options.allowRgb565) {
-                    ImageDecoder.MEMORY_POLICY_LOW_RAM
-                } else {
-                    ImageDecoder.MEMORY_POLICY_DEFAULT
-                }
+                allocator = parseAllocator(options)
+                memorySizePolicy = parseMemorySizePolicy(options)
 
                 if (options.colorSpace != null) {
                     setTargetColorSpace(options.colorSpace)
                 }
 
                 isUnpremultipliedRequired = !options.premultipliedAlpha
-
                 postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
             }
-        }
 
-        val drawable = if (baseDrawable is AnimatedImageDrawable) {
+        val parsedDrawable = parseDrawable(baseDrawable)
+        return DecodeResult(drawable = parsedDrawable, isSampled = isSampled)
+    }
+
+    private fun parseAllocator(options: Options): Int {
+        return if (options.config.isHardware) {
+            ImageDecoder.ALLOCATOR_HARDWARE
+        } else {
+            ImageDecoder.ALLOCATOR_SOFTWARE
+        }
+    }
+
+    private fun parseMemorySizePolicy(options: Options): Int {
+        return if (options.allowRgb565) {
+            ImageDecoder.MEMORY_POLICY_LOW_RAM
+        } else {
+            ImageDecoder.MEMORY_POLICY_DEFAULT
+        }
+    }
+
+    private suspend fun parseDrawable(baseDrawable: Drawable): Drawable {
+        return if (baseDrawable is AnimatedImageDrawable) {
             baseDrawable.repeatCount = options.parameters.repeatCount() ?: REPEAT_INFINITE
 
             // Set the start and end animation callbacks if any one is supplied through the request.
@@ -110,47 +166,6 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         } else {
             baseDrawable
         }
-
-        return DecodeResult(
-            drawable = drawable,
-            isSampled = isSampled
-        )
-    }
-
-    private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
-        val file = fileOrNull()
-        if (file != null) {
-            return ImageDecoder.createSource(file)
-        }
-
-        val metadata = metadata
-        if (metadata is AssetMetadata) {
-            return ImageDecoder.createSource(options.context.assets, metadata.fileName)
-        }
-        if (metadata is ContentMetadata) {
-            return ImageDecoder.createSource(options.context.contentResolver, metadata.uri)
-        }
-        if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
-            return ImageDecoder.createSource(options.context.resources, metadata.resId)
-        }
-        return when {
-            SDK_INT >= 31 -> ImageDecoder.createSource(source().readByteArray())
-            SDK_INT == 30 -> ImageDecoder.createSource(ByteBuffer.wrap(source().readByteArray()))
-            // https://issuetracker.google.com/issues/139371066
-            else -> ImageDecoder.createSource(file())
-        }
-    }
-
-    private suspend fun <T> withSource(block: (ImageSource) -> T): T = runInterruptible {
-        if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
-            // Wrap the source to rewrite its frame delay as it's read.
-            source.use {
-                val rewritingSource = FrameDelayRewritingSource(source.source())
-                ImageSource(rewritingSource.buffer(), options.context).use(block)
-            }
-        } else {
-            source.use(block)
-        }
     }
 
     @RequiresApi(28)
@@ -158,7 +173,11 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         private val enforceMinimumFrameDelay: Boolean = true
     ) : Decoder.Factory {
 
-        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(
+            result: SourceResult,
+            options: Options,
+            imageLoader: ImageLoader
+        ): Decoder? {
             if (!isApplicable(result.source.source())) return null
             return ImageDecoderDecoder(result.source, options, enforceMinimumFrameDelay)
         }
