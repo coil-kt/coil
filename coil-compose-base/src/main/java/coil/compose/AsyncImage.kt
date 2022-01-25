@@ -28,8 +28,8 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
+import coil.compose.AsyncImagePainter.Companion.DefaultStateTransform
 import coil.compose.AsyncImagePainter.State
-import coil.compose.AsyncImageScope.Companion.DefaultContent
 import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Scale
@@ -38,6 +38,121 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import coil.size.Size as CoilSize
+
+/**
+ * A composable that executes an [ImageRequest] asynchronously and renders the result.
+ *
+ * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
+ * @param contentDescription Text used by accessibility services to describe what this image
+ *  represents. This should always be provided unless this image is used for decorative purposes,
+ *  and does not represent a meaningful action that a user can take.
+ * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
+ * @param placeholder A [Painter] that is displayed while the image is loading.
+ * @param error A [Painter] that is displayed when the image request is unsuccessful.
+ * @param fallback A [Painter] that is displayed when the request's [ImageRequest.data] is null.
+ * @param onLoading Called when the image request begins loading.
+ * @param onSuccess Called when the image request completes successfully.
+ * @param onError Called when the image request completes unsuccessfully.
+ * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
+ *  bounds defined by the width and height.
+ * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
+ *  used if the bounds are a different size from the intrinsic size of the [AsyncImagePainter].
+ * @param alpha Optional opacity to be applied to the [AsyncImagePainter] when it is rendered
+ *  onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
+ *  rendered onscreen.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
+ *  into the destination.
+ */
+@Composable
+fun AsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    imageLoader: ImageLoader,
+    modifier: Modifier = Modifier,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = null,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+) = AsyncImage(
+    model = model,
+    contentDescription = contentDescription,
+    imageLoader = imageLoader,
+    modifier = modifier,
+    stateTransform = stateTransformOf(placeholder, error, fallback),
+    onState = onStateOf(onLoading, onSuccess, onError),
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality
+)
+
+/**
+ * A composable that executes an [ImageRequest] asynchronously and renders the result.
+ *
+ * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
+ * @param contentDescription Text used by accessibility services to describe what this image
+ *  represents. This should always be provided unless this image is used for decorative purposes,
+ *  and does not represent a meaningful action that a user can take.
+ * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
+ * @param stateTransform A callback to transform a new [State] before it's applied to the
+ *  [AsyncImagePainter]. Typically this is used to modify the state's [Painter].
+ * @param onState Called when the state of this painter changes.
+ * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
+ *  bounds defined by the width and height.
+ * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
+ *  used if the bounds are a different size from the intrinsic size of the [AsyncImagePainter].
+ * @param alpha Optional opacity to be applied to the [AsyncImagePainter] when it is rendered
+ *  onscreen.
+ * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
+ *  rendered onscreen.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
+ *  into the destination.
+ */
+@Composable
+fun AsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    imageLoader: ImageLoader,
+    modifier: Modifier = Modifier,
+    stateTransform: (State) -> State = DefaultStateTransform,
+    onState: ((State) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+) {
+    // Create and execute the image request.
+    val request = updateRequest(requestOf(model), contentScale)
+    val painter = rememberAsyncImagePainter(request, imageLoader, stateTransform, onState, filterQuality)
+
+    // Draw the content without a parent composable or subcomposition.
+    val sizeResolver = request.sizeResolver
+    Content(
+        modifier = if (sizeResolver is ConstraintsSizeResolver) {
+            modifier.then(sizeResolver)
+        } else {
+            modifier
+        },
+        painter = painter,
+        contentDescription = contentDescription,
+        alignment = alignment,
+        contentScale = contentScale,
+        alpha = alpha,
+        colorFilter = colorFilter
+    )
+}
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
@@ -66,7 +181,7 @@ import coil.size.Size as CoilSize
  *  into the destination.
  */
 @Composable
-fun AsyncImage(
+fun SubcomposeAsyncImage(
     model: Any?,
     contentDescription: String?,
     imageLoader: ImageLoader,
@@ -82,7 +197,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-) = AsyncImage(
+) = SubcomposeAsyncImage(
     model = model,
     contentDescription = contentDescription,
     imageLoader = imageLoader,
@@ -126,7 +241,7 @@ fun AsyncImage(
  * @param content A callback to draw the content inside an [AsyncImageScope].
  */
 @Composable
-fun AsyncImage(
+fun SubcomposeAsyncImage(
     model: Any?,
     contentDescription: String?,
     imageLoader: ImageLoader,
@@ -142,7 +257,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    content: @Composable (AsyncImageScope.() -> Unit) = DefaultContent,
+    content: @Composable AsyncImageScope.() -> Unit,
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
@@ -150,23 +265,9 @@ fun AsyncImage(
         onLoading, onSuccess, onError, filterQuality)
 
     val sizeResolver = request.sizeResolver
-    if (content === DefaultContent) {
-        // Fastest path: draw the content without a parent composable or subcomposition.
-        Content(
-            modifier = if (sizeResolver is ConstraintsSizeResolver) {
-                modifier.then(sizeResolver)
-            } else {
-                modifier
-            },
-            painter = painter,
-            contentDescription = contentDescription,
-            alignment = alignment,
-            contentScale = contentScale,
-            alpha = alpha,
-            colorFilter = colorFilter
-        )
-    } else if (sizeResolver !is ConstraintsSizeResolver) {
-        // Fast path: draw the content inside a parent composable without subcomposition.
+    if (sizeResolver !is ConstraintsSizeResolver) {
+        // Fast path: draw the content without subcomposition as a custom `SizeResolver` has been
+        // set using `ImageRequest.Builder.sizeResolver`.
         Box(
             modifier = modifier,
             contentAlignment = alignment,
@@ -183,7 +284,8 @@ fun AsyncImage(
             ).content()
         }
     } else {
-        // Slow path: draw the content inside a parent composable with subcomposition.
+        // Slow path: draw the content with subcomposition as we need to resolve the size before
+        // calling `content`.
         BoxWithConstraints(
             modifier = modifier,
             contentAlignment = alignment,
@@ -231,13 +333,6 @@ interface AsyncImageScope : BoxScope {
 
     /** The color filter for [AsyncImageContent]. */
     val colorFilter: ColorFilter?
-
-    companion object {
-        /**
-         * The default content composable only draws [AsyncImageContent].
-         */
-        val DefaultContent: @Composable (AsyncImageScope.() -> Unit) = { AsyncImageContent() }
-    }
 }
 
 /**
@@ -297,7 +392,7 @@ private fun contentOf(
     loading: @Composable (AsyncImageScope.(State.Loading) -> Unit)?,
     success: @Composable (AsyncImageScope.(State.Success) -> Unit)?,
     error: @Composable (AsyncImageScope.(State.Error) -> Unit)?,
-) = if (loading != null || success != null || error != null) {
+): @Composable AsyncImageScope.() -> Unit = if (loading != null || success != null || error != null) {
     {
         var draw = true
         when (val state = painter.state) {
@@ -309,7 +404,7 @@ private fun contentOf(
         if (draw) AsyncImageContent()
     }
 } else {
-    DefaultContent
+    { AsyncImageContent() }
 }
 
 @Composable

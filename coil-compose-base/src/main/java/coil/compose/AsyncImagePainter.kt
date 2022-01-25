@@ -28,11 +28,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
+import coil.compose.AsyncImagePainter.Companion.DefaultStateTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
-import coil.request.NullRequestDataException
 import coil.request.SuccessResult
 import coil.size.Dimension
 import coil.size.Precision
@@ -85,17 +85,47 @@ fun rememberAsyncImagePainter(
     onSuccess: ((State.Success) -> Unit)? = null,
     onError: ((State.Error) -> Unit)? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+) = rememberAsyncImagePainter(
+    model = model,
+    imageLoader = imageLoader,
+    stateTransform = stateTransformOf(placeholder, error, fallback),
+    onState = onStateOf(onLoading, onSuccess, onError),
+    filterQuality = filterQuality
+)
+
+/**
+ * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
+ *
+ * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations.**
+ * **It's highly recommended to use [AsyncImage] unless you need a reference to a [Painter].**
+ *
+ * Notably, [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called,
+ * which can occur for composables that don't have a fixed size (e.g. [LazyColumn]). Also
+ * [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
+ * composition phase.
+ *
+ * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
+ * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param stateTransform A callback to transform a new [State] before it's applied to the
+ *  [AsyncImagePainter]. Typically this is used to modify the state's [Painter].
+ * @param onState Called when the state of this painter changes.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
+ *  into the destination.
+ */
+@Composable
+fun rememberAsyncImagePainter(
+    model: Any?,
+    imageLoader: ImageLoader,
+    stateTransform: (State) -> State = DefaultStateTransform,
+    onState: ((State) -> Unit)? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter {
     val request = requestOf(model)
     validateRequest(request)
 
     val painter = remember { AsyncImagePainter(request, imageLoader) }
-    painter.placeholder = placeholder
-    painter.error = error
-    painter.fallback = fallback
-    painter.onLoading = onLoading
-    painter.onSuccess = onSuccess
-    painter.onError = onError
+    painter.stateTransform = stateTransform
+    painter.onState = onState
     painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
     painter.imageLoader = imageLoader
@@ -133,12 +163,8 @@ class AsyncImagePainter internal constructor(
             painter = value
         }
 
-    internal var placeholder: Painter? = null
-    internal var error: Painter? = null
-    internal var fallback: Painter? = null
-    internal var onLoading: ((State.Loading) -> Unit)? = null
-    internal var onSuccess: ((State.Success) -> Unit)? = null
-    internal var onError: ((State.Error) -> Unit)? = null
+    internal var stateTransform = DefaultStateTransform
+    internal var onState: ((State) -> Unit)? = null
     internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
 
@@ -221,7 +247,7 @@ class AsyncImagePainter internal constructor(
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
             .target(onStart = { placeholder ->
-                updateState(State.Loading(placeholder?.toPainter() ?: this.placeholder))
+                updateState(State.Loading(placeholder?.toPainter()))
             })
             .apply {
                 if (request.defined.sizeResolver == null) {
@@ -235,8 +261,9 @@ class AsyncImagePainter internal constructor(
             .build()
     }
 
-    private fun updateState(current: State) {
+    private fun updateState(input: State) {
         val previous = _state
+        val current = stateTransform(input)
         _state = current
         _painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
 
@@ -246,13 +273,8 @@ class AsyncImagePainter internal constructor(
             (current.painter as? RememberObserver)?.onRemembered()
         }
 
-        // Notify any listeners.
-        when (current) {
-            is State.Loading -> onLoading?.invoke(current)
-            is State.Success -> onSuccess?.invoke(current)
-            is State.Error -> onError?.invoke(current)
-            is State.Empty -> {}
-        }
+        // Notify the state listener.
+        onState?.invoke(current)
     }
 
     /** Create and return a [CrossfadePainter] if requested. */
@@ -282,18 +304,8 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun ImageResult.toState() = when (this) {
-        is SuccessResult -> {
-            State.Success(drawable.toPainter(), this)
-        }
-        is ErrorResult -> {
-            val drawable = drawable
-            val painter = when {
-                drawable != null -> drawable.toPainter()
-                throwable is NullRequestDataException -> fallback ?: error
-                else -> error
-            }
-            State.Error(painter, this)
-        }
+        is SuccessResult -> State.Success(drawable.toPainter(), this)
+        is ErrorResult -> State.Error(drawable?.toPainter(), this)
     }
 
     /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
@@ -332,6 +344,10 @@ class AsyncImagePainter internal constructor(
             override val painter: Painter?,
             val result: ErrorResult,
         ) : State()
+    }
+
+    companion object {
+        val DefaultStateTransform: (State) -> State = { it }
     }
 }
 

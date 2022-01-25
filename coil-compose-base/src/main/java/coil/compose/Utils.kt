@@ -2,11 +2,16 @@ package coil.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
+import coil.compose.AsyncImagePainter.Companion.DefaultStateTransform
+import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
+import coil.request.NullRequestDataException
 import kotlin.math.roundToInt
 
 /** Create an [ImageRequest] from the [model]. */
@@ -18,6 +23,47 @@ internal fun requestOf(model: Any?): ImageRequest {
     } else {
         return ImageRequest.Builder(LocalContext.current).data(model).build()
     }
+}
+
+@Stable
+internal fun stateTransformOf(
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = null,
+) = if (placeholder != null || error != null || fallback != null) {
+    { state ->
+        when (state) {
+            is State.Loading -> {
+                if (placeholder != null) state.copy(painter = placeholder) else state
+            }
+            is State.Error -> if (state.result.throwable is NullRequestDataException) {
+                if (fallback != null) state.copy(painter = fallback) else state
+            } else {
+                if (error != null) state.copy(painter = error) else state
+            }
+            else -> state
+        }
+    }
+} else {
+    DefaultStateTransform
+}
+
+@Stable
+internal fun onStateOf(
+    onLoading: ((State.Loading) -> Unit)?,
+    onSuccess: ((State.Success) -> Unit)?,
+    onError: ((State.Error) -> Unit)?,
+): ((State) -> Unit)? = if (onLoading != null || onSuccess != null || onError != null) {
+    { state ->
+        when (state) {
+            is State.Loading -> onLoading?.invoke(state)
+            is State.Success -> onSuccess?.invoke(state)
+            is State.Error -> onError?.invoke(state)
+            is State.Empty -> {}
+        }
+    }
+} else {
+    null
 }
 
 internal fun Constraints.constrainWidth(width: Float) =
