@@ -45,11 +45,11 @@ class ImageDecoderDecoder @JvmOverloads constructor(
 ) : Decoder {
 
     override suspend fun decode(): DecodeResult {
-        var imageDecoder: ImageDecoder? = null
         var isSampled = false
-        val wrappedSource = wrapImageSource(source)
-        val drawable = try {
-            runInterruptible {
+        val drawable = runInterruptible {
+            var imageDecoder: ImageDecoder? = null
+            val wrappedSource = wrapImageSource(source)
+            try {
                 wrappedSource.toImageDecoderSource().decodeDrawable { info, _ ->
                     // Capture the image decoder to manually close it later.
                     imageDecoder = this
@@ -81,17 +81,12 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                     // Configure any other attributes.
                     configureImageDecoderProperties()
                 }
+            } finally {
+                imageDecoder?.close()
+                wrappedSource.close()
             }
-        } finally {
-            imageDecoder?.close()
-            wrappedSource.close()
-            source.close()
         }
-
-        return DecodeResult(
-            drawable = wrapDrawable(drawable),
-            isSampled = isSampled
-        )
+        return DecodeResult(wrapDrawable(drawable), isSampled)
     }
 
     private fun wrapImageSource(source: ImageSource): ImageSource {
