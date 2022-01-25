@@ -122,8 +122,8 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         }
 
         return when {
-            SDK_INT >= 31 -> ImageDecoder.createSource(source().use { it.readByteArray() })
-            SDK_INT == 30 -> ImageDecoder.createSource(ByteBuffer.wrap(source().use { it.readByteArray() }))
+            SDK_INT >= 31 -> ImageDecoder.createSource(source().readByteArray())
+            SDK_INT == 30 -> ImageDecoder.createSource(ByteBuffer.wrap(source().readByteArray()))
             // https://issuetracker.google.com/issues/139371066
             else -> ImageDecoder.createSource(file())
         }
