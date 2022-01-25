@@ -272,7 +272,7 @@ internal class SourceImageSource(
     override fun close() {
         isClosed = true
         source?.closeQuietly()
-        file?.delete()
+//        file?.delete()
     }
 
     private fun assertNotClosed() {
