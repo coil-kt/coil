@@ -266,8 +266,7 @@ fun SubcomposeAsyncImage(
 
     val sizeResolver = request.sizeResolver
     if (sizeResolver !is ConstraintsSizeResolver) {
-        // Fast path: draw the content without subcomposition as a custom `SizeResolver` has been
-        // set using `ImageRequest.Builder.sizeResolver`.
+        // Fast path: draw the content without subcomposition as we've got a custom `SizeResolver`.
         Box(
             modifier = modifier,
             contentAlignment = alignment,
