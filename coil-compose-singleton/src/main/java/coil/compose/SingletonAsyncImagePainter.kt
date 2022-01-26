@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
-import coil.compose.AsyncImagePainter.Companion.DefaultInterceptor
+import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 
@@ -64,7 +64,7 @@ fun rememberAsyncImagePainter(
  * composition phase.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
- * @param interceptor A callback to transform a new [State] before it's applied to the
+ * @param transform A callback to transform a new [State] before it's applied to the
  *  [AsyncImagePainter]. Typically this is used to overwrite the state's [Painter].
  * @param onState Called when the state of this painter changes.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
@@ -73,13 +73,13 @@ fun rememberAsyncImagePainter(
 @Composable
 fun rememberAsyncImagePainter(
     model: Any?,
-    interceptor: (State) -> State = DefaultInterceptor,
+    transform: (State) -> State = DefaultTransform,
     onState: ((State) -> Unit)? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) = rememberAsyncImagePainter(
     model = model,
     imageLoader = LocalImageLoader.current,
-    interceptor = interceptor,
+    transform = transform,
     onState = onState,
     filterQuality = filterQuality
 )

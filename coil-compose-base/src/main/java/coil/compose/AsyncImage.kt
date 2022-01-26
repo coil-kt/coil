@@ -28,7 +28,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
-import coil.compose.AsyncImagePainter.Companion.DefaultInterceptor
+import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.Dimension
@@ -87,7 +87,7 @@ fun AsyncImage(
     contentDescription = contentDescription,
     imageLoader = imageLoader,
     modifier = modifier,
-    interceptor = interceptorOf(placeholder, error, fallback),
+    transform = transformOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
     alignment = alignment,
     contentScale = contentScale,
@@ -105,7 +105,7 @@ fun AsyncImage(
  *  and does not represent a meaningful action that a user can take.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param interceptor A callback to transform a new [State] before it's applied to the
+ * @param transform A callback to transform a new [State] before it's applied to the
  *  [AsyncImagePainter]. Typically this is used to modify the state's [Painter].
  * @param onState Called when the state of this painter changes.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
@@ -125,7 +125,7 @@ fun AsyncImage(
     contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
-    interceptor: (State) -> State = DefaultInterceptor,
+    transform: (State) -> State = DefaultTransform,
     onState: ((State) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -135,7 +135,7 @@ fun AsyncImage(
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
-    val painter = rememberAsyncImagePainter(request, imageLoader, interceptor, onState, filterQuality)
+    val painter = rememberAsyncImagePainter(request, imageLoader, transform, onState, filterQuality)
 
     // Draw the content without a parent composable or subcomposition.
     val sizeResolver = request.sizeResolver
@@ -220,7 +220,7 @@ fun SubcomposeAsyncImage(
  *  and does not represent a meaningful action that a user can take.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param interceptor A callback to transform a new [State] before it's applied to the
+ * @param transform A callback to transform a new [State] before it's applied to the
  *  [AsyncImagePainter]. Typically this is used to modify the state's [Painter].
  * @param onState Called when the state of this painter changes.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
@@ -241,7 +241,7 @@ fun SubcomposeAsyncImage(
     contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
-    interceptor: (State) -> State = DefaultInterceptor,
+    transform: (State) -> State = DefaultTransform,
     onState: ((State) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -252,7 +252,7 @@ fun SubcomposeAsyncImage(
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
-    val painter = rememberAsyncImagePainter(request, imageLoader, interceptor, onState, filterQuality)
+    val painter = rememberAsyncImagePainter(request, imageLoader, transform, onState, filterQuality)
 
     val sizeResolver = request.sizeResolver
     if (sizeResolver !is ConstraintsSizeResolver) {

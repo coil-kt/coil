@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
-import coil.compose.AsyncImagePainter.Companion.DefaultInterceptor
+import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
@@ -26,7 +26,7 @@ internal fun requestOf(model: Any?): ImageRequest {
 }
 
 @Stable
-internal fun interceptorOf(
+internal fun transformOf(
     placeholder: Painter?,
     error: Painter?,
     fallback: Painter?,
@@ -46,7 +46,7 @@ internal fun interceptorOf(
             }
         }
     } else {
-        DefaultInterceptor
+        DefaultTransform
     }
 }
 

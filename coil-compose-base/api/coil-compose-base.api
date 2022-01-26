@@ -18,7 +18,7 @@ public final class coil/compose/AsyncImagePainter : androidx/compose/ui/graphics
 }
 
 public final class coil/compose/AsyncImagePainter$Companion {
-	public final fun getDefaultInterceptor ()Lkotlin/jvm/functions/Function1;
+	public final fun getDefaultTransform ()Lkotlin/jvm/functions/Function1;
 }
 
 public abstract class coil/compose/AsyncImagePainter$State {

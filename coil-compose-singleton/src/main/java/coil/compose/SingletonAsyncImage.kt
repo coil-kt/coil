@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImagePainter.Companion.DefaultInterceptor
+import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 
@@ -82,7 +82,7 @@ fun AsyncImage(
  *  represents. This should always be provided unless this image is used for decorative purposes,
  *  and does not represent a meaningful action that a user can take.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param interceptor A callback to transform a new [State] before it's applied to the
+ * @param transform A callback to transform a new [State] before it's applied to the
  *  [AsyncImagePainter]. Typically this is used to modify the state's [Painter].
  * @param onState Called when the state of this painter changes.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
@@ -101,7 +101,7 @@ fun AsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    interceptor: (State) -> State = DefaultInterceptor,
+    transform: (State) -> State = DefaultTransform,
     onState: ((State) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -113,7 +113,7 @@ fun AsyncImage(
     contentDescription = contentDescription,
     imageLoader = LocalImageLoader.current,
     modifier = modifier,
-    interceptor = interceptor,
+    transform = transform,
     onState = onState,
     alignment = alignment,
     contentScale = contentScale,
@@ -189,7 +189,7 @@ fun SubcomposeAsyncImage(
  *  represents. This should always be provided unless this image is used for decorative purposes,
  *  and does not represent a meaningful action that a user can take.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param interceptor A callback to transform a new [State] before it's applied to the
+ * @param transform A callback to transform a new [State] before it's applied to the
  *  [AsyncImagePainter]. Typically this is used to modify the state's [Painter].
  * @param onState Called when the state of this painter changes.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
@@ -209,7 +209,7 @@ fun SubcomposeAsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    interceptor: (State) -> State = DefaultInterceptor,
+    transform: (State) -> State = DefaultTransform,
     onState: ((State) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -222,7 +222,7 @@ fun SubcomposeAsyncImage(
     contentDescription = contentDescription,
     imageLoader = LocalImageLoader.current,
     modifier = modifier,
-    interceptor = interceptor,
+    transform = transform,
     onState = onState,
     alignment = alignment,
     contentScale = contentScale,
