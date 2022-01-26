@@ -186,9 +186,9 @@ fun SubcomposeAsyncImage(
     contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
-    loading: @Composable (AsyncImageScope.(State.Loading) -> Unit)? = null,
-    success: @Composable (AsyncImageScope.(State.Success) -> Unit)? = null,
-    error: @Composable (AsyncImageScope.(State.Error) -> Unit)? = null,
+    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
+    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
+    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
     onLoading: ((State.Loading) -> Unit)? = null,
     onSuccess: ((State.Success) -> Unit)? = null,
     onError: ((State.Error) -> Unit)? = null,
@@ -238,7 +238,7 @@ fun SubcomposeAsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
  *  into the destination.
- * @param content A callback to draw the content inside an [AsyncImageScope].
+ * @param content A callback to draw the content inside an [SubcomposeAsyncImageScope].
  */
 @Composable
 fun SubcomposeAsyncImage(
@@ -257,7 +257,7 @@ fun SubcomposeAsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    content: @Composable AsyncImageScope.() -> Unit,
+    content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
@@ -273,7 +273,7 @@ fun SubcomposeAsyncImage(
             contentAlignment = alignment,
             propagateMinConstraints = true
         ) {
-            RealAsyncImageScope(
+            RealSubcomposeAsyncImageScope(
                 parentScope = this,
                 painter = painter,
                 contentDescription = contentDescription,
@@ -296,7 +296,7 @@ fun SubcomposeAsyncImage(
             // and `painter.state` is updated to `Success` before invoking `content`.
             sizeResolver.setConstraints(constraints)
 
-            RealAsyncImageScope(
+            RealSubcomposeAsyncImageScope(
                 parentScope = this,
                 painter = painter,
                 contentDescription = contentDescription,
@@ -314,7 +314,7 @@ fun SubcomposeAsyncImage(
  */
 @LayoutScopeMarker
 @Immutable
-interface AsyncImageScope : BoxScope {
+interface SubcomposeAsyncImageScope : BoxScope {
 
     /** The painter that is drawn by [AsyncImageContent]. */
     val painter: AsyncImagePainter
@@ -336,12 +336,12 @@ interface AsyncImageScope : BoxScope {
 }
 
 /**
- * A composable that draws [AsyncImage]'s content with [AsyncImageScope]'s properties.
+ * A composable that draws [AsyncImage]'s content with [SubcomposeAsyncImageScope]'s properties.
  *
- * @see AsyncImageScope
+ * @see SubcomposeAsyncImageScope
  */
 @Composable
-fun AsyncImageScope.AsyncImageContent(
+fun SubcomposeAsyncImageScope.AsyncImageContent(
     modifier: Modifier = Modifier,
     painter: Painter = this.painter,
     contentDescription: String? = this.contentDescription,
@@ -359,7 +359,7 @@ fun AsyncImageScope.AsyncImageContent(
     colorFilter = colorFilter
 )
 
-/** Draws the current content without an [AsyncImageScope]. */
+/** Draws the current content without an [SubcomposeAsyncImageScope]. */
 @Composable
 private fun Content(
     modifier: Modifier,
@@ -389,22 +389,24 @@ private fun Content(
 
 @Stable
 private fun contentOf(
-    loading: @Composable (AsyncImageScope.(State.Loading) -> Unit)?,
-    success: @Composable (AsyncImageScope.(State.Success) -> Unit)?,
-    error: @Composable (AsyncImageScope.(State.Error) -> Unit)?,
-): @Composable AsyncImageScope.() -> Unit = if (loading != null || success != null || error != null) {
-    {
-        var draw = true
-        when (val state = painter.state) {
-            is State.Loading -> if (loading != null) loading(state).also { draw = false }
-            is State.Success -> if (success != null) success(state).also { draw = false }
-            is State.Error -> if (error != null) error(state).also { draw = false }
-            is State.Empty -> {} // Skipped if rendering on the main thread.
+    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)?,
+    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)?,
+    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)?,
+): @Composable SubcomposeAsyncImageScope.() -> Unit {
+    return if (loading != null || success != null || error != null) {
+        {
+            var draw = true
+            when (val state = painter.state) {
+                is State.Loading -> if (loading != null) loading(state).also { draw = false }
+                is State.Success -> if (success != null) success(state).also { draw = false }
+                is State.Error -> if (error != null) error(state).also { draw = false }
+                is State.Empty -> {} // Skipped if rendering on the main thread.
+            }
+            if (draw) AsyncImageContent()
         }
-        if (draw) AsyncImageContent()
+    } else {
+        { AsyncImageContent() }
     }
-} else {
-    { AsyncImageContent() }
 }
 
 @Composable
@@ -475,7 +477,7 @@ private class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
     }
 }
 
-private data class RealAsyncImageScope(
+private data class RealSubcomposeAsyncImageScope(
     private val parentScope: BoxScope,
     override val painter: AsyncImagePainter,
     override val contentDescription: String?,
@@ -483,6 +485,6 @@ private data class RealAsyncImageScope(
     override val contentScale: ContentScale,
     override val alpha: Float,
     override val colorFilter: ColorFilter?,
-) : AsyncImageScope, BoxScope by parentScope
+) : SubcomposeAsyncImageScope, BoxScope by parentScope
 
 private val ZeroConstraints = Constraints.fixed(0, 0)

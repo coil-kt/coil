@@ -30,22 +30,24 @@ internal fun interceptorOf(
     placeholder: Painter?,
     error: Painter?,
     fallback: Painter?,
-) = if (placeholder != null || error != null || fallback != null) {
-    { state ->
-        when (state) {
-            is State.Loading -> {
-                if (placeholder != null) state.copy(painter = placeholder) else state
+): (State) -> State {
+    return if (placeholder != null || error != null || fallback != null) {
+        { state ->
+            when (state) {
+                is State.Loading -> {
+                    if (placeholder != null) state.copy(painter = placeholder) else state
+                }
+                is State.Error -> if (state.result.throwable is NullRequestDataException) {
+                    if (fallback != null) state.copy(painter = fallback) else state
+                } else {
+                    if (error != null) state.copy(painter = error) else state
+                }
+                else -> state
             }
-            is State.Error -> if (state.result.throwable is NullRequestDataException) {
-                if (fallback != null) state.copy(painter = fallback) else state
-            } else {
-                if (error != null) state.copy(painter = error) else state
-            }
-            else -> state
         }
+    } else {
+        DefaultInterceptor
     }
-} else {
-    DefaultInterceptor
 }
 
 @Stable
@@ -53,17 +55,19 @@ internal fun onStateOf(
     onLoading: ((State.Loading) -> Unit)?,
     onSuccess: ((State.Success) -> Unit)?,
     onError: ((State.Error) -> Unit)?,
-): ((State) -> Unit)? = if (onLoading != null || onSuccess != null || onError != null) {
-    { state ->
-        when (state) {
-            is State.Loading -> onLoading?.invoke(state)
-            is State.Success -> onSuccess?.invoke(state)
-            is State.Error -> onError?.invoke(state)
-            is State.Empty -> {}
+): ((State) -> Unit)? {
+    return if (onLoading != null || onSuccess != null || onError != null) {
+        { state ->
+            when (state) {
+                is State.Loading -> onLoading?.invoke(state)
+                is State.Success -> onSuccess?.invoke(state)
+                is State.Error -> onError?.invoke(state)
+                is State.Empty -> {}
+            }
         }
+    } else {
+        null
     }
-} else {
-    null
 }
 
 internal fun Constraints.constrainWidth(width: Float) =

@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQ
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImagePainter.State
-import coil.compose.AsyncImageScope.Companion.DefaultContent
+import coil.compose.SubcomposeAsyncImageScope.Companion.DefaultContent
 import coil.request.ImageRequest
 
 /**
@@ -45,9 +45,9 @@ fun AsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    loading: @Composable (AsyncImageScope.(State.Loading) -> Unit)? = null,
-    success: @Composable (AsyncImageScope.(State.Success) -> Unit)? = null,
-    error: @Composable (AsyncImageScope.(State.Error) -> Unit)? = null,
+    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
+    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
+    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
     onLoading: ((State.Loading) -> Unit)? = null,
     onSuccess: ((State.Success) -> Unit)? = null,
     onError: ((State.Error) -> Unit)? = null,
@@ -98,7 +98,7 @@ fun AsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
  *  into the destination.
- * @param content A callback to draw the content inside an [AsyncImageScope].
+ * @param content A callback to draw the content inside an [SubcomposeAsyncImageScope].
  */
 @Composable
 fun AsyncImage(
@@ -116,7 +116,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    content: @Composable (AsyncImageScope.() -> Unit) = DefaultContent,
+    content: @Composable (SubcomposeAsyncImageScope.() -> Unit) = DefaultContent,
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
