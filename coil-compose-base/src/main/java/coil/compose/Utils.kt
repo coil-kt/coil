@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
-import coil.compose.AsyncImagePainter.Companion.DefaultStateTransform
+import coil.compose.AsyncImagePainter.Companion.DefaultInterceptor
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
@@ -26,10 +26,10 @@ internal fun requestOf(model: Any?): ImageRequest {
 }
 
 @Stable
-internal fun stateTransformOf(
-    placeholder: Painter? = null,
-    error: Painter? = null,
-    fallback: Painter? = null,
+internal fun interceptorOf(
+    placeholder: Painter?,
+    error: Painter?,
+    fallback: Painter?,
 ) = if (placeholder != null || error != null || fallback != null) {
     { state ->
         when (state) {
@@ -45,7 +45,7 @@ internal fun stateTransformOf(
         }
     }
 } else {
-    DefaultStateTransform
+    DefaultInterceptor
 }
 
 @Stable

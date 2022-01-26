@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
-import coil.compose.AsyncImagePainter.Companion.DefaultStateTransform
+import coil.compose.AsyncImagePainter.Companion.DefaultInterceptor
 import coil.compose.AsyncImagePainter.State
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -88,7 +88,7 @@ fun rememberAsyncImagePainter(
 ) = rememberAsyncImagePainter(
     model = model,
     imageLoader = imageLoader,
-    stateTransform = stateTransformOf(placeholder, error, fallback),
+    interceptor = interceptorOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
     filterQuality = filterQuality
 )
@@ -106,8 +106,8 @@ fun rememberAsyncImagePainter(
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
- * @param stateTransform A callback to transform a new [State] before it's applied to the
- *  [AsyncImagePainter]. Typically this is used to modify the state's [Painter].
+ * @param interceptor A callback to transform a new [State] before it's applied to the
+ *  [AsyncImagePainter]. Typically this is used to overwrite the state's [Painter].
  * @param onState Called when the state of this painter changes.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
  *  into the destination.
@@ -116,7 +116,7 @@ fun rememberAsyncImagePainter(
 fun rememberAsyncImagePainter(
     model: Any?,
     imageLoader: ImageLoader,
-    stateTransform: (State) -> State = DefaultStateTransform,
+    interceptor: (State) -> State = DefaultInterceptor,
     onState: ((State) -> Unit)? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter {
@@ -124,7 +124,7 @@ fun rememberAsyncImagePainter(
     validateRequest(request)
 
     val painter = remember { AsyncImagePainter(request, imageLoader) }
-    painter.stateTransform = stateTransform
+    painter.interceptor = interceptor
     painter.onState = onState
     painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
@@ -163,7 +163,7 @@ class AsyncImagePainter internal constructor(
             painter = value
         }
 
-    internal var stateTransform = DefaultStateTransform
+    internal var interceptor = DefaultInterceptor
     internal var onState: ((State) -> Unit)? = null
     internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
@@ -263,7 +263,7 @@ class AsyncImagePainter internal constructor(
 
     private fun updateState(input: State) {
         val previous = _state
-        val current = stateTransform(input)
+        val current = interceptor(input)
         _state = current
         _painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
 
@@ -347,7 +347,7 @@ class AsyncImagePainter internal constructor(
     }
 
     companion object {
-        val DefaultStateTransform: (State) -> State = { it }
+        val DefaultInterceptor: (State) -> State = { it }
     }
 }
 
