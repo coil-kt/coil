@@ -347,6 +347,9 @@ class AsyncImagePainter internal constructor(
     }
 
     companion object {
+        /**
+         * A state interceptor that does not transform the state.
+         */
         val DefaultInterceptor: (State) -> State = { it }
     }
 }
