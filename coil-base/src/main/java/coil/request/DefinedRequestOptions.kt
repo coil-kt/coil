@@ -87,21 +87,21 @@ class DefinedRequestOptions(
     }
 
     override fun hashCode(): Int {
-        var result = lifecycle?.hashCode() ?: 0
-        result = 31 * result + (sizeResolver?.hashCode() ?: 0)
-        result = 31 * result + (scale?.hashCode() ?: 0)
-        result = 31 * result + (interceptorDispatcher?.hashCode() ?: 0)
-        result = 31 * result + (fetcherDispatcher?.hashCode() ?: 0)
-        result = 31 * result + (decoderDispatcher?.hashCode() ?: 0)
-        result = 31 * result + (transformationDispatcher?.hashCode() ?: 0)
-        result = 31 * result + (transitionFactory?.hashCode() ?: 0)
-        result = 31 * result + (precision?.hashCode() ?: 0)
-        result = 31 * result + (bitmapConfig?.hashCode() ?: 0)
-        result = 31 * result + (allowHardware?.hashCode() ?: 0)
-        result = 31 * result + (allowRgb565?.hashCode() ?: 0)
-        result = 31 * result + (memoryCachePolicy?.hashCode() ?: 0)
-        result = 31 * result + (diskCachePolicy?.hashCode() ?: 0)
-        result = 31 * result + (networkCachePolicy?.hashCode() ?: 0)
+        var result = lifecycle.hashCode()
+        result = 31 * result + sizeResolver.hashCode()
+        result = 31 * result + scale.hashCode()
+        result = 31 * result + interceptorDispatcher.hashCode()
+        result = 31 * result + fetcherDispatcher.hashCode()
+        result = 31 * result + decoderDispatcher.hashCode()
+        result = 31 * result + transformationDispatcher.hashCode()
+        result = 31 * result + transitionFactory.hashCode()
+        result = 31 * result + precision.hashCode()
+        result = 31 * result + bitmapConfig.hashCode()
+        result = 31 * result + allowHardware.hashCode()
+        result = 31 * result + allowRgb565.hashCode()
+        result = 31 * result + memoryCachePolicy.hashCode()
+        result = 31 * result + diskCachePolicy.hashCode()
+        result = 31 * result + networkCachePolicy.hashCode()
         return result
     }
 }
