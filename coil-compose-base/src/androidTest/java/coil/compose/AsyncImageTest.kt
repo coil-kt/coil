@@ -251,7 +251,7 @@ class AsyncImageTest {
         composeTestRule.unregisterIdlingResource(requestTracker)
 
         composeTestRule.setContent {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(server.url("/image"))
                     .fetcherFactory(LoadingFetcher.Factory())
@@ -297,7 +297,7 @@ class AsyncImageTest {
         assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(server.url("/image"))
                     .fetcherFactory(ErrorFetcher.Factory())
@@ -341,7 +341,7 @@ class AsyncImageTest {
         assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader,
@@ -384,7 +384,7 @@ class AsyncImageTest {
         var index = 0
 
         composeTestRule.setContent {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader,
@@ -408,7 +408,7 @@ class AsyncImageTest {
                     }
                     index++
                 }
-                AsyncImageContent(
+                SubcomposeAsyncImageContent(
                     modifier = Modifier.clip(CircleShape)
                 )
             }
@@ -531,7 +531,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             outerCompositionCount.getAndIncrement()
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(server.url("/image"))
                     .memoryCachePolicy(CachePolicy.ENABLED)
@@ -543,7 +543,7 @@ class AsyncImageTest {
                     0 -> assertIs<State.Loading>(painter.state)
                     else -> assertIs<State.Success>(painter.state)
                 }
-                AsyncImageContent()
+                SubcomposeAsyncImageContent()
             }
         }
 
@@ -564,7 +564,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             outerCompositionCount.getAndIncrement()
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(url)
                     .memoryCachePolicy(CachePolicy.ENABLED)
@@ -574,7 +574,7 @@ class AsyncImageTest {
             ) {
                 innerCompositionCount.getAndIncrement()
                 assertIs<State.Success>(painter.state)
-                AsyncImageContent()
+                SubcomposeAsyncImageContent()
             }
         }
 
