@@ -309,38 +309,39 @@ fun SubcomposeAsyncImage(
 }
 
 /**
- * A scope for the children of [AsyncImage].
+ * A scope for the children of [SubcomposeAsyncImage].
  */
 @LayoutScopeMarker
 @Immutable
 interface SubcomposeAsyncImageScope : BoxScope {
 
-    /** The painter that is drawn by [AsyncImageContent]. */
+    /** The painter that is drawn by [SubcomposeAsyncImageContent]. */
     val painter: AsyncImagePainter
 
-    /** The content description for [AsyncImageContent]. */
+    /** The content description for [SubcomposeAsyncImageContent]. */
     val contentDescription: String?
 
     /** The default alignment for any composables drawn in this scope. */
     val alignment: Alignment
 
-    /** The content scale for [AsyncImageContent]. */
+    /** The content scale for [SubcomposeAsyncImageContent]. */
     val contentScale: ContentScale
 
-    /** The alpha for [AsyncImageContent]. */
+    /** The alpha for [SubcomposeAsyncImageContent]. */
     val alpha: Float
 
-    /** The color filter for [AsyncImageContent]. */
+    /** The color filter for [SubcomposeAsyncImageContent]. */
     val colorFilter: ColorFilter?
 }
 
 /**
- * A composable that draws [AsyncImage]'s content with [SubcomposeAsyncImageScope]'s properties.
+ * A composable that draws [SubcomposeAsyncImage]'s content with [SubcomposeAsyncImageScope]'s
+ * properties.
  *
  * @see SubcomposeAsyncImageScope
  */
 @Composable
-fun SubcomposeAsyncImageScope.AsyncImageContent(
+fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
     modifier: Modifier = Modifier,
     painter: Painter = this.painter,
     contentDescription: String? = this.contentDescription,
@@ -401,10 +402,10 @@ private fun contentOf(
                 is State.Error -> if (error != null) error(state).also { draw = false }
                 is State.Empty -> {} // Skipped if rendering on the main thread.
             }
-            if (draw) AsyncImageContent()
+            if (draw) SubcomposeAsyncImageContent()
         }
     } else {
-        { AsyncImageContent() }
+        { SubcomposeAsyncImageContent() }
     }
 }
 
