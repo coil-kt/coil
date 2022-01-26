@@ -92,8 +92,8 @@ class SuccessResult(
         var result = drawable.hashCode()
         result = 31 * result + request.hashCode()
         result = 31 * result + dataSource.hashCode()
-        result = 31 * result + (memoryCacheKey?.hashCode() ?: 0)
-        result = 31 * result + (diskCacheKey?.hashCode() ?: 0)
+        result = 31 * result + memoryCacheKey.hashCode()
+        result = 31 * result + diskCacheKey.hashCode()
         result = 31 * result + isSampled.hashCode()
         result = 31 * result + isPlaceholderCached.hashCode()
         return result
@@ -139,7 +139,7 @@ class ErrorResult(
     }
 
     override fun hashCode(): Int {
-        var result = drawable?.hashCode() ?: 0
+        var result = drawable.hashCode()
         result = 31 * result + request.hashCode()
         result = 31 * result + throwable.hashCode()
         return result
