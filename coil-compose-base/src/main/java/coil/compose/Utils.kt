@@ -79,3 +79,5 @@ internal fun Constraints.constrainHeight(height: Float) =
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
+
+internal val ZeroConstraints = Constraints.fixed(0, 0)

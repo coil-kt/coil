@@ -202,15 +202,13 @@ fun SubcomposeAsyncImage(
     contentDescription = contentDescription,
     imageLoader = imageLoader,
     modifier = modifier,
-    onLoading = onLoading,
-    onSuccess = onSuccess,
-    onError = onError,
+    onState = onStateOf(onLoading, onSuccess, onError),
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
-    content = contentOf(loading, success, error),
+    content = contentOf(loading, success, error)
 )
 
 /**
@@ -222,12 +220,9 @@ fun SubcomposeAsyncImage(
  *  and does not represent a meaningful action that a user can take.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param placeholder A [Painter] that is displayed while the image is loading.
- * @param error A [Painter] that is displayed when the image request is unsuccessful.
- * @param fallback A [Painter] that is displayed when the request's [ImageRequest.data] is null.
- * @param onLoading Called when the image request begins loading.
- * @param onSuccess Called when the image request completes successfully.
- * @param onError Called when the image request completes unsuccessfully.
+ * @param interceptor A callback to transform a new [State] before it's applied to the
+ *  [AsyncImagePainter]. Typically this is used to modify the state's [Painter].
+ * @param onState Called when the state of this painter changes.
  * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
  *  bounds defined by the width and height.
  * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
@@ -246,12 +241,8 @@ fun SubcomposeAsyncImage(
     contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
-    placeholder: Painter? = null,
-    error: Painter? = null,
-    fallback: Painter? = null,
-    onLoading: ((State.Loading) -> Unit)? = null,
-    onSuccess: ((State.Success) -> Unit)? = null,
-    onError: ((State.Error) -> Unit)? = null,
+    interceptor: (State) -> State = DefaultInterceptor,
+    onState: ((State) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
@@ -261,8 +252,7 @@ fun SubcomposeAsyncImage(
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
-    val painter = rememberAsyncImagePainter(request, imageLoader, placeholder, error, fallback,
-        onLoading, onSuccess, onError, filterQuality)
+    val painter = rememberAsyncImagePainter(request, imageLoader, interceptor, onState, filterQuality)
 
     val sizeResolver = request.sizeResolver
     if (sizeResolver !is ConstraintsSizeResolver) {
@@ -486,5 +476,3 @@ private data class RealSubcomposeAsyncImageScope(
     override val alpha: Float,
     override val colorFilter: ColorFilter?,
 ) : SubcomposeAsyncImageScope, BoxScope by parentScope
-
-private val ZeroConstraints = Constraints.fixed(0, 0)

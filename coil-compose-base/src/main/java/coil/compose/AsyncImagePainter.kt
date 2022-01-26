@@ -90,7 +90,7 @@ fun rememberAsyncImagePainter(
     imageLoader = imageLoader,
     interceptor = interceptorOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )
 
 /**
