@@ -22,10 +22,10 @@ private const val DEPRECATION_MESSAGE = "" +
     "encourages creating multiple ImageLoaders if the user creates multiple activities that use " +
     "Compose.\n" +
     "\n" +
-    "It's recommended to use ImageLoaderFactory to set the singleton ImageLoader and " +
+    "You should migrate to `ImageLoaderFactory` to set the singleton ImageLoader and " +
     "`LocalContext.current.imageLoader` to access the singleton ImageLoader in Compose. If you " +
-    "need to use a locally scoped ImageLoader it's recommended to use the AsyncImage and " +
-    "rememberAsyncImagePainter overloads that have an ImageLoader argument and pass the local " +
+    "need to use a locally scoped ImageLoader it's recommended to use the `AsyncImage` and " +
+    "`rememberAsyncImagePainter` overloads that have an ImageLoader argument and pass the local " +
     "ImageLoader as input."
 
 @Deprecated(message = DEPRECATION_MESSAGE)
