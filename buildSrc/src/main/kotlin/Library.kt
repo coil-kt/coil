@@ -23,8 +23,7 @@ object Library {
     const val ANDROIDX_LIFECYCLE_RUNTIME = "androidx.lifecycle:lifecycle-runtime:$LIFECYCLE_VERSION"
     const val ANDROIDX_LIFECYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
 
-    private const val COMPOSE_VERSION = "1.1.0-rc01"
-    const val COMPOSE_COMPILER_VERSION = "1.1.0-rc02"
+    const val COMPOSE_VERSION = "1.1.0-rc03"
     const val COMPOSE_FOUNDATION = "androidx.compose.foundation:foundation:$COMPOSE_VERSION"
     const val COMPOSE_MATERIAL = "androidx.compose.material:material:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_JUNIT = "androidx.compose.ui:ui-test-junit4:$COMPOSE_VERSION"
