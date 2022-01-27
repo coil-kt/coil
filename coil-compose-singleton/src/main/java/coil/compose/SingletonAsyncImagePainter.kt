@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("DEPRECATION", "unused")
 
 package coil.compose
 
