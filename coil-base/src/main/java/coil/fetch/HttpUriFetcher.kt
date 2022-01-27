@@ -45,7 +45,7 @@ internal class HttpUriFetcher(
             val cacheStrategy: CacheStrategy
             if (snapshot != null) {
                 // Always return cached images with empty metadata as they were likely added manually.
-                if (snapshot.metadata.length() == 0L) {
+                if (snapshot.fileSystem.metadata(snapshot.metadata).size == 0L) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
                         mimeType = getMimeType(url, null),
@@ -129,18 +129,25 @@ internal class HttpUriFetcher(
             diskCache.value?.edit(diskCacheKey)
         } ?: return null
         try {
-            // Write the response to the disk cache.
-            if (response.code == HTTP_NOT_MODIFIED && cacheResponse != null) {
-                // Only update the metadata.
-                val combinedResponse = response.newBuilder()
-                    .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
-                    .build()
-                editor.metadata.sink().buffer().use { CacheResponse(combinedResponse).writeTo(it) }
-                response.body!!.closeQuietly()
-            } else {
-                // Update the metadata and the image data.
-                editor.metadata.sink().buffer().use { CacheResponse(response).writeTo(it) }
-                response.body!!.source().use { editor.data.sink().use(it::readAll) }
+            response.use {
+                // Write the response to the disk cache.
+                if (response.code == HTTP_NOT_MODIFIED && cacheResponse != null) {
+                    // Only update the metadata.
+                    val combinedResponse = response.newBuilder()
+                        .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
+                        .build()
+                    editor.fileSystem.write(editor.metadata) {
+                        CacheResponse(combinedResponse).writeTo(this)
+                    }
+                } else {
+                    // Update the metadata and the image data.
+                    editor.fileSystem.write(editor.metadata) {
+                        CacheResponse(response).writeTo(this)
+                    }
+                    editor.fileSystem.write(editor.data) {
+                        response.body!!.source().readAll(this)
+                    }
+                }
             }
             return editor.commitAndGet()
         } catch (e: Exception) {
@@ -221,7 +228,9 @@ internal class HttpUriFetcher(
 
     private fun DiskCache.Snapshot.toCacheResponse(): CacheResponse? {
         try {
-            return metadata.source().buffer().use(::CacheResponse)
+            return fileSystem.read(metadata) {
+                CacheResponse(this)
+            }
         } catch (_: IOException) {
             // If we can't parse the metadata, ignore this entry.
             return null
@@ -229,7 +238,8 @@ internal class HttpUriFetcher(
     }
 
     private fun DiskCache.Snapshot.toImageSource(): ImageSource {
-        return ImageSource(file = data, diskCacheKey = diskCacheKey, closeable = this)
+        // TODO discuss supporting Path in ImageSource as well
+        return ImageSource(file = data.toFile(), diskCacheKey = diskCacheKey, closeable = this)
     }
 
     private fun ResponseBody.toImageSource(): ImageSource {

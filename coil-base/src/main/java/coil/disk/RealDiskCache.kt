@@ -5,18 +5,18 @@ import coil.disk.DiskCache.Snapshot
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.ByteString.Companion.encodeUtf8
 import okio.FileSystem
-import okio.Path.Companion.toOkioPath
-import java.io.File
+import okio.Path
 
 internal class RealDiskCache(
     override val maxSize: Long,
-    override val directory: File,
+    override val directory: Path,
+    override val fileSystem: FileSystem,
     cleanupDispatcher: CoroutineDispatcher
 ) : DiskCache {
 
     private val cache = DiskLruCache(
-        fileSystem = FileSystem.SYSTEM,
-        directory = directory.toOkioPath(),
+        fileSystem = fileSystem,
+        directory = directory,
         cleanupDispatcher = cleanupDispatcher,
         maxSize = maxSize,
         appVersion = 1,
@@ -43,19 +43,19 @@ internal class RealDiskCache(
 
     private fun String.hash() = encodeUtf8().sha256().hex()
 
-    private class RealSnapshot(private val snapshot: DiskLruCache.Snapshot) : Snapshot {
-
-        override val metadata get() = snapshot.file(ENTRY_METADATA).toFile()
-        override val data get() = snapshot.file(ENTRY_DATA).toFile()
+    private inner class RealSnapshot(private val snapshot: DiskLruCache.Snapshot) : Snapshot {
+        override val fileSystem: FileSystem = this@RealDiskCache.fileSystem
+        override val metadata get() = snapshot.file(ENTRY_METADATA)
+        override val data get() = snapshot.file(ENTRY_DATA)
 
         override fun close() = snapshot.close()
         override fun closeAndEdit() = snapshot.closeAndEdit()?.let(::RealEditor)
     }
 
-    private class RealEditor(private val editor: DiskLruCache.Editor) : Editor {
-
-        override val metadata get() = editor.file(ENTRY_METADATA).toFile()
-        override val data get() = editor.file(ENTRY_DATA).toFile()
+    private inner class RealEditor(private val editor: DiskLruCache.Editor) : Editor {
+        override val fileSystem: FileSystem = this@RealDiskCache.fileSystem
+        override val metadata get() = editor.file(ENTRY_METADATA)
+        override val data get() = editor.file(ENTRY_DATA)
 
         override fun commit() = editor.commit()
         override fun commitAndGet() = editor.commitAndGet()?.let(::RealSnapshot)
