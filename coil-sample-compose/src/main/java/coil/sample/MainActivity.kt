@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -146,21 +147,22 @@ private fun ListScreen(
                     .run { DpSize(width.toDp(), height.toDp()) }
             }
 
+            // Intentionally not a `State` object to avoid recomposition.
             var placeholder: MemoryCache.Key? = null
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(image.uri)
                     .parameters(image.parameters)
-                    .listener { _, result -> placeholder = result.memoryCacheKey }
                     .build(),
+                placeholder = ColorPainter(Color(image.color)),
+                error = ColorPainter(Color.Red),
+                onSuccess = { placeholder = it.result.memoryCacheKey },
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(size)
-                    .clickable {
-                        screenFlow.value = Screen.Detail(image, placeholder)
-                    }
+                    .clickable { screenFlow.value = Screen.Detail(image, placeholder) }
             )
         }
     }

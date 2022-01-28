@@ -1,36 +1,21 @@
 package coil.compose
 
 import android.os.SystemClock
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.painter.Painter
 import coil.decode.DecodeUtils
 import coil.size.Scale
 import kotlin.math.max
-
-/** Return a [CrossfadePainter] for the given [key]. */
-@Composable
-internal fun rememberCrossfadePainter(
-    key: Any,
-    start: Painter?,
-    end: Painter?,
-    scale: Scale,
-    durationMillis: Int,
-    fadeStart: Boolean,
-    preferExactIntrinsicSize: Boolean,
-): Painter = remember(key) {
-    CrossfadePainter(start, end, scale, durationMillis, fadeStart, preferExactIntrinsicSize)
-}
 
 /**
  * A [Painter] that crossfades from [start] to [end].
@@ -39,7 +24,7 @@ internal fun rememberCrossfadePainter(
  * dereferenced at the end of the transition.
  */
 @Stable
-private class CrossfadePainter(
+internal class CrossfadePainter(
     private var start: Painter?,
     private val end: Painter?,
     private val scale: Scale,
@@ -52,7 +37,7 @@ private class CrossfadePainter(
     private var startTimeMillis = -1L
     private var isDone = false
 
-    private var maxAlpha: Float by mutableStateOf(1f)
+    private var maxAlpha: Float by mutableStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     override val intrinsicSize get() = computeIntrinsicSize()
@@ -72,7 +57,7 @@ private class CrossfadePainter(
         val percent = (uptimeMillis - startTimeMillis) / durationMillis.toFloat()
         val endAlpha = percent.coerceIn(0f, 1f) * maxAlpha
         val startAlpha = if (fadeStart) maxAlpha - endAlpha else maxAlpha
-        isDone = percent >= 1.0
+        isDone = percent >= 1f
 
         drawPainter(start, startAlpha)
         drawPainter(end, endAlpha)
