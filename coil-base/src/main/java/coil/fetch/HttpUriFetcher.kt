@@ -24,10 +24,8 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okio.FileSystem
 import okio.IOException
-import okio.buffer
-import okio.sink
-import okio.source
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 
 internal class HttpUriFetcher(
@@ -37,6 +35,8 @@ internal class HttpUriFetcher(
     private val diskCache: Lazy<DiskCache?>,
     private val respectCacheHeaders: Boolean
 ) : Fetcher {
+    val fileSystem: FileSystem
+        get() = diskCache.value!!.fileSystem
 
     override suspend fun fetch(): FetchResult {
         var snapshot = readFromDiskCache()
@@ -45,7 +45,7 @@ internal class HttpUriFetcher(
             val cacheStrategy: CacheStrategy
             if (snapshot != null) {
                 // Always return cached images with empty metadata as they were likely added manually.
-                if (snapshot.fileSystem.metadata(snapshot.metadata).size == 0L) {
+                if (fileSystem.metadata(snapshot.metadata).size == 0L) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
                         mimeType = getMimeType(url, null),
@@ -136,15 +136,15 @@ internal class HttpUriFetcher(
                     val combinedResponse = response.newBuilder()
                         .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
                         .build()
-                    editor.fileSystem.write(editor.metadata) {
+                    fileSystem.write(editor.metadata) {
                         CacheResponse(combinedResponse).writeTo(this)
                     }
                 } else {
                     // Update the metadata and the image data.
-                    editor.fileSystem.write(editor.metadata) {
+                    fileSystem.write(editor.metadata) {
                         CacheResponse(response).writeTo(this)
                     }
-                    editor.fileSystem.write(editor.data) {
+                    fileSystem.write(editor.data) {
                         response.body!!.source().readAll(this)
                     }
                 }
@@ -238,8 +238,7 @@ internal class HttpUriFetcher(
     }
 
     private fun DiskCache.Snapshot.toImageSource(): ImageSource {
-        // TODO discuss supporting Path in ImageSource as well
-        return ImageSource(file = data.toFile(), diskCacheKey = diskCacheKey, closeable = this)
+        return ImageSource(file = data, fileSystem = fileSystem, diskCacheKey = diskCacheKey, closeable = this)
     }
 
     private fun ResponseBody.toImageSource(): ImageSource {

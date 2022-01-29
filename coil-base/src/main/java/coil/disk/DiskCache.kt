@@ -65,7 +65,6 @@ interface DiskCache {
      * disk cache. To modify the contents of those files, use [edit].
      */
     interface Snapshot : Closeable {
-        val fileSystem: FileSystem
 
         /** Get the metadata for this entry. */
         val metadata: Path
@@ -91,8 +90,6 @@ interface DiskCache {
      */
     interface Editor {
 
-        val fileSystem: FileSystem
-
         /** Get the metadata for this entry. */
         val metadata: Path
 
@@ -112,7 +109,7 @@ interface DiskCache {
     class Builder {
 
         private var directory: Path? = null
-        private var fileSystem: FileSystem? = null
+        private var fileSystem: FileSystem = FileSystem.SYSTEM
         private var maxSizePercent = 0.02 // 2%
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
@@ -125,8 +122,10 @@ interface DiskCache {
          * IMPORTANT: It is an error to have two [DiskCache] instances active in the same
          * directory at the same time as this can corrupt the disk cache.
          */
-        fun directory(directory: File) =
-            directory(directory = directory.toOkioPath(), fileSystem = FileSystem.SYSTEM)
+        fun directory(directory: File) = apply {
+            this.directory = directory.toOkioPath()
+            this.fileSystem = FileSystem.SYSTEM
+        }
 
         /**
          * Set the [directory] where the cache stores its data.
@@ -134,8 +133,14 @@ interface DiskCache {
          * IMPORTANT: It is an error to have two [DiskCache] instances active in the same
          * directory at the same time as this can corrupt the disk cache.
          */
-        fun directory(directory: Path, fileSystem: FileSystem = FileSystem.SYSTEM) = apply {
+        fun directory(directory: Path) = apply {
             this.directory = directory
+        }
+
+        /**
+         * Set the fileSystem where the cache stores its data, usually [FileSystem.SYSTEM].
+         */
+        fun fileSystem(fileSystem: FileSystem = FileSystem.SYSTEM) = apply {
             this.fileSystem = fileSystem
         }
 
@@ -187,7 +192,6 @@ interface DiskCache {
          */
         fun build(): DiskCache {
             val directory = checkNotNull(directory) { "directory == null" }
-            val fileSystem = checkNotNull(fileSystem) { "fileSystem == null" }
             val maxSize = if (maxSizePercent > 0) {
                 try {
                     val stats = StatFs(directory.toFile().absolutePath)

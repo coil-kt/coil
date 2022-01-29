@@ -5,13 +5,18 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
+import coil.util.extension
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toOkioPath
 import java.io.File
 
-internal class FileFetcher(private val data: File) : Fetcher {
+internal class FileFetcher(private val data: Path, private val fileSystem: FileSystem) : Fetcher {
+    constructor(data: File) : this(data.toOkioPath(), FileSystem.SYSTEM)
 
     override suspend fun fetch(): FetchResult {
         return SourceResult(
-            source = ImageSource(file = data),
+            source = ImageSource(file = data, fileSystem = fileSystem),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(data.extension),
             dataSource = DataSource.DISK
         )

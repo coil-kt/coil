@@ -120,7 +120,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
     private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
         val file = fileOrNull()
         if (file != null) {
-            return ImageDecoder.createSource(file)
+            return ImageDecoder.createSource(file.toFile())
         }
 
         val metadata = metadata
@@ -137,7 +137,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
             SDK_INT >= 31 -> ImageDecoder.createSource(source().readByteArray())
             SDK_INT == 30 -> ImageDecoder.createSource(ByteBuffer.wrap(source().readByteArray()))
             // https://issuetracker.google.com/issues/139371066
-            else -> ImageDecoder.createSource(file())
+            else -> ImageDecoder.createSource(file().toFile())
         }
     }
 

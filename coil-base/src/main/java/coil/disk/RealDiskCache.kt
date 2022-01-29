@@ -44,7 +44,6 @@ internal class RealDiskCache(
     private fun String.hash() = encodeUtf8().sha256().hex()
 
     private inner class RealSnapshot(private val snapshot: DiskLruCache.Snapshot) : Snapshot {
-        override val fileSystem: FileSystem = this@RealDiskCache.fileSystem
         override val metadata get() = snapshot.file(ENTRY_METADATA)
         override val data get() = snapshot.file(ENTRY_DATA)
 
@@ -53,7 +52,6 @@ internal class RealDiskCache(
     }
 
     private inner class RealEditor(private val editor: DiskLruCache.Editor) : Editor {
-        override val fileSystem: FileSystem = this@RealDiskCache.fileSystem
         override val metadata get() = editor.file(ENTRY_METADATA)
         override val data get() = editor.file(ENTRY_DATA)
 
