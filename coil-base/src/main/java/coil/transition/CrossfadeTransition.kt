@@ -32,7 +32,7 @@ class CrossfadeTransition @JvmOverloads constructor(
             end = result.drawable,
             scale = (target.view as? ImageView)?.scale ?: Scale.FIT,
             durationMillis = durationMillis,
-            fadeStart = !(result is SuccessResult && result.isPlaceholderCached),
+            fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
             preferExactIntrinsicSize = preferExactIntrinsicSize
         )
         when (result) {
