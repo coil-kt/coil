@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.0.0-alpha07] - January 30, 2022
+
+- Significantly improve `AsyncImage` performance and split `AsyncImage` into `AsyncImage` and `SubcomposeAsyncImage`. ([#1048](https://github.com/coil-kt/coil/pull/1048))
+    - `SubcomposeAsyncImage` provides `loading`/`success`/`error`/`content` slot APIs and uses subcomposition which has worse performance.
+    -  `AsyncImage` provides `placeholder`/`error`/`fallback` arguments to overwrite the `Painter` that's drawn when loading or if the request is unsuccessful. `AsyncImage` does not use subcomposition and has much better performance than `SubcomposeAsyncImage`.
+    - Remove `AsyncImagePainter.State` argument from `SubcomposeAsyncImage.content`. Use `painter.state` if needed.
+    - Add `onLoading`/`onSuccess`/`onError` callbacks to both `AsyncImage` and `SubcomposeAsyncImage`.
+- Deprecate `LocalImageLoader`. ([#1101](https://github.com/coil-kt/coil/pull/1101))
+- Add support for `ImageRequest.tags`. ([#1066](https://github.com/coil-kt/coil/pull/1066))
+- Move `isGif`, `isWebP`, `isAnimatedWebP`, `isHeif`, and `isAnimatedHeif` in `DecodeUtils` into coil-gif. Add `isSvg` to coil-svg. ([#1117](https://github.com/coil-kt/coil/pull/1117))
+- Convert `FetchResult` and `DecodeResult` to be non-data classes. ([#1114](https://github.com/coil-kt/coil/pull/1114))
+- Remove unused `DiskCache.Builder` context argument. ([#1099](https://github.com/coil-kt/coil/pull/1099))
+- Fix scaling for bitmap resources with original size. ([#1072](https://github.com/coil-kt/coil/pull/1072))
+- Fix failing to close `ImageDecoder` in `ImageDecoderDecoder`. ([#1109](https://github.com/coil-kt/coil/pull/1109))
+- Fix incorrect scaling when converting a drawable to a bitmap. ([#1084](https://github.com/coil-kt/coil/pull/1084))
+- Update Compose to 1.1.0-rc03.
+- Update `accompanist-drawablepainter` to 0.22.1-rc.
+- Update `androidx.appcompat:appcompat-resources` to 1.4.1.
+
 ## [2.0.0-alpha06] - December 24, 2021
 
 - Add `ImageSource.Metadata` to support decoding from assets, resources, and content URIs without buffering or temporary files. ([#1060](https://github.com/coil-kt/coil/pull/1060))
@@ -10,7 +29,7 @@
 - Update Coroutines to 1.6.0.
 - Update Compose to 1.1.0-rc01.
 - Update `accompanist-drawablepainter` to 0.22.0-rc.
-- Update androidx.collection to 1.2.0.
+- Update `androidx.collection` to 1.2.0.
 
 ## [2.0.0-alpha05] - November 28, 2021
 
