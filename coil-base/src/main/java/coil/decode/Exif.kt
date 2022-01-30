@@ -7,42 +7,46 @@ import android.graphics.RectF
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.exifinterface.media.ExifInterface
+import coil.util.MIME_TYPE_HEIC
+import coil.util.MIME_TYPE_HEIF
+import coil.util.MIME_TYPE_JPEG
+import coil.util.MIME_TYPE_WEBP
+import coil.util.safeConfig
+import okio.BufferedSource
 import java.io.InputStream
 
-internal object Exif {
+/** Utility methods for interacting with Exchangeable Image File Format data. */
+internal object ExifUtils {
 
     /**
-     * NOTE: We don't support PNG EXIF data as it's very rarely used and requires buffering
-     * the entire file into memory. All of the supported formats short circuit when the EXIF
-     * chunk is found (often near the top of the file).
+     * We don't support PNG EXIF data as it's very rarely used and requires buffering the entire
+     * file into memory. All of the supported formats short circuit when the EXIF chunk is found
+     * (often near the top of the file).
      */
-    private val SUPPORTED_EXIF_MIME_TYPES = arrayOf(
-        BitmapFactoryDecoder.MIME_TYPE_JPEG,
-        BitmapFactoryDecoder.MIME_TYPE_WEBP,
-        BitmapFactoryDecoder.MIME_TYPE_HEIC,
-        BitmapFactoryDecoder.MIME_TYPE_HEIF
+    private val SUPPORTED_MIME_TYPES = arrayOf(
+        MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF
     )
 
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val PAINT = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     /**
-     * Return 'true' if we should read the image's EXIF data.
+     * Read the image's EXIF data.
      */
-    internal fun shouldReadExifData(mimeType: String?): Boolean {
-        return mimeType != null && mimeType in SUPPORTED_EXIF_MIME_TYPES
+    fun readData(mimeType: String?, source: BufferedSource): ExifData {
+        if (mimeType == null || mimeType in SUPPORTED_MIME_TYPES) {
+            return ExifData.NONE
+        }
+
+        val exifInterface = ExifInterface(ExifInterfaceInputStream(source.peek().inputStream()))
+        return ExifData(exifInterface.isFlipped, exifInterface.rotationDegrees)
     }
 
     /**
-     * This method assumes [config] is not [Bitmap.Config.HARDWARE].
+     * Reverse the EXIF transformations applied to [inBitmap] and return the original image.
      */
-    internal fun applyExifTransformations(
-        inBitmap: Bitmap,
-        config: Bitmap.Config,
-        exifData: Data
-    ): Bitmap {
+    fun reverseTransformations(inBitmap: Bitmap, exifData: ExifData): Bitmap {
         // Short circuit if there are no transformations to apply.
-        val isRotated = exifData.rotationDegrees > 0
-        if (!exifData.isFlipped && !isRotated) {
+        if (!exifData.isFlipped && !exifData.isRotated) {
             return inBitmap
         }
 
@@ -52,7 +56,7 @@ internal object Exif {
         if (exifData.isFlipped) {
             matrix.postScale(-1f, 1f, centerX, centerY)
         }
-        if (isRotated) {
+        if (exifData.isRotated) {
             matrix.postRotate(exifData.rotationDegrees.toFloat(), centerX, centerY)
         }
 
@@ -63,48 +67,42 @@ internal object Exif {
         }
 
         val outBitmap = if (exifData.isSwapped) {
-            createBitmap(inBitmap.height, inBitmap.width, config)
+            createBitmap(inBitmap.height, inBitmap.width, inBitmap.safeConfig)
         } else {
-            createBitmap(inBitmap.width, inBitmap.height, config)
+            createBitmap(inBitmap.width, inBitmap.height, inBitmap.safeConfig)
         }
 
         outBitmap.applyCanvas {
-            drawBitmap(inBitmap, matrix, paint)
+            drawBitmap(inBitmap, matrix, PAINT)
         }
         inBitmap.recycle()
         return outBitmap
     }
+}
 
-    internal data class Data(
-        val isFlipped: Boolean,
-        val rotationDegrees: Int
-    ) {
-        val isSwapped = rotationDegrees == 90 || rotationDegrees == 270
+/** Properties read from an image's EXIF header. */
+internal class ExifData(
+    val isFlipped: Boolean,
+    val rotationDegrees: Int
+) {
 
-        internal companion object {
-            val DEFAULT = Data(
-                isFlipped = false,
-                rotationDegrees = 0
-            )
-
-            internal fun ExifInterface.toExifData() = Data(
-                isFlipped = isFlipped,
-                rotationDegrees = rotationDegrees
-            )
-        }
+    companion object {
+        @JvmField val NONE = ExifData(false, 0)
     }
 }
 
-/**
- * Wrap [delegate] so that it works with [ExifInterface].
- */
-internal class ExifInterfaceInputStream(private val delegate: InputStream) : InputStream() {
+internal val ExifData.isSwapped get() = rotationDegrees == 90 || rotationDegrees == 270
+
+internal val ExifData.isRotated get() = rotationDegrees > 0
+
+/** Wrap [delegate] so that it works with [ExifInterface]. */
+private class ExifInterfaceInputStream(private val delegate: InputStream) : InputStream() {
 
     /**
      * Ensure that this value is always larger than the size of the image
      * so ExifInterface won't stop reading the stream prematurely.
      */
-    private var availableBytes = GIGABYTE_IN_BYTES
+    private var availableBytes = 1024 * 1024 * 1024 // 1GB
 
     override fun read() = interceptBytesRead(delegate.read())
 
@@ -122,9 +120,5 @@ internal class ExifInterfaceInputStream(private val delegate: InputStream) : Inp
     private fun interceptBytesRead(bytesRead: Int): Int {
         if (bytesRead == -1) availableBytes = 0
         return bytesRead
-    }
-
-    private companion object {
-        const val GIGABYTE_IN_BYTES = 1024 * 1024 * 1024
     }
 }

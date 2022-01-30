@@ -200,6 +200,11 @@ internal fun Dimension.pxString(): String {
     return if (this is Dimension.Pixels) px.toString() else toString()
 }
 
+internal const val MIME_TYPE_JPEG = "image/jpeg"
+internal const val MIME_TYPE_WEBP = "image/webp"
+internal const val MIME_TYPE_HEIC = "image/heic"
+internal const val MIME_TYPE_HEIF = "image/heif"
+
 internal val Interceptor.Chain.isPlaceholderCached: Boolean
     get() = this is RealInterceptorChain && isPlaceholderCached
 
