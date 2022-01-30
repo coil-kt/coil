@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -83,7 +84,7 @@ class SvgDecoderTest {
             size = Size(400, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
             scale = Scale.FIT
         )
-        val (drawable, isSampled) = assertNotNull(
+        val result = assertNotNull(
             decoderFactory.create(
                 result = source.asSourceResult(),
                 options = options,
@@ -91,8 +92,8 @@ class SvgDecoderTest {
             )?.decode()
         )
 
-        assertTrue(isSampled)
-        assertTrue(drawable is BitmapDrawable)
+        assertTrue(result.isSampled)
+        val drawable = assertIs<BitmapDrawable>(result.drawable)
 
         val expected = context.decodeBitmapAsset("coil_logo_250.png")
         drawable.bitmap.assertIsSimilarTo(expected)
@@ -106,7 +107,7 @@ class SvgDecoderTest {
             size = Size(326, 50),
             scale = Scale.FILL
         )
-        val (drawable, isSampled) = assertNotNull(
+        val result = assertNotNull(
             decoderFactory.create(
                 result = source.asSourceResult(),
                 options = options,
@@ -114,8 +115,8 @@ class SvgDecoderTest {
             )?.decode()
         )
 
-        assertTrue(isSampled)
-        assertTrue(drawable is BitmapDrawable)
+        assertTrue(result.isSampled)
+        val drawable = assertIs<BitmapDrawable>(result.drawable)
 
         val expected = context.decodeBitmapAsset("instacart_logo_326.png")
         drawable.bitmap.assertIsSimilarTo(expected)
