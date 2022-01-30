@@ -203,8 +203,8 @@ public abstract interface class coil/decode/Decoder$Factory {
 public abstract class coil/decode/ImageSource : java/io/Closeable {
 	public abstract fun file ()Lokio/Path;
 	public abstract fun fileOrNull ()Lokio/Path;
+	public abstract fun getFileSystem ()Lokio/FileSystem;
 	public abstract fun getMetadata ()Lcoil/decode/ImageSource$Metadata;
-	public abstract fun mediaDataSource ()Landroid/media/MediaDataSource;
 	public abstract fun source ()Lokio/BufferedSource;
 	public abstract fun sourceOrNull ()Lokio/BufferedSource;
 }
@@ -250,7 +250,6 @@ public final class coil/disk/DiskCache$Builder {
 	public final fun directory (Ljava/io/File;)Lcoil/disk/DiskCache$Builder;
 	public final fun directory (Lokio/Path;)Lcoil/disk/DiskCache$Builder;
 	public final fun fileSystem (Lokio/FileSystem;)Lcoil/disk/DiskCache$Builder;
-	public static synthetic fun fileSystem$default (Lcoil/disk/DiskCache$Builder;Lokio/FileSystem;ILjava/lang/Object;)Lcoil/disk/DiskCache$Builder;
 	public final fun maxSizeBytes (J)Lcoil/disk/DiskCache$Builder;
 	public final fun maxSizePercent (D)Lcoil/disk/DiskCache$Builder;
 	public final fun maximumMaxSizeBytes (J)Lcoil/disk/DiskCache$Builder;
