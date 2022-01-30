@@ -3,14 +3,12 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build.VERSION.SDK_INT
-import androidx.exifinterface.media.ExifInterface
 import coil.ImageLoader
-import coil.decode.Exif.Data.Companion.toExifData
-import coil.decode.Exif.applyExifTransformations
 import coil.fetch.SourceResult
 import coil.request.Options
 import coil.size.isOriginal
 import coil.size.pxOrElse
+import coil.util.MIME_TYPE_JPEG
 import coil.util.toDrawable
 import coil.util.toSoftware
 import kotlinx.coroutines.runInterruptible
@@ -44,31 +42,19 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         inJustDecodeBounds = false
 
         // Read the image's EXIF data.
-        val exifData = if (Exif.shouldReadExifData(outMimeType)) {
-            val inputStream = safeBufferedSource.peek().inputStream()
-            val exifInterface = ExifInterface(ExifInterfaceInputStream(inputStream))
-            safeSource.exception?.let { throw it }
-            exifInterface.toExifData()
-        } else {
-            Exif.Data.DEFAULT
-        }
+        val exifData = ExifUtils.readData(outMimeType, safeBufferedSource)
+        safeSource.exception?.let { throw it }
 
-        // srcWidth and srcHeight are the dimensions of the image after
-        // EXIF transformations (but before sampling).
-        val srcWidth = if (exifData.isSwapped) outHeight else outWidth
-        val srcHeight = if (exifData.isSwapped) outWidth else outHeight
-
-        inPreferredConfig = computeConfig(options, exifData)
-        inPremultiplied = options.premultipliedAlpha
+        // Always create immutable bitmaps as they have better performance.
+        inMutable = false
 
         if (SDK_INT >= 26 && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
         }
+        inPremultiplied = options.premultipliedAlpha
 
-        // Always create immutable bitmaps as they have performance benefits.
-        inMutable = false
-
-        configureScale(srcWidth, srcHeight)
+        configureConfig(exifData)
+        configureScale(exifData)
 
         // Decode the bitmap.
         val outBitmap: Bitmap? = safeBufferedSource.use {
@@ -84,8 +70,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         // Fix the incorrect density created by overloading inDensity/inTargetDensity.
         outBitmap.density = options.context.resources.displayMetrics.densityDpi
 
-        // Apply any EXIF transformations.
-        val bitmap = applyExifTransformations(outBitmap, inPreferredConfig, exifData)
+        // Reverse the EXIF transformations to get the original image.
+        val bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
 
         return DecodeResult(
             drawable = bitmap.toDrawable(options.context),
@@ -93,15 +79,12 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         )
     }
 
-    /** Compute and return [BitmapFactory.Options.inPreferredConfig]. */
-    private fun BitmapFactory.Options.computeConfig(
-        options: Options,
-        exifData: Exif.Data
-    ): Bitmap.Config {
+    /** Compute and set [BitmapFactory.Options.inPreferredConfig]. */
+    private fun BitmapFactory.Options.configureConfig(exifData: ExifData) {
         var config = options.config
 
         // Disable hardware bitmaps if we need to perform EXIF transformations.
-        if (exifData.isFlipped || exifData.rotationDegrees > 0) {
+        if (exifData.isFlipped || exifData.isRotated) {
             config = config.toSoftware()
         }
 
@@ -115,70 +98,71 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
             config = Bitmap.Config.RGBA_F16
         }
 
-        return config
+        inPreferredConfig = config
     }
 
-    /**
-     * Configure scaling of the output bitmap by considering density, sample size and the given
-     * scaling algorithm.
-     */
-    private fun BitmapFactory.Options.configureScale(
-        srcWidth: Int,
-        srcHeight: Int
-    ) {
-        when {
-            options.size.isOriginal && source.metadata is ResourceMetadata -> {
-                inScaled = true
-                // Read the resource density if available
-                inDensity = (source.metadata as ResourceMetadata).density
-                inTargetDensity = options.context.resources.displayMetrics.densityDpi
-                // Clear outWidth and outHeight so that BitmapFactory will handle scaling itself.
-                outWidth = 0
-                outHeight = 0
-            }
-            outWidth > 0 && outHeight > 0 -> {
-                val (width, height) = options.size
-                val dstWidth = width.pxOrElse { srcWidth }
-                val dstHeight = height.pxOrElse { srcHeight }
-                inSampleSize = DecodeUtils.calculateInSampleSize(
-                    srcWidth = srcWidth,
-                    srcHeight = srcHeight,
-                    dstWidth = dstWidth,
-                    dstHeight = dstHeight,
-                    scale = options.scale
-                )
+    /** Compute and set the scaling properties for [BitmapFactory.Options]. */
+    private fun BitmapFactory.Options.configureScale(exifData: ExifData) {
+        // Requests that request original size from a resource source need to be decoded with
+        // respect to their intrinsic density.
+        val metadata = source.metadata
+        if (metadata is ResourceMetadata && options.size.isOriginal) {
+            inSampleSize = 1
+            inScaled = true
+            inDensity = metadata.density
+            inTargetDensity = options.context.resources.displayMetrics.densityDpi
+            return
+        }
 
-                // Calculate the image's density scaling multiple.
-                var scale = DecodeUtils.computeSizeMultiplier(
-                    srcWidth = srcWidth / inSampleSize.toDouble(),
-                    srcHeight = srcHeight / inSampleSize.toDouble(),
-                    dstWidth = dstWidth.toDouble(),
-                    dstHeight = dstHeight.toDouble(),
-                    scale = options.scale
-                )
+        // This occurs if there was an error decoding the image's size.
+        if (outWidth <= 0 || outHeight <= 0) {
+            inSampleSize = 1
+            inScaled = false
+            return
+        }
 
-                // Only upscale the image if the options require an exact size.
-                if (options.allowInexactSize) {
-                    scale = scale.coerceAtMost(1.0)
-                }
+        // srcWidth and srcHeight are the original dimensions of the image after
+        // EXIF transformations (but before sampling).
+        val srcWidth = if (exifData.isSwapped) outHeight else outWidth
+        val srcHeight = if (exifData.isSwapped) outWidth else outHeight
 
-                inScaled = scale != 1.0
-                if (inScaled) {
-                    if (scale > 1) {
-                        // Upscale
-                        inDensity = (Int.MAX_VALUE / scale).roundToInt()
-                        inTargetDensity = Int.MAX_VALUE
-                    } else {
-                        // Downscale
-                        inDensity = Int.MAX_VALUE
-                        inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
-                    }
-                }
-            }
-            else -> {
-                // This occurs if there was an error decoding the image's size.
-                inSampleSize = 1
-                inScaled = false
+        val (width, height) = options.size
+        val dstWidth = width.pxOrElse { srcWidth }
+        val dstHeight = height.pxOrElse { srcHeight }
+
+        // Calculate the image's sample size.
+        inSampleSize = DecodeUtils.calculateInSampleSize(
+            srcWidth = srcWidth,
+            srcHeight = srcHeight,
+            dstWidth = dstWidth,
+            dstHeight = dstHeight,
+            scale = options.scale
+        )
+
+        // Calculate the image's density scaling multiple.
+        var scale = DecodeUtils.computeSizeMultiplier(
+            srcWidth = srcWidth / inSampleSize.toDouble(),
+            srcHeight = srcHeight / inSampleSize.toDouble(),
+            dstWidth = dstWidth.toDouble(),
+            dstHeight = dstHeight.toDouble(),
+            scale = options.scale
+        )
+
+        // Only upscale the image if the options require an exact size.
+        if (options.allowInexactSize) {
+            scale = scale.coerceAtMost(1.0)
+        }
+
+        inScaled = scale != 1.0
+        if (inScaled) {
+            if (scale > 1) {
+                // Upscale
+                inDensity = (Int.MAX_VALUE / scale).roundToInt()
+                inTargetDensity = Int.MAX_VALUE
+            } else {
+                // Downscale
+                inDensity = Int.MAX_VALUE
+                inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
             }
         }
     }
@@ -215,10 +199,6 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
     }
 
     internal companion object {
-        internal const val MIME_TYPE_JPEG = "image/jpeg"
-        internal const val MIME_TYPE_WEBP = "image/webp"
-        internal const val MIME_TYPE_HEIC = "image/heic"
-        internal const val MIME_TYPE_HEIF = "image/heif"
         internal const val DEFAULT_MAX_PARALLELISM = 4
     }
 }
