@@ -218,7 +218,8 @@ public final class coil/decode/ImageSources {
 }
 
 public final class coil/decode/ResourceMetadata : coil/decode/ImageSource$Metadata {
-	public fun <init> (Ljava/lang/String;I)V
+	public fun <init> (Ljava/lang/String;II)V
+	public final fun getDensity ()I
 	public final fun getPackageName ()Ljava/lang/String;
 	public final fun getResId ()I
 }
