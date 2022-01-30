@@ -199,6 +199,6 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
     }
 
     internal companion object {
-        const val DEFAULT_MAX_PARALLELISM = 4
+        internal const val DEFAULT_MAX_PARALLELISM = 4
     }
 }
