@@ -33,7 +33,7 @@ internal object ExifUtils {
      * Read the image's EXIF data.
      */
     fun readData(mimeType: String?, source: BufferedSource): ExifData {
-        if (mimeType == null || mimeType in SUPPORTED_MIME_TYPES) {
+        if (mimeType == null || mimeType !in SUPPORTED_MIME_TYPES) {
             return ExifData.NONE
         }
 
