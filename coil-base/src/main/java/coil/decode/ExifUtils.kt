@@ -42,7 +42,7 @@ internal object ExifUtils {
     }
 
     /**
-     * Reverse the EXIF transformations applied to [inBitmap] and return the original image.
+     * Reverse the EXIF transformations applied to [inBitmap] and return the output image.
      */
     fun reverseTransformations(inBitmap: Bitmap, exifData: ExifData): Bitmap {
         // Short circuit if there are no transformations to apply.
