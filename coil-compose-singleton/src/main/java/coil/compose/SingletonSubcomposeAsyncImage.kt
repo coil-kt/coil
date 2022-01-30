@@ -23,9 +23,9 @@ import coil.request.ImageRequest
  *  represents. This should always be provided unless this image is used for decorative purposes,
  *  and does not represent a meaningful action that a user can take.
  * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param placeholder A [Painter] that is displayed while the image is loading.
- * @param error A [Painter] that is displayed when the image request is unsuccessful.
- * @param fallback A [Painter] that is displayed when the request's [ImageRequest.data] is null.
+ * @param loading An optional callback to overwrite what's drawn while the image request is loading.
+ * @param success An optional callback to overwrite what's drawn when the image request succeeds.
+ * @param error An optional callback to overwrite what's drawn when the image request fails.
  * @param onLoading Called when the image request begins loading.
  * @param onSuccess Called when the image request completes successfully.
  * @param onError Called when the image request completes unsuccessfully.
@@ -41,13 +41,13 @@ import coil.request.ImageRequest
  *  into the destination.
  */
 @Composable
-fun AsyncImage(
+fun SubcomposeAsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    placeholder: Painter? = null,
-    error: Painter? = null,
-    fallback: Painter? = null,
+    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
+    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
+    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
     onLoading: ((State.Loading) -> Unit)? = null,
     onSuccess: ((State.Success) -> Unit)? = null,
     onError: ((State.Error) -> Unit)? = null,
@@ -56,14 +56,14 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-) = AsyncImage(
+) = SubcomposeAsyncImage(
     model = model,
     contentDescription = contentDescription,
     imageLoader = LocalImageLoader.current,
     modifier = modifier,
-    placeholder = placeholder,
+    loading = loading,
+    success = success,
     error = error,
-    fallback = fallback,
     onLoading = onLoading,
     onSuccess = onSuccess,
     onError = onError,
@@ -95,9 +95,10 @@ fun AsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
  *  into the destination.
+ * @param content A callback to draw the content inside an [SubcomposeAsyncImageScope].
  */
 @Composable
-fun AsyncImage(
+fun SubcomposeAsyncImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
@@ -108,7 +109,8 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-) = AsyncImage(
+    content: @Composable SubcomposeAsyncImageScope.() -> Unit,
+) = SubcomposeAsyncImage(
     model = model,
     contentDescription = contentDescription,
     imageLoader = LocalImageLoader.current,
@@ -119,5 +121,6 @@ fun AsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
+    content = content
 )
