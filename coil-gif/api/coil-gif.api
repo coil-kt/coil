@@ -1,3 +1,11 @@
+public final class coil/decode/GifDecodeUtils {
+	public static final fun isAnimatedHeif (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
+	public static final fun isAnimatedWebP (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
+	public static final fun isGif (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
+	public static final fun isHeif (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
+	public static final fun isWebP (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
+}
+
 public final class coil/decode/GifDecoder : coil/decode/Decoder {
 	public static final field ANIMATED_TRANSFORMATION_KEY Ljava/lang/String;
 	public static final field ANIMATION_END_CALLBACK_KEY Ljava/lang/String;

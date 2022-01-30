@@ -8,19 +8,17 @@ import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
 import coil.size.Dimension
-import coil.util.indexOf
 import coil.util.toSoftware
 import com.caverock.androidsvg.SVG
 import kotlinx.coroutines.runInterruptible
-import okio.BufferedSource
-import okio.ByteString.Companion.encodeUtf8
 import kotlin.math.roundToInt
 
 /**
- * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG files.
+ * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG
+ * files.
  *
- * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for the SVG.
- *  If false, uses the SVG's width/height as the intrinsic size for the SVG.
+ * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
+ *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
  */
 class SvgDecoder @JvmOverloads constructor(
     private val source: ImageSource,
@@ -97,17 +95,13 @@ class SvgDecoder @JvmOverloads constructor(
         }
 
         private fun isApplicable(result: SourceResult): Boolean {
-            return result.mimeType == MIME_TYPE_SVG || containsSvgTag(result.source.source())
-        }
-
-        private fun containsSvgTag(source: BufferedSource): Boolean {
-            return source.rangeEquals(0, LEFT_ANGLE_BRACKET) &&
-                source.indexOf(SVG_TAG, 0, SVG_TAG_SEARCH_THRESHOLD_BYTES) != -1L
+            return result.mimeType == MIME_TYPE_SVG || DecodeUtils.isSvg(result.source.source())
         }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            return other is Factory && useViewBoundsAsIntrinsicSize == other.useViewBoundsAsIntrinsicSize
+            return other is Factory &&
+                useViewBoundsAsIntrinsicSize == other.useViewBoundsAsIntrinsicSize
         }
 
         override fun hashCode() = useViewBoundsAsIntrinsicSize.hashCode()
@@ -116,8 +110,5 @@ class SvgDecoder @JvmOverloads constructor(
     private companion object {
         private const val MIME_TYPE_SVG = "image/svg+xml"
         private const val DEFAULT_SIZE = 512f
-        private const val SVG_TAG_SEARCH_THRESHOLD_BYTES = 1024L
-        private val SVG_TAG = "<svg ".encodeUtf8()
-        private val LEFT_ANGLE_BRACKET = "<".encodeUtf8()
     }
 }

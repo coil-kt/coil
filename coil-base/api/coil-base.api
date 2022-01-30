@@ -185,11 +185,6 @@ public final class coil/decode/DecodeUtils {
 	public static final fun computeSizeMultiplier (DDDDLcoil/size/Scale;)D
 	public static final fun computeSizeMultiplier (FFFFLcoil/size/Scale;)F
 	public static final fun computeSizeMultiplier (IIIILcoil/size/Scale;)D
-	public static final fun isAnimatedHeif (Lokio/BufferedSource;)Z
-	public static final fun isAnimatedWebP (Lokio/BufferedSource;)Z
-	public static final fun isGif (Lokio/BufferedSource;)Z
-	public static final fun isHeif (Lokio/BufferedSource;)Z
-	public static final fun isWebP (Lokio/BufferedSource;)Z
 }
 
 public abstract interface class coil/decode/Decoder {
