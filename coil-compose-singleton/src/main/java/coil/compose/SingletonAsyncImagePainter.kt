@@ -35,7 +35,7 @@ fun rememberAsyncImagePainter(
     model: Any?,
     placeholder: Painter? = null,
     error: Painter? = null,
-    fallback: Painter? = null,
+    fallback: Painter? = error,
     onLoading: ((State.Loading) -> Unit)? = null,
     onSuccess: ((State.Success) -> Unit)? = null,
     onError: ((State.Error) -> Unit)? = null,
