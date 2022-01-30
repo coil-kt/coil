@@ -4,12 +4,9 @@ package coil.decode
 
 import android.content.Context
 import android.graphics.ImageDecoder
-import android.media.MediaDataSource
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
 import androidx.annotation.DrawableRes
-import androidx.annotation.RequiresApi
 import coil.annotation.ExperimentalCoilApi
 import coil.fetch.Fetcher
 import coil.util.closeQuietly
@@ -141,8 +138,6 @@ sealed class ImageSource : Closeable {
      * Return a [File] containing this [ImageSource]'s data.
      * If this image source is backed by a [BufferedSource], a temporary file containing this
      * [ImageSource]'s data will be created.
-     *
-     * This method is only safe when used on FileSystem.SYSTEM.
      */
     abstract fun file(): Path
 
@@ -152,7 +147,10 @@ sealed class ImageSource : Closeable {
      */
     abstract fun fileOrNull(): Path?
 
-    abstract fun mediaDataSource(): MediaDataSource
+    /**
+     * The [FileSystem] which contains the file, or [FileSystem.SYSTEM] if none.
+     */
+    abstract val fileSystem: FileSystem
 
     /**
      * A marker class for metadata for an [ImageSource].
@@ -198,7 +196,7 @@ class ResourceMetadata(
 
 internal class FileImageSource(
     internal val file: Path,
-    internal val fileSystem: FileSystem,
+    override val fileSystem: FileSystem,
     internal val diskCacheKey: String?,
     private val closeable: Closeable?,
     override val metadata: Metadata?
@@ -228,11 +226,6 @@ internal class FileImageSource(
 
     override fun fileOrNull() = file()
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun mediaDataSource(): MediaDataSource {
-        return OkioMediaDataSource(file, fileSystem)
-    }
-
     @Synchronized
     override fun close() {
         isClosed = true
@@ -248,7 +241,7 @@ internal class FileImageSource(
 internal class SourceImageSource(
     source: BufferedSource,
     private val cacheDirectory: Path,
-    private val fileSystem: FileSystem,
+    override val fileSystem: FileSystem,
     override val metadata: Metadata?
 ) : ImageSource() {
 
@@ -287,11 +280,6 @@ internal class SourceImageSource(
     override fun fileOrNull(): Path? {
         assertNotClosed()
         return file
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun mediaDataSource(): MediaDataSource {
-        return OkioMediaDataSource(file(), fileSystem)
     }
 
     @Synchronized

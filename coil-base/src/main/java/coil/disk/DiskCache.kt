@@ -140,7 +140,7 @@ interface DiskCache {
         /**
          * Set the fileSystem where the cache stores its data, usually [FileSystem.SYSTEM].
          */
-        fun fileSystem(fileSystem: FileSystem = FileSystem.SYSTEM) = apply {
+        fun fileSystem(fileSystem: FileSystem) = apply {
             this.fileSystem = fileSystem
         }
 
