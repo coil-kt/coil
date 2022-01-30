@@ -103,8 +103,11 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
 
     /** Compute and set the scaling properties for [BitmapFactory.Options]. */
     private fun BitmapFactory.Options.configureScale(exifData: ExifData) {
+        // Requests that request original size from a resource source need to be decoded with
+        // respect to their intrinsic density.
         val metadata = source.metadata
         if (metadata is ResourceMetadata && options.size.isOriginal) {
+            inSampleSize = 1
             inScaled = true
             inDensity = metadata.density
             inTargetDensity = options.context.resources.displayMetrics.densityDpi
