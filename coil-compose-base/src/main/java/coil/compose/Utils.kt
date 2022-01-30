@@ -37,11 +37,10 @@ internal fun transformOf(
                 is State.Loading -> {
                     if (placeholder != null) state.copy(painter = placeholder) else state
                 }
-                is State.Error -> when {
-                    fallback != null && state.result.throwable is NullRequestDataException ->
-                        state.copy(painter = fallback)
-                    error != null -> state.copy(painter = error)
-                    else -> state
+                is State.Error -> if (state.result.throwable is NullRequestDataException) {
+                    if (fallback != null) state.copy(painter = fallback) else state
+                } else {
+                    if (error != null) state.copy(painter = error) else state
                 }
                 else -> state
             }
