@@ -168,15 +168,12 @@ public final class coil/decode/DataSource : java/lang/Enum {
 
 public final class coil/decode/DecodeResult {
 	public fun <init> (Landroid/graphics/drawable/Drawable;Z)V
-	public final fun component1 ()Landroid/graphics/drawable/Drawable;
-	public final fun component2 ()Z
 	public final fun copy (Landroid/graphics/drawable/Drawable;Z)Lcoil/decode/DecodeResult;
 	public static synthetic fun copy$default (Lcoil/decode/DecodeResult;Landroid/graphics/drawable/Drawable;ZILjava/lang/Object;)Lcoil/decode/DecodeResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public fun hashCode ()I
 	public final fun isSampled ()Z
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/decode/DecodeUtils {
@@ -305,9 +302,6 @@ public final class coil/drawable/CrossfadeDrawable$Companion {
 
 public final class coil/fetch/DrawableResult : coil/fetch/FetchResult {
 	public fun <init> (Landroid/graphics/drawable/Drawable;ZLcoil/decode/DataSource;)V
-	public final fun component1 ()Landroid/graphics/drawable/Drawable;
-	public final fun component2 ()Z
-	public final fun component3 ()Lcoil/decode/DataSource;
 	public final fun copy (Landroid/graphics/drawable/Drawable;ZLcoil/decode/DataSource;)Lcoil/fetch/DrawableResult;
 	public static synthetic fun copy$default (Lcoil/fetch/DrawableResult;Landroid/graphics/drawable/Drawable;ZLcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/fetch/DrawableResult;
 	public fun equals (Ljava/lang/Object;)Z
@@ -315,7 +309,6 @@ public final class coil/fetch/DrawableResult : coil/fetch/FetchResult {
 	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public fun hashCode ()I
 	public final fun isSampled ()Z
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract class coil/fetch/FetchResult {
@@ -331,9 +324,6 @@ public abstract interface class coil/fetch/Fetcher$Factory {
 
 public final class coil/fetch/SourceResult : coil/fetch/FetchResult {
 	public fun <init> (Lcoil/decode/ImageSource;Ljava/lang/String;Lcoil/decode/DataSource;)V
-	public final fun component1 ()Lcoil/decode/ImageSource;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Lcoil/decode/DataSource;
 	public final fun copy (Lcoil/decode/ImageSource;Ljava/lang/String;Lcoil/decode/DataSource;)Lcoil/fetch/SourceResult;
 	public static synthetic fun copy$default (Lcoil/fetch/SourceResult;Lcoil/decode/ImageSource;Ljava/lang/String;Lcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/fetch/SourceResult;
 	public fun equals (Ljava/lang/Object;)Z
@@ -341,7 +331,6 @@ public final class coil/fetch/SourceResult : coil/fetch/FetchResult {
 	public final fun getMimeType ()Ljava/lang/String;
 	public final fun getSource ()Lcoil/decode/ImageSource;
 	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class coil/intercept/Interceptor {
