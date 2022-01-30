@@ -1,3 +1,7 @@
+public final class coil/decode/SvgDecodeUtils {
+	public static final fun isSvg (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
+}
+
 public final class coil/decode/SvgDecoder : coil/decode/Decoder {
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;)V
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Z)V
