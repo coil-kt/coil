@@ -1,8 +1,5 @@
 package coil.disk
 
-import okio.buffer
-import okio.sink
-import okio.source
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +24,7 @@ class DiskCacheTest {
     @After
     fun after() {
         diskCache.clear()
-        diskCache.directory.deleteRecursively() // Ensure we start fresh.
+        diskCache.fileSystem.deleteRecursively(diskCache.directory) // Ensure we start fresh.
     }
 
     @Test
@@ -43,15 +40,19 @@ class DiskCacheTest {
         diskCache["test"].use { assertNull(it) }
 
         diskCache.edit("test")!!.use { editor ->
-            editor.metadata.sink().buffer().use { it.writeDecimalLong(12345).writeByte('\n'.code) }
-            editor.data.sink().buffer().use { it.writeDecimalLong(54321).writeByte('\n'.code) }
+            diskCache.fileSystem.write(editor.metadata) {
+                writeDecimalLong(12345).writeByte('\n'.code)
+            }
+            diskCache.fileSystem.write(editor.data) {
+                writeDecimalLong(54321).writeByte('\n'.code)
+            }
         }
 
         assertTrue(diskCache.size > 0)
 
         diskCache["test"]!!.use { snapshot ->
-            assertEquals(12345, snapshot.metadata.source().buffer().use { it.readUtf8LineStrict() }.toLong())
-            assertEquals(54321, snapshot.data.source().buffer().use { it.readUtf8LineStrict() }.toLong())
+            assertEquals(12345, diskCache.fileSystem.read(snapshot.metadata) { readUtf8LineStrict().toLong() })
+            assertEquals(54321, diskCache.fileSystem.read(snapshot.data) { readUtf8LineStrict().toLong() })
         }
     }
 
