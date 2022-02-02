@@ -25,9 +25,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.FileSystem
 import okio.blackholeSink
-import okio.buffer
-import okio.sink
 import okio.source
 import org.junit.After
 import org.junit.Before
@@ -75,7 +74,7 @@ class HttpUriFetcherTest {
         server.shutdown()
         imageLoader.shutdown()
         diskCache.clear()
-        diskCache.directory.deleteRecursively() // Ensure we start fresh.
+        FileSystem.SYSTEM.deleteRecursively(diskCache.directory) // Ensure we start fresh.
     }
 
     @Test
@@ -150,8 +149,8 @@ class HttpUriFetcherTest {
 
         // Write the image in the disk cache.
         val editor = diskCache.edit(url)!!
-        editor.data.sink().buffer().use {
-            it.writeAll(context.assets.open(IMAGE).source())
+        FileSystem.SYSTEM.write(editor.data) {
+            writeAll(context.assets.open(IMAGE).source())
         }
         editor.commit()
 
@@ -182,7 +181,7 @@ class HttpUriFetcherTest {
 
         // Ensure the result file is present.
         diskCache[url]!!.use { snapshot ->
-            assertTrue(snapshot.data in diskCache.directory.listFiles().orEmpty())
+            assertTrue(snapshot.data in FileSystem.SYSTEM.list(diskCache.directory))
             assertEquals(snapshot.data, source.file)
         }
     }
@@ -207,7 +206,7 @@ class HttpUriFetcherTest {
 
         // Ensure the result file is present.
         val expected = diskCache[url]?.data
-        assertTrue(expected in diskCache.directory.listFiles().orEmpty())
+        assertTrue(expected in FileSystem.SYSTEM.list(diskCache.directory))
         assertEquals(expected, (result.source as FileImageSource).file)
     }
 
@@ -216,8 +215,8 @@ class HttpUriFetcherTest {
         val url = server.url(IMAGE).toString()
 
         val editor = diskCache.edit(url)!!
-        editor.data.sink().buffer().use {
-            it.writeAll(context.assets.open(IMAGE).source())
+        FileSystem.SYSTEM.write(editor.data) {
+            writeAll(context.assets.open(IMAGE).source())
         }
         editor.commit()
 

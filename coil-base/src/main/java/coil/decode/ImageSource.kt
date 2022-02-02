@@ -12,8 +12,10 @@ import coil.fetch.Fetcher
 import coil.util.closeQuietly
 import coil.util.safeCacheDir
 import okio.BufferedSource
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toOkioPath
 import okio.buffer
-import okio.sink
 import okio.source
 import java.io.Closeable
 import java.io.File
@@ -28,10 +30,11 @@ import java.io.File
  */
 @JvmName("create")
 fun ImageSource(
-    file: File,
+    file: Path,
+    fileSystem: FileSystem = FileSystem.SYSTEM,
     diskCacheKey: String? = null,
     closeable: Closeable? = null,
-): ImageSource = FileImageSource(file, diskCacheKey, closeable, null)
+): ImageSource = FileImageSource(file, fileSystem, diskCacheKey, closeable, null)
 
 /**
  * Create a new [ImageSource] backed by a [File].
@@ -45,11 +48,12 @@ fun ImageSource(
 @ExperimentalCoilApi
 @JvmName("create")
 fun ImageSource(
-    file: File,
+    file: Path,
+    fileSystem: FileSystem = FileSystem.SYSTEM,
     diskCacheKey: String? = null,
     closeable: Closeable? = null,
     metadata: ImageSource.Metadata? = null,
-): ImageSource = FileImageSource(file, diskCacheKey, closeable, metadata)
+): ImageSource = FileImageSource(file, fileSystem, diskCacheKey, closeable, metadata)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -61,7 +65,7 @@ fun ImageSource(
 fun ImageSource(
     source: BufferedSource,
     context: Context,
-): ImageSource = SourceImageSource(source, context.safeCacheDir, null)
+): ImageSource = SourceImageSource(source, context.safeCacheDir.toOkioPath(), FileSystem.SYSTEM, null)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -76,7 +80,7 @@ fun ImageSource(
     source: BufferedSource,
     context: Context,
     metadata: ImageSource.Metadata? = null,
-): ImageSource = SourceImageSource(source, context.safeCacheDir, metadata)
+): ImageSource = SourceImageSource(source, context.safeCacheDir.toOkioPath(), FileSystem.SYSTEM, metadata)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -89,7 +93,7 @@ fun ImageSource(
 fun ImageSource(
     source: BufferedSource,
     cacheDirectory: File,
-): ImageSource = SourceImageSource(source, cacheDirectory, null)
+): ImageSource = SourceImageSource(source, cacheDirectory.toOkioPath(), FileSystem.SYSTEM, null)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -103,9 +107,10 @@ fun ImageSource(
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
-    cacheDirectory: File,
+    cacheDirectory: Path,
+    fileSystem: FileSystem = FileSystem.SYSTEM,
     metadata: ImageSource.Metadata? = null,
-): ImageSource = SourceImageSource(source, cacheDirectory, metadata)
+): ImageSource = SourceImageSource(source, cacheDirectory, fileSystem, metadata)
 
 /**
  * Provides access to the image data to be decoded.
@@ -134,13 +139,18 @@ sealed class ImageSource : Closeable {
      * If this image source is backed by a [BufferedSource], a temporary file containing this
      * [ImageSource]'s data will be created.
      */
-    abstract fun file(): File
+    abstract fun file(): Path
 
     /**
      * Return a [File] containing this [ImageSource]'s data if one has already been created.
      * Else, return 'null'.
      */
-    abstract fun fileOrNull(): File?
+    abstract fun fileOrNull(): Path?
+
+    /**
+     * The [FileSystem] which contains the file, or [FileSystem.SYSTEM] if none.
+     */
+    abstract val fileSystem: FileSystem
 
     /**
      * A marker class for metadata for an [ImageSource].
@@ -186,7 +196,8 @@ class ResourceMetadata(
 ) : ImageSource.Metadata()
 
 internal class FileImageSource(
-    internal val file: File,
+    internal val file: Path,
+    override val fileSystem: FileSystem,
     internal val diskCacheKey: String?,
     private val closeable: Closeable?,
     override val metadata: Metadata?
@@ -199,7 +210,7 @@ internal class FileImageSource(
     override fun source(): BufferedSource {
         assertNotClosed()
         source?.let { return it }
-        return file.source().buffer().also { source = it }
+        return fileSystem.source(file).buffer().also { source = it }
     }
 
     @Synchronized
@@ -209,7 +220,7 @@ internal class FileImageSource(
     }
 
     @Synchronized
-    override fun file(): File {
+    override fun file(): Path {
         assertNotClosed()
         return file
     }
@@ -230,41 +241,44 @@ internal class FileImageSource(
 
 internal class SourceImageSource(
     source: BufferedSource,
-    private val cacheDirectory: File,
+    private val cacheDirectory: Path,
+    override val fileSystem: FileSystem,
     override val metadata: Metadata?
 ) : ImageSource() {
 
     private var isClosed = false
     private var source: BufferedSource? = source
-    private var file: File? = null
+    private var file: Path? = null
 
     init {
-        require(cacheDirectory.isDirectory) { "cacheDirectory must be a directory." }
+        require(fileSystem.metadata(cacheDirectory).isDirectory) { "cacheDirectory must be a directory." }
     }
 
     @Synchronized
     override fun source(): BufferedSource {
         assertNotClosed()
         source?.let { return it }
-        return file!!.source().buffer().also { source = it }
+        return fileSystem.source(file!!).buffer().also { source = it }
     }
 
     override fun sourceOrNull() = source()
 
     @Synchronized
-    override fun file(): File {
+    override fun file(): Path {
         assertNotClosed()
         file?.let { return it }
 
         // Copy the source to a temp file.
-        val tempFile = File.createTempFile("tmp", null, cacheDirectory)
-        source!!.use { tempFile.sink().use(it::readAll) }
+        val tempFile = File.createTempFile("tmp", null, cacheDirectory.toFile()).toOkioPath()
+        fileSystem.write(tempFile) {
+            this.writeAll(source!!)
+        }
         source = null
         return tempFile.also { file = it }
     }
 
     @Synchronized
-    override fun fileOrNull(): File? {
+    override fun fileOrNull(): Path? {
         assertNotClosed()
         return file
     }
@@ -273,7 +287,7 @@ internal class SourceImageSource(
     override fun close() {
         isClosed = true
         source?.closeQuietly()
-        file?.delete()
+        file?.let { fileSystem.delete(it) }
     }
 
     private fun assertNotClosed() {

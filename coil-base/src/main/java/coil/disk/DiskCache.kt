@@ -7,7 +7,10 @@ import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import java.io.Closeable
+import okio.Closeable
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toOkioPath
 import java.io.File
 
 /**
@@ -23,7 +26,10 @@ interface DiskCache {
     val maxSize: Long
 
     /** The directory where the cache stores its data. */
-    val directory: File
+    val directory: Path
+
+    /** The directory where the cache stores its data. */
+    val fileSystem: FileSystem
 
     /**
      * Get the entry associated with [key].
@@ -61,10 +67,10 @@ interface DiskCache {
     interface Snapshot : Closeable {
 
         /** Get the metadata for this entry. */
-        val metadata: File
+        val metadata: Path
 
         /** Get the data for this entry. */
-        val data: File
+        val data: Path
 
         /** Close the snapshot to allow editing. */
         override fun close()
@@ -85,10 +91,10 @@ interface DiskCache {
     interface Editor {
 
         /** Get the metadata for this entry. */
-        val metadata: File
+        val metadata: Path
 
         /** Get the data for this entry. */
-        val data: File
+        val data: Path
 
         /** Commit the edit so the changes are visible to readers. */
         fun commit()
@@ -102,7 +108,8 @@ interface DiskCache {
 
     class Builder {
 
-        private var directory: File? = null
+        private var directory: Path? = null
+        private var fileSystem: FileSystem = FileSystem.SYSTEM
         private var maxSizePercent = 0.02 // 2%
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
@@ -116,7 +123,25 @@ interface DiskCache {
          * directory at the same time as this can corrupt the disk cache.
          */
         fun directory(directory: File) = apply {
+            this.directory = directory.toOkioPath()
+            this.fileSystem = FileSystem.SYSTEM
+        }
+
+        /**
+         * Set the [directory] where the cache stores its data.
+         *
+         * IMPORTANT: It is an error to have two [DiskCache] instances active in the same
+         * directory at the same time as this can corrupt the disk cache.
+         */
+        fun directory(directory: Path) = apply {
             this.directory = directory
+        }
+
+        /**
+         * Set the fileSystem where the cache stores its data, usually [FileSystem.SYSTEM].
+         */
+        fun fileSystem(fileSystem: FileSystem) = apply {
+            this.fileSystem = fileSystem
         }
 
         /**
@@ -169,7 +194,7 @@ interface DiskCache {
             val directory = checkNotNull(directory) { "directory == null" }
             val maxSize = if (maxSizePercent > 0) {
                 try {
-                    val stats = StatFs(directory.absolutePath)
+                    val stats = StatFs(directory.toFile().absolutePath)
                     val size = maxSizePercent * stats.blockCountLong * stats.blockSizeLong
                     size.toLong().coerceIn(minimumMaxSizeBytes, maximumMaxSizeBytes)
                 } catch (_: Exception) {
@@ -181,6 +206,7 @@ interface DiskCache {
             return RealDiskCache(
                 maxSize = maxSize,
                 directory = directory,
+                fileSystem = fileSystem,
                 cleanupDispatcher = cleanupDispatcher
             )
         }

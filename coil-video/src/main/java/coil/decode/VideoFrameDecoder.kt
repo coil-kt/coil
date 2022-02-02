@@ -172,7 +172,7 @@ class VideoFrameDecoder(
                 setDataSource("android.resource://${metadata.packageName}/${metadata.resId}")
             }
             else -> {
-                setDataSource(source.file().path)
+                setDataSource(source.file().toFile().path)
             }
         }
     }
