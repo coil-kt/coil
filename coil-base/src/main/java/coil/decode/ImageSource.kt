@@ -24,9 +24,9 @@ import java.io.File
  * Create a new [ImageSource] backed by a [File].
  *
  * @param file The file to read from.
+ * @param fileSystem The file system which contains [file].
  * @param diskCacheKey An optional cache key for the [file] in the disk cache.
- * @param closeable An optional closeable reference that will
- *  be closed when the image source is closed.
+ * @param closeable An optional closeable reference that will be closed when the image source is closed.
  */
 @JvmName("create")
 fun ImageSource(
@@ -40,9 +40,9 @@ fun ImageSource(
  * Create a new [ImageSource] backed by a [File].
  *
  * @param file The file to read from.
+ * @param fileSystem The file system which contains [file].
  * @param diskCacheKey An optional cache key for the [file] in the disk cache.
- * @param closeable An optional closeable reference that will
- *  be closed when the image source is closed.
+ * @param closeable An optional closeable reference that will be closed when the image source is closed.
  * @param metadata Metadata for this image source.
  */
 @ExperimentalCoilApi
@@ -65,7 +65,7 @@ fun ImageSource(
 fun ImageSource(
     source: BufferedSource,
     context: Context,
-): ImageSource = SourceImageSource(source, context.safeCacheDir.toOkioPath(), FileSystem.SYSTEM, null)
+): ImageSource = SourceImageSource(source, context.safeCacheDir, null)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -80,37 +80,34 @@ fun ImageSource(
     source: BufferedSource,
     context: Context,
     metadata: ImageSource.Metadata? = null,
-): ImageSource = SourceImageSource(source, context.safeCacheDir.toOkioPath(), FileSystem.SYSTEM, metadata)
+): ImageSource = SourceImageSource(source, context.safeCacheDir, metadata)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
  *
  * @param source The buffered source to read from.
- * @param cacheDirectory The directory to create temporary files in
- *  if [ImageSource.file] is called.
+ * @param cacheDirectory The directory to create temporary files in if [ImageSource.file] is called.
  */
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
     cacheDirectory: File,
-): ImageSource = SourceImageSource(source, cacheDirectory.toOkioPath(), FileSystem.SYSTEM, null)
+): ImageSource = SourceImageSource(source, cacheDirectory, null)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
  *
  * @param source The buffered source to read from.
- * @param cacheDirectory The directory to create temporary files in
- *  if [ImageSource.file] is called.
+ * @param cacheDirectory The directory to create temporary files in if [ImageSource.file] is called.
  * @param metadata Metadata for this image source.
  */
 @ExperimentalCoilApi
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
-    cacheDirectory: Path,
-    fileSystem: FileSystem = FileSystem.SYSTEM,
+    cacheDirectory: File,
     metadata: ImageSource.Metadata? = null,
-): ImageSource = SourceImageSource(source, cacheDirectory, fileSystem, metadata)
+): ImageSource = SourceImageSource(source, cacheDirectory, metadata)
 
 /**
  * Provides access to the image data to be decoded.
@@ -135,20 +132,21 @@ sealed class ImageSource : Closeable {
     abstract fun sourceOrNull(): BufferedSource?
 
     /**
-     * Return a [File] containing this [ImageSource]'s data.
+     * Return a [Path] that resolves to a file containing this [ImageSource]'s data.
+     *
      * If this image source is backed by a [BufferedSource], a temporary file containing this
      * [ImageSource]'s data will be created.
      */
     abstract fun file(): Path
 
     /**
-     * Return a [File] containing this [ImageSource]'s data if one has already been created.
-     * Else, return 'null'.
+     * Return a [Path] that resolves to a file containing this [ImageSource]'s data if one has
+     * already been created. Else, return 'null'.
      */
     abstract fun fileOrNull(): Path?
 
     /**
-     * The [FileSystem] which contains the file, or [FileSystem.SYSTEM] if none.
+     * The [FileSystem] which contains the [file].
      */
     abstract val fileSystem: FileSystem
 
@@ -241,8 +239,7 @@ internal class FileImageSource(
 
 internal class SourceImageSource(
     source: BufferedSource,
-    private val cacheDirectory: Path,
-    override val fileSystem: FileSystem,
+    private val cacheDirectory: File,
     override val metadata: Metadata?
 ) : ImageSource() {
 
@@ -251,8 +248,10 @@ internal class SourceImageSource(
     private var file: Path? = null
 
     init {
-        require(fileSystem.metadata(cacheDirectory).isDirectory) { "cacheDirectory must be a directory." }
+        require(cacheDirectory.isDirectory) { "cacheDirectory must be a directory." }
     }
+
+    override val fileSystem get() = FileSystem.SYSTEM
 
     @Synchronized
     override fun source(): BufferedSource {
@@ -269,9 +268,11 @@ internal class SourceImageSource(
         file?.let { return it }
 
         // Copy the source to a temp file.
-        val tempFile = File.createTempFile("tmp", null, cacheDirectory.toFile()).toOkioPath()
+        // Support writing to non-SYSTEM file systems once
+        // https://github.com/square/okio/issues/1090 is resolved.
+        val tempFile = File.createTempFile("tmp", null, cacheDirectory).toOkioPath()
         fileSystem.write(tempFile) {
-            this.writeAll(source!!)
+            writeAll(source!!)
         }
         source = null
         return tempFile.also { file = it }
@@ -287,7 +288,7 @@ internal class SourceImageSource(
     override fun close() {
         isClosed = true
         source?.closeQuietly()
-        file?.let { fileSystem.delete(it) }
+        file?.let(fileSystem::delete)
     }
 
     private fun assertNotClosed() {

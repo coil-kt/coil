@@ -14,7 +14,7 @@ import okio.Path.Companion.toOkioPath
 import java.io.File
 
 /**
- * An LRU cache of [File]s.
+ * An LRU cache of files.
  */
 @ExperimentalCoilApi
 interface DiskCache {
@@ -28,7 +28,7 @@ interface DiskCache {
     /** The directory where the cache stores its data. */
     val directory: Path
 
-    /** The directory where the cache stores its data. */
+    /** The file system that contains the cache's files. */
     val fileSystem: FileSystem
 
     /**
@@ -122,10 +122,7 @@ interface DiskCache {
          * IMPORTANT: It is an error to have two [DiskCache] instances active in the same
          * directory at the same time as this can corrupt the disk cache.
          */
-        fun directory(directory: File) = apply {
-            this.directory = directory.toOkioPath()
-            this.fileSystem = FileSystem.SYSTEM
-        }
+        fun directory(directory: File) = directory(directory.toOkioPath())
 
         /**
          * Set the [directory] where the cache stores its data.
