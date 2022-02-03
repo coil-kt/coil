@@ -268,8 +268,7 @@ internal class SourceImageSource(
         file?.let { return it }
 
         // Copy the source to a temp file.
-        // Support writing to non-SYSTEM file systems once
-        // https://github.com/square/okio/issues/1090 is resolved.
+        // Replace JVM call with https://github.com/square/okio/issues/1090 once it's available.
         val tempFile = File.createTempFile("tmp", null, cacheDirectory).toOkioPath()
         fileSystem.write(tempFile) {
             writeAll(source!!)
