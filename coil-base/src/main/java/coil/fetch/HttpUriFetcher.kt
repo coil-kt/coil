@@ -94,8 +94,9 @@ internal class HttpUriFetcher(
                     mimeType = getMimeType(url, responseBody.contentType()),
                     dataSource = response.toDataSource()
                 )
-            } finally {
+            } catch (e: Exception) {
                 response.closeQuietly()
+                throw e
             }
         } catch (e: Exception) {
             snapshot?.closeQuietly()
@@ -123,11 +124,14 @@ internal class HttpUriFetcher(
             return null
         }
 
+        // Open a new editor.
         val editor = if (snapshot != null) {
             snapshot.closeAndEdit()
         } else {
             diskCache.value?.edit(diskCacheKey)
-        } ?: return null
+        }
+        if (editor == null) return null
+
         try {
             // Write the response to the disk cache.
             if (response.code == HTTP_NOT_MODIFIED && cacheResponse != null) {
@@ -151,6 +155,8 @@ internal class HttpUriFetcher(
         } catch (e: Exception) {
             editor.abortQuietly()
             throw e
+        } finally {
+            response.closeQuietly()
         }
     }
 
