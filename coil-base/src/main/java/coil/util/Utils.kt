@@ -45,7 +45,6 @@ import coil.transform.Transformation
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
-import okio.Path
 import java.io.Closeable
 import java.io.File
 
@@ -272,6 +271,3 @@ internal object SingletonDiskCache {
         }
     }
 }
-
-internal val Path.extension: String
-    get() = name.substringAfterLast('.', "")
