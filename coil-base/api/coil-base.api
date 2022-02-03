@@ -209,11 +209,11 @@ public final class coil/decode/ImageSources {
 	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Ljava/io/File;)Lcoil/decode/ImageSource;
-	public static final fun create (Lokio/BufferedSource;Lokio/Path;Lokio/FileSystem;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
+	public static final fun create (Lokio/BufferedSource;Ljava/io/File;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
 	public static synthetic fun create$default (Lokio/BufferedSource;Landroid/content/Context;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
-	public static synthetic fun create$default (Lokio/BufferedSource;Lokio/Path;Lokio/FileSystem;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Lokio/BufferedSource;Ljava/io/File;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
 	public static synthetic fun create$default (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;ILjava/lang/Object;)Lcoil/decode/ImageSource;
 	public static synthetic fun create$default (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
 }
