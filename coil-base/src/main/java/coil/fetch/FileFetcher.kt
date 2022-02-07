@@ -9,6 +9,7 @@ import okio.Path.Companion.toOkioPath
 import java.io.File
 
 internal class FileFetcher(private val data: File) : Fetcher {
+
     override suspend fun fetch(): FetchResult {
         return SourceResult(
             source = ImageSource(file = data.toOkioPath()),

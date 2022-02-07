@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.0-alpha08] - February 7, 2022
+
+- Update `DiskCache` and `ImageSource` to use to Okio's `FileSystem` API. ([#1115](https://github.com/coil-kt/coil/pull/1115))
+
 ## [2.0.0-alpha07] - January 30, 2022
 
 - Significantly improve `AsyncImage` performance and split `AsyncImage` into `AsyncImage` and `SubcomposeAsyncImage`. ([#1048](https://github.com/coil-kt/coil/pull/1048))
