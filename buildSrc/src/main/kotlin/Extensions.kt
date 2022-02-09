@@ -3,12 +3,8 @@
 package coil
 
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.project
 import kotlin.math.pow
 
 val Project.minSdk: Int
@@ -52,51 +48,6 @@ private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
         sum += selector(index++, element)
     }
     return sum
-}
-
-private fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? {
-    return add("testImplementation", dependencyNotation)
-}
-
-private fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? {
-    return add("androidTestImplementation", dependencyNotation)
-}
-
-fun DependencyHandler.addTestDependencies(kotlinVersion: String) {
-    testImplementation(project(":coil-test"))
-
-    testImplementation(Library.JUNIT)
-    testImplementation(kotlin("test-junit", kotlinVersion))
-
-    testImplementation(Library.KOTLINX_COROUTINES_TEST)
-
-    testImplementation(Library.ANDROIDX_TEST_CORE)
-    testImplementation(Library.ANDROIDX_TEST_JUNIT)
-    testImplementation(Library.ANDROIDX_TEST_RULES)
-    testImplementation(Library.ANDROIDX_TEST_RUNNER)
-
-    testImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
-    testImplementation(Library.OKIO_FAKE_FILESYSTEM)
-
-    testImplementation(Library.ROBOLECTRIC)
-}
-
-fun DependencyHandler.addAndroidTestDependencies(kotlinVersion: String) {
-    androidTestImplementation(project(":coil-test"))
-
-    androidTestImplementation(Library.JUNIT)
-    androidTestImplementation(kotlin("test-junit", kotlinVersion))
-
-    androidTestImplementation(Library.KOTLINX_COROUTINES_TEST)
-
-    androidTestImplementation(Library.MATERIAL)
-
-    androidTestImplementation(Library.ANDROIDX_TEST_CORE)
-    androidTestImplementation(Library.ANDROIDX_TEST_JUNIT)
-    androidTestImplementation(Library.ANDROIDX_TEST_RULES)
-    androidTestImplementation(Library.ANDROIDX_TEST_RUNNER)
-
-    androidTestImplementation(Library.OKHTTP_MOCK_WEB_SERVER)
 }
 
 inline infix fun <T> Property<T>.by(value: T) = set(value)

@@ -1,7 +1,4 @@
-import coil.addAndroidTestDependencies
-import coil.addTestDependencies
 import coil.setupLibraryModule
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
@@ -26,8 +23,10 @@ dependencies {
     implementation(libs.accompanist.drawablepainter)
     api(libs.compose.foundation)
 
-    addTestDependencies(KotlinCompilerVersion.VERSION)
-    addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+    testImplementation(project(":coil-test"))
+    testImplementation(libs.bundles.test.jvm)
 
+    androidTestImplementation(project(":coil-test"))
+    androidTestImplementation(libs.bundles.test.android)
     androidTestImplementation(libs.compose.ui.test)
 }
