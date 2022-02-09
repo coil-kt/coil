@@ -1,6 +1,6 @@
 [versions]
-accompanist = "0.22.1-rc"
-compose = "1.1.0-rc03"
+accompanist = "0.22.1"
+compose = "1.1.0"
 coroutines = "1.6.0"
 lifecycle = "2.4.0"
 okhttp = "4.9.3"
