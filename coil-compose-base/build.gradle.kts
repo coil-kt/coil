@@ -17,16 +17,16 @@ setupLibraryModule {
 }
 
 dependencies {
-    api(project(":coil-base"))
+    api(projects.coilBase)
 
     implementation(libs.androidx.core)
     implementation(libs.accompanist.drawablepainter)
     api(libs.compose.foundation)
 
-    testImplementation(project(":coil-test"))
+    testImplementation(projects.coilTest)
     testImplementation(libs.bundles.test.jvm)
 
-    androidTestImplementation(project(":coil-test"))
+    androidTestImplementation(projects.coilTest)
     androidTestImplementation(libs.bundles.test.android)
     androidTestImplementation(libs.compose.ui.test)
 }

@@ -9,7 +9,7 @@ setupLibraryModule()
 
 dependencies {
     // Prevent a dependency cycle.
-    compileOnly(project(":coil-base"))
+    compileOnly(projects.coilBase)
 
     api(libs.androidx.activity)
     api(libs.androidx.core)

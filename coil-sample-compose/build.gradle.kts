@@ -26,11 +26,11 @@ setupAppModule {
 }
 
 dependencies {
-    implementation(project(":coil-sample-common"))
-    implementation(project(":coil-compose-singleton"))
-    implementation(project(":coil-gif"))
-    implementation(project(":coil-svg"))
-    implementation(project(":coil-video"))
+    implementation(projects.coilSampleCommon)
+    implementation(projects.coilComposeSingleton)
+    implementation(projects.coilGif)
+    implementation(projects.coilSvg)
+    implementation(projects.coilVideo)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.accompanist.insets)
