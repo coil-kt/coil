@@ -1,4 +1,3 @@
-import coil.Library
 import coil.setupAppModule
 
 plugins {
@@ -30,8 +29,8 @@ dependencies {
     implementation(project(":coil-svg"))
     implementation(project(":coil-video"))
 
-    implementation(Library.ANDROIDX_ACTIVITY)
-    implementation(Library.ANDROIDX_CONSTRAINT_LAYOUT)
-    implementation(Library.ANDROIDX_RECYCLER_VIEW)
-    implementation(Library.MATERIAL)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.material)
 }

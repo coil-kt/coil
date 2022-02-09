@@ -8,7 +8,6 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
-import coil.size
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
@@ -16,6 +15,7 @@ import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
+import coil.util.size
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okio.buffer
