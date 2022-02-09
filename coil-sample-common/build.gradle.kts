@@ -8,10 +8,10 @@ plugins {
 setupLibraryModule(enableBuildConfig = true)
 
 dependencies {
-    api(project(":coil-singleton"))
-    api(project(":coil-gif"))
-    api(project(":coil-svg"))
-    api(project(":coil-video"))
+    api(projects.coilSingleton)
+    api(projects.coilGif)
+    api(projects.coilSvg)
+    api(projects.coilVideo)
 
     api(libs.androidx.core)
     api(libs.androidx.lifecycle.viewmodel)

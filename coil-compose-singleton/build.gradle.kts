@@ -17,6 +17,6 @@ setupLibraryModule {
 }
 
 dependencies {
-    api(project(":coil-compose-base"))
-    api(project(":coil-singleton"))
+    api(projects.coilComposeBase)
+    api(projects.coilSingleton)
 }
