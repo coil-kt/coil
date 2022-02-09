@@ -10,5 +10,5 @@
         android:layout_width="100px"
         android:layout_height="100px"
         android:layout_gravity="center"
-        tools:ignore="ContentDescription,PxUsage" />
+        tools:ignore="ContentDescription,PxUsage"/>
 </FrameLayout>

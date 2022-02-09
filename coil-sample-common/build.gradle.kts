@@ -1,4 +1,3 @@
-import coil.Library
 import coil.setupLibraryModule
 
 plugins {
@@ -14,6 +13,6 @@ dependencies {
     api(project(":coil-svg"))
     api(project(":coil-video"))
 
-    api(Library.ANDROIDX_CORE)
-    api(Library.ANDROIDX_LIFECYCLE_VIEW_MODEL)
+    api(libs.androidx.core)
+    api(libs.androidx.lifecycle.viewmodel)
 }

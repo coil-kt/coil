@@ -1,4 +1,3 @@
-import coil.Library
 import coil.setupLibraryModule
 
 plugins {
@@ -13,7 +12,7 @@ setupLibraryModule {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Library.COMPOSE_VERSION
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 }
 

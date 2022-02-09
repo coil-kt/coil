@@ -11,7 +11,6 @@ import androidx.core.graphics.component3
 import androidx.core.graphics.component4
 import androidx.test.core.app.ApplicationProvider
 import coil.base.R
-import coil.size
 import coil.size.Scale
 import coil.size.Size
 import org.junit.Test

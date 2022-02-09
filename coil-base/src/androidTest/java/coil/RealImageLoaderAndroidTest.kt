@@ -34,6 +34,7 @@ import coil.util.getDrawableCompat
 import coil.util.isMainThread
 import coil.util.runTestAsync
 import coil.util.runTestMain
+import coil.util.size
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

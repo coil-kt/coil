@@ -1,6 +1,4 @@
-import coil.Library
 import coil.setupLibraryModule
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
@@ -10,23 +8,19 @@ plugins {
 setupLibraryModule()
 
 dependencies {
-    implementation(Library.KOTLINX_COROUTINES_ANDROID)
-    implementation(Library.KOTLINX_COROUTINES_TEST)
+    // Prevent a dependency cycle.
+    compileOnly(project(":coil-base"))
 
-    implementation(Library.ANDROIDX_CORE)
+    api(libs.androidx.activity)
+    api(libs.androidx.core)
+    api(libs.androidx.test.core)
+    api(libs.androidx.test.junit)
+    api(libs.coroutines.android)
+    api(libs.coroutines.test)
+    api(libs.junit)
+    api(libs.okhttp)
+    api(libs.okhttp.mockwebserver)
+    api(libs.okio)
 
-    implementation(Library.MATERIAL)
-
-    implementation(Library.OKHTTP)
-    implementation(Library.OKHTTP_MOCK_WEB_SERVER)
-
-    implementation(Library.OKIO)
-
-    implementation(Library.ANDROIDX_TEST_CORE)
-    implementation(Library.ANDROIDX_TEST_JUNIT)
-
-    implementation(Library.JUNIT)
-
-    testImplementation(Library.JUNIT)
-    testImplementation(kotlin("test-junit", KotlinCompilerVersion.VERSION))
+    testImplementation(libs.kotlin.test)
 }

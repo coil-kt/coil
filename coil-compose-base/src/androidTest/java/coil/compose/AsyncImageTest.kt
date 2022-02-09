@@ -2,7 +2,6 @@ package coil.compose
 
 import android.graphics.BitmapFactory
 import android.view.View
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -48,6 +47,7 @@ import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
 import coil.size.Scale
+import coil.util.TestActivity
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -64,7 +64,7 @@ import kotlin.test.fail
 class AsyncImageTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+    val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private lateinit var server: MockWebServer
     private lateinit var requestTracker: ImageLoaderIdlingResource

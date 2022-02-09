@@ -13,11 +13,11 @@ import coil.intercept.EngineInterceptor.ExecuteResult
 import coil.key.Keyer
 import coil.request.Options
 import coil.request.RequestService
-import coil.size
 import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.util.SystemCallbacks
 import coil.util.createRequest
+import coil.util.size
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before

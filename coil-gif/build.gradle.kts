@@ -1,8 +1,4 @@
-import coil.Library
-import coil.addAndroidTestDependencies
-import coil.addTestDependencies
 import coil.setupLibraryModule
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
@@ -16,9 +12,12 @@ setupLibraryModule()
 dependencies {
     api(project(":coil-base"))
 
-    implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_VECTOR_DRAWABLE_ANIMATED)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.vectordrawable.animated)
 
-    addTestDependencies(KotlinCompilerVersion.VERSION)
-    addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+    testImplementation(project(":coil-test"))
+    testImplementation(libs.bundles.test.jvm)
+
+    androidTestImplementation(project(":coil-test"))
+    androidTestImplementation(libs.bundles.test.android)
 }
