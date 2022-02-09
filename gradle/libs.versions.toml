@@ -8,6 +8,13 @@ okio = "3.0.0"
 test = "1.4.0"
 
 [libraries]
+plugin-android = "com.android.tools.build:gradle:7.1.1"
+plugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+plugin-dokka = "org.jetbrains.dokka:dokka-gradle-plugin:1.6.10"
+plugin-mavenpublish = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
+plugin-binarycompatibility = "org.jetbrains.kotlinx:binary-compatibility-validator:0.8.0"
+plugin-ktlint = "org.jlleitschuh.gradle:ktlint-gradle:10.2.1"
+
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
 

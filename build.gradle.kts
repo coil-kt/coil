@@ -8,19 +8,18 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
-    apply(from = "buildSrc/plugins.gradle.kts")
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
-        classpath(rootProject.extra["androidPlugin"].toString())
-        classpath(rootProject.extra["kotlinPlugin"].toString())
-        classpath(rootProject.extra["dokkaPlugin"].toString())
-        classpath(rootProject.extra["mavenPublishPlugin"].toString())
-        classpath(rootProject.extra["binaryCompatibilityPlugin"].toString())
-        classpath(rootProject.extra["ktlintPlugin"].toString())
+        classpath(libs.plugin.android)
+        classpath(libs.plugin.kotlin)
+        classpath(libs.plugin.dokka)
+        classpath(libs.plugin.mavenpublish)
+        classpath(libs.plugin.binarycompatibility)
+        classpath(libs.plugin.ktlint)
     }
 }
 
