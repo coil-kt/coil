@@ -1,4 +1,4 @@
-package coil
+package coil.util
 
 import android.graphics.Bitmap
 import coil.size.Size
