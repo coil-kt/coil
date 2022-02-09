@@ -27,7 +27,6 @@ object Library {
     const val COMPOSE_FOUNDATION = "androidx.compose.foundation:foundation:$COMPOSE_VERSION"
     const val COMPOSE_MATERIAL = "androidx.compose.material:material:$COMPOSE_VERSION"
     const val COMPOSE_UI_TEST_JUNIT = "androidx.compose.ui:ui-test-junit4:$COMPOSE_VERSION"
-    const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest:$COMPOSE_VERSION"
 
     private const val ACCOMPANIST_VERSION = "0.22.1-rc"
     const val ACCOMPANIST_DRAWABLE_PAINTER = "com.google.accompanist:accompanist-drawablepainter:$ACCOMPANIST_VERSION"

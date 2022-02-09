@@ -1,4 +1,3 @@
-import coil.Library
 import coil.addAndroidTestDependencies
 import coil.addTestDependencies
 import coil.setupLibraryModule
@@ -20,18 +19,15 @@ setupLibraryModule {
 }
 
 dependencies {
-    api(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    api(Library.KOTLINX_COROUTINES_ANDROID)
-
-    implementation(Library.ANDROIDX_ANNOTATION)
-    implementation(Library.ANDROIDX_APPCOMPAT_RESOURCES)
-    implementation(Library.ANDROIDX_COLLECTION)
-    implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_EXIF_INTERFACE)
-    api(Library.ANDROIDX_LIFECYCLE_RUNTIME)
-
-    api(Library.OKHTTP)
-    api(Library.OKIO)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.appcompat.resources)
+    implementation(libs.androidx.collection)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.exifinterface)
+    api(libs.androidx.lifecycle.runtime)
+    api(libs.coroutines.android)
+    api(libs.okhttp)
+    api(libs.okio)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)

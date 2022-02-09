@@ -1,4 +1,3 @@
-import coil.Library
 import coil.addAndroidTestDependencies
 import coil.addTestDependencies
 import coil.setupLibraryModule
@@ -16,7 +15,7 @@ setupLibraryModule()
 dependencies {
     api(project(":coil-base"))
 
-    implementation(Library.ANDROIDX_CORE)
+    implementation(libs.androidx.core)
 
     addTestDependencies(KotlinCompilerVersion.VERSION)
     addAndroidTestDependencies(KotlinCompilerVersion.VERSION)

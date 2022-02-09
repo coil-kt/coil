@@ -11,35 +11,23 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 fun Project.setupLibraryModule(
     enableBuildConfig: Boolean = false,
     block: LibraryExtension.() -> Unit = {}
-) {
-    setupBaseModule<LibraryExtension> {
-        if (!enableBuildConfig) {
-            libraryVariants.all {
-                generateBuildConfigProvider?.configure { enabled = false }
-            }
-        }
-        packagingOptions {
-            // https://github.com/Kotlin/kotlinx.coroutines/issues/2023
-            resources.pickFirsts += "META-INF/AL2.0"
-            resources.pickFirsts += "META-INF/LGPL2.1"
-        }
-        testOptions {
-            unitTests.isIncludeAndroidResources = true
-        }
-        block()
+) = setupBaseModule<LibraryExtension> {
+    libraryVariants.all {
+        generateBuildConfigProvider?.configure { enabled = enableBuildConfig }
     }
+    block()
 }
 
-fun Project.setupAppModule(block: BaseAppModuleExtension.() -> Unit = {}) {
-    setupBaseModule<BaseAppModuleExtension> {
-        defaultConfig {
-            versionCode = project.versionCode
-            versionName = project.versionName
-            resourceConfigurations += "en"
-            vectorDrawables.useSupportLibrary = true
-        }
-        block()
+fun Project.setupAppModule(
+    block: BaseAppModuleExtension.() -> Unit = {}
+) = setupBaseModule<BaseAppModuleExtension> {
+    defaultConfig {
+        versionCode = project.versionCode
+        versionName = project.versionName
+        resourceConfigurations += "en"
+        vectorDrawables.useSupportLibrary = true
     }
+    block()
 }
 
 private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinline block: T.() -> Unit = {}) {
@@ -80,6 +68,9 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(crossinli
             resources.pickFirsts += "META-INF/AL2.0"
             resources.pickFirsts += "META-INF/LGPL2.1"
             resources.pickFirsts += "META-INF/*kotlin_module"
+        }
+        testOptions {
+            unitTests.isIncludeAndroidResources = true
         }
         (this as T).block()
     }
