@@ -2,7 +2,7 @@
 accompanist = "0.22.1"
 compose = "1.1.0"
 coroutines = "1.6.0"
-lifecycle = "2.4.0"
+lifecycle = "2.4.1"
 okhttp = "4.9.3"
 okio = "3.0.0"
 test = "1.4.0"
