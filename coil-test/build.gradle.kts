@@ -1,5 +1,4 @@
 import coil.setupLibraryModule
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
@@ -19,5 +18,6 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.mockwebserver)
     implementation(libs.okio)
-    testImplementation(kotlin("test-junit", KotlinCompilerVersion.VERSION))
+
+    testImplementation(libs.kotlin.test)
 }

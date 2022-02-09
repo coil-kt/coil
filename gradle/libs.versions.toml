@@ -61,7 +61,6 @@ test-android = [
     "coroutines-test",
     "junit",
     "kotlin-test",
-    "material",
     "okhttp-mockwebserver"
 ]
 test-jvm = [
