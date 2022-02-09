@@ -10,14 +10,14 @@ plugins {
 setupLibraryModule()
 
 dependencies {
-    api(project(":coil-base"))
+    api(projects.coilBase)
 
     implementation(libs.androidx.core)
     implementation(libs.androidx.vectordrawable.animated)
 
-    testImplementation(project(":coil-test"))
+    testImplementation(projects.coilTest)
     testImplementation(libs.bundles.test.jvm)
 
-    androidTestImplementation(project(":coil-test"))
+    androidTestImplementation(projects.coilTest)
     androidTestImplementation(libs.bundles.test.android)
 }

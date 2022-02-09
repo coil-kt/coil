@@ -40,10 +40,10 @@ apply(plugin = "org.jetbrains.dokka")
 tasks.withType<DokkaMultiModuleTask>().configureEach {
     outputDirectory by file("$rootDir/docs/api")
     removeChildTasks(listOf(
-        project(":coil-sample-common"),
-        project(":coil-sample-compose"),
-        project(":coil-sample-view"),
-        project(":coil-test")
+        projects.coilSampleCommon.dependencyProject,
+        projects.coilSampleCompose.dependencyProject,
+        projects.coilSampleView.dependencyProject,
+        projects.coilTest.dependencyProject
     ))
 }
 
