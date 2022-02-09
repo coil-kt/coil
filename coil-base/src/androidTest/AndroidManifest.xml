@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
 
-    <application android:usesCleartextTraffic="true">
+    <application>
         <provider
             android:name="coil.util.AssetContentProvider"
             android:authorities="coil"

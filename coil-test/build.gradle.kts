@@ -8,16 +8,16 @@ plugins {
 setupLibraryModule()
 
 dependencies {
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.test.core)
-    implementation(libs.androidx.test.junit)
-    implementation(libs.coroutines.android)
-    implementation(libs.coroutines.test)
-    implementation(libs.junit)
-    implementation(libs.material)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.mockwebserver)
-    implementation(libs.okio)
+    api(libs.androidx.activity)
+    api(libs.androidx.core)
+    api(libs.androidx.test.core)
+    api(libs.androidx.test.junit)
+    api(libs.coroutines.android)
+    api(libs.coroutines.test)
+    api(libs.junit)
+    api(libs.okhttp)
+    api(libs.okhttp.mockwebserver)
+    api(libs.okio)
 
     testImplementation(libs.kotlin.test)
 }
