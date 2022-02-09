@@ -2,7 +2,6 @@
 accompanist = "0.22.1-rc"
 compose = "1.1.0-rc03"
 coroutines = "1.6.0"
-kotlin = "1.6.10"
 lifecycle = "2.4.0"
 okhttp = "4.9.3"
 okio = "3.0.0"
@@ -39,7 +38,7 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 
 junit = "junit:junit:4.13.2"
 
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
 material = "com.google.android.material:material:1.5.0"
 
@@ -54,5 +53,26 @@ robolectric = "org.robolectric:robolectric:4.7.3"
 svg = "com.caverock:androidsvg-aar:1.4"
 
 [bundles]
-test-android = ["androidx-test-core", "androidx-test-junit", "androidx-test-rules", "androidx-test-runner", "coroutines-test", "junit", "kotlin-test", "material", "okhttp-mockwebserver"]
-test-jvm = ["androidx-test-core", "androidx-test-junit", "androidx-test-rules", "androidx-test-runner", "coroutines-test", "junit", "kotlin-test", "okhttp-mockwebserver", "okio-fakefilesystem", "robolectric"]
+test-android = [
+    "androidx-test-core",
+    "androidx-test-junit",
+    "androidx-test-rules",
+    "androidx-test-runner",
+    "coroutines-test",
+    "junit",
+    "kotlin-test",
+    "material",
+    "okhttp-mockwebserver"
+]
+test-jvm = [
+    "androidx-test-core",
+    "androidx-test-junit",
+    "androidx-test-rules",
+    "androidx-test-runner",
+    "coroutines-test",
+    "junit",
+    "kotlin-test",
+    "okhttp-mockwebserver",
+    "okio-fakefilesystem",
+    "robolectric"
+]
