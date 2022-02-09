@@ -8,12 +8,7 @@ plugins {
     id("com.vanniktech.maven.publish")
 }
 
-setupLibraryModule {
-    sourceSets {
-        getByName("test").java.srcDir("src/sharedTest/java")
-        getByName("androidTest").java.srcDir("src/sharedTest/java")
-    }
-}
+setupLibraryModule()
 
 dependencies {
     implementation(libs.androidx.annotation)

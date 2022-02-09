@@ -8,6 +8,9 @@ plugins {
 setupLibraryModule()
 
 dependencies {
+    // Prevent a dependency cycle.
+    compileOnly(project(":coil-base"))
+
     api(libs.androidx.activity)
     api(libs.androidx.core)
     api(libs.androidx.test.core)
