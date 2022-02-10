@@ -591,17 +591,35 @@ class AsyncImageTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/1133 */
     @Test
     fun validConstraints() {
+        val expectedWidthDp = 32.dp
+
         composeTestRule.setContent {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 AsyncImage(
                     model = server.url("/image"),
                     contentDescription = null,
                     imageLoader = imageLoader,
-                    modifier = Modifier.width(32.dp),
+                    modifier = Modifier
+                        .width(expectedWidthDp)
+                        .testTag(Image),
                     contentScale = ContentScale.Crop
                 )
             }
         }
+
+        waitForRequestComplete()
+
+        val expectedWidthPx = expectedWidthDp.toPx().toDouble()
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
+
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
@@ -613,7 +631,9 @@ class AsyncImageTest {
     }
 
     private fun assertLoadedBitmapSize(width: Int, height: Int, requestNumber: Int = 0) {
-        val bitmap = (requestTracker.results[requestNumber] as SuccessResult).drawable.toBitmap()
+        val result = requestTracker.results[requestNumber]
+        assertIs<SuccessResult>(result)
+        val bitmap = result.drawable.toBitmap()
         assertTrue(bitmap.width in (width - 1)..(width + 1))
         assertTrue(bitmap.height in (height - 1)..(height + 1))
     }
