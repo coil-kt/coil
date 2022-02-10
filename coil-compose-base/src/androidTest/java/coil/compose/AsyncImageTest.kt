@@ -59,10 +59,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlin.test.fail
 
 class AsyncImageTest {
@@ -634,8 +634,8 @@ class AsyncImageTest {
         val result = requestTracker.results[requestNumber]
         assertIs<SuccessResult>(result)
         val bitmap = result.drawable.toBitmap()
-        assertTrue(bitmap.width in (width - 1)..(width + 1))
-        assertTrue(bitmap.height in (height - 1)..(height + 1))
+        assertContains((width - 1)..(width + 1), bitmap.width)
+        assertContains((height - 1)..(height + 1), bitmap.height)
     }
 
     private fun assertSampleLoadedBitmapSize(
