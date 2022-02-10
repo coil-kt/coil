@@ -594,7 +594,7 @@ class AsyncImageTest {
         composeTestRule.setContent {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 AsyncImage(
-                    model = "https://picsum.photos/seed/abc123/96/96",
+                    model = server.url("/image"),
                     contentDescription = null,
                     imageLoader = imageLoader,
                     modifier = Modifier.width(32.dp),
