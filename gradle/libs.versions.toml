@@ -1,5 +1,5 @@
 [versions]
-accompanist = "0.22.1"
+accompanist = "0.23.0"
 compose = "1.1.0"
 coroutines = "1.6.0"
 lifecycle = "2.4.1"
