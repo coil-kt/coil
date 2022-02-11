@@ -115,14 +115,17 @@ internal data class ContentPainterModifier(
 
     private fun calculateScaledSize(dstSize: Size): Size {
         if (dstSize.isEmpty()) return Size.Zero
-        val intrinsicSize = painter.intrinsicSize
-        if (intrinsicSize.isUnspecified) return dstSize
 
-        val srcSize = Size(
-            width = intrinsicSize.width.takeOrElse { dstSize.width },
-            height = intrinsicSize.height.takeOrElse { dstSize.height }
-        )
-        return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
+        val intrinsicSize = painter.intrinsicSize
+        if (intrinsicSize.isUnspecified) {
+            return dstSize
+        } else {
+            val srcSize = Size(
+                width = intrinsicSize.width.takeOrElse { dstSize.width },
+                height = intrinsicSize.height.takeOrElse { dstSize.height }
+            )
+            return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
+        }
     }
 
     private fun modifyConstraints(constraints: Constraints): Constraints {
