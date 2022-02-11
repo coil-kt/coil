@@ -590,7 +590,7 @@ class AsyncImageTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1133 */
     @Test
-    fun validConstraints() {
+    fun infiniteConstraint() {
         val expectedWidthDp = 32.dp
 
         composeTestRule.setContent {

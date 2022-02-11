@@ -135,10 +135,12 @@ internal data class ContentPainterModifier(
             return constraints
         }
 
+        val hasBoundedWidth = constraints.hasBoundedWidth
+        val hasBoundedHeight = constraints.hasBoundedHeight
         val intrinsicSize = painter.intrinsicSize
         if (intrinsicSize.isUnspecified) {
             // Fill the available space if the painter has no intrinsic size.
-            if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+            if (hasBoundedWidth && hasBoundedHeight) {
                 return constraints.copy(
                     minWidth = constraints.maxWidth,
                     minHeight = constraints.maxHeight
@@ -148,7 +150,6 @@ internal data class ContentPainterModifier(
             }
         }
 
-        // Changed from PainterModifier:
         // Scale the image to fill the maximum space if one dimension is fixed.
         val srcWidth = if (hasFixedHeight) {
             constraints.maxWidth.toFloat()
@@ -183,7 +184,7 @@ internal data class ContentPainterModifier(
         // Draw the painter.
         translate(dx.toFloat(), dy.toFloat()) {
             with(painter) {
-                draw(size = scaledSize, alpha = alpha, colorFilter = colorFilter)
+                draw(scaledSize, alpha, colorFilter)
             }
         }
 
