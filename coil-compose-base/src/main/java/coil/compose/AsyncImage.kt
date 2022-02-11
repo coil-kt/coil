@@ -149,7 +149,7 @@ fun AsyncImage(
     )
 }
 
-/** Draws the current content without an [SubcomposeAsyncImageScope]. */
+/** Draws the current image content. */
 @Composable
 internal fun Content(
     modifier: Modifier,

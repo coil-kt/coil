@@ -76,16 +76,6 @@ internal fun Constraints.constrainWidth(width: Float) =
 internal fun Constraints.constrainHeight(height: Float) =
     height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
 
-internal inline fun Constraints.maxWidthOrElse(block: () -> Int): Int {
-    val maxWidth = maxWidth
-    return if (maxWidth != Constraints.Infinity) maxWidth else block()
-}
-
-internal inline fun Constraints.maxHeightOrElse(block: () -> Int): Int {
-    val maxHeight = maxHeight
-    return if (maxHeight != Constraints.Infinity) maxHeight else block()
-}
-
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())

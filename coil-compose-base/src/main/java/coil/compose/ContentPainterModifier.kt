@@ -27,8 +27,8 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * A custom [paint] modifier used by [SubcomposeAsyncImageContent] that fills the remaining space
- * if one dimension of the incoming constraints is fixed.
+ * A custom [paint] modifier used by [Content] that fills the remaining space if one dimension of
+ * the incoming constraints is fixed.
  */
 internal data class ContentPainterModifier(
     private val painter: Painter,
@@ -148,12 +148,12 @@ internal data class ContentPainterModifier(
         // Changed from PainterModifier:
         // Scale the image to fill the maximum space if one dimension is fixed.
         val srcWidth = if (hasFixedHeight) {
-            constraints.maxWidthOrElse { constraints.minWidth }.toFloat()
+            constraints.maxWidth.toFloat()
         } else {
             intrinsicSize.width.takeOrElse { constraints.minWidth.toFloat() }
         }
         val srcHeight = if (hasFixedWidth) {
-            constraints.maxHeightOrElse { constraints.minHeight }.toFloat()
+            constraints.maxHeight.toFloat()
         } else {
             intrinsicSize.height.takeOrElse { constraints.minHeight.toFloat() }
         }
