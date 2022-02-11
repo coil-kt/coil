@@ -223,6 +223,7 @@ class AsyncImageTest {
                             model = server.url("/image"),
                             contentDescription = null,
                             imageLoader = imageLoader,
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier.testTag(Image),
                         )
                     }
