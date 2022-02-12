@@ -135,12 +135,10 @@ internal data class ContentPainterModifier(
             return constraints
         }
 
-        val hasBoundedWidth = constraints.hasBoundedWidth
-        val hasBoundedHeight = constraints.hasBoundedHeight
         val intrinsicSize = painter.intrinsicSize
         if (intrinsicSize.isUnspecified) {
             // Fill the available space if the painter has no intrinsic size.
-            if (hasBoundedWidth && hasBoundedHeight) {
+            if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
                 return constraints.copy(
                     minWidth = constraints.maxWidth,
                     minHeight = constraints.maxHeight
