@@ -15,7 +15,7 @@ internal class RealInterceptorChain(
     override val size: Size,
     override val scale: Scale,
     val eventListener: EventListener,
-    val isPlaceholderCached: Boolean
+    val isPlaceholderCached: Boolean,
 ) : Interceptor.Chain {
 
     override fun withSize(size: Size) = copy(size = size)
