@@ -255,6 +255,7 @@ class AsyncImagePainter internal constructor(
                     size { drawSize.mapNotNull { it.toSizeOrNull() }.first() }
                 }
                 if (request.defined.precision != Precision.EXACT) {
+                    // AsyncImagePainter scales the image to fit the canvas size at draw time.
                     precision(Precision.INEXACT)
                 }
             }
