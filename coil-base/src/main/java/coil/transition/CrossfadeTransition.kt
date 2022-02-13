@@ -1,13 +1,11 @@
 package coil.transition
 
-import android.widget.ImageView
 import coil.decode.DataSource
 import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
-import coil.size.Scale
-import coil.util.scale
+import kotlinx.coroutines.runBlocking
 
 /**
  * A [Transition] that crossfades from the current drawable to a new one.
@@ -30,7 +28,7 @@ class CrossfadeTransition @JvmOverloads constructor(
         val drawable = CrossfadeDrawable(
             start = target.drawable,
             end = result.drawable,
-            scale = (target.view as? ImageView)?.scale ?: Scale.FIT,
+            scale = runBlocking { result.request.scaleResolver.scale() },
             durationMillis = durationMillis,
             fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
             preferExactIntrinsicSize = preferExactIntrinsicSize

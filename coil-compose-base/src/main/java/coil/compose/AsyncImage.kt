@@ -28,6 +28,7 @@ import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Scale
+import coil.size.ScaleResolver
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -135,7 +136,7 @@ fun AsyncImage(
     // Draw the content without a parent composable or subcomposition.
     val sizeResolver = request.sizeResolver
     Content(
-        modifier = if (sizeResolver is ConstraintsSizeResolver) {
+        modifier = if (sizeResolver is ConstraintsResolver) {
             modifier.then(sizeResolver)
         } else {
             modifier
@@ -183,21 +184,22 @@ internal fun updateRequest(
     contentScale: ContentScale,
 ) = request.newBuilder()
     .apply {
-        if (request.defined.sizeResolver == null) {
-            size(remember { ConstraintsSizeResolver() })
-        }
-        if (request.defined.scale == null) {
-            scale(contentScale.toScale())
-        }
+        val resolver = remember(contentScale) { ConstraintsResolver(contentScale) }
+        if (request.defined.sizeResolver == null) size(resolver)
+        if (request.defined.scaleResolver == null) scale(resolver)
     }
     .build()
 
 /** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
-internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
+internal class ConstraintsResolver(
+    private val contentScale: ContentScale
+) : SizeResolver, ScaleResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
 
     override suspend fun size() = _constraints.mapNotNull { it.toSizeOrNull() }.first()
+
+    override suspend fun scale() = _constraints.mapNotNull { calculateScale(it , contentScale) }.first()
 
     override fun MeasureScope.measure(
         measurable: Measurable,
@@ -231,16 +233,25 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
 }
 
 @Stable
-private fun ContentScale.toScale() = when (this) {
-    ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
-    else -> Scale.FILL
-}
-
-@Stable
 private fun Constraints.toSizeOrNull() = when {
     isZero -> null
     else -> CoilSize(
         width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original,
         height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
     )
+}
+
+@Stable
+private fun calculateScale(constraints: Constraints, contentScale: ContentScale): Scale {
+    if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+        return contentScale.toScale()
+    } else {
+        return Scale.FIT
+    }
+}
+
+@Stable
+private fun ContentScale.toScale() = when (this) {
+    ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
+    else -> Scale.FILL
 }

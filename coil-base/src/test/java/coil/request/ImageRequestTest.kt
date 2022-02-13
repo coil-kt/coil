@@ -92,8 +92,8 @@ class ImageRequestTest {
 
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
 
-        assertSame(request.scale, request.newBuilder().build().scale)
-        assertNotSame(request.scale, request.newBuilder().size(200, 200).build().scale)
+        assertSame(request.scaleResolver, request.newBuilder().build().scaleResolver)
+        assertNotSame(request.scaleResolver, request.newBuilder().size(200, 200).build().scaleResolver)
     }
 
     @Test
@@ -112,7 +112,7 @@ class ImageRequestTest {
         val newRequest = request.newBuilder().defaults(DefaultRequestOptions()).build()
         assertSame(request.lifecycle, newRequest.lifecycle)
         assertSame(request.sizeResolver, newRequest.sizeResolver)
-        assertEquals(Scale.FILL, newRequest.scale)
+        assertEquals(Scale.FILL, newRequest.scaleResolver)
     }
 
     @Test
@@ -129,7 +129,7 @@ class ImageRequestTest {
         val newRequest = request.newBuilder(Activity()).build()
         assertSame(request.lifecycle, newRequest.lifecycle)
         assertSame(request.sizeResolver, newRequest.sizeResolver)
-        assertSame(request.scale, newRequest.scale)
+        assertSame(request.scaleResolver, newRequest.scaleResolver)
     }
 
     @Test
