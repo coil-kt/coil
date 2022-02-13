@@ -48,6 +48,10 @@ internal class RealInterceptorChain(
             "Interceptor '$interceptor' cannot modify the request's size resolver. " +
                 "Use `Interceptor.Chain.withSize` instead."
         }
+        check(request.scaleResolver === initialRequest.scaleResolver) {
+            "Interceptor '$interceptor' cannot modify the request's scale resolver. " +
+                "Use `Interceptor.Chain.withScale` instead."
+        }
     }
 
     private fun copy(
