@@ -117,27 +117,46 @@ internal data class ContentPainterModifier(
         if (dstSize.isEmpty()) return Size.Zero
 
         val intrinsicSize = painter.intrinsicSize
-        if (intrinsicSize.isUnspecified) {
-            return dstSize
-        } else {
-            val srcSize = Size(
-                width = intrinsicSize.width.takeOrElse { dstSize.width },
-                height = intrinsicSize.height.takeOrElse { dstSize.height }
-            )
-            return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
+        if (intrinsicSize.isUnspecified) return dstSize
+
+        val srcSize = Size(
+            width = intrinsicSize.width.takeOrElse { dstSize.width },
+            height = intrinsicSize.height.takeOrElse { dstSize.height }
+        )
+        val scaleFactor = contentScale.computeScaleFactor(srcSize, dstSize)
+        if (scaleFactor.scaleX != scaleFactor.scaleY) {
+            return srcSize * scaleFactor
+        }
+
+        return when {
+            dstSize.width == Constraints.Infinity.toFloat() && dstSize.height == Constraints.Infinity.toFloat() -> {
+                Size(Constraints.Infinity.toFloat(), Constraints.Infinity.toFloat())
+            }
+            dstSize.width == Constraints.Infinity.toFloat() -> {
+                val factor = dstSize.height / srcSize.height
+                srcSize * factor
+            }
+            dstSize.height == Constraints.Infinity.toFloat() -> {
+                val factor = dstSize.width / srcSize.width
+                srcSize * factor
+            }
+            else -> {
+                srcSize * scaleFactor
+            }
         }
     }
 
     private fun modifyConstraints(constraints: Constraints): Constraints {
+        // The constraints are a fixed pixel value that can't be modified.
         val hasFixedWidth = constraints.hasFixedWidth
         val hasFixedHeight = constraints.hasFixedHeight
         if (hasFixedWidth && hasFixedHeight) {
             return constraints
         }
 
+        // Fill the available space if the painter has no intrinsic size.
         val intrinsicSize = painter.intrinsicSize
         if (intrinsicSize.isUnspecified) {
-            // Fill the available space if the painter has no intrinsic size.
             if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
                 return constraints.copy(
                     minWidth = constraints.maxWidth,
@@ -149,25 +168,39 @@ internal data class ContentPainterModifier(
         }
 
         // Scale the image to fill the maximum space if one dimension is fixed.
-        val srcWidth = if (hasFixedHeight) {
-            constraints.maxWidth.toFloat()
+        val constrainedSize = if (hasFixedWidth || hasFixedHeight) {
+            Size(
+                width = constraints.maxWidth.toFloat(),
+                height = constraints.maxHeight.toFloat()
+            )
         } else {
-            intrinsicSize.width.takeOrElse { constraints.minWidth.toFloat() }
-        }
-        val srcHeight = if (hasFixedWidth) {
-            constraints.maxHeight.toFloat()
-        } else {
-            intrinsicSize.height.takeOrElse { constraints.minHeight.toFloat() }
+            val (intrinsicWidth, intrinsicHeight) = intrinsicSize
+            Size(
+                width = if (intrinsicWidth.isFinite()) {
+                    constraints.constrainWidth(intrinsicWidth)
+                } else {
+                    constraints.minWidth.toFloat()
+                },
+                height = if (intrinsicHeight.isFinite()) {
+                    constraints.constrainWidth(intrinsicHeight)
+                } else {
+                    constraints.minHeight.toFloat()
+                }
+            )
         }
 
-        val constrainedSize = Size(
-            width = constraints.constrainWidth(srcWidth),
-            height = constraints.constrainHeight(srcHeight)
-        )
-        val scaledSize = calculateScaledSize(constrainedSize)
+        val (scaledWidth, scaledHeight) = calculateScaledSize(constrainedSize)
         return constraints.copy(
-            minWidth = constraints.constrainWidth(scaledSize.width.roundToInt()),
-            minHeight = constraints.constrainHeight(scaledSize.height.roundToInt())
+            minWidth = if (scaledWidth <= Constraints.Infinity.toFloat()) {
+                constraints.constrainWidth(scaledWidth.roundToInt())
+            } else {
+                constraints.minWidth
+            },
+            minHeight = if (scaledHeight <= Constraints.Infinity.toFloat()) {
+                constraints.constrainHeight(scaledHeight.roundToInt())
+            } else {
+                constraints.minHeight
+            }
         )
     }
 
