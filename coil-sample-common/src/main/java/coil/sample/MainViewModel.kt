@@ -43,7 +43,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         if (assetType == AssetType.MP4) {
             for (index in 0 until 200) {
-                val videoFrameMicros = Random.nextLong(62000000L)
+                val videoFrameMicros = Random.nextLong(62_000_000L)
                 val parameters = Parameters.Builder()
                     .set(VIDEO_FRAME_MICROS_KEY, videoFrameMicros)
                     .build()
