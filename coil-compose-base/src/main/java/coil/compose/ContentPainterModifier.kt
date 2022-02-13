@@ -123,27 +123,7 @@ internal data class ContentPainterModifier(
             width = intrinsicSize.width.takeOrElse { dstSize.width },
             height = intrinsicSize.height.takeOrElse { dstSize.height }
         )
-        val scaleFactor = contentScale.computeScaleFactor(srcSize, dstSize)
-        if (scaleFactor.scaleX != scaleFactor.scaleY) {
-            return srcSize * scaleFactor
-        }
-
-        return when {
-            dstSize.width == Constraints.Infinity.toFloat() && dstSize.height == Constraints.Infinity.toFloat() -> {
-                Size(Constraints.Infinity.toFloat(), Constraints.Infinity.toFloat())
-            }
-            dstSize.width == Constraints.Infinity.toFloat() -> {
-                val factor = dstSize.height / srcSize.height
-                srcSize * factor
-            }
-            dstSize.height == Constraints.Infinity.toFloat() -> {
-                val factor = dstSize.width / srcSize.width
-                srcSize * factor
-            }
-            else -> {
-                srcSize * scaleFactor
-            }
-        }
+        return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
     }
 
     private fun modifyConstraints(constraints: Constraints): Constraints {
