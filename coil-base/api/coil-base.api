@@ -775,7 +775,7 @@ public final class coil/size/Scale : java/lang/Enum {
 }
 
 public abstract interface class coil/size/ScaleResolver {
-	public abstract fun scale (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun scale ()Lcoil/size/Scale;
 }
 
 public final class coil/size/ScaleResolvers {

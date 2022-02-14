@@ -202,7 +202,7 @@ internal class ConstraintsResolver : SizeResolver, ScaleResolver, LayoutModifier
 
     override suspend fun size() = _constraints.mapNotNull(Constraints::toSizeOrNull).first()
 
-    override suspend fun scale() = _constraints.mapNotNull { computeScale(it, scale) }.first()
+    override fun scale() = computeScale(_constraints.value, scale)
 
     override fun MeasureScope.measure(
         measurable: Measurable,

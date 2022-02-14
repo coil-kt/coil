@@ -49,7 +49,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
 import coil.size.Size as CoilSize
 
@@ -295,7 +294,7 @@ class AsyncImagePainter internal constructor(
             return CrossfadePainter(
                 start = previous.painter.takeIf { previous is State.Loading },
                 end = current.painter,
-                scale = runBlocking { result.request.scaleResolver.scale() },
+                scale = result.request.scaleResolver.scale(),
                 durationMillis = transition.durationMillis,
                 fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
                 preferExactIntrinsicSize = transition.preferExactIntrinsicSize

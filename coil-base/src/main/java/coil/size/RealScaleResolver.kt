@@ -2,7 +2,7 @@ package coil.size
 
 internal class RealScaleResolver(private val scale: Scale) : ScaleResolver {
 
-    override suspend fun scale() = scale
+    override fun scale() = scale
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
