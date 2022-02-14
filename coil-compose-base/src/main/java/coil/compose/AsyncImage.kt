@@ -198,9 +198,9 @@ internal class ConstraintsResolver : SizeResolver, ScaleResolver, LayoutModifier
 
     lateinit var scale: Scale
 
-    override suspend fun size() = _constraints.mapNotNull { it.toSizeOrNull() }.first()
+    override suspend fun size() = _constraints.mapNotNull(Constraints::toSizeOrNull).first()
 
-    override suspend fun scale() = _constraints.mapNotNull { it.toScale(scale) }.first()
+    override suspend fun scale() = _constraints.mapNotNull { computeScale(it, scale) }.first()
 
     override fun MeasureScope.measure(
         measurable: Measurable,
@@ -243,8 +243,8 @@ private fun Constraints.toSizeOrNull() = when {
 }
 
 @Stable
-private fun Constraints.toScale(existing: Scale): Scale {
-    return if (hasBoundedWidth && hasBoundedHeight) existing else Scale.FIT
+private fun computeScale(constraints: Constraints, existing: Scale): Scale {
+    return if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) existing else Scale.FIT
 }
 
 @Stable
