@@ -43,6 +43,8 @@ public abstract interface class coil/EventListener : coil/request/ImageRequest$L
 	public fun onError (Lcoil/request/ImageRequest;Lcoil/request/ErrorResult;)V
 	public fun onStart (Lcoil/request/ImageRequest;)V
 	public fun onSuccess (Lcoil/request/ImageRequest;Lcoil/request/SuccessResult;)V
+	public fun resolveScaleEnd (Lcoil/request/ImageRequest;Lcoil/size/Scale;)V
+	public fun resolveScaleStart (Lcoil/request/ImageRequest;)V
 	public fun resolveSizeEnd (Lcoil/request/ImageRequest;Lcoil/size/Size;)V
 	public fun resolveSizeStart (Lcoil/request/ImageRequest;)V
 	public fun transformEnd (Lcoil/request/ImageRequest;Landroid/graphics/Bitmap;)V
