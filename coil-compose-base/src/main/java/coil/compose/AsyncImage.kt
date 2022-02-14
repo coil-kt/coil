@@ -184,10 +184,12 @@ internal fun updateRequest(
     contentScale: ContentScale,
 ) = request.newBuilder()
     .apply {
-        val resolver = remember { ConstraintsResolver() }
-        resolver.scale = contentScale.toScale()
-        if (request.defined.sizeResolver == null) size(resolver)
-        if (request.defined.scaleResolver == null) scale(resolver)
+        if (request.defined.sizeResolver == null && request.defined.scaleResolver == null) {
+            val resolver = remember { ConstraintsResolver() }
+            resolver.scale = contentScale.toScale()
+            size(resolver)
+            scale(resolver)
+        }
     }
     .build()
 
