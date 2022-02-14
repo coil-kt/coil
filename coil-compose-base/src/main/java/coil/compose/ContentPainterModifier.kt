@@ -135,9 +135,10 @@ internal data class ContentPainterModifier(
         }
 
         // Fill the available space if the painter has no intrinsic size.
+        val hasBoundedSize = constraints.hasBoundedWidth && constraints.hasBoundedHeight
         val intrinsicSize = painter.intrinsicSize
         if (intrinsicSize.isUnspecified) {
-            if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+            if (hasBoundedSize) {
                 return constraints.copy(
                     minWidth = constraints.maxWidth,
                     minHeight = constraints.maxHeight
@@ -148,23 +149,16 @@ internal data class ContentPainterModifier(
         }
 
         // Scale the image to fill the maximum space if one dimension is fixed.
+        val isBoundedWithFixedDimension = hasBoundedSize && (hasFixedWidth || hasFixedHeight)
         val (intrinsicWidth, intrinsicHeight) = intrinsicSize
         val constrainedWidth = when {
+            isBoundedWithFixedDimension -> constraints.maxWidth.constraintIntToFloat()
             intrinsicWidth.isFinite() -> constraints.constrainWidth(intrinsicWidth)
-            hasFixedWidth || hasFixedHeight -> if (constraints.maxWidth != Constraints.Infinity) {
-                constraints.maxWidth.toFloat()
-            } else {
-                Float.POSITIVE_INFINITY
-            }
             else -> constraints.minWidth.toFloat()
         }
         val constrainedHeight = when {
+            isBoundedWithFixedDimension -> constraints.maxHeight.constraintIntToFloat()
             intrinsicHeight.isFinite() -> constraints.constrainHeight(intrinsicHeight)
-            hasFixedWidth || hasFixedHeight -> if (constraints.maxHeight != Constraints.Infinity) {
-                constraints.maxHeight.toFloat()
-            } else {
-                Float.POSITIVE_INFINITY
-            }
             else -> constraints.minHeight.toFloat()
         }
         val constrainedSize = Size(constrainedWidth, constrainedHeight)
