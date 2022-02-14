@@ -27,8 +27,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * A custom [paint] modifier used by [Content] that fills the remaining space if one dimension of
- * the incoming constraints is fixed.
+ * A custom [paint] modifier used by [Content].
  */
 internal data class ContentPainterModifier(
     private val painter: Painter,
@@ -148,6 +147,7 @@ internal data class ContentPainterModifier(
             }
         }
 
+        // Changed from `PainterModifier`:
         // Use the maximum space as the destination size if the constraints are bounded and at
         // least one dimension is a fixed pixel value. Else, use the intrinsic size of the painter.
         val dstWidth: Float
