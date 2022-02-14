@@ -199,7 +199,7 @@ internal class ConstraintsResolver(
 
     override suspend fun size() = _constraints.mapNotNull { it.toSizeOrNull() }.first()
 
-    override suspend fun scale() = _constraints.mapNotNull { calculateScale(it , contentScale) }.first()
+    override suspend fun scale() = _constraints.mapNotNull { calculateScale(it, contentScale) }.first()
 
     override fun MeasureScope.measure(
         measurable: Measurable,
@@ -222,13 +222,13 @@ internal class ConstraintsResolver(
 
 @Stable
 private fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    return if (contentDescription != null) {
-        semantics {
+    if (contentDescription != null) {
+        return semantics {
             this.contentDescription = contentDescription
             this.role = Role.Image
         }
     } else {
-        this
+        return this
     }
 }
 
@@ -252,6 +252,6 @@ private fun calculateScale(constraints: Constraints, contentScale: ContentScale)
 
 @Stable
 private fun ContentScale.toScale() = when (this) {
-    ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
+    ContentScale.Fit, ContentScale.Inside -> Scale.FIT
     else -> Scale.FILL
 }
