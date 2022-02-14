@@ -291,10 +291,19 @@ class AsyncImagePainter internal constructor(
         // a `CrossfadeTransformation`.
         val transition = result.request.transitionFactory.create(FakeTransitionTarget, result)
         if (transition is CrossfadeTransition) {
+            // Use the original scale inside of the scale that's used for determining the
+            // decode dimensions.
+            val scaleResolver = result.request.scaleResolver
+            val scale = if (scaleResolver is ConstraintsResolver) {
+                scaleResolver.scale
+            } else {
+                scaleResolver.scale()
+            }
+
             return CrossfadePainter(
                 start = previous.painter.takeIf { previous is State.Loading },
                 end = current.painter,
-                scale = result.request.scaleResolver.scale(),
+                scale = scale,
                 durationMillis = transition.durationMillis,
                 fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
                 preferExactIntrinsicSize = transition.preferExactIntrinsicSize

@@ -246,9 +246,9 @@ private fun Constraints.toSizeOrNull() = when {
 }
 
 @Stable
-private fun computeScale(constraints: Constraints, existing: Scale): Scale {
+private fun computeScale(constraints: Constraints, original: Scale): Scale {
     if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
-        return existing
+        return original
     } else {
         // Always scale to fit the minimum dimension when at least one dimension is unbounded.
         return Scale.FIT
