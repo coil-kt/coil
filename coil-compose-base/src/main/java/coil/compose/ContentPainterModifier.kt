@@ -163,16 +163,8 @@ internal data class ContentPainterModifier(
 
         val (scaledWidth, scaledHeight) = calculateScaledSize(constrainedSize)
         return constraints.copy(
-            minWidth = if (scaledWidth.isFinite() && scaledWidth < Constraints.Infinity.toFloat()) {
-                constraints.constrainWidth(scaledWidth.roundToInt())
-            } else {
-                constraints.minWidth
-            },
-            minHeight = if (scaledHeight.isFinite() && scaledHeight < Constraints.Infinity.toFloat()) {
-                constraints.constrainHeight(scaledHeight.roundToInt())
-            } else {
-                constraints.minHeight
-            }
+            minWidth = constraints.constrainWidth(scaledWidth.roundToInt()),
+            minHeight = constraints.constrainHeight(scaledHeight.roundToInt())
         )
     }
 
