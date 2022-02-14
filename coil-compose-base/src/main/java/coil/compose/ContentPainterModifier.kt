@@ -151,12 +151,20 @@ internal data class ContentPainterModifier(
         val (intrinsicWidth, intrinsicHeight) = intrinsicSize
         val constrainedWidth = when {
             intrinsicWidth.isFinite() -> constraints.constrainWidth(intrinsicWidth)
-            hasFixedWidth || hasFixedHeight -> constraints.maxWidth.toFloat()
+            hasFixedWidth || hasFixedHeight -> if (constraints.maxWidth != Constraints.Infinity) {
+                constraints.maxWidth.toFloat()
+            } else {
+                Float.POSITIVE_INFINITY
+            }
             else -> constraints.minWidth.toFloat()
         }
         val constrainedHeight = when {
             intrinsicHeight.isFinite() -> constraints.constrainHeight(intrinsicHeight)
-            hasFixedWidth || hasFixedHeight -> constraints.maxHeight.toFloat()
+            hasFixedWidth || hasFixedHeight -> if (constraints.maxHeight != Constraints.Infinity) {
+                constraints.maxHeight.toFloat()
+            } else {
+                Float.POSITIVE_INFINITY
+            }
             else -> constraints.minHeight.toFloat()
         }
         val constrainedSize = Size(constrainedWidth, constrainedHeight)
