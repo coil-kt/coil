@@ -18,7 +18,6 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: 17
-                  cache: 'gradle'
             - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v2
               with:
@@ -48,7 +47,6 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: 17
-                  cache: 'gradle'
             - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v2
               with:
@@ -75,7 +73,6 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: 17
-                  cache: 'gradle'
             - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v2
               with:
@@ -138,7 +135,6 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: 17
-                  cache: 'gradle'
             - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v2
               with:
