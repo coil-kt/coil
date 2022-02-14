@@ -1,5 +1,6 @@
 package coil.compose
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
@@ -69,6 +70,10 @@ internal fun onStateOf(
         null
     }
 }
+
+@get:SuppressLint("ModifierFactoryExtensionFunction", "ModifierFactoryReturnType")
+internal val ImageRequest.constraintsResolver: ConstraintsResolver?
+    get() = sizeResolver as? ConstraintsResolver ?: scaleResolver as? ConstraintsResolver
 
 internal fun Constraints.constrainWidth(width: Float) =
     width.coerceIn(minWidth.toFloat(), maxWidth.toFloat())

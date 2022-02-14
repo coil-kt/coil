@@ -134,10 +134,10 @@ fun AsyncImage(
     val painter = rememberAsyncImagePainter(request, imageLoader, transform, onState, filterQuality)
 
     // Draw the content without a parent composable or subcomposition.
-    val sizeResolver = request.sizeResolver
+    val constraintsResolver = request.constraintsResolver
     Content(
-        modifier = if (sizeResolver is ConstraintsResolver) {
-            modifier.then(sizeResolver)
+        modifier = if (constraintsResolver != null) {
+            modifier.then(constraintsResolver)
         } else {
             modifier
         },
