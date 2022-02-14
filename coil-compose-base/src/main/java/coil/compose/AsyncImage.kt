@@ -247,6 +247,7 @@ private fun computeScale(constraints: Constraints, existing: Scale): Scale {
     if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
         return existing
     } else {
+        // Always scale to the minimum dimensions when one (or more) dimensions is unbounded.
         return Scale.FIT
     }
 }
