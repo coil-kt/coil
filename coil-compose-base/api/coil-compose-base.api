@@ -1,10 +1,10 @@
 public final class coil/compose/AsyncImageKt {
-	public static final fun AsyncImage-HtA5bXE (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
-	public static final fun AsyncImage-h7wOGxc (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
-	public static final fun AsyncImageContent (Lcoil/compose/AsyncImageScope;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Ljava/lang/String;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;II)V
+	public static final fun AsyncImage-MvsnxeU (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+	public static final fun AsyncImage-Q4Kwu38 (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
 }
 
 public final class coil/compose/AsyncImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
+	public static final field Companion Lcoil/compose/AsyncImagePainter$Companion;
 	public final fun getImageLoader ()Lcoil/ImageLoader;
 	public fun getIntrinsicSize-NH-jbRc ()J
 	public final fun getRequest ()Lcoil/request/ImageRequest;
@@ -12,6 +12,10 @@ public final class coil/compose/AsyncImagePainter : androidx/compose/ui/graphics
 	public fun onAbandoned ()V
 	public fun onForgotten ()V
 	public fun onRemembered ()V
+}
+
+public final class coil/compose/AsyncImagePainter$Companion {
+	public final fun getDefaultTransform ()Lkotlin/jvm/functions/Function1;
 }
 
 public abstract class coil/compose/AsyncImagePainter$State {
@@ -66,28 +70,15 @@ public final class coil/compose/AsyncImagePainter$State$Success : coil/compose/A
 }
 
 public final class coil/compose/AsyncImagePainterKt {
-	public static final fun rememberAsyncImagePainter-ycFWDq0 (Ljava/lang/Object;Lcoil/ImageLoader;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberAsyncImagePainter-19ie5dc (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberAsyncImagePainter-MqR-F_0 (Ljava/lang/Object;Lcoil/ImageLoader;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 }
 
-public abstract interface class coil/compose/AsyncImageScope : androidx/compose/foundation/layout/BoxScope {
-	public static final field Companion Lcoil/compose/AsyncImageScope$Companion;
-	public abstract fun getAlignment ()Landroidx/compose/ui/Alignment;
-	public abstract fun getAlpha ()F
-	public abstract fun getColorFilter ()Landroidx/compose/ui/graphics/ColorFilter;
-	public abstract fun getContentDescription ()Ljava/lang/String;
-	public abstract fun getContentScale ()Landroidx/compose/ui/layout/ContentScale;
-	public abstract fun getPainter ()Lcoil/compose/AsyncImagePainter;
-}
-
-public final class coil/compose/AsyncImageScope$Companion {
-	public final fun getDefaultContent ()Lkotlin/jvm/functions/Function4;
-}
-
-public final class coil/compose/ComposableSingletons$AsyncImageKt {
-	public static final field INSTANCE Lcoil/compose/ComposableSingletons$AsyncImageKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function4;
+public final class coil/compose/ComposableSingletons$SubcomposeAsyncImageKt {
+	public static final field INSTANCE Lcoil/compose/ComposableSingletons$SubcomposeAsyncImageKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function3;
 	public fun <init> ()V
-	public final fun getLambda-1$coil_compose_base_release ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda-1$coil_compose_base_release ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class coil/compose/ImagePainterKt {
@@ -97,5 +88,20 @@ public final class coil/compose/ImagePainterKt {
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberImagePainter (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImagePainter;
+}
+
+public final class coil/compose/SubcomposeAsyncImageKt {
+	public static final fun SubcomposeAsyncImage-Q4Kwu38 (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+	public static final fun SubcomposeAsyncImage-sKDTAoQ (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;III)V
+	public static final fun SubcomposeAsyncImageContent (Lcoil/compose/SubcomposeAsyncImageScope;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Ljava/lang/String;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;II)V
+}
+
+public abstract interface class coil/compose/SubcomposeAsyncImageScope : androidx/compose/foundation/layout/BoxScope {
+	public abstract fun getAlignment ()Landroidx/compose/ui/Alignment;
+	public abstract fun getAlpha ()F
+	public abstract fun getColorFilter ()Landroidx/compose/ui/graphics/ColorFilter;
+	public abstract fun getContentDescription ()Ljava/lang/String;
+	public abstract fun getContentScale ()Landroidx/compose/ui/layout/ContentScale;
+	public abstract fun getPainter ()Lcoil/compose/AsyncImagePainter;
 }
 

@@ -6,9 +6,13 @@ import androidx.core.graphics.alpha
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import coil.size.Size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+
+val Bitmap.size: Size
+    get() = Size(width, height)
 
 /**
  * Returns an [Array] of 4 [IntArray]s, the alpha, red, green, and blue pixel values.

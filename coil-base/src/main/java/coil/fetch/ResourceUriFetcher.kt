@@ -63,11 +63,13 @@ internal class ResourceUriFetcher(
                 dataSource = DataSource.DISK
             )
         } else {
+            val typedValue = TypedValue()
+            val inputStream = resources.openRawResource(resId, typedValue)
             SourceResult(
                 source = ImageSource(
-                    source = resources.openRawResource(resId).source().buffer(),
+                    source = inputStream.source().buffer(),
                     context = context,
-                    metadata = ResourceMetadata(packageName, resId)
+                    metadata = ResourceMetadata(packageName, resId, typedValue.density)
                 ),
                 mimeType = mimeType,
                 dataSource = DataSource.DISK

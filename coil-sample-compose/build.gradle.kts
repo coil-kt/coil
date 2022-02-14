@@ -1,4 +1,3 @@
-import coil.Library
 import coil.setupAppModule
 
 plugins {
@@ -22,18 +21,18 @@ setupAppModule {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Library.COMPOSE_COMPILER_VERSION
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 }
 
 dependencies {
-    implementation(project(":coil-sample-common"))
-    implementation(project(":coil-compose-singleton"))
-    implementation(project(":coil-gif"))
-    implementation(project(":coil-svg"))
-    implementation(project(":coil-video"))
+    implementation(projects.coilSampleCommon)
+    implementation(projects.coilComposeSingleton)
+    implementation(projects.coilGif)
+    implementation(projects.coilSvg)
+    implementation(projects.coilVideo)
 
-    implementation(Library.ANDROIDX_ACTIVITY_COMPOSE)
-    implementation(Library.ACCOMPANIST_INSETS)
-    implementation(Library.COMPOSE_MATERIAL)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.accompanist.insets)
+    implementation(libs.compose.material)
 }

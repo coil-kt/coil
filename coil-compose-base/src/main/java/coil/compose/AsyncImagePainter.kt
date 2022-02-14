@@ -1,5 +1,3 @@
-@file:Suppress("ComposableNaming", "unused")
-
 package coil.compose
 
 import android.graphics.drawable.BitmapDrawable
@@ -7,19 +5,18 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -29,44 +26,51 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil.ImageLoader
+import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
-import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
+import coil.size.Dimension
 import coil.size.Precision
-import coil.size.SizeResolver
 import coil.transition.CrossfadeTransition
+import coil.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlin.math.roundToInt
 import coil.size.Size as CoilSize
 
 /**
- * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and
- * renders the result.
+ * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
- * This is a lower-level API than [AsyncImage] and may not work as expected in all situations.
- * Notably, it will not finish loading if [AsyncImagePainter.onDraw] is not called, which can occur
- * for composables that don't have a fixed size (e.g. [LazyColumn]). It's recommended to use
- * [AsyncImage] unless you need a reference to a [Painter].
+ * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations.**
+ * **It's highly recommended to use [AsyncImage] unless you need a reference to a [Painter].**
+ *
+ * Notably, [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called,
+ * which can occur for composables that don't have a fixed size (e.g. [LazyColumn]). Also
+ * [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
+ * composition phase.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param placeholder A [Painter] that is displayed while the image is loading.
+ * @param error A [Painter] that is displayed when the image request is unsuccessful.
+ * @param fallback A [Painter] that is displayed when the request's [ImageRequest.data] is null.
+ * @param onLoading Called when the image request begins loading.
+ * @param onSuccess Called when the image request completes successfully.
+ * @param onError Called when the image request completes unsuccessfully.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
  *  into the destination.
  */
@@ -74,20 +78,59 @@ import coil.size.Size as CoilSize
 fun rememberAsyncImagePainter(
     model: Any?,
     imageLoader: ImageLoader,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = error,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+) = rememberAsyncImagePainter(
+    model = model,
+    imageLoader = imageLoader,
+    transform = transformOf(placeholder, error, fallback),
+    onState = onStateOf(onLoading, onSuccess, onError),
+    filterQuality = filterQuality,
+)
+
+/**
+ * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
+ *
+ * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations.**
+ * **It's highly recommended to use [AsyncImage] unless you need a reference to a [Painter].**
+ *
+ * Notably, [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called,
+ * which can occur for composables that don't have a fixed size (e.g. [LazyColumn]). Also
+ * [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
+ * composition phase.
+ *
+ * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
+ * @param imageLoader The [ImageLoader] that will be used to execute the request.
+ * @param transform A callback to transform a new [State] before it's applied to the
+ *  [AsyncImagePainter]. Typically this is used to overwrite the state's [Painter].
+ * @param onState Called when the state of this painter changes.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
+ *  into the destination.
+ */
+@Composable
+fun rememberAsyncImagePainter(
+    model: Any?,
+    imageLoader: ImageLoader,
+    transform: (State) -> State = DefaultTransform,
+    onState: ((State) -> Unit)? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter {
     val request = requestOf(model)
-    requireSupportedData(request.data)
-    require(request.target == null) { "request.target must be null." }
+    validateRequest(request)
 
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
-    val painter = remember(scope) { AsyncImagePainter(scope, request, imageLoader) }
-    painter.request = request
-    painter.imageLoader = imageLoader
+    val painter = remember { AsyncImagePainter(request, imageLoader) }
+    painter.transform = transform
+    painter.onState = onState
     painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
-    painter.onRemembered() // Invoke this manually so `painter.state` is up to date immediately.
-    updatePainter(painter, request, imageLoader)
+    painter.imageLoader = imageLoader
+    painter.request = request // Update request last so all other properties are up to date.
+    painter.onRemembered() // Invoke this manually so `painter.state` is set to `Loading` immediately.
     return painter
 }
 
@@ -96,19 +139,32 @@ fun rememberAsyncImagePainter(
  */
 @Stable
 class AsyncImagePainter internal constructor(
-    private val parentScope: CoroutineScope,
     request: ImageRequest,
     imageLoader: ImageLoader
 ) : Painter(), RememberObserver {
 
     private var rememberScope: CoroutineScope? = null
-    private var requestJob: Job? = null
-    private var drawSize = MutableStateFlow(Size.Zero)
+    private val drawSize = MutableStateFlow(Size.Zero)
 
-    private var alpha: Float by mutableStateOf(1f)
+    private var painter: Painter? by mutableStateOf(null)
+    private var alpha: Float by mutableStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
-    internal var painter: Painter? by mutableStateOf(null)
+    // These fields allow access to the current value
+    // instead of the value in the current composition.
+    private var _state: State = State.Empty
+        set(value) {
+            field = value
+            state = value
+        }
+    private var _painter: Painter? = null
+        set(value) {
+            field = value
+            painter = value
+        }
+
+    internal var transform = DefaultTransform
+    internal var onState: ((State) -> Unit)? = null
     internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
 
@@ -145,57 +201,106 @@ class AsyncImagePainter internal constructor(
         return true
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onRemembered() {
-        // If we're in inspection mode (preview) skip executing the image request
-        // and set the state to loading.
+        // Short circuit if we're already remembered.
+        if (rememberScope != null) return
+
+        // Create a new scope to observe state and execute requests while we're remembered.
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        rememberScope = scope
+
+        // Manually notify the child painter that we're remembered.
+        (_painter as? RememberObserver)?.onRemembered()
+
+        // If we're in inspection mode skip the image request and set the state to loading.
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
-            state = State.Loading(request.placeholder?.toPainter())
+            updateState(State.Loading(request.placeholder?.toPainter()))
             return
         }
 
-        // Create a new scope to observe state and execute requests while we're remembered.
-        if (rememberScope != null) return
-        val scope = parentScope + SupervisorJob(parentScope.coroutineContext.job)
-        rememberScope = scope
-
-        // Observe the current request + request size and launch new requests as necessary.
+        // Observe the current request and execute any emissions.
         scope.launch {
-            snapshotFlow { request }.collect { request ->
-                requestJob?.cancel()
-                requestJob = launch {
-                    state = imageLoader.execute(updateRequest(request)).toState()
-                }
-            }
+            snapshotFlow { request }
+                .mapLatest { imageLoader.execute(updateRequest(request)).toState() }
+                .collect(::updateState)
         }
     }
 
     override fun onForgotten() {
-        rememberScope?.cancel()
-        rememberScope = null
-        requestJob?.cancel()
-        requestJob = null
+        clear()
+        (_painter as? RememberObserver)?.onForgotten()
     }
 
-    override fun onAbandoned() = onForgotten()
+    override fun onAbandoned() {
+        clear()
+        (_painter as? RememberObserver)?.onAbandoned()
+    }
+
+    private fun clear() {
+        rememberScope?.cancel()
+        rememberScope = null
+    }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
-            .target(
-                onStart = { placeholder ->
-                    state = State.Loading(placeholder?.toPainter())
-                }
-            )
+            .target(onStart = { placeholder ->
+                updateState(State.Loading(placeholder?.toPainter()))
+            })
             .apply {
                 if (request.defined.sizeResolver == null) {
-                    size(DrawSizeResolver())
+                    // If no other size resolver is set, suspend until the canvas size is positive.
+                    size { drawSize.mapNotNull { it.toSizeOrNull() }.first() }
                 }
                 if (request.defined.precision != Precision.EXACT) {
                     precision(Precision.INEXACT)
                 }
             }
             .build()
+    }
+
+    private fun updateState(input: State) {
+        val previous = _state
+        val current = transform(input)
+        _state = current
+        _painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
+
+        // Manually forget and remember the old/new painters if we're already remembered.
+        if (rememberScope != null && previous.painter !== current.painter) {
+            (previous.painter as? RememberObserver)?.onForgotten()
+            (current.painter as? RememberObserver)?.onRemembered()
+        }
+
+        // Notify the state listener.
+        onState?.invoke(current)
+    }
+
+    /** Create and return a [CrossfadePainter] if requested. */
+    private fun maybeNewCrossfadePainter(previous: State, current: State): CrossfadePainter? {
+        // We can only invoke the transition factory if the state is success or error.
+        val result = when (current) {
+            is State.Success -> current.result
+            is State.Error -> current.result
+            else -> return null
+        }
+
+        // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
+        // a `CrossfadeTransformation`.
+        val transition = result.request.transitionFactory.create(FakeTransitionTarget, result)
+        if (transition is CrossfadeTransition) {
+            return CrossfadePainter(
+                start = previous.painter.takeIf { previous is State.Loading },
+                end = current.painter,
+                scale = result.request.scale,
+                durationMillis = transition.durationMillis,
+                fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
+                preferExactIntrinsicSize = transition.preferExactIntrinsicSize
+            )
+        } else {
+            return null
+        }
     }
 
     private fun ImageResult.toState() = when (this) {
@@ -208,20 +313,6 @@ class AsyncImagePainter internal constructor(
         is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
         is ColorDrawable -> ColorPainter(Color(color))
         else -> DrawablePainter(mutate())
-    }
-
-    /** Suspends until the draw size for this [AsyncImagePainter] is unspecified or positive. */
-    private inner class DrawSizeResolver : SizeResolver {
-
-        override suspend fun size() = drawSize
-            .mapNotNull { size ->
-                when {
-                    size.isUnspecified -> CoilSize.ORIGINAL
-                    size.isPositive -> CoilSize(size.width.roundToInt(), size.height.roundToInt())
-                    else -> null
-                }
-            }
-            .first()
     }
 
     /**
@@ -254,81 +345,45 @@ class AsyncImagePainter internal constructor(
             val result: ErrorResult,
         ) : State()
     }
-}
 
-/**
- * Allows us to observe the current [AsyncImagePainter.painter]. This function allows us to
- * minimize the amount of recomposition needed such that this function only needs to be restarted
- * when the [AsyncImagePainter.state] changes.
- */
-@Composable
-private fun updatePainter(
-    imagePainter: AsyncImagePainter,
-    request: ImageRequest,
-    imageLoader: ImageLoader
-) {
-    // This may look like a useless remember, but this allows any painter instances
-    // to receive remember events (if it implements RememberObserver). Do not remove.
-    val state = imagePainter.state
-    val painter = remember(state) { state.painter }
-
-    // Short circuit if the crossfade transition isn't set.
-    // Check `imageLoader.defaults.transitionFactory` specifically as the default isn't set
-    // until the request is executed.
-    val transition = request.defined.transitionFactory ?: imageLoader.defaults.transitionFactory
-    if (transition !is CrossfadeTransition.Factory) {
-        imagePainter.painter = painter
-        return
+    companion object {
+        /**
+         * A state transform that does not modify the state.
+         */
+        val DefaultTransform: (State) -> State = { it }
     }
+}
 
-    // Keep track of the most recent loading painter to crossfade from it.
-    val loading = remember(request) { ValueHolder<Painter?>(null) }
-    if (state is State.Loading) loading.value = state.painter
-
-    // Short circuit if the request isn't successful or if it's returned by the memory cache.
-    if (state !is State.Success || state.result.dataSource == DataSource.MEMORY_CACHE) {
-        imagePainter.painter = painter
-        return
+private fun validateRequest(request: ImageRequest) {
+    when (request.data) {
+        is ImageRequest.Builder -> unsupportedData(
+            name = "ImageRequest.Builder",
+            description = "Did you forget to call ImageRequest.Builder.build()?"
+        )
+        is ImageBitmap -> unsupportedData("ImageBitmap")
+        is ImageVector -> unsupportedData("ImageVector")
+        is Painter -> unsupportedData("Painter")
     }
-
-    // Set the crossfade painter.
-    imagePainter.painter = rememberCrossfadePainter(
-        key = state,
-        start = loading.value,
-        end = painter,
-        scale = request.scale,
-        durationMillis = transition.durationMillis,
-        fadeStart = !state.result.isPlaceholderCached,
-        preferExactIntrinsicSize = transition.preferExactIntrinsicSize
-    )
+    require(request.target == null) { "request.target must be null." }
 }
 
-private fun requireSupportedData(data: Any?) = when (data) {
-    is ImageBitmap -> unsupportedData("ImageBitmap")
-    is ImageVector -> unsupportedData("ImageVector")
-    is Painter -> unsupportedData("Painter")
-    else -> data
-}
-
-private fun unsupportedData(name: String): Nothing {
-    throw IllegalArgumentException(
-        "Unsupported type: $name. If you wish to display this $name, " +
-            "use androidx.compose.foundation.Image."
-    )
-}
+private fun unsupportedData(
+    name: String,
+    description: String = "If you wish to display this $name, use androidx.compose.foundation.Image."
+): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
 
 private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 
-/** A simple mutable value holder that avoids recomposition. */
-private class ValueHolder<T>(@JvmField var value: T)
+private fun Size.toSizeOrNull() = when {
+    isUnspecified -> CoilSize.ORIGINAL
+    isPositive -> CoilSize(
+        width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Original,
+        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Original
+    )
+    else -> null
+}
 
-/** Create an [ImageRequest] from the [model]. */
-@Composable
-@ReadOnlyComposable
-internal fun requestOf(model: Any?): ImageRequest {
-    if (model is ImageRequest) {
-        return model
-    } else {
-        return ImageRequest.Builder(LocalContext.current).data(model).build()
-    }
+private val FakeTransitionTarget = object : TransitionTarget {
+    override val view get() = throw UnsupportedOperationException()
+    override val drawable: Drawable? get() = null
 }

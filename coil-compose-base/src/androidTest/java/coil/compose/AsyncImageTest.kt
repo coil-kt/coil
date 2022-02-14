@@ -1,7 +1,7 @@
 package coil.compose
 
+import android.graphics.BitmapFactory
 import android.view.View
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -41,17 +41,20 @@ import coil.compose.utils.assumeSupportsCaptureToImage
 import coil.decode.DecodeUtils
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
+import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
 import coil.size.Scale
+import coil.util.TestActivity
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
@@ -61,7 +64,7 @@ import kotlin.test.fail
 class AsyncImageTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+    val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private lateinit var server: MockWebServer
     private lateinit var requestTracker: ImageLoaderIdlingResource
@@ -72,8 +75,8 @@ class AsyncImageTest {
         server = ImageMockWebServer()
         requestTracker = ImageLoaderIdlingResource()
         imageLoader = ImageLoader.Builder(composeTestRule.activity)
-            .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
+            .diskCachePolicy(CachePolicy.DISABLED)
             .networkObserverEnabled(false)
             .eventListener(requestTracker)
             .build()
@@ -248,7 +251,7 @@ class AsyncImageTest {
         composeTestRule.unregisterIdlingResource(requestTracker)
 
         composeTestRule.setContent {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(server.url("/image"))
                     .fetcherFactory(LoadingFetcher.Factory())
@@ -294,7 +297,7 @@ class AsyncImageTest {
         assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(server.url("/image"))
                     .fetcherFactory(ErrorFetcher.Factory())
@@ -338,7 +341,7 @@ class AsyncImageTest {
         assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader,
@@ -381,14 +384,15 @@ class AsyncImageTest {
         var index = 0
 
         composeTestRule.setContent {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = server.url("/image"),
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
                     .size(100.dp)
                     .testTag(Image)
-            ) { state ->
+            ) {
+                val state = painter.state
                 SideEffect {
                     when (index) {
                         0 -> {
@@ -404,7 +408,7 @@ class AsyncImageTest {
                     }
                     index++
                 }
-                AsyncImageContent(
+                SubcomposeAsyncImageContent(
                     modifier = Modifier.clip(CircleShape)
                 )
             }
@@ -500,6 +504,84 @@ class AsyncImageTest {
             .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample, scale = Scale.FILL)
+    }
+
+    @Test
+    fun doesNotRecompose() {
+        val compositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            compositionCount.getAndIncrement()
+            AsyncImage(
+                model = server.url("/image"),
+                contentDescription = null,
+                imageLoader = imageLoader
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, compositionCount.get())
+    }
+
+    @Test
+    fun painterState_notMemoryCached() {
+        val outerCompositionCount = AtomicInteger()
+        val innerCompositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            outerCompositionCount.getAndIncrement()
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(server.url("/image"))
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader
+            ) {
+                when (innerCompositionCount.getAndIncrement()) {
+                    0 -> assertIs<State.Loading>(painter.state)
+                    else -> assertIs<State.Success>(painter.state)
+                }
+                SubcomposeAsyncImageContent()
+            }
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, outerCompositionCount.get())
+        assertEquals(2, innerCompositionCount.get())
+    }
+
+    @Test
+    fun painterState_memoryCached() {
+        val url = server.url("/image")
+        val bitmap = BitmapFactory.decodeResource(composeTestRule.activity.resources, R.drawable.sample)
+        imageLoader.memoryCache!![MemoryCache.Key(url.toString())] = MemoryCache.Value(bitmap)
+
+        val outerCompositionCount = AtomicInteger()
+        val innerCompositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            outerCompositionCount.getAndIncrement()
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(url)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader
+            ) {
+                innerCompositionCount.getAndIncrement()
+                assertIs<State.Success>(painter.state)
+                SubcomposeAsyncImageContent()
+            }
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, outerCompositionCount.get())
+        assertEquals(1, innerCompositionCount.get())
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {

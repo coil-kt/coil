@@ -1,8 +1,4 @@
-import coil.Library
-import coil.addAndroidTestDependencies
-import coil.addTestDependencies
 import coil.setupLibraryModule
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
@@ -12,27 +8,22 @@ plugins {
     id("com.vanniktech.maven.publish")
 }
 
-setupLibraryModule {
-    sourceSets {
-        getByName("test").java.srcDir("src/sharedTest/java")
-        getByName("androidTest").java.srcDir("src/sharedTest/java")
-    }
-}
+setupLibraryModule()
 
 dependencies {
-    api(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    api(Library.KOTLINX_COROUTINES_ANDROID)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.appcompat.resources)
+    implementation(libs.androidx.collection)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.exifinterface)
+    api(libs.androidx.lifecycle.runtime)
+    api(libs.coroutines.android)
+    api(libs.okhttp)
+    api(libs.okio)
 
-    implementation(Library.ANDROIDX_ANNOTATION)
-    implementation(Library.ANDROIDX_APPCOMPAT_RESOURCES)
-    implementation(Library.ANDROIDX_COLLECTION)
-    implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ANDROIDX_EXIF_INTERFACE)
-    api(Library.ANDROIDX_LIFECYCLE_RUNTIME)
+    testImplementation(projects.coilTest)
+    testImplementation(libs.bundles.test.jvm)
 
-    api(Library.OKHTTP)
-    api(Library.OKIO)
-
-    addTestDependencies(KotlinCompilerVersion.VERSION)
-    addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+    androidTestImplementation(projects.coilTest)
+    androidTestImplementation(libs.bundles.test.android)
 }

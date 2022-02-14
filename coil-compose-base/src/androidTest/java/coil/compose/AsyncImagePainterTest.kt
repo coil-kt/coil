@@ -1,7 +1,6 @@
 package coil.compose
 
 import android.view.View
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +51,7 @@ import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.util.TestActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filter
@@ -63,6 +63,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -71,7 +72,7 @@ import kotlin.test.assertNull
 class AsyncImagePainterTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+    val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private lateinit var server: MockWebServer
     private lateinit var requestTracker: ImageLoaderIdlingResource
@@ -610,6 +611,84 @@ class AsyncImagePainterTest {
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
+    }
+
+    @Test
+    fun successCallbackIsCalled() {
+        val loadingCount = AtomicInteger()
+        val successCount = AtomicInteger()
+        val errorCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/image"))
+                        .size(100, 100)
+                        .build(),
+                    imageLoader = imageLoader,
+                    onLoading = { loadingCount.getAndIncrement() },
+                    onSuccess = { successCount.getAndIncrement() },
+                    onError = { errorCount.getAndIncrement() },
+                ),
+                contentDescription = null
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, loadingCount.get())
+        assertEquals(1, successCount.get())
+        assertEquals(0, errorCount.get())
+    }
+
+    @Test
+    fun errorCallbackIsCalled() {
+        val loadingCount = AtomicInteger()
+        val successCount = AtomicInteger()
+        val errorCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(server.url("/incorrect_path"))
+                        .size(100, 100)
+                        .build(),
+                    imageLoader = imageLoader,
+                    onLoading = { loadingCount.getAndIncrement() },
+                    onSuccess = { successCount.getAndIncrement() },
+                    onError = { errorCount.getAndIncrement() },
+                ),
+                contentDescription = null
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, loadingCount.get())
+        assertEquals(0, successCount.get())
+        assertEquals(1, errorCount.get())
+    }
+
+    @Test
+    fun doesNotRecompose() {
+        val compositionCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            compositionCount.getAndIncrement()
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = server.url("/image"),
+                    imageLoader = imageLoader
+                ),
+                contentDescription = null
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertEquals(1, compositionCount.get())
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {

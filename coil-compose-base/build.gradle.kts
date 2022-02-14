@@ -1,8 +1,4 @@
-import coil.Library
-import coil.addAndroidTestDependencies
-import coil.addTestDependencies
 import coil.setupLibraryModule
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
@@ -16,20 +12,21 @@ setupLibraryModule {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Library.COMPOSE_COMPILER_VERSION
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 }
 
 dependencies {
-    api(project(":coil-base"))
+    api(projects.coilBase)
 
-    implementation(Library.ANDROIDX_CORE)
-    implementation(Library.ACCOMPANIST_DRAWABLE_PAINTER)
-    api(Library.COMPOSE_FOUNDATION)
+    implementation(libs.androidx.core)
+    implementation(libs.accompanist.drawablepainter)
+    api(libs.compose.foundation)
 
-    addTestDependencies(KotlinCompilerVersion.VERSION)
-    addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+    testImplementation(projects.coilTest)
+    testImplementation(libs.bundles.test.jvm)
 
-    androidTestImplementation(Library.COMPOSE_UI_TEST_JUNIT)
-    androidTestImplementation(Library.COMPOSE_UI_TEST_MANIFEST)
+    androidTestImplementation(projects.coilTest)
+    androidTestImplementation(libs.bundles.test.android)
+    androidTestImplementation(libs.compose.ui.test)
 }

@@ -3,6 +3,7 @@ package coil.decode
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.AnimatedImageDrawable.REPEAT_INFINITE
+import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeDrawable
@@ -45,82 +46,63 @@ class ImageDecoderDecoder @JvmOverloads constructor(
 
     override suspend fun decode(): DecodeResult {
         var isSampled = false
-        val baseDrawable = withSource { source ->
-            source.toImageDecoderSource().decodeDrawable { info, _ ->
-                val (srcWidth, srcHeight) = info.size
-                val dstWidth = options.size.width.pxOrElse { srcWidth }
-                val dstHeight = options.size.height.pxOrElse { srcHeight }
-                if (srcWidth > 0 && srcHeight > 0 &&
-                    (srcWidth != dstWidth || srcHeight != dstHeight)) {
-                    val multiplier = DecodeUtils.computeSizeMultiplier(
-                        srcWidth = srcWidth,
-                        srcHeight = srcHeight,
-                        dstWidth = dstWidth,
-                        dstHeight = dstHeight,
-                        scale = options.scale
-                    )
+        val drawable = runInterruptible {
+            var imageDecoder: ImageDecoder? = null
+            val wrappedSource = wrapImageSource(source)
+            try {
+                wrappedSource.toImageDecoderSource().decodeDrawable { info, _ ->
+                    // Capture the image decoder to manually close it later.
+                    imageDecoder = this
 
-                    // Set the target size if the image is larger than the requested dimensions or
-                    // the request requires exact dimensions.
-                    isSampled = multiplier < 1
-                    if (isSampled || !options.allowInexactSize) {
-                        val targetWidth = (multiplier * srcWidth).roundToInt()
-                        val targetHeight = (multiplier * srcHeight).roundToInt()
-                        setTargetSize(targetWidth, targetHeight)
+                    // Configure the output image's size.
+                    val (srcWidth, srcHeight) = info.size
+                    val dstWidth = options.size.width.pxOrElse { srcWidth }
+                    val dstHeight = options.size.height.pxOrElse { srcHeight }
+                    if (srcWidth > 0 && srcHeight > 0 &&
+                        (srcWidth != dstWidth || srcHeight != dstHeight)) {
+                        val multiplier = DecodeUtils.computeSizeMultiplier(
+                            srcWidth = srcWidth,
+                            srcHeight = srcHeight,
+                            dstWidth = dstWidth,
+                            dstHeight = dstHeight,
+                            scale = options.scale
+                        )
+
+                        // Set the target size if the image is larger than the requested dimensions
+                        // or the request requires exact dimensions.
+                        isSampled = multiplier < 1
+                        if (isSampled || !options.allowInexactSize) {
+                            val targetWidth = (multiplier * srcWidth).roundToInt()
+                            val targetHeight = (multiplier * srcHeight).roundToInt()
+                            setTargetSize(targetWidth, targetHeight)
+                        }
                     }
+
+                    // Configure any other attributes.
+                    configureImageDecoderProperties()
                 }
-
-                allocator = if (options.config.isHardware) {
-                    ImageDecoder.ALLOCATOR_HARDWARE
-                } else {
-                    ImageDecoder.ALLOCATOR_SOFTWARE
-                }
-
-                memorySizePolicy = if (options.allowRgb565) {
-                    ImageDecoder.MEMORY_POLICY_LOW_RAM
-                } else {
-                    ImageDecoder.MEMORY_POLICY_DEFAULT
-                }
-
-                if (options.colorSpace != null) {
-                    setTargetColorSpace(options.colorSpace)
-                }
-
-                isUnpremultipliedRequired = !options.premultipliedAlpha
-
-                postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
+            } finally {
+                imageDecoder?.close()
+                wrappedSource.close()
             }
         }
+        return DecodeResult(wrapDrawable(drawable), isSampled)
+    }
 
-        val drawable = if (baseDrawable is AnimatedImageDrawable) {
-            baseDrawable.repeatCount = options.parameters.repeatCount() ?: REPEAT_INFINITE
-
-            // Set the start and end animation callbacks if any one is supplied through the request.
-            val onStart = options.parameters.animationStartCallback()
-            val onEnd = options.parameters.animationEndCallback()
-            if (onStart != null || onEnd != null) {
-                // Animation callbacks must be set on the main thread.
-                withContext(Dispatchers.Main.immediate) {
-                    baseDrawable.registerAnimationCallback(animatable2CallbackOf(onStart, onEnd))
-                }
-            }
-
-            // Wrap AnimatedImageDrawable in a ScaleDrawable so it always scales to fill its bounds.
-            ScaleDrawable(baseDrawable, options.scale)
+    private fun wrapImageSource(source: ImageSource): ImageSource {
+        return if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
+            // Wrap the source to rewrite its frame delay as it's read.
+            val rewritingSource = FrameDelayRewritingSource(source.source())
+            ImageSource(rewritingSource.buffer(), options.context)
         } else {
-            baseDrawable
+            source
         }
-
-        return DecodeResult(
-            drawable = drawable,
-            isSampled = isSampled
-        )
     }
 
     private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
         val file = fileOrNull()
         if (file != null) {
-            return ImageDecoder.createSource(file)
+            return ImageDecoder.createSource(file.toFile())
         }
 
         val metadata = metadata
@@ -133,24 +115,52 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
             return ImageDecoder.createSource(options.context.resources, metadata.resId)
         }
+
         return when {
             SDK_INT >= 31 -> ImageDecoder.createSource(source().readByteArray())
             SDK_INT == 30 -> ImageDecoder.createSource(ByteBuffer.wrap(source().readByteArray()))
             // https://issuetracker.google.com/issues/139371066
-            else -> ImageDecoder.createSource(file())
+            else -> ImageDecoder.createSource(file().toFile())
         }
     }
 
-    private suspend fun <T> withSource(block: (ImageSource) -> T): T = runInterruptible {
-        if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
-            // Wrap the source to rewrite its frame delay as it's read.
-            source.use {
-                val rewritingSource = FrameDelayRewritingSource(source.source())
-                ImageSource(rewritingSource.buffer(), options.context).use(block)
-            }
+    private fun ImageDecoder.configureImageDecoderProperties() {
+        allocator = if (options.config.isHardware) {
+            ImageDecoder.ALLOCATOR_HARDWARE
         } else {
-            source.use(block)
+            ImageDecoder.ALLOCATOR_SOFTWARE
         }
+        memorySizePolicy = if (options.allowRgb565) {
+            ImageDecoder.MEMORY_POLICY_LOW_RAM
+        } else {
+            ImageDecoder.MEMORY_POLICY_DEFAULT
+        }
+        if (options.colorSpace != null) {
+            setTargetColorSpace(options.colorSpace)
+        }
+        isUnpremultipliedRequired = !options.premultipliedAlpha
+        postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
+    }
+
+    private suspend fun wrapDrawable(baseDrawable: Drawable): Drawable {
+        if (baseDrawable !is AnimatedImageDrawable) {
+            return baseDrawable
+        }
+
+        baseDrawable.repeatCount = options.parameters.repeatCount() ?: REPEAT_INFINITE
+
+        // Set the start and end animation callbacks if any one is supplied through the request.
+        val onStart = options.parameters.animationStartCallback()
+        val onEnd = options.parameters.animationEndCallback()
+        if (onStart != null || onEnd != null) {
+            // Animation callbacks must be set on the main thread.
+            withContext(Dispatchers.Main.immediate) {
+                baseDrawable.registerAnimationCallback(animatable2CallbackOf(onStart, onEnd))
+            }
+        }
+
+        // Wrap AnimatedImageDrawable in a ScaleDrawable so it always scales to fill its bounds.
+        return ScaleDrawable(baseDrawable, options.scale)
     }
 
     @RequiresApi(28)

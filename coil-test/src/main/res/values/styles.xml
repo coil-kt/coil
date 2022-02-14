@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.TestActivity" parent="@style/Theme.MaterialComponents.Light">
-        <item name="colorPrimary">#FFFFFF</item>
+    <style name="Theme.TestActivity" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">#FFF</item>
+        <item name="android:colorPrimaryDark">#AAA</item>
+        <item name="android:colorAccent">#CCC</item>
     </style>
 </resources>

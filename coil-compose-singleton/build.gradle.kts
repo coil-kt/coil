@@ -1,4 +1,3 @@
-import coil.Library
 import coil.setupLibraryModule
 
 plugins {
@@ -13,11 +12,11 @@ setupLibraryModule {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Library.COMPOSE_COMPILER_VERSION
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 }
 
 dependencies {
-    api(project(":coil-compose-base"))
-    api(project(":coil-singleton"))
+    api(projects.coilComposeBase)
+    api(projects.coilSingleton)
 }

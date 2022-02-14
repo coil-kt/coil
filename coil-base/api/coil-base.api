@@ -168,15 +168,12 @@ public final class coil/decode/DataSource : java/lang/Enum {
 
 public final class coil/decode/DecodeResult {
 	public fun <init> (Landroid/graphics/drawable/Drawable;Z)V
-	public final fun component1 ()Landroid/graphics/drawable/Drawable;
-	public final fun component2 ()Z
 	public final fun copy (Landroid/graphics/drawable/Drawable;Z)Lcoil/decode/DecodeResult;
 	public static synthetic fun copy$default (Lcoil/decode/DecodeResult;Landroid/graphics/drawable/Drawable;ZILjava/lang/Object;)Lcoil/decode/DecodeResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public fun hashCode ()I
 	public final fun isSampled ()Z
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/decode/DecodeUtils {
@@ -185,11 +182,6 @@ public final class coil/decode/DecodeUtils {
 	public static final fun computeSizeMultiplier (DDDDLcoil/size/Scale;)D
 	public static final fun computeSizeMultiplier (FFFFLcoil/size/Scale;)F
 	public static final fun computeSizeMultiplier (IIIILcoil/size/Scale;)D
-	public static final fun isAnimatedHeif (Lokio/BufferedSource;)Z
-	public static final fun isAnimatedWebP (Lokio/BufferedSource;)Z
-	public static final fun isGif (Lokio/BufferedSource;)Z
-	public static final fun isHeif (Lokio/BufferedSource;)Z
-	public static final fun isWebP (Lokio/BufferedSource;)Z
 }
 
 public abstract interface class coil/decode/Decoder {
@@ -201,8 +193,9 @@ public abstract interface class coil/decode/Decoder$Factory {
 }
 
 public abstract class coil/decode/ImageSource : java/io/Closeable {
-	public abstract fun file ()Ljava/io/File;
-	public abstract fun fileOrNull ()Ljava/io/File;
+	public abstract fun file ()Lokio/Path;
+	public abstract fun fileOrNull ()Lokio/Path;
+	public abstract fun getFileSystem ()Lokio/FileSystem;
 	public abstract fun getMetadata ()Lcoil/decode/ImageSource$Metadata;
 	public abstract fun source ()Lokio/BufferedSource;
 	public abstract fun sourceOrNull ()Lokio/BufferedSource;
@@ -213,20 +206,21 @@ public abstract class coil/decode/ImageSource$Metadata {
 }
 
 public final class coil/decode/ImageSources {
-	public static final fun create (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;)Lcoil/decode/ImageSource;
-	public static final fun create (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Landroid/content/Context;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Ljava/io/File;)Lcoil/decode/ImageSource;
 	public static final fun create (Lokio/BufferedSource;Ljava/io/File;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
-	public static synthetic fun create$default (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;ILjava/lang/Object;)Lcoil/decode/ImageSource;
-	public static synthetic fun create$default (Ljava/io/File;Ljava/lang/String;Ljava/io/Closeable;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static final fun create (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;)Lcoil/decode/ImageSource;
+	public static final fun create (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil/decode/ImageSource$Metadata;)Lcoil/decode/ImageSource;
 	public static synthetic fun create$default (Lokio/BufferedSource;Landroid/content/Context;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
 	public static synthetic fun create$default (Lokio/BufferedSource;Ljava/io/File;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;ILjava/lang/Object;)Lcoil/decode/ImageSource;
+	public static synthetic fun create$default (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil/decode/ImageSource;
 }
 
 public final class coil/decode/ResourceMetadata : coil/decode/ImageSource$Metadata {
-	public fun <init> (Ljava/lang/String;I)V
+	public fun <init> (Ljava/lang/String;II)V
+	public final fun getDensity ()I
 	public final fun getPackageName ()Ljava/lang/String;
 	public final fun getResId ()I
 }
@@ -235,17 +229,20 @@ public abstract interface class coil/disk/DiskCache {
 	public abstract fun clear ()V
 	public abstract fun edit (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
 	public abstract fun get (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
-	public abstract fun getDirectory ()Ljava/io/File;
+	public abstract fun getDirectory ()Lokio/Path;
+	public abstract fun getFileSystem ()Lokio/FileSystem;
 	public abstract fun getMaxSize ()J
 	public abstract fun getSize ()J
 	public abstract fun remove (Ljava/lang/String;)Z
 }
 
 public final class coil/disk/DiskCache$Builder {
-	public fun <init> (Landroid/content/Context;)V
+	public fun <init> ()V
 	public final fun build ()Lcoil/disk/DiskCache;
 	public final fun cleanupDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil/disk/DiskCache$Builder;
 	public final fun directory (Ljava/io/File;)Lcoil/disk/DiskCache$Builder;
+	public final fun directory (Lokio/Path;)Lcoil/disk/DiskCache$Builder;
+	public final fun fileSystem (Lokio/FileSystem;)Lcoil/disk/DiskCache$Builder;
 	public final fun maxSizeBytes (J)Lcoil/disk/DiskCache$Builder;
 	public final fun maxSizePercent (D)Lcoil/disk/DiskCache$Builder;
 	public final fun maximumMaxSizeBytes (J)Lcoil/disk/DiskCache$Builder;
@@ -256,15 +253,15 @@ public abstract interface class coil/disk/DiskCache$Editor {
 	public abstract fun abort ()V
 	public abstract fun commit ()V
 	public abstract fun commitAndGet ()Lcoil/disk/DiskCache$Snapshot;
-	public abstract fun getData ()Ljava/io/File;
-	public abstract fun getMetadata ()Ljava/io/File;
+	public abstract fun getData ()Lokio/Path;
+	public abstract fun getMetadata ()Lokio/Path;
 }
 
 public abstract interface class coil/disk/DiskCache$Snapshot : java/io/Closeable {
 	public abstract fun close ()V
 	public abstract fun closeAndEdit ()Lcoil/disk/DiskCache$Editor;
-	public abstract fun getData ()Ljava/io/File;
-	public abstract fun getMetadata ()Ljava/io/File;
+	public abstract fun getData ()Lokio/Path;
+	public abstract fun getMetadata ()Lokio/Path;
 }
 
 public final class coil/drawable/CrossfadeDrawable : android/graphics/drawable/Drawable, android/graphics/drawable/Drawable$Callback, androidx/vectordrawable/graphics/drawable/Animatable2Compat {
@@ -310,9 +307,6 @@ public final class coil/drawable/CrossfadeDrawable$Companion {
 
 public final class coil/fetch/DrawableResult : coil/fetch/FetchResult {
 	public fun <init> (Landroid/graphics/drawable/Drawable;ZLcoil/decode/DataSource;)V
-	public final fun component1 ()Landroid/graphics/drawable/Drawable;
-	public final fun component2 ()Z
-	public final fun component3 ()Lcoil/decode/DataSource;
 	public final fun copy (Landroid/graphics/drawable/Drawable;ZLcoil/decode/DataSource;)Lcoil/fetch/DrawableResult;
 	public static synthetic fun copy$default (Lcoil/fetch/DrawableResult;Landroid/graphics/drawable/Drawable;ZLcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/fetch/DrawableResult;
 	public fun equals (Ljava/lang/Object;)Z
@@ -320,7 +314,6 @@ public final class coil/fetch/DrawableResult : coil/fetch/FetchResult {
 	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public fun hashCode ()I
 	public final fun isSampled ()Z
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract class coil/fetch/FetchResult {
@@ -336,9 +329,6 @@ public abstract interface class coil/fetch/Fetcher$Factory {
 
 public final class coil/fetch/SourceResult : coil/fetch/FetchResult {
 	public fun <init> (Lcoil/decode/ImageSource;Ljava/lang/String;Lcoil/decode/DataSource;)V
-	public final fun component1 ()Lcoil/decode/ImageSource;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Lcoil/decode/DataSource;
 	public final fun copy (Lcoil/decode/ImageSource;Ljava/lang/String;Lcoil/decode/DataSource;)Lcoil/fetch/SourceResult;
 	public static synthetic fun copy$default (Lcoil/fetch/SourceResult;Lcoil/decode/ImageSource;Ljava/lang/String;Lcoil/decode/DataSource;ILjava/lang/Object;)Lcoil/fetch/SourceResult;
 	public fun equals (Ljava/lang/Object;)Z
@@ -346,7 +336,6 @@ public final class coil/fetch/SourceResult : coil/fetch/FetchResult {
 	public final fun getMimeType ()Ljava/lang/String;
 	public final fun getSource ()Lcoil/decode/ImageSource;
 	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class coil/intercept/Interceptor {

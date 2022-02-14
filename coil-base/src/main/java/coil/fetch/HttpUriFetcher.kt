@@ -25,9 +25,6 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.IOException
-import okio.buffer
-import okio.sink
-import okio.source
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 
 internal class HttpUriFetcher(
@@ -45,7 +42,7 @@ internal class HttpUriFetcher(
             val cacheStrategy: CacheStrategy
             if (snapshot != null) {
                 // Always return cached images with empty metadata as they were likely added manually.
-                if (snapshot.metadata.length() == 0L) {
+                if (fileSystem.metadata(snapshot.metadata).size == 0L) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
                         mimeType = getMimeType(url, null),
@@ -95,10 +92,10 @@ internal class HttpUriFetcher(
                 return SourceResult(
                     source = responseBody.toImageSource(),
                     mimeType = getMimeType(url, responseBody.contentType()),
-                    dataSource = if (response.networkResponse != null) DataSource.NETWORK else DataSource.DISK
+                    dataSource = response.toDataSource()
                 )
             } catch (e: Exception) {
-                responseBody.closeQuietly()
+                response.closeQuietly()
                 throw e
             }
         } catch (e: Exception) {
@@ -108,7 +105,11 @@ internal class HttpUriFetcher(
     }
 
     private fun readFromDiskCache(): DiskCache.Snapshot? {
-        return if (options.diskCachePolicy.readEnabled) diskCache.value?.get(diskCacheKey) else null
+        return if (options.diskCachePolicy.readEnabled) {
+            diskCache.value?.get(diskCacheKey)
+        } else {
+            null
+        }
     }
 
     private fun writeToDiskCache(
@@ -123,11 +124,14 @@ internal class HttpUriFetcher(
             return null
         }
 
+        // Open a new editor.
         val editor = if (snapshot != null) {
             snapshot.closeAndEdit()
         } else {
             diskCache.value?.edit(diskCacheKey)
-        } ?: return null
+        }
+        if (editor == null) return null
+
         try {
             // Write the response to the disk cache.
             if (response.code == HTTP_NOT_MODIFIED && cacheResponse != null) {
@@ -135,17 +139,24 @@ internal class HttpUriFetcher(
                 val combinedResponse = response.newBuilder()
                     .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
                     .build()
-                editor.metadata.sink().buffer().use { CacheResponse(combinedResponse).writeTo(it) }
-                response.body!!.closeQuietly()
+                fileSystem.write(editor.metadata) {
+                    CacheResponse(combinedResponse).writeTo(this)
+                }
             } else {
                 // Update the metadata and the image data.
-                editor.metadata.sink().buffer().use { CacheResponse(response).writeTo(it) }
-                response.body!!.source().use { editor.data.sink().use(it::readAll) }
+                fileSystem.write(editor.metadata) {
+                    CacheResponse(response).writeTo(this)
+                }
+                fileSystem.write(editor.data) {
+                    response.body!!.source().readAll(this)
+                }
             }
             return editor.commitAndGet()
         } catch (e: Exception) {
             editor.abortQuietly()
             throw e
+        } finally {
+            response.closeQuietly()
         }
     }
 
@@ -221,7 +232,9 @@ internal class HttpUriFetcher(
 
     private fun DiskCache.Snapshot.toCacheResponse(): CacheResponse? {
         try {
-            return metadata.source().buffer().use(::CacheResponse)
+            return fileSystem.read(metadata) {
+                CacheResponse(this)
+            }
         } catch (_: IOException) {
             // If we can't parse the metadata, ignore this entry.
             return null
@@ -229,14 +242,28 @@ internal class HttpUriFetcher(
     }
 
     private fun DiskCache.Snapshot.toImageSource(): ImageSource {
-        return ImageSource(file = data, diskCacheKey = diskCacheKey, closeable = this)
+        return ImageSource(
+            file = data,
+            fileSystem = fileSystem,
+            diskCacheKey = diskCacheKey,
+            closeable = this
+        )
     }
 
     private fun ResponseBody.toImageSource(): ImageSource {
-        return ImageSource(source = source(), context = options.context)
+        return ImageSource(
+            source = source(),
+            context = options.context
+        )
+    }
+
+    private fun Response.toDataSource(): DataSource {
+        return if (networkResponse != null) DataSource.NETWORK else DataSource.DISK
     }
 
     private val diskCacheKey get() = options.diskCacheKey ?: url
+
+    private val fileSystem get() = diskCache.value!!.fileSystem
 
     class Factory(
         private val callFactory: Lazy<Call.Factory>,

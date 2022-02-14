@@ -1,7 +1,4 @@
-import coil.addAndroidTestDependencies
-import coil.addTestDependencies
 import coil.setupLibraryModule
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.library")
@@ -13,8 +10,11 @@ plugins {
 setupLibraryModule()
 
 dependencies {
-    api(project(":coil-base"))
+    api(projects.coilBase)
 
-    addTestDependencies(KotlinCompilerVersion.VERSION)
-    addAndroidTestDependencies(KotlinCompilerVersion.VERSION)
+    testImplementation(projects.coilTest)
+    testImplementation(libs.bundles.test.jvm)
+
+    androidTestImplementation(projects.coilTest)
+    androidTestImplementation(libs.bundles.test.android)
 }

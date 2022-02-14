@@ -2,17 +2,13 @@ package coil.decode
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.graphics.Paint
-import android.graphics.RectF
 import android.os.Build.VERSION.SDK_INT
-import androidx.core.graphics.applyCanvas
-import androidx.core.graphics.createBitmap
-import androidx.exifinterface.media.ExifInterface
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
+import coil.size.isOriginal
 import coil.size.pxOrElse
+import coil.util.MIME_TYPE_JPEG
 import coil.util.toDrawable
 import coil.util.toSoftware
 import kotlinx.coroutines.runInterruptible
@@ -22,7 +18,6 @@ import okio.Buffer
 import okio.ForwardingSource
 import okio.Source
 import okio.buffer
-import java.io.InputStream
 import kotlin.math.roundToInt
 
 /** The base [Decoder] that uses [BitmapFactory] to decode a given [ImageSource]. */
@@ -31,8 +26,6 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
     private val options: Options,
     private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE)
 ) : Decoder {
-
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     override suspend fun decode() = parallelismLock.withPermit {
         runInterruptible { BitmapFactory.Options().decode() }
@@ -49,78 +42,19 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         inJustDecodeBounds = false
 
         // Read the image's EXIF data.
-        val isFlipped: Boolean
-        val rotationDegrees: Int
-        if (shouldReadExifData(outMimeType)) {
-            val inputStream = safeBufferedSource.peek().inputStream()
-            val exifInterface = ExifInterface(ExifInterfaceInputStream(inputStream))
-            safeSource.exception?.let { throw it }
-            isFlipped = exifInterface.isFlipped
-            rotationDegrees = exifInterface.rotationDegrees
-        } else {
-            isFlipped = false
-            rotationDegrees = 0
-        }
+        val exifData = ExifUtils.readData(outMimeType, safeBufferedSource)
+        safeSource.exception?.let { throw it }
 
-        // srcWidth and srcHeight are the dimensions of the image after
-        // EXIF transformations (but before sampling).
-        val isSwapped = rotationDegrees == 90 || rotationDegrees == 270
-        val srcWidth = if (isSwapped) outHeight else outWidth
-        val srcHeight = if (isSwapped) outWidth else outHeight
-
-        inPreferredConfig = computeConfig(options, isFlipped, rotationDegrees)
-        inPremultiplied = options.premultipliedAlpha
+        // Always create immutable bitmaps as they have better performance.
+        inMutable = false
 
         if (SDK_INT >= 26 && options.colorSpace != null) {
             inPreferredColorSpace = options.colorSpace
         }
+        inPremultiplied = options.premultipliedAlpha
 
-        // Always create immutable bitmaps as they have performance benefits.
-        inMutable = false
-
-        if (outWidth > 0 && outHeight > 0) {
-            val (width, height) = options.size
-            val dstWidth = width.pxOrElse { srcWidth }
-            val dstHeight = height.pxOrElse { srcHeight }
-            inSampleSize = DecodeUtils.calculateInSampleSize(
-                srcWidth = srcWidth,
-                srcHeight = srcHeight,
-                dstWidth = dstWidth,
-                dstHeight = dstHeight,
-                scale = options.scale
-            )
-
-            // Calculate the image's density scaling multiple.
-            var scale = DecodeUtils.computeSizeMultiplier(
-                srcWidth = srcWidth / inSampleSize.toDouble(),
-                srcHeight = srcHeight / inSampleSize.toDouble(),
-                dstWidth = dstWidth.toDouble(),
-                dstHeight = dstHeight.toDouble(),
-                scale = options.scale
-            )
-
-            // Only upscale the image if the options require an exact size.
-            if (options.allowInexactSize) {
-                scale = scale.coerceAtMost(1.0)
-            }
-
-            inScaled = scale != 1.0
-            if (inScaled) {
-                if (scale > 1) {
-                    // Upscale
-                    inDensity = (Int.MAX_VALUE / scale).roundToInt()
-                    inTargetDensity = Int.MAX_VALUE
-                } else {
-                    // Downscale
-                    inDensity = Int.MAX_VALUE
-                    inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
-                }
-            }
-        } else {
-            // This occurs if there was an error decoding the image's size.
-            inSampleSize = 1
-            inScaled = false
-        }
+        configureConfig(exifData)
+        configureScale(exifData)
 
         // Decode the bitmap.
         val outBitmap: Bitmap? = safeBufferedSource.use {
@@ -136,8 +70,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         // Fix the incorrect density created by overloading inDensity/inTargetDensity.
         outBitmap.density = options.context.resources.displayMetrics.densityDpi
 
-        // Apply any EXIF transformations.
-        val bitmap = applyExifTransformations(outBitmap, inPreferredConfig, isFlipped, rotationDegrees)
+        // Reverse the EXIF transformations to get the original image.
+        val bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
 
         return DecodeResult(
             drawable = bitmap.toDrawable(options.context),
@@ -145,21 +79,12 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         )
     }
 
-    /** Return 'true' if we should read the image's EXIF data. */
-    private fun shouldReadExifData(mimeType: String?): Boolean {
-        return mimeType != null && mimeType in SUPPORTED_EXIF_MIME_TYPES
-    }
-
-    /** Compute and return [BitmapFactory.Options.inPreferredConfig]. */
-    private fun BitmapFactory.Options.computeConfig(
-        options: Options,
-        isFlipped: Boolean,
-        rotationDegrees: Int
-    ): Bitmap.Config {
+    /** Compute and set [BitmapFactory.Options.inPreferredConfig]. */
+    private fun BitmapFactory.Options.configureConfig(exifData: ExifData) {
         var config = options.config
 
         // Disable hardware bitmaps if we need to perform EXIF transformations.
-        if (isFlipped || rotationDegrees > 0) {
+        if (exifData.isFlipped || exifData.isRotated) {
             config = config.toSoftware()
         }
 
@@ -173,49 +98,73 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
             config = Bitmap.Config.RGBA_F16
         }
 
-        return config
+        inPreferredConfig = config
     }
 
-    /** This method assumes [config] is not [Bitmap.Config.HARDWARE]. */
-    private fun applyExifTransformations(
-        inBitmap: Bitmap,
-        config: Bitmap.Config,
-        isFlipped: Boolean,
-        rotationDegrees: Int
-    ): Bitmap {
-        // Short circuit if there are no transformations to apply.
-        val isRotated = rotationDegrees > 0
-        if (!isFlipped && !isRotated) {
-            return inBitmap
+    /** Compute and set the scaling properties for [BitmapFactory.Options]. */
+    private fun BitmapFactory.Options.configureScale(exifData: ExifData) {
+        // Requests that request original size from a resource source need to be decoded with
+        // respect to their intrinsic density.
+        val metadata = source.metadata
+        if (metadata is ResourceMetadata && options.size.isOriginal) {
+            inSampleSize = 1
+            inScaled = true
+            inDensity = metadata.density
+            inTargetDensity = options.context.resources.displayMetrics.densityDpi
+            return
         }
 
-        val matrix = Matrix()
-        val centerX = inBitmap.width / 2f
-        val centerY = inBitmap.height / 2f
-        if (isFlipped) {
-            matrix.postScale(-1f, 1f, centerX, centerY)
-        }
-        if (isRotated) {
-            matrix.postRotate(rotationDegrees.toFloat(), centerX, centerY)
+        // This occurs if there was an error decoding the image's size.
+        if (outWidth <= 0 || outHeight <= 0) {
+            inSampleSize = 1
+            inScaled = false
+            return
         }
 
-        val rect = RectF(0f, 0f, inBitmap.width.toFloat(), inBitmap.height.toFloat())
-        matrix.mapRect(rect)
-        if (rect.left != 0f || rect.top != 0f) {
-            matrix.postTranslate(-rect.left, -rect.top)
+        // srcWidth and srcHeight are the original dimensions of the image after
+        // EXIF transformations (but before sampling).
+        val srcWidth = if (exifData.isSwapped) outHeight else outWidth
+        val srcHeight = if (exifData.isSwapped) outWidth else outHeight
+
+        val (width, height) = options.size
+        val dstWidth = width.pxOrElse { srcWidth }
+        val dstHeight = height.pxOrElse { srcHeight }
+
+        // Calculate the image's sample size.
+        inSampleSize = DecodeUtils.calculateInSampleSize(
+            srcWidth = srcWidth,
+            srcHeight = srcHeight,
+            dstWidth = dstWidth,
+            dstHeight = dstHeight,
+            scale = options.scale
+        )
+
+        // Calculate the image's density scaling multiple.
+        var scale = DecodeUtils.computeSizeMultiplier(
+            srcWidth = srcWidth / inSampleSize.toDouble(),
+            srcHeight = srcHeight / inSampleSize.toDouble(),
+            dstWidth = dstWidth.toDouble(),
+            dstHeight = dstHeight.toDouble(),
+            scale = options.scale
+        )
+
+        // Only upscale the image if the options require an exact size.
+        if (options.allowInexactSize) {
+            scale = scale.coerceAtMost(1.0)
         }
 
-        val outBitmap = if (rotationDegrees == 90 || rotationDegrees == 270) {
-            createBitmap(inBitmap.height, inBitmap.width, config)
-        } else {
-            createBitmap(inBitmap.width, inBitmap.height, config)
+        inScaled = scale != 1.0
+        if (inScaled) {
+            if (scale > 1) {
+                // Upscale
+                inDensity = (Int.MAX_VALUE / scale).roundToInt()
+                inTargetDensity = Int.MAX_VALUE
+            } else {
+                // Downscale
+                inDensity = Int.MAX_VALUE
+                inTargetDensity = (Int.MAX_VALUE * scale).roundToInt()
+            }
         }
-
-        outBitmap.applyCanvas {
-            drawBitmap(inBitmap, matrix, paint)
-        }
-        inBitmap.recycle()
-        return outBitmap
     }
 
     class Factory @JvmOverloads constructor(
@@ -249,44 +198,7 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         }
     }
 
-    /** Wrap [delegate] so that it works with [ExifInterface]. */
-    private class ExifInterfaceInputStream(private val delegate: InputStream) : InputStream() {
-
-        // Ensure that this value is always larger than the size of the image
-        // so ExifInterface won't stop reading the stream prematurely.
-        private var availableBytes = GIGABYTE_IN_BYTES
-
-        override fun read() = interceptBytesRead(delegate.read())
-
-        override fun read(b: ByteArray) = interceptBytesRead(delegate.read(b))
-
-        override fun read(b: ByteArray, off: Int, len: Int) =
-            interceptBytesRead(delegate.read(b, off, len))
-
-        override fun skip(n: Long) = delegate.skip(n)
-
-        override fun available() = availableBytes
-
-        override fun close() = delegate.close()
-
-        private fun interceptBytesRead(bytesRead: Int): Int {
-            if (bytesRead == -1) availableBytes = 0
-            return bytesRead
-        }
-    }
-
     internal companion object {
-        private const val MIME_TYPE_JPEG = "image/jpeg"
-        private const val MIME_TYPE_WEBP = "image/webp"
-        private const val MIME_TYPE_HEIC = "image/heic"
-        private const val MIME_TYPE_HEIF = "image/heif"
-        private const val GIGABYTE_IN_BYTES = 1024 * 1024 * 1024
         internal const val DEFAULT_MAX_PARALLELISM = 4
-
-        // NOTE: We don't support PNG EXIF data as it's very rarely used and requires buffering
-        // the entire file into memory. All of the supported formats short circuit when the EXIF
-        // chunk is found (often near the top of the file).
-        private val SUPPORTED_EXIF_MIME_TYPES =
-            arrayOf(MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF)
     }
 }

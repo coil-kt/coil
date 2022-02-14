@@ -5,14 +5,5 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application
-        android:name="coil.compose.utils.TestApplication"
-        android:usesCleartextTraffic="true">
-
-        <!--suppress AndroidDomInspection -->
-        <activity
-            android:name="androidx.activity.ComponentActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-    </application>
+    <application android:name="coil.compose.utils.TestApplication"/>
 </manifest>

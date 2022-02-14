@@ -25,9 +25,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.FileSystem
 import okio.blackholeSink
-import okio.buffer
-import okio.sink
 import okio.source
 import org.junit.After
 import org.junit.Before
@@ -50,6 +49,7 @@ class HttpUriFetcherTest {
 
     private lateinit var context: Context
     private lateinit var server: MockWebServer
+    private lateinit var fileSystem: FileSystem
     private lateinit var diskCache: DiskCache
     private lateinit var callFactory: Call.Factory
     private lateinit var imageLoader: ImageLoader
@@ -58,7 +58,8 @@ class HttpUriFetcherTest {
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         server = createMockWebServer()
-        diskCache = DiskCache.Builder(context)
+        fileSystem = FileSystem.SYSTEM
+        diskCache = DiskCache.Builder()
             .directory(File("build/cache"))
             .maxSizeBytes(10L * 1024 * 1024) // 10MB
             .build()
@@ -75,7 +76,7 @@ class HttpUriFetcherTest {
         server.shutdown()
         imageLoader.shutdown()
         diskCache.clear()
-        diskCache.directory.deleteRecursively() // Ensure we start fresh.
+        fileSystem.deleteRecursively(diskCache.directory) // Ensure we start fresh.
     }
 
     @Test
@@ -150,8 +151,8 @@ class HttpUriFetcherTest {
 
         // Write the image in the disk cache.
         val editor = diskCache.edit(url)!!
-        editor.data.sink().buffer().use {
-            it.writeAll(context.assets.open(IMAGE).source())
+        fileSystem.write(editor.data) {
+            writeAll(context.assets.open(IMAGE).source())
         }
         editor.commit()
 
@@ -182,7 +183,7 @@ class HttpUriFetcherTest {
 
         // Ensure the result file is present.
         diskCache[url]!!.use { snapshot ->
-            assertTrue(snapshot.data in diskCache.directory.listFiles().orEmpty())
+            assertTrue(snapshot.data in fileSystem.list(diskCache.directory))
             assertEquals(snapshot.data, source.file)
         }
     }
@@ -207,7 +208,7 @@ class HttpUriFetcherTest {
 
         // Ensure the result file is present.
         val expected = diskCache[url]?.data
-        assertTrue(expected in diskCache.directory.listFiles().orEmpty())
+        assertTrue(expected in fileSystem.list(diskCache.directory))
         assertEquals(expected, (result.source as FileImageSource).file)
     }
 
@@ -216,8 +217,8 @@ class HttpUriFetcherTest {
         val url = server.url(IMAGE).toString()
 
         val editor = diskCache.edit(url)!!
-        editor.data.sink().buffer().use {
-            it.writeAll(context.assets.open(IMAGE).source())
+        fileSystem.write(editor.data) {
+            writeAll(context.assets.open(IMAGE).source())
         }
         editor.commit()
 

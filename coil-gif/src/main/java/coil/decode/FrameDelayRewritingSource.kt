@@ -1,5 +1,4 @@
-// https://youtrack.jetbrains.com/issue/KTIJ-196
-@file:Suppress("SameParameterValue", "UnusedEquals", "UnusedUnaryOperator")
+@file:Suppress("SameParameterValue")
 
 package coil.decode
 

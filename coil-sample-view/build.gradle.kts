@@ -1,4 +1,3 @@
-import coil.Library
 import coil.setupAppModule
 
 plugins {
@@ -24,14 +23,14 @@ setupAppModule {
 }
 
 dependencies {
-    implementation(project(":coil-sample-common"))
-    implementation(project(":coil-singleton"))
-    implementation(project(":coil-gif"))
-    implementation(project(":coil-svg"))
-    implementation(project(":coil-video"))
+    implementation(projects.coilSampleCommon)
+    implementation(projects.coilSingleton)
+    implementation(projects.coilGif)
+    implementation(projects.coilSvg)
+    implementation(projects.coilVideo)
 
-    implementation(Library.ANDROIDX_ACTIVITY)
-    implementation(Library.ANDROIDX_CONSTRAINT_LAYOUT)
-    implementation(Library.ANDROIDX_RECYCLER_VIEW)
-    implementation(Library.MATERIAL)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.material)
 }
