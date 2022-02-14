@@ -620,7 +620,7 @@ class AsyncImageTest {
             .assertWidthIsEqualTo(expectedWidthPx.toDp())
             .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.sample)
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
