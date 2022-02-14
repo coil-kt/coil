@@ -76,10 +76,6 @@ internal fun Constraints.constrainWidth(width: Float) =
 internal fun Constraints.constrainHeight(height: Float) =
     height.coerceIn(minHeight.toFloat(), maxHeight.toFloat())
 
-internal fun Int.constraintIntToFloat(): Float {
-    return if (this == Constraints.Infinity) Float.POSITIVE_INFINITY else toFloat()
-}
-
 internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this else block()
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
