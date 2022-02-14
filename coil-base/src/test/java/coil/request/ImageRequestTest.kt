@@ -97,31 +97,13 @@ class ImageRequestTest {
     }
 
     @Test
-    fun `setting defaults resets resolved scale only`() {
-        val imageView = ImageView(context)
-        val request = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
-            .size(100, 100)
-            .target(imageView)
-            .build()
-
-        assertEquals(Scale.FIT, imageView.scale)
-
-        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-
-        val newRequest = request.newBuilder().defaults(DefaultRequestOptions()).build()
-        assertSame(request.lifecycle, newRequest.lifecycle)
-        assertSame(request.sizeResolver, newRequest.sizeResolver)
-        assertEquals(Scale.FILL, newRequest.scaleResolver)
-    }
-
-    @Test
     fun `defined values are not replaced`() {
         val lifecycle = FakeLifecycle()
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
             .data("https://www.example.com/image.jpg")
             .size(100, 100)
+            .scale(Scale.FILL)
             .lifecycle(lifecycle)
             .target(imageView)
             .build()

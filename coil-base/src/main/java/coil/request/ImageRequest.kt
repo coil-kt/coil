@@ -609,6 +609,9 @@ class ImageRequest private constructor(
             this.scaleResolver = ScaleResolver(scale)
         }
 
+        /**
+         * Set the [ScaleResolver] to resolve the [Scale].
+         */
         fun scale(resolver: ScaleResolver) = apply {
             this.scaleResolver = resolver
         }
