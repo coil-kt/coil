@@ -244,7 +244,11 @@ private fun Constraints.toSizeOrNull() = when {
 
 @Stable
 private fun computeScale(constraints: Constraints, existing: Scale): Scale {
-    return if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) existing else Scale.FIT
+    if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+        return existing
+    } else {
+        return Scale.FIT
+    }
 }
 
 @Stable
