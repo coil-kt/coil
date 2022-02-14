@@ -184,22 +184,23 @@ internal fun updateRequest(
     contentScale: ContentScale,
 ) = request.newBuilder()
     .apply {
-        val resolver = remember(contentScale) { ConstraintsResolver(contentScale) }
+        val resolver = remember { ConstraintsResolver() }
+        resolver.scale = contentScale.toScale()
         if (request.defined.sizeResolver == null) size(resolver)
         if (request.defined.scaleResolver == null) scale(resolver)
     }
     .build()
 
 /** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
-internal class ConstraintsResolver(
-    private val contentScale: ContentScale
-) : SizeResolver, ScaleResolver, LayoutModifier {
+internal class ConstraintsResolver : SizeResolver, ScaleResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
 
+    lateinit var scale: Scale
+
     override suspend fun size() = _constraints.mapNotNull { it.toSizeOrNull() }.first()
 
-    override suspend fun scale() = _constraints.mapNotNull { calculateScale(it, contentScale) }.first()
+    override suspend fun scale() = _constraints.mapNotNull { it.toScale(scale) }.first()
 
     override fun MeasureScope.measure(
         measurable: Measurable,
@@ -242,12 +243,8 @@ private fun Constraints.toSizeOrNull() = when {
 }
 
 @Stable
-private fun calculateScale(constraints: Constraints, contentScale: ContentScale): Scale {
-    if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
-        return contentScale.toScale()
-    } else {
-        return Scale.FIT
-    }
+private fun Constraints.toScale(existing: Scale): Scale {
+    return if (hasBoundedWidth && hasBoundedHeight) existing else Scale.FIT
 }
 
 @Stable
