@@ -3,7 +3,7 @@ package coil.size
 import android.widget.ImageView
 import coil.util.scale
 
-class RealImageViewScaleResolver(private val view: ImageView) : ScaleResolver {
+internal class RealImageViewScaleResolver(private val view: ImageView) : ScaleResolver {
 
     override suspend fun scale() = view.scale
 

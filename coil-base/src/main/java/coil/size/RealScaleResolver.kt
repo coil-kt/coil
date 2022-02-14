@@ -1,6 +1,6 @@
 package coil.size
 
-class RealScaleResolver(private val scale: Scale) : ScaleResolver {
+internal class RealScaleResolver(private val scale: Scale) : ScaleResolver {
 
     override suspend fun scale() = scale
 

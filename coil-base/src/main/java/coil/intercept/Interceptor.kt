@@ -28,6 +28,11 @@ fun interface Interceptor {
          */
         fun withSize(size: Size): Chain
 
+        /**
+         * Set the requested [Scale]. This determines how the image is scaled to fit [size].
+         *
+         * @param scale The requested scaling algorithm.
+         */
         fun withScale(scale: Scale): Chain
 
         /**
