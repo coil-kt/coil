@@ -150,15 +150,14 @@ internal data class ContentPainterModifier(
 
         // Scale the image to fill the maximum space if one dimension is fixed.
         val isBoundedWithFixedDimension = hasBoundedSize && (hasFixedWidth || hasFixedHeight)
-        val (intrinsicWidth, intrinsicHeight) = intrinsicSize
         val constrainedWidth = when {
             isBoundedWithFixedDimension -> constraints.maxWidth.constraintIntToFloat()
-            intrinsicWidth.isFinite() -> constraints.constrainWidth(intrinsicWidth)
+            intrinsicSize.width.isFinite() -> constraints.constrainWidth(intrinsicSize.width)
             else -> constraints.minWidth.toFloat()
         }
         val constrainedHeight = when {
             isBoundedWithFixedDimension -> constraints.maxHeight.constraintIntToFloat()
-            intrinsicHeight.isFinite() -> constraints.constrainHeight(intrinsicHeight)
+            intrinsicSize.height.isFinite() -> constraints.constrainHeight(intrinsicSize.height)
             else -> constraints.minHeight.toFloat()
         }
         val constrainedSize = Size(constrainedWidth, constrainedHeight)
