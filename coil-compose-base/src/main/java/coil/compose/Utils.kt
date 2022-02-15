@@ -71,8 +71,8 @@ internal fun onStateOf(
     }
 }
 
-@get:SuppressLint("ModifierFactoryExtensionFunction", "ModifierFactoryReturnType")
 internal val ImageRequest.constraintsResolver: ConstraintsResolver?
+    @SuppressLint("ModifierFactoryExtensionFunction", "ModifierFactoryReturnType")
     get() = sizeResolver as? ConstraintsResolver ?: scaleResolver as? ConstraintsResolver
 
 internal fun Constraints.constrainWidth(width: Float) =
