@@ -9,6 +9,13 @@ okhttp = "4.9.3"
 okio = "3.0.0"
 
 [libraries]
+androidPlugin = "com.android.tools.build:gradle:7.1.1"
+kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+dokkaPlugin = "org.jetbrains.dokka:dokka-gradle-plugin:1.6.10"
+mavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
+binaryCompatibilityPlugin = "org.jetbrains.kotlinx:binary-compatibility-validator:0.8.0"
+ktlintPlugin = "org.jlleitschuh.gradle:ktlint-gradle:10.2.1"
+
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
 
