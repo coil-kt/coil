@@ -51,8 +51,9 @@ internal class EngineInterceptor(
             val request = chain.request
             val data = request.data
             val size = chain.size
+            val scale = chain.scale
             val eventListener = chain.eventListener
-            val options = requestService.options(request, size)
+            val options = requestService.options(request, size, scale)
 
             // Perform any data mapping.
             eventListener.mapStart(request, data)
@@ -61,7 +62,7 @@ internal class EngineInterceptor(
 
             // Check the memory cache.
             val cacheKey = memoryCacheService.newCacheKey(request, mappedData, options, eventListener)
-            val cacheValue = cacheKey?.let { memoryCacheService.getCacheValue(request, it, size) }
+            val cacheValue = cacheKey?.let { memoryCacheService.getCacheValue(request, it, size, scale) }
 
             // Fast path: return the value from the memory cache.
             if (cacheValue != null) {
