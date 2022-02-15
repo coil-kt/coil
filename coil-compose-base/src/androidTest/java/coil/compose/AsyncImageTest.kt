@@ -122,7 +122,7 @@ class AsyncImageTest {
     }
 
     @Test
-    fun fillMaxWidth() {
+    fun fillMaxWidth_boundedConstraint() {
         assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
@@ -134,6 +134,39 @@ class AsyncImageTest {
                     .fillMaxWidth()
                     .testTag(Image),
             )
+        }
+
+        waitForRequestComplete()
+
+        val expectedWidthPx = displaySize.width.toDouble()
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
+
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
+    fun fillMaxWidth_infiniteConstraint() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                AsyncImage(
+                    model = server.url("/image"),
+                    contentDescription = null,
+                    imageLoader = imageLoader,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(Image),
+                )
+            }
         }
 
         waitForRequestComplete()
