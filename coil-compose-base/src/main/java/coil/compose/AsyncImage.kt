@@ -131,7 +131,9 @@ fun AsyncImage(
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
-    val painter = rememberAsyncImagePainter(request, imageLoader, transform, onState, filterQuality)
+    val painter = rememberAsyncImagePainter(
+        request, imageLoader, transform, onState, contentScale, filterQuality
+    )
 
     // Draw the content without a parent composable or subcomposition.
     val constraintsResolver = request.constraintsResolver
@@ -184,10 +186,14 @@ internal fun updateRequest(
     contentScale: ContentScale,
 ) = request.newBuilder()
     .apply {
-        val resolver = remember { ConstraintsResolver() }
-        resolver.scale = contentScale.toScale()
-        if (request.defined.sizeResolver == null) size(resolver)
-        if (request.defined.scaleResolver == null) scale(resolver)
+        if (request.defined.sizeResolver == null) {
+            val resolver = remember { ConstraintsResolver() }
+            size(resolver)
+            if (request.defined.scaleResolver == null) {
+                resolver.scale = contentScale.toScale()
+                scale(resolver)
+            }
+        }
     }
     .build()
 
@@ -254,10 +260,4 @@ private fun computeScale(constraints: Constraints, original: Scale): Scale {
         // Always scale to fit the minimum dimension when at least one dimension is unbounded.
         return Scale.FIT
     }
-}
-
-@Stable
-private fun ContentScale.toScale() = when (this) {
-    ContentScale.Fit, ContentScale.Inside -> Scale.FIT
-    else -> Scale.FILL
 }

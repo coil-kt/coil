@@ -118,7 +118,9 @@ fun SubcomposeAsyncImage(
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
-    val painter = rememberAsyncImagePainter(request, imageLoader, transform, onState, filterQuality)
+    val painter = rememberAsyncImagePainter(
+        request, imageLoader, transform, onState, contentScale, filterQuality
+    )
 
     val constraintsResolver = request.constraintsResolver
     if (constraintsResolver == null) {
