@@ -8,13 +8,15 @@ coroutines = "1.6.0"
 okhttp = "4.9.3"
 okio = "3.0.0"
 
+[plugins]
+binaryCompatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.8.0" }
+dokka = { id = "org.jetbrains.dokka", version = "1.6.10" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "10.2.1" }
+
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:7.1.1"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
-gradlePlugin-dokka = "org.jetbrains.dokka:dokka-gradle-plugin:1.6.10"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
-gradlePlugin-binaryCompatibility = "org.jetbrains.kotlinx:binary-compatibility-validator:0.8.0"
-gradlePlugin-ktlint = "org.jlleitschuh.gradle:ktlint-gradle:10.2.1"
 
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }

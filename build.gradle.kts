@@ -11,19 +11,21 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
     dependencies {
         classpath(libs.gradlePlugin.android)
         classpath(libs.gradlePlugin.kotlin)
-        classpath(libs.gradlePlugin.dokka)
         classpath(libs.gradlePlugin.mavenPublish)
-        classpath(libs.gradlePlugin.binaryCompatibility)
-        classpath(libs.gradlePlugin.ktlint)
     }
 }
 
-apply(plugin = "binary-compatibility-validator")
+// https://youtrack.jetbrains.com/issue/KTIJ-19369
+@Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+plugins {
+    alias(libs.plugins.binaryCompatibility)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.ktlint)
+}
 
 extensions.configure<ApiValidationExtension> {
     ignoredProjects += arrayOf(
@@ -33,8 +35,6 @@ extensions.configure<ApiValidationExtension> {
         "coil-test"
     )
 }
-
-apply(plugin = "org.jetbrains.dokka")
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
     outputDirectory by file("$rootDir/docs/api")
