@@ -620,7 +620,7 @@ class ImageRequest private constructor(
          * Set the precision for the size of the loaded image.
          *
          * The default value is [Precision.AUTOMATIC], which uses the logic in [allowInexactSize]
-         * to determine if output image's dimensions must match the input [size] and [scaleResolver] exactly.
+         * to determine if output image's dimensions must match the input [size] and [scale] exactly.
          *
          * NOTE: If [size] is [Size.ORIGINAL], the returned image's size will always be equal to or
          * greater than the image's original size.

@@ -191,7 +191,10 @@ internal fun updateRequest(
     }
     .build()
 
-/** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
+/**
+ * A [SizeResolver] and [ScaleResolver] that computes the size and scale from the constrains passed
+ * during the layout phase.
+ */
 internal class ConstraintsResolver : SizeResolver, ScaleResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
