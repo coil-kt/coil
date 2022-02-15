@@ -11,6 +11,7 @@ import coil.lifecycle.FakeLifecycle
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import coil.request.ImageResult
+import coil.size.Scale
 import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.util.createRequest
@@ -145,6 +146,7 @@ class RealInterceptorChainTest {
             index = 0,
             request = request,
             size = Size(100, 100),
+            scale = Scale.FIT,
             eventListener = EventListener.NONE,
             isPlaceholderCached = false
         )

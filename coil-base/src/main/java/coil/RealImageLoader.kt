@@ -168,6 +168,11 @@ internal class RealImageLoader(
             val size = request.sizeResolver.size()
             eventListener.resolveSizeEnd(request, size)
 
+            // Resolve the scale.
+            eventListener.resolveScaleStart(request)
+            val scale = request.scaleResolver.scale()
+            eventListener.resolveScaleEnd(request, scale)
+
             // Execute the interceptor chain.
             val result = withContext(request.interceptorDispatcher) {
                 RealInterceptorChain(
@@ -176,6 +181,7 @@ internal class RealImageLoader(
                     index = 0,
                     request = request,
                     size = size,
+                    scale = scale,
                     eventListener = eventListener,
                     isPlaceholderCached = placeholderBitmap != null
                 ).proceed(request)

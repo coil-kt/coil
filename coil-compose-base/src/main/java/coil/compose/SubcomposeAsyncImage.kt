@@ -120,9 +120,10 @@ fun SubcomposeAsyncImage(
     val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(request, imageLoader, transform, onState, filterQuality)
 
-    val sizeResolver = request.sizeResolver
-    if (sizeResolver !is ConstraintsSizeResolver) {
-        // Fast path: draw the content without subcomposition as we've got a custom `SizeResolver`.
+    val constraintsResolver = request.constraintsResolver
+    if (constraintsResolver == null) {
+        // Fast path: draw the content without subcomposition as we don't need to resolve the
+        // constraints.
         Box(
             modifier = modifier,
             contentAlignment = alignment,
@@ -139,8 +140,8 @@ fun SubcomposeAsyncImage(
             ).content()
         }
     } else {
-        // Slow path: draw the content with subcomposition as we need to resolve the size before
-        // calling `content`.
+        // Slow path: draw the content with subcomposition as we need to resolve the constraints
+        // before calling `content`.
         BoxWithConstraints(
             modifier = modifier,
             contentAlignment = alignment,
@@ -149,7 +150,7 @@ fun SubcomposeAsyncImage(
             // Ensure `painter.state` is up to date immediately. Resolving the constraints
             // synchronously is necessary to ensure that images from the memory cache are resolved
             // and `painter.state` is updated to `Success` before invoking `content`.
-            sizeResolver.setConstraints(constraints)
+            constraintsResolver.setConstraints(constraints)
 
             RealSubcomposeAsyncImageScope(
                 parentScope = this,

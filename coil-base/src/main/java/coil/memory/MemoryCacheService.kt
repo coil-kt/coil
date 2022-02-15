@@ -73,11 +73,12 @@ internal class MemoryCacheService(
     fun getCacheValue(
         request: ImageRequest,
         cacheKey: MemoryCache.Key,
-        size: Size
+        size: Size,
+        scale: Scale,
     ): MemoryCache.Value? {
         if (!request.memoryCachePolicy.readEnabled) return null
         val cacheValue = imageLoader.memoryCache?.get(cacheKey)
-        return cacheValue?.takeIf { isCacheValueValid(request, cacheKey, it, size) }
+        return cacheValue?.takeIf { isCacheValueValid(request, cacheKey, it, size, scale) }
     }
 
     /** Return 'true' if [cacheValue] satisfies the [request]. */
@@ -86,7 +87,8 @@ internal class MemoryCacheService(
         request: ImageRequest,
         cacheKey: MemoryCache.Key,
         cacheValue: MemoryCache.Value,
-        size: Size
+        size: Size,
+        scale: Scale,
     ): Boolean {
         // Ensure we don't return a hardware bitmap if the request doesn't allow it.
         if (!requestService.isConfigValidForHardware(request, cacheValue.bitmap.safeConfig)) {
@@ -98,7 +100,7 @@ internal class MemoryCacheService(
         }
 
         // Ensure the size of the cached bitmap is valid for the request.
-        return isSizeValid(request, cacheKey, cacheValue, size)
+        return isSizeValid(request, cacheKey, cacheValue, size, scale)
     }
 
     /** Return 'true' if [cacheValue]'s size satisfies the [request]. */
@@ -106,7 +108,8 @@ internal class MemoryCacheService(
         request: ImageRequest,
         cacheKey: MemoryCache.Key,
         cacheValue: MemoryCache.Value,
-        size: Size
+        size: Size,
+        scale: Scale,
     ): Boolean {
         // The cached value must not be sampled if the image's original size is requested.
         val isSampled = cacheValue.isSampled
@@ -133,14 +136,14 @@ internal class MemoryCacheService(
         // Compute the scaling factor between the source dimensions and the requested dimensions.
         val srcWidth = cacheValue.bitmap.width
         val srcHeight = cacheValue.bitmap.height
-        val dstWidth = size.width.pxOrMinMax(request.scale)
-        val dstHeight = size.height.pxOrMinMax(request.scale)
+        val dstWidth = size.width.pxOrMinMax(scale)
+        val dstHeight = size.height.pxOrMinMax(scale)
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = srcWidth,
             srcHeight = srcHeight,
             dstWidth = dstWidth,
             dstHeight = dstHeight,
-            scale = request.scale
+            scale = scale
         )
 
         // Short circuit the size check if the size is at most 1 pixel off in either dimension.
@@ -165,7 +168,7 @@ internal class MemoryCacheService(
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) does not exactly match the requested size " +
-                    "(${size.width.pxString()}, ${size.height.pxString()}, ${request.scale})."
+                    "(${size.width.pxString()}, ${size.height.pxString()}, $scale)."
             }
             return false
         }
@@ -175,7 +178,7 @@ internal class MemoryCacheService(
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) is smaller than the requested size " +
-                    "(${size.width.pxString()}, ${size.height.pxString()}, ${request.scale})."
+                    "(${size.width.pxString()}, ${size.height.pxString()}, $scale)."
             }
             return false
         }

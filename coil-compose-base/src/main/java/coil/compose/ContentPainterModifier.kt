@@ -27,8 +27,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * A custom [paint] modifier used by [SubcomposeAsyncImageContent] that fills the remaining space
- * if one dimension of the incoming constraints is fixed.
+ * A custom [paint] modifier used by [Content].
  */
 internal data class ContentPainterModifier(
     private val painter: Painter,
@@ -115,6 +114,7 @@ internal data class ContentPainterModifier(
 
     private fun calculateScaledSize(dstSize: Size): Size {
         if (dstSize.isEmpty()) return Size.Zero
+
         val intrinsicSize = painter.intrinsicSize
         if (intrinsicSize.isUnspecified) return dstSize
 
@@ -126,16 +126,18 @@ internal data class ContentPainterModifier(
     }
 
     private fun modifyConstraints(constraints: Constraints): Constraints {
+        // The constraints are a fixed pixel value that can't be modified.
         val hasFixedWidth = constraints.hasFixedWidth
         val hasFixedHeight = constraints.hasFixedHeight
         if (hasFixedWidth && hasFixedHeight) {
             return constraints
         }
 
+        // Fill the available space if the painter has no intrinsic size.
+        val hasBoundedSize = constraints.hasBoundedWidth && constraints.hasBoundedHeight
         val intrinsicSize = painter.intrinsicSize
         if (intrinsicSize.isUnspecified) {
-            // Fill the available space if the painter has no intrinsic size.
-            if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+            if (hasBoundedSize) {
                 return constraints.copy(
                     minWidth = constraints.maxWidth,
                     minHeight = constraints.maxHeight
@@ -145,27 +147,31 @@ internal data class ContentPainterModifier(
             }
         }
 
-        // Changed from PainterModifier:
-        // Scale the image to fill the maximum space if one dimension is fixed.
-        val srcWidth = if (hasFixedHeight) {
-            constraints.maxWidth.toFloat()
+        // Changed from `PainterModifier`:
+        // Use the maximum space as the destination size if the constraints are bounded and at
+        // least one dimension is a fixed pixel value. Else, use the intrinsic size of the painter.
+        val dstWidth: Float
+        val dstHeight: Float
+        if (hasBoundedSize && (hasFixedWidth || hasFixedHeight)) {
+            dstWidth = constraints.maxWidth.toFloat()
+            dstHeight = constraints.maxHeight.toFloat()
         } else {
-            intrinsicSize.width.takeOrElse { constraints.minWidth.toFloat() }
-        }
-        val srcHeight = if (hasFixedWidth) {
-            constraints.maxHeight.toFloat()
-        } else {
-            intrinsicSize.height.takeOrElse { constraints.minHeight.toFloat() }
+            val (intrinsicWidth, intrinsicHeight) = intrinsicSize
+            dstWidth = when {
+                intrinsicWidth.isFinite() -> constraints.constrainWidth(intrinsicWidth)
+                else -> constraints.minWidth.toFloat()
+            }
+            dstHeight = when {
+                intrinsicHeight.isFinite() -> constraints.constrainHeight(intrinsicHeight)
+                else -> constraints.minHeight.toFloat()
+            }
         }
 
-        val constrainedSize = Size(
-            width = constraints.constrainWidth(srcWidth),
-            height = constraints.constrainHeight(srcHeight)
-        )
-        val scaledSize = calculateScaledSize(constrainedSize)
+        // Scale the source dimensions into the destination dimensions and update the constraints.
+        val (scaledWidth, scaledHeight) = calculateScaledSize(Size(dstWidth, dstHeight))
         return constraints.copy(
-            minWidth = constraints.constrainWidth(scaledSize.width.roundToInt()),
-            minHeight = constraints.constrainHeight(scaledSize.height.roundToInt())
+            minWidth = constraints.constrainWidth(scaledWidth.roundToInt()),
+            minHeight = constraints.constrainHeight(scaledHeight.roundToInt())
         )
     }
 
@@ -180,7 +186,7 @@ internal data class ContentPainterModifier(
         // Draw the painter.
         translate(dx.toFloat(), dy.toFloat()) {
             with(painter) {
-                draw(size = scaledSize, alpha = alpha, colorFilter = colorFilter)
+                draw(scaledSize, alpha, colorFilter)
             }
         }
 

@@ -26,6 +26,7 @@ import coil.util.SystemCallbacks
 import coil.util.createBitmap
 import coil.util.createRequest
 import coil.util.forEachIndexedIndices
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -385,29 +386,33 @@ class MemoryCacheServiceTest {
         assertFalse(service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
-            request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
-            size = Size(650, 400)
+            request = request.newBuilder().precision(Precision.INEXACT).build(),
+            size = Size(650, 400),
+            scale = Scale.FIT
         ))
 
         assertTrue(service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
-            request = request.newBuilder().precision(Precision.EXACT).scale(Scale.FIT).build(),
-            size = Size(1000, 500)
+            request = request.newBuilder().precision(Precision.EXACT).build(),
+            size = Size(1000, 500),
+            scale = Scale.FIT
         ))
 
         assertFalse(service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
-            request = request.newBuilder().precision(Precision.INEXACT).scale(Scale.FIT).build(),
-            size = Size(1500, 1000)
+            request = request.newBuilder().precision(Precision.INEXACT).build(),
+            size = Size(1500, 1000),
+            scale = Scale.FIT
         ))
 
         assertFalse(service.isCacheValueValid(
             cacheKey = key,
             cacheValue = value,
-            request = request.newBuilder().precision(Precision.EXACT).scale(Scale.FIT).build(),
-            size = Size(800, 500)
+            request = request.newBuilder().precision(Precision.EXACT).build(),
+            size = Size(800, 500),
+            scale = Scale.FIT
         ))
     }
 
@@ -483,7 +488,8 @@ class MemoryCacheServiceTest {
         request = request,
         cacheKey = MemoryCache.Key("key"),
         cacheValue = MemoryCache.Value(cached, mapOf(EXTRA_IS_SAMPLED to isSampled)),
-        size = size
+        size = size,
+        scale = runBlocking { request.scaleResolver.scale() }
     )
 
     private fun createFakeTransformations(): List<Transformation> {
