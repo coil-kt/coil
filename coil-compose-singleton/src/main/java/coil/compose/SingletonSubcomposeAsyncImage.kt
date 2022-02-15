@@ -37,8 +37,8 @@ import coil.request.ImageRequest
  *  onscreen.
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
  *  rendered onscreen.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
- *  into the destination.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+ *  destination.
  */
 @Composable
 fun SubcomposeAsyncImage(
@@ -93,8 +93,8 @@ fun SubcomposeAsyncImage(
  *  onscreen.
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
  *  rendered onscreen.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
- *  into the destination.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+ *  destination.
  * @param content A callback to draw the content inside an [SubcomposeAsyncImageScope].
  */
 @Composable

@@ -58,8 +58,8 @@ import coil.size.Size as CoilSize
  *  onscreen.
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
  *  rendered onscreen.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
- *  into the destination.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+ *  destination.
  */
 @Composable
 fun AsyncImage(
@@ -112,8 +112,8 @@ fun AsyncImage(
  *  onscreen.
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
  *  rendered onscreen.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
- *  into the destination.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+ *  destination.
  */
 @Composable
 fun AsyncImage(
