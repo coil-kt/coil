@@ -529,7 +529,8 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = server.url("/image"),
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
+                    contentScale = ContentScale.FillWidth,
                 ),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
@@ -568,7 +569,6 @@ class AsyncImagePainterTest {
                             imageLoader = imageLoader
                         ),
                         contentDescription = null,
-                        contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .height(100.dp)
                             .testTag(Image),
