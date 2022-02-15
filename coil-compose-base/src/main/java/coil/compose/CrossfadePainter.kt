@@ -13,21 +13,21 @@ import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.painter.Painter
-import coil.decode.DecodeUtils
-import coil.size.Scale
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.times
 import kotlin.math.max
 
 /**
  * A [Painter] that crossfades from [start] to [end].
  *
- * NOTE: The animation can only be executed once as the [start] drawable is
- * dereferenced at the end of the transition.
+ * NOTE: The animation can only be executed once as the [start] drawable is dereferenced at
+ * the end of the transition.
  */
 @Stable
 internal class CrossfadePainter(
     private var start: Painter?,
     private val end: Painter?,
-    private val scale: Scale,
+    private val contentScale: ContentScale,
     private val durationMillis: Int,
     private val fadeStart: Boolean,
     private val preferExactIntrinsicSize: Boolean,
@@ -119,23 +119,9 @@ internal class CrossfadePainter(
         }
     }
 
-    /** Scale the src size into the dst size preserving aspect ratio. */
     private fun computeDrawSize(srcSize: Size, dstSize: Size): Size {
         if (srcSize.isUnspecified || srcSize.isEmpty()) return dstSize
         if (dstSize.isUnspecified || dstSize.isEmpty()) return dstSize
-
-        val srcWidth = srcSize.width
-        val srcHeight = srcSize.height
-        val multiplier = DecodeUtils.computeSizeMultiplier(
-            srcWidth = srcWidth,
-            srcHeight = srcHeight,
-            dstWidth = dstSize.width,
-            dstHeight = dstSize.height,
-            scale = scale
-        )
-        return Size(
-            width = multiplier * srcWidth,
-            height = multiplier * srcHeight
-        )
+        return srcSize * contentScale.computeScaleFactor(srcSize, dstSize)
     }
 }

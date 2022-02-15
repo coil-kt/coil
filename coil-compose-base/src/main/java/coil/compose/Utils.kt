@@ -6,6 +6,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
@@ -13,6 +14,7 @@ import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
+import coil.size.Scale
 import kotlin.math.roundToInt
 
 /** Create an [ImageRequest] from the [model]. */
@@ -69,6 +71,12 @@ internal fun onStateOf(
     } else {
         null
     }
+}
+
+@Stable
+internal fun ContentScale.toScale() = when (this) {
+    ContentScale.Fit, ContentScale.Inside -> Scale.FIT
+    else -> Scale.FILL
 }
 
 internal val ImageRequest.constraintsResolver: ConstraintsResolver?
