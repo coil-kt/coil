@@ -14,12 +14,12 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath(libs.androidPlugin)
-        classpath(libs.kotlinPlugin)
-        classpath(libs.dokkaPlugin)
-        classpath(libs.mavenPublishPlugin)
-        classpath(libs.binaryCompatibilityPlugin)
-        classpath(libs.ktlintPlugin)
+        classpath(libs.gradlePlugin.android)
+        classpath(libs.gradlePlugin.kotlin)
+        classpath(libs.gradlePlugin.dokka)
+        classpath(libs.gradlePlugin.mavenPublish)
+        classpath(libs.gradlePlugin.binaryCompatibility)
+        classpath(libs.gradlePlugin.ktlint)
     }
 }
 
