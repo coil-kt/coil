@@ -3,6 +3,7 @@ package coil.intercept
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.ImageResult
+import coil.size.Scale
 import coil.size.Size
 
 /**
@@ -18,12 +19,21 @@ fun interface Interceptor {
 
         val size: Size
 
+        val scale: Scale
+
         /**
          * Set the requested [Size] to load the image at.
          *
          * @param size The requested size for the image.
          */
         fun withSize(size: Size): Chain
+
+        /**
+         * Set the requested [Scale]. This determines how the image is scaled to fit [size].
+         *
+         * @param scale The requested scaling algorithm.
+         */
+        fun withScale(scale: Scale): Chain
 
         /**
          * Continue executing the chain.

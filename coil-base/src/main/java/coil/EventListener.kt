@@ -15,6 +15,8 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
+import coil.size.Scale
+import coil.size.ScaleResolver
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.transform.Transformation
@@ -49,6 +51,20 @@ interface EventListener : ImageRequest.Listener {
      */
     @MainThread
     fun resolveSizeEnd(request: ImageRequest, size: Size) {}
+
+    /**
+     * Called before [ScaleResolver.scale].
+     */
+    @MainThread
+    fun resolveScaleStart(request: ImageRequest) {}
+
+    /**
+     * Called after [ScaleResolver.scale].
+     *
+     * @param scale The resolved [Scale] for this request.
+     */
+    @MainThread
+    fun resolveScaleEnd(request: ImageRequest, scale: Scale) {}
 
     /**
      * Called before [Mapper.map].

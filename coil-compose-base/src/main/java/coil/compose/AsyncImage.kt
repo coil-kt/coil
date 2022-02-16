@@ -28,6 +28,7 @@ import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Scale
+import coil.size.ScaleResolver
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -57,8 +58,8 @@ import coil.size.Size as CoilSize
  *  onscreen.
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
  *  rendered onscreen.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
- *  into the destination.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+ *  destination.
  */
 @Composable
 fun AsyncImage(
@@ -111,8 +112,8 @@ fun AsyncImage(
  *  onscreen.
  * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
  *  rendered onscreen.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
- *  into the destination.
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+ *  destination.
  */
 @Composable
 fun AsyncImage(
@@ -130,13 +131,15 @@ fun AsyncImage(
 ) {
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
-    val painter = rememberAsyncImagePainter(request, imageLoader, transform, onState, filterQuality)
+    val painter = rememberAsyncImagePainter(
+        request, imageLoader, transform, onState, contentScale, filterQuality
+    )
 
     // Draw the content without a parent composable or subcomposition.
-    val sizeResolver = request.sizeResolver
+    val constraintsResolver = request.constraintsResolver
     Content(
-        modifier = if (sizeResolver is ConstraintsSizeResolver) {
-            modifier.then(sizeResolver)
+        modifier = if (constraintsResolver != null) {
+            modifier.then(constraintsResolver)
         } else {
             modifier
         },
@@ -149,7 +152,7 @@ fun AsyncImage(
     )
 }
 
-/** Draws the current content without an [SubcomposeAsyncImageScope]. */
+/** Draws the current image content. */
 @Composable
 internal fun Content(
     modifier: Modifier,
@@ -184,20 +187,29 @@ internal fun updateRequest(
 ) = request.newBuilder()
     .apply {
         if (request.defined.sizeResolver == null) {
-            size(remember { ConstraintsSizeResolver() })
-        }
-        if (request.defined.scale == null) {
-            scale(contentScale.toScale())
+            val resolver = remember { ConstraintsResolver() }
+            size(resolver)
+            if (request.defined.scaleResolver == null) {
+                resolver.scale = contentScale.toScale()
+                scale(resolver)
+            }
         }
     }
     .build()
 
-/** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
-internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
+/**
+ * A [SizeResolver] and [ScaleResolver] that computes the size and scale from the constrains passed
+ * during the layout phase.
+ */
+internal class ConstraintsResolver : SizeResolver, ScaleResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
 
-    override suspend fun size() = _constraints.mapNotNull { it.toSizeOrNull() }.first()
+    lateinit var scale: Scale
+
+    override suspend fun size() = _constraints.mapNotNull(Constraints::toSizeOrNull).first()
+
+    override fun scale() = computeScale(_constraints.value, scale)
 
     override fun MeasureScope.measure(
         measurable: Measurable,
@@ -220,20 +232,14 @@ internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
 @Stable
 private fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    return if (contentDescription != null) {
-        semantics {
+    if (contentDescription != null) {
+        return semantics {
             this.contentDescription = contentDescription
             this.role = Role.Image
         }
     } else {
-        this
+        return this
     }
-}
-
-@Stable
-private fun ContentScale.toScale() = when (this) {
-    ContentScale.Fit, ContentScale.Inside, ContentScale.None -> Scale.FIT
-    else -> Scale.FILL
 }
 
 @Stable
@@ -243,4 +249,14 @@ private fun Constraints.toSizeOrNull() = when {
         width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original,
         height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
     )
+}
+
+@Stable
+private fun computeScale(constraints: Constraints, original: Scale): Scale {
+    if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+        return original
+    } else {
+        // Always scale to fit the minimum dimension when at least one dimension is unbounded.
+        return Scale.FIT
+    }
 }

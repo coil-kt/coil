@@ -25,8 +25,7 @@ AsyncImage(
         .build(),
     contentScale = ContentScale.Crop,
     placeholder = painterResource(R.drawable.placeholder),
-    modifier = Modifier
-        .clip(CircleShape)
+    modifier = Modifier.clip(CircleShape)
 )
 ```
 
@@ -58,14 +57,15 @@ Custom [`Transition`](transitions.md)s do not work with `AsyncImage` or `remembe
 That said, it's possible to create custom transitions in Compose by observing the `AsyncImagePainter`'s state:
 
 ```kotlin
-AsyncImage(
+SubcomposeAsyncImage(
     model = "https://example.com/image.jpg"
-) { state ->
-    if (state is AsyncImagePainter.State.Success && state.dataSource != DataSource.MEMORY_CACHE }) {
+) {
+    val state = painter.state
+    if (state is AsyncImagePainter.State.Success && state.dataSource != DataSource.MEMORY_CACHE) {
         // Perform the transition animation.
     } else {
         // Render the content as normal.
-        AsyncImageContent()
+        SubcomposeAsyncImageContent()
     }
 }
 ```

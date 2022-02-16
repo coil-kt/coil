@@ -4,8 +4,11 @@ import android.widget.ImageView
 import coil.request.ImageRequest
 
 /**
- * Represents a scaling policy. Conceptually, you can think of this as [ImageView.ScaleType]
- * without any knowledge of an image's gravity in the view.
+ * Represents a scaling policy. This determines how the image is scaled to fit into the [Size]
+ * returned by [ImageRequest.sizeResolver].
+ *
+ * Conceptually, you can think of this as [ImageView.ScaleType] without any knowledge of an image's
+ * gravity in the view.
  *
  * @see ImageRequest.Builder.scale
  */

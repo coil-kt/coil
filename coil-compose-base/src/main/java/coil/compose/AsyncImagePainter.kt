@@ -3,7 +3,9 @@ package coil.compose
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
@@ -26,7 +28,9 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
@@ -58,10 +62,12 @@ import coil.size.Size as CoilSize
  * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations.**
  * **It's highly recommended to use [AsyncImage] unless you need a reference to a [Painter].**
  *
- * Notably, [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called,
- * which can occur for composables that don't have a fixed size (e.g. [LazyColumn]). Also
- * [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
- * composition phase.
+ * - [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called.
+ *   This can occur if a composable has an unbounded (i.e. [Constraints.Infinity]) width/height
+ *   constraint. For example, to use [AsyncImagePainter] with [LazyRow] or [LazyColumn], you must
+ *   set a bounded width or height respectively.
+ * - [AsyncImagePainter.state] does not transition to [State.Success] synchronously during the
+ *   composition phase. Use [SubcomposeAsyncImage] if you need this.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
@@ -71,8 +77,11 @@ import coil.size.Size as CoilSize
  * @param onLoading Called when the image request begins loading.
  * @param onSuccess Called when the image request completes successfully.
  * @param onError Called when the image request completes unsuccessfully.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
- *  into the destination.
+ * @param contentScale Used to determine the aspect ratio scaling to be used if the canvas bounds
+ *  are a different size from the intrinsic size of the image loaded by [model]. This should be set
+ *  to the same value that's passed to [Image].
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+ *  destination.
  */
 @Composable
 fun rememberAsyncImagePainter(
@@ -84,12 +93,14 @@ fun rememberAsyncImagePainter(
     onLoading: ((State.Loading) -> Unit)? = null,
     onSuccess: ((State.Success) -> Unit)? = null,
     onError: ((State.Error) -> Unit)? = null,
+    contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) = rememberAsyncImagePainter(
     model = model,
     imageLoader = imageLoader,
     transform = transformOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
+    contentScale = contentScale,
     filterQuality = filterQuality,
 )
 
@@ -99,18 +110,23 @@ fun rememberAsyncImagePainter(
  * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations.**
  * **It's highly recommended to use [AsyncImage] unless you need a reference to a [Painter].**
  *
- * Notably, [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called,
- * which can occur for composables that don't have a fixed size (e.g. [LazyColumn]). Also
- * [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
- * composition phase.
+ * - [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called.
+ *   This can occur if a composable has an unbounded (i.e. [Constraints.Infinity]) width/height
+ *   constraint. For example, to use [AsyncImagePainter] with [LazyRow] or [LazyColumn], you must
+ *   set a bounded width or height respectively.
+ * - [AsyncImagePainter.state] does not transition to [State.Success] synchronously during the
+ *   composition phase. Use [SubcomposeAsyncImage] if you need this.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param imageLoader The [ImageLoader] that will be used to execute the request.
  * @param transform A callback to transform a new [State] before it's applied to the
  *  [AsyncImagePainter]. Typically this is used to overwrite the state's [Painter].
  * @param onState Called when the state of this painter changes.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn
- *  into the destination.
+ * @param contentScale Used to determine the aspect ratio scaling to be used if the canvas bounds
+ *  are a different size from the intrinsic size of the image loaded by [model]. This should be set
+ *  to the same value that's passed to [Image].
+ * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+ *  destination.
  */
 @Composable
 fun rememberAsyncImagePainter(
@@ -118,6 +134,7 @@ fun rememberAsyncImagePainter(
     imageLoader: ImageLoader,
     transform: (State) -> State = DefaultTransform,
     onState: ((State) -> Unit)? = null,
+    contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
 ): AsyncImagePainter {
     val request = requestOf(model)
@@ -126,6 +143,7 @@ fun rememberAsyncImagePainter(
     val painter = remember { AsyncImagePainter(request, imageLoader) }
     painter.transform = transform
     painter.onState = onState
+    painter.contentScale = contentScale
     painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
     painter.imageLoader = imageLoader
@@ -165,6 +183,7 @@ class AsyncImagePainter internal constructor(
 
     internal var transform = DefaultTransform
     internal var onState: ((State) -> Unit)? = null
+    internal var contentScale = ContentScale.Fit
     internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
 
@@ -254,7 +273,12 @@ class AsyncImagePainter internal constructor(
                     // If no other size resolver is set, suspend until the canvas size is positive.
                     size { drawSize.mapNotNull { it.toSizeOrNull() }.first() }
                 }
+                if (request.defined.scaleResolver == null) {
+                    // If no other scale resolver is set, use the content scale.
+                    scale(contentScale.toScale())
+                }
                 if (request.defined.precision != Precision.EXACT) {
+                    // AsyncImagePainter scales the image to fit the canvas size at draw time.
                     precision(Precision.INEXACT)
                 }
             }
@@ -293,7 +317,7 @@ class AsyncImagePainter internal constructor(
             return CrossfadePainter(
                 start = previous.painter.takeIf { previous is State.Loading },
                 end = current.painter,
-                scale = result.request.scale,
+                contentScale = contentScale,
                 durationMillis = transition.durationMillis,
                 fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
                 preferExactIntrinsicSize = transition.preferExactIntrinsicSize

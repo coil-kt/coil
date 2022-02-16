@@ -15,6 +15,7 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
+import coil.size.Scale
 import coil.size.Size
 import coil.transform.Transformation
 import coil.transition.Transition
@@ -234,6 +235,8 @@ class EventListenerTest {
         val onStart: MethodChecker = MethodChecker(true),
         val resolveSizeStart: MethodChecker = MethodChecker(true),
         val resolveSizeEnd: MethodChecker = MethodChecker(true),
+        val resolveScaleStart: MethodChecker = MethodChecker(true),
+        val resolveScaleEnd: MethodChecker = MethodChecker(true),
         val mapStart: MethodChecker = MethodChecker(true),
         val mapEnd: MethodChecker = MethodChecker(true),
         val keyStart: MethodChecker = MethodChecker(true),
@@ -254,6 +257,8 @@ class EventListenerTest {
         override fun onStart(request: ImageRequest) = onStart.call()
         override fun resolveSizeStart(request: ImageRequest) = resolveSizeStart.call()
         override fun resolveSizeEnd(request: ImageRequest, size: Size) = resolveSizeEnd.call()
+        override fun resolveScaleStart(request: ImageRequest) = resolveScaleStart.call()
+        override fun resolveScaleEnd(request: ImageRequest, scale: Scale) = resolveScaleEnd.call()
         override fun mapStart(request: ImageRequest, input: Any) = mapStart.call()
         override fun mapEnd(request: ImageRequest, output: Any) = mapEnd.call()
         override fun keyStart(request: ImageRequest, input: Any) = keyStart.call()

@@ -5,14 +5,18 @@ import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,10 +59,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlin.test.fail
 
 class AsyncImageTest {
@@ -118,7 +122,7 @@ class AsyncImageTest {
     }
 
     @Test
-    fun fillMaxWidth() {
+    fun fillMaxWidth_boundedConstraint() {
         assumeSupportsCaptureToImage()
 
         composeTestRule.setContent {
@@ -130,6 +134,39 @@ class AsyncImageTest {
                     .fillMaxWidth()
                     .testTag(Image),
             )
+        }
+
+        waitForRequestComplete()
+
+        val expectedWidthPx = displaySize.width.toDouble()
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
+
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample)
+    }
+
+    @Test
+    fun fillMaxWidth_infiniteConstraint() {
+        assumeSupportsCaptureToImage()
+
+        composeTestRule.setContent {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                AsyncImage(
+                    model = server.url("/image"),
+                    contentDescription = null,
+                    imageLoader = imageLoader,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(Image),
+                )
+            }
         }
 
         waitForRequestComplete()
@@ -219,6 +256,7 @@ class AsyncImageTest {
                             model = server.url("/image"),
                             contentDescription = null,
                             imageLoader = imageLoader,
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier.testTag(Image),
                         )
                     }
@@ -584,6 +622,42 @@ class AsyncImageTest {
         assertEquals(1, innerCompositionCount.get())
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/1133 */
+    @Test
+    fun infiniteConstraint() {
+        assumeSupportsCaptureToImage()
+
+        val expectedWidthDp = 32.dp
+
+        composeTestRule.setContent {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                AsyncImage(
+                    model = server.url("/image"),
+                    contentDescription = null,
+                    imageLoader = imageLoader,
+                    modifier = Modifier
+                        .width(expectedWidthDp)
+                        .testTag(Image),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+
+        waitForRequestComplete()
+
+        val expectedWidthPx = expectedWidthDp.toPx().toDouble()
+        val expectedHeightPx = expectedWidthPx * SampleHeight / SampleWidth
+
+        assertSampleLoadedBitmapSize(expectedWidthPx, expectedHeightPx)
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
+    }
+
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(10_000) {
@@ -593,9 +667,11 @@ class AsyncImageTest {
     }
 
     private fun assertLoadedBitmapSize(width: Int, height: Int, requestNumber: Int = 0) {
-        val bitmap = (requestTracker.results[requestNumber] as SuccessResult).drawable.toBitmap()
-        assertTrue(bitmap.width in (width - 1)..(width + 1))
-        assertTrue(bitmap.height in (height - 1)..(height + 1))
+        val result = requestTracker.results[requestNumber]
+        assertIs<SuccessResult>(result)
+        val bitmap = result.drawable.toBitmap()
+        assertContains((width - 1)..(width + 1), bitmap.width)
+        assertContains((height - 1)..(height + 1), bitmap.height)
     }
 
     private fun assertSampleLoadedBitmapSize(

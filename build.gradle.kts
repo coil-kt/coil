@@ -8,23 +8,24 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
-    apply(from = "buildSrc/plugins.gradle.kts")
     repositories {
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
     dependencies {
-        classpath(rootProject.extra["androidPlugin"].toString())
-        classpath(rootProject.extra["kotlinPlugin"].toString())
-        classpath(rootProject.extra["dokkaPlugin"].toString())
-        classpath(rootProject.extra["mavenPublishPlugin"].toString())
-        classpath(rootProject.extra["binaryCompatibilityPlugin"].toString())
-        classpath(rootProject.extra["ktlintPlugin"].toString())
+        classpath(libs.gradlePlugin.android)
+        classpath(libs.gradlePlugin.kotlin)
+        classpath(libs.gradlePlugin.mavenPublish)
     }
 }
 
-apply(plugin = "binary-compatibility-validator")
+// https://youtrack.jetbrains.com/issue/KTIJ-19369
+@Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+plugins {
+    alias(libs.plugins.binaryCompatibility)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.ktlint)
+}
 
 extensions.configure<ApiValidationExtension> {
     ignoredProjects += arrayOf(
@@ -34,8 +35,6 @@ extensions.configure<ApiValidationExtension> {
         "coil-test"
     )
 }
-
-apply(plugin = "org.jetbrains.dokka")
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
     outputDirectory by file("$rootDir/docs/api")
