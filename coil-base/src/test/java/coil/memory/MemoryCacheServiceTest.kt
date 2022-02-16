@@ -26,7 +26,6 @@ import coil.util.SystemCallbacks
 import coil.util.createBitmap
 import coil.util.createRequest
 import coil.util.forEachIndexedIndices
-import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -489,7 +488,7 @@ class MemoryCacheServiceTest {
         cacheKey = MemoryCache.Key("key"),
         cacheValue = MemoryCache.Value(cached, mapOf(EXTRA_IS_SAMPLED to isSampled)),
         size = size,
-        scale = runBlocking { request.scaleResolver.scale() }
+        scale = request.scaleResolver.scale()
     )
 
     private fun createFakeTransformations(): List<Transformation> {
