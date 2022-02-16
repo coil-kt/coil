@@ -4,7 +4,6 @@ import coil.versionName
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
@@ -46,6 +45,11 @@ tasks.withType<DokkaMultiModuleTask>().configureEach {
     ))
 }
 
+ktlint {
+    version by libs.versions.ktlint.get()
+    disabledRules by setOf("indent", "max-line-length", "parameter-list-wrapping")
+}
+
 allprojects {
     repositories {
         google()
@@ -54,13 +58,6 @@ allprojects {
 
     group = project.groupId
     version = project.versionName
-
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-
-    extensions.configure<KtlintExtension> {
-        version by "0.43.2"
-        disabledRules by setOf("indent", "max-line-length", "parameter-list-wrapping")
-    }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
