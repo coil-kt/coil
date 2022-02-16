@@ -56,7 +56,7 @@ That said, it's possible to create custom transitions in Compose by observing th
 val painter = rememberImagePainter("https://www.example.com/image.jpg")
 
 val state = painter.state
-if (state is ImagePainter.State.Success && state.metadata.dataSource != DataSource.MEMORY_CACHE }) {
+if (state is ImagePainter.State.Success && state.metadata.dataSource != DataSource.MEMORY_CACHE ) {
     // Perform the transition animation.
 }
 
