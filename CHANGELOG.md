@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0-alpha09] - February 16, 2022
+
+- Fix `AsyncImage` creating invalid constraints. ([#1134](https://github.com/coil-kt/coil/pull/1134))
+- Add `ContentScale` argument to `AsyncImagePainter`. ([#1144](https://github.com/coil-kt/coil/pull/1144))
+    - This should be set to the same value that's set on `Image` to ensure that the image is loaded at the correct size.
+- Add `ScaleResolver` to support lazily resolving the `Scale` for an `ImageRequest`. ([#1134](https://github.com/coil-kt/coil/pull/1134))
+    - `ImageRequest.scale` should be replaced by `ImageRequest.scaleResolver.scale()`.
+- Update Compose to 1.1.0.
+- Update `accompanist-drawablepainter` to 0.23.0.
+- Update `androidx.lifecycle` to 2.4.1.
+
 ## [2.0.0-alpha08] - February 7, 2022
 
 - Update `DiskCache` and `ImageSource` to use to Okio's `FileSystem` API. ([#1115](https://github.com/coil-kt/coil/pull/1115))
