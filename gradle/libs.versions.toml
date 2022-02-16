@@ -7,7 +7,7 @@ compose = "1.1.0"
 coroutines = "1.6.0"
 okhttp = "4.9.3"
 okio = "3.0.0"
-ktlint = "0.43.2"
+ktlint = "0.44.0"
 
 [plugins]
 binaryCompatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.8.0" }
