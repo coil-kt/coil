@@ -26,7 +26,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            assetType.collect { _images.value = loadImages(it) }
+            assetType.collect { _images.value = loadImagesAsync(it) }
         }
     }
 
@@ -38,48 +38,52 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return false
     }
 
-    private suspend fun loadImages(assetType: AssetType): List<Image> = withContext(Dispatchers.IO) {
-        val images = mutableListOf<Image>()
-
+    private suspend fun loadImagesAsync(assetType: AssetType) = withContext(Dispatchers.IO) {
         if (assetType == AssetType.MP4) {
-            for (index in 0 until 200) {
-                val videoFrameMicros = Random.nextLong(62_000_000L)
-                val parameters = Parameters.Builder()
-                    .set(VIDEO_FRAME_MICROS_KEY, videoFrameMicros)
-                    .build()
-
-                images += Image(
-                    uri = "file:///android_asset/${assetType.fileName}",
-                    color = randomColor(),
-                    width = 1280,
-                    height = 720,
-                    parameters = parameters
-                )
-            }
+            loadVideoFrames()
         } else {
-            val json = JSONArray(context.assets.open(assetType.fileName).source().buffer().readUtf8())
-            for (index in 0 until json.length()) {
-                val image = json.getJSONObject(index)
-
-                val url: String
-                val color: Int
-                if (assetType == AssetType.JPG) {
-                    url = image.getJSONObject("urls").getString("regular")
-                    color = image.getString("color").toColorInt()
-                } else {
-                    url = image.getString("url")
-                    color = randomColor()
-                }
-
-                images += Image(
-                    uri = url,
-                    color = color,
-                    width = image.getInt("width"),
-                    height = image.getInt("height")
-                )
-            }
+            loadImages(assetType)
         }
+    }
 
-        images
+    private fun loadVideoFrames(): List<Image> {
+        return List(200) {
+            val videoFrameMicros = Random.nextLong(62_000_000L)
+            val parameters = Parameters.Builder()
+                .set(VIDEO_FRAME_MICROS_KEY, videoFrameMicros)
+                .build()
+
+            Image(
+                uri = "file:///android_asset/${AssetType.MP4.fileName}",
+                color = randomColor(),
+                width = 1280,
+                height = 720,
+                parameters = parameters
+            )
+        }
+    }
+
+    private fun loadImages(assetType: AssetType): List<Image> {
+        val json = JSONArray(context.assets.open(assetType.fileName).source().buffer().readUtf8())
+        return List(json.length()) { index ->
+            val image = json.getJSONObject(index)
+
+            val url: String
+            val color: Int
+            if (assetType == AssetType.JPG) {
+                url = image.getJSONObject("urls").getString("regular")
+                color = image.getString("color").toColorInt()
+            } else {
+                url = image.getString("url")
+                color = randomColor()
+            }
+
+            Image(
+                uri = url,
+                color = color,
+                width = image.getInt("width"),
+                height = image.getInt("height")
+            )
+        }
     }
 }
