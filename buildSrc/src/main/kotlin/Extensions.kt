@@ -4,6 +4,7 @@ package coil
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import kotlin.math.pow
 
@@ -51,5 +52,7 @@ private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
 }
 
 inline infix fun <T> Property<T>.by(value: T) = set(value)
+
+inline infix fun <T> Property<T>.by(provider: Provider<T>) = set(provider)
 
 inline infix fun <T> SetProperty<T>.by(value: Set<T>) = set(value)
