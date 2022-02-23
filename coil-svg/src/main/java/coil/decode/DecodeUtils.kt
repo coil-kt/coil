@@ -7,7 +7,7 @@ import coil.util.indexOf
 import okio.BufferedSource
 import okio.ByteString.Companion.encodeUtf8
 
-private val SVG_TAG = "<svg ".encodeUtf8()
+private val SVG_TAG = "<svg".encodeUtf8()
 private val LEFT_ANGLE_BRACKET = "<".encodeUtf8()
 
 /**
