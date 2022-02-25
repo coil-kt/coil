@@ -3,6 +3,7 @@
     "dependencies"
   ],
   "extends": [
-    "config:base"
+    "config:base",
+    ":disableDependencyDashboard"
   ]
 }
