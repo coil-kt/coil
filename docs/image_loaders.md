@@ -86,6 +86,7 @@ class FakeImageLoader(private val context: Context) : ImageLoader {
     override fun newBuilder() = throw UnsupportedOperationException()
 
     override fun shutdown() {}
+}
 ```
 
 This is perfect for screenshot and instrumentation tests where you want consistent rendering behavior.
