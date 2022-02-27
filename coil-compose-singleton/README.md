@@ -62,7 +62,7 @@ SubcomposeAsyncImage(
 }
 ```
 
-Subcomposition is less performant than regular composition so this composable may not be suitable for parts of your UI where high performance is critical.
+Subcomposition is less performant than regular composition so this composable may not be suitable for parts of your UI where high performance is critical (e.g. lists).
 
 !!! Note
     If you set a custom size for the `ImageRequest` using `ImageRequest.Builder.size` (e.g. `size(Size.ORIGINAL)`), `SubcomposeAsyncImage` will not use subcomposition since it doesn't need to resolve the composable's constraints.
