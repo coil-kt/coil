@@ -26,8 +26,8 @@ AsyncImage(
         .crossfade(true)
         .build(),
     placeholder = painterResource(R.drawable.placeholder),
-    contentScale = ContentScale.Crop,
     contentDescription = stringResource(R.string.description),
+    contentScale = ContentScale.Crop,
     modifier = Modifier.clip(CircleShape)
 )
 ```
