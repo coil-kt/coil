@@ -6,14 +6,40 @@ import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.get
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 
 fun Project.setupLibraryModule(
-    enableBuildConfig: Boolean = false,
+    buildConfig: Boolean = false,
+    publish: Boolean = false,
     block: LibraryExtension.() -> Unit = {}
 ) = setupBaseModule<LibraryExtension> {
     libraryVariants.all {
-        generateBuildConfigProvider?.configure { enabled = enableBuildConfig }
+        generateBuildConfigProvider?.configure { enabled = buildConfig }
+    }
+    if (publish) {
+        apply(plugin = "com.vanniktech.maven.publish.base")
+        publishing {
+            singleVariant("release") {
+                withJavadocJar()
+                withSourcesJar()
+            }
+        }
+        afterEvaluate {
+            extensions.configure<PublishingExtension> {
+                publications.create<MavenPublication>("release") {
+                    from(components["release"])
+                    // https://github.com/vanniktech/gradle-maven-publish-plugin/issues/326
+                    val id = project.property("POM_ARTIFACT_ID").toString()
+                    artifactId = artifactId.replace(project.name, id)
+                }
+            }
+        }
     }
     block()
 }
