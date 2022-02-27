@@ -82,7 +82,7 @@ val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
 ## Observing AsyncImagePainter.state
 
-An image request needs a size to determine the output image's dimensions. By default, both `AsyncImage` and `AsyncImagePainter` resolve that size [**after** composition occurs](https://developer.android.com/jetpack/compose/layouts/basics), but before the first frame is drawn because it's high performance. This means that `AsyncImagePainter.state` will be `Loading` for the first composition - even if the image is present in the memory cache and it will be drawn in the first frame.
+An image request needs a size to determine the output image's dimensions. By default, both `AsyncImage` and `AsyncImagePainter` resolve the request's size [**after** composition occurs](https://developer.android.com/jetpack/compose/layouts/basics), but before the first frame is drawn. It's resolved this way to maximize performance. This means that `AsyncImagePainter.state` will be `Loading` for the first composition - even if the image is present in the memory cache and it will be drawn in the first frame.
 
 If you need `AsyncImagePainter.state` to be up-to-date during the first composition, use `SubcomposeAsyncImage` **or** set a custom size for the image request using `ImageRequest.Builder.size`. For example, `AsyncImagePainter.state` will always be up-to-date during the first composition in this example:
 
