@@ -37,24 +37,18 @@ value class ImageLoaderProvidableCompositionLocal internal constructor(
     private val delegate: ProvidableCompositionLocal<ImageLoader?> = staticCompositionLocalOf { null }
 ) {
 
-    @Deprecated(
-        message = DEPRECATION_MESSAGE,
-        replaceWith = ReplaceWith(
-            expression = "LocalContext.current.imageLoader",
-            imports = ["androidx.compose.ui.platform.LocalContext", "coil.imageLoader"]
-        )
-    )
     val current: ImageLoader
+        @Deprecated(
+            message = DEPRECATION_MESSAGE,
+            replaceWith = ReplaceWith(
+                expression = "LocalContext.current.imageLoader",
+                imports = ["androidx.compose.ui.platform.LocalContext", "coil.imageLoader"]
+            )
+        )
         @Composable
         @ReadOnlyComposable
         get() = delegate.current ?: LocalContext.current.imageLoader
 
-    @Deprecated(
-        message = DEPRECATION_MESSAGE,
-        replaceWith = ReplaceWith(
-            expression = "Coil.setImageLoader(value)",
-            imports = ["coil.Coil"]
-        )
-    )
+    @Deprecated("Implement `ImageLoaderFactory` in your `Application`.")
     infix fun provides(value: ImageLoader) = delegate provides value
 }
