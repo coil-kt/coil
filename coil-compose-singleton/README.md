@@ -10,10 +10,13 @@ Then use the `AsyncImage` composable to load and display an image:
 
 ```kotlin
 // Basic
-AsyncImage("https://example.com/image.jpg")
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null
+)
 ```
 
-`model` can either be the `ImageRequest.data` value - or the `ImageRequest` itself.
+`model` can either be the `ImageRequest.data` value - or the `ImageRequest` itself. `contentDescription` sets the text used by accessibility services to describe what this image represents.
 
 `AsyncImage` supports the same arguments as the standard `Image` composable. Additionally, it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads image with a circle crop, crossfade, and sets a placeholder:
 
@@ -23,21 +26,60 @@ AsyncImage(
         .data("https://example.com/image.jpg")
         .crossfade(true)
         .build(),
-    contentScale = ContentScale.Crop,
     placeholder = painterResource(R.drawable.placeholder),
+    contentScale = ContentScale.Crop,
+    contentDescription = stringResource(R.string.image_description),
     modifier = Modifier.clip(CircleShape)
 )
 ```
 
+## SubcomposeAsyncImage
+
+`SubcomposeAsyncImage` is a variant of `AsyncImage` that uses subcomposition to provide a slot API for `AsyncImagePainter`'s states. Here's an example:
+
+```kotlin
+SubcomposeAsyncImage(
+    model = "https://example.com/image.jpg",
+    loading = {
+        CircularProgressIndicator()
+    },
+    contentDescription = stringResource(R.string.image_description),
+)
+```
+
+Additionally, you can have more complex logic using its `content` argument and `SubcomposeAsyncImageContent`, which renders the current state:
+
+```kotlin
+SubcomposeAsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = stringResource(R.string.image_description),
+) {
+    val state = painter.state
+    if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
+        CircularProgressIndicator()
+    } else {
+        SubcomposeAsyncImageContent()
+    }
+}
+```
+
+Subcomposition is more expensive computationally than regular composition so this composable may not be suitable for parts of your UI where high performance is critical. 
+
+!!! Note
+    If you set a custom size for the `ImageRequest` using `ImageRequest.Builder.size` (e.g. `size(Size.ORIGINAL)`), `SubcomposeAsyncImage` will not use subcomposition since it doesn't need to resolve the composable's constraints.
+
 ## AsyncImagePainter
 
-Internally, `AsyncImage` uses `AsyncImagePainter` to load the `model`. If you need a `Painter` and can't use `AsyncImage`, you can load the image using `rememberAsyncImagePainter`:
+Internally, `AsyncImage` and `SubcomposeAsyncImage` use `AsyncImagePainter` to load the `model`. If you need a `Painter` and can't use `AsyncImage`, you can load the image using `rememberAsyncImagePainter`:
 
 ```kotlin
 val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 ```
 
-That said, you should prefer using `AsyncImage` as `AsyncImagePainter` is unable to determine the target size if its parent constraints are unbounded (due to how `Painter`s are designed in Jetpack Compose) and it will appear to load forever. Additionally, `AsyncImagePainter` can't determine the correct scale and always uses the value from `ImageRequest.scale`, which defaults to `Scale.FIT`. `AsyncImage` does not have these issues.
+`rememberAsyncImagePainter` is a lower-level API that may not behave as expected in all cases. Read the method's documentation for more information.
+
+!!! Note
+    If you set a custom `ContentScale` on the `Image` that's rendering the `AsyncImagePainter`, you should also set it in `rememberAsyncImagePainter`. It's necessary to determine the correct dimensions to load the image at.
 
 ## Transitions
 
@@ -48,27 +90,26 @@ AsyncImage(
     model = ImageRequest.Builder(LocalContext.current)
         .data("https://example.com/image.jpg")
         .crossfade(true)
-        .build()
+        .build(),
+    contentDescription = null
 )
 ```
 
-Custom [`Transition`](transitions.md)s do not work with `AsyncImage` or `rememberAsyncImagePainter` as they require a `View` reference. `CrossfadeTransition` works due to special internal support.
+Custom [`Transition`](transitions.md)s do not work with `AsyncImage`, `SubcomposeAsyncImage`, or `rememberAsyncImagePainter` as they require a `View` reference. `CrossfadeTransition` works due to special internal support.
 
 That said, it's possible to create custom transitions in Compose by observing the `AsyncImagePainter`'s state:
 
 ```kotlin
 SubcomposeAsyncImage(
-    model = "https://example.com/image.jpg"
+    model = "https://example.com/image.jpg",
+    contentDescription = null
 ) {
     val state = painter.state
     if (state is AsyncImagePainter.State.Success && state.dataSource != DataSource.MEMORY_CACHE) {
         // Perform the transition animation.
-    } else {
-        // Render the content as normal.
-        SubcomposeAsyncImageContent()
     }
+
+    // Render the content.
+    SubcomposeAsyncImageContent()
 }
 ```
-
-!!! Note
-    Using the `loading`/`success`/`error`/`content` slot APIs is expensive as it uses subcomposition. Avoid using them in cases where high UI performance is necessary!
