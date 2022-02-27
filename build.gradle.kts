@@ -1,6 +1,8 @@
 import coil.by
 import coil.groupId
 import coil.versionName
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SonatypeHost.DEFAULT
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
@@ -81,6 +83,17 @@ allprojects {
                 url by URL("https://square.github.io/okio/3.x/okio/")
                 packageListUrl by URL("https://square.github.io/okio/3.x/okio/okio/package-list")
             }
+        }
+    }
+
+    plugins.withId("com.vanniktech.maven.publish.base") {
+        group = project.groupId
+        version = project.versionName
+
+        extensions.configure<MavenPublishBaseExtension> {
+            publishToMavenCentral(DEFAULT)
+            signAllPublications()
+            pomFromGradleProperties()
         }
     }
 

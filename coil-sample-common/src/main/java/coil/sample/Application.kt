@@ -4,7 +4,6 @@ package coil.sample
 
 import android.app.Application
 import android.os.Build.VERSION.SDK_INT
-import android.util.Log
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
@@ -59,12 +58,8 @@ class Application : Application(), ImageLoaderFactory {
             .crossfade(true)
             // Ignore the network cache headers and always read from/write to the disk cache.
             .respectCacheHeaders(false)
-            .apply {
-                // Enable logging to the standard Android log if this is a debug build.
-                if (BuildConfig.DEBUG) {
-                    logger(DebugLogger(Log.VERBOSE))
-                }
-            }
+            // Enable logging to the standard Android log if this is a debug build.
+            .apply { if (BuildConfig.DEBUG) logger(DebugLogger()) }
             .build()
     }
 }
