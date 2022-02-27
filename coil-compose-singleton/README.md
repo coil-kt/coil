@@ -28,7 +28,7 @@ AsyncImage(
         .build(),
     placeholder = painterResource(R.drawable.placeholder),
     contentScale = ContentScale.Crop,
-    contentDescription = stringResource(R.string.image_description),
+    contentDescription = stringResource(R.string.description),
     modifier = Modifier.clip(CircleShape)
 )
 ```
@@ -43,7 +43,7 @@ SubcomposeAsyncImage(
     loading = {
         CircularProgressIndicator()
     },
-    contentDescription = stringResource(R.string.image_description),
+    contentDescription = stringResource(R.string.description),
 )
 ```
 
@@ -52,7 +52,7 @@ Additionally, you can have more complex logic using its `content` argument and `
 ```kotlin
 SubcomposeAsyncImage(
     model = "https://example.com/image.jpg",
-    contentDescription = stringResource(R.string.image_description),
+    contentDescription = stringResource(R.string.description),
 ) {
     val state = painter.state
     if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
@@ -80,6 +80,30 @@ val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
 !!! Note
     If you set a custom `ContentScale` on the `Image` that's rendering the `AsyncImagePainter`, you should also set it in `rememberAsyncImagePainter`. It's necessary to determine the correct dimensions to load the image at.
+
+## Observing AsyncImagePainter.state
+
+An image request needs a size to determine the output image's dimensions. By default, both `AsyncImage` and `AsyncImagePainter` resolve that size [**after** composition occurs](https://developer.android.com/jetpack/compose/layouts/basics), but before the first frame is drawn because it's high performance. This means that `AsyncImagePainter.state` will be `Loading` for the first composition - even if the image is present in the memory cache and it will be drawn in the first frame.
+
+If you need `AsyncImagePainter.state` to be up-to-date during the first composition, use `SubcomposeAsyncImage` or set a custom size for the image request using `ImageRequest.Builder.size`. For example, `AsyncImagePainter.state` will always be up-to-date during the first composition in this example:
+
+```kotlin
+val painter = rememberAsyncImagePainter(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data("https://example.com/image.jpg")
+        .size(Size.ORIGINAL) // Set the target size to load the image at.
+        .build()
+)
+
+if (painter.state is AsyncImagePainter.State.Success) {
+    // This will be executed during the first composition if the image is in the memory cache.
+}
+
+Image(
+    painter = painter,
+    contentDescription = stringResource(R.string.description),
+)
+```
 
 ## Transitions
 
