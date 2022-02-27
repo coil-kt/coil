@@ -109,7 +109,7 @@ interface DiskCache {
     class Builder {
 
         private var directory: Path? = null
-        private var fileSystem: FileSystem = FileSystem.SYSTEM
+        private var fileSystem = FileSystem.SYSTEM
         private var maxSizePercent = 0.02 // 2%
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB

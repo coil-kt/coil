@@ -12,6 +12,7 @@ import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import okio.Buffer
 import okio.BufferedSource
 import okio.buffer
 import okio.source
@@ -57,6 +58,21 @@ class SvgDecoderTest {
         assertNull(decoderFactory.create(result, Options(context), ImageLoader(context)))
         assertFalse(source.exhausted())
         assertEquals(8192, source.buffer.size) // should buffer exactly 1 segment
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1154 */
+    @Test
+    fun isSvg_newLine() {
+        val text = "<svg\n" +
+            "   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+            "   xmlns:cc=\"http://creativecommons.org/ns#\"\n" +
+            "   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" +
+            "   xmlns:svg=\"http://www.w3.org/2000/svg\"\n" +
+            "   xmlns=\"http://www.w3.org/2000/svg\"\n" +
+            "   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"/>"
+        val buffer = Buffer().apply { writeUtf8(text) }
+
+        assertTrue(DecodeUtils.isSvg(buffer))
     }
 
     @Test

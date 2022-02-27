@@ -4,11 +4,9 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("kotlin-parcelize")
-    id("org.jetbrains.dokka")
-    id("com.vanniktech.maven.publish")
 }
 
-setupLibraryModule()
+setupLibraryModule(publish = true)
 
 dependencies {
     implementation(libs.androidx.annotation)
