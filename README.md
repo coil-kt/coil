@@ -56,7 +56,10 @@ implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 To load an image, use the `AsyncImage` composable:
 
 ```kotlin
-AsyncImage("https://example.com/image.jpg")
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null
+)
 ```
 
 #### Image Loaders
