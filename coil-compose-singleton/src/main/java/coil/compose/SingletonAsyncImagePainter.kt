@@ -25,7 +25,7 @@ import coil.request.ImageRequest
  *   This can occur if a composable has an unbounded (i.e. [Constraints.Infinity]) width/height
  *   constraint. For example, to use [AsyncImagePainter] with [LazyRow] or [LazyColumn], you must
  *   set a bounded width or height respectively.
- * - [AsyncImagePainter.state] does not transition to [State.Success] synchronously during the
+ * - [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
  *   composition phase. Use [SubcomposeAsyncImage] if you need this.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
@@ -75,7 +75,7 @@ fun rememberAsyncImagePainter(
  *   This can occur if a composable has an unbounded (i.e. [Constraints.Infinity]) width/height
  *   constraint. For example, to use [AsyncImagePainter] with [LazyRow] or [LazyColumn], you must
  *   set a bounded width or height respectively.
- * - [AsyncImagePainter.state] does not transition to [State.Success] synchronously during the
+ * - [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
  *   composition phase. Use [SubcomposeAsyncImage] if you need this.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.

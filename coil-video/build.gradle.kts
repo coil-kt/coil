@@ -3,11 +3,9 @@ import coil.setupLibraryModule
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("org.jetbrains.dokka")
-    id("com.vanniktech.maven.publish")
 }
 
-setupLibraryModule()
+setupLibraryModule(publish = true)
 
 dependencies {
     api(projects.coilBase)
