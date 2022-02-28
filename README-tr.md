@@ -90,8 +90,7 @@ Coil'in [dokümantasyonunun tamamına buradan](https://coil-kt.github.io/coil/ge
 
 ## Gereksinimler
 
-- AndroidX
-- Min SDK 14+
+- Min SDK 21+
 - [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
 
 ## R8 / Proguard
