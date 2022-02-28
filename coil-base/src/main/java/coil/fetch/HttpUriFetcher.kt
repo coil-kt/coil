@@ -73,12 +73,16 @@ internal class HttpUriFetcher(
             }
 
             // Slow path: fetch the image from the network.
-            val request = cacheStrategy.networkRequest ?: newRequest()
-            val response = executeNetworkRequest(request)
-            val responseBody = checkNotNull(response.body) { "response body == null" }
+            var response = executeNetworkRequest(cacheStrategy.networkRequest!!)
+            var responseBody = response.requireBody()
             try {
-                // Read the response from the disk cache after writing it.
-                snapshot = writeToDiskCache(snapshot, request, response, cacheStrategy.cacheResponse)
+                // Write the response to the disk cache then open a new snapshot.
+                snapshot = writeToDiskCache(
+                    snapshot = snapshot,
+                    request = cacheStrategy.networkRequest,
+                    response = response,
+                    cacheResponse = cacheStrategy.cacheResponse
+                )
                 if (snapshot != null) {
                     return SourceResult(
                         source = snapshot.toImageSource(),
@@ -87,13 +91,26 @@ internal class HttpUriFetcher(
                     )
                 }
 
-                // If we can't read it from the cache or write it to the cache, read the response
-                // directly from the response body.
-                return SourceResult(
-                    source = responseBody.toImageSource(),
-                    mimeType = getMimeType(url, responseBody.contentType()),
-                    dataSource = response.toDataSource()
-                )
+                // If we failed to read a new snapshot then read the response body if it's not empty.
+                if (responseBody.contentLength() > 0) {
+                    return SourceResult(
+                        source = responseBody.toImageSource(),
+                        mimeType = getMimeType(url, responseBody.contentType()),
+                        dataSource = response.toDataSource()
+                    )
+                } else {
+                    // If the response body is empty, execute a new network request without the
+                    // cache headers.
+                    response.closeQuietly()
+                    response = executeNetworkRequest(newRequest())
+                    responseBody = response.requireBody()
+
+                    return SourceResult(
+                        source = responseBody.toImageSource(),
+                        mimeType = getMimeType(url, responseBody.contentType()),
+                        dataSource = response.toDataSource()
+                    )
+                }
             } catch (e: Exception) {
                 response.closeQuietly()
                 throw e
@@ -130,6 +147,8 @@ internal class HttpUriFetcher(
         } else {
             diskCache.value?.edit(diskCacheKey)
         }
+
+        // Return `null` if we're unable to write to this entry.
         if (editor == null) return null
 
         try {
@@ -242,23 +261,19 @@ internal class HttpUriFetcher(
     }
 
     private fun DiskCache.Snapshot.toImageSource(): ImageSource {
-        return ImageSource(
-            file = data,
-            fileSystem = fileSystem,
-            diskCacheKey = diskCacheKey,
-            closeable = this
-        )
+        return ImageSource(data, fileSystem, diskCacheKey, this)
     }
 
     private fun ResponseBody.toImageSource(): ImageSource {
-        return ImageSource(
-            source = source(),
-            context = options.context
-        )
+        return ImageSource(source(), options.context)
     }
 
     private fun Response.toDataSource(): DataSource {
         return if (networkResponse != null) DataSource.NETWORK else DataSource.DISK
+    }
+
+    private fun Response.requireBody(): ResponseBody {
+        return checkNotNull(body) { "response body == null" }
     }
 
     private val diskCacheKey get() = options.diskCacheKey ?: url
