@@ -49,12 +49,6 @@ value class ImageLoaderProvidableCompositionLocal internal constructor(
         @ReadOnlyComposable
         get() = delegate.current ?: LocalContext.current.imageLoader
 
-    @Deprecated(
-        message = DEPRECATION_MESSAGE,
-        replaceWith = ReplaceWith(
-            expression = "Coil.setImageLoader(value)",
-            imports = ["coil.Coil"]
-        )
-    )
+    @Deprecated("Implement `ImageLoaderFactory` in your `android.app.Application` class.")
     infix fun provides(value: ImageLoader) = delegate provides value
 }
