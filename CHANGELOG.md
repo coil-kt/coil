@@ -1,5 +1,54 @@
 # Changelog
 
+## [2.0.0-rc01] - March XX, 2022
+
+Significant changes since `1.4.0`:
+
+- The minimum supported API is now 21.
+- Enable `-Xjvm-default=all`.
+    - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
+    - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to do this.
+- Rework Jetpack Compose integration.
+    - `rememberImagePainter` has been renamed to `rememberAsyncImagePainter`.
+    - Add support for `AsyncImage` and `SubcomposeAsyncImage`. Check out [the documentation](https://coil-kt.github.io/coil/compose/) for more info.
+- Coil 2.0 has its own disk cache implementation and no longer relies on OkHttp for disk caching.
+    - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
+    - You **should not** use OkHttp's `Cache` with Coil 2.0 as it can be corrupted if it's interrupted while writing to it.
+    - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
+    - Your existing disk cache will be cleared when upgrading to 2.0.
+- `ImageRequest`'s default `Scale` is now `Scale.FIT`
+    - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
+    - Requests with an `ImageViewTarget` still have their `Scale` autodetected.
+- Rework the image pipeline classes:
+    - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
+    - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
+    - Adds `ImageSource`, which allows `Decoder`s to decode `File`s directly.
+- `BitmapPool` and `PoolableViewTarget` have been removed from the library as bitmap pooling is most effective on <= API 23 and has become less effective with newer Android releases.
+- Rework the `MemoryCache` API.
+- Disable generating runtime not-null assertions.
+    - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. If you use Kotlin, there is essentially no change.
+    - This change allows the library's size to be smaller.
+- `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
+- Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
+- Adds support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
+- `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
+- Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
+- Add `GenericViewTarget`, which handles common `ViewTarget` logic.
+- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library.
+    - If you use them, you can copy their code into your project.
+- `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
+- `Transformation.key` is replaced with `Transformation.cacheKey`.
+- `ImageRequest.Listener` returns `SuccessResult`/`ErrorResult` in `onSuccess` and `onError` respectively.
+- Add `ByteBuffer` to the default supported data types.
+
+Changes since `2.0.0-alpha09`:
+
+- Fix failing to load image if multiple requests with must-revalidate/e-tag are executed concurrently.
+- Fix `DecodeUtils.isSvg` returning false if there is a new line character after the `<svg` tag.
+- Make `LocalImageLoader.provides` deprecation message clearer.
+- Update Compose to 1.1.1.
+- Update `accompanist-drawablepainter` to 0.23.1.
+
 ## [2.0.0-alpha09] - February 16, 2022
 
 - Fix `AsyncImage` creating invalid constraints. ([#1134](https://github.com/coil-kt/coil/pull/1134))
