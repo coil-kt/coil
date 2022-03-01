@@ -13,7 +13,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - uses: actions/setup-java@v3
               with:
                   distribution: 'zulu'
@@ -42,7 +42,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - uses: actions/setup-java@v3
               with:
                   distribution: 'zulu'
@@ -68,7 +68,7 @@ jobs:
                 # API 21 is flaky and times out.
                 api-level: [22, 26, 31]
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - uses: actions/setup-java@v3
               with:
                   distribution: 'zulu'
@@ -130,7 +130,7 @@ jobs:
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         needs: [checks, unit-tests, instrumentation-tests]
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - uses: actions/setup-java@v3
               with:
                   distribution: 'zulu'
