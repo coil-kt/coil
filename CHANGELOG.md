@@ -5,10 +5,7 @@
 Significant changes since `1.4.0`:
 
 - The minimum supported API is now 21.
-- Enable `-Xjvm-default=all`.
-    - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
-    - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to do this.
-- Rework Jetpack Compose integration.
+- Rework the Jetpack Compose integration.
     - `rememberImagePainter` has been renamed to `rememberAsyncImagePainter`.
     - Add support for `AsyncImage` and `SubcomposeAsyncImage`. Check out [the documentation](https://coil-kt.github.io/coil/compose/) for more info.
 - Coil 2.0 has its own disk cache implementation and no longer relies on OkHttp for disk caching.
@@ -18,7 +15,7 @@ Significant changes since `1.4.0`:
     - Your existing disk cache will be cleared when upgrading to 2.0.
 - `ImageRequest`'s default `Scale` is now `Scale.FIT`
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
-    - Requests with an `ImageViewTarget` still have their `Scale` autodetected.
+    - Requests with an `ImageViewTarget` still have their `Scale` auto-detected.
 - Rework the image pipeline classes:
     - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
     - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
@@ -43,6 +40,7 @@ Significant changes since `1.4.0`:
 
 Changes since `2.0.0-alpha09`:
 
+- Remove the `-Xjvm-default=all` compiler flag.
 - Fix failing to load image if multiple requests with must-revalidate/e-tag are executed concurrently.
 - Fix `DecodeUtils.isSvg` returning false if there is a new line character after the `<svg` tag.
 - Make `LocalImageLoader.provides` deprecation message clearer.
