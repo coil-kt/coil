@@ -17,6 +17,42 @@ Set `logger(DebugLogger())` when [constructing your `ImageLoader`](../getting_st
 !!! Note
     `DebugLogger` should only be used in debug builds.
 
+## How do I target Java 8?
+
+Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support).
+
+This is enabled by default on the Android Gradle Plugin 4.2.0 and later and the Kotlin Gradle Plugin 1.5.0 and later.
+
+If you're using older versions of the above plugins add the following to your Gradle build script:
+
+Gradle (`.gradle`):
+
+```groovy
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+```
+
+Gradle Kotlin DSL (`.gradle.kts`):
+
+```kotlin
+android {
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+```
+
 ## How do I get development snapshots?
 
 Add the snapshots repository to your list of repositories:

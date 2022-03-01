@@ -13,38 +13,6 @@ Coil has 8 artifacts published to `mavenCentral()`:
 * `io.coil-kt:coil-video`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
 * `io.coil-kt:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). Importing `coil-bom` allows you to depend on other Coil artifacts without specifying a version.
 
-## Java 8
-
-Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support). To enable this add the following to your Gradle build script:
-
-Gradle (`.gradle`):
-
-```groovy
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-```
-
-Gradle Kotlin DSL (`.gradle.kts`):
-
-```kotlin
-android {
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-```
-
 ## Image Loaders
 
 [`ImageLoader`](image_loaders.md)s are service classes that execute [`ImageRequest`](image_requests.md)s. `ImageLoader`s handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more.
@@ -54,7 +22,7 @@ The default Coil artifact (`io.coil-kt:coil`) includes the singleton `ImageLoade
 The singleton `ImageLoader` can be configured by implementing `ImageLoaderFactory` on your `Application` class:
 
 ```kotlin
-class MyApplication : Application() : ImageLoaderFactory {
+class MyApplication : Application(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
