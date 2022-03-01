@@ -19,11 +19,7 @@ Set `logger(DebugLogger())` when [constructing your `ImageLoader`](../getting_st
 
 ## How do I target Java 8?
 
-Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support).
-
-This is enabled by default on the Android Gradle Plugin 4.2.0 and later and the Kotlin Gradle Plugin 1.5.0 and later.
-
-If you're using older versions of the above plugins add the following to your Gradle build script:
+Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support). This is enabled by default on the Android Gradle Plugin 4.2.0 and later and the Kotlin Gradle Plugin 1.5.0 and later. If you're using older versions of the above plugins add the following to your Gradle build script:
 
 Gradle (`.gradle`):
 
