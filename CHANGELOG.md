@@ -8,6 +8,7 @@ Significant changes since `1.4.0`:
 - Rework the Jetpack Compose integration.
     - `rememberImagePainter` has been renamed to `rememberAsyncImagePainter`.
     - Add support for `AsyncImage` and `SubcomposeAsyncImage`. Check out [the documentation](https://coil-kt.github.io/coil/compose/) for more info.
+    - Deprecate `LocalImageLoader`. Check out the deprecation message for more info.
 - Coil 2.0 has its own disk cache implementation and no longer relies on OkHttp for disk caching.
     - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
     - You **should not** use OkHttp's `Cache` with Coil 2.0 as the cache can be corrupted if a thread is interrupted while writing to it.
