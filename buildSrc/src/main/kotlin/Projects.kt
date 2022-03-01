@@ -76,8 +76,6 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(
         val arguments = mutableListOf(
             // https://kotlinlang.org/docs/compiler-reference.html#progressive
             "-progressive",
-            // Generate native Java 8 default interface methods.
-            "-Xjvm-default=all",
             // Generate smaller bytecode by not generating runtime not-null assertions.
             "-Xno-call-assertions",
             "-Xno-param-assertions",
