@@ -198,7 +198,7 @@ Coil 2.0.0 is the next major iteration of the library and has new features, perf
 - **Important**: The minimum supported API is now 21.
 - **Important**: Enable `-Xjvm-default=all`.
     - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
-    - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to do this.
+    - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8) for how to do this.
 - **Important**: Coil now has its own disk cache implementation and no longer relies on OkHttp for disk caching.
     - This change was made to:
         - Better support thread interruption while decoding images. This improves performance when image requests are started and stopped in quick succession.
@@ -416,7 +416,7 @@ Changes since `1.0.0-rc3`:
 
 - **This release requires Kotlin 1.4.0 or above.**
 - Update Kotlin to 1.4.0 and enable [`-Xjvm-default=all`](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/).
-    - **[See here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to enable `-Xjvm-default=all` in your build file.**
+    - **[See here](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8) for how to enable `-Xjvm-default=all` in your build file.**
     - This generates Java 8 default methods for default Kotlin interface methods.
 - Remove all existing deprecated methods in 0.12.0.
 - Update Coroutines to 1.3.9.

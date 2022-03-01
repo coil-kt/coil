@@ -108,7 +108,7 @@ Check out Coil's [full documentation here](https://coil-kt.github.io/coil/gettin
 ## Requirements
 
 - Min SDK 21+
-- [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
+- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 
