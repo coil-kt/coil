@@ -24,19 +24,18 @@ Significant changes since `1.4.0`:
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. Kotlin's compile-time null safety guards against this happening.
     - This change allows the library's size to be smaller.
-- Rework the `MemoryCache` API.
 - `BitmapPool` and `PoolableViewTarget` have been removed from the library.
 - `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
-- Adds support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
-- Adds support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
-- `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
-- Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
-- Add `GenericViewTarget`, which handles common `ViewTarget` logic.
 - [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
+- Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
+- Add support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
+- Add support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
+- Add `GenericViewTarget`, which handles common `ViewTarget` logic.
+- Add `ByteBuffer` to the default supported data types.
+- `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
+- Rework the `MemoryCache` API.
 - `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
 - `Transformation.key` is replaced with `Transformation.cacheKey`.
-- `ImageRequest.Listener` returns `SuccessResult`/`ErrorResult` in `onSuccess` and `onError` respectively.
-- Add `ByteBuffer` to the default supported data types.
 - Update Kotlin to 1.6.10.
 - Update Compose to 1.1.1.
 - Update OkHttp to 4.9.3.
