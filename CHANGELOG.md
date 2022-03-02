@@ -37,6 +37,10 @@ Significant changes since `1.4.0`:
 - `Transformation.key` is replaced with `Transformation.cacheKey`.
 - `ImageRequest.Listener` returns `SuccessResult`/`ErrorResult` in `onSuccess` and `onError` respectively.
 - Add `ByteBuffer` to the default supported data types.
+- Update Kotlin to 1.6.10.
+- Update Compose to 1.1.1.
+- Update OkHttp to 4.9.3.
+- Update Okio to 3.0.0.
 
 Changes since `2.0.0-alpha09`:
 
@@ -105,7 +109,7 @@ Changes since `2.0.0-alpha09`:
 - Mutate `ImageLoader` placeholder/error/fallback drawables.
 - Add default arguments to `SuccessResult`'s constructor.
 - Depend on `androidx.collection` instead of `androidx.collection-ktx`.
-- Update Okhttp to 4.9.3.
+- Update OkHttp to 4.9.3.
 
 ## [2.0.0-alpha04] - November 22, 2021
 
