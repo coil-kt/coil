@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0-rc01] - March XX, 2022
+## [2.0.0-rc01] - March 2, 2022
 
 Significant changes since `1.4.0`:
 
