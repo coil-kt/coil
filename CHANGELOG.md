@@ -20,7 +20,7 @@ Significant changes since `1.4.0`:
 - Rework the image pipeline classes:
     - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
     - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
-    - Adds `ImageSource`, which allows `Decoder`s to decode `File`s directly.
+    - Adds `ImageSource`, which allows `Decoder`s to read `File`s directly.
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. Kotlin's compile-time null safety guards against this happening.
     - This change allows the library's size to be smaller.
