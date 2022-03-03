@@ -1,5 +1,55 @@
 # Changelog
 
+## [2.0.0-rc01] - March 2, 2022
+
+Significant changes since `1.4.0`:
+
+- The minimum supported API is now 21.
+- Rework the Jetpack Compose integration.
+    - `rememberImagePainter` has been renamed to `rememberAsyncImagePainter`.
+    - Add support for `AsyncImage` and `SubcomposeAsyncImage`. Check out [the documentation](https://coil-kt.github.io/coil/compose/) for more info.
+    - Deprecate `LocalImageLoader`. Check out the deprecation message for more info.
+- Coil 2.0 has its own disk cache implementation and no longer relies on OkHttp for disk caching.
+    - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
+    - You **should not** use OkHttp's `Cache` with Coil 2.0 as the cache can be corrupted if a thread is interrupted while writing to it.
+    - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
+    - Existing disk caches will be cleared when upgrading to 2.0.
+- `ImageRequest`'s default `Scale` is now `Scale.FIT`
+    - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
+    - Requests with an `ImageViewTarget` still have their `Scale` auto-detected.
+- Rework the image pipeline classes:
+    - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
+    - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
+    - Adds `ImageSource`, which allows `Decoder`s to read `File`s directly using Okio's file system API.
+- Disable generating runtime not-null assertions.
+    - If you use Java, passing null as a not-null annotated parameter to a function will no longer throw a `NullPointerException` immediately. Kotlin's compile-time null safety guards against this happening.
+    - This change allows the library's size to be smaller.
+- `BitmapPool` and `PoolableViewTarget` have been removed from the library.
+- `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
+- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
+- Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
+- Add support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
+- Add support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
+- Add `GenericViewTarget`, which handles common `ViewTarget` logic.
+- Add `ByteBuffer` to the default supported data types.
+- `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
+- Rework the `MemoryCache` API.
+- `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
+- `Transformation.key` is replaced with `Transformation.cacheKey`.
+- Update Kotlin to 1.6.10.
+- Update Compose to 1.1.1.
+- Update OkHttp to 4.9.3.
+- Update Okio to 3.0.0.
+
+Changes since `2.0.0-alpha09`:
+
+- Remove the `-Xjvm-default=all` compiler flag.
+- Fix failing to load image if multiple requests with must-revalidate/e-tag are executed concurrently.
+- Fix `DecodeUtils.isSvg` returning false if there is a new line character after the `<svg` tag.
+- Make `LocalImageLoader.provides` deprecation message clearer.
+- Update Compose to 1.1.1.
+- Update `accompanist-drawablepainter` to 0.23.1.
+
 ## [2.0.0-alpha09] - February 16, 2022
 
 - Fix `AsyncImage` creating invalid constraints. ([#1134](https://github.com/coil-kt/coil/pull/1134))
@@ -58,7 +108,7 @@
 - Mutate `ImageLoader` placeholder/error/fallback drawables.
 - Add default arguments to `SuccessResult`'s constructor.
 - Depend on `androidx.collection` instead of `androidx.collection-ktx`.
-- Update Okhttp to 4.9.3.
+- Update OkHttp to 4.9.3.
 
 ## [2.0.0-alpha04] - November 22, 2021
 
@@ -151,7 +201,7 @@ Coil 2.0.0 is the next major iteration of the library and has new features, perf
 - **Important**: The minimum supported API is now 21.
 - **Important**: Enable `-Xjvm-default=all`.
     - This generates Java 8 default methods instead of using Kotlin's default interface method support. Check out [this blog post](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/) for more information.
-    - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to do this.
+    - **You'll need to add `-Xjvm-default=all` or `-Xjvm-default=all-compatibility` to your build file as well.** See [here](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8) for how to do this.
 - **Important**: Coil now has its own disk cache implementation and no longer relies on OkHttp for disk caching.
     - This change was made to:
         - Better support thread interruption while decoding images. This improves performance when image requests are started and stopped in quick succession.
@@ -369,7 +419,7 @@ Changes since `1.0.0-rc3`:
 
 - **This release requires Kotlin 1.4.0 or above.**
 - Update Kotlin to 1.4.0 and enable [`-Xjvm-default=all`](https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/).
-    - **[See here](https://coil-kt.github.io/coil/getting_started/#java-8) for how to enable `-Xjvm-default=all` in your build file.**
+    - **[See here](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8) for how to enable `-Xjvm-default=all` in your build file.**
     - This generates Java 8 default methods for default Kotlin interface methods.
 - Remove all existing deprecated methods in 0.12.0.
 - Update Coroutines to 1.3.9.

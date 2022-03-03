@@ -3,136 +3,136 @@
 To add support for [Jetpack Compose](https://developer.android.com/jetpack/compose), import the extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:1.4.0")
+implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 ```
 
-Then use the `rememberImagePainter` function to create an `ImagePainter` that can be drawn by the `Image` composable:
+Then use the `AsyncImage` composable to load and display an image:
 
 ```kotlin
-// Basic
-Image(
-    painter = rememberImagePainter("https://www.example.com/image.jpg"),
-    contentDescription = null,
-    modifier = Modifier.size(128.dp)
-)
-
-// Advanced
-Image(
-    painter = rememberImagePainter(
-        data = "https://www.example.com/image.jpg",
-        builder = {
-            transformations(CircleCropTransformation())
-        }
-    ),
-    contentDescription = null,
-    modifier = Modifier.size(128.dp)
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null
 )
 ```
 
-`ImagePainter` manages the asynchronous image request and handles drawing the placeholder/success/error drawables.
+`model` can either be the `ImageRequest.data` value - or the `ImageRequest` itself. `contentDescription` sets the text used by accessibility services to describe what this image represents.
+
+`AsyncImage` supports the same arguments as the standard `Image` composable. Additionally, it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads image with a circle crop, crossfade, and sets a placeholder:
+
+```kotlin
+AsyncImage(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data("https://example.com/image.jpg")
+        .crossfade(true)
+        .build(),
+    placeholder = painterResource(R.drawable.placeholder),
+    contentDescription = stringResource(R.string.description),
+    contentScale = ContentScale.Crop,
+    modifier = Modifier.clip(CircleShape)
+)
+```
+
+## SubcomposeAsyncImage
+
+`SubcomposeAsyncImage` is a variant of `AsyncImage` that uses subcomposition to provide a slot API for `AsyncImagePainter`'s states. Here's an example:
+
+```kotlin
+SubcomposeAsyncImage(
+    model = "https://example.com/image.jpg",
+    loading = {
+        CircularProgressIndicator()
+    },
+    contentDescription = stringResource(R.string.description),
+)
+```
+
+Additionally, you can have more complex logic using its `content` argument and `SubcomposeAsyncImageContent`, which renders the current state:
+
+```kotlin
+SubcomposeAsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = stringResource(R.string.description),
+) {
+    val state = painter.state
+    if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
+        CircularProgressIndicator()
+    } else {
+        SubcomposeAsyncImageContent()
+    }
+}
+```
+
+Subcomposition is less performant than regular composition so this composable may not be suitable for parts of your UI where high performance is critical (e.g. lists).
+
+!!! Note
+    If you set a custom size for the `ImageRequest` using `ImageRequest.Builder.size` (e.g. `size(Size.ORIGINAL)`), `SubcomposeAsyncImage` will not use subcomposition since it doesn't need to resolve the composable's constraints.
+
+## AsyncImagePainter
+
+Internally, `AsyncImage` and `SubcomposeAsyncImage` use `AsyncImagePainter` to load the `model`. If you need a `Painter` and can't use `AsyncImage`, you can load the image using `rememberAsyncImagePainter`:
+
+```kotlin
+val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
+```
+
+`rememberAsyncImagePainter` is a lower-level API that may not behave as expected in all cases. Read the method's documentation for more information.
+
+!!! Note
+    If you set a custom `ContentScale` on the `Image` that's rendering the `AsyncImagePainter`, you should also set it in `rememberAsyncImagePainter`. It's necessary to determine the correct dimensions to load the image at.
+
+## Observing AsyncImagePainter.state
+
+An image request needs a size to determine the output image's dimensions. By default, both `AsyncImage` and `AsyncImagePainter` resolve the request's size [**after** composition occurs](https://developer.android.com/jetpack/compose/layouts/basics), but before the first frame is drawn. It's resolved this way to maximize performance. This means that `AsyncImagePainter.state` will be `Loading` for the first composition - even if the image is present in the memory cache and it will be drawn in the first frame.
+
+If you need `AsyncImagePainter.state` to be up-to-date during the first composition, use `SubcomposeAsyncImage` **or** set a custom size for the image request using `ImageRequest.Builder.size`. For example, `AsyncImagePainter.state` will always be up-to-date during the first composition in this example:
+
+```kotlin
+val painter = rememberAsyncImagePainter(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data("https://example.com/image.jpg")
+        .size(Size.ORIGINAL) // Set the target size to load the image at.
+        .build()
+)
+
+if (painter.state is AsyncImagePainter.State.Success) {
+    // This will be executed during the first composition if the image is in the memory cache.
+}
+
+Image(
+    painter = painter,
+    contentDescription = stringResource(R.string.description),
+)
+```
 
 ## Transitions
 
 You can enable the built in crossfade transition using `ImageRequest.Builder.crossfade`:
 
 ```kotlin
-Image(
-    painter = rememberImagePainter(
-        data = "https://www.example.com/image.jpg",
-        builder = {
-            crossfade(true)
-        }
-    ),
-    contentDescription = null,
-    modifier = Modifier.size(128.dp)
+AsyncImage(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data("https://example.com/image.jpg")
+        .crossfade(true)
+        .build(),
+    contentDescription = null
 )
 ```
 
-Custom [`Transition`](transitions.md)s do not work with `rememberImagePainter` as they require a `View` reference. `CrossfadeTransition` works due to special internal support.
+Custom [`Transition`](transitions.md)s do not work with `AsyncImage`, `SubcomposeAsyncImage`, or `rememberAsyncImagePainter` as they require a `View` reference. `CrossfadeTransition` works due to special internal support.
 
-That said, it's possible to create custom transitions in Compose by observing the `ImagePainter`'s state:
+That said, it's possible to create custom transitions in Compose by observing the `AsyncImagePainter`'s state:
 
 ```kotlin
-val painter = rememberImagePainter("https://www.example.com/image.jpg")
+SubcomposeAsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null
+) {
+    val state = painter.state
+    if (state is AsyncImagePainter.State.Success && state.dataSource != DataSource.MEMORY_CACHE) {
+        // Perform the transition animation.
+    }
 
-val state = painter.state
-if (state is ImagePainter.State.Success && state.metadata.dataSource != DataSource.MEMORY_CACHE ) {
-    // Perform the transition animation.
+    // Render the content.
+    SubcomposeAsyncImageContent()
 }
-
-Image(
-    painter = painter,
-    contentDescription = null,
-    modifier = Modifier.size(128.dp)
-)
-```
-
-In the above example, the composable will recompose when the `ImagePainter`'s state changes. If the image request is successful and not served from the memory cache, it'll execute the animation inside the if statement.
-
-## LocalImageLoader
-
-The integration also adds a pseudo-[`CompositionLocal`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/CompositionLocal) for getting the local `ImageLoader`.
-
-In most cases the local `ImageLoader` will be the singleton `ImageLoader`, however it's possible to overwrite the local `ImageLoader` using a `CompositionLocalProvider` if necessary.
-
-```kotlin
-// Get
-val imageLoader = LocalImageLoader.current
-
-// Set
-CompositionLocalProvider(LocalImageLoader provides ImageLoader(context)) {
-    // Describe the rest of the UI.
-}
-```
-
-!!! Note
-    There's also the `coil-compose-base` artifact which is a subset of `coil-compose`. It does not include `LocalImageLoader` and the singleton `ImageLoader`.
-
-## Migrating from Accompanist
-
-Coil's Jetpack Compose integration is based on [Accompanist](https://github.com/google/accompanist)'s Coil integration, but has the following changes:
-
-- `rememberCoilPainter` is renamed to `rememberImagePainter` and its arguments changed:
-    - `shouldRefetchOnSizeChange` is replaced with `onExecute`, which has more control over if image requests are executed or skipped.
-    - `requestBuilder` is renamed to `builder`.
-    - `fadeIn` and `fadeInDurationMs` are removed. Migrate to `ImageRequest.Builder.crossfade` (see [Transitions](#Transitions)).
-    - `previewPlaceholder` is removed. `ImageRequest.placeholder` is now automatically used if inspection mode is enabled.
-- `LoadPainter` is renamed to `ImagePainter`.
-    - `ImagePainter` no longer falls back to executing an image request with the root view's size if `onDraw` is not called. This is most likely to be noticeable if you use `ImagePainter` in a `LazyColumn` and the `Image`'s size isn't constrained.
-- `Loader` and `rememberLoadPainter` are removed.
-- `LocalImageLoader.current` is not-null and returns the singleton `ImageLoader` by default.
-- `DrawablePainter` and `rememberDrawablePainter` are now private.
-
-Here's an example call site migration:
-
-```kotlin
-// accompanist-coil
-Image(
-    painter = rememberCoilPainter(
-        request = "https://www.example.com/image.jpg",
-        requestBuilder = {
-            transformations(CircleCropTransformation())
-        },
-        shouldRefetchOnSizeChange = ShouldRefetchOnSizeChange { _, _ -> true },
-        fadeIn = true,
-        previewPlaceholder = R.drawable.placeholder
-    ),
-    contentDescription = null,
-    modifier = Modifier.size(128.dp)
-)
-
-// coil-compose
-Image(
-    painter = rememberImagePainter(
-        data = "https://www.example.com/image.jpg",
-        onExecute = ExecuteCallback { _, _ -> true },
-        builder = {
-            crossfade(true)
-            placeholder(R.drawable.placeholder)
-            transformations(CircleCropTransformation())
-        }
-    ),
-    contentDescription = null,
-    modifier = Modifier.size(128.dp)
-)
 ```

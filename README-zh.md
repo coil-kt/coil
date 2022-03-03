@@ -16,7 +16,7 @@ Coil 名字的由来：取 **Co**routine **I**mage **L**oader 首字母得来。
 Coil 可以在 `mavenCentral()` 下载
 
 ```kotlin
-implementation("io.coil-kt:coil:1.4.0")
+implementation("io.coil-kt:coil:2.0.0-rc01")
 ```
 
 ## 快速上手
@@ -85,9 +85,8 @@ val drawable = imageLoader.execute(request).drawable
 
 ## 环境要求
 
-- AndroidX
-- Min SDK 14+
-- [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
+- Min SDK 21+
+- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 

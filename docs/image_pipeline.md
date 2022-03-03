@@ -1,18 +1,19 @@
 # Extending the Image Pipeline
 
-Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats#image-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, TIFF, etc.)
+Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats#image-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, MP4, etc.)
 
-Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of four main parts: [Interceptors](../api/coil-base/coil.intercept/-interceptor), [Mappers](../api/coil-base/coil.map/-mapper), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
+Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of five main parts that are executed in the following order: [Interceptors](../api/coil-base/coil.intercept/-interceptor), [Mappers](../api/coil-base/coil.map/-mapper), [Keyers](../api/coil-base/coil.key/-keyer), [Fetchers](../api/coil-base/coil.fetch/-fetcher), and [Decoders](../api/coil-base/coil.decode/-decoder).
 
 Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-base/coil/-component-registry):
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
-    .componentRegistry {
+    .components {
         add(CustomCacheInterceptor())
         add(ItemMapper())
-        add(CronetFetcher())
-        add(GifDecoder())
+        add(HttpUrlKeyer())
+        add(CronetFetcher.Factory())
+        add(GifDecoder.Factory())
     }
     .build()
 ```
@@ -33,7 +34,7 @@ class CustomCacheInterceptor(
             return SuccessResult(
                 drawable = value.bitmap.toDrawable(context),
                 request = chain.request,
-                metadata = TODO()
+                dataSource = DataSource.MEMORY_CACHE
             )
         }
         return chain.proceed(chain.request)
@@ -62,7 +63,7 @@ We could write a custom mapper to map it to its URL, which will be handled later
 
 ```kotlin
 class ItemMapper : Mapper<Item, String> {
-    override fun map(data: Item) = data.imageUrl
+    override fun map(data: Item, options: Options) = data.imageUrl
 }
 ```
 
@@ -78,17 +79,20 @@ imageLoader.enqueue(request)
 
 See [Mapper](../api/coil-base/coil.map/-mapper) for more information.
 
+## Keyers
+
+Keyers convert data into a portion of a cache key. This value is used as `MemoryCache.Key.key` when/if this request's output is written to the `MemoryCache`.
+
+See [Keyers](../api/coil-base/coil.key/-keyer) for more information.
+
 ## Fetchers
 
-Fetchers translate data into either a `BufferedSource` or a `Drawable`.
+Fetchers translate data (e.g. URL, URI, File, etc.) into either an `ImageSource` or a `Drawable`. They typically convert the input data into a format that can then be consumed by a `Decoder`. Use this interface to add support for custom fetching mechanisms (e.g. Cronet, custom URI schemes, etc.)
 
 See [Fetcher](../api/coil-base/coil.fetch/-fetcher) for more information.
 
 ## Decoders
 
-Decoders read a `BufferedSource` as input and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
+Decoders read an `ImageSource` and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
 
 See [Decoder](../api/coil-base/coil.decode/-decoder) for more information.
-
-!!! Note
-    Decoders are responsible for closing the `BufferedSource` when finished. This allows custom decoders to return a `Drawable` while still reading the source. This can be useful to support file types such as [progressive JPEG](https://www.liquidweb.com/kb/what-is-a-progressive-jpeg/) where there is incremental information to show.

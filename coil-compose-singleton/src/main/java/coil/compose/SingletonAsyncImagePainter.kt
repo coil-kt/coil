@@ -26,7 +26,8 @@ import coil.request.ImageRequest
  *   constraint. For example, to use [AsyncImagePainter] with [LazyRow] or [LazyColumn], you must
  *   set a bounded width or height respectively.
  * - [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
- *   composition phase. Use [SubcomposeAsyncImage] if you need this.
+ *   composition phase. Use [SubcomposeAsyncImage] or set a custom [ImageRequest.Builder.size] value
+ *   if you need this.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param placeholder A [Painter] that is displayed while the image is loading.
@@ -76,7 +77,8 @@ fun rememberAsyncImagePainter(
  *   constraint. For example, to use [AsyncImagePainter] with [LazyRow] or [LazyColumn], you must
  *   set a bounded width or height respectively.
  * - [AsyncImagePainter.state] will not transition to [State.Success] synchronously during the
- *   composition phase. Use [SubcomposeAsyncImage] if you need this.
+ *   composition phase. Use [SubcomposeAsyncImage] or set a custom [ImageRequest.Builder.size] value
+ *   if you need this.
  *
  * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
  * @param transform A callback to transform a new [State] before it's applied to the
