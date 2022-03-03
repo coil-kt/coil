@@ -40,12 +40,6 @@ extensions.configure<ApiValidationExtension> {
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
     outputDirectory by file("$rootDir/docs/api")
-    removeChildTasks(listOf(
-        projects.coilSampleCommon.dependencyProject,
-        projects.coilSampleCompose.dependencyProject,
-        projects.coilSampleView.dependencyProject,
-        projects.coilTest.dependencyProject
-    ))
 }
 
 allprojects {
