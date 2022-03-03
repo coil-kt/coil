@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(publish = true)
+setupLibraryModule(publish = true, document = false)
 
 dependencies {
     constraints {

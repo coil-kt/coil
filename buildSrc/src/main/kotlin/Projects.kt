@@ -17,12 +17,14 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 fun Project.setupLibraryModule(
     buildConfig: Boolean = false,
     publish: Boolean = false,
+    document: Boolean = publish,
     block: LibraryExtension.() -> Unit = {}
 ) = setupBaseModule<LibraryExtension> {
     libraryVariants.all {
         generateBuildConfigProvider?.configure { enabled = buildConfig }
     }
     if (publish) {
+        if (document) apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
         publishing {
             singleVariant("release") {
