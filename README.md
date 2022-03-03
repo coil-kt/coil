@@ -70,8 +70,6 @@ Both `imageView.load` and `AsyncImage` use the singleton `ImageLoader` to execut
 val imageLoader = context.imageLoader
 ```
 
-Optionally, you can create your own `ImageLoader` instance(s) and inject them with dependency injection:
-
 `ImageLoader`s are designed to be shareable and are most efficient when you create a single instance and share it throughout your app. That said, you can also create your own `ImageLoader` instance(s):
 
 ```kotlin
