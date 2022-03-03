@@ -16,7 +16,7 @@ Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
 Coil은 `mavenCentral()`로 이용 가능합니다.
 
 ```kotlin
-implementation("io.coil-kt:coil:1.4.0")
+implementation("io.coil-kt:coil:2.0.0-rc01")
 ```
 
 ## 빠른 시작
@@ -50,9 +50,8 @@ imageView.load("https://www.example.com/image.jpg") {
 
 ## 요구사항
 
-- AndroidX
-- Min SDK 14+
-- [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
+- Min SDK 21+
+- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 

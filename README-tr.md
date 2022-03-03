@@ -17,7 +17,7 @@ Coil şunların baş harflerinden oluşur: **Co**routine **I**mage **L**oader.
 Coil `mavenCentral()`'da mevcuttur.
 
 ```kotlin
-implementation("io.coil-kt:coil:1.4.0")
+implementation("io.coil-kt:coil:2.0.0-rc01")
 ```
 
 ## Hızlı Başlangıç
@@ -90,9 +90,8 @@ Coil'in [dokümantasyonunun tamamına buradan](https://coil-kt.github.io/coil/ge
 
 ## Gereksinimler
 
-- AndroidX
-- Min SDK 14+
-- [Java 8+](https://coil-kt.github.io/coil/getting_started/#java-8)
+- Min SDK 21+
+- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 

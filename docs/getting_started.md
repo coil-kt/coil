@@ -13,52 +13,28 @@ Coil has 8 artifacts published to `mavenCentral()`:
 * `io.coil-kt:coil-video`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
 * `io.coil-kt:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). Importing `coil-bom` allows you to depend on other Coil artifacts without specifying a version.
 
-## Java 8
-
-Coil requires [Java 8 bytecode](https://developer.android.com/studio/write/java8-support). To enable this add the following to your Gradle build script:
-
-Gradle (`.gradle`):
-
-```groovy
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-```
-
-Gradle Kotlin DSL (`.gradle.kts`):
-
-```kotlin
-android {
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-```
-
 ## Image Loaders
 
-[`ImageLoader`](image_loaders.md)s are service classes that execute [`ImageRequest`](image_requests.md)s. `ImageLoader`s handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more. New instances can be created and configured using a builder:
+[`ImageLoader`](image_loaders.md)s are service classes that execute [`ImageRequest`](image_requests.md)s. `ImageLoader`s handle caching, data fetching, image decoding, request management, bitmap pooling, memory management, and more.
+
+The default Coil artifact (`io.coil-kt:coil`) includes the singleton `ImageLoader`, which can be accessed using an extension function: `context.imageLoader`.
+
+The singleton `ImageLoader` can be configured by implementing `ImageLoaderFactory` on your `Application` class:
 
 ```kotlin
-val imageLoader = ImageLoader.Builder(context)
-    .availableMemoryPercentage(0.25)
-    .crossfade(true)
-    .build()
+class MyApplication : Application(), ImageLoaderFactory {
+
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .crossfade(true)
+            .build()
+    }
+}
 ```
 
-Coil performs best when you create a single `ImageLoader` and share it throughout your app. This is because each `ImageLoader` has its own memory cache, bitmap pool, and network observer.
+Implementing `ImageLoaderFactory` is optional. If you don't, Coil will lazily create an `ImageLoader` with the default values.
 
-It's recommended, though not required, to call [`shutdown`](../api/coil-base/coil/-image-loader/shutdown.html) when you've finished using an image loader. Calling `shutdown` preemptively frees its memory and cleans up any observers. If you only create and use a single `ImageLoader`, you do not need to shut it down as it will be freed when your app is killed.
+Check out [the full documentation](image_loaders.md) for more info.
 
 ## Image Requests
 
@@ -88,58 +64,9 @@ val request = ImageRequest.Builder(context)
 val result = imageLoader.execute(request)
 ```
 
-## Singleton
-
-If you are using the `io.coil-kt:coil` artifact, you can set the singleton [`ImageLoader`](image_loaders.md) instance by either:
-
-- Implementing `ImageLoaderFactory` on your `Application` class (prefer this method):
-
-```kotlin
-class MyApplication : Application(), ImageLoaderFactory {
-
-    override fun newImageLoader(): ImageLoader {
-        return ImageLoader.Builder(applicationContext)
-            .crossfade(true)
-            .okHttpClient {
-                OkHttpClient.Builder()
-                    .cache(CoilUtils.createDefaultCache(applicationContext))
-                    .build()
-            }
-            .build()
-    }
-}
-```
-
-- **Or** calling `Coil.setImageLoader`:
-
-```kotlin
-val imageLoader = ImageLoader.Builder(context)
-    .crossfade(true)
-    .okHttpClient {
-        OkHttpClient.Builder()
-            .cache(CoilUtils.createDefaultCache(context))
-            .build()
-    }
-    .build()
-Coil.setImageLoader(imageLoader)
-```
-
-The singleton `ImageLoader` can be retrieved using the `Context.imageLoader` extension function:
-
-```kotlin
-val imageLoader = context.imageLoader
-```
-
-Setting the singleton `ImageLoader` is optional. If you don't set one, Coil will lazily create an `ImageLoader` with the default values.
-
-If you're using the `io.coil-kt:coil-base` artifact, you should create your own `ImageLoader` instance(s) and inject them throughout your app with dependency injection. [Read more about dependency injection here](../image_loaders/#singleton-vs-dependency-injection).
-
-!!! Note
-    If you set a custom `OkHttpClient`, you must set a `cache` implementation or the `ImageLoader` will have no disk cache. A default Coil cache instance can be created using [`CoilUtils.createDefaultCache`](../api/coil-base/coil.util/-coil-utils/create-default-cache.html).
-
 ## ImageView Extension Functions
 
-The `io.coil-kt:coil` artifact provides a set of type-safe `ImageView` extension functions. Here's an example for loading a URL into an `ImageView`:
+The `io.coil-kt:coil` artifact provides a set of `ImageView` extension functions. Here's an example for loading a URL into an `ImageView`:
 
 ```kotlin
 imageView.load("https://www.example.com/image.jpg")
@@ -234,43 +161,4 @@ val disposable = imageView.load("https://www.example.com/image.jpg")
 
 // Cancel the request.
 disposable.dispose()
-```
-
-## Memory Cache
-
-Each `ImageLoader` has its own `MemoryCache` of recently loaded images. To read/write a `Bitmap` to the memory cache, you need a `MemoryCache.Key`. There are two ways to get a `MemoryCache.Key`:
-
-- Create a `MemoryCache.Key` using its `String` constructor: `MemoryCache.Key("my_cache_key")`
-- Get the `MemoryCache.Key` from an executed request:
-
-```kotlin
-// If using the ImageLoader singleton
-val memoryCacheKey = imageView.metadata.memoryCacheKey
-
-// Enqueue
-val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .target(imageView)
-    .listener { _, metadata ->
-        val memoryCacheKey = metadata.memoryCacheKey
-    }
-    .build()
-imageLoader.enqueue(request)
-
-// Execute
-val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
-    .build()
-val result = imageLoader.execute(request) as SuccessResult
-val memoryCacheKey = result.metadata.memoryCacheKey
-```
-
-Once you have the memory cache key, you can read/write to the memory cache synchronously:
-
-```kotlin
-// Get
-val bitmap: Bitmap? = imageLoader.memoryCache[memoryCacheKey]
-
-// Set
-imageLoader.memoryCache[memoryCacheKey] = bitmap
 ```
