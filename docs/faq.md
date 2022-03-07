@@ -12,7 +12,7 @@ Yes! [Read here](java_compatibility.md).
 
 ## How do I enable logging?
 
-Set `logger(DebugLogger())` when [constructing your `ImageLoader`](../getting_started/#singleton).
+Set `logger(DebugLogger())` when [constructing your `ImageLoader`](../getting_started/#image-loaders).
 
 !!! Note
     `DebugLogger` should only be used in debug builds.
