@@ -42,7 +42,7 @@ SubcomposeAsyncImage(
     loading = {
         CircularProgressIndicator()
     },
-    contentDescription = stringResource(R.string.description),
+    contentDescription = stringResource(R.string.description)
 )
 ```
 
@@ -51,7 +51,7 @@ Additionally, you can have more complex logic using its `content` argument and `
 ```kotlin
 SubcomposeAsyncImage(
     model = "https://example.com/image.jpg",
-    contentDescription = stringResource(R.string.description),
+    contentDescription = stringResource(R.string.description)
 ) {
     val state = painter.state
     if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
@@ -100,7 +100,7 @@ if (painter.state is AsyncImagePainter.State.Success) {
 
 Image(
     painter = painter,
-    contentDescription = stringResource(R.string.description),
+    contentDescription = stringResource(R.string.description)
 )
 ```
 
@@ -123,16 +123,15 @@ Custom [`Transition`](transitions.md)s do not work with `AsyncImage`, `Subcompos
 That said, it's possible to create custom transitions in Compose by observing the `AsyncImagePainter`'s state:
 
 ```kotlin
-SubcomposeAsyncImage(
-    model = "https://example.com/image.jpg",
-    contentDescription = null
-) {
-    val state = painter.state
-    if (state is AsyncImagePainter.State.Success && state.dataSource != DataSource.MEMORY_CACHE) {
-        // Perform the transition animation.
-    }
+val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
 
-    // Render the content.
-    SubcomposeAsyncImageContent()
+val state = painter.state
+if (state is AsyncImagePainter.State.Success && state.dataSource != DataSource.MEMORY_CACHE) {
+    // Perform the transition animation.
 }
+
+Image(
+    painter = painter,
+    contentDescription = stringResource(R.string.description)
+)
 ```

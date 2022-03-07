@@ -16,4 +16,4 @@ val imageLoader = ImageLoader.Builder(context)
     .build()
 ```
 
-The `ImageLoader` will automatically detect and decode any SVGs. Coil detects SVGs by looking for the `<svg ` marker in the first 1 KB of the file, which should cover most cases. If the SVG is not automatically detected, you can [set the `Decoder` explicitly](../api/coil-base/coil.request/-image-request/-builder/decoder.html) to `SvgDecoder` for the request.
+The `ImageLoader` will automatically detect and decode any SVGs. Coil detects SVGs by looking for the `<svg ` marker in the first 1 KB of the file, which should cover most cases. If the SVG is not automatically detected, you can [set the `Decoder` explicitly](../api/coil-base/coil-base/coil.request/-image-request/-builder/decoder) to `SvgDecoder` for the request.
