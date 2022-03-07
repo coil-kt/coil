@@ -8,9 +8,9 @@ Coil has 8 artifacts published to `mavenCentral()`:
 * `io.coil-kt:coil-base`: A subset of `io.coil-kt:coil` which **does not** include the singleton `ImageLoader` and the `ImageView` extension functions.
 * `io.coil-kt:coil-compose`: Includes support for [Jetpack Compose](https://developer.android.com/jetpack/compose).
 * `io.coil-kt:coil-compose-base`: A subset of `io.coil-kt:coil-compose` which does not include functions that depend on the singleton `ImageLoader`.
-* `io.coil-kt:coil-gif`: Includes two [decoders](../api/coil-base/coil.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
-* `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
-* `io.coil-kt:coil-video`: Includes a [decoder](../api/coil-base/coil.decode/-decoder) to support decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
+* `io.coil-kt:coil-gif`: Includes two [decoders](../api/coil-base/coil-base/coil.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
+* `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-base/coil-base/coil.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
+* `io.coil-kt:coil-video`: Includes a [decoder](../api/coil-base/coil-base/coil.decode/-decoder) to support decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
 * `io.coil-kt:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). Importing `coil-bom` allows you to depend on other Coil artifacts without specifying a version.
 
 ## Image Loaders
@@ -41,9 +41,9 @@ Check out [the full documentation](image_loaders.md) for more info.
 [`ImageRequest`](image_requests.md)s are value classes that are executed by [`ImageLoader`](image_loaders.md)s. They describe where an image should be loaded from, how it should be loaded, and any extra parameters. An `ImageLoader` has two methods that can execute a request:
 
 - `enqueue`: Enqueues the `ImageRequest` to be executed asynchronously on a background thread.
-- `execute`: Executes the `ImageRequest` in the current coroutine and returns an [`ImageResult`](../api/coil-base/coil.request/-image-result).
+- `execute`: Executes the `ImageRequest` in the current coroutine and returns an [`ImageResult`](../api/coil-base/coil-base/coil.request/-image-result).
 
-All requests should set `data` (i.e. url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to decide where to fetch the image data from. If you do not set `data`, it will default to [`NullRequestData`](../api/coil-base/coil.request/-null-request-data).
+All requests should set `data` (i.e. url, uri, file, drawable resource, etc.). This is what the `ImageLoader` will use to decide where to fetch the image data from. If you do not set `data`, it will default to [`NullRequestData`](../api/coil-base/coil-base/coil.request/-null-request-data).
 
 Additionally, you likely want to set a `target` when enqueuing a request. It's optional, but the `target` is what will receive the loaded placeholder/success/error drawables. Executed requests return an `ImageResult` which has the success/error drawable.
 
@@ -154,7 +154,7 @@ imageLoader.enqueue(request)
 - `request.lifecycle` reaches the `DESTROYED` state.
 - `request.target` is a `ViewTarget` and its `View` is detached.
 
-Additionally, `ImageLoader.enqueue` returns a [Disposable](../api/coil-base/coil.request/-disposable/), which can be used to dispose the request (which cancels it and frees its associated resources):
+Additionally, `ImageLoader.enqueue` returns a [Disposable](../api/coil-base/coil-base/coil.request/-disposable/), which can be used to dispose the request (which cancels it and frees its associated resources):
 
 ```kotlin
 val disposable = imageView.load("https://www.example.com/image.jpg")
