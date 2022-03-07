@@ -68,10 +68,12 @@ allprojects {
                 url by URL("https://developer.android.com/reference/")
             }
             externalDocumentationLink {
-                url by URL("https://kotlin.github.io/kotlinx.coroutines/")
+                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+                packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/package-list")
             }
             externalDocumentationLink {
-                url by URL("https://square.github.io/okhttp/4.x/okhttp/")
+                url by URL("https://square.github.io/okhttp/4.x/")
+                packageListUrl by URL("https://square.github.io/okhttp/4.x/okhttp/package-list")
             }
             externalDocumentationLink {
                 url by URL("https://square.github.io/okio/3.x/okio/")
