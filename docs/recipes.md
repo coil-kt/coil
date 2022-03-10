@@ -177,7 +177,7 @@ AsyncImage(
     model = "https://example.com/image.jpg",
     contentDescription = null,
     placeholder = forwardingPainter(painterResource(R.drawable.placeholder)) { info ->
-        inset(50, 50) {
+        inset(50f, 50f) {
             with(info.painter) {
                 draw(size, info.alpha, info.colorFilter)
             }
