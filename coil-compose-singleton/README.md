@@ -17,7 +17,9 @@ AsyncImage(
 
 `model` can either be the `ImageRequest.data` value - or the `ImageRequest` itself. `contentDescription` sets the text used by accessibility services to describe what this image represents.
 
-`AsyncImage` supports the same arguments as the standard `Image` composable. Additionally, it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads image with a circle crop, crossfade, and sets a placeholder:
+## AsyncImage
+
+`AsyncImage` is a composable that that executes an image request asynchronously and renders the result. It supports the same arguments as the standard `Image` composable and additionally it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads image with a circle crop, crossfade, and sets a placeholder:
 
 ```kotlin
 AsyncImage(
@@ -34,7 +36,7 @@ AsyncImage(
 
 ## SubcomposeAsyncImage
 
-`SubcomposeAsyncImage` is a variant of `AsyncImage` that uses subcomposition to provide a slot API for `AsyncImagePainter`'s states. Here's an example:
+`SubcomposeAsyncImage` is a variant of `AsyncImage` that uses subcomposition to provide a slot API for `AsyncImagePainter`'s states instead of using `Painter`s. Here's an example:
 
 ```kotlin
 SubcomposeAsyncImage(
