@@ -153,3 +153,35 @@ val request = ImageRequest.Builder(context)
     .build()
 imageLoader.enqueue(request)
 ```
+
+## Transforming Painters
+
+Both `AsyncImage` and `AsyncImagePainter` have `placeholder`/`error`/`fallback` arguments that accept `Painter`s. Painters are less flexible than using composables, but are faster as Coil doesn't need to use subcomposition. That said, it may be necessary to inset, stretch, tint, or transform your painter to get the desired UI. To accomplish this, [copy this Gist into your project](https://gist.github.com/colinrtwhite/c2966e0b8584b4cdf0a5b05786b20ae1) and wrap the painter like so:
+
+```kotlin
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null,
+    placeholder = forwardingPainter(
+        painter = painterResource(R.drawable.placeholder),
+        colorFilter = ColorFilter(Color.Red),
+        alpha = 0.5f
+    )
+)
+```
+
+The `onDraw` can be overwritten using a trailing lambda:
+
+```kotlin
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null,
+    placeholder = forwardingPainter(painterResource(R.drawable.placeholder)) { info ->
+        inset(50, 50) {
+            with(info.painter) {
+                draw(size, info.alpha, info.colorFilter)
+            }
+        }
+    }
+)
+```
