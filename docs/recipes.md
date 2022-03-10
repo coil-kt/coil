@@ -156,7 +156,7 @@ imageLoader.enqueue(request)
 
 ## Transforming Painters
 
-Both `AsyncImage` and `AsyncImagePainter` have `placeholder`/`error`/`fallback` arguments that accept `Painter`s. `Painter`s are less flexible than using composables, but are faster as Coil doesn't need to use subcomposition. That said, it may be necessary to inset, stretch, tint, or transform your painter to get the desired UI. To accomplish this, [copy this Gist locally](https://gist.github.com/colinrtwhite/c2966e0b8584b4cdf0a5b05786b20ae1) and wrap the painter like so:
+Both `AsyncImage` and `AsyncImagePainter` have `placeholder`/`error`/`fallback` arguments that accept `Painter`s. Painters are less flexible than using composables, but are faster as Coil doesn't need to use subcomposition. That said, it may be necessary to inset, stretch, tint, or transform your painter to get the desired UI. To accomplish this, [copy this Gist into your project](https://gist.github.com/colinrtwhite/c2966e0b8584b4cdf0a5b05786b20ae1) and wrap the painter like so:
 
 ```kotlin
 AsyncImage(
