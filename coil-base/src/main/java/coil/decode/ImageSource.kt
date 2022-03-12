@@ -115,6 +115,11 @@ fun ImageSource(
 sealed class ImageSource : Closeable {
 
     /**
+     * The [FileSystem] which contains the [file].
+     */
+    abstract val fileSystem: FileSystem
+
+    /**
      * Return the [Metadata] for this [ImageSource].
      */
     @ExperimentalCoilApi
@@ -144,11 +149,6 @@ sealed class ImageSource : Closeable {
      * already been created. Else, return 'null'.
      */
     abstract fun fileOrNull(): Path?
-
-    /**
-     * The [FileSystem] which contains the [file].
-     */
-    abstract val fileSystem: FileSystem
 
     /**
      * A marker class for metadata for an [ImageSource].
