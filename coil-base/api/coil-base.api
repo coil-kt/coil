@@ -408,8 +408,6 @@ public final class coil/memory/MemoryCache$Key : android/os/Parcelable {
 	public static final field CREATOR Landroid/os/Parcelable$Creator;
 	public fun <init> (Ljava/lang/String;Ljava/util/Map;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/util/Map;
 	public final fun copy (Ljava/lang/String;Ljava/util/Map;)Lcoil/memory/MemoryCache$Key;
 	public static synthetic fun copy$default (Lcoil/memory/MemoryCache$Key;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Lcoil/memory/MemoryCache$Key;
 	public fun describeContents ()I
@@ -424,8 +422,6 @@ public final class coil/memory/MemoryCache$Key : android/os/Parcelable {
 public final class coil/memory/MemoryCache$Value {
 	public fun <init> (Landroid/graphics/Bitmap;Ljava/util/Map;)V
 	public synthetic fun <init> (Landroid/graphics/Bitmap;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Landroid/graphics/Bitmap;
-	public final fun component2 ()Ljava/util/Map;
 	public final fun copy (Landroid/graphics/Bitmap;Ljava/util/Map;)Lcoil/memory/MemoryCache$Value;
 	public static synthetic fun copy$default (Lcoil/memory/MemoryCache$Value;Landroid/graphics/Bitmap;Ljava/util/Map;ILjava/lang/Object;)Lcoil/memory/MemoryCache$Value;
 	public fun equals (Ljava/lang/Object;)Z
@@ -720,10 +716,6 @@ public final class coil/request/Parameters$Companion {
 
 public final class coil/request/Parameters$Entry {
 	public fun <init> (Ljava/lang/Object;Ljava/lang/String;)V
-	public final fun component1 ()Ljava/lang/Object;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/Object;Ljava/lang/String;)Lcoil/request/Parameters$Entry;
-	public static synthetic fun copy$default (Lcoil/request/Parameters$Entry;Ljava/lang/Object;Ljava/lang/String;ILjava/lang/Object;)Lcoil/request/Parameters$Entry;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getMemoryCacheKey ()Ljava/lang/String;
 	public final fun getValue ()Ljava/lang/Object;
