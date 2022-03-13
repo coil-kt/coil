@@ -54,10 +54,33 @@ interface MemoryCache {
      *  **must be** treated as immutable and should not be modified.
      */
     @Parcelize
-    data class Key(
+    class Key(
         val key: String,
         val extras: Map<String, String> = emptyMap(),
-    ) : Parcelable
+    ) : Parcelable {
+
+        fun copy(
+            key: String = this.key,
+            extras: Map<String, String> = this.extras
+        ) = Key(key, extras)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Key &&
+                key == other.key &&
+                extras == other.extras
+        }
+
+        override fun hashCode(): Int {
+            var result = key.hashCode()
+            result = 31 * result + extras.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "Key(key=$key, extras=$extras)"
+        }
+    }
 
     /**
      * The value for a [Bitmap] in the memory cache.
@@ -66,10 +89,33 @@ interface MemoryCache {
      * @param extras Metadata for [bitmap]. This map **must be**
      *  treated as immutable and should not be modified.
      */
-    data class Value(
+    class Value(
         val bitmap: Bitmap,
         val extras: Map<String, Any> = emptyMap(),
-    )
+    ) {
+
+        fun copy(
+            bitmap: Bitmap = this.bitmap,
+            extras: Map<String, Any> = this.extras
+        ) = Value(bitmap, extras)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Value &&
+                bitmap == other.bitmap &&
+                extras == other.extras
+        }
+
+        override fun hashCode(): Int {
+            var result = bitmap.hashCode()
+            result = 31 * result + extras.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "Value(bitmap=$bitmap, extras=$extras)"
+        }
+    }
 
     class Builder(private val context: Context) {
 
