@@ -21,14 +21,13 @@ implementation("io.coil-kt:coil:2.0.0-rc01")
 
 ## 빠른 시작
 
+#### ImageViews
+
 `ImageView`로 이미지를 불러오기 위해, `load` 확장 함수를 사용합니다.
 
 ```kotlin
 // URL
 imageView.load("https://www.example.com/image.jpg")
-
-// Resource
-imageView.load(R.drawable.image)
 
 // File
 imageView.load(File("/path/to/image.jpg"))
@@ -44,6 +43,62 @@ imageView.load("https://www.example.com/image.jpg") {
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
 }
+```
+
+#### Jetpack Compose
+
+[Jetpack Compose](https://developer.android.com/jetpack/compose) 확장 라이브러리 추가:
+
+```kotlin
+implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+```
+
+이미지를 불러오려면, `AsyncImage` composable를 사용하세요:
+
+```kotlin
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null
+)
+```
+
+#### Image Loaders
+
+`imageView.load` 와 `AsyncImage`는 이미지를 불러오기 위해 싱글톤 `ImageLoader`를 사용합니다. 싱글톤 `ImageLoader`는 `Context`의 확장함수를 통해 접근할 수 있습니다:
+
+```kotlin
+val imageLoader = context.imageLoader
+```
+
+`ImageLoader`는 공유가 가능하게 설계 되었으며, 싱글 객체를 만들어서 앱에 전반적으로 사용했을 때 가장 효율적입니다. 즉, 직접 `ImageLoader` 인스턴스를 생성해도 됩니다:
+
+```kotlin
+val imageLoader = ImageLoader(context)
+```
+
+싱글톤 `ImageLoader`를 사용하고 싶지 않을때에는, `io.coil-kt:coil`를 참조하는 대신, `io.coil-kt:coil-base`를 참조하세요.
+
+#### Requests
+
+커스텀 타겟에 이미지를 로드하려면, `ImageRequest`를 `enqueue` 하세요:
+
+```kotlin
+val request = ImageRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .target { drawable ->
+        // Handle the result.
+    }
+    .build()
+val disposable = imageLoader.enqueue(request)
+```
+
+Imperative하게 이미지 로드를 하려면, `ImageRequest`를 `execute` 하세요:
+
+```kotlin
+val request = ImageRequest.Builder(context)
+    .data("https://www.example.com/image.jpg")
+    .build()
+val drawable = imageLoader.execute(request).drawable
 ```
 
 [여기서 Coil의 전체 문서](https://coil-kt.github.io/coil/)를 확인하세요.
