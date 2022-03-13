@@ -71,10 +71,28 @@ class Parameters private constructor(
 
     fun newBuilder() = Builder(this)
 
-    data class Entry(
+    class Entry(
         val value: Any?,
         val memoryCacheKey: String?,
-    )
+    ) {
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Entry &&
+                value == other.value &&
+                memoryCacheKey == other.memoryCacheKey
+        }
+
+        override fun hashCode(): Int {
+            var result = value.hashCode()
+            result = 31 * result + memoryCacheKey.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "Entry(value=$value, memoryCacheKey=$memoryCacheKey)"
+        }
+    }
 
     class Builder {
 
