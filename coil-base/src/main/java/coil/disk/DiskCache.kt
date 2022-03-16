@@ -16,19 +16,22 @@ import java.io.File
 /**
  * An LRU cache of files.
  */
-@ExperimentalCoilApi
 interface DiskCache {
 
     /** The current size of the cache in bytes. */
+    @ExperimentalCoilApi
     val size: Long
 
     /** The maximum size of the cache in bytes. */
+    @ExperimentalCoilApi
     val maxSize: Long
 
     /** The directory where the cache stores its data. */
+    @ExperimentalCoilApi
     val directory: Path
 
     /** The file system that contains the cache's files. */
+    @ExperimentalCoilApi
     val fileSystem: FileSystem
 
     /**
@@ -37,6 +40,7 @@ interface DiskCache {
      * IMPORTANT: **You must** call either [Snapshot.close] or [Snapshot.closeAndEdit] when finished
      * reading the snapshot. An open snapshot prevents editing the entry or deleting it on disk.
      */
+    @ExperimentalCoilApi
     operator fun get(key: String): Snapshot?
 
     /**
@@ -46,6 +50,7 @@ interface DiskCache {
      * to complete the edit. An open editor prevents opening new [Snapshot]s or opening a new
      * [Editor].
      */
+    @ExperimentalCoilApi
     fun edit(key: String): Editor?
 
     /**
@@ -53,9 +58,11 @@ interface DiskCache {
      *
      * @return 'true' if [key] was removed successfully. Else, return 'false'.
      */
+    @ExperimentalCoilApi
     fun remove(key: String): Boolean
 
     /** Delete all entries in the disk cache. */
+    @ExperimentalCoilApi
     fun clear()
 
     /**
@@ -64,6 +71,7 @@ interface DiskCache {
      * IMPORTANT: You must **only read** [metadata] or [data]. Mutating either file can corrupt the
      * disk cache. To modify the contents of those files, use [edit].
      */
+    @ExperimentalCoilApi
     interface Snapshot : Closeable {
 
         /** Get the metadata for this entry. */
@@ -88,6 +96,7 @@ interface DiskCache {
      * IMPORTANT: You must **only read or modify the contents** of [metadata] or [data].
      * Renaming, locking, or other mutating file operations can corrupt the disk cache.
      */
+    @ExperimentalCoilApi
     interface Editor {
 
         /** Get the metadata for this entry. */
