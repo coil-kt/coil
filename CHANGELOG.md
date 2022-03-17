@@ -14,9 +14,10 @@ Significant changes since `1.4.0`:
     - You **should not** use OkHttp's `Cache` with Coil 2.0 as the cache can be corrupted if a thread is interrupted while writing to it.
     - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
     - Existing disk caches will be cleared when upgrading to 2.0.
-- `ImageRequest`'s default `Scale` is now `Scale.FIT`
+- `ImageRequest`'s default `Scale` is now `Scale.FIT`.
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
     - Requests with an `ImageViewTarget` still have their `Scale` auto-detected.
+- `ImageRequest`'s default size is now `Size.ORIGINAL`.
 - Rework the image pipeline classes:
     - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
     - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
