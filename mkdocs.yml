@@ -36,7 +36,6 @@ extra:
 nav:
   - 'Overview': index.md
   - 'Getting Started': getting_started.md
-  - 'Migrating from Glide/Picasso': migrating.md
   - 'Image Loaders': image_loaders.md
   - 'Image Requests': image_requests.md
   - 'Targets': targets.md
@@ -50,6 +49,8 @@ nav:
   - 'Video Frames': videos.md
   - 'Recipes': recipes.md
   - 'FAQ': faq.md
+  - 'Migrating from Glide/Picasso': migrating.md
+  - 'Upgrading from Coil 1.x to 2.x': upgrading.md
   - 'API ⏏': api/index.html
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
