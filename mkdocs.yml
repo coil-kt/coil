@@ -63,12 +63,13 @@ extra_css:
 # Extensions
 markdown_extensions:
   - admonition
-  - codehilite:
-      guess_lang: false
   - footnotes
   - toc:
       permalink: true
-  - pymdownx.betterem
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
   - pymdownx.superfences
 
 # Plugins
@@ -77,4 +78,4 @@ plugins:
   - minify:
       minify_html: true
 
-# Built with https://github.com/squidfunk/mkdocs-material v7.1.10
+# Built with https://github.com/squidfunk/mkdocs-material
