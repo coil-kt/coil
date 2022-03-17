@@ -4,7 +4,7 @@ This is a short guide to highlight the main changes when upgrading from Coil 1.x
 
 ## Minimum API 21
 
-Coil 2.x requires minimum API 21. This is also the minimum API required for Compose and OkHttp 4.x.
+Coil 2.x requires minimum API 21. This is also the minimum API required for Jetpack Compose and OkHttp 4.x.
 
 ## Jetpack Compose
 
@@ -77,7 +77,7 @@ In Coil 2.x `Cache-Control` and other cache headers are still supported - except
 
 When upgrading from Coil 1.x to 2.x, any existing disk cache will be cleared as the internal format has changed.
 
-## Change ImageRequest defaults
+## ImageRequest defaults
 
 Coil 2.x changes the default scale from `Scale.FILL` to `Scale.FIT`. This was done to ensure be consistent with `ImageView`'s default `ScaleType` and `Image`'s default `ContentScale`. Scale is still autodetected if you set an `ImageView` as your `ImageRequest.target`.
 
