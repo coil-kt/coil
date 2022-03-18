@@ -15,3 +15,9 @@
     public static void checkFieldIsNotNull(...);
     public static void checkReturnedValueIsNotNull(...);
 }
+
+# https://github.com/square/okhttp/issues/6258
+-dontwarn okhttp3.internal.platform.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
