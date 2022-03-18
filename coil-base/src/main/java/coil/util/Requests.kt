@@ -32,21 +32,20 @@ internal fun ImageRequest.getDrawableCompat(
  * requested dimensions exactly.
  */
 internal val ImageRequest.allowInexactSize: Boolean
-    get() {
-        // If we haven't explicitly set a precision or size, always allow inexact size.
-        if (defined.precision == null && defined.sizeResolver == null && sizeResolver is DisplaySizeResolver) {
-            return true
-        }
-
-        return when (precision) {
-            Precision.EXACT -> false
-            Precision.INEXACT -> true
-            Precision.AUTOMATIC -> {
-                // If both our target and size resolver reference the same ImageView, allow the
-                // dimensions to be inexact as the ImageView will scale the output image
-                // automatically. Else, require the dimensions to be exact.
-                target is ViewTarget<*> && sizeResolver is ViewSizeResolver<*> &&
-                    target.view is ImageView && target.view === sizeResolver.view
+    get() = when (precision) {
+        Precision.EXACT -> false
+        Precision.INEXACT -> true
+        Precision.AUTOMATIC -> run {
+            // If we haven't explicitly set a size and fell back to the default size resolver,
+            // always allow inexact size.
+            if (defined.sizeResolver == null && sizeResolver is DisplaySizeResolver) {
+                return@run true
             }
+
+            // If both our target and size resolver reference the same ImageView, allow the
+            // dimensions to be inexact as the ImageView will scale the output image
+            // automatically. Else, require the dimensions to be exact.
+            return@run target is ViewTarget<*> && sizeResolver is ViewSizeResolver<*> &&
+                target.view is ImageView && target.view === sizeResolver.view
         }
     }
