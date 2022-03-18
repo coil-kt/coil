@@ -34,7 +34,7 @@ internal fun ImageRequest.getDrawableCompat(
 internal val ImageRequest.allowInexactSize: Boolean
     get() {
         // If we haven't explicitly set a precision or size, always allow inexact size.
-        if (defined.precision == null && sizeResolver is DisplaySizeResolver) {
+        if (defined.precision == null && defined.sizeResolver == null && sizeResolver is DisplaySizeResolver) {
             return true
         }
 
