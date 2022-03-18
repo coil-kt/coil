@@ -546,6 +546,7 @@ class RealImageLoaderAndroidTest {
                 width = ViewGroup.LayoutParams.WRAP_CONTENT
                 height = ViewGroup.LayoutParams.MATCH_PARENT
             }
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             imageView.requestLayout()
             awaitFrame()
         }
@@ -580,6 +581,7 @@ class RealImageLoaderAndroidTest {
                 width = ViewGroup.LayoutParams.MATCH_PARENT
                 height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             imageView.requestLayout()
             awaitFrame()
         }
