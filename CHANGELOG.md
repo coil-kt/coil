@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0-rc02] - March 20, 2022
+
+- Revert `ImageRequest`'s default size to be the size of the current display instead of `Size.ORIGINAL`.
+- Fix `DiskCache.Builder` being marked as experimental. Only `DiskCache`'s methods are experimental.
+- Fix case where loading an image into an `ImageView` with one dimension as `WRAP_CONTENT` would load the image at its original size instead of fitting it into the bounded dimension.
+- Remove component functions from `MemoryCache.Key`, `MemoryCache.Value`, and `Parameters.Entry`.
+
 ## [2.0.0-rc01] - March 2, 2022
 
 Significant changes since `1.4.0`:
@@ -17,6 +24,7 @@ Significant changes since `1.4.0`:
 - `ImageRequest`'s default `Scale` is now `Scale.FIT`.
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
     - Requests with an `ImageViewTarget` still have their `Scale` auto-detected.
+- `ImageRequest`'s default size is now `Size.ORIGINAL`.
 - Rework the image pipeline classes:
     - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
     - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
