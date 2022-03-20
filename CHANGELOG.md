@@ -17,7 +17,6 @@ Significant changes since `1.4.0`:
 - `ImageRequest`'s default `Scale` is now `Scale.FIT`.
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
     - Requests with an `ImageViewTarget` still have their `Scale` auto-detected.
-- `ImageRequest`'s default size is now `Size.ORIGINAL`.
 - Rework the image pipeline classes:
     - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
     - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.

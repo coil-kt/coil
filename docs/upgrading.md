@@ -6,6 +6,23 @@ This is a short guide to highlight the main changes when upgrading from Coil 1.x
 
 Coil 2.x requires minimum API 21. This is also the minimum API required for Jetpack Compose and OkHttp 4.x.
 
+## ImageRequest default scale
+
+Coil 2.x changes `ImageRequest`'s default scale from `Scale.FILL` to `Scale.FIT`. This was done to ensure be consistent with `ImageView`'s default `ScaleType` and `Image`'s default `ContentScale`. Scale is still autodetected if you set an `ImageView` as your `ImageRequest.target`.
+
+## Size refactor
+
+`Size`'s `width` and `height` is now composed of two `Dimension`s instead of `Int` pixel values. `Dimension` is either a pixel value or `Dimension.Original`, which represents the source value for that dimension (similar to how `Size.ORIGINAL` represents the source values for both width and height). You can use the `pxOrElse` extension to get the pixel value (if present), else use a fallback:
+
+```kotlin
+val width = size.width.pxOrElse { -1 }
+if (width > 0) {
+    // Use the pixel value.
+}
+```
+
+This change was made to improve support for cases where a target has one unbounded dimension (e.g. if one dimension is `ViewGroup.LayoutParams.WRAP_CONTENT` for a `View` or `Constraints.Infinity` in Compose).
+
 ## Jetpack Compose
 
 Coil 2.x significantly reworks the Jetpack Compose integration to add features, improve stability, and improve performance.
@@ -76,25 +93,6 @@ ImageLoader.Builder(context)
 In Coil 2.x `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
 
 When upgrading from Coil 1.x to 2.x, any existing disk cache will be cleared as the internal format has changed.
-
-## ImageRequest defaults
-
-Coil 2.x changes the default scale from `Scale.FILL` to `Scale.FIT`. This was done to ensure be consistent with `ImageView`'s default `ScaleType` and `Image`'s default `ContentScale`. Scale is still autodetected if you set an `ImageView` as your `ImageRequest.target`.
-
-Coil 2.x also changes the default size to `Size.ORIGINAL`. In Coil 1.x, the default `SizeResolver` uses the current display's size. If you want to restore the behaviour from 1.x, copy [`DisplaySizeResolver`](https://github.com/coil-kt/coil/blob/1.x/coil-base/src/main/java/coil/size/DisplaySizeResolver.kt) into your project and manually set it on your `ImageRequest`. This change was made to ensure transformations that modify the aspect ratio of the image (e.g. `RoundedCornersTransformation`) work as expected when a custom size isn't set.
-
-## Size refactor
-
-`Size`'s `width` and `height` is now composed of two `Dimension`s instead of `Int` pixel values. `Dimension` is either a pixel value or `Dimension.Original`, which represents the source value for that dimension (similar to how `Size.ORIGINAL` represents the source values for both width and height). You can use the `pxOrElse` extension to get the pixel value (if present), else use a fallback:
-
-```kotlin
-val width = size.width.pxOrElse { -1 }
-if (width > 0) {
-    // Use the pixel value.
-}
-```
-
-This change was made to improve support for cases where a target has one unbounded dimension (e.g. if one dimension is `Constraints.Infinity` in Compose).
 
 ## Image pipeline refactor
 
