@@ -35,7 +35,6 @@ import coil.fetch.Fetcher
 import coil.intercept.Interceptor
 import coil.intercept.RealInterceptorChain
 import coil.memory.MemoryCache
-import coil.request.DefaultRequestOptions
 import coil.request.Parameters
 import coil.request.Tags
 import coil.request.ViewTargetRequestManager
@@ -143,8 +142,6 @@ internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
 
 /** Required for compatibility with API 25 and below. */
 internal val NULL_COLOR_SPACE: ColorSpace? = null
-
-internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
 
 internal val EMPTY_HEADERS = Headers.Builder().build()
 

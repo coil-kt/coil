@@ -26,8 +26,9 @@ import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.request.ImageRequest.Builder
 import coil.size.Dimension
+import coil.size.DisplaySizeResolver
+import coil.size.ImageViewScaleResolver
 import coil.size.Precision
-import coil.size.RealImageViewScaleResolver
 import coil.size.Scale
 import coil.size.ScaleResolver
 import coil.size.Size
@@ -1009,33 +1010,26 @@ class ImageRequest private constructor(
         private fun resolveSizeResolver(): SizeResolver {
             val target = target
             if (target is ViewTarget<*>) {
-                val view = target.view
                 // CENTER and MATRIX scale types should be decoded at the image's original size.
-                if (view !is ImageView || view.scaleType.let { it != CENTER && it != MATRIX }) {
+                val view = target.view
+                if (view is ImageView && view.scaleType.let { it == CENTER || it == MATRIX }) {
+                    return SizeResolver(Size.ORIGINAL)
+                } else {
                     return ViewSizeResolver(view)
                 }
+            } else {
+                // Fall back to the size of the display.
+                return DisplaySizeResolver(context)
             }
-            return SizeResolver(Size.ORIGINAL)
         }
 
         private fun resolveScaleResolver(): ScaleResolver {
-            val sizeResolver = sizeResolver
-            if (sizeResolver is ViewSizeResolver<*>) {
-                val view = sizeResolver.view
-                if (view is ImageView) {
-                    return RealImageViewScaleResolver(view)
-                }
+            val view = (sizeResolver as? ViewSizeResolver<*>)?.view ?: (target as? ViewTarget<*>)?.view
+            if (view is ImageView) {
+                return ImageViewScaleResolver(view)
+            } else {
+                return ScaleResolver(Scale.FIT)
             }
-
-            val target = target
-            if (target is ViewTarget<*>) {
-                val view = target.view
-                if (view is ImageView) {
-                    return RealImageViewScaleResolver(view)
-                }
-            }
-
-            return ScaleResolver(Scale.FIT)
         }
 
         @Deprecated(
