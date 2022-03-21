@@ -19,7 +19,7 @@ jobs:
                   distribution: 'zulu'
                   java-version: 17
             - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v2
+            - uses: actions/cache@v3
               with:
                   path: |
                       ~/.gradle/caches
@@ -48,7 +48,7 @@ jobs:
                   distribution: 'zulu'
                   java-version: 17
             - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v2
+            - uses: actions/cache@v3
               with:
                   path: |
                       ~/.gradle/caches
@@ -74,7 +74,7 @@ jobs:
                   distribution: 'zulu'
                   java-version: 17
             - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v2
+            - uses: actions/cache@v3
               with:
                   path: |
                       ~/.gradle/caches
@@ -89,7 +89,7 @@ jobs:
                   api-level: ${{ matrix.api-level }}
 
             # Retrieve the cached emulator snapshot.
-            - uses: actions/cache@v2
+            - uses: actions/cache@v3
               id: avd-cache
               with:
                   path: |
@@ -136,7 +136,7 @@ jobs:
                   distribution: 'zulu'
                   java-version: 17
             - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v2
+            - uses: actions/cache@v3
               with:
                   path: |
                       ~/.gradle/caches
