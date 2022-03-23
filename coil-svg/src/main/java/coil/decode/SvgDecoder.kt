@@ -7,8 +7,10 @@ import androidx.core.graphics.drawable.toDrawable
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
+import coil.request.css
 import coil.size.Dimension
 import coil.util.toSoftware
+import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
 import kotlinx.coroutines.runInterruptible
 import kotlin.math.roundToInt
@@ -69,7 +71,8 @@ class SvgDecoder @JvmOverloads constructor(
         svg.setDocumentHeight("100%")
 
         val bitmap = createBitmap(bitmapWidth, bitmapHeight, options.config.toSoftware())
-        svg.renderToCanvas(Canvas(bitmap))
+        val renderOptions = options.parameters.css()?.let { RenderOptions().css(it) }
+        svg.renderToCanvas(Canvas(bitmap), renderOptions)
 
         DecodeResult(
             drawable = bitmap.toDrawable(options.context.resources),
@@ -107,8 +110,9 @@ class SvgDecoder @JvmOverloads constructor(
         override fun hashCode() = useViewBoundsAsIntrinsicSize.hashCode()
     }
 
-    private companion object {
+    companion object {
         private const val MIME_TYPE_SVG = "image/svg+xml"
         private const val DEFAULT_SIZE = 512f
+        const val CSS_KEY = "coil#css"
     }
 }
