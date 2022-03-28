@@ -3,7 +3,7 @@ package coil.request
 import android.graphics.Bitmap
 import androidx.lifecycle.Lifecycle
 import coil.size.Precision
-import coil.size.ScaleResolver
+import coil.size.Scale
 import coil.size.SizeResolver
 import coil.transition.Transition
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,7 +17,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 class DefinedRequestOptions(
     val lifecycle: Lifecycle?,
     val sizeResolver: SizeResolver?,
-    val scaleResolver: ScaleResolver?,
+    val scale: Scale?,
     val interceptorDispatcher: CoroutineDispatcher?,
     val fetcherDispatcher: CoroutineDispatcher?,
     val decoderDispatcher: CoroutineDispatcher?,
@@ -35,7 +35,7 @@ class DefinedRequestOptions(
     fun copy(
         lifecycle: Lifecycle? = this.lifecycle,
         sizeResolver: SizeResolver? = this.sizeResolver,
-        scaleResolver: ScaleResolver? = this.scaleResolver,
+        scale: Scale? = this.scale,
         interceptorDispatcher: CoroutineDispatcher? = this.interceptorDispatcher,
         fetcherDispatcher: CoroutineDispatcher? = this.fetcherDispatcher,
         decoderDispatcher: CoroutineDispatcher? = this.decoderDispatcher,
@@ -51,7 +51,7 @@ class DefinedRequestOptions(
     ) = DefinedRequestOptions(
         lifecycle = lifecycle,
         sizeResolver = sizeResolver,
-        scaleResolver = scaleResolver,
+        scale = scale,
         interceptorDispatcher = interceptorDispatcher,
         fetcherDispatcher = fetcherDispatcher,
         decoderDispatcher = decoderDispatcher,
@@ -71,7 +71,7 @@ class DefinedRequestOptions(
         return other is DefinedRequestOptions &&
             lifecycle == other.lifecycle &&
             sizeResolver == other.sizeResolver &&
-            scaleResolver == other.scaleResolver &&
+            scale == other.scale &&
             interceptorDispatcher == other.interceptorDispatcher &&
             fetcherDispatcher == other.fetcherDispatcher &&
             decoderDispatcher == other.decoderDispatcher &&
@@ -89,7 +89,7 @@ class DefinedRequestOptions(
     override fun hashCode(): Int {
         var result = lifecycle.hashCode()
         result = 31 * result + sizeResolver.hashCode()
-        result = 31 * result + scaleResolver.hashCode()
+        result = 31 * result + scale.hashCode()
         result = 31 * result + interceptorDispatcher.hashCode()
         result = 31 * result + fetcherDispatcher.hashCode()
         result = 31 * result + decoderDispatcher.hashCode()

@@ -1,4 +1,4 @@
-package coil.coil.memory
+package coil.memory
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,8 +7,6 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.key.Keyer
-import coil.memory.MemoryCache
-import coil.memory.MemoryCacheService
 import coil.memory.MemoryCacheService.Companion.EXTRA_IS_SAMPLED
 import coil.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_INDEX
 import coil.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_SIZE
@@ -488,7 +486,7 @@ class MemoryCacheServiceTest {
         cacheKey = MemoryCache.Key("key"),
         cacheValue = MemoryCache.Value(cached, mapOf(EXTRA_IS_SAMPLED to isSampled)),
         size = size,
-        scale = request.scaleResolver.scale()
+        scale = request.scale
     )
 
     private fun createFakeTransformations(): List<Transformation> {
