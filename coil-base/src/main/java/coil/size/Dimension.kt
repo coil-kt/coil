@@ -30,13 +30,13 @@ sealed class Dimension {
     }
 
     /**
-     * Represents the original value of the source image.
+     * Represents an undefined number of pixels.
      *
-     * i.e. if the image's original dimensions are 400x600 and this is used as the width, this
-     * should be treated as 400 pixels.
+     * Use this dimension to scale to only fill the other dimension. If both dimensions are
+     * undefined, use the source image's size (or a default size if the image has no intrinsic size).
      */
-    object Original : Dimension() {
-        override fun toString() = "Dimension.Original"
+    object Undefined : Dimension() {
+        override fun toString() = "Dimension.Undefined"
     }
 }
 

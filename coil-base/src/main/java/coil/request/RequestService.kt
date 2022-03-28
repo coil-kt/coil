@@ -73,8 +73,8 @@ internal class RequestService(
         val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() &&
             config != Bitmap.Config.ALPHA_8
 
-        // Use `Scale.FIT` if either dimension is unbounded.
-        val scale = if (size.width == Dimension.Original || size.height == Dimension.Original) {
+        // Use `Scale.FIT` if either dimension is undefined.
+        val scale = if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
             Scale.FIT
         } else {
             request.scale

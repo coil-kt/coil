@@ -30,7 +30,7 @@ data class Size(
         /**
          * A [Size] whose width and height are equal to the original dimensions of the source image.
          */
-        @JvmField val ORIGINAL = Size(Dimension.Original, Dimension.Original)
+        @JvmField val ORIGINAL = Size(Dimension.Undefined, Dimension.Undefined)
     }
 }
 
