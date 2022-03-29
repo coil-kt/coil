@@ -34,7 +34,8 @@ sealed class Dimension {
     /**
      * Represents an undefined number of pixels.
      *
-     * This value is typically used in cases where a dimension is unbounded (e.g. [WRAP_CONTENT]).
+     * This value is typically used in cases where a dimension is unbounded (e.g. [WRAP_CONTENT],
+     * `Constraints.Infinity`).
      *
      * NOTE: If at least one dimension is undefined [Options.scale] is always [Scale.FIT].
      */
