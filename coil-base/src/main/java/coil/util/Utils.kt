@@ -193,7 +193,7 @@ internal fun DiskCache.Editor.abortQuietly() {
     } catch (_: Exception) {}
 }
 
-internal fun Dimension.pxString(): String {
+internal fun Dimension.string(): String {
     return if (this is Dimension.Pixels) px.toString() else toString()
 }
 

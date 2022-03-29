@@ -13,7 +13,6 @@ import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.RequestService
 import coil.request.SuccessResult
-import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
 import coil.size.isOriginal
@@ -24,8 +23,8 @@ import coil.util.forEachIndexedIndices
 import coil.util.isMinOrMax
 import coil.util.isPlaceholderCached
 import coil.util.log
-import coil.util.pxString
 import coil.util.safeConfig
+import coil.util.string
 import coil.util.toDrawable
 import kotlin.math.abs
 
@@ -136,8 +135,8 @@ internal class MemoryCacheService(
         // Compute the scaling factor between the source dimensions and the requested dimensions.
         val srcWidth = cacheValue.bitmap.width
         val srcHeight = cacheValue.bitmap.height
-        val dstWidth = size.width.pxOrMinMax(scale)
-        val dstHeight = size.height.pxOrMinMax(scale)
+        val dstWidth = size.width.pxOrElse { Int.MAX_VALUE }
+        val dstHeight = size.height.pxOrElse { Int.MAX_VALUE }
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = srcWidth,
             srcHeight = srcHeight,
@@ -168,7 +167,7 @@ internal class MemoryCacheService(
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) does not exactly match the requested size " +
-                    "(${size.width.pxString()}, ${size.height.pxString()}, $scale)."
+                    "(${size.width.string()}, ${size.height.string()}, $scale)."
             }
             return false
         }
@@ -178,7 +177,7 @@ internal class MemoryCacheService(
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) is smaller than the requested size " +
-                    "(${size.width.pxString()}, ${size.height.pxString()}, $scale)."
+                    "(${size.width.string()}, ${size.height.string()}, $scale)."
             }
             return false
         }
@@ -220,13 +219,6 @@ internal class MemoryCacheService(
         isSampled = cacheValue.isSampled,
         isPlaceholderCached = chain.isPlaceholderCached,
     )
-
-    private fun Dimension.pxOrMinMax(scale: Scale) = pxOrElse {
-        when (scale) {
-            Scale.FIT -> Int.MAX_VALUE
-            Scale.FILL -> Int.MIN_VALUE
-        }
-    }
 
     private val MemoryCache.Value.isSampled: Boolean
         get() = (extras[EXTRA_IS_SAMPLED] as? Boolean) ?: false

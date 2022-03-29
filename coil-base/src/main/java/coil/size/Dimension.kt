@@ -3,7 +3,9 @@
 
 package coil.size
 
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.annotation.Px
+import coil.request.Options
 
 /**
  * Represents either the width or height of a [Size].
@@ -32,8 +34,9 @@ sealed class Dimension {
     /**
      * Represents an undefined number of pixels.
      *
-     * Use this dimension to scale to only fill the other dimension. If both dimensions are
-     * undefined, use the source image's size (or a default size if the image has no intrinsic size).
+     * This value is typically used in cases where a dimension is unbounded (e.g. [WRAP_CONTENT]).
+     *
+     * NOTE: If at least one dimension is undefined [Options.scale] is always [Scale.FIT].
      */
     object Undefined : Dimension() {
         override fun toString() = "Dimension.Undefined"
