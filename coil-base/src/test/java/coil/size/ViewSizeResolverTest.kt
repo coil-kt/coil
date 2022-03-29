@@ -96,6 +96,6 @@ class ViewSizeResolverTest {
         view.viewTreeObserver.dispatchOnPreDraw()
 
         val size = deferred.await()
-        assertEquals(Size(Dimension.Undefined, Dimension(100)), size)
+        assertEquals(Size(Dimension.Undefined, 100), size)
     }
 }
