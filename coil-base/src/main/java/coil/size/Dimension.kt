@@ -39,8 +39,8 @@ sealed class Dimension {
      *
      * NOTE: If at least one dimension is undefined [Options.scale] is always [Scale.FIT].
      */
-    object Undefined : Dimension() {
-        override fun toString() = "Dimension.Undefined"
+    object Original : Dimension() {
+        override fun toString() = "Dimension.Original"
     }
 }
 

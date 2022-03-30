@@ -442,37 +442,37 @@ class MemoryCacheServiceTest {
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(400, Dimension.Undefined)
+            size = Size(400, Dimension.Original)
         ))
         assertTrue(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(Dimension.Undefined, 200)
+            size = Size(Dimension.Original, 200)
         ))
         assertFalse(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(450, Dimension.Undefined)
+            size = Size(450, Dimension.Original)
         ))
         assertFalse(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(Dimension.Undefined, 250)
+            size = Size(Dimension.Original, 250)
         ))
         assertTrue(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = false,
-            size = Size(450, Dimension.Undefined)
+            size = Size(450, Dimension.Original)
         ))
         assertTrue(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = false,
-            size = Size(Dimension.Undefined, 250)
+            size = Size(Dimension.Original, 250)
         ))
     }
 

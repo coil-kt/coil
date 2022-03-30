@@ -87,7 +87,7 @@ interface ViewSizeResolver<T : View> : SizeResolver {
     private fun getDimension(paramSize: Int, viewSize: Int, paddingSize: Int): Dimension? {
         // If the dimension is set to WRAP_CONTENT, use `Dimension.Undefined`.
         if (paramSize == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            return Dimension.Undefined
+            return Dimension.Original
         }
 
         // Assume the dimension will match the value in the view's layout params.

@@ -761,16 +761,16 @@ public final class coil/size/-Sizes {
 public abstract class coil/size/Dimension {
 }
 
+public final class coil/size/Dimension$Original : coil/size/Dimension {
+	public static final field INSTANCE Lcoil/size/Dimension$Original;
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class coil/size/Dimension$Pixels : coil/size/Dimension {
 	public final field px I
 	public fun <init> (I)V
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class coil/size/Dimension$Undefined : coil/size/Dimension {
-	public static final field INSTANCE Lcoil/size/Dimension$Undefined;
 	public fun toString ()Ljava/lang/String;
 }
 

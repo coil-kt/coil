@@ -74,7 +74,7 @@ internal class RequestService(
             config != Bitmap.Config.ALPHA_8
 
         // Use `Scale.FIT` if either dimension is undefined.
-        val scale = if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
+        val scale = if (size.width == Dimension.Original || size.height == Dimension.Original) {
             Scale.FIT
         } else {
             request.scale
