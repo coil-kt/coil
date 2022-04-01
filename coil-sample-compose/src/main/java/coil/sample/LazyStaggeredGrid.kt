@@ -69,12 +69,12 @@ fun LazyStaggeredGrid(
 
     val gridScope = RealLazyStaggeredGridScope(columnCount).apply(content)
 
-    Row {
-        for (index in 0 until columnCount) {
-            // Disable overscroll otherwise it'll only overscroll one column.
-            CompositionLocalProvider(
-                LocalOverScrollConfiguration provides null
-            ) {
+    // Disable overscroll otherwise it'll only overscroll one column.
+    CompositionLocalProvider(
+        LocalOverScrollConfiguration provides null
+    ) {
+        Row {
+            for (index in 0 until columnCount) {
                 LazyColumn(
                     contentPadding = contentPadding,
                     state = states[index],
