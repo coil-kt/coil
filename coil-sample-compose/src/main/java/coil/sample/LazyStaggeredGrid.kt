@@ -71,6 +71,7 @@ fun LazyStaggeredGrid(
 
     Row {
         for (index in 0 until columnCount) {
+            // Disable overscroll otherwise it'll only overscroll one column.
             CompositionLocalProvider(
                 LocalOverScrollConfiguration provides null
             ) {
