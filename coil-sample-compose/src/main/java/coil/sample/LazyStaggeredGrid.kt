@@ -62,7 +62,6 @@ fun LazyStaggeredGrid(
                     }
                     return Offset.Zero
                 }
-
             }
         }
     }
