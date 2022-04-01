@@ -32,6 +32,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /** Modified from: https://github.com/savvasdalkitsis/lazy-staggered-grid */
@@ -46,7 +47,7 @@ fun LazyStaggeredGrid(
     check(columnCount == states.size) {
         "Invalid number of lazy list states. Expected: $columnCount. Actual: ${states.size}"
     }
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
 
     val scrollConnections = List(columnCount) { index ->
         remember {
