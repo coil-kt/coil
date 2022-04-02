@@ -85,18 +85,33 @@ fun LazyStaggeredGrid(
     }
 }
 
+/** Receiver scope which is used by [LazyStaggeredGrid]. */
 interface LazyStaggeredGridScope {
-    fun item(key: Any? = null, content: @Composable () -> Unit)
+
+    /** Adds a single item. */
+    fun item(
+        key: Any? = null,
+        content: @Composable () -> Unit
+    )
+
+    /** Adds a [count] of items. */
+    fun items(
+        count: Int,
+        key: ((index: Int) -> Any)? = null,
+        itemContent: @Composable (index: Int) -> Unit
+    )
 }
 
+/** Adds a list of items. */
 inline fun <T> LazyStaggeredGridScope.items(
     items: List<T>,
-    crossinline content: @Composable (T) -> Unit
-) {
-    for (item in items) {
-        item { content(item) }
-    }
-}
+    noinline key: ((item: T) -> Any)? = null,
+    crossinline itemContent: @Composable (item: T) -> Unit
+) = items(
+    count = items.size,
+    key = if (key != null) { index -> key(items[index]) } else null,
+    itemContent = { itemContent(items[it]) }
+)
 
 private class RealLazyStaggeredGridScope(private val columnCount: Int) : LazyStaggeredGridScope {
 
@@ -106,5 +121,11 @@ private class RealLazyStaggeredGridScope(private val columnCount: Int) : LazySta
     override fun item(key: Any?, content: @Composable () -> Unit) {
         items[currentIndex % columnCount] += key to content
         currentIndex += 1
+    }
+
+    override fun items(count: Int, key: ((Int) -> Any)?, itemContent: @Composable (Int) -> Unit) {
+        for (index in 0 until count) {
+            item(key?.invoke(index)) { itemContent(index) }
+        }
     }
 }
