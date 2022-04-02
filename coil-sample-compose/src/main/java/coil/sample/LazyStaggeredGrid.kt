@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -47,32 +46,27 @@ fun LazyStaggeredGrid(
     check(columnCount == states.size) {
         "Invalid number of lazy list states. Expected: $columnCount. Actual: ${states.size}"
     }
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
 
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val scrollConnections = List(columnCount) { index ->
-        remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    val delta = available.y
-                    scope.launch {
-                        for (stateIndex in states.indices) {
-                            if (stateIndex != index) {
-                                states[stateIndex].scrollBy(-delta)
-                            }
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                val delta = available.y
+                scope.launch {
+                    for (stateIndex in states.indices) {
+                        if (stateIndex != index) {
+                            states[stateIndex].scrollBy(-delta)
                         }
                     }
-                    return Offset.Zero
                 }
+                return Offset.Zero
             }
         }
     }
-
     val gridScope = RealLazyStaggeredGridScope(columnCount).apply(content)
 
     // Disable overscroll otherwise it'll only overscroll one column.
-    CompositionLocalProvider(
-        LocalOverScrollConfiguration provides null
-    ) {
+    CompositionLocalProvider(LocalOverScrollConfiguration provides null) {
         Row {
             for (index in 0 until columnCount) {
                 LazyColumn(
@@ -82,9 +76,7 @@ fun LazyStaggeredGrid(
                         .nestedScroll(scrollConnections[index])
                         .weight(1f)
                 ) {
-                    val items = gridScope.items[index]
-                    for (itemIndex in items.indices) {
-                        val (key, itemContent) = items[itemIndex]
+                    for ((key, itemContent) in gridScope.items[index]) {
                         item(key) { itemContent() }
                     }
                 }
@@ -108,7 +100,7 @@ inline fun <T> LazyStaggeredGridScope.items(
 
 private class RealLazyStaggeredGridScope(private val columnCount: Int) : LazyStaggeredGridScope {
 
-    val items = Array(columnCount) { ArrayList<Pair<Any?, @Composable () -> Unit>>() }
+    val items = Array(columnCount) { mutableListOf<Pair<Any?, @Composable () -> Unit>>() }
     var currentIndex = 0
 
     override fun item(key: Any?, content: @Composable () -> Unit) {
