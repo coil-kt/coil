@@ -53,9 +53,9 @@ fun LazyStaggeredGrid(
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 val delta = available.y
                 scope.launch {
-                    for (stateIndex in states.indices) {
+                    states.forEachIndexed { stateIndex, state ->
                         if (stateIndex != index) {
-                            states[stateIndex].scrollBy(-delta)
+                            state.scrollBy(-delta)
                         }
                     }
                 }
