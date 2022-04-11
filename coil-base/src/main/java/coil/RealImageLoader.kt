@@ -209,8 +209,9 @@ internal class RealImageLoader(
     }
 
     /** Called by [SystemCallbacks.onTrimMemory]. */
+    @Suppress("UNNECESSARY_SAFE_CALL") // https://github.com/coil-kt/coil/issues/1211
     internal fun onTrimMemory(level: Int) {
-        memoryCache?.trimMemory(level)
+        memoryCacheLazy?.value?.trimMemory(level)
     }
 
     override fun shutdown() {
