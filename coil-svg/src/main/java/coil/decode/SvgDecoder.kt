@@ -78,10 +78,10 @@ class SvgDecoder @JvmOverloads constructor(
     }
 
     private fun Dimension.pxOrElse(value: Float): Float {
-        return if (this is Dimension.Pixels) {
-            px.toFloat()
-        } else {
-            if (value > 0) value else DEFAULT_SIZE
+        return when {
+            this is Dimension.Pixels -> px.toFloat()
+            value > 0 -> value
+            else -> DEFAULT_SIZE
         }
     }
 

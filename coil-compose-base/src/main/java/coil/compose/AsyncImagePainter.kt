@@ -273,7 +273,7 @@ class AsyncImagePainter internal constructor(
                     // If no other size resolver is set, suspend until the canvas size is positive.
                     size { drawSize.mapNotNull { it.toSizeOrNull() }.first() }
                 }
-                if (request.defined.scaleResolver == null) {
+                if (request.defined.scale == null) {
                     // If no other scale resolver is set, use the content scale.
                     scale(contentScale.toScale())
                 }

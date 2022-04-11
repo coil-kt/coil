@@ -126,9 +126,9 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         val srcWidth = if (exifData.isSwapped) outHeight else outWidth
         val srcHeight = if (exifData.isSwapped) outWidth else outHeight
 
-        val (width, height) = options.size
-        val dstWidth = width.pxOrElse { srcWidth }
-        val dstHeight = height.pxOrElse { srcHeight }
+        val dstSize = options.size
+        val dstWidth = dstSize.width.pxOrElse { srcWidth }
+        val dstHeight = dstSize.height.pxOrElse { srcHeight }
 
         // Calculate the image's sample size.
         inSampleSize = DecodeUtils.calculateInSampleSize(

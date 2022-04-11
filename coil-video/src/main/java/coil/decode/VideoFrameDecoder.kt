@@ -30,8 +30,6 @@ class VideoFrameDecoder(
     private val options: Options
 ) : Decoder {
 
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
-
     override suspend fun decode() = MediaMetadataRetriever().use { retriever ->
         retriever.setDataSource(source)
         val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
@@ -130,6 +128,7 @@ class VideoFrameDecoder(
             else -> options.config
         }
 
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         val outBitmap = createBitmap(dstWidth, dstHeight, safeConfig)
         outBitmap.applyCanvas {
             scale(scale, scale)
