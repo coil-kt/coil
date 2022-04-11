@@ -1,10 +1,19 @@
 @file:JvmName("-Sizes")
-@file:Suppress("NOTHING_TO_INLINE", "unused")
+@file:Suppress("unused")
 
 package coil.size
 
 import androidx.annotation.Px
 import coil.request.ImageRequest
+
+/** Create a [Size] with a pixel value for width. */
+fun Size(@Px width: Int, height: Dimension) = Size(Dimension(width), height)
+
+/** Create a [Size] with a pixel value for height. */
+fun Size(width: Dimension, @Px height: Int) = Size(width, Dimension(height))
+
+/** Create a [Size] with pixel values for both width and height. */
+fun Size(@Px width: Int, @Px height: Int) = Size(Dimension(width), Dimension(height))
 
 /**
  * Represents the target size of an image request.
@@ -17,15 +26,6 @@ data class Size(
     val height: Dimension,
 ) {
 
-    /** Create a [Size] with a pixel value for width. */
-    constructor(@Px width: Int, height: Dimension) : this(Dimension(width), height)
-
-    /** Create a [Size] with a pixel value for height. */
-    constructor(width: Dimension, @Px height: Int) : this(width, Dimension(height))
-
-    /** Create a [Size] with pixel values for both width and height. */
-    constructor(@Px width: Int, @Px height: Int) : this(Dimension(width), Dimension(height))
-
     companion object {
         /**
          * A [Size] whose width and height are equal to the original dimensions of the source image.
@@ -34,11 +34,8 @@ data class Size(
     }
 }
 
-/**
- * Return true if this size is equal to [Size.ORIGINAL]. Else, return false.
- */
-val Size.isOriginal: Boolean
-    get() = this == Size.ORIGINAL
+/** Return true if this size is equal to [Size.ORIGINAL]. Else, return false. */
+val Size.isOriginal: Boolean get() = this == Size.ORIGINAL
 
 @Deprecated(
     message = "Migrate to 'coil.size.Size'.",
@@ -50,5 +47,4 @@ typealias PixelSize = Size
     message = "Migrate to 'coil.size.Size.ORIGINAL'.",
     replaceWith = ReplaceWith("Size.ORIGINAL", "coil.size.Size")
 )
-inline val OriginalSize: Size
-    @JvmName("OriginalSize") get() = Size.ORIGINAL
+val OriginalSize: Size get() = Size.ORIGINAL
