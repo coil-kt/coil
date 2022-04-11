@@ -28,7 +28,7 @@ sealed class Dimension {
 
         override fun hashCode() = px
 
-        override fun toString() = "Dimension.Pixels(px=$px)"
+        override fun toString() = px.toString()
     }
 
     /**
