@@ -50,7 +50,7 @@ sealed class Dimension {
 inline fun Dimension(@Px px: Int) = Dimension.Pixels(px)
 
 /**
- * If this is a [Dimension.Pixels] value, return its number of pixels. Else, invoke and return
+ * If this is a [Dimension.Pixels] value, return its pixel value. Else, invoke and return
  * the value from [block].
  */
 inline fun Dimension.pxOrElse(block: () -> Int): Int {
