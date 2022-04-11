@@ -32,7 +32,7 @@ sealed class Dimension {
     }
 
     /**
-     * Represents the original value of the source image.
+     * Represents the original pixel value of the source image.
      *
      * i.e. if the image's original dimensions are 400x600 and this is used as the width, this
      * should be treated as 400 pixels.
