@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-rc03] - April 11, 2022
+
+- Remove the `ScaleResolver` interface.
+- Convert `Size` constructors to functions.
+- Change `Dimension.Pixels`'s `toString` to only be its pixel value.
+- Guard against a rare crash in `SystemCallbacks.onTrimMemory`.
+- Update Coroutines to 1.6.1.
+
 ## [2.0.0-rc02] - March 20, 2022
 
 - Revert `ImageRequest`'s default size to be the size of the current display instead of `Size.ORIGINAL`.
