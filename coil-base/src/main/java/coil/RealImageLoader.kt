@@ -70,7 +70,7 @@ internal class RealImageLoader(
     val eventListenerFactory: EventListener.Factory,
     val componentRegistry: ComponentRegistry,
     val options: ImageLoaderOptions,
-    val logger: Logger?
+    val logger: Logger?,
 ) : ImageLoader {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate +
