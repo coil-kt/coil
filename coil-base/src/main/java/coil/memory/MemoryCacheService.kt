@@ -24,7 +24,6 @@ import coil.util.isMinOrMax
 import coil.util.isPlaceholderCached
 import coil.util.log
 import coil.util.safeConfig
-import coil.util.string
 import coil.util.toDrawable
 import kotlin.math.abs
 
@@ -167,7 +166,7 @@ internal class MemoryCacheService(
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) does not exactly match the requested size " +
-                    "(${size.width.string()}, ${size.height.string()}, $scale)."
+                    "(${size.width}, ${size.height}, $scale)."
             }
             return false
         }
@@ -177,7 +176,7 @@ internal class MemoryCacheService(
             logger?.log(TAG, Log.DEBUG) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) is smaller than the requested size " +
-                    "(${size.width.string()}, ${size.height.string()}, $scale)."
+                    "(${size.width}, ${size.height}, $scale)."
             }
             return false
         }

@@ -38,7 +38,6 @@ import coil.memory.MemoryCache
 import coil.request.Parameters
 import coil.request.Tags
 import coil.request.ViewTargetRequestManager
-import coil.size.Dimension
 import coil.size.Scale
 import coil.transform.Transformation
 import kotlinx.coroutines.Deferred
@@ -191,10 +190,6 @@ internal fun DiskCache.Editor.abortQuietly() {
     try {
         abort()
     } catch (_: Exception) {}
-}
-
-internal fun Dimension.string(): String {
-    return if (this is Dimension.Pixels) px.toString() else toString()
 }
 
 internal const val MIME_TYPE_JPEG = "image/jpeg"
