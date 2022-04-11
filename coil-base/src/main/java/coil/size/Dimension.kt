@@ -3,7 +3,9 @@
 
 package coil.size
 
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.annotation.Px
+import coil.request.Options
 
 /**
  * Represents either the width or height of a [Size].
@@ -26,7 +28,7 @@ sealed class Dimension {
 
         override fun hashCode() = px
 
-        override fun toString() = "Dimension.Pixels(px=$px)"
+        override fun toString() = px.toString()
     }
 
     /**
@@ -34,6 +36,11 @@ sealed class Dimension {
      *
      * i.e. if the image's original dimensions are 400x600 and this is used as the width, this
      * should be treated as 400 pixels.
+     *
+     * This value is typically used in cases where a dimension is unbounded (e.g. [WRAP_CONTENT],
+     * `Constraints.Infinity`).
+     *
+     * NOTE: If at least one dimension is [Original], [Options.scale] is always [Scale.FIT].
      */
     object Original : Dimension() {
         override fun toString() = "Dimension.Original"
@@ -46,7 +53,7 @@ sealed class Dimension {
 inline fun Dimension(@Px px: Int) = Dimension.Pixels(px)
 
 /**
- * If this is a [Dimension.Pixels] value, return its number of pixels. Else, invoke and return
+ * If this is a [Dimension.Pixels] value, return its pixel value. Else, invoke and return
  * the value from [block].
  */
 inline fun Dimension.pxOrElse(block: () -> Int): Int {

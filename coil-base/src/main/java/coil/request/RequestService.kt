@@ -3,6 +3,7 @@ package coil.request
 import android.graphics.Bitmap
 import androidx.annotation.WorkerThread
 import coil.ImageLoader
+import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
 import coil.target.Target
@@ -53,7 +54,7 @@ internal class RequestService(
     /**
      * Return the request options. The function is called from the main thread and must be fast.
      */
-    fun options(request: ImageRequest, size: Size, scale: Scale): Options {
+    fun options(request: ImageRequest, size: Size): Options {
         // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
         val isValidConfig = isConfigValidForTransformations(request) &&
             isConfigValidForHardwareAllocation(request, size)
@@ -71,6 +72,13 @@ internal class RequestService(
         // RGB_565 as an optimization in that case.
         val allowRgb565 = request.allowRgb565 && request.transformations.isEmpty() &&
             config != Bitmap.Config.ALPHA_8
+
+        // Use `Scale.FIT` if either dimension is undefined.
+        val scale = if (size.width == Dimension.Original || size.height == Dimension.Original) {
+            Scale.FIT
+        } else {
+            request.scale
+        }
 
         return Options(
             context = request.context,

@@ -54,10 +54,10 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun unboundedWidth() = runTest {
+    fun undefinedWidth() = runTest {
         val result = decode(
             assetName = "normal.jpg",
-            size = Size(Dimension.Original, Dimension(100)),
+            size = Size(Dimension.Original, 100),
             scale = Scale.FIT
         )
 
@@ -68,10 +68,10 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun unboundedHeight() = runTest {
+    fun undefinedHeight() = runTest {
         val result = decode(
             assetName = "normal.jpg",
-            size = Size(Dimension(100), Dimension.Original),
+            size = Size(100, Dimension.Original),
             scale = Scale.FIT
         )
 

@@ -92,8 +92,27 @@ class ImageRequestTest {
 
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
 
-        assertSame(request.scaleResolver, request.newBuilder().build().scaleResolver)
-        assertNotSame(request.scaleResolver, request.newBuilder().size(200, 200).build().scaleResolver)
+        assertSame(request.scale, request.newBuilder().build().scale)
+        assertNotSame(request.scale, request.newBuilder().size(200, 200).build().scale)
+    }
+
+    @Test
+    fun `setting defaults resets resolved scale only`() {
+        val imageView = ImageView(context)
+        val request = ImageRequest.Builder(context)
+            .data("https://www.example.com/image.jpg")
+            .size(100, 100)
+            .target(imageView)
+            .build()
+
+        assertEquals(Scale.FIT, imageView.scale)
+
+        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+
+        val newRequest = request.newBuilder().defaults(DefaultRequestOptions()).build()
+        assertSame(request.lifecycle, newRequest.lifecycle)
+        assertSame(request.sizeResolver, newRequest.sizeResolver)
+        assertEquals(Scale.FILL, newRequest.scale)
     }
 
     @Test
@@ -111,7 +130,7 @@ class ImageRequestTest {
         val newRequest = request.newBuilder(Activity()).build()
         assertSame(request.lifecycle, newRequest.lifecycle)
         assertSame(request.sizeResolver, newRequest.sizeResolver)
-        assertSame(request.scaleResolver, newRequest.scaleResolver)
+        assertSame(request.scale, newRequest.scale)
     }
 
     @Test
