@@ -32,12 +32,15 @@ sealed class Dimension {
     }
 
     /**
-     * Represents an undefined number of pixels.
+     * Represents the original value of the source image.
+     *
+     * i.e. if the image's original dimensions are 400x600 and this is used as the width, this
+     * should be treated as 400 pixels.
      *
      * This value is typically used in cases where a dimension is unbounded (e.g. [WRAP_CONTENT],
      * `Constraints.Infinity`).
      *
-     * NOTE: If at least one dimension is undefined [Options.scale] is always [Scale.FIT].
+     * NOTE: If at least one dimension is [Original], [Options.scale] is always [Scale.FIT].
      */
     object Original : Dimension() {
         override fun toString() = "Dimension.Original"
