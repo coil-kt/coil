@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE", "unused", "UNUSED_PARAMETER")
+@file:Suppress("NOTHING_TO_INLINE", "UNUSED_PARAMETER")
 
 package coil.compose
 

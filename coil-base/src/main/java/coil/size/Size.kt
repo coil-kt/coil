@@ -1,5 +1,4 @@
 @file:JvmName("-Sizes")
-@file:Suppress("unused")
 
 package coil.size
 

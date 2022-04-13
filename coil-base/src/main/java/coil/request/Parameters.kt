@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST", "unused")
-
 package coil.request
 
 import coil.decode.Decoder
@@ -26,6 +24,7 @@ class Parameters private constructor(
     val size: Int @JvmName("size") get() = entries.size
 
     /** Returns the value associated with [key] or null if [key] has no mapping. */
+    @Suppress("UNCHECKED_CAST")
     fun <T : Any> value(key: String): T? = entries[key]?.value as T?
 
     /** Returns the cache key associated with [key] or null if [key] has no mapping. */

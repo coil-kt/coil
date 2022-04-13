@@ -1,5 +1,5 @@
 @file:JvmName("-SingletonExtensions")
-@file:Suppress("NOTHING_TO_INLINE", "unused")
+@file:Suppress("NOTHING_TO_INLINE")
 
 package coil
 

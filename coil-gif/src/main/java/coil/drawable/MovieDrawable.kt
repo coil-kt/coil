@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION", "unused")
+@file:Suppress("DEPRECATION")
 
 package coil.drawable
 
