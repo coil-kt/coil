@@ -1,5 +1,3 @@
-@file:Suppress("MemberVisibilityCanBePrivate")
-
 package coil.network
 
 import coil.fetch.HttpUriFetcher

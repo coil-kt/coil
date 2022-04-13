@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package coil.util
 
 import android.util.Log

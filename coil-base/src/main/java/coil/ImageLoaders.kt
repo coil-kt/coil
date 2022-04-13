@@ -1,5 +1,4 @@
 @file:JvmName("ImageLoaders")
-@file:Suppress("unused")
 
 package coil
 
