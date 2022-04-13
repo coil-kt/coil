@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package coil.memory
 
 import android.content.ComponentCallbacks2

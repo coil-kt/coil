@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST", "unused")
+@file:Suppress("UNCHECKED_CAST")
 
 package coil
 

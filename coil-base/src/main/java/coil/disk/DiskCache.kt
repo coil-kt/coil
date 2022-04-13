@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package coil.disk
 
 import android.os.StatFs
