@@ -182,13 +182,9 @@ internal fun Content(
 @Composable
 internal fun updateRequest(
     request: ImageRequest
-) = request.newBuilder()
-    .apply {
-        if (request.defined.sizeResolver == null) {
-            size(remember { ConstraintsSizeResolver() })
-        }
-    }
-    .build()
+) = if (request.defined.sizeResolver == null) {
+    request.newBuilder().size(remember { ConstraintsSizeResolver() }).build()
+} else request
 
 /** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
 internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
