@@ -1,5 +1,4 @@
 @file:JvmName("-Dimensions")
-@file:Suppress("NOTHING_TO_INLINE")
 
 package coil.size
 
@@ -47,14 +46,12 @@ sealed class Dimension {
     }
 }
 
-/**
- * Convenience function to create a [Dimension.Pixels].
- */
-inline fun Dimension(@Px px: Int) = Dimension.Pixels(px)
+/** Create a [Dimension.Pixels] value with [px] number of pixels. */
+fun Dimension(@Px px: Int) = Dimension.Pixels(px)
 
 /**
- * If this is a [Dimension.Pixels] value, return its pixel value. Else, invoke and return
- * the value from [block].
+ * If this is a [Dimension.Pixels] value, return its pixel value.
+ * Else, invoke and return the value from [block].
  */
 inline fun Dimension.pxOrElse(block: () -> Int): Int {
     return if (this is Dimension.Pixels) px else block()
