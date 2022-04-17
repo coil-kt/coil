@@ -27,7 +27,6 @@ import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.Dimension
-import coil.size.Scale
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -180,18 +179,20 @@ internal fun Content(
 )
 
 @Composable
-internal fun updateRequest(
-    request: ImageRequest
-) = if (request.defined.sizeResolver == null) {
-    request.newBuilder().size(remember { ConstraintsSizeResolver() }).build()
-} else request
+internal fun updateRequest(request: ImageRequest): ImageRequest {
+    return if (request.defined.sizeResolver == null) {
+        request.newBuilder()
+            .size(remember { ConstraintsSizeResolver() })
+            .build()
+    } else {
+        request
+    }
+}
 
 /** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
 internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
-
-    lateinit var scale: Scale
 
     override suspend fun size() = _constraints.mapNotNull(Constraints::toSizeOrNull).first()
 
