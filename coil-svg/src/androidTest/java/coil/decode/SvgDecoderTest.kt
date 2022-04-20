@@ -46,7 +46,7 @@ class SvgDecoderTest {
 
     @Test
     fun doesNotHandlePngMimeType() {
-        val result = context.assets.open("coil_logo_250.png").source().buffer()
+        val result = context.assets.open("coil_logo.png").source().buffer()
             .asSourceResult(mimeType = "image/png")
         assertNull(decoderFactory.create(result, Options(context), ImageLoader(context)))
     }
@@ -82,13 +82,13 @@ class SvgDecoderTest {
         var source = context.assets.open("coil_logo.svg").source().buffer()
         assertNotNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
 
-        source = context.assets.open("coil_logo_250.png").source().buffer()
+        source = context.assets.open("coil_logo.png").source().buffer()
         assertNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
 
         source = context.assets.open("instacart_logo.svg").source().buffer()
         assertNotNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
 
-        source = context.assets.open("instacart_logo_326.png").source().buffer()
+        source = context.assets.open("instacart_logo.png").source().buffer()
         assertNull(decoderFactory.create(source.asSourceResult(), options, imageLoader))
     }
 
@@ -111,7 +111,7 @@ class SvgDecoderTest {
         assertTrue(result.isSampled)
         val drawable = assertIs<BitmapDrawable>(result.drawable)
 
-        val expected = context.decodeBitmapAsset("coil_logo_250.png")
+        val expected = context.decodeBitmapAsset("coil_logo.png")
         drawable.bitmap.assertIsSimilarTo(expected)
     }
 
@@ -120,7 +120,7 @@ class SvgDecoderTest {
         val source = context.assets.open("instacart_logo.svg").source().buffer()
         val options = Options(
             context = context,
-            size = Size(326, 50),
+            size = Size(600, 96),
             scale = Scale.FILL
         )
         val result = assertNotNull(
@@ -134,18 +134,16 @@ class SvgDecoderTest {
         assertTrue(result.isSampled)
         val drawable = assertIs<BitmapDrawable>(result.drawable)
 
-        val expected = context.decodeBitmapAsset("instacart_logo_326.png")
+        val expected = context.decodeBitmapAsset("instacart_logo.png")
         drawable.bitmap.assertIsSimilarTo(expected)
     }
 
     private fun BufferedSource.asSourceResult(
         mimeType: String? = null,
         dataSource: DataSource = DataSource.DISK
-    ): SourceResult {
-        return SourceResult(
-            source = ImageSource(this, context),
-            mimeType = mimeType,
-            dataSource = dataSource
-        )
-    }
+    ) = SourceResult(
+        source = ImageSource(this, context),
+        mimeType = mimeType,
+        dataSource = dataSource
+    )
 }
