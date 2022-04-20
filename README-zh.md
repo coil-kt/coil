@@ -96,7 +96,7 @@ Coil 兼容 R8 混淆，您无需再添加其他的规则
 
 ## License
 
-    Copyright 2021 Coil Contributors
+    Copyright 2022 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

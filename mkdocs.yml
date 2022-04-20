@@ -1,7 +1,7 @@
 # Project information
 site_name: 'Coil'
 site_description: 'An image loading library for Android backed by Kotlin Coroutines'
-site_author: '2021 Coil Contributors'
+site_author: '2022 Coil Contributors'
 site_url: 'https://coil-kt.github.io/coil/'
 remote_branch: gh-pages
 edit_uri: ""
@@ -11,7 +11,7 @@ repo_name: 'Coil'
 repo_url: 'https://github.com/coil-kt/coil'
 
 # Copyright
-copyright: 'Copyright &copy; 2021 Coil Contributors'
+copyright: 'Copyright &copy; 2022 Coil Contributors'
 
 # Configuration
 theme:
