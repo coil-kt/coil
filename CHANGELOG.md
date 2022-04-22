@@ -1,5 +1,47 @@
 # Changelog
 
+## [2.0.0] - April 25, 2022
+
+Coil 2.0.0 is a major iteration of the library and includes breaking changes. Check out the [upgrade guide](https://coil-kt.github.io/coil/upgrading/) for how to upgrade.
+
+- The minimum supported API is now 21.
+- Rework the Jetpack Compose integration.
+    - `rememberImagePainter` has been renamed to `rememberAsyncImagePainter`.
+    - Add support for `AsyncImage` and `SubcomposeAsyncImage`. Check out [the documentation](https://coil-kt.github.io/coil/compose/) for more info.
+    - Deprecate `LocalImageLoader`. Check out the deprecation message for more info.
+- Coil 2.0 has its own disk cache implementation and no longer relies on OkHttp for disk caching.
+    - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
+    - You should not use OkHttp's `Cache` with Coil 2.0 as the cache can be corrupted if a thread is interrupted while writing to it.
+    - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
+    - Existing disk caches will be cleared when upgrading to 2.0.
+- `ImageRequest`'s default `Scale` is now `Scale.FIT`.
+    - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
+    - Requests with an `ImageViewTarget` still have their `Scale` auto-detected.
+- Rework the image pipeline classes:
+    - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
+    - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
+    - Adds `ImageSource`, which allows `Decoder`s to read `File`s directly using Okio's file system API.
+- Disable generating runtime not-null assertions.
+    - If you use Java, passing null as a not-null annotated argument to a function will no longer throw a `NullPointerException` immediately. Kotlin's compile-time null safety guards against this happening.
+    - This change allows the library's size to be smaller.
+- `Size` is now composed of two `Dimension` values for its width and height. `Dimension` can either be a positive pixel value or `Dimension.Original`.
+- `BitmapPool` and `PoolableViewTarget` have been removed from the library.
+- `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
+- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
+- Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
+- Add support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
+- Add support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
+- Add `GenericViewTarget`, which handles common `ViewTarget` logic.
+- Add `ByteBuffer` to the default supported data types.
+- `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
+- Rework the `MemoryCache` API.
+- `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
+- `Transformation.key` is replaced with `Transformation.cacheKey`.
+- Update Kotlin to 1.6.10.
+- Update Compose to 1.1.1.
+- Update OkHttp to 4.9.3.
+- Update Okio to 3.0.0.
+
 ## [2.0.0-rc03] - April 11, 2022
 
 - Remove the `ScaleResolver` interface.
