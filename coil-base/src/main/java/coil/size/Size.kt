@@ -12,11 +12,11 @@ import coil.request.ImageRequest
  * by how much the source image should be scaled. A [Dimension] can either be a fixed pixel
  * value or [Dimension.Undefined]. Examples:
  *
- * - Given `Size(400, 600)`, the image will be loaded to fit/fill a width of 400 pixels and a
+ * - Given `Size(400, 600)`, the image should be loaded to fit/fill a width of 400 pixels and a
  *   height of 600 pixels.
- * - Given `Size(400, Dimension.Undefined)`, the image will be loaded to fit/fill a width of 400
+ * - Given `Size(400, Dimension.Undefined)`, the image should be loaded to fit/fill a width of 400
  *   pixels.
- * - Given `Size(Dimension.Undefined, Dimension.Undefined)`, the image will not be scaled to
+ * - Given `Size(Dimension.Undefined, Dimension.Undefined)`, the image should not be scaled to
  *   fit/fill either width or height. i.e. it will be loaded at its original width/height.
  *
  * @see ImageRequest.Builder.size
