@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0] - April 25, 2022
+## [2.0.0] - April XX, 2022
 
 Coil 2.0.0 is a major iteration of the library and includes breaking changes. Check out the [upgrade guide](https://coil-kt.github.io/coil/upgrading/) for how to upgrade.
 
@@ -24,7 +24,7 @@ Coil 2.0.0 is a major iteration of the library and includes breaking changes. Ch
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated argument to a function will no longer throw a `NullPointerException` immediately. Kotlin's compile-time null safety guards against this happening.
     - This change allows the library's size to be smaller.
-- `Size` is now composed of two `Dimension` values for its width and height. `Dimension` can either be a positive pixel value or `Dimension.Original`.
+- `Size` is now composed of two `Dimension` values for its width and height. `Dimension` can either be a positive pixel value or `Dimension.Undefined`.
 - `BitmapPool` and `PoolableViewTarget` have been removed from the library.
 - `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
 - [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
