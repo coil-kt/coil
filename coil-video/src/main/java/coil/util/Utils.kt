@@ -24,12 +24,12 @@ internal inline fun <T> MediaMetadataRetriever.use(block: (MediaMetadataRetrieve
     }
 }
 
-internal inline fun Size.widthPx(scale: Scale, block: () -> Int): Int {
-    return if (isOriginal) block() else width.toPx(scale)
+internal inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
+    return if (isOriginal) original() else width.toPx(scale)
 }
 
-internal inline fun Size.heightPx(scale: Scale, block: () -> Int): Int {
-    return if (isOriginal) block() else height.toPx(scale)
+internal inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
+    return if (isOriginal) original() else height.toPx(scale)
 }
 
 internal fun Dimension.toPx(scale: Scale) = pxOrElse {
