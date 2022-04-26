@@ -29,8 +29,7 @@ data class Size(
 
     companion object {
         /**
-         * A [Size] whose width and height are undefined - meaning the source image will be loaded
-         * without any scaling.
+         * A [Size] whose width and height are not scaled.
          */
         @JvmField val ORIGINAL = Size(Dimension.Undefined, Dimension.Undefined)
     }
