@@ -673,7 +673,6 @@ class AsyncImageTest {
 
         waitForRequestComplete()
 
-        // Equal to the source dimensions of 'sample.jpg'.
         assertLoadedBitmapSize(SampleWidth, SampleHeight)
     }
 
