@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
+import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
 import coil.util.assertIsSimilarTo
@@ -135,6 +136,30 @@ class SvgDecoderTest {
         val drawable = assertIs<BitmapDrawable>(result.drawable)
 
         val expected = context.decodeBitmapAsset("instacart_logo.png")
+        drawable.bitmap.assertIsSimilarTo(expected)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1246 */
+    @Test
+    fun oneDimensionIsUndefined() = runTest {
+        val source = context.assets.open("coil_logo.svg").source().buffer()
+        val options = Options(
+            context = context,
+            size = Size(Dimension.Undefined, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
+            scale = Scale.FIT
+        )
+        val result = assertNotNull(
+            decoderFactory.create(
+                result = source.asSourceResult(),
+                options = options,
+                imageLoader = ImageLoader(context)
+            )?.decode()
+        )
+
+        assertTrue(result.isSampled)
+        val drawable = assertIs<BitmapDrawable>(result.drawable)
+
+        val expected = context.decodeBitmapAsset("coil_logo.png")
         drawable.bitmap.assertIsSimilarTo(expected)
     }
 

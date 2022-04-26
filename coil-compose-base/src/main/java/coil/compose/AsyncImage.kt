@@ -234,7 +234,7 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
 private fun Constraints.toSizeOrNull() = when {
     isZero -> null
     else -> CoilSize(
-        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original,
-        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
+        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
+        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
     )
 }

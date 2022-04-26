@@ -7,10 +7,11 @@ import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
 import coil.size.isOriginal
-import coil.size.pxOrElse
 import coil.util.MIME_TYPE_JPEG
+import coil.util.heightPx
 import coil.util.toDrawable
 import coil.util.toSoftware
+import coil.util.widthPx
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -126,9 +127,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         val srcWidth = if (exifData.isSwapped) outHeight else outWidth
         val srcHeight = if (exifData.isSwapped) outWidth else outHeight
 
-        val dstSize = options.size
-        val dstWidth = dstSize.width.pxOrElse { srcWidth }
-        val dstHeight = dstSize.height.pxOrElse { srcHeight }
+        val dstWidth = options.size.widthPx(options.scale) { srcWidth }
+        val dstHeight = options.size.heightPx(options.scale) { srcHeight }
 
         // Calculate the image's sample size.
         inSampleSize = DecodeUtils.calculateInSampleSize(
