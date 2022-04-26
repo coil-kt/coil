@@ -18,7 +18,10 @@ import coil.request.videoFrameMicros
 import coil.request.videoFrameOption
 import coil.size.Dimension.Pixels
 import coil.size.Size
+import coil.size.isOriginal
 import coil.size.pxOrElse
+import coil.util.PxSize
+import coil.util.toPxSize
 import coil.util.use
 import kotlin.math.roundToInt
 
@@ -49,14 +52,23 @@ class VideoFrameDecoder(
         }
 
         val dstSize = if (srcWidth > 0 && srcHeight > 0) {
+            val (dstWidth, dstHeight) = if (options.size.isOriginal) {
+                PxSize(srcWidth, srcHeight)
+            } else {
+                options.size.toPxSize(options.scale)
+            }
             val rawScale = DecodeUtils.computeSizeMultiplier(
                 srcWidth = srcWidth,
                 srcHeight = srcHeight,
-                dstWidth = options.size.width.pxOrElse { srcWidth },
-                dstHeight = options.size.height.pxOrElse { srcHeight },
+                dstWidth = dstWidth,
+                dstHeight = dstHeight,
                 scale = options.scale
             )
-            val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
+            val scale = if (options.allowInexactSize) {
+                rawScale.coerceAtMost(1.0)
+            } else {
+                rawScale
+            }
             val width = (scale * srcWidth).roundToInt()
             val height = (scale * srcHeight).roundToInt()
             Size(width, height)
@@ -81,7 +93,7 @@ class VideoFrameDecoder(
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
         checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
-        val bitmap = normalizeBitmap(rawBitmap, dstSize, options)
+        val bitmap = normalizeBitmap(rawBitmap, dstSize)
 
         val isSampled = if (srcWidth > 0 && srcHeight > 0) {
             DecodeUtils.computeSizeMultiplier(
@@ -103,11 +115,7 @@ class VideoFrameDecoder(
     }
 
     /** Return [inBitmap] or a copy of [inBitmap] that is valid for the input [options] and [size]. */
-    private fun normalizeBitmap(
-        inBitmap: Bitmap,
-        size: Size,
-        options: Options
-    ): Bitmap {
+    private fun normalizeBitmap(inBitmap: Bitmap, size: Size): Bitmap {
         // Fast path: if the input bitmap is valid, return it.
         if (isConfigValid(inBitmap, options) && isSizeValid(inBitmap, options, size)) {
             return inBitmap

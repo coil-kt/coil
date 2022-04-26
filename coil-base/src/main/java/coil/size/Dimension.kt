@@ -31,18 +31,18 @@ sealed class Dimension {
     }
 
     /**
-     * Represents the original pixel value of the source image.
+     * Represents an undefined pixel value.
      *
-     * i.e. if the image's original dimensions are 400x600 and this is used as the width, this
-     * should be treated as 400 pixels.
+     * i.e. Given `Size(400, Dimension.Undefined)`, the image should be loaded to fit/fill a width
+     * of 400 pixels.
      *
      * This value is typically used in cases where a dimension is unbounded (e.g. [WRAP_CONTENT],
      * `Constraints.Infinity`).
      *
-     * NOTE: If at least one dimension is [Original], [Options.scale] is always [Scale.FIT].
+     * NOTE: If either dimension is [Undefined], [Options.scale] is always [Scale.FIT].
      */
-    object Original : Dimension() {
-        override fun toString() = "Dimension.Original"
+    object Undefined : Dimension() {
+        override fun toString() = "Dimension.Undefined"
     }
 }
 

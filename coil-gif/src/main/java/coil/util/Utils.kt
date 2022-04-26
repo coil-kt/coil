@@ -10,6 +10,10 @@ import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
+import coil.size.Dimension
+import coil.size.Scale
+import coil.size.Size
+import coil.size.pxOrElse
 import coil.transform.AnimatedTransformation
 import coil.transform.PixelOpacity
 
@@ -49,3 +53,14 @@ internal inline fun <T> List<T>.forEachIndices(action: (T) -> Unit) {
 
 internal val Bitmap.Config.isHardware: Boolean
     get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
+
+internal typealias PxSize = Pair<Int, Int>
+
+internal fun Size.toPxSize(scale: Scale) = PxSize(width.toPx(scale), height.toPx(scale))
+
+private fun Dimension.toPx(scale: Scale) = pxOrElse {
+    when (scale) {
+        Scale.FILL -> Int.MIN_VALUE
+        Scale.FIT -> Int.MAX_VALUE
+    }
+}

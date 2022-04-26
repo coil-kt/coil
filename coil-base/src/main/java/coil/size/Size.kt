@@ -8,6 +8,17 @@ import coil.request.ImageRequest
 /**
  * Represents the target size of an image request.
  *
+ * Each [Size] is composed of two [Dimension]s, [width] and [height]. Each dimension determines
+ * if and how much the source image should be scaled. A [Dimension] can either be a fixed pixel
+ * value or [Dimension.Undefined]. Examples:
+ *
+ * - Given `Size(400, 600)`, the image will be loaded to fit/fill a width of 400 pixels and a
+ *   height of 600 pixels.
+ * - Given `Size(400, Dimension.Undefined)`, the image will be loaded to fit/fill a width of 400
+ *   pixels.
+ * - Given `Size(Dimension.Undefined, Dimension.Undefined)`, the image will not be scaled to
+ *   fit/fill either width or height. i.e. it will be loaded at its original width/height.
+ *
  * @see ImageRequest.Builder.size
  * @see SizeResolver.size
  */
@@ -18,9 +29,10 @@ data class Size(
 
     companion object {
         /**
-         * A [Size] whose width and height are equal to the original dimensions of the source image.
+         * A [Size] whose width and height are undefined - meaning the source image will be loaded
+         * without any scaling.
          */
-        @JvmField val ORIGINAL = Size(Dimension.Original, Dimension.Original)
+        @JvmField val ORIGINAL = Size(Dimension.Undefined, Dimension.Undefined)
     }
 }
 

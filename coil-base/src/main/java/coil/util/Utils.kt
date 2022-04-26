@@ -38,7 +38,11 @@ import coil.memory.MemoryCache
 import coil.request.Parameters
 import coil.request.Tags
 import coil.request.ViewTargetRequestManager
+import coil.size.Dimension
 import coil.size.Scale
+import coil.size.Size
+import coil.size.isOriginal
+import coil.size.pxOrElse
 import coil.transform.Transformation
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -204,6 +208,25 @@ internal val Interceptor.Chain.eventListener: EventListener
     get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
 
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
+
+internal typealias PxSize = Pair<Int, Int>
+
+internal fun Size.toPxSize(scale: Scale) = PxSize(width.toPx(scale), height.toPx(scale))
+
+internal inline fun Size.widthOrElse(scale: Scale, block: () -> Int): Int {
+    return if (isOriginal) block() else width.toPx(scale)
+}
+
+internal inline fun Size.heightOrElse(scale: Scale, block: () -> Int): Int {
+    return if (isOriginal) block() else height.toPx(scale)
+}
+
+internal fun Dimension.toPx(scale: Scale) = pxOrElse {
+    when (scale) {
+        Scale.FILL -> Int.MIN_VALUE
+        Scale.FIT -> Int.MAX_VALUE
+    }
+}
 
 internal fun unsupported(): Nothing = error("Unsupported")
 
