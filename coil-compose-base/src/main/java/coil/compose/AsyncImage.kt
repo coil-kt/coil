@@ -128,7 +128,7 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(requestOf(model))
+    val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(
         request, imageLoader, transform, onState, contentScale, filterQuality
     )
@@ -179,11 +179,14 @@ internal fun Content(
 )
 
 @Composable
-internal fun updateRequest(request: ImageRequest): ImageRequest {
+internal fun updateRequest(request: ImageRequest, contentScale: ContentScale): ImageRequest {
     return if (request.defined.sizeResolver == null) {
-        request.newBuilder()
-            .size(remember { ConstraintsSizeResolver() })
-            .build()
+        val sizeResolver = if (contentScale == ContentScale.None) {
+            SizeResolver(CoilSize.ORIGINAL)
+        } else {
+            remember { ConstraintsSizeResolver() }
+        }
+        request.newBuilder().size(sizeResolver).build()
     } else {
         request
     }
@@ -231,7 +234,7 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
 private fun Constraints.toSizeOrNull() = when {
     isZero -> null
     else -> CoilSize(
-        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original,
-        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
+        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
+        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
     )
 }
