@@ -18,11 +18,10 @@ import coil.request.videoFrameMicros
 import coil.request.videoFrameOption
 import coil.size.Dimension.Pixels
 import coil.size.Size
-import coil.size.isOriginal
 import coil.size.pxOrElse
-import coil.util.PxSize
-import coil.util.toPxSize
+import coil.util.heightPx
 import coil.util.use
+import coil.util.widthPx
 import kotlin.math.roundToInt
 
 /**
@@ -52,11 +51,8 @@ class VideoFrameDecoder(
         }
 
         val dstSize = if (srcWidth > 0 && srcHeight > 0) {
-            val (dstWidth, dstHeight) = if (options.size.isOriginal) {
-                PxSize(srcWidth, srcHeight)
-            } else {
-                options.size.toPxSize(options.scale)
-            }
+            val dstWidth = options.size.widthPx(options.scale) { srcWidth }
+            val dstHeight = options.size.heightPx(options.scale) { srcHeight }
             val rawScale = DecodeUtils.computeSizeMultiplier(
                 srcWidth = srcWidth,
                 srcHeight = srcHeight,

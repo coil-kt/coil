@@ -17,12 +17,11 @@ import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
 import coil.request.repeatCount
-import coil.size.isOriginal
-import coil.util.PxSize
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
+import coil.util.heightPx
 import coil.util.isHardware
-import coil.util.toPxSize
+import coil.util.widthPx
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
@@ -58,11 +57,8 @@ class ImageDecoderDecoder @JvmOverloads constructor(
 
                     // Configure the output image's size.
                     val (srcWidth, srcHeight) = info.size
-                    val (dstWidth, dstHeight) = if (options.size.isOriginal) {
-                        PxSize(srcWidth, srcHeight)
-                    } else {
-                        options.size.toPxSize(options.scale)
-                    }
+                    val dstWidth = options.size.widthPx(options.scale) { srcWidth }
+                    val dstHeight = options.size.heightPx(options.scale) { srcHeight }
                     if (srcWidth > 0 && srcHeight > 0 &&
                         (srcWidth != dstWidth || srcHeight != dstHeight)) {
                         val multiplier = DecodeUtils.computeSizeMultiplier(

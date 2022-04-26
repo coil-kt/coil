@@ -7,6 +7,7 @@ import android.os.Build.VERSION.SDK_INT
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
+import coil.size.isOriginal
 import coil.size.pxOrElse
 
 /** [MediaMetadataRetriever] doesn't implement [AutoCloseable] until API 29. */
@@ -23,11 +24,15 @@ internal inline fun <T> MediaMetadataRetriever.use(block: (MediaMetadataRetrieve
     }
 }
 
-internal typealias PxSize = Pair<Int, Int>
+internal inline fun Size.widthPx(scale: Scale, block: () -> Int): Int {
+    return if (isOriginal) block() else width.toPx(scale)
+}
 
-internal fun Size.toPxSize(scale: Scale) = PxSize(width.toPx(scale), height.toPx(scale))
+internal inline fun Size.heightPx(scale: Scale, block: () -> Int): Int {
+    return if (isOriginal) block() else height.toPx(scale)
+}
 
-private fun Dimension.toPx(scale: Scale) = pxOrElse {
+internal fun Dimension.toPx(scale: Scale) = pxOrElse {
     when (scale) {
         Scale.FILL -> Int.MIN_VALUE
         Scale.FIT -> Int.MAX_VALUE

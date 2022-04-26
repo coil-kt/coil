@@ -209,15 +209,11 @@ internal val Interceptor.Chain.eventListener: EventListener
 
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
 
-internal typealias PxSize = Pair<Int, Int>
-
-internal fun Size.toPxSize(scale: Scale) = PxSize(width.toPx(scale), height.toPx(scale))
-
-internal inline fun Size.widthOrElse(scale: Scale, block: () -> Int): Int {
+internal inline fun Size.widthPx(scale: Scale, block: () -> Int): Int {
     return if (isOriginal) block() else width.toPx(scale)
 }
 
-internal inline fun Size.heightOrElse(scale: Scale, block: () -> Int): Int {
+internal inline fun Size.heightPx(scale: Scale, block: () -> Int): Int {
     return if (isOriginal) block() else height.toPx(scale)
 }
 
