@@ -674,7 +674,7 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         // Equal to the source dimensions of 'sample.jpg'.
-        assertSampleLoadedBitmapSize(1024.0, 1326.0)
+        assertLoadedBitmapSize(SampleWidth, SampleHeight)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
