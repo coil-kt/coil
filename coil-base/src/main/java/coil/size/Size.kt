@@ -9,7 +9,7 @@ import coil.request.ImageRequest
  * Represents the target size of an image request.
  *
  * Each [Size] is composed of two [Dimension]s, [width] and [height]. Each dimension determines
- * if and how much the source image should be scaled. A [Dimension] can either be a fixed pixel
+ * by how much the source image should be scaled. A [Dimension] can either be a fixed pixel
  * value or [Dimension.Undefined]. Examples:
  *
  * - Given `Size(400, 600)`, the image will be loaded to fit/fill a width of 400 pixels and a
