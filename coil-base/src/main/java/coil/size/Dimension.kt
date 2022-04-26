@@ -33,8 +33,8 @@ sealed class Dimension {
     /**
      * Represents an undefined pixel value.
      *
-     * i.e. Given `Size(400, Dimension.Undefined)`, the image should be loaded to fit/fill a width
-     * of 400 pixels.
+     * E.g. given `Size(400, Dimension.Undefined)`, the image should be loaded to fit/fill a width
+     * of 400 pixels irrespective of the image's height.
      *
      * This value is typically used in cases where a dimension is unbounded (e.g. [WRAP_CONTENT],
      * `Constraints.Infinity`).
