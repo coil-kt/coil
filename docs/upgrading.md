@@ -12,7 +12,7 @@ Coil 2.x changes `ImageRequest`'s default scale from `Scale.FILL` to `Scale.FIT`
 
 ## Size refactor
 
-`Size`'s `width` and `height` is now composed of two `Dimension`s instead of `Int` pixel values. `Dimension` is either a pixel value or `Dimension.Original`, which represents the source value for that dimension (similar to how `Size.ORIGINAL` represents the source values for both width and height). You can use the `pxOrElse` extension to get the pixel value (if present), else use a fallback:
+`Size`'s `width` and `height` are now two `Dimension`s instead of `Int` pixel values. `Dimension` is either a pixel value or `Dimension.Undefined`, which represents an undefined/unbounded constraint. For example, if the size is `Size(400, Dimension.Undefined)` that means the image should be scaled to have 400 pixels for its width irrespective of its height. You can use the `pxOrElse` extension to get the pixel value (if present), else use a fallback:
 
 ```kotlin
 val width = size.width.pxOrElse { -1 }
