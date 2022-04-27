@@ -24,9 +24,9 @@ Coil 2.0.0 is a major iteration of the library and includes breaking changes. Ch
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated argument to a function will no longer throw a `NullPointerException` immediately. Kotlin's compile-time null safety guards against this happening.
     - This change allows the library's size to be smaller.
-- `Size` is now composed of two `Dimension` values for its width and height. `Dimension` can either be a positive pixel value or `Dimension.Undefined`.
+- `Size` is now composed of two `Dimension` values for its width and height. `Dimension` can either be a positive pixel value or `Dimension.Undefined`. See [here](https://coil-kt.github.io/coil/upgrading/#size-refactor) for more info.
 - `BitmapPool` and `PoolableViewTarget` have been removed from the library.
-- `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
+- `VideoFrameFileFetcher` and `VideoFrameUriFetcher` have been removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
 - [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
 - Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
 - Add support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
@@ -41,6 +41,11 @@ Coil 2.0.0 is a major iteration of the library and includes breaking changes. Ch
 - Update Compose to 1.1.1.
 - Update OkHttp to 4.9.3.
 - Update Okio to 3.0.0.
+
+Changes from `2.0.0-rc03`:
+- Convert `Dimension.Original` to be `Dimension.Undefined`.
+  - This changes the semantics of the non-pixel dimension slightly to fix some edge cases ([example](https://github.com/coil-kt/coil/issues/1246)) in the size system.
+- Load images with `Size.ORIGINAL` if ContentScale is None.
 
 ## [2.0.0-rc03] - April 11, 2022
 
