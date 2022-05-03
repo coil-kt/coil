@@ -58,7 +58,7 @@ okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 
-robolectric = "org.robolectric:robolectric:4.8"
+robolectric = "org.robolectric:robolectric:4.8.1"
 
 svg = "com.caverock:androidsvg-aar:1.4"
 
