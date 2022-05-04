@@ -12,7 +12,7 @@ okio = "3.0.0"
 [plugins]
 binaryCompatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.9.0" }
 dokka = { id = "org.jetbrains.dokka", version = "1.6.10" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "10.2.1" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "10.3.0" }
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:7.1.3"
