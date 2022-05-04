@@ -37,7 +37,6 @@ Coil 2.0.0 is a major iteration of the library and includes breaking changes. Ch
 - Rework the `MemoryCache` API.
 - `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
 - `Transformation.key` is replaced with `Transformation.cacheKey`.
-- ``
 - Update Kotlin to 1.6.10.
 - Update Compose to 1.1.1.
 - Update OkHttp to 4.9.3.
