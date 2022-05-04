@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0] - May XX, 2022
+## [2.0.0] - May 5, 2022
 
 Coil 2.0.0 is a major iteration of the library and includes breaking changes. Check out the [upgrade guide](https://coil-kt.github.io/coil/upgrading/) for how to upgrade.
 
