@@ -90,6 +90,14 @@ ImageLoader.Builder(context)
     .build()
 ```
 
+This change was made to add functionality and improve performance:
+
+- Support thread interruption while decoding images.
+  - Thread interruption allows fast cancellation of decode operations. This is particularly important for quickly scrolling through a list.
+  - By using a custom disk cache Coil is able to ensure a network source is fully read to disk before decoding. This is necessary as writing the data to disk cannot be interrupted - only the decode step can be interrupted.
+- Avoid buffering/creating temporary files for decode APIs that don't support `InputStream`s or require direct access to a `File` (e.g. `ImageDecoder`, `MediaMetadataRetriever`).
+- Add a public read/write `DiskCache` API.
+
 In Coil 2.x `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
 
 When upgrading from Coil 1.x to 2.x, any existing disk cache will be cleared as the internal format has changed.

@@ -11,7 +11,7 @@ Coil 2.0.0 is a major iteration of the library and includes breaking changes. Ch
     - Deprecate `LocalImageLoader`. Check out the deprecation message for more info.
 - Coil 2.0 has its own disk cache implementation and no longer relies on OkHttp for disk caching.
     - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
-    - You should not use OkHttp's `Cache` with Coil 2.0 as the cache can be corrupted if a thread is interrupted while writing to it.
+    - You should not use OkHttp's `Cache` with Coil 2.0. See [here](https://coil-kt.github.io/coil/upgrading/#disk-cache) for more info.
     - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
     - Existing disk caches will be cleared when upgrading to 2.0.
 - `ImageRequest`'s default `Scale` is now `Scale.FIT`.
