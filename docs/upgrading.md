@@ -94,7 +94,7 @@ This change was made to add functionality and improve performance:
 
 - Support thread interruption while decoding images.
   - Thread interruption allows fast cancellation of decode operations. This is particularly important for quickly scrolling through a list.
-  - By using a custom disk cache Coil is able to ensure a network source is fully read to disk before decoding. This is necessary as writing the data to disk cannot be interrupted - only the decode step can be interrupted.
+  - By using a custom disk cache Coil is able to ensure a network source is fully read to disk before decoding. This is necessary as writing the data to disk cannot be interrupted - only the decode step can be interrupted. OkHttp's `Cache` shouldn't be used with Coil 2.0 as it's not possible to guarantee that all data is written to disk before decoding.
 - Avoid buffering/creating temporary files for decode APIs that don't support `InputStream`s or require direct access to a `File` (e.g. `ImageDecoder`, `MediaMetadataRetriever`).
 - Add a public read/write `DiskCache` API.
 
