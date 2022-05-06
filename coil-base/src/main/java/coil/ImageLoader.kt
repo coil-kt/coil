@@ -1,4 +1,4 @@
-@file:Suppress("unused", "UNUSED_PARAMETER")
+@file:Suppress("UNUSED_PARAMETER")
 
 package coil
 
@@ -530,7 +530,7 @@ interface ImageLoader {
         @Deprecated(
             message = "Migrate to 'memoryCache'.",
             replaceWith = ReplaceWith(
-                expression = "memoryCache(MemoryCache.Builder(context).maxSizePercent(percent).build())",
+                expression = "memoryCache { MemoryCache.Builder(context).maxSizePercent(percent).build() }",
                 imports = ["coil.memory.MemoryCache"]
             ),
             level = DeprecationLevel.ERROR // Temporary migration aid.
@@ -540,7 +540,7 @@ interface ImageLoader {
         @Deprecated(
             message = "Migrate to 'memoryCache'.",
             replaceWith = ReplaceWith(
-                expression = "memoryCache(MemoryCache.Builder(context).weakReferencesEnabled(percent).build())",
+                expression = "memoryCache { MemoryCache.Builder(context).weakReferencesEnabled(enable).build() }",
                 imports = ["coil.memory.MemoryCache"]
             ),
             level = DeprecationLevel.ERROR // Temporary migration aid.

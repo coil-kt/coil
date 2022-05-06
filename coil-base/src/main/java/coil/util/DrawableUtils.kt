@@ -13,7 +13,6 @@ import androidx.core.graphics.createBitmap
 import coil.decode.DecodeUtils
 import coil.size.Scale
 import coil.size.Size
-import coil.size.pxOrElse
 import kotlin.math.roundToInt
 
 internal object DrawableUtils {
@@ -52,8 +51,8 @@ internal object DrawableUtils {
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = srcWidth,
             srcHeight = srcHeight,
-            dstWidth = size.width.pxOrElse { srcWidth },
-            dstHeight = size.height.pxOrElse { srcHeight },
+            dstWidth = size.widthPx(scale) { srcWidth },
+            dstHeight = size.heightPx(scale) { srcHeight },
             scale = scale
         )
         val bitmapWidth = (multiplier * srcWidth).roundToInt()
@@ -87,8 +86,8 @@ internal object DrawableUtils {
             return DecodeUtils.computeSizeMultiplier(
                 srcWidth = bitmap.width,
                 srcHeight = bitmap.height,
-                dstWidth = size.width.pxOrElse { bitmap.width },
-                dstHeight = size.height.pxOrElse { bitmap.height },
+                dstWidth = size.widthPx(scale) { bitmap.width },
+                dstHeight = size.heightPx(scale) { bitmap.height },
                 scale = scale
             ) == 1.0
         }

@@ -1,7 +1,7 @@
 # Project information
 site_name: 'Coil'
 site_description: 'An image loading library for Android backed by Kotlin Coroutines'
-site_author: '2021 Coil Contributors'
+site_author: '2022 Coil Contributors'
 site_url: 'https://coil-kt.github.io/coil/'
 remote_branch: gh-pages
 edit_uri: ""
@@ -11,7 +11,7 @@ repo_name: 'Coil'
 repo_url: 'https://github.com/coil-kt/coil'
 
 # Copyright
-copyright: 'Copyright &copy; 2021 Coil Contributors'
+copyright: 'Copyright &copy; 2022 Coil Contributors'
 
 # Configuration
 theme:
@@ -36,7 +36,6 @@ extra:
 nav:
   - 'Overview': index.md
   - 'Getting Started': getting_started.md
-  - 'Migrating from Glide/Picasso': migrating.md
   - 'Image Loaders': image_loaders.md
   - 'Image Requests': image_requests.md
   - 'Targets': targets.md
@@ -50,6 +49,8 @@ nav:
   - 'Video Frames': videos.md
   - 'Recipes': recipes.md
   - 'FAQ': faq.md
+  - 'Migrating from Glide/Picasso': migrating.md
+  - 'Upgrading from Coil 1.x to 2.x': upgrading.md
   - 'API ⏏': api/index.html
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
@@ -62,12 +63,13 @@ extra_css:
 # Extensions
 markdown_extensions:
   - admonition
-  - codehilite:
-      guess_lang: false
   - footnotes
   - toc:
       permalink: true
-  - pymdownx.betterem
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
   - pymdownx.superfences
 
 # Plugins
@@ -76,4 +78,4 @@ plugins:
   - minify:
       minify_html: true
 
-# Built with https://github.com/squidfunk/mkdocs-material v7.1.10
+# Built with https://github.com/squidfunk/mkdocs-material

@@ -71,7 +71,7 @@ internal class RealImageLoader(
     val eventListenerFactory: EventListener.Factory,
     val componentRegistry: ComponentRegistry,
     val options: ImageLoaderOptions,
-    val logger: Logger?
+    val logger: Logger?,
 ) : ImageLoader {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate +
@@ -170,11 +170,6 @@ internal class RealImageLoader(
             val size = request.sizeResolver.size()
             eventListener.resolveSizeEnd(request, size)
 
-            // Resolve the scale.
-            eventListener.resolveScaleStart(request)
-            val scale = request.scaleResolver.scale()
-            eventListener.resolveScaleEnd(request, scale)
-
             // Execute the interceptor chain.
             val result = withContext(request.interceptorDispatcher) {
                 RealInterceptorChain(
@@ -183,7 +178,6 @@ internal class RealImageLoader(
                     index = 0,
                     request = request,
                     size = size,
-                    scale = scale,
                     eventListener = eventListener,
                     isPlaceholderCached = placeholderBitmap != null
                 ).proceed(request)
@@ -211,8 +205,10 @@ internal class RealImageLoader(
     }
 
     /** Called by [SystemCallbacks.onTrimMemory]. */
+    @Suppress("SAFE_CALL_WILL_CHANGE_NULLABILITY", "UNNECESSARY_SAFE_CALL")
     internal fun onTrimMemory(level: Int) {
-        memoryCache?.trimMemory(level)
+        // https://github.com/coil-kt/coil/issues/1211
+        memoryCacheLazy?.value?.trimMemory(level)
     }
 
     override fun shutdown() {

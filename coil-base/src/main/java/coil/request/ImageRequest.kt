@@ -1,4 +1,4 @@
-@file:Suppress("unused", "UNUSED_PARAMETER")
+@file:Suppress("UNUSED_PARAMETER")
 
 package coil.request
 
@@ -26,10 +26,9 @@ import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.request.ImageRequest.Builder
 import coil.size.Dimension
+import coil.size.DisplaySizeResolver
 import coil.size.Precision
-import coil.size.RealImageViewScaleResolver
 import coil.size.Scale
-import coil.size.ScaleResolver
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.size.ViewSizeResolver
@@ -44,6 +43,7 @@ import coil.util.allowInexactSize
 import coil.util.getDrawableCompat
 import coil.util.getLifecycle
 import coil.util.orEmpty
+import coil.util.scale
 import coil.util.toImmutableList
 import coil.util.unsupported
 import kotlinx.coroutines.CoroutineDispatcher
@@ -143,7 +143,7 @@ class ImageRequest private constructor(
     val sizeResolver: SizeResolver,
 
     /** @see Builder.scale */
-    val scaleResolver: ScaleResolver,
+    val scale: Scale,
 
     /** @see Builder.parameters */
     val parameters: Parameters,
@@ -218,7 +218,7 @@ class ImageRequest private constructor(
             fallbackDrawable == other.fallbackDrawable &&
             lifecycle == other.lifecycle &&
             sizeResolver == other.sizeResolver &&
-            scaleResolver == other.scaleResolver &&
+            scale == other.scale &&
             parameters == other.parameters &&
             defined == other.defined &&
             defaults == other.defaults
@@ -253,7 +253,7 @@ class ImageRequest private constructor(
         result = 31 * result + transformationDispatcher.hashCode()
         result = 31 * result + lifecycle.hashCode()
         result = 31 * result + sizeResolver.hashCode()
-        result = 31 * result + scaleResolver.hashCode()
+        result = 31 * result + scale.hashCode()
         result = 31 * result + parameters.hashCode()
         result = 31 * result + placeholderMemoryCacheKey.hashCode()
         result = 31 * result + placeholderResId.hashCode()
@@ -338,10 +338,10 @@ class ImageRequest private constructor(
 
         private var lifecycle: Lifecycle?
         private var sizeResolver: SizeResolver?
-        private var scaleResolver: ScaleResolver?
+        private var scale: Scale?
         private var resolvedLifecycle: Lifecycle?
         private var resolvedSizeResolver: SizeResolver?
-        private var resolvedScaleResolver: ScaleResolver?
+        private var resolvedScale: Scale?
 
         constructor(context: Context) {
             this.context = context
@@ -381,10 +381,10 @@ class ImageRequest private constructor(
             fallbackDrawable = null
             lifecycle = null
             sizeResolver = null
-            scaleResolver = null
+            scale = null
             resolvedLifecycle = null
             resolvedSizeResolver = null
-            resolvedScaleResolver = null
+            resolvedScale = null
         }
 
         @JvmOverloads
@@ -426,17 +426,17 @@ class ImageRequest private constructor(
             fallbackDrawable = request.fallbackDrawable
             lifecycle = request.defined.lifecycle
             sizeResolver = request.defined.sizeResolver
-            scaleResolver = request.defined.scaleResolver
+            scale = request.defined.scale
 
             // If the context changes, recompute the resolved values.
             if (request.context === context) {
                 resolvedLifecycle = request.lifecycle
                 resolvedSizeResolver = request.sizeResolver
-                resolvedScaleResolver = request.scaleResolver
+                resolvedScale = request.scale
             } else {
                 resolvedLifecycle = null
                 resolvedSizeResolver = null
-                resolvedScaleResolver = null
+                resolvedScale = null
             }
         }
 
@@ -606,14 +606,7 @@ class ImageRequest private constructor(
          * NOTE: If [scale] is not set, it is automatically computed for [ImageView] targets.
          */
         fun scale(scale: Scale) = apply {
-            this.scaleResolver = ScaleResolver(scale)
-        }
-
-        /**
-         * Set the [ScaleResolver] to resolve the [Scale].
-         */
-        fun scale(resolver: ScaleResolver) = apply {
-            this.scaleResolver = resolver
+            this.scale = scale
         }
 
         /**
@@ -940,6 +933,7 @@ class ImageRequest private constructor(
          */
         fun defaults(defaults: DefaultRequestOptions) = apply {
             this.defaults = defaults
+            resetResolvedScale()
         }
 
         /**
@@ -975,7 +969,7 @@ class ImageRequest private constructor(
                 transformationDispatcher = transformationDispatcher ?: defaults.transformationDispatcher,
                 lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
                 sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
-                scaleResolver = scaleResolver ?: resolvedScaleResolver ?: resolveScaleResolver(),
+                scale = scale ?: resolvedScale ?: resolveScale(),
                 parameters = parameters?.build().orEmpty(),
                 placeholderMemoryCacheKey = placeholderMemoryCacheKey,
                 placeholderResId = placeholderResId,
@@ -984,7 +978,7 @@ class ImageRequest private constructor(
                 errorDrawable = errorDrawable,
                 fallbackResId = fallbackResId,
                 fallbackDrawable = fallbackDrawable,
-                defined = DefinedRequestOptions(lifecycle, sizeResolver, scaleResolver,
+                defined = DefinedRequestOptions(lifecycle, sizeResolver, scale,
                     interceptorDispatcher, fetcherDispatcher, decoderDispatcher,
                     transformationDispatcher, transitionFactory, precision, bitmapConfig,
                     allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy,
@@ -997,7 +991,12 @@ class ImageRequest private constructor(
         private fun resetResolvedValues() {
             resolvedLifecycle = null
             resolvedSizeResolver = null
-            resolvedScaleResolver = null
+            resolvedScale = null
+        }
+
+        /** Ensure the scale will be recomputed when [build] is called. */
+        private fun resetResolvedScale() {
+            resolvedScale = null
         }
 
         private fun resolveLifecycle(): Lifecycle {
@@ -1009,33 +1008,26 @@ class ImageRequest private constructor(
         private fun resolveSizeResolver(): SizeResolver {
             val target = target
             if (target is ViewTarget<*>) {
-                val view = target.view
                 // CENTER and MATRIX scale types should be decoded at the image's original size.
-                if (view !is ImageView || view.scaleType.let { it != CENTER && it != MATRIX }) {
+                val view = target.view
+                if (view is ImageView && view.scaleType.let { it == CENTER || it == MATRIX }) {
+                    return SizeResolver(Size.ORIGINAL)
+                } else {
                     return ViewSizeResolver(view)
                 }
+            } else {
+                // Fall back to the size of the display.
+                return DisplaySizeResolver(context)
             }
-            return SizeResolver(Size.ORIGINAL)
         }
 
-        private fun resolveScaleResolver(): ScaleResolver {
-            val sizeResolver = sizeResolver
-            if (sizeResolver is ViewSizeResolver<*>) {
-                val view = sizeResolver.view
-                if (view is ImageView) {
-                    return RealImageViewScaleResolver(view)
-                }
+        private fun resolveScale(): Scale {
+            val view = (sizeResolver as? ViewSizeResolver<*>)?.view ?: (target as? ViewTarget<*>)?.view
+            if (view is ImageView) {
+                return view.scale
+            } else {
+                return Scale.FIT
             }
-
-            val target = target
-            if (target is ViewTarget<*>) {
-                val view = target.view
-                if (view is ImageView) {
-                    return RealImageViewScaleResolver(view)
-                }
-            }
-
-            return ScaleResolver(Scale.FIT)
         }
 
         @Deprecated(

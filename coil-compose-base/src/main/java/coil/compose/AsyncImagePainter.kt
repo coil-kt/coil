@@ -273,7 +273,7 @@ class AsyncImagePainter internal constructor(
                     // If no other size resolver is set, suspend until the canvas size is positive.
                     size { drawSize.mapNotNull { it.toSizeOrNull() }.first() }
                 }
-                if (request.defined.scaleResolver == null) {
+                if (request.defined.scale == null) {
                     // If no other scale resolver is set, use the content scale.
                     scale(contentScale.toScale())
                 }
@@ -401,8 +401,8 @@ private val Size.isPositive get() = width >= 0.5 && height >= 0.5
 private fun Size.toSizeOrNull() = when {
     isUnspecified -> CoilSize.ORIGINAL
     isPositive -> CoilSize(
-        width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Original,
-        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Original
+        width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Undefined,
+        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined
     )
     else -> null
 }

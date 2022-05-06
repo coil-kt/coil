@@ -27,8 +27,6 @@ import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.Dimension
-import coil.size.Scale
-import coil.size.ScaleResolver
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -136,10 +134,10 @@ fun AsyncImage(
     )
 
     // Draw the content without a parent composable or subcomposition.
-    val constraintsResolver = request.constraintsResolver
+    val sizeResolver = request.sizeResolver
     Content(
-        modifier = if (constraintsResolver != null) {
-            modifier.then(constraintsResolver)
+        modifier = if (sizeResolver is ConstraintsSizeResolver) {
+            modifier.then(sizeResolver)
         } else {
             modifier
         },
@@ -181,35 +179,25 @@ internal fun Content(
 )
 
 @Composable
-internal fun updateRequest(
-    request: ImageRequest,
-    contentScale: ContentScale,
-) = request.newBuilder()
-    .apply {
-        if (request.defined.sizeResolver == null) {
-            val resolver = remember { ConstraintsResolver() }
-            size(resolver)
-            if (request.defined.scaleResolver == null) {
-                resolver.scale = contentScale.toScale()
-                scale(resolver)
-            }
+internal fun updateRequest(request: ImageRequest, contentScale: ContentScale): ImageRequest {
+    return if (request.defined.sizeResolver == null) {
+        val sizeResolver = if (contentScale == ContentScale.None) {
+            SizeResolver(CoilSize.ORIGINAL)
+        } else {
+            remember { ConstraintsSizeResolver() }
         }
+        request.newBuilder().size(sizeResolver).build()
+    } else {
+        request
     }
-    .build()
+}
 
-/**
- * A [SizeResolver] and [ScaleResolver] that computes the size and scale from the constrains passed
- * during the layout phase.
- */
-internal class ConstraintsResolver : SizeResolver, ScaleResolver, LayoutModifier {
+/** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
+internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     private val _constraints = MutableStateFlow(ZeroConstraints)
 
-    lateinit var scale: Scale
-
     override suspend fun size() = _constraints.mapNotNull(Constraints::toSizeOrNull).first()
-
-    override fun scale() = computeScale(_constraints.value, scale)
 
     override fun MeasureScope.measure(
         measurable: Measurable,
@@ -246,17 +234,7 @@ private fun Modifier.contentDescription(contentDescription: String?): Modifier {
 private fun Constraints.toSizeOrNull() = when {
     isZero -> null
     else -> CoilSize(
-        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Original,
-        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Original
+        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
+        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
     )
-}
-
-@Stable
-private fun computeScale(constraints: Constraints, original: Scale): Scale {
-    if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
-        return original
-    } else {
-        // Always scale to fit the minimum dimension when at least one dimension is unbounded.
-        return Scale.FIT
-    }
 }

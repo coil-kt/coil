@@ -1,5 +1,4 @@
 @file:JvmName("GifDecodeUtils")
-@file:Suppress("unused")
 
 package coil.decode
 

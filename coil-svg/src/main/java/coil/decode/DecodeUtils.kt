@@ -1,5 +1,4 @@
 @file:JvmName("SvgDecodeUtils")
-@file:Suppress("unused")
 
 package coil.decode
 

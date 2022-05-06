@@ -19,7 +19,9 @@ import coil.request.videoFrameOption
 import coil.size.Dimension.Pixels
 import coil.size.Size
 import coil.size.pxOrElse
+import coil.util.heightPx
 import coil.util.use
+import coil.util.widthPx
 import kotlin.math.roundToInt
 
 /**
@@ -29,8 +31,6 @@ class VideoFrameDecoder(
     private val source: ImageSource,
     private val options: Options
 ) : Decoder {
-
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     override suspend fun decode() = MediaMetadataRetriever().use { retriever ->
         retriever.setDataSource(source)
@@ -51,14 +51,20 @@ class VideoFrameDecoder(
         }
 
         val dstSize = if (srcWidth > 0 && srcHeight > 0) {
+            val dstWidth = options.size.widthPx(options.scale) { srcWidth }
+            val dstHeight = options.size.heightPx(options.scale) { srcHeight }
             val rawScale = DecodeUtils.computeSizeMultiplier(
                 srcWidth = srcWidth,
                 srcHeight = srcHeight,
-                dstWidth = options.size.width.pxOrElse { srcWidth },
-                dstHeight = options.size.height.pxOrElse { srcHeight },
+                dstWidth = dstWidth,
+                dstHeight = dstHeight,
                 scale = options.scale
             )
-            val scale = if (options.allowInexactSize) rawScale.coerceAtMost(1.0) else rawScale
+            val scale = if (options.allowInexactSize) {
+                rawScale.coerceAtMost(1.0)
+            } else {
+                rawScale
+            }
             val width = (scale * srcWidth).roundToInt()
             val height = (scale * srcHeight).roundToInt()
             Size(width, height)
@@ -83,7 +89,7 @@ class VideoFrameDecoder(
         // https://developer.android.com/guide/topics/media/media-formats#video-formats
         checkNotNull(rawBitmap) { "Failed to decode frame at $frameMicros microseconds." }
 
-        val bitmap = normalizeBitmap(rawBitmap, dstSize, options)
+        val bitmap = normalizeBitmap(rawBitmap, dstSize)
 
         val isSampled = if (srcWidth > 0 && srcHeight > 0) {
             DecodeUtils.computeSizeMultiplier(
@@ -105,11 +111,7 @@ class VideoFrameDecoder(
     }
 
     /** Return [inBitmap] or a copy of [inBitmap] that is valid for the input [options] and [size]. */
-    private fun normalizeBitmap(
-        inBitmap: Bitmap,
-        size: Size,
-        options: Options
-    ): Bitmap {
+    private fun normalizeBitmap(inBitmap: Bitmap, size: Size): Bitmap {
         // Fast path: if the input bitmap is valid, return it.
         if (isConfigValid(inBitmap, options) && isSizeValid(inBitmap, options, size)) {
             return inBitmap
@@ -130,6 +132,7 @@ class VideoFrameDecoder(
             else -> options.config
         }
 
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         val outBitmap = createBitmap(dstWidth, dstHeight, safeConfig)
         outBitmap.applyCanvas {
             scale(scale, scale)

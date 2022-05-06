@@ -30,6 +30,8 @@ enum class Precision {
 
     /**
      * Allow Coil to automatically determine if the size needs to be exact for this request.
+     *
+     * This is the default value for [ImageRequest.Builder.precision].
      */
     AUTOMATIC
 }

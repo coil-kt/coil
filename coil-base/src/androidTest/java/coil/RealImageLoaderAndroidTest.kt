@@ -8,14 +8,17 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil.base.test.R
 import coil.decode.DataSource
+import coil.decode.DecodeUtils
 import coil.memory.MemoryCache
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -23,6 +26,7 @@ import coil.request.NullRequestDataException
 import coil.request.SuccessResult
 import coil.request.Tags
 import coil.size.Precision
+import coil.size.Scale
 import coil.size.Size
 import coil.util.ASSET_FILE_PATH_ROOT
 import coil.util.TestActivity
@@ -38,8 +42,10 @@ import coil.util.size
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import okio.buffer
@@ -53,6 +59,8 @@ import java.io.File
 import java.nio.ByteBuffer
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.math.max
+import kotlin.math.roundToInt
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -512,6 +520,101 @@ class RealImageLoaderAndroidTest {
         if (result is ErrorResult) throw result.throwable
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/1201 */
+    @Test
+    fun veryLargeImage() = runTest {
+        val request = ImageRequest.Builder(context)
+            .data(R.drawable.very_large)
+            .build()
+        val result = imageLoader.execute(request)
+        if (result is ErrorResult) throw result.throwable
+
+        assertIs<SuccessResult>(result)
+        val drawable = assertIs<BitmapDrawable>(result.drawable)
+        val maxDimension = context.resources.displayMetrics.run { max(widthPixels, heightPixels) }
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = 9052,
+            srcHeight = 4965,
+            dstWidth = maxDimension,
+            dstHeight = maxDimension,
+            scale = Scale.FIT
+        )
+        val expectedWidth = (multiplier * 9052).roundToInt()
+        val expectedHeight = (multiplier * 4965).roundToInt()
+        assertTrue(drawable.bitmap.width in expectedWidth - 1..expectedWidth + 1)
+        assertTrue(drawable.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+    }
+
+    @Test
+    fun imageViewWrapWidth() = runTest {
+        val imageView = activityRule.scenario.activity.imageView
+        withContext(Dispatchers.Main.immediate) {
+            imageView.updateLayoutParams {
+                width = ViewGroup.LayoutParams.WRAP_CONTENT
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageView.requestLayout()
+            awaitFrame()
+        }
+
+        val request = ImageRequest.Builder(context)
+            .data(R.drawable.very_large)
+            .target(imageView)
+            .build()
+        val result = imageLoader.execute(request)
+        if (result is ErrorResult) throw result.throwable
+
+        assertIs<SuccessResult>(result)
+        val drawable = assertIs<BitmapDrawable>(result.drawable)
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = 9052,
+            srcHeight = 4965,
+            dstWidth = 9052,
+            dstHeight = imageView.height,
+            scale = Scale.FIT
+        )
+        val expectedWidth = (multiplier * 9052).roundToInt()
+        val expectedHeight = (multiplier * 4965).roundToInt()
+        assertTrue(drawable.bitmap.width in expectedWidth - 1..expectedWidth + 1)
+        assertTrue(drawable.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+    }
+
+    @Test
+    fun imageViewWrapHeight() = runTest {
+        val imageView = activityRule.scenario.activity.imageView
+        withContext(Dispatchers.Main.immediate) {
+            imageView.updateLayoutParams {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageView.requestLayout()
+            awaitFrame()
+        }
+
+        val request = ImageRequest.Builder(context)
+            .data(R.drawable.very_large)
+            .target(imageView)
+            .build()
+        val result = imageLoader.execute(request)
+        if (result is ErrorResult) throw result.throwable
+
+        assertIs<SuccessResult>(result)
+        val drawable = assertIs<BitmapDrawable>(result.drawable)
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = 9052,
+            srcHeight = 4965,
+            dstWidth = imageView.width,
+            dstHeight = 4965,
+            scale = Scale.FIT
+        )
+        val expectedWidth = (multiplier * 9052).roundToInt()
+        val expectedHeight = (multiplier * 4965).roundToInt()
+        assertTrue(drawable.bitmap.width in expectedWidth - 1..expectedWidth + 1)
+        assertTrue(drawable.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+    }
+
     private suspend fun testEnqueue(data: Any, expectedSize: Size = Size(80, 100)) {
         val imageView = activityRule.scenario.activity.imageView
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -532,8 +635,7 @@ class RealImageLoaderAndroidTest {
             imageLoader.enqueue(request)
         }
 
-        val drawable = imageView.drawable
-        assertTrue(drawable is BitmapDrawable)
+        val drawable = assertIs<BitmapDrawable>(imageView.drawable)
         assertEquals(expectedSize, drawable.bitmap.size)
     }
 
@@ -548,9 +650,8 @@ class RealImageLoaderAndroidTest {
             throw result.throwable
         }
 
-        assertTrue(result is SuccessResult)
-        val drawable = result.drawable
-        assertTrue(drawable is BitmapDrawable)
+        assertIs<SuccessResult>(result)
+        val drawable = assertIs<BitmapDrawable>(result.drawable)
         assertEquals(expectedSize, drawable.bitmap.size)
     }
 

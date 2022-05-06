@@ -35,12 +35,14 @@ import coil.fetch.Fetcher
 import coil.intercept.Interceptor
 import coil.intercept.RealInterceptorChain
 import coil.memory.MemoryCache
-import coil.request.DefaultRequestOptions
 import coil.request.Parameters
 import coil.request.Tags
 import coil.request.ViewTargetRequestManager
 import coil.size.Dimension
 import coil.size.Scale
+import coil.size.Size
+import coil.size.isOriginal
+import coil.size.pxOrElse
 import coil.transform.Transformation
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -144,8 +146,6 @@ internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
 /** Required for compatibility with API 25 and below. */
 internal val NULL_COLOR_SPACE: ColorSpace? = null
 
-internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
-
 internal val EMPTY_HEADERS = Headers.Builder().build()
 
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
@@ -196,10 +196,6 @@ internal fun DiskCache.Editor.abortQuietly() {
     } catch (_: Exception) {}
 }
 
-internal fun Dimension.pxString(): String {
-    return if (this is Dimension.Pixels) px.toString() else toString()
-}
-
 internal const val MIME_TYPE_JPEG = "image/jpeg"
 internal const val MIME_TYPE_WEBP = "image/webp"
 internal const val MIME_TYPE_HEIC = "image/heic"
@@ -212,6 +208,21 @@ internal val Interceptor.Chain.eventListener: EventListener
     get() = if (this is RealInterceptorChain) eventListener else EventListener.NONE
 
 internal fun Int.isMinOrMax() = this == Int.MIN_VALUE || this == Int.MAX_VALUE
+
+internal inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
+    return if (isOriginal) original() else width.toPx(scale)
+}
+
+internal inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
+    return if (isOriginal) original() else height.toPx(scale)
+}
+
+internal fun Dimension.toPx(scale: Scale) = pxOrElse {
+    when (scale) {
+        Scale.FILL -> Int.MIN_VALUE
+        Scale.FIT -> Int.MAX_VALUE
+    }
+}
 
 internal fun unsupported(): Nothing = error("Unsupported")
 
