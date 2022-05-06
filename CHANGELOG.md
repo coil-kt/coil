@@ -46,6 +46,8 @@ Changes from `2.0.0-rc03`:
 - Convert `Dimension.Original` to be `Dimension.Undefined`.
   - This changes the semantics of the non-pixel dimension slightly to fix some edge cases ([example](https://github.com/coil-kt/coil/issues/1246)) in the size system.
 - Load images with `Size.ORIGINAL` if ContentScale is None.
+- Fix applying `ImageView.load` builder argument first instead of last.
+- Fix not combining HTTP headers if response is not modified.
 
 ## [2.0.0-rc03] - April 11, 2022
 
