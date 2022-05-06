@@ -56,9 +56,9 @@ inline fun ImageView.load(
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable {
     val request = ImageRequest.Builder(context)
-        .apply(builder)
         .data(data)
         .target(this)
+        .apply(builder)
         .build()
     return imageLoader.enqueue(request)
 }

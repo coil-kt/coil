@@ -156,7 +156,7 @@ internal class HttpUriFetcher(
             if (response.code == HTTP_NOT_MODIFIED && cacheResponse != null) {
                 // Only update the metadata.
                 val combinedResponse = response.newBuilder()
-                    .headers(combineHeaders(CacheResponse(response).responseHeaders, response.headers))
+                    .headers(combineHeaders(cacheResponse.responseHeaders, response.headers))
                     .build()
                 fileSystem.write(editor.metadata) {
                     CacheResponse(combinedResponse).writeTo(this)
