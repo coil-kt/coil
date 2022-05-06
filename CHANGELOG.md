@@ -4,16 +4,34 @@
 
 Coil 2.0.0 is a major iteration of the library and includes breaking changes. Check out the [upgrade guide](https://coil-kt.github.io/coil/upgrading/) for how to upgrade.
 
-- The minimum supported API is now 21.
-- Rework the Jetpack Compose integration.
-    - `rememberImagePainter` has been renamed to `rememberAsyncImagePainter`.
-    - Add support for `AsyncImage` and `SubcomposeAsyncImage`. Check out [the documentation](https://coil-kt.github.io/coil/compose/) for more info.
-    - Deprecate `LocalImageLoader`. Check out the deprecation message for more info.
-- Coil 2.0 has its own disk cache implementation and no longer relies on OkHttp for disk caching.
+- **New** Add support `AsyncImage` and `SubcomposeAsyncImage` to `coil-compose`. Check out [the documentation](https://coil-kt.github.io/coil/compose/) for more info.
+
+```kotlin
+// Display an image from the network.
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null
+)
+
+// Display an image from the network with a placeholder, circle crop, and crossfade animation.
+AsyncImage(
+    model = ImageRequest.Builder(LocalContext.current)
+        .data("https://example.com/image.jpg")
+        .crossfade(true)
+        .build(),
+    placeholder = painterResource(R.drawable.placeholder),
+    contentDescription = stringResource(R.string.description),
+    contentScale = ContentScale.Crop,
+    modifier = Modifier.clip(CircleShape)
+)
+```
+
+- **New** Introduce a public `DiskCache` API.
     - Use `ImageLoader.Builder.diskCache` and `DiskCache.Builder` to configure the disk cache.
     - You should not use OkHttp's `Cache` with Coil 2.0. See [here](https://coil-kt.github.io/coil/upgrading/#disk-cache) for more info.
     - `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
     - Existing disk caches will be cleared when upgrading to 2.0.
+- The minimum supported API is now 21.
 - `ImageRequest`'s default `Scale` is now `Scale.FIT`.
     - This was changed to make `ImageRequest.scale` consistent with other classes that have a default `Scale`.
     - Requests with an `ImageViewTarget` still have their `Scale` auto-detected.
@@ -21,6 +39,9 @@ Coil 2.0.0 is a major iteration of the library and includes breaking changes. Ch
     - `Mapper`, `Fetcher`, and `Decoder` have been refactored to be more flexible.
     - `Fetcher.key` has been replaced with a new `Keyer` interface. `Keyer` creates the cache key from the input data.
     - Adds `ImageSource`, which allows `Decoder`s to read `File`s directly using Okio's file system API.
+- Rework the Jetpack Compose integration:
+    - `rememberImagePainter` and `ImagePainter` have been renamed to `rememberAsyncImagePainter` and `AsyncImagePainter` respectively.
+    - Deprecate `LocalImageLoader`. Check out the deprecation message for more info.
 - Disable generating runtime not-null assertions.
     - If you use Java, passing null as a not-null annotated argument to a function will no longer throw a `NullPointerException` immediately. Kotlin's compile-time null safety guards against this happening.
     - This change allows the library's size to be smaller.
