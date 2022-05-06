@@ -8,7 +8,7 @@ Coil 2.x requires minimum API 21. This is also the minimum API required for Jetp
 
 ## ImageRequest default scale
 
-Coil 2.x changes `ImageRequest`'s default scale from `Scale.FILL` to `Scale.FIT`. This was done to ensure be consistent with `ImageView`'s default `ScaleType` and `Image`'s default `ContentScale`. Scale is still autodetected if you set an `ImageView` as your `ImageRequest.target`.
+Coil 2.x changes `ImageRequest`'s default scale from `Scale.FILL` to `Scale.FIT`. This was done to be consistent with `ImageView`'s default `ScaleType` and `Image`'s default `ContentScale`. Scale is still autodetected if you set an `ImageView` as your `ImageRequest.target`.
 
 ## Size refactor
 
