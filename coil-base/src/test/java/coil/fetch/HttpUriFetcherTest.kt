@@ -321,7 +321,7 @@ class HttpUriFetcherTest {
         val headers = Headers.Builder()
             .set("Cache-Control", "no-cache")
             .set("Cache-Header", "none")
-            .set("ETag", UUID.randomUUID().toString())
+            .set("ETag", "fake_etag")
             .build()
         val expectedSize = server.enqueueImage(IMAGE, headers)
         var result = newFetcher(url).fetch()
