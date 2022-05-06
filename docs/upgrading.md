@@ -109,7 +109,7 @@ Coil 2.x refactors the image pipeline classes to be more flexible. Here's a high
 - Introduce a new class, `Keyer`, that computes the memory cache key for a request. It replaces `Fetcher.key`.
 - `Mapper`, `Keyer`, `Fetcher`, and `Decoder` can return `null` to delegate to the next element in the list of components.
 - Add `Options` to `Mapper.map`'s signature.
-- Introduce `Fetcher.Factory` and `Decoder.Factory`. Use the factories to determine if a specific `Fetcher`/`Decoder` is applicable.
+- Introduce `Fetcher.Factory` and `Decoder.Factory`. Use the factories to determine if a specific `Fetcher`/`Decoder` is applicable. Return `null` if that `Fetcher`/`Decoder` is not applicable.
 
 ## Remove bitmap pooling
 
