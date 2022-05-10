@@ -8,11 +8,11 @@ Coil 2.x requires minimum API 21. This is also the minimum API required for Jetp
 
 ## ImageRequest default scale
 
-Coil 2.x changes `ImageRequest`'s default scale from `Scale.FILL` to `Scale.FIT`. This was done to ensure be consistent with `ImageView`'s default `ScaleType` and `Image`'s default `ContentScale`. Scale is still autodetected if you set an `ImageView` as your `ImageRequest.target`.
+Coil 2.x changes `ImageRequest`'s default scale from `Scale.FILL` to `Scale.FIT`. This was done to be consistent with `ImageView`'s default `ScaleType` and `Image`'s default `ContentScale`. Scale is still autodetected if you set an `ImageView` as your `ImageRequest.target`.
 
 ## Size refactor
 
-`Size`'s `width` and `height` is now composed of two `Dimension`s instead of `Int` pixel values. `Dimension` is either a pixel value or `Dimension.Original`, which represents the source value for that dimension (similar to how `Size.ORIGINAL` represents the source values for both width and height). You can use the `pxOrElse` extension to get the pixel value (if present), else use a fallback:
+`Size`'s `width` and `height` are now two `Dimension`s instead of `Int` pixel values. `Dimension` is either a pixel value or `Dimension.Undefined`, which represents an undefined/unbounded constraint. For example, if the size is `Size(400, Dimension.Undefined)` that means the image should be scaled to have 400 pixels for its width irrespective of its height. You can use the `pxOrElse` extension to get the pixel value (if present), else use a fallback:
 
 ```kotlin
 val width = size.width.pxOrElse { -1 }
@@ -90,6 +90,14 @@ ImageLoader.Builder(context)
     .build()
 ```
 
+This change was made to add functionality and improve performance:
+
+- Support thread interruption while decoding images.
+  - Thread interruption allows fast cancellation of decode operations. This is particularly important for quickly scrolling through a list.
+  - By using a custom disk cache Coil is able to ensure a network source is fully read to disk before decoding. This is necessary as writing the data to disk cannot be interrupted - only the decode step can be interrupted. OkHttp's `Cache` shouldn't be used with Coil 2.0 as it's not possible to guarantee that all data is written to disk before decoding.
+- Avoid buffering/creating temporary files for decode APIs that don't support `InputStream`s or require direct access to a `File` (e.g. `ImageDecoder`, `MediaMetadataRetriever`).
+- Add a public read/write `DiskCache` API.
+
 In Coil 2.x `Cache-Control` and other cache headers are still supported - except `Vary` headers, as the cache only checks that the URLs match. Additionally, only responses with a response code in the range [200..300) are cached.
 
 When upgrading from Coil 1.x to 2.x, any existing disk cache will be cleared as the internal format has changed.
@@ -101,7 +109,7 @@ Coil 2.x refactors the image pipeline classes to be more flexible. Here's a high
 - Introduce a new class, `Keyer`, that computes the memory cache key for a request. It replaces `Fetcher.key`.
 - `Mapper`, `Keyer`, `Fetcher`, and `Decoder` can return `null` to delegate to the next element in the list of components.
 - Add `Options` to `Mapper.map`'s signature.
-- Introduce `Fetcher.Factory` and `Decoder.Factory`. Use the factories to determine if a specific `Fetcher`/`Decoder` is applicable.
+- Introduce `Fetcher.Factory` and `Decoder.Factory`. Use the factories to determine if a specific `Fetcher`/`Decoder` is applicable. Return `null` if that `Fetcher`/`Decoder` is not applicable.
 
 ## Remove bitmap pooling
 
