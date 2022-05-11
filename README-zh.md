@@ -44,6 +44,22 @@ imageView.load("https://www.example.com/image.jpg") {
     transformations(CircleCropTransformation())
 }
 ```
+#### Jetpack Compose
+
+引入 [Jetpack Compose](https://developer.android.com/jetpack/compose) 扩展库:
+
+```kotlin
+implementation("io.coil-kt:coil-compose:2.0.0")
+```
+
+使用 `AsyncImage` 加载图片:
+
+```kotlin
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null
+)
+```
 
 ### 图片加载器 `ImageLoader`
 `imageView.load` 使用单例 `ImageLoader` 来把 `ImageRequest` 加入队列. `ImageLoader` 单例可以通过扩展方法来获取：
