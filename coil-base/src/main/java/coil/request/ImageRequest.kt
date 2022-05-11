@@ -451,6 +451,7 @@ class ImageRequest private constructor(
          * - [DrawableRes]
          * - [Drawable]
          * - [Bitmap]
+         * - [ByteArray]
          * - [ByteBuffer]
          */
         fun data(data: Any?) = apply {

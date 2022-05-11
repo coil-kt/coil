@@ -220,6 +220,13 @@ class RealImageLoaderAndroidTest {
         testExecute(data)
     }
 
+    @Test
+    fun byteArray() = runTest {
+        val data = context.resources.openRawResource(R.drawable.normal).readBytes()
+        testEnqueue(data)
+        testExecute(data)
+    }
+
     // endregion
 
     @Test
