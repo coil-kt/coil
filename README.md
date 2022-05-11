@@ -16,7 +16,7 @@ Made with ❤️ at [Instacart](https://www.instacart.com). Translations: [한�
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.0.0-rc02")
+implementation("io.coil-kt:coil:2.0.0")
 ```
 
 ## Quick Start
@@ -50,7 +50,7 @@ imageView.load("https://www.example.com/image.jpg") {
 Import the [Jetpack Compose](https://developer.android.com/jetpack/compose) extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.0.0-rc02")
+implementation("io.coil-kt:coil-compose:2.0.0")
 ```
 
 To load an image, use the `AsyncImage` composable:
@@ -116,7 +116,7 @@ If you use Proguard, you may need to add rules for [Coroutines](https://github.c
 
 ## License
 
-    Copyright 2021 Coil Contributors
+    Copyright 2022 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

@@ -17,6 +17,7 @@ import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
 import coil.key.FileKeyer
 import coil.key.UriKeyer
+import coil.map.ByteArrayMapper
 import coil.map.FileUriMapper
 import coil.map.HttpUrlMapper
 import coil.map.ResourceIntMapper
@@ -70,7 +71,7 @@ internal class RealImageLoader(
     val eventListenerFactory: EventListener.Factory,
     val componentRegistry: ComponentRegistry,
     val options: ImageLoaderOptions,
-    val logger: Logger?
+    val logger: Logger?,
 ) : ImageLoader {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate +
@@ -86,6 +87,7 @@ internal class RealImageLoader(
         .add(FileUriMapper())
         .add(ResourceUriMapper())
         .add(ResourceIntMapper())
+        .add(ByteArrayMapper())
         // Keyers
         .add(UriKeyer())
         .add(FileKeyer(options.addLastModifiedToFileCacheKey))
@@ -168,11 +170,6 @@ internal class RealImageLoader(
             val size = request.sizeResolver.size()
             eventListener.resolveSizeEnd(request, size)
 
-            // Resolve the scale.
-            eventListener.resolveScaleStart(request)
-            val scale = request.scaleResolver.scale()
-            eventListener.resolveScaleEnd(request, scale)
-
             // Execute the interceptor chain.
             val result = withContext(request.interceptorDispatcher) {
                 RealInterceptorChain(
@@ -181,7 +178,6 @@ internal class RealImageLoader(
                     index = 0,
                     request = request,
                     size = size,
-                    scale = scale,
                     eventListener = eventListener,
                     isPlaceholderCached = placeholderBitmap != null
                 ).proceed(request)
@@ -209,8 +205,10 @@ internal class RealImageLoader(
     }
 
     /** Called by [SystemCallbacks.onTrimMemory]. */
+    @Suppress("SAFE_CALL_WILL_CHANGE_NULLABILITY", "UNNECESSARY_SAFE_CALL")
     internal fun onTrimMemory(level: Int) {
-        memoryCache?.trimMemory(level)
+        // https://github.com/coil-kt/coil/issues/1211
+        memoryCacheLazy?.value?.trimMemory(level)
     }
 
     override fun shutdown() {

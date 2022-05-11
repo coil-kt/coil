@@ -8,7 +8,9 @@ import coil.ImageLoader
 import coil.fetch.SourceResult
 import coil.request.Options
 import coil.request.css
-import coil.size.Dimension
+import coil.size.Scale
+import coil.size.isOriginal
+import coil.util.toPx
 import coil.util.toSoftware
 import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
@@ -44,9 +46,7 @@ class SvgDecoder @JvmOverloads constructor(
 
         val bitmapWidth: Int
         val bitmapHeight: Int
-        val size = options.size
-        val dstWidth = size.width.pxOrElse(svgWidth)
-        val dstHeight = size.height.pxOrElse(svgHeight)
+        val (dstWidth, dstHeight) = getDstSize(svgWidth, svgHeight, options.scale)
         if (svgWidth > 0 && svgHeight > 0) {
             val multiplier = DecodeUtils.computeSizeMultiplier(
                 srcWidth = svgWidth,
@@ -80,11 +80,14 @@ class SvgDecoder @JvmOverloads constructor(
         )
     }
 
-    private fun Dimension.pxOrElse(value: Float): Float {
-        return if (this is Dimension.Pixels) {
-            px.toFloat()
+    private fun getDstSize(srcWidth: Float, srcHeight: Float, scale: Scale): Pair<Float, Float> {
+        if (options.size.isOriginal) {
+            val dstWidth = if (srcWidth > 0) srcWidth else DEFAULT_SIZE
+            val dstHeight = if (srcHeight > 0) srcHeight else DEFAULT_SIZE
+            return dstWidth to dstHeight
         } else {
-            if (value > 0) value else DEFAULT_SIZE
+            val (dstWidth, dstHeight) = options.size
+            return dstWidth.toPx(scale) to dstHeight.toPx(scale)
         }
     }
 

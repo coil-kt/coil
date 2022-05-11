@@ -51,9 +51,9 @@ internal class EngineInterceptor(
             val request = chain.request
             val data = request.data
             val size = chain.size
-            val scale = chain.scale
             val eventListener = chain.eventListener
-            val options = requestService.options(request, size, scale)
+            val options = requestService.options(request, size)
+            val scale = options.scale
 
             // Perform any data mapping.
             eventListener.mapStart(request, data)

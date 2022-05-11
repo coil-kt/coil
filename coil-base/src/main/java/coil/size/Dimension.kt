@@ -1,9 +1,10 @@
 @file:JvmName("-Dimensions")
-@file:Suppress("NOTHING_TO_INLINE")
 
 package coil.size
 
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.annotation.Px
+import coil.request.Options
 
 /**
  * Represents either the width or height of a [Size].
@@ -26,28 +27,31 @@ sealed class Dimension {
 
         override fun hashCode() = px
 
-        override fun toString() = "Dimension.Pixels(px=$px)"
+        override fun toString() = px.toString()
     }
 
     /**
-     * Represents the original value of the source image.
+     * Represents an undefined pixel value.
      *
-     * i.e. if the image's original dimensions are 400x600 and this is used as the width, this
-     * should be treated as 400 pixels.
+     * E.g. given `Size(400, Dimension.Undefined)`, the image should be loaded to fit/fill a width
+     * of 400 pixels irrespective of the image's height.
+     *
+     * This value is typically used in cases where a dimension is unbounded (e.g. [WRAP_CONTENT],
+     * `Constraints.Infinity`).
+     *
+     * NOTE: If either dimension is [Undefined], [Options.scale] is always [Scale.FIT].
      */
-    object Original : Dimension() {
-        override fun toString() = "Dimension.Original"
+    object Undefined : Dimension() {
+        override fun toString() = "Dimension.Undefined"
     }
 }
 
-/**
- * Convenience function to create a [Dimension.Pixels].
- */
-inline fun Dimension(@Px px: Int) = Dimension.Pixels(px)
+/** Create a [Dimension.Pixels] value with [px] number of pixels. */
+fun Dimension(@Px px: Int) = Dimension.Pixels(px)
 
 /**
- * If this is a [Dimension.Pixels] value, return its number of pixels. Else, invoke and return
- * the value from [block].
+ * If this is a [Dimension.Pixels] value, return its pixel value.
+ * Else, invoke and return the value from [block].
  */
 inline fun Dimension.pxOrElse(block: () -> Int): Int {
     return if (this is Dimension.Pixels) px else block()

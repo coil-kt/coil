@@ -16,7 +16,7 @@ Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
 Coil은 `mavenCentral()`로 이용 가능합니다.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.0.0-rc02")
+implementation("io.coil-kt:coil:2.0.0")
 ```
 
 ## 빠른 시작
@@ -50,7 +50,7 @@ imageView.load("https://www.example.com/image.jpg") {
 [Jetpack Compose](https://developer.android.com/jetpack/compose) 확장 라이브러리 추가:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.0.0-rc02")
+implementation("io.coil-kt:coil-compose:2.0.0")
 ```
 
 이미지를 불러오려면, `AsyncImage` composable를 사용하세요:
@@ -116,7 +116,7 @@ Proguard를 사용할 경우, [Coroutines](https://github.com/Kotlin/kotlinx.cor
 
 ## 라이선스
 
-    Copyright 2021 Coil Contributors
+    Copyright 2022 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

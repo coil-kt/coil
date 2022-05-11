@@ -1,4 +1,4 @@
-package coil.coil.memory
+package coil.memory
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,8 +7,6 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.key.Keyer
-import coil.memory.MemoryCache
-import coil.memory.MemoryCacheService
 import coil.memory.MemoryCacheService.Companion.EXTRA_IS_SAMPLED
 import coil.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_INDEX
 import coil.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_SIZE
@@ -444,37 +442,37 @@ class MemoryCacheServiceTest {
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(400, Dimension.Original)
+            size = Size(400, Dimension.Undefined)
         ))
         assertTrue(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(Dimension.Original, 200)
+            size = Size(Dimension.Undefined, 200)
         ))
         assertFalse(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(450, Dimension.Original)
+            size = Size(450, Dimension.Undefined)
         ))
         assertFalse(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = true,
-            size = Size(Dimension.Original, 250)
+            size = Size(Dimension.Undefined, 250)
         ))
         assertTrue(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = false,
-            size = Size(450, Dimension.Original)
+            size = Size(450, Dimension.Undefined)
         ))
         assertTrue(service.isCacheValueValid(
             request = request,
             cached = createBitmap(width = 400, height = 200),
             isSampled = false,
-            size = Size(Dimension.Original, 250)
+            size = Size(Dimension.Undefined, 250)
         ))
     }
 
@@ -488,7 +486,7 @@ class MemoryCacheServiceTest {
         cacheKey = MemoryCache.Key("key"),
         cacheValue = MemoryCache.Value(cached, mapOf(EXTRA_IS_SAMPLED to isSampled)),
         size = size,
-        scale = request.scaleResolver.scale()
+        scale = request.scale
     )
 
     private fun createFakeTransformations(): List<Transformation> {

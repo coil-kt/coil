@@ -16,7 +16,7 @@ Coil 名字的由来：取 **Co**routine **I**mage **L**oader 首字母得来。
 Coil 可以在 `mavenCentral()` 下载
 
 ```kotlin
-implementation("io.coil-kt:coil:2.0.0-rc02")
+implementation("io.coil-kt:coil:2.0.0")
 ```
 
 ## 快速上手
@@ -43,6 +43,22 @@ imageView.load("https://www.example.com/image.jpg") {
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
 }
+```
+#### Jetpack Compose
+
+引入 [Jetpack Compose](https://developer.android.com/jetpack/compose) 扩展库:
+
+```kotlin
+implementation("io.coil-kt:coil-compose:2.0.0")
+```
+
+使用 `AsyncImage` 加载图片:
+
+```kotlin
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = null
+)
 ```
 
 ### 图片加载器 `ImageLoader`
@@ -96,7 +112,7 @@ Coil 兼容 R8 混淆，您无需再添加其他的规则
 
 ## License
 
-    Copyright 2021 Coil Contributors
+    Copyright 2022 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

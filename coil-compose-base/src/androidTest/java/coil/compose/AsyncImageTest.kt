@@ -658,6 +658,24 @@ class AsyncImageTest {
             .assertIsSimilarTo(R.drawable.sample, threshold = 0.85)
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/1217 */
+    @Test
+    fun noneContentScaleShouldLoadAtOriginalSize() {
+        composeTestRule.setContent {
+            AsyncImage(
+                model = server.url("/image"),
+                contentDescription = null,
+                imageLoader = imageLoader,
+                modifier = Modifier.width(30.dp),
+                contentScale = ContentScale.None
+            )
+        }
+
+        waitForRequestComplete()
+
+        assertLoadedBitmapSize(SampleWidth, SampleHeight)
+    }
+
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(10_000) {

@@ -17,7 +17,7 @@ Coil şunların baş harflerinden oluşur: **Co**routine **I**mage **L**oader.
 Coil `mavenCentral()`'da mevcuttur.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.0.0-rc02")
+implementation("io.coil-kt:coil:2.0.0")
 ```
 
 ## Hızlı Başlangıç
@@ -101,7 +101,7 @@ Eğer Proguard kullanıyorsanız, [Coroutines](https://github.com/Kotlin/kotlinx
 
 ## Lisans
 
-    Copyright 2021 Coil Contributors
+    Copyright 2022 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

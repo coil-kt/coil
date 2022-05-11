@@ -4,6 +4,8 @@ package coil.util
 
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
+import coil.size.Dimension
+import coil.size.Scale
 import okio.BufferedSource
 import okio.ByteString
 
@@ -29,4 +31,15 @@ internal val Bitmap.Config.isHardware: Boolean
 /** Convert null and [Bitmap.Config.HARDWARE] configs to [Bitmap.Config.ARGB_8888]. */
 internal fun Bitmap.Config?.toSoftware(): Bitmap.Config {
     return if (this == null || isHardware) Bitmap.Config.ARGB_8888 else this
+}
+
+internal fun Dimension.toPx(scale: Scale): Float {
+    if (this is Dimension.Pixels) {
+        return px.toFloat()
+    } else {
+        return when (scale) {
+            Scale.FILL -> Float.MIN_VALUE
+            Scale.FIT -> Float.MAX_VALUE
+        }
+    }
 }

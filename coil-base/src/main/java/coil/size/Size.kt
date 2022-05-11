@@ -1,5 +1,4 @@
 @file:JvmName("-Sizes")
-@file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package coil.size
 
@@ -9,6 +8,17 @@ import coil.request.ImageRequest
 /**
  * Represents the target size of an image request.
  *
+ * Each [Size] is composed of two [Dimension]s, [width] and [height]. Each dimension determines
+ * by how much the source image should be scaled. A [Dimension] can either be a fixed pixel
+ * value or [Dimension.Undefined]. Examples:
+ *
+ * - Given `Size(400, 600)`, the image should be loaded to fit/fill a width of 400 pixels and a
+ *   height of 600 pixels.
+ * - Given `Size(400, Dimension.Undefined)`, the image should be loaded to fit/fill a width of 400
+ *   pixels.
+ * - Given `Size(Dimension.Undefined, Dimension.Undefined)`, the image should not be scaled to
+ *   fit/fill either width or height. i.e. it will be loaded at its original width/height.
+ *
  * @see ImageRequest.Builder.size
  * @see SizeResolver.size
  */
@@ -17,38 +27,28 @@ data class Size(
     val height: Dimension,
 ) {
 
-    /** Create a [Size] with a pixel value for width. */
-    constructor(@Px width: Int, height: Dimension) : this(Dimension(width), height)
-
-    /** Create a [Size] with a pixel value for height. */
-    constructor(width: Dimension, @Px height: Int) : this(width, Dimension(height))
-
-    /** Create a [Size] with pixel values for both width and height. */
-    constructor(@Px width: Int, @Px height: Int) : this(Dimension(width), Dimension(height))
-
     companion object {
         /**
-         * A [Size] whose width and height are equal to the original dimensions of the source image.
+         * A [Size] whose width and height are not scaled.
          */
-        @JvmField val ORIGINAL = Size(Dimension.Original, Dimension.Original)
+        @JvmField val ORIGINAL = Size(Dimension.Undefined, Dimension.Undefined)
     }
 }
 
-/**
- * Return true if this size is equal to [Size.ORIGINAL]. Else, return false.
- */
-val Size.isOriginal: Boolean
-    get() = this == Size.ORIGINAL
+/** Create a [Size] with a pixel value for width. */
+fun Size(@Px width: Int, height: Dimension) = Size(Dimension(width), height)
 
-@Deprecated(
-    message = "Migrate to 'coil.size.Size'.",
-    replaceWith = ReplaceWith("Size", "coil.size.Size")
-)
-typealias PixelSize = Size
+/** Create a [Size] with a pixel value for height. */
+fun Size(width: Dimension, @Px height: Int) = Size(width, Dimension(height))
+
+/** Create a [Size] with pixel values for both width and height. */
+fun Size(@Px width: Int, @Px height: Int) = Size(Dimension(width), Dimension(height))
+
+/** Return true if this size is equal to [Size.ORIGINAL]. Else, return false. */
+val Size.isOriginal: Boolean get() = this == Size.ORIGINAL
 
 @Deprecated(
     message = "Migrate to 'coil.size.Size.ORIGINAL'.",
     replaceWith = ReplaceWith("Size.ORIGINAL", "coil.size.Size")
 )
-inline val OriginalSize: Size
-    @JvmName("OriginalSize") get() = Size.ORIGINAL
+val OriginalSize: Size get() = Size.ORIGINAL

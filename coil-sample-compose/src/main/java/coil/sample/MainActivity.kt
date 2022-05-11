@@ -5,15 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -23,6 +19,7 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -102,12 +99,18 @@ private fun Content(
     screenFlow: MutableStateFlow<Screen>,
     imagesFlow: StateFlow<List<Image>>
 ) {
+    val context = LocalContext.current
+    val numColumns = remember(context) { numberOfColumns(context) }
+
     // Reset the scroll position when assetType changes.
     val assetType by assetTypeFlow.collectAsState()
-    val listState = rememberSaveable(assetType, saver = LazyListState.Saver) { LazyListState() }
+    val listStates = List(numColumns) {
+        rememberSaveable(assetType, saver = LazyListState.Saver) { LazyListState() }
+    }
+
     when (val screen = screenFlow.collectAsState().value) {
         is Screen.Detail -> DetailScreen(screen)
-        is Screen.List -> ListScreen(listState, screenFlow, imagesFlow)
+        is Screen.List -> ListScreen(numColumns, listStates, screenFlow, imagesFlow)
     }
 }
 
@@ -125,19 +128,17 @@ private fun DetailScreen(screen: Screen.Detail) {
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun ListScreen(
-    listState: LazyListState,
+    numColumns: Int,
+    listStates: List<LazyListState>,
     screenFlow: MutableStateFlow<Screen>,
     imagesFlow: StateFlow<List<Image>>
 ) {
-    val numColumns = numberOfColumns(LocalContext.current)
     val images by imagesFlow.collectAsState()
 
-    // Migrate to LazyStaggeredVerticalGrid when it's implemented.
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(numColumns),
-        state = listState
+    LazyStaggeredGrid(
+        columnCount = numColumns,
+        states = listStates
     ) {
         items(images) { image ->
             // Scale the image to fit the width of a column.

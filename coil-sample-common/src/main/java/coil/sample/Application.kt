@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package coil.sample
 
 import android.app.Application

@@ -1,5 +1,5 @@
 @file:JvmName("-SingletonExtensions")
-@file:Suppress("NOTHING_TO_INLINE", "unused")
+@file:Suppress("NOTHING_TO_INLINE")
 
 package coil
 
@@ -43,6 +43,7 @@ inline val Context.imageLoader: ImageLoader
  * - [DrawableRes] [Int]
  * - [Drawable]
  * - [Bitmap]
+ * - [ByteArray]
  * - [ByteBuffer]
  *
  * @param data The data to load.
@@ -56,9 +57,9 @@ inline fun ImageView.load(
     builder: ImageRequest.Builder.() -> Unit = {}
 ): Disposable {
     val request = ImageRequest.Builder(context)
-        .apply(builder)
         .data(data)
         .target(this)
+        .apply(builder)
         .build()
     return imageLoader.enqueue(request)
 }
