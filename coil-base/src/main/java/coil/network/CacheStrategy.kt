@@ -56,24 +56,23 @@ internal class CacheStrategy private constructor(
                 val headers = cacheResponse.responseHeaders
                 for (i in 0 until headers.size) {
                     val name = headers.name(i)
-                    val value = headers.value(i)
                     when {
                         name.equals("Date", ignoreCase = true) -> {
                             servedDate = headers.getDate("Date")
-                            servedDateString = value
+                            servedDateString = headers.value(i)
                         }
                         name.equals("Expires", ignoreCase = true) -> {
                             expires = headers.getDate("Expires")
                         }
                         name.equals("Last-Modified", ignoreCase = true) -> {
                             lastModified = headers.getDate("Last-Modified")
-                            lastModifiedString = value
+                            lastModifiedString = headers.value(i)
                         }
                         name.equals("ETag", ignoreCase = true) -> {
-                            etag = value
+                            etag = headers.value(i)
                         }
                         name.equals("Age", ignoreCase = true) -> {
-                            ageSeconds = value.toNonNegativeInt(-1)
+                            ageSeconds = headers.value(i).toNonNegativeInt(-1)
                         }
                     }
                 }
@@ -129,29 +128,26 @@ internal class CacheStrategy private constructor(
             // Find a condition to add to the request.
             // If the condition is satisfied, the response body will not be transmitted.
             val conditionName: String
-            val conditionValue: String?
+            val conditionValue: String
             when {
                 etag != null -> {
                     conditionName = "If-None-Match"
-                    conditionValue = etag
+                    conditionValue = etag!!
                 }
                 lastModified != null -> {
                     conditionName = "If-Modified-Since"
-                    conditionValue = lastModifiedString
+                    conditionValue = lastModifiedString!!
                 }
                 servedDate != null -> {
                     conditionName = "If-Modified-Since"
-                    conditionValue = servedDateString
+                    conditionValue = servedDateString!!
                 }
                 // No condition! Make a regular request.
                 else -> return CacheStrategy(request, null)
             }
 
-            val conditionalRequestHeaders = request.headers.newBuilder()
-            conditionalRequestHeaders.add(conditionName, conditionValue!!)
-
             val conditionalRequest = request.newBuilder()
-                .headers(conditionalRequestHeaders.build())
+                .addHeader(conditionName, conditionValue)
                 .build()
             return CacheStrategy(conditionalRequest, cacheResponse)
         }
@@ -220,7 +216,6 @@ internal class CacheStrategy private constructor(
     }
 
     companion object {
-
         /** Returns true if the response can be stored to later serve another request. */
         fun isCacheable(request: Request, response: Response): Boolean {
             // A 'no-store' directive on request or response prevents the response from being cached.
@@ -248,9 +243,7 @@ internal class CacheStrategy private constructor(
                     // Drop 100-level freshness warnings.
                     continue
                 }
-                if (isContentSpecificHeader(name) ||
-                    !isEndToEnd(name) ||
-                    networkHeaders[name] == null) {
+                if (isContentSpecificHeader(name) || !isEndToEnd(name) || networkHeaders[name] == null) {
                     result.add(name, value)
                 }
             }
