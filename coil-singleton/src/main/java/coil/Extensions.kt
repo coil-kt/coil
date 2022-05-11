@@ -43,6 +43,7 @@ inline val Context.imageLoader: ImageLoader
  * - [DrawableRes] [Int]
  * - [Drawable]
  * - [Bitmap]
+ * - [ByteArray]
  * - [ByteBuffer]
  *
  * @param data The data to load.
