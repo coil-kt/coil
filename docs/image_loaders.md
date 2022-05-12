@@ -56,8 +56,8 @@ class FakeImageLoader(private val context: Context) : ImageLoader {
 
     override val defaults = DefaultRequestOptions()
     override val components = ComponentRegistry()
-    override val memoryCache get() = null
-    override val diskCache get() = null
+    override val memoryCache: MemoryCache? get() = null
+    override val diskCache: DiskCache? get() = null
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Always call onStart before onSuccess.
