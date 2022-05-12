@@ -164,7 +164,6 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         return ScaleDrawable(baseDrawable, options.scale)
     }
 
-    @RequiresApi(28)
     class Factory @JvmOverloads constructor(
         private val enforceMinimumFrameDelay: Boolean = true
     ) : Decoder.Factory {

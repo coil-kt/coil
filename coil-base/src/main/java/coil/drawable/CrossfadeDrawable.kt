@@ -115,6 +115,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
         maxAlpha = alpha
     }
 
+    @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun getOpacity(): Int {
         val start = start
