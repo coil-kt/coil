@@ -844,6 +844,8 @@ public abstract class coil/target/GenericViewTarget : androidx/lifecycle/Default
 	public fun onStop (Landroidx/lifecycle/LifecycleOwner;)V
 	public fun onSuccess (Landroid/graphics/drawable/Drawable;)V
 	public abstract fun setDrawable (Landroid/graphics/drawable/Drawable;)V
+	protected final fun updateAnimation ()V
+	protected final fun updateDrawable (Landroid/graphics/drawable/Drawable;)V
 }
 
 public class coil/target/ImageViewTarget : coil/target/GenericViewTarget {
