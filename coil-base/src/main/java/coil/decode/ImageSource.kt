@@ -178,7 +178,7 @@ sealed class ImageSource : Closeable {
 class AssetMetadata(val fileName: String) : ImageSource.Metadata()
 
 /**
- * Metadata containing the [uri] of `content` URI.
+ * Metadata containing the [uri] of a `content` URI.
  */
 @ExperimentalCoilApi
 class ContentMetadata(val uri: Uri) : ImageSource.Metadata()
