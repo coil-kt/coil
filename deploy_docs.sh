@@ -31,3 +31,5 @@ rm docs/index.md \
    docs/README-ko.md \
    docs/README-tr.md \
    docs/README-zh.md
+rm -r docs/api
+rm -r site
