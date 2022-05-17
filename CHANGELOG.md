@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0] - May 17, 2022
+
+- **New**: Support loading `ByteArray`s. ([#1202](https://github.com/coil-kt/coil/pull/1202))
+- **New**: Support setting custom CSS rules for SVGs using `ImageRequest.Builder.css`. ([#1210](https://github.com/coil-kt/coil/pull/1210))
+- Fix: Convert `GenericViewTarget`'s private methods to protected. ([#1273](https://github.com/coil-kt/coil/pull/1273))
+- Update compile SDK to 32. ([#1268](https://github.com/coil-kt/coil/pull/1268))
+
 ## [2.0.0] - May 10, 2022
 
 Coil 2.0.0 is a major iteration of the library and includes breaking changes. Check out the [upgrade guide](https://coil-kt.github.io/coil/upgrading/) for how to upgrade.
