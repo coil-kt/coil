@@ -10,7 +10,7 @@ okhttp = "4.9.3"
 okio = "3.0.0"
 
 [plugins]
-binaryCompatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.9.0" }
+binaryCompatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.10.0" }
 dokka = { id = "org.jetbrains.dokka", version = "1.6.10" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "10.3.0" }
 
