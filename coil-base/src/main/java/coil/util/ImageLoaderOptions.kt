@@ -3,6 +3,7 @@ package coil.util
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
+import coil.decode.ExifOrientationPolicy
 
 /**
  * Private configuration options used by [RealImageLoader].
@@ -14,6 +15,7 @@ internal class ImageLoaderOptions(
     val networkObserverEnabled: Boolean = true,
     val respectCacheHeaders: Boolean = true,
     val bitmapFactoryMaxParallelism: Int = DEFAULT_MAX_PARALLELISM,
+    val bitmapFactoryExifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_OPTIMAL
 ) {
 
     fun copy(
@@ -21,10 +23,12 @@ internal class ImageLoaderOptions(
         networkObserverEnabled: Boolean = this.networkObserverEnabled,
         respectCacheHeaders: Boolean = this.respectCacheHeaders,
         bitmapFactoryMaxParallelism: Int = this.bitmapFactoryMaxParallelism,
+        bitmapFactoryExifOrientationPolicy: ExifOrientationPolicy = this.bitmapFactoryExifOrientationPolicy,
     ) = ImageLoaderOptions(
         addLastModifiedToFileCacheKey,
         networkObserverEnabled,
         respectCacheHeaders,
         bitmapFactoryMaxParallelism,
+        bitmapFactoryExifOrientationPolicy
     )
 }

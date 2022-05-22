@@ -102,6 +102,7 @@ public final class coil/ImageLoader$Builder {
 	public final fun allowRgb565 (Z)Lcoil/ImageLoader$Builder;
 	public final fun availableMemoryPercentage (D)Lcoil/ImageLoader$Builder;
 	public final fun bitmapConfig (Landroid/graphics/Bitmap$Config;)Lcoil/ImageLoader$Builder;
+	public final fun bitmapFactoryExifOrientationPolicy (Lcoil/decode/ExifOrientationPolicy;)Lcoil/ImageLoader$Builder;
 	public final fun bitmapFactoryMaxParallelism (I)Lcoil/ImageLoader$Builder;
 	public final fun build ()Lcoil/ImageLoader;
 	public final fun callFactory (Lkotlin/jvm/functions/Function0;)Lcoil/ImageLoader$Builder;
@@ -161,6 +162,8 @@ public final class coil/decode/BitmapFactoryDecoder : coil/decode/Decoder {
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;)V
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;)V
 	public synthetic fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil/decode/ExifOrientationPolicy;)V
+	public synthetic fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -168,6 +171,8 @@ public final class coil/decode/BitmapFactoryDecoder$Factory : coil/decode/Decode
 	public fun <init> ()V
 	public fun <init> (I)V
 	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ILcoil/decode/ExifOrientationPolicy;)V
+	public synthetic fun <init> (ILcoil/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil/fetch/SourceResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
@@ -211,6 +216,14 @@ public abstract interface class coil/decode/Decoder {
 
 public abstract interface class coil/decode/Decoder$Factory {
 	public abstract fun create (Lcoil/fetch/SourceResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
+}
+
+public final class coil/decode/ExifOrientationPolicy : java/lang/Enum {
+	public static final field IGNORE Lcoil/decode/ExifOrientationPolicy;
+	public static final field RESPECT_ALL Lcoil/decode/ExifOrientationPolicy;
+	public static final field RESPECT_OPTIMAL Lcoil/decode/ExifOrientationPolicy;
+	public static fun valueOf (Ljava/lang/String;)Lcoil/decode/ExifOrientationPolicy;
+	public static fun values ()[Lcoil/decode/ExifOrientationPolicy;
 }
 
 public abstract class coil/decode/ImageSource : java/io/Closeable {

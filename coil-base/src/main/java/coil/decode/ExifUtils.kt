@@ -19,26 +19,39 @@ import java.io.InputStream
 internal object ExifUtils {
 
     /**
-     * We don't support PNG EXIF data as it's very rarely used and requires buffering the entire
-     * file into memory. All of the supported formats short circuit when the EXIF chunk is found
-     * (often near the top of the file).
+     * A list of MIME types supported by the [ExifOrientationPolicy.RESPECT_OPTIMAL] policy.
      */
-    private val SUPPORTED_MIME_TYPES = arrayOf(
+    private val RESPECT_OPTIMAL_MIME_TYPES = setOf(
         MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF
     )
 
     private val PAINT = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     /**
-     * Read the image's EXIF data.
+     * Returns the image's EXIF data according to [exifOrientationPolicy].
      */
-    fun readData(mimeType: String?, source: BufferedSource): ExifData {
-        if (mimeType == null || mimeType !in SUPPORTED_MIME_TYPES) {
+    fun getExifData(
+        exifOrientationPolicy: ExifOrientationPolicy,
+        mimeType: String?,
+        source: BufferedSource
+    ): ExifData {
+        if (mimeType == null || !respectExifOrientation(mimeType, exifOrientationPolicy)) {
             return ExifData.NONE
         }
 
         val exifInterface = ExifInterface(ExifInterfaceInputStream(source.peek().inputStream()))
         return ExifData(exifInterface.isFlipped, exifInterface.rotationDegrees)
+    }
+
+    private fun respectExifOrientation(
+        mimeType: String,
+        exifOrientationPolicy: ExifOrientationPolicy
+    ): Boolean {
+        return when (exifOrientationPolicy) {
+            ExifOrientationPolicy.IGNORE -> false
+            ExifOrientationPolicy.RESPECT_OPTIMAL -> mimeType in RESPECT_OPTIMAL_MIME_TYPES
+            ExifOrientationPolicy.RESPECT_ALL -> true
+        }
     }
 
     /**
