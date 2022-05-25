@@ -15,7 +15,7 @@ dokka = { id = "org.jetbrains.dokka", version = "1.6.10" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "10.3.0" }
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:7.2.0"
+gradlePlugin-android = "com.android.tools.build:gradle:7.2.1"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.19.0"
 
