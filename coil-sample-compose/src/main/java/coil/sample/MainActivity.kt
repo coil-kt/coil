@@ -7,11 +7,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -74,13 +73,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun Toolbar(assetType: MutableStateFlow<AssetType>) {
-    val topPadding = with(LocalDensity.current) {
-        WindowInsets.systemBars.getTop(this).toDp()
-    }
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
         actions = { AssetTypeButton(assetType) },
-        modifier = Modifier.padding(top = topPadding)
+        modifier = Modifier.statusBarsPadding()
     )
 }
 
