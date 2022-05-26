@@ -413,6 +413,14 @@ public final class coil/memory/MemoryCache$Key : android/os/Parcelable {
 	public fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
+public final class coil/memory/MemoryCache$Key$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcoil/memory/MemoryCache$Key;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcoil/memory/MemoryCache$Key;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
 public final class coil/memory/MemoryCache$Value {
 	public fun <init> (Landroid/graphics/Bitmap;Ljava/util/Map;)V
 	public synthetic fun <init> (Landroid/graphics/Bitmap;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V

@@ -7,9 +7,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -33,8 +35,6 @@ import androidx.compose.ui.unit.DpSize
 import coil.compose.AsyncImage
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.ProvideWindowInsets
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -52,23 +52,21 @@ class MainActivity : ComponentActivity() {
                     onPrimary = Color.Black
                 )
             ) {
-                ProvideWindowInsets {
-                    Scaffold(
-                        topBar = {
-                            Toolbar(viewModel.assetType)
-                        },
-                        content = { padding ->
-                            Box(Modifier.padding(padding)) {
-                                Content(
-                                    assetTypeFlow = viewModel.assetType,
-                                    screenFlow = viewModel.screen,
-                                    imagesFlow = viewModel.images
-                                )
-                            }
+                Scaffold(
+                    topBar = {
+                        Toolbar(viewModel.assetType)
+                    },
+                    content = { padding ->
+                        Box(Modifier.padding(padding)) {
+                            Content(
+                                assetTypeFlow = viewModel.assetType,
+                                screenFlow = viewModel.screen,
+                                imagesFlow = viewModel.images
+                            )
                         }
-                    )
-                    BackHandler { viewModel.onBackPressed() }
-                }
+                    }
+                )
+                BackHandler { viewModel.onBackPressed() }
             }
         }
     }
@@ -77,7 +75,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun Toolbar(assetType: MutableStateFlow<AssetType>) {
     val topPadding = with(LocalDensity.current) {
-        LocalWindowInsets.current.systemBars.top.toDp()
+        WindowInsets.systemBars.getTop(this).toDp()
     }
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },

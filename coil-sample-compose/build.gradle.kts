@@ -33,6 +33,5 @@ dependencies {
     implementation(projects.coilVideo)
 
     implementation(libs.androidx.activity.compose)
-    implementation(libs.accompanist.insets)
     implementation(libs.compose.material)
 }
