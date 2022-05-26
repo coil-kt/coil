@@ -12,5 +12,10 @@
             android:name="coil.util.TestActivity"
             android:exported="true"
             android:theme="@style/Theme.TestActivity"/>
+
+        <activity
+            android:name="coil.util.TestComposeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.TestActivity"/>
     </application>
 </manifest>

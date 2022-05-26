@@ -9,9 +9,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
-/** Launch [TestActivity] and invoke [action]. */
-fun withTestActivity(action: ActivityAction<TestActivity>) {
-    launchActivity<TestActivity>().use { scenario ->
+/** Launch [T] and invoke [action]. */
+inline fun <reified T : Activity> launchActivity(action: ActivityAction<T>) {
+    launchActivity<T>().use { scenario ->
         scenario.moveToState(Lifecycle.State.RESUMED)
         scenario.onActivity(action)
     }
