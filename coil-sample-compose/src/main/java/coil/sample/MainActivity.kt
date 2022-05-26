@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -56,12 +57,14 @@ class MainActivity : ComponentActivity() {
                         topBar = {
                             Toolbar(viewModel.assetType)
                         },
-                        content = {
-                            Content(
-                                assetTypeFlow = viewModel.assetType,
-                                screenFlow = viewModel.screen,
-                                imagesFlow = viewModel.images
-                            )
+                        content = { padding ->
+                            Box(Modifier.padding(padding)) {
+                                Content(
+                                    assetTypeFlow = viewModel.assetType,
+                                    screenFlow = viewModel.screen,
+                                    imagesFlow = viewModel.images
+                                )
+                            }
                         }
                     )
                     BackHandler { viewModel.onBackPressed() }
