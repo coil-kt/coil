@@ -29,7 +29,7 @@ import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.util.ASSET_FILE_PATH_ROOT
-import coil.util.TestActivity
+import coil.util.TestViewActivity
 import coil.util.activity
 import coil.util.createMockWebServer
 import coil.util.decodeBitmapAsset
@@ -79,7 +79,7 @@ class RealImageLoaderAndroidTest {
     private lateinit var imageLoader: ImageLoader
 
     @get:Rule
-    val activityRule = activityScenarioRule<TestActivity>()
+    val activityRule = activityScenarioRule<TestViewActivity>()
 
     @Before
     fun before() {

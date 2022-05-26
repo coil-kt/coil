@@ -13,7 +13,7 @@ import coil.size.Size
 import coil.transform.Transformation
 import coil.util.ASSET_FILE_PATH_ROOT
 import coil.util.CoilUtils
-import coil.util.TestActivity
+import coil.util.TestViewActivity
 import coil.util.activity
 import coil.util.requestManager
 import coil.util.runTestMain
@@ -34,7 +34,7 @@ class DisposableTest {
     private lateinit var imageLoader: ImageLoader
 
     @get:Rule
-    val activityRule = activityScenarioRule<TestActivity>()
+    val activityRule = activityScenarioRule<TestViewActivity>()
 
     @Before
     fun before() {

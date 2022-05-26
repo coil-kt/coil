@@ -9,7 +9,7 @@
         tools:ignore="UnusedAttribute">
 
         <activity
-            android:name="coil.util.TestActivity"
+            android:name="coil.util.TestViewActivity"
             android:exported="true"
             android:theme="@style/Theme.TestActivity"/>
 
