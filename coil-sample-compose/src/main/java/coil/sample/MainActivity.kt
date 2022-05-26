@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpSize
+import androidx.core.view.WindowCompat
 import coil.compose.AsyncImage
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
@@ -43,7 +44,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.setDecorFitsSystemWindowsCompat(false)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             MaterialTheme(
                 colors = lightColors(
