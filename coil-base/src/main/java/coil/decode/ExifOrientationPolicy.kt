@@ -29,8 +29,8 @@ enum class ExifOrientationPolicy {
     /**
      * Respect the EXIF orientation flag for all supported formats.
      *
-     * NOTE: This can potentially cause out of memory errors as certain image formats will be
-     * buffered entirely into memory while being decoded.
+     * NOTE: This policy can potentially cause out of memory errors as certain image formats
+     * (e.g. PNG) will be buffered entirely into memory while being decoded.
      */
     RESPECT_ALL
 }
