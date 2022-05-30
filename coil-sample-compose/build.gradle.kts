@@ -33,5 +33,6 @@ dependencies {
     implementation(projects.coilVideo)
 
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.compose.material)
 }

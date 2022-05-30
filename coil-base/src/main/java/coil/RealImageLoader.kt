@@ -101,7 +101,12 @@ internal class RealImageLoader(
         .add(BitmapFetcher.Factory())
         .add(ByteBufferFetcher.Factory())
         // Decoders
-        .add(BitmapFactoryDecoder.Factory(options.bitmapFactoryMaxParallelism))
+        .add(
+            BitmapFactoryDecoder.Factory(
+                maxParallelism = options.bitmapFactoryMaxParallelism,
+                exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy
+            )
+        )
         .build()
     private val interceptors = components.interceptors +
         EngineInterceptor(this, requestService, logger)

@@ -13,7 +13,7 @@ import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.request.Options
 import coil.size.Size
-import coil.util.TestViewActivity
+import coil.util.ViewTestActivity
 import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import coil.util.getDrawableCompat
@@ -94,7 +94,7 @@ class ResourceUriFetcherTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/469 */
     @Test
-    fun colorAttributeIsApplied() = launchActivity { activity: TestViewActivity ->
+    fun colorAttributeIsApplied() = launchActivity { activity: ViewTestActivity ->
         // Intentionally use the application context.
         val imageLoader = ImageLoader(context.applicationContext)
         val options = Options(context = activity, size = Size.ORIGINAL)

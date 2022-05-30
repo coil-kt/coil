@@ -9,12 +9,12 @@
         tools:ignore="UnusedAttribute">
 
         <activity
-            android:name="coil.util.TestViewActivity"
+            android:name="coil.util.ComposeTestActivity"
             android:exported="true"
             android:theme="@style/Theme.TestActivity"/>
 
         <activity
-            android:name="coil.util.TestComposeActivity"
+            android:name="coil.util.ViewTestActivity"
             android:exported="true"
             android:theme="@style/Theme.TestActivity"/>
     </application>
