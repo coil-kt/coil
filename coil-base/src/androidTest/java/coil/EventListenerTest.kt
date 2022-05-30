@@ -18,7 +18,7 @@ import coil.request.SuccessResult
 import coil.size.Size
 import coil.transform.Transformation
 import coil.transition.Transition
-import coil.util.TestActivity
+import coil.util.ViewTestActivity
 import coil.util.activity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,7 +38,7 @@ class EventListenerTest {
     private lateinit var context: Context
 
     @get:Rule
-    val activityRule = activityScenarioRule<TestActivity>()
+    val activityRule = activityScenarioRule<ViewTestActivity>()
 
     @Before
     fun before() {

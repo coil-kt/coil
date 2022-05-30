@@ -51,7 +51,7 @@ import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import coil.util.TestActivity
+import coil.util.ComposeTestActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filter
@@ -72,7 +72,7 @@ import kotlin.test.assertNull
 class AsyncImagePainterTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<TestActivity>()
+    val composeTestRule = createAndroidComposeRule<ComposeTestActivity>()
 
     private lateinit var server: MockWebServer
     private lateinit var requestTracker: ImageLoaderIdlingResource
