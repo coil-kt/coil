@@ -22,11 +22,20 @@ import okio.buffer
 import kotlin.math.roundToInt
 
 /** The base [Decoder] that uses [BitmapFactory] to decode a given [ImageSource]. */
-class BitmapFactoryDecoder @JvmOverloads constructor(
+class BitmapFactoryDecoder constructor(
     private val source: ImageSource,
     private val options: Options,
-    private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE)
+    private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
+    private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_OPTIMAL
 ) : Decoder {
+
+    // Kept for backward compatibility
+    @JvmOverloads
+    constructor(
+        source: ImageSource,
+        options: Options,
+        parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE)
+    ) : this(source, options, parallelismLock, ExifOrientationPolicy.RESPECT_OPTIMAL)
 
     override suspend fun decode() = parallelismLock.withPermit {
         runInterruptible { BitmapFactory.Options().decode() }
@@ -42,8 +51,8 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         safeSource.exception?.let { throw it }
         inJustDecodeBounds = false
 
-        // Read the image's EXIF data.
-        val exifData = ExifUtils.readData(outMimeType, safeBufferedSource)
+        // Get the image's EXIF data.
+        val exifData = ExifUtils.getExifData(exifOrientationPolicy, outMimeType, safeBufferedSource)
         safeSource.exception?.let { throw it }
 
         // Always create immutable bitmaps as they have better performance.
@@ -167,14 +176,20 @@ class BitmapFactoryDecoder @JvmOverloads constructor(
         }
     }
 
-    class Factory @JvmOverloads constructor(
-        maxParallelism: Int = DEFAULT_MAX_PARALLELISM
+    class Factory constructor(
+        maxParallelism: Int = DEFAULT_MAX_PARALLELISM,
+        private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_OPTIMAL
     ) : Decoder.Factory {
+
+        // Kept for backward compatibility
+        constructor(
+            maxParallelism: Int = DEFAULT_MAX_PARALLELISM
+        ) : this(maxParallelism, ExifOrientationPolicy.RESPECT_OPTIMAL)
 
         private val parallelismLock = Semaphore(maxParallelism)
 
         override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder {
-            return BitmapFactoryDecoder(result.source, options, parallelismLock)
+            return BitmapFactoryDecoder(result.source, options, parallelismLock, exifOrientationPolicy)
         }
 
         override fun equals(other: Any?) = other is Factory

@@ -9,7 +9,9 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import androidx.lifecycle.Lifecycle
+import coil.decode.BitmapFactoryDecoder
 import coil.decode.Decoder
+import coil.decode.ExifOrientationPolicy
 import coil.disk.DiskCache
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
@@ -322,6 +324,17 @@ interface ImageLoader {
         fun bitmapFactoryMaxParallelism(maxParallelism: Int) = apply {
             require(maxParallelism > 0) { "maxParallelism must be > 0." }
             this.options = this.options.copy(bitmapFactoryMaxParallelism = maxParallelism)
+        }
+
+        /**
+         * Sets the policy for handling the EXIF orientation flag for [BitmapFactoryDecoder].
+         */
+        fun bitmapFactoryExifOrientationPolicy(
+            exifOrientationPolicy: ExifOrientationPolicy
+        ) = apply {
+            this.options = this.options.copy(
+                bitmapFactoryExifOrientationPolicy = exifOrientationPolicy
+            )
         }
 
         /**
