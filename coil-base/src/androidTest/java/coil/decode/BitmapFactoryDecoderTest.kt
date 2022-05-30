@@ -2,6 +2,7 @@ package coil.decode
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
@@ -108,17 +109,6 @@ class BitmapFactoryDecoderTest {
         val size = Size.ORIGINAL
         val normal = decodeBitmap("normal.jpg", size)
         assertEquals(Size(1080, 1350), normal.size)
-    }
-
-    @Test
-    fun exifTransformationsAreAppliedCorrectlyByDefault() = runTest {
-        val size = Size(500, 500)
-        val normal = decodeBitmap("normal.jpg", size)
-
-        for (index in 1..8) {
-            val other = decodeBitmap("exif/$index.jpg", size)
-            assertTrue(normal.isSimilarTo(other), "Image with index $index is incorrect.")
-        }
     }
 
     @Test
@@ -229,46 +219,69 @@ class BitmapFactoryDecoderTest {
         assertFalse(result.isPremultiplied)
     }
 
-    // https://github.com/coil-kt/coil/issues/1074
     @Test
     fun exifOrientationPolicy_ignore() = runTest {
-        val decoderFactory = BitmapFactoryDecoder.Factory(
+        val factory = BitmapFactoryDecoder.Factory(
             exifOrientationPolicy = ExifOrientationPolicy.IGNORE
         )
 
-        for (index in 1..4) {
-            val result = decodeBitmap(decoderFactory, "exif/$index.jpg", Size.ORIGINAL)
-            assertEquals(Size(1080, 1350), result.size)
+        // Test JPG
+        for (index in 1..8) {
+            val assetName = "exif/$index.jpg"
+            val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
+            val actual = decodeBitmap(assetName, Size.ORIGINAL, factory = factory)
+            assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
 
-        for (index in 5..8) {
-            val result = decodeBitmap(decoderFactory, "exif/$index.jpg", Size.ORIGINAL)
-            assertEquals(Size(1350, 1080), result.size)
+        // Test PNG
+        for (index in 1..8) {
+            val assetName = "exif/$index.png"
+            val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
+            val actual = decodeBitmap(assetName, Size.ORIGINAL, factory = factory)
+            assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
     }
 
     @Test
-    fun exifOrientationPolicy_respectOptimal() = runTest {
-        val decoderFactory = BitmapFactoryDecoder.Factory(
-            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_OPTIMAL
+    fun exifOrientationPolicy_respectPerformance() = runTest {
+        val factory = BitmapFactoryDecoder.Factory(
+            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
         )
 
+        // Test JPG
+        val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL, factory = factory)
         for (index in 1..8) {
-            val result = decodeBitmap(decoderFactory, "exif/$index.jpg", Size.ORIGINAL)
-            assertEquals(Size(1080, 1350), result.size)
+            val actual = decodeBitmap("exif/$index.jpg", Size.ORIGINAL, factory = factory)
+            assertTrue(normalJpg.isSimilarTo(actual), "Image with index $index is incorrect.")
+        }
+
+        // Test PNG
+        for (index in 1..8) {
+            val assetName = "exif/$index.png"
+            val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
+            val actual = decodeBitmap(assetName, Size.ORIGINAL, factory = factory)
+            assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
     }
 
-    // https://github.com/coil-kt/coil/issues/1182
     @Test
     fun exifOrientationPolicy_respectAll() = runTest {
-        val decoderFactory = BitmapFactoryDecoder.Factory(
+        val factory = BitmapFactoryDecoder.Factory(
             exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL
         )
 
+        // Test JPG
+        val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL, factory = factory)
         for (index in 1..8) {
-            val result = decodeBitmap(decoderFactory, "exif/$index.png", Size.ORIGINAL)
-            assertEquals(Size(108, 135), result.size)
+            val actual = decodeBitmap("exif/$index.jpg", Size.ORIGINAL, factory = factory)
+            assertTrue(normalJpg.isSimilarTo(actual), "Image with index $index is incorrect.")
+        }
+
+        // Test PNG
+        val normalPng = decodeBitmap("normal.png", Size.ORIGINAL, factory = factory)
+        for (index in 1..8) {
+            val actual = decodeBitmap("exif/$index.png", Size.ORIGINAL, factory = factory)
+            assertTrue(normalPng.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
     }
 
@@ -321,56 +334,30 @@ class BitmapFactoryDecoderTest {
     private suspend fun decodeBitmap(
         assetName: String,
         size: Size,
-        scale: Scale = Scale.FILL
-    ): Bitmap = decodeBitmap(decoderFactory, assetName, size, scale)
+        scale: Scale = Scale.FILL,
+        factory: BitmapFactoryDecoder.Factory = this.decoderFactory
+    ): Bitmap = assertIs<BitmapDrawable>(decode(assetName, size, scale, factory).drawable).bitmap
 
     private suspend fun decodeBitmap(
         assetName: String,
-        options: Options
-    ): Bitmap = decodeBitmap(decoderFactory, assetName, options)
+        options: Options,
+        factory: BitmapFactoryDecoder.Factory = this.decoderFactory
+    ): Bitmap = assertIs<BitmapDrawable>(decode(assetName, options, factory).drawable).bitmap
 
     private suspend fun decode(
         assetName: String,
         size: Size,
-        scale: Scale = Scale.FILL
-    ): DecodeResult = decode(decoderFactory, assetName, size, scale)
+        scale: Scale = Scale.FILL,
+        factory: BitmapFactoryDecoder.Factory = this.decoderFactory
+    ): DecodeResult = decode(assetName, Options(context, size = size, scale = scale), factory)
 
     private suspend fun decode(
         assetName: String,
-        options: Options
-    ): DecodeResult = decode(decoderFactory, assetName, options)
-
-    private suspend fun decodeBitmap(
-        decoderFactory: BitmapFactoryDecoder.Factory,
-        assetName: String,
-        size: Size,
-        scale: Scale = Scale.FILL
-    ): Bitmap = decodeBitmap(
-        decoderFactory,
-        assetName,
-        Options(context = context, size = size, scale = scale)
-    )
-
-    private suspend fun decodeBitmap(
-        decoderFactory: BitmapFactoryDecoder.Factory,
-        assetName: String,
-        options: Options
-    ): Bitmap = (decode(decoderFactory, assetName, options).drawable as BitmapDrawable).bitmap
-
-    private suspend fun decode(
-        decoderFactory: BitmapFactoryDecoder.Factory,
-        assetName: String,
-        size: Size,
-        scale: Scale = Scale.FILL
-    ): DecodeResult = decode(decoderFactory, assetName, Options(context = context, size = size, scale = scale))
-
-    private suspend fun decode(
-        decoderFactory: BitmapFactoryDecoder.Factory,
-        assetName: String,
-        options: Options
+        options: Options,
+        factory: BitmapFactoryDecoder.Factory
     ): DecodeResult {
         val source = context.assets.open(assetName).source().buffer()
-        val decoder = decoderFactory.create(
+        val decoder = factory.create(
             result = SourceResult(
                 source = ImageSource(source, context),
                 mimeType = null,

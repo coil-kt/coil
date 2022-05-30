@@ -159,8 +159,8 @@ public final class coil/decode/AssetMetadata : coil/decode/ImageSource$Metadata 
 }
 
 public final class coil/decode/BitmapFactoryDecoder : coil/decode/Decoder {
-	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;)V
-	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;)V
+	public synthetic fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;)V
+	public synthetic fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;)V
 	public synthetic fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil/decode/ExifOrientationPolicy;)V
 	public synthetic fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;Lkotlinx/coroutines/sync/Semaphore;Lcoil/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -169,7 +169,7 @@ public final class coil/decode/BitmapFactoryDecoder : coil/decode/Decoder {
 
 public final class coil/decode/BitmapFactoryDecoder$Factory : coil/decode/Decoder$Factory {
 	public fun <init> ()V
-	public fun <init> (I)V
+	public synthetic fun <init> (I)V
 	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (ILcoil/decode/ExifOrientationPolicy;)V
 	public synthetic fun <init> (ILcoil/decode/ExifOrientationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -221,7 +221,7 @@ public abstract interface class coil/decode/Decoder$Factory {
 public final class coil/decode/ExifOrientationPolicy : java/lang/Enum {
 	public static final field IGNORE Lcoil/decode/ExifOrientationPolicy;
 	public static final field RESPECT_ALL Lcoil/decode/ExifOrientationPolicy;
-	public static final field RESPECT_OPTIMAL Lcoil/decode/ExifOrientationPolicy;
+	public static final field RESPECT_PERFORMANCE Lcoil/decode/ExifOrientationPolicy;
 	public static fun valueOf (Ljava/lang/String;)Lcoil/decode/ExifOrientationPolicy;
 	public static fun values ()[Lcoil/decode/ExifOrientationPolicy;
 }
