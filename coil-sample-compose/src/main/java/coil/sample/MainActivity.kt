@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +18,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -30,90 +28,106 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpSize
+import androidx.core.view.WindowCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.ProvideWindowInsets
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.setDecorFitsSystemWindowsCompat(false)
-        setContent {
-            MaterialTheme(
-                colors = lightColors(
-                    primary = Color.White,
-                    onPrimary = Color.Black
-                )
-            ) {
-                ProvideWindowInsets {
-                    Scaffold(
-                        topBar = {
-                            Toolbar(viewModel.assetType)
-                        },
-                        content = { padding ->
-                            Box(Modifier.padding(padding)) {
-                                Content(
-                                    assetTypeFlow = viewModel.assetType,
-                                    screenFlow = viewModel.screen,
-                                    imagesFlow = viewModel.images
-                                )
-                            }
-                        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setContent { Content() }
+    }
+}
+
+@Composable
+private fun Content(viewModel: MainViewModel = viewModel()) {
+    MaterialTheme(
+        colors = lightColors(
+            primary = Color.White,
+            onPrimary = Color.Black
+        )
+    ) {
+        ProvideWindowInsets {
+            Scaffold(
+                topBar = {
+                    Toolbar(
+                        assetType = viewModel.assetType.collectAsState().value,
+                        onAssetTypeChange = { viewModel.assetType.value = it }
                     )
-                    BackHandler { viewModel.onBackPressed() }
+                },
+                content = { padding ->
+                    Box(Modifier.padding(padding)) {
+                        ScaffoldContent(
+                            screen = viewModel.screen.collectAsState().value,
+                            onScreenChange = { viewModel.screen.value = it },
+                            images = viewModel.images.collectAsState().value
+                        )
+                    }
                 }
-            }
+            )
+            BackHandler { viewModel.onBackPressed() }
         }
     }
 }
 
 @Composable
-private fun Toolbar(assetType: MutableStateFlow<AssetType>) {
+private fun Toolbar(
+    assetType: AssetType,
+    onAssetTypeChange: (AssetType) -> Unit,
+) {
     val topPadding = with(LocalDensity.current) {
         LocalWindowInsets.current.systemBars.top.toDp()
     }
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
-        actions = { AssetTypeButton(assetType) },
+        actions = { AssetTypeButton(assetType, onAssetTypeChange) },
         modifier = Modifier.padding(top = topPadding)
     )
 }
 
 @Composable
-private fun AssetTypeButton(assetTypeFlow: MutableStateFlow<AssetType>) {
-    val assetType by assetTypeFlow.collectAsState()
+private fun AssetTypeButton(
+    assetType: AssetType,
+    onAssetTypeChange: (AssetType) -> Unit,
+) {
     IconButton(
-        onClick = { assetTypeFlow.value = assetType.next() }
-    ) {
-        Text(text = assetType.name)
-    }
+        onClick = { onAssetTypeChange(assetType.next()) },
+        content = { Text(assetType.name) }
+    )
 }
 
 @Composable
-private fun Content(
-    assetTypeFlow: StateFlow<AssetType>,
-    screenFlow: MutableStateFlow<Screen>,
-    imagesFlow: StateFlow<List<Image>>
+private fun ScaffoldContent(
+    screen: Screen,
+    onScreenChange: (Screen) -> Unit,
+    images: List<Image>,
 ) {
     val context = LocalContext.current
     val numColumns = remember(context) { numberOfColumns(context) }
-
-    // Reset the scroll position when assetType changes.
-    val assetType by assetTypeFlow.collectAsState()
     val listStates = List(numColumns) {
-        rememberSaveable(assetType, saver = LazyListState.Saver) { LazyListState() }
+        // Reset the scroll position when the image list changes.
+        rememberSaveable(images, saver = LazyListState.Saver) { LazyListState() }
     }
 
-    when (val screen = screenFlow.collectAsState().value) {
-        is Screen.Detail -> DetailScreen(screen)
-        is Screen.List -> ListScreen(numColumns, listStates, screenFlow, imagesFlow)
+    when (screen) {
+        is Screen.Detail -> {
+            DetailScreen(screen)
+        }
+        is Screen.List -> {
+            ListScreen(
+                listStates = listStates,
+                images = images,
+                onImageClick = { image, placeholder ->
+                    onScreenChange(Screen.Detail(image, placeholder))
+                }
+            )
+        }
     }
 }
 
@@ -132,26 +146,23 @@ private fun DetailScreen(screen: Screen.Detail) {
 
 @Composable
 private fun ListScreen(
-    numColumns: Int,
     listStates: List<LazyListState>,
-    screenFlow: MutableStateFlow<Screen>,
-    imagesFlow: StateFlow<List<Image>>
+    images: List<Image>,
+    onImageClick: (Image, MemoryCache.Key?) -> Unit,
 ) {
-    val images by imagesFlow.collectAsState()
-
     LazyStaggeredGrid(
-        columnCount = numColumns,
+        columnCount = listStates.size,
         states = listStates
     ) {
         items(images) { image ->
             // Scale the image to fit the width of a column.
             val size = with(LocalDensity.current) {
                 image
-                    .calculateScaledSize(LocalContext.current, numColumns)
+                    .calculateScaledSize(LocalContext.current, listStates.size)
                     .run { DpSize(width.toDp(), height.toDp()) }
             }
 
-            // Intentionally not a `State` object to avoid recomposition.
+            // Intentionally not a state object to avoid recomposition.
             var placeholder: MemoryCache.Key? = null
 
             AsyncImage(
@@ -166,7 +177,7 @@ private fun ListScreen(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(size)
-                    .clickable { screenFlow.value = Screen.Detail(image, placeholder) }
+                    .clickable { onImageClick(image, placeholder) }
             )
         }
     }
