@@ -1,5 +1,7 @@
 package coil.decode
 
+import coil.ImageLoader
+
 /**
  * Specifies the policy for handling the EXIF orientation flag.
  */
@@ -11,20 +13,24 @@ enum class ExifOrientationPolicy {
     IGNORE,
 
     /**
-     * Respect the EXIF orientation flag only for those formats for which the presence of
-     * this flag is _typical_.
+     * Respect the EXIF orientation flag only for image formats that won't negatively affect
+     * performance.
      *
-     * It's guaranteed that this policy respects the EXIF orientation flag
-     * for the following MIME types:
+     * This policy respects the EXIF orientation flag for the following MIME types:
      * - image/jpeg
      * - image/webp
      * - image/heic
      * - image/heif
+     *
+     * This is the default value for [ImageLoader.Builder.bitmapFactoryExifOrientationPolicy].
      */
-    RESPECT_OPTIMAL,
+    RESPECT_PERFORMANCE,
 
     /**
      * Respect the EXIF orientation flag for all supported formats.
+     *
+     * NOTE: This can potentially cause out of memory errors as certain image formats will be
+     * buffered entirely into memory while being decoded.
      */
     RESPECT_ALL
 }

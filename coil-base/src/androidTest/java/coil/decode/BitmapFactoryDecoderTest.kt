@@ -250,7 +250,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun exifOrientationPolicy_respectOptimal() = runTest {
         val decoderFactory = BitmapFactoryDecoder.Factory(
-            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_OPTIMAL
+            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
         )
 
         for (index in 1..8) {
