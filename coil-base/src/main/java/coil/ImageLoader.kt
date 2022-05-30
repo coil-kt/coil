@@ -327,14 +327,13 @@ interface ImageLoader {
         }
 
         /**
-         * Sets the policy for handling the EXIF orientation flag for [BitmapFactoryDecoder].
+         * Sets the policy for handling the EXIF orientation flag for images decoded by
+         * [BitmapFactoryDecoder].
+         *
+         * Default: [ExifOrientationPolicy.RESPECT_PERFORMANCE]
          */
-        fun bitmapFactoryExifOrientationPolicy(
-            exifOrientationPolicy: ExifOrientationPolicy
-        ) = apply {
-            this.options = this.options.copy(
-                bitmapFactoryExifOrientationPolicy = exifOrientationPolicy
-            )
+        fun bitmapFactoryExifOrientationPolicy(policy: ExifOrientationPolicy) = apply {
+            this.options = this.options.copy(bitmapFactoryExifOrientationPolicy = policy)
         }
 
         /**

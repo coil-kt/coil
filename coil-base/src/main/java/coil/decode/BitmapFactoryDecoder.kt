@@ -22,20 +22,25 @@ import okio.buffer
 import kotlin.math.roundToInt
 
 /** The base [Decoder] that uses [BitmapFactory] to decode a given [ImageSource]. */
-class BitmapFactoryDecoder constructor(
+class BitmapFactoryDecoder(
     private val source: ImageSource,
     private val options: Options,
     private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
-    private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_OPTIMAL
+    private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
 ) : Decoder {
 
-    // Kept for backward compatibility
-    @JvmOverloads
+    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+    constructor(
+        source: ImageSource,
+        options: Options
+    ) : this(source, options)
+
+    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
     constructor(
         source: ImageSource,
         options: Options,
         parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE)
-    ) : this(source, options, parallelismLock, ExifOrientationPolicy.RESPECT_OPTIMAL)
+    ) : this(source, options, parallelismLock)
 
     override suspend fun decode() = parallelismLock.withPermit {
         runInterruptible { BitmapFactory.Options().decode() }
@@ -52,7 +57,7 @@ class BitmapFactoryDecoder constructor(
         inJustDecodeBounds = false
 
         // Get the image's EXIF data.
-        val exifData = ExifUtils.getExifData(exifOrientationPolicy, outMimeType, safeBufferedSource)
+        val exifData = ExifUtils.getExifData(outMimeType, safeBufferedSource, exifOrientationPolicy)
         safeSource.exception?.let { throw it }
 
         // Always create immutable bitmaps as they have better performance.
@@ -176,15 +181,17 @@ class BitmapFactoryDecoder constructor(
         }
     }
 
-    class Factory constructor(
+    class Factory(
         maxParallelism: Int = DEFAULT_MAX_PARALLELISM,
-        private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_OPTIMAL
+        private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
     ) : Decoder.Factory {
 
-        // Kept for backward compatibility
-        constructor(
-            maxParallelism: Int = DEFAULT_MAX_PARALLELISM
-        ) : this(maxParallelism, ExifOrientationPolicy.RESPECT_OPTIMAL)
+        @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
+        @SinceKotlin("999.9") // Only public in Java.
+        constructor() : this()
+
+        @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
+        constructor(maxParallelism: Int = DEFAULT_MAX_PARALLELISM) : this(maxParallelism)
 
         private val parallelismLock = Semaphore(maxParallelism)
 
