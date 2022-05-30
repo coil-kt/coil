@@ -187,7 +187,7 @@ class BitmapFactoryDecoder(
     ) : Decoder.Factory {
 
         @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
-        @SinceKotlin("999.9") // Only public to Java.
+        @SinceKotlin("999.9") // Only public in Java.
         constructor() : this()
 
         @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
