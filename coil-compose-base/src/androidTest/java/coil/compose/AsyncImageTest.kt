@@ -51,7 +51,7 @@ import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
 import coil.size.Scale
-import coil.util.TestActivity
+import coil.util.ComposeTestActivity
 import kotlinx.coroutines.delay
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -68,7 +68,7 @@ import kotlin.test.fail
 class AsyncImageTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<TestActivity>()
+    val composeTestRule = createAndroidComposeRule<ComposeTestActivity>()
 
     private lateinit var server: MockWebServer
     private lateinit var requestTracker: ImageLoaderIdlingResource

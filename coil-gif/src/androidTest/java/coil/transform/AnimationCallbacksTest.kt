@@ -15,7 +15,7 @@ import coil.request.ImageRequest
 import coil.request.onAnimationEnd
 import coil.request.onAnimationStart
 import coil.request.repeatCount
-import coil.util.TestActivity
+import coil.util.ViewTestActivity
 import coil.util.activity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +33,7 @@ class AnimationCallbacksTest {
     private lateinit var imageLoader: ImageLoader
 
     @get:Rule
-    val activityRule = activityScenarioRule<TestActivity>()
+    val activityRule = activityScenarioRule<ViewTestActivity>()
 
     @Before
     fun before() {
