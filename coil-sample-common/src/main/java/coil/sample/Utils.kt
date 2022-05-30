@@ -6,9 +6,7 @@ package coil.sample
 import android.content.Context
 import android.graphics.Color
 import android.util.Size
-import android.view.Window
 import androidx.annotation.ColorInt
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.AndroidViewModel
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -16,10 +14,6 @@ import kotlin.random.Random
 
 inline val AndroidViewModel.context: Context
     get() = getApplication()
-
-inline fun Window.setDecorFitsSystemWindowsCompat(decorFitsSystemWindows: Boolean) {
-    WindowCompat.setDecorFitsSystemWindows(this, decorFitsSystemWindows)
-}
 
 @ColorInt
 fun randomColor(): Int {
