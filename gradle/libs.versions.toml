@@ -51,7 +51,7 @@ junit = "junit:junit:4.13.2"
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
-material = "com.google.android.material:material:1.6.0"
+material = "com.google.android.material:material:1.6.1"
 
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
