@@ -2,7 +2,7 @@
 androidx-activity = "1.4.0"
 androidx-lifecycle = "2.4.1"
 androidx-test = "1.4.0"
-compose = "1.2.0-beta02"
+compose = "1.2.0-beta03"
 coroutines = "1.6.2"
 ktlint = "0.44.0"
 okhttp = "4.9.3"
