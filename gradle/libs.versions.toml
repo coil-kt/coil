@@ -24,7 +24,7 @@ accompanist-insets = { module = "com.google.accompanist:accompanist-insets", ver
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.4.1"
+androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.4.2"
 androidx-annotation = "androidx.annotation:annotation:1.3.0"
 androidx-collection = "androidx.collection:collection:1.2.0"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
