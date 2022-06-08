@@ -18,7 +18,7 @@ import coil.request.ImageRequest
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
- * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
+ * ** This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
  *
  * - [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called.
  *   This can occur if a composable has an unbounded (i.e. [Constraints.Infinity]) width/height
@@ -68,7 +68,7 @@ fun rememberAsyncImagePainter(
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.
  *
- * **This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
+ * ** This is a lower-level API than [AsyncImage] and may not work as expected in all situations. **
  *
  * - [AsyncImagePainter] will not finish loading if [AsyncImagePainter.onDraw] is not called.
  *   This can occur if a composable has an unbounded (i.e. [Constraints.Infinity]) width/height
