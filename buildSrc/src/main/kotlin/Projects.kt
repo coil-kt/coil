@@ -82,8 +82,6 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(
             "-Xno-call-assertions",
             "-Xno-param-assertions",
             "-Xno-receiver-assertions",
-            // https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-requires-opt-in/#requiresoptin
-            "-opt-in=kotlin.RequiresOptIn"
         )
         if (project.name != "coil-test") {
             arguments += "-opt-in=coil.annotation.ExperimentalCoilApi"
