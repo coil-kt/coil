@@ -2,6 +2,7 @@ public final class coil/decode/VideoFrameDecoder : coil/decode/Decoder {
 	public static final field Companion Lcoil/decode/VideoFrameDecoder$Companion;
 	public static final field VIDEO_FRAME_MICROS_KEY Ljava/lang/String;
 	public static final field VIDEO_FRAME_OPTION_KEY Ljava/lang/String;
+	public static final field VIDEO_FRAME_PERCENT_KEY Ljava/lang/String;
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -22,5 +23,7 @@ public final class coil/request/Videos {
 	public static final fun videoFrameMillis (Lcoil/request/ImageRequest$Builder;J)Lcoil/request/ImageRequest$Builder;
 	public static final fun videoFrameOption (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
 	public static final fun videoFrameOption (Lcoil/request/Parameters;)Ljava/lang/Integer;
+	public static final fun videoFramePercent (Lcoil/request/ImageRequest$Builder;D)Lcoil/request/ImageRequest$Builder;
+	public static final fun videoFramePercent (Lcoil/request/Parameters;)Ljava/lang/Double;
 }
 
