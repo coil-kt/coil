@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
+import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_PERCENT_KEY
 import coil.request.Options
 import coil.request.Parameters
 import coil.size.Size
@@ -66,6 +67,32 @@ class VideoFrameDecoderTest {
                 context = context,
                 parameters = Parameters.Builder()
                     .set(VIDEO_FRAME_MICROS_KEY, 32600000L)
+                    .build()
+            )
+        ).decode()
+
+        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_2.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
+    fun specificFramePercent() = runTest {
+        // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                source = context.assets.open("video.mp4").source().buffer(),
+                context = context
+            ),
+            options = Options(
+                context = context,
+                parameters = Parameters.Builder()
+                    .set(VIDEO_FRAME_PERCENT_KEY, 0.525)
                     .build()
             )
         ).decode()
