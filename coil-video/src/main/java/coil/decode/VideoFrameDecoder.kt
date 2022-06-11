@@ -24,8 +24,6 @@ import coil.size.pxOrElse
 import coil.util.heightPx
 import coil.util.use
 import coil.util.widthPx
-import java.util.concurrent.TimeUnit.MICROSECONDS
-import java.util.concurrent.TimeUnit.MILLISECONDS
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -40,13 +38,7 @@ class VideoFrameDecoder(
     override suspend fun decode() = MediaMetadataRetriever().use { retriever ->
         retriever.setDataSource(source)
         val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
-
-        val frameMicros = options.parameters.videoFrameMicros()
-            ?: options.parameters.videoFramePercent()?.let { framePercent ->
-                val durationMillis = retriever.extractMetadata(METADATA_KEY_DURATION)
-                    ?.toLongOrNull() ?: 0L
-                MICROSECONDS.convert((framePercent * durationMillis).roundToLong(), MILLISECONDS)
-            } ?: 0L
+        val frameMicros = computeFrameMicros(retriever)
 
         // Resolve the dimensions to decode the video frame at accounting
         // for the source's aspect ratio and the target's size.
@@ -119,6 +111,21 @@ class VideoFrameDecoder(
             drawable = bitmap.toDrawable(options.context.resources),
             isSampled = isSampled
         )
+    }
+
+    private fun computeFrameMicros(retriever: MediaMetadataRetriever): Long {
+        val frameMicros = options.parameters.videoFrameMicros()
+        if (frameMicros != null) {
+            return frameMicros
+        }
+
+        val framePercent = options.parameters.videoFramePercent()
+        if (framePercent != null) {
+            val durationMillis = retriever.extractMetadata(METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
+            return 1000 * (framePercent * durationMillis).roundToLong()
+        }
+
+        return 0
     }
 
     /** Return [inBitmap] or a copy of [inBitmap] that is valid for the input [options] and [size]. */
