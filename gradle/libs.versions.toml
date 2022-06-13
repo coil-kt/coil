@@ -6,7 +6,7 @@ androidx-test = "1.4.0"
 compose = "1.1.1"
 coroutines = "1.6.1"
 ktlint = "0.44.0"
-okhttp = "4.9.3"
+okhttp = "4.10.0"
 okio = "3.0.0"
 
 [plugins]
