@@ -6,11 +6,11 @@ compose = "1.2.0-beta03"
 composeCompiler = "1.2.0-dev-k1.7.0-53370d83bb1"
 coroutines = "1.6.2"
 ktlint = "0.44.0"
-okhttp = "4.9.3"
+okhttp = "4.10.0"
 okio = "3.1.0"
 
 [plugins]
-binaryCompatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.10.0" }
+binaryCompatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.10.1" }
 dokka = { id = "org.jetbrains.dokka", version = "1.6.10" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "10.3.0" }
 
