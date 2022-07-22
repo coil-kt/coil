@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -33,8 +34,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.ProvideWindowInsets
 
 class MainActivity : ComponentActivity() {
 
@@ -53,26 +52,24 @@ private fun Content(viewModel: MainViewModel = viewModel()) {
             onPrimary = Color.Black
         )
     ) {
-        ProvideWindowInsets {
-            Scaffold(
-                topBar = {
-                    Toolbar(
-                        assetType = viewModel.assetType.collectAsState().value,
-                        onAssetTypeChange = { viewModel.assetType.value = it }
+        Scaffold(
+            topBar = {
+                Toolbar(
+                    assetType = viewModel.assetType.collectAsState().value,
+                    onAssetTypeChange = { viewModel.assetType.value = it }
+                )
+            },
+            content = { padding ->
+                Box(Modifier.padding(padding)) {
+                    ScaffoldContent(
+                        screen = viewModel.screen.collectAsState().value,
+                        onScreenChange = { viewModel.screen.value = it },
+                        images = viewModel.images.collectAsState().value
                     )
-                },
-                content = { padding ->
-                    Box(Modifier.padding(padding)) {
-                        ScaffoldContent(
-                            screen = viewModel.screen.collectAsState().value,
-                            onScreenChange = { viewModel.screen.value = it },
-                            images = viewModel.images.collectAsState().value
-                        )
-                    }
                 }
-            )
-            BackHandler { viewModel.onBackPressed() }
-        }
+            }
+        )
+        BackHandler { viewModel.onBackPressed() }
     }
 }
 
@@ -81,13 +78,10 @@ private fun Toolbar(
     assetType: AssetType,
     onAssetTypeChange: (AssetType) -> Unit,
 ) {
-    val topPadding = with(LocalDensity.current) {
-        LocalWindowInsets.current.systemBars.top.toDp()
-    }
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
         actions = { AssetTypeButton(assetType, onAssetTypeChange) },
-        modifier = Modifier.padding(top = topPadding)
+        modifier = Modifier.statusBarsPadding()
     )
 }
 
