@@ -1,9 +1,9 @@
 [versions]
-accompanist = "0.23.1"
 androidx-activity = "1.4.0"
 androidx-lifecycle = "2.4.1"
 androidx-test = "1.4.0"
-compose = "1.1.1"
+compose = "1.2.0-rc03"
+composeCompiler = "1.2.0"
 coroutines = "1.6.4"
 ktlint = "0.44.0"
 okhttp = "4.10.0"
@@ -16,11 +16,10 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "10.3.0" }
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:7.2.1"
-gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.21.0"
 
-accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
-accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.24.13-rc" }
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
