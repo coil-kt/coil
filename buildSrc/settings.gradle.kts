@@ -1,3 +1,5 @@
+rootProject.name = "coil"
+
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     versionCatalogs {
