@@ -50,7 +50,7 @@ Headers can be added to your image requests in one of two ways. You can set head
 ```kotlin
 val request = ImageRequest.Builder(context)
     .data("https://www.example.com/image.jpg")
-    .setHeader("Cache-Control", "max-age=31536000")
+    .setHeader("Cache-Control", "no-cache")
     .target(imageView)
     .build()
 imageLoader.execute(request)
@@ -59,14 +59,16 @@ imageLoader.execute(request)
 Or you can create an OkHttp [`Interceptor`](https://square.github.io/okhttp/interceptors/) that sets headers for every request executed by your `ImageLoader`:
 
 ```kotlin
-class ResponseHeaderInterceptor(
+class RequestHeaderInterceptor(
     private val name: String,
     private val value: String
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val response = chain.proceed(chain.request())
-        return response.newBuilder().header(name, value).build()
+        val request = chain.request().newBuilder()
+            .header(name, value)
+            .build()
+        return chain.proceed(request)
     }
 }
 
@@ -74,7 +76,7 @@ val imageLoader = ImageLoader.Builder(context)
     .okHttpClient {
         OkHttpClient.Builder()
             // This header will be added to every image request.
-            .addNetworkInterceptor(ResponseHeaderInterceptor("Cache-Control", "max-age=31536000,public"))
+            .addNetworkInterceptor(RequestHeaderInterceptor("Cache-Control", "no-cache"))
             .build()
     }
     .build()
