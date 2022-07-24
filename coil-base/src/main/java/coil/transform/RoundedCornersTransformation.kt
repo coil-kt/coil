@@ -13,11 +13,12 @@ import androidx.annotation.Px
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import coil.decode.DecodeUtils
+import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
-import coil.util.heightPx
+import coil.size.isOriginal
+import coil.size.pxOrElse
 import coil.util.safeConfig
-import coil.util.widthPx
 import kotlin.math.roundToInt
 
 /**
@@ -52,17 +53,7 @@ class RoundedCornersTransformation(
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-        val dstWidth = size.widthPx(Scale.FILL) { input.width }
-        val dstHeight = size.heightPx(Scale.FILL) { input.height }
-        val multiplier = DecodeUtils.computeSizeMultiplier(
-            srcWidth = input.width,
-            srcHeight = input.height,
-            dstWidth = dstWidth,
-            dstHeight = dstHeight,
-            scale = Scale.FILL
-        )
-        val outputWidth = (dstWidth / multiplier).roundToInt()
-        val outputHeight = (dstHeight / multiplier).roundToInt()
+        val (outputWidth, outputHeight) = calculateOutputSize(input, size)
 
         val output = createBitmap(outputWidth, outputHeight, input.safeConfig)
         output.applyCanvas {
@@ -86,6 +77,28 @@ class RoundedCornersTransformation(
         }
 
         return output
+    }
+
+    private fun calculateOutputSize(input: Bitmap, size: Size): Pair<Int, Int> {
+        if (size.isOriginal) {
+            return input.width to input.height
+        }
+
+        val (dstWidth, dstHeight) = size
+        if (dstWidth is Dimension.Pixels && dstHeight is Dimension.Pixels) {
+            return dstWidth.px to dstHeight.px
+        }
+
+        val multiplier = DecodeUtils.computeSizeMultiplier(
+            srcWidth = input.width,
+            srcHeight = input.height,
+            dstWidth = size.width.pxOrElse { Int.MIN_VALUE },
+            dstHeight = size.height.pxOrElse { Int.MIN_VALUE },
+            scale = Scale.FILL
+        )
+        val outputWidth = (multiplier * input.width).roundToInt()
+        val outputHeight = (multiplier * input.height).roundToInt()
+        return outputWidth to outputHeight
     }
 
     override fun equals(other: Any?): Boolean {
