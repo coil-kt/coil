@@ -25,7 +25,7 @@ class RoundedCornerTransformationTest {
     }
 
     @Test
-    fun defined() = runTest {
+    fun defined_size() = runTest {
         val input = context.decodeBitmapAsset("normal_small.jpg")
         val actual = transformation.transform(input, Size(100, 100))
 
