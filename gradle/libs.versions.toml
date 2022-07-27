@@ -1,6 +1,6 @@
 [versions]
 androidx-activity = "1.4.0"
-androidx-lifecycle = "2.4.1"
+androidx-lifecycle = "2.5.1"
 androidx-test = "1.4.0"
 compose = "1.2.0"
 composeCompiler = "1.2.0"
