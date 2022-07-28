@@ -19,7 +19,7 @@ gradlePlugin-android = "com.android.tools.build:gradle:7.2.1"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.21.0"
 
-accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.24.13-rc" }
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.25.0" }
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
