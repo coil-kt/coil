@@ -167,7 +167,7 @@ internal class HttpUriFetcher(
                     CacheResponse(response).writeTo(this)
                 }
                 fileSystem.write(editor.data) {
-                    response.body!!.source().readAll(this)
+                    response.body.source().readAll(this)
                 }
             }
             return editor.commitAndGet()
@@ -223,7 +223,7 @@ internal class HttpUriFetcher(
             callFactory.value.newCall(request).await()
         }
         if (!response.isSuccessful && response.code != HTTP_NOT_MODIFIED) {
-            response.body?.closeQuietly()
+            response.body.closeQuietly()
             throw HttpException(response)
         }
         return response
