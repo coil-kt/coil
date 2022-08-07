@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.2.0] - August *, 2022
+
+- **New**: Add `ImageRequest.videoFramePercent` to `coil-video` to support specifying the video frame as a percent of the video's duration.
+- **New**: Add `ExifOrientationPolicy` to configure how `BitmapFactoryDecoder` treats EXIF orientation data.
+- Fix `RoundedCornersTransformation` throwing an exception if passed a size with an undefined dimension.
+- Update Kotlin to 1.7.0.
+- Update Coroutines to 1.6.4.
+- Update Compose to 1.2.0.
+- Update OkHttp to 4.10.0.
+- Update Okio to 3.2.0.
+- Update `accompanist-drawablepainter` to 0.25.0.
+- Update `androidx.annotation` to 1.4.0.
+- Update `androidx.appcompat:appcompat-resources` to 1.4.2.
+- Update `androidx.core` to 1.8.0.
+
 ## [2.1.0] - May 17, 2022
 
 - **New**: Support loading `ByteArray`s. ([#1202](https://github.com/coil-kt/coil/pull/1202))
