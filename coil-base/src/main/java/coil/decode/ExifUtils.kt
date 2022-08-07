@@ -91,12 +91,13 @@ internal val ExifData.isSwapped get() = rotationDegrees == 90 || rotationDegrees
 internal val ExifData.isRotated get() = rotationDegrees > 0
 
 /** The MIME types that are supported by [ExifOrientationPolicy.RESPECT_PERFORMANCE]. */
-private val RESPECT_OPTIMAL_MIME_TYPES = setOf(
+private val RESPECT_PERFORMANCE_MIME_TYPES = setOf(
     MIME_TYPE_JPEG, MIME_TYPE_WEBP, MIME_TYPE_HEIC, MIME_TYPE_HEIF
 )
 
 internal fun ExifOrientationPolicy.supports(mimeType: String?) = when (this) {
-    ExifOrientationPolicy.RESPECT_PERFORMANCE -> mimeType != null && mimeType in RESPECT_OPTIMAL_MIME_TYPES
+    ExifOrientationPolicy.RESPECT_PERFORMANCE ->
+        mimeType != null && mimeType in RESPECT_PERFORMANCE_MIME_TYPES
     ExifOrientationPolicy.IGNORE -> false
     ExifOrientationPolicy.RESPECT_ALL -> true
 }
