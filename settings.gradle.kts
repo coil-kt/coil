@@ -22,3 +22,4 @@ include(
     "coil-sample-view",
     "coil-test",
 )
+include(":benchmark")
