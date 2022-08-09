@@ -185,8 +185,8 @@ jobs:
                 run: ./baseline_profile.sh
 
             -   uses: stefanzweifel/git-auto-commit-action@v4
-                    with:
-                        commit_message: Commit baseline profile
+                with:
+                    commit_message: Commit baseline profile
 
     deploy-snapshot:
         name: Deploy snapshot
