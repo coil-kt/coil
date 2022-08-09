@@ -156,7 +156,7 @@ jobs:
                 uses: ./.github/actions/get-avd-info
                 id: avd-info
                 with:
-                api-level: ${{ matrix.api-level }}
+                    api-level: ${{ matrix.api-level }}
 
             # Retrieve the cached emulator snapshot.
             -   uses: actions/cache@v3
