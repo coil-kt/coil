@@ -132,7 +132,7 @@ jobs:
         timeout-minutes: 10
         # if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         if: github.ref == 'refs/heads/sagar/enhancement/baseline-profile'
-        needs: [ checks, unit-tests, instrumentation-tests ]
+        needs: [ unit-tests, instrumentation-tests ]
         strategy:
             fail-fast: true
             matrix:
