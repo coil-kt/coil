@@ -131,7 +131,6 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         # if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
-        if: github.ref == 'refs/heads/sagar/enhancement/baseline-profile'
         needs: [ unit-tests, instrumentation-tests ]
         strategy:
             fail-fast: true
