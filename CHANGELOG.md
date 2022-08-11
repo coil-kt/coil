@@ -10,7 +10,7 @@
 - Update Compose to 1.2.1.
 - Update OkHttp to 4.10.0.
 - Update Okio to 3.2.0.
-- Update `accompanist-drawablepainter` to 0.25.0.
+- Update `accompanist-drawablepainter` to 0.25.1.
 - Update `androidx.annotation` to 1.4.0.
 - Update `androidx.appcompat:appcompat-resources` to 1.5.0.
 - Update `androidx.core` to 1.8.0.
