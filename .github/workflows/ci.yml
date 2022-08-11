@@ -129,7 +129,6 @@ jobs:
     baseline-profile:
         name: Generate baseline profile and run benchmark
         runs-on: macOS-latest
-        timeout-minutes: 10
         # if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         needs: [ unit-tests, instrumentation-tests ]
         strategy:
