@@ -2,8 +2,8 @@
 androidx-activity = "1.4.0"
 androidx-lifecycle = "2.4.1"
 androidx-test = "1.4.0"
-compose = "1.2.0"
-composeCompiler = "1.2.0"
+compose = "1.2.1"
+composeCompiler = "1.3.0"
 coroutines = "1.6.4"
 ktlint = "0.44.0"
 okhttp = "4.10.0"
@@ -16,14 +16,14 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "10.3.0" }
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:7.2.2"
-gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
+gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.21.0"
 
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.25.0" }
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.4.2"
+androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.5.0"
 androidx-annotation = "androidx.annotation:annotation:1.4.0"
 androidx-collection = "androidx.collection:collection:1.2.0"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
