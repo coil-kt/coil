@@ -6,7 +6,6 @@ import com.vanniktech.maven.publish.SonatypeHost.DEFAULT
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
@@ -51,11 +50,20 @@ allprojects {
     group = project.groupId
     version = project.versionName
 
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "org.jmailen.kotlinter")
 
-    extensions.configure<KtlintExtension> {
-        version by rootProject.libs.versions.ktlint
-        disabledRules by setOf("indent", "max-line-length", "parameter-list-wrapping")
+    kotlinter {
+        version = rootProject.libs.versions.ktlint
+        disabledRules = arrayOf(
+            "annotation",
+            "argument-list-wrapping",
+            "filename",
+            "indent",
+            "max-line-length",
+            "parameter-list-wrapping",
+            "spacing-between-declarations-with-annotations",
+            "wrapping",
+        )
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
