@@ -1,5 +1,7 @@
 package coil
 
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.Lint
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
@@ -103,9 +105,21 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
+    lint {
+        warningsAsErrors = true
+        disable += arrayOf(
+            "UnusedResources",
+            "VectorPath",
+            "VectorRaster",
+        )
+    }
     block()
 }
 
 private fun BaseExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
     (this as ExtensionAware).extensions.configure("kotlinOptions", block)
+}
+
+private fun BaseExtension.lint(block: Lint.() -> Unit) {
+    (this as CommonExtension<*, *, *, *>).lint(block)
 }
