@@ -11,11 +11,11 @@ okio = "3.2.0"
 
 [plugins]
 binaryCompatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.11.0" }
-dokka = { id = "org.jetbrains.dokka", version = "1.6.10" }
+dokka = { id = "org.jetbrains.dokka", version = "1.7.10" }
 ktlint = { id = "org.jmailen.kotlinter", version = "3.11.1" }
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:7.2.2"
+gradlePlugin-android = "com.android.tools.build:gradle:7.3.0-beta05" # https://github.com/Kotlin/dokka/issues/2472
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.21.0"
 
