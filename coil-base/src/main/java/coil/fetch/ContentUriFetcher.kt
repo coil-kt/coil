@@ -37,7 +37,6 @@ internal class ContentUriFetcher(
         } else if (SDK_INT >= 29 && isMusicThumbnailUri(data)) {
             val bundle = newMusicThumbnailSizeOptions()
             val stream = contentResolver
-                //noinspection Recycle
                 .openTypedAssetFile(data, "image/*", bundle, null)
                 ?.createInputStream()
             checkNotNull(stream) { "Unable to find a music thumbnail associated with '$data'." }
