@@ -39,8 +39,8 @@ internal class FrameDelayRewritingSource(delegate: Source) : ForwardingSource(de
             if (!request(5) || buffer[4] != 0.toByte()) continue
 
             // Rewrite the frame delay if it is below the threshold.
-            // The frame delay is stored as two unsigned bits in reverse order
-            // (i.e. the most significant digits are in the second byte).
+            // The frame delay is stored as two unsigned bytes in reverse order
+            // (i.e. the most significant bits are in the byte that's read second).
             val frameDelay = (buffer[2].toUByte().toInt() shl 8) or buffer[1].toUByte().toInt()
             if (frameDelay < MINIMUM_FRAME_DELAY) {
                 sink.writeByte(buffer[0].toInt())
