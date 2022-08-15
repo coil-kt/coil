@@ -4,7 +4,8 @@
 
 - **New**: Add `ImageRequest.videoFramePercent` to `coil-video` to support specifying the video frame as a percent of the video's duration.
 - **New**: Add `ExifOrientationPolicy` to configure how `BitmapFactoryDecoder` treats EXIF orientation data.
-- Fix `RoundedCornersTransformation` throwing an exception if passed a size with an undefined dimension.
+- Fix: Don't throw an exception in `RoundedCornersTransformation` if passed a size with an undefined dimension.
+- Fix: Read a GIF's frame delay as two unsigned bytes instead of one signed byte.
 - Update Kotlin to 1.7.10.
 - Update Coroutines to 1.6.4.
 - Update Compose to 1.2.1.
