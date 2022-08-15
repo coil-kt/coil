@@ -30,6 +30,15 @@ class FrameDelayRewritingSourceTest {
     }
 
     @Test
+    fun doesNotRewriteGifWithLongFrameDelay() {
+        val expected = context.assets.open("long_frame_delay.gif").source().readBuffer()
+        val source = context.assets.open("long_frame_delay.gif").source()
+        val actual = FrameDelayRewritingSource(source).readBuffer()
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun onlyRewritesFrameDelay() {
         val expected = context.assets.open("no_frame_delay.gif").source().readByteArray()
         val source = context.assets.open("no_frame_delay.gif").source()
