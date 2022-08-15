@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule()
+setupLibraryModule(name = "coil.test")
 
 dependencies {
     // Prevent a dependency cycle.

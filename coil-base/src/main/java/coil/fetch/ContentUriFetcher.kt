@@ -30,12 +30,14 @@ internal class ContentUriFetcher(
         val inputStream = if (isContactPhotoUri(data)) {
             // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
             val stream = contentResolver
+                //noinspection Recycle
                 .openAssetFileDescriptor(data, "r")
                 ?.createInputStream()
             checkNotNull(stream) { "Unable to find a contact photo associated with '$data'." }
         } else if (SDK_INT >= 29 && isMusicThumbnailUri(data)) {
             val bundle = newMusicThumbnailSizeOptions()
             val stream = contentResolver
+                //noinspection Recycle
                 .openTypedAssetFile(data, "image/*", bundle, null)
                 ?.createInputStream()
             checkNotNull(stream) { "Unable to find a music thumbnail associated with '$data'." }
