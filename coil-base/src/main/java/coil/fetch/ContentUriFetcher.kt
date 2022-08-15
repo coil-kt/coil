@@ -30,7 +30,6 @@ internal class ContentUriFetcher(
         val inputStream = if (isContactPhotoUri(data)) {
             // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
             val stream = contentResolver
-                //noinspection Recycle
                 .openAssetFileDescriptor(data, "r")
                 ?.createInputStream()
             checkNotNull(stream) { "Unable to find a contact photo associated with '$data'." }
