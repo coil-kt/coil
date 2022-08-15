@@ -6,7 +6,7 @@ plugins {
     id("kotlin-parcelize")
 }
 
-setupLibraryModule(publish = true)
+setupLibraryModule(name = "coil.base", publish = true)
 
 dependencies {
     implementation(libs.androidx.annotation)

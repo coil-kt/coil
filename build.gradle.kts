@@ -6,7 +6,6 @@ import com.vanniktech.maven.publish.SonatypeHost.DEFAULT
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.net.URL
 
 buildscript {
@@ -34,7 +33,7 @@ extensions.configure<ApiValidationExtension> {
         "coil-sample-common",
         "coil-sample-compose",
         "coil-sample-view",
-        "coil-test"
+        "coil-test",
     )
 }
 
@@ -51,11 +50,20 @@ allprojects {
     group = project.groupId
     version = project.versionName
 
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "org.jmailen.kotlinter")
 
-    extensions.configure<KtlintExtension> {
-        version by rootProject.libs.versions.ktlint
-        disabledRules by setOf("indent", "max-line-length", "parameter-list-wrapping")
+    kotlinter {
+        version = rootProject.libs.versions.ktlint
+        disabledRules = arrayOf(
+            "annotation",
+            "argument-list-wrapping",
+            "filename",
+            "indent",
+            "max-line-length",
+            "parameter-list-wrapping",
+            "spacing-between-declarations-with-annotations",
+            "wrapping",
+        )
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
@@ -68,12 +76,11 @@ allprojects {
                 url by URL("https://developer.android.com/reference/")
             }
             externalDocumentationLink {
-                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/package-list")
+                url by URL("https://kotlinlang.org/api/kotlinx.coroutines/")
             }
             externalDocumentationLink {
                 url by URL("https://square.github.io/okhttp/4.x/")
-                packageListUrl by URL("https://square.github.io/okhttp/4.x/okhttp/package-list")
+                packageListUrl by URL("https://colinwhite.me/okhttp3-package-list") // https://github.com/square/okhttp/issues/7338
             }
             externalDocumentationLink {
                 url by URL("https://square.github.io/okio/3.x/okio/")

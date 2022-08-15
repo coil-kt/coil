@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupAppModule {
+setupAppModule(name = "coil.sample") {
     defaultConfig {
         applicationId = "coil.sample"
     }
