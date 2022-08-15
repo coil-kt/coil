@@ -179,6 +179,15 @@ jobs:
                     emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                     script: echo "Generated AVD snapshot."
 
+            -   name: Fire an emulator
+                uses: reactivecircus/android-emulator-runner@v2
+                with:
+                    api-level: ${{ matrix.api-level }}
+                    arch: ${{ steps.avd-info.outputs.arch }}
+                    target: ${{ steps.avd-info.outputs.target }}
+                    force-avd-creation: false
+                    ram-size: 4096M
+                    emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
             -   name: Generate Baseline profile
                 run: ./baseline_profile.sh
 
