@@ -33,13 +33,16 @@ internal class FrameDelayRewritingSource(delegate: Source) : ForwardingSource(de
             if (index == -1L) break
 
             // Write up until the end of the frame delay start marker.
-            bytesWritten += write(sink, index + FRAME_DELAY_START_MARKER_SIZE)
+            bytesWritten += write(sink, index + FRAME_DELAY_START_MARKER_SIZE_BYTES)
 
             // Check for the end of the graphics control extension block.
             if (!request(5) || buffer[4] != 0.toByte()) continue
 
             // Rewrite the frame delay if it is below the threshold.
-            if (buffer[1].toInt() < MINIMUM_FRAME_DELAY) {
+            // The frame delay is stored as two unsigned bits in reverse order
+            // (i.e. the most significant digits are in the second byte).
+            val frameDelay = (buffer[2].toUByte().toInt() shl 8) or buffer[1].toUByte().toInt()
+            if (frameDelay < MINIMUM_FRAME_DELAY) {
                 sink.writeByte(buffer[0].toInt())
                 sink.writeByte(DEFAULT_FRAME_DELAY)
                 sink.writeByte(0)
@@ -78,7 +81,7 @@ internal class FrameDelayRewritingSource(delegate: Source) : ForwardingSource(de
         // https://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
         // See: "Graphics Control Extension"
         private val FRAME_DELAY_START_MARKER = "0021F904".decodeHex()
-        private const val FRAME_DELAY_START_MARKER_SIZE = 4
+        private const val FRAME_DELAY_START_MARKER_SIZE_BYTES = 4
         private const val MINIMUM_FRAME_DELAY = 2
         private const val DEFAULT_FRAME_DELAY = 10
     }
