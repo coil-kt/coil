@@ -33,7 +33,7 @@ extensions.configure<ApiValidationExtension> {
         "coil-sample-common",
         "coil-sample-compose",
         "coil-sample-view",
-        "coil-test"
+        "coil-test",
     )
 }
 
@@ -76,12 +76,11 @@ allprojects {
                 url by URL("https://developer.android.com/reference/")
             }
             externalDocumentationLink {
-                url by URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                packageListUrl by URL("https://kotlin.github.io/kotlinx.coroutines/package-list")
+                url by URL("https://kotlinlang.org/api/kotlinx.coroutines/")
             }
             externalDocumentationLink {
                 url by URL("https://square.github.io/okhttp/4.x/")
-                packageListUrl by URL("https://square.github.io/okhttp/4.x/okhttp/package-list")
+                packageListUrl by URL("https://colinwhite.me/okhttp3-package-list") // https://github.com/square/okhttp/issues/7338
             }
             externalDocumentationLink {
                 url by URL("https://square.github.io/okio/3.x/okio/")
