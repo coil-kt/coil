@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.2.0] - August 15, 2022
+## [2.2.0] - August 16, 2022
 
 - **New**: Add `ImageRequest.videoFramePercent` to `coil-video` to support specifying the video frame as a percent of the video's duration.
 - **New**: Add `ExifOrientationPolicy` to configure how `BitmapFactoryDecoder` treats EXIF orientation data.
