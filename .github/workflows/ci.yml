@@ -188,8 +188,9 @@ jobs:
                     force-avd-creation: false
                     ram-size: 4096M
                     emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-            -   name: Generate Baseline profile
-                run: ./baseline_profile.sh
+                    script: adb root ./gradlew :benchmark:connectedCheck -P android.testInstrumentationRunnerArguments.class=coil.compose.benchmark.BaselineProfileGenerator#startup
+
+            -   run: ./baseline_profile.sh
 
             -   uses: stefanzweifel/git-auto-commit-action@v4
                 with:

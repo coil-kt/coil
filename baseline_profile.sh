@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Run the adb daemon with root permissions
-adb root
-
-# Run baseline profile
-./gradlew :benchmark:connectedCheck -P android.testInstrumentationRunnerArguments.class=coil.compose.benchmark.BaselineProfileGenerator#startup
-
 # Pull profile from device
 adb pull storage/emulated/0/Android/media/coil.compose.benchmark/BaselineProfileGenerator_startup-baseline-prof.txt .
 
