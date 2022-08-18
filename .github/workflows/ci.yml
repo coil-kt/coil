@@ -195,9 +195,14 @@ jobs:
                         mv BaselineProfileGenerator_startup-baseline-prof.txt baseline-prof.txt
                         mv baseline-prof.txt coil-sample-compose/src/main/baseline-prof.txt
 
-            -   uses: stefanzweifel/git-auto-commit-action@v4
-                with:
-                    commit_message: Commit baseline profile
+            -   uses: actions/checkout@v3
+            -   run: |
+                    git config user.name github-actions
+                    git config user.email github-actions@github.com
+                    git add .
+                    git commit -m "Update baseline profile"
+                    git push
+
 
     deploy-snapshot:
         name: Deploy snapshot
