@@ -190,7 +190,8 @@ jobs:
                     emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
                     script: adb root ./gradlew :benchmark:connectedCheck -P android.testInstrumentationRunnerArguments.class=coil.compose.benchmark.BaselineProfileGenerator#startup
 
-            -   run: ./baseline_profile.sh
+            -   name: Fetch Baseline profile
+                run: ./baseline_profile.sh
 
             -   uses: stefanzweifel/git-auto-commit-action@v4
                 with:
