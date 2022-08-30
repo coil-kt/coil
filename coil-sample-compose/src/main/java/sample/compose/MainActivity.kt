@@ -1,4 +1,4 @@
-package coil.sample
+package sample.compose
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
+import sample.common.*
 
 class MainActivity : ComponentActivity() {
 

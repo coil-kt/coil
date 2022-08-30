@@ -5,9 +5,9 @@ plugins {
     id("kotlin-android")
 }
 
-setupAppModule(name = "coil.sample") {
+setupAppModule(name = "sample.compose") {
     defaultConfig {
-        applicationId = "coil.sample"
+        applicationId = "sample.compose"
     }
     buildTypes {
         release {

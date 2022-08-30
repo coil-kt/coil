@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.memory.MemoryCache
 import coil.sample.ImageListAdapter.ViewHolder
+import sample.common.Image
+import sample.common.Screen
+import sample.common.calculateScaledSize
 
 class ImageListAdapter(
     private val numColumns: Int,

@@ -1,4 +1,4 @@
-package coil.sample
+package sample.common
 
 import android.app.Application
 import androidx.core.graphics.toColorInt
