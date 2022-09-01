@@ -16,6 +16,13 @@ setupAppModule(name = "sample.compose") {
             proguardFiles("shrinker-rules.pro", "shrinker-rules-android.pro")
             signingConfig = signingConfigs["debug"]
         }
+
+        create("benchmark") {
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+            proguardFiles("baseline-profile-rules.pro")
+        }
     }
     buildFeatures {
         compose = true
