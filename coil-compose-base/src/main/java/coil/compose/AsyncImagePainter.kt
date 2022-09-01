@@ -206,8 +206,18 @@ class AsyncImagePainter internal constructor(
         // Update the draw scope's current size.
         drawSize.value = size
 
-        // Draw the current painter.
-        painter?.apply { draw(size, alpha, colorFilter) }
+        try {
+            // Draw the current painter.
+            painter?.apply { draw(size, alpha, colorFilter) }
+        } catch (e: Exception) {
+            // If the image it larger than allowed buffer then a RuntimeException will be thrown
+            updateState(
+                State.Error(
+                    request.error?.toPainter(),
+                    result = ErrorResult(request.error, request, e)
+                )
+            )
+        }
     }
 
     override fun applyAlpha(alpha: Float): Boolean {
