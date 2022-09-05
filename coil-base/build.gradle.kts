@@ -3,7 +3,6 @@ import coil.setupLibraryModule
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("kotlin-parcelize")
 }
 
 setupLibraryModule(name = "coil.base", publish = true)
