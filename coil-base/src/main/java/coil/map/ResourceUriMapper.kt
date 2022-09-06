@@ -18,6 +18,7 @@ internal class ResourceUriMapper : Mapper<Uri, Uri> {
         val packageName = data.authority.orEmpty()
         val resources = options.context.packageManager.getResourcesForApplication(packageName)
         val (type, name) = data.pathSegments
+        //noinspection DiscouragedApi: Necessary to support resource URIs.
         val id = resources.getIdentifier(name, type, packageName)
         check(id != 0) { "Invalid $SCHEME_ANDROID_RESOURCE URI: $data" }
 
