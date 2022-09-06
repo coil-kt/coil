@@ -117,7 +117,6 @@ class RealMemoryCacheTest {
         val parcel = Parcel.obtain()
         parcel.writeParcelable(expected, 0)
         val expectedPosition = parcel.dataPosition()
-
         parcel.setDataPosition(0)
 
         // writeParcelable writes the class name automatically.
