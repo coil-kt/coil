@@ -1,6 +1,7 @@
 package coil.memory
 
 import android.os.Parcel
+import android.os.Parcelable
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
 import coil.util.DEFAULT_BITMAP_SIZE
@@ -122,7 +123,8 @@ class RealMemoryCacheTest {
         // writeParcelable writes the class name automatically.
         assertEquals(Key::class.java.name, parcel.readString())
 
-        val actual = Key.CREATOR.createFromParcel(parcel)
+        val creator = Key::class.java.getField("CREATOR").get(null) as Parcelable.Creator<*>
+        val actual = creator.createFromParcel(parcel)
         assertEquals(expected, actual)
         assertEquals(expectedPosition, parcel.dataPosition())
     }
