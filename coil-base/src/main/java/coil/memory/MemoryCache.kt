@@ -78,41 +78,36 @@ interface MemoryCache {
             return "Key(key=$key, extras=$extras)"
         }
 
+        override fun describeContents() = 0
+
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(key)
             parcel.writeInt(extras.size)
-            extras.forEach {
-                parcel.writeString(it.key)
-                parcel.writeString(it.value)
+            extras.forEach { (key, value) ->
+                parcel.writeString(key)
+                parcel.writeString(value)
             }
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        companion object {
-            @JvmField
-            val CREATOR: Parcelable.Creator<*> = Creator()
         }
 
         class Creator : Parcelable.Creator<Key> {
-            final override fun createFromParcel(parcel: Parcel): Key {
-                val key = parcel.readString()!!
-                val extras = mutableMapOf<String, String>()
-                val size = parcel.readInt()
-                for (i in 0 until size) {
-                    val mapKey = parcel.readString()!!
-                    val value = parcel.readString()!!
-                    extras[mapKey] = value
-                }
 
+            override fun createFromParcel(parcel: Parcel): Key {
+                val key = parcel.readString()!!
+                val size = parcel.readInt()
+                val extras = mutableMapOf<String, String>()
+                repeat(size) {
+                    val extraKey = parcel.readString()!!
+                    val extraValue = parcel.readString()!!
+                    extras[extraKey] = extraValue
+                }
                 return Key(key, extras)
             }
 
-            final override fun newArray(size: Int): Array<Key?> {
-                return arrayOfNulls(size)
-            }
+            override fun newArray(size: Int) = arrayOfNulls<Key>(size)
+        }
+
+        internal companion object {
+            @JvmField val CREATOR: Parcelable.Creator<*> = Creator()
         }
     }
 
