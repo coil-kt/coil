@@ -106,8 +106,8 @@ interface MemoryCache {
             override fun newArray(size: Int) = arrayOfNulls<Key>(size)
         }
 
-        internal companion object {
-            @JvmField val CREATOR: Parcelable.Creator<*> = Creator()
+        companion object {
+            @JvmField val CREATOR: Parcelable.Creator<Key> = Creator()
         }
     }
 
