@@ -89,25 +89,23 @@ interface MemoryCache {
             }
         }
 
-        class Creator : Parcelable.Creator<Key> {
+        private companion object {
+            @JvmField val CREATOR = object : Parcelable.Creator<Key> {
 
-            override fun createFromParcel(parcel: Parcel): Key {
-                val key = parcel.readString()!!
-                val size = parcel.readInt()
-                val extras = mutableMapOf<String, String>()
-                repeat(size) {
-                    val extraKey = parcel.readString()!!
-                    val extraValue = parcel.readString()!!
-                    extras[extraKey] = extraValue
+                override fun createFromParcel(parcel: Parcel): Key {
+                    val key = parcel.readString()!!
+                    val size = parcel.readInt()
+                    val extras = mutableMapOf<String, String>()
+                    repeat(size) {
+                        val extraKey = parcel.readString()!!
+                        val extraValue = parcel.readString()!!
+                        extras[extraKey] = extraValue
+                    }
+                    return Key(key, extras)
                 }
-                return Key(key, extras)
+
+                override fun newArray(size: Int) = arrayOfNulls<Key>(size)
             }
-
-            override fun newArray(size: Int) = arrayOfNulls<Key>(size)
-        }
-
-        companion object {
-            @JvmField val CREATOR: Parcelable.Creator<Key> = Creator()
         }
     }
 
