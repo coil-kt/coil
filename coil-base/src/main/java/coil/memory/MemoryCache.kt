@@ -3,12 +3,12 @@ package coil.memory
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.FloatRange
 import coil.key.Keyer
 import coil.util.calculateMemoryCacheSize
 import coil.util.defaultMemoryCacheSizePercent
-import kotlinx.parcelize.Parcelize
 
 /**
  * An LRU cache of [Bitmap]s.
@@ -51,7 +51,6 @@ interface MemoryCache {
      *  cached value from other values with the same [key]. This map
      *  **must be** treated as immutable and should not be modified.
      */
-    @Parcelize
     class Key(
         val key: String,
         val extras: Map<String, String> = emptyMap(),
@@ -77,6 +76,43 @@ interface MemoryCache {
 
         override fun toString(): String {
             return "Key(key=$key, extras=$extras)"
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeString(key)
+            parcel.writeInt(extras.size)
+            extras.forEach {
+                parcel.writeString(it.key)
+                parcel.writeString(it.value)
+            }
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object {
+            @JvmField
+            val CREATOR: Parcelable.Creator<*> = Creator()
+        }
+
+        class Creator : Parcelable.Creator<Key> {
+            final override fun createFromParcel(parcel: Parcel): Key {
+                val key = parcel.readString()!!
+                val extras = mutableMapOf<String, String>()
+                val size = parcel.readInt()
+                for (i in 0 until size) {
+                    val mapKey = parcel.readString()!!
+                    val value = parcel.readString()!!
+                    extras[mapKey] = value
+                }
+
+                return Key(key, extras)
+            }
+
+            final override fun newArray(size: Int): Array<Key?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 
