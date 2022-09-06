@@ -3,12 +3,12 @@ package coil.memory
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.FloatRange
 import coil.key.Keyer
 import coil.util.calculateMemoryCacheSize
 import coil.util.defaultMemoryCacheSizePercent
-import kotlinx.parcelize.Parcelize
 
 /**
  * An LRU cache of [Bitmap]s.
@@ -51,7 +51,6 @@ interface MemoryCache {
      *  cached value from other values with the same [key]. This map
      *  **must be** treated as immutable and should not be modified.
      */
-    @Parcelize
     class Key(
         val key: String,
         val extras: Map<String, String> = emptyMap(),
@@ -77,6 +76,38 @@ interface MemoryCache {
 
         override fun toString(): String {
             return "Key(key=$key, extras=$extras)"
+        }
+
+        override fun describeContents() = 0
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeString(key)
+            parcel.writeInt(extras.size)
+            extras.forEach { (key, value) ->
+                parcel.writeString(key)
+                parcel.writeString(value)
+            }
+        }
+
+        class Creator : Parcelable.Creator<Key> {
+
+            override fun createFromParcel(parcel: Parcel): Key {
+                val key = parcel.readString()!!
+                val size = parcel.readInt()
+                val extras = mutableMapOf<String, String>()
+                repeat(size) {
+                    val extraKey = parcel.readString()!!
+                    val extraValue = parcel.readString()!!
+                    extras[extraKey] = extraValue
+                }
+                return Key(key, extras)
+            }
+
+            override fun newArray(size: Int) = arrayOfNulls<Key>(size)
+        }
+
+        internal companion object {
+            @JvmField val CREATOR: Parcelable.Creator<*> = Creator()
         }
     }
 
