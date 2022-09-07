@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.androidx.exifinterface)
     api(libs.androidx.lifecycle.runtime)
     api(libs.coroutines.android)
+    api(libs.kotlin.stdlib)
     api(libs.okhttp)
     api(libs.okio)
 
