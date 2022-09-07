@@ -110,13 +110,11 @@ class CrossfadeTransitionTest {
         crossinline onStart: (placeholder: Drawable?) -> Unit = { fail() },
         crossinline onError: (error: Drawable?) -> Unit = { fail() },
         crossinline onSuccess: (result: Drawable) -> Unit = { fail() }
-    ): TransitionTarget {
-        return object : TransitionTarget {
-            override val view = imageView
-            override val drawable: Drawable? get() = imageView.drawable
-            override fun onStart(placeholder: Drawable?) = onStart(placeholder)
-            override fun onError(error: Drawable?) = onError(error)
-            override fun onSuccess(result: Drawable) = onSuccess(result)
-        }
+    ) = object : TransitionTarget {
+        override val view = imageView
+        override val drawable: Drawable? get() = imageView.drawable
+        override fun onStart(placeholder: Drawable?) = onStart(placeholder)
+        override fun onError(error: Drawable?) = onError(error)
+        override fun onSuccess(result: Drawable) = onSuccess(result)
     }
 }

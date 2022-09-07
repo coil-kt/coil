@@ -196,7 +196,7 @@ class EventListenerTest {
 
     private suspend fun ImageLoader.testEnqueue(
         builder: ImageRequest.Builder.() -> Unit
-    ) = suspendCancellableCoroutine<Unit> { continuation ->
+    ) = suspendCancellableCoroutine { continuation ->
         val request = ImageRequest.Builder(context)
             .size(100, 100)
             .target(activityRule.scenario.activity.imageView)
