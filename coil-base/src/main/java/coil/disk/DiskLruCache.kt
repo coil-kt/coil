@@ -547,9 +547,6 @@ internal class DiskLruCache(
             return true
         }
 
-        // Prevent the edit from completing normally.
-        entry.currentEditor?.detach()
-
         for (i in 0 until valueCount) {
             fileSystem.delete(entry.cleanFiles[i])
             size -= entry.lengths[i]
@@ -586,10 +583,8 @@ internal class DiskLruCache(
 
         // Copying for concurrent iteration.
         for (entry in lruEntries.values.toTypedArray()) {
-            if (entry.currentEditor != null) {
-                // Prevent the edit from completing normally.
-                entry.currentEditor?.detach()
-            }
+            // Prevent the edit from completing normally.
+            entry.currentEditor?.detach()
         }
 
         trimToSize()
