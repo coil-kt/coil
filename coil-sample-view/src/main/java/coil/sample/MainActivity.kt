@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var listAdapter: ImageListAdapter
-    private lateinit var onBackPressedCallback: OnBackPressedCallback
+    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             adapter = listAdapter
         }
 
-        onBackPressedCallback = onBackPressedDispatcher.addCallback(enabled = false) {
+        backPressedCallback = onBackPressedDispatcher.addCallback(enabled = false) {
             viewModel.onBackPressed()
         }
 
@@ -65,12 +65,12 @@ class MainActivity : AppCompatActivity() {
     private fun setScreen(screen: Screen) {
         when (screen) {
             is Screen.List -> {
-                onBackPressedCallback.isEnabled = false
+                backPressedCallback.isEnabled = false
                 binding.list.isVisible = true
                 binding.detail.isVisible = false
             }
             is Screen.Detail -> {
-                onBackPressedCallback.isEnabled = true
+                backPressedCallback.isEnabled = true
                 binding.list.isVisible = false
                 binding.detail.isVisible = true
                 binding.detail.load(screen.image.uri) {
