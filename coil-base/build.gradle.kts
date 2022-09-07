@@ -13,11 +13,16 @@ dependencies {
     implementation(libs.androidx.collection)
     implementation(libs.androidx.core)
     implementation(libs.androidx.exifinterface)
-    api(libs.androidx.lifecycle.runtime)
+    api(libs.androidx.lifecycle.common)
     api(libs.coroutines.android)
     api(libs.kotlin.stdlib)
     api(libs.okhttp)
     api(libs.okio)
+
+    constraints {
+        implementation(libs.androidx.lifecycle.runtime)
+        implementation(libs.androidx.lifecycle.viewmodel)
+    }
 
     testImplementation(projects.coilTest)
     testImplementation(libs.bundles.test.jvm)
