@@ -19,11 +19,6 @@ dependencies {
     api(libs.okhttp)
     api(libs.okio)
 
-    constraints {
-        implementation(libs.androidx.lifecycle.runtime)
-        implementation(libs.androidx.lifecycle.viewmodel)
-    }
-
     testImplementation(projects.coilTest)
     testImplementation(libs.bundles.test.jvm)
 

@@ -21,11 +21,6 @@ dependencies {
     implementation(libs.accompanist.drawablepainter)
     api(libs.compose.foundation)
 
-    constraints {
-        implementation(libs.androidx.lifecycle.runtime)
-        implementation(libs.androidx.lifecycle.viewmodel)
-    }
-
     testImplementation(projects.coilTest)
     testImplementation(libs.bundles.test.jvm)
 
