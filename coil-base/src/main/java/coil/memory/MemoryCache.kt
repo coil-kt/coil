@@ -94,7 +94,7 @@ interface MemoryCache {
                 override fun createFromParcel(parcel: Parcel): Key {
                     val key = parcel.readString()!!
                     val size = parcel.readInt()
-                    val extras = mutableMapOf<String, String>()
+                    val extras = LinkedHashMap<String, String>(size)
                     repeat(size) {
                         val extraKey = parcel.readString()!!
                         val extraValue = parcel.readString()!!
