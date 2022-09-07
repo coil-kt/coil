@@ -91,7 +91,6 @@ interface MemoryCache {
 
         private companion object {
             @JvmField val CREATOR = object : Parcelable.Creator<Key> {
-
                 override fun createFromParcel(parcel: Parcel): Key {
                     val key = parcel.readString()!!
                     val size = parcel.readInt()
