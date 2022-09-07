@@ -4,6 +4,8 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -23,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var listAdapter: ImageListAdapter
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,10 @@ class MainActivity : AppCompatActivity() {
             adapter = listAdapter
         }
 
+        onBackPressedCallback = onBackPressedDispatcher.addCallback(enabled = false) {
+            viewModel.onBackPressed()
+        }
+
         lifecycleScope.apply {
             launch { viewModel.assetType.collect(::setAssetType) }
             launch { viewModel.images.collect(::setImages) }
@@ -58,10 +65,12 @@ class MainActivity : AppCompatActivity() {
     private fun setScreen(screen: Screen) {
         when (screen) {
             is Screen.List -> {
+                onBackPressedCallback.isEnabled = false
                 binding.list.isVisible = true
                 binding.detail.isVisible = false
             }
             is Screen.Detail -> {
+                onBackPressedCallback.isEnabled = true
                 binding.list.isVisible = false
                 binding.detail.isVisible = true
                 binding.detail.load(screen.image.uri) {
@@ -99,11 +108,5 @@ class MainActivity : AppCompatActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
-    }
-
-    override fun onBackPressed() {
-        if (!viewModel.onBackPressed()) {
-            super.onBackPressed()
-        }
     }
 }
