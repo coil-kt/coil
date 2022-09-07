@@ -1,5 +1,7 @@
 package coil.memory
 
+import android.os.Parcel
+import android.os.Parcelable
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
 import coil.util.DEFAULT_BITMAP_SIZE
@@ -106,5 +108,23 @@ class RealMemoryCacheTest {
 
         assertTrue(weakCache.remove(key))
         assertFalse(weakCache.remove(key))
+    }
+
+    @Test
+    fun `memory cache key can be written to and read from parcel`() {
+        val expected = Key("a", mapOf("b" to "c"))
+
+        val parcel = Parcel.obtain()
+        parcel.writeParcelable(expected, 0)
+        val expectedPosition = parcel.dataPosition()
+        parcel.setDataPosition(0)
+
+        // writeParcelable writes the class name automatically.
+        assertEquals(Key::class.java.name, parcel.readString())
+
+        val creator = Key::class.java.getField("CREATOR").get(null) as Parcelable.Creator<*>
+        val actual = creator.createFromParcel(parcel)
+        assertEquals(expected, actual)
+        assertEquals(expectedPosition, parcel.dataPosition())
     }
 }
