@@ -2,8 +2,10 @@ package coil.transform
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import coil.base.test.R
 import coil.size.Dimension
 import coil.size.Size
+import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
 import coil.util.size
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +32,7 @@ class RoundedCornerTransformationTest {
         val actual = transformation.transform(input, Size(100, 100))
 
         assertEquals(Size(100, 100), actual.size)
+        actual.assertIsSimilarTo(R.drawable.rounded_corners_1)
     }
 
     @Test
@@ -38,6 +41,7 @@ class RoundedCornerTransformationTest {
         val actual = transformation.transform(input, Size(Dimension.Undefined, 100))
 
         assertEquals(Size(80, 100), actual.size)
+        actual.assertIsSimilarTo(R.drawable.rounded_corners_2)
     }
 
     @Test
@@ -46,6 +50,7 @@ class RoundedCornerTransformationTest {
         val actual = transformation.transform(input, Size(100, Dimension.Undefined))
 
         assertEquals(Size(100, 125), actual.size)
+        actual.assertIsSimilarTo(R.drawable.rounded_corners_3)
     }
 
     @Test
@@ -54,5 +59,27 @@ class RoundedCornerTransformationTest {
         val actual = transformation.transform(input, Size.ORIGINAL)
 
         assertEquals(Size(103, 129), actual.size)
+        actual.assertIsSimilarTo(R.drawable.rounded_corners_4)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1426 */
+    @Test
+    fun imageIsSmallerThanTarget() = runTest {
+        val expectedSize = Size(200, 200)
+        val input = context.decodeBitmapAsset("normal_small.jpg")
+        val actual = transformation.transform(input, expectedSize)
+
+        assertEquals(expectedSize, actual.size)
+        actual.assertIsSimilarTo(R.drawable.rounded_corners_5)
+    }
+
+    @Test
+    fun imageIsLargerThanTarget() = runTest {
+        val expectedSize = Size(200, 200)
+        val input = context.decodeBitmapAsset("normal.jpg")
+        val actual = transformation.transform(input, expectedSize)
+
+        assertEquals(expectedSize, actual.size)
+        actual.assertIsSimilarTo(R.drawable.rounded_corners_6)
     }
 }
