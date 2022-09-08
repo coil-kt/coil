@@ -19,6 +19,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -52,6 +53,7 @@ private fun Content(viewModel: MainViewModel = viewModel()) {
             onPrimary = Color.Black
         )
     ) {
+        val screen by viewModel.screen.collectAsState()
         Scaffold(
             topBar = {
                 Toolbar(
@@ -62,14 +64,16 @@ private fun Content(viewModel: MainViewModel = viewModel()) {
             content = { padding ->
                 Box(Modifier.padding(padding)) {
                     ScaffoldContent(
-                        screen = viewModel.screen.collectAsState().value,
+                        screen = screen,
                         onScreenChange = { viewModel.screen.value = it },
                         images = viewModel.images.collectAsState().value
                     )
                 }
             }
         )
-        BackHandler { viewModel.onBackPressed() }
+        BackHandler(enabled = screen is Screen.Detail) {
+            viewModel.onBackPressed()
+        }
     }
 }
 
