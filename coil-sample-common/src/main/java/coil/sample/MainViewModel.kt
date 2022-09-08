@@ -30,12 +30,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun onBackPressed(): Boolean {
-        if (screen.value is Screen.Detail) {
-            screen.value = Screen.List
-            return true
-        }
-        return false
+    fun onBackPressed() {
+        // Always navigate to the top-level list if this method is called.
+        screen.value = Screen.List
     }
 
     private suspend fun loadImagesAsync(assetType: AssetType) = withContext(Dispatchers.IO) {
