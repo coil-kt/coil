@@ -1,11 +1,14 @@
 package coil.util
 
 import android.graphics.Bitmap
+import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import androidx.core.graphics.alpha
 import androidx.core.graphics.blue
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import androidx.test.platform.app.InstrumentationRegistry
 import coil.size.Size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -101,4 +104,16 @@ fun Bitmap.assertIsSimilarTo(
     check(similarity >= threshold) {
         "The images are not visually similar. Expected: $threshold; Actual: $similarity."
     }
+}
+
+/**
+ * Asserts that [this] and [expected] are the same size and that
+ * the cross correlation of their ARGB channels is >= [threshold].
+ */
+fun Bitmap.assertIsSimilarTo(
+    @DrawableRes expected: Int,
+    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
+) {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    assertIsSimilarTo(context.getDrawable(expected)!!.toBitmap(), threshold)
 }
