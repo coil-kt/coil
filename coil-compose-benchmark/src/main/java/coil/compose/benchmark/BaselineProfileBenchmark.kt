@@ -37,6 +37,7 @@ class BaselineProfileBenchmark {
         ) {
             pressHome()
             startActivityAndWait()
+            device.waitForIdle()
         }
     }
 

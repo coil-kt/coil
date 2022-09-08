@@ -21,5 +21,6 @@ class BaselineProfileGenerator {
         ) {
             pressHome()
             startActivityAndWait()
+            device.waitForIdle()
         }
 }
