@@ -4,11 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.test.core.app.ApplicationProvider
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import okhttp3.Headers
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.mockwebserver.MockResponse
@@ -68,18 +67,14 @@ fun Context.copyAssetToFile(fileName: String): File {
     return file
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 fun runTestMain(
     context: CoroutineContext = EmptyCoroutineContext,
-    block: suspend CoroutineScope.() -> Unit
-) = runTest(context) {
-    withContext(Dispatchers.Main.immediate, block)
-}
+    block: suspend TestScope.() -> Unit
+) = runTest(context = context + Dispatchers.Main.immediate, testBody = block)
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 fun runTestAsync(
     context: CoroutineContext = EmptyCoroutineContext,
-    block: suspend CoroutineScope.() -> Unit
-) = runTest(context) {
-    withContext(Dispatchers.IO, block)
-}
+    block: suspend TestScope.() -> Unit
+) = runTest(context = context + Dispatchers.IO, testBody = block)

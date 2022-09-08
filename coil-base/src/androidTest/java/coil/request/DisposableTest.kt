@@ -17,6 +17,7 @@ import coil.util.ViewTestActivity
 import coil.util.activity
 import coil.util.requestManager
 import coil.util.runTestMain
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import org.junit.After
@@ -28,6 +29,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DisposableTest {
 
     private lateinit var context: Context
