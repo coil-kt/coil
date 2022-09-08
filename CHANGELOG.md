@@ -2,7 +2,7 @@
 
 ## [2.2.1] - September 8, 2022
 
-- Fix: `RoundedCornersTransformation` now properly scales the input bitmap.
+- Fix: `RoundedCornersTransformation` now properly scales the `input` bitmap.
 - Remove dependency on the `kotlin-parcelize` plugin.
 - Update compile SDK to 33.
 - Downgrade `androidx.appcompat:appcompat-resources` to 1.4.2.
