@@ -5,8 +5,7 @@
 - Fix: `RoundedCornersTransformation` now properly scales the `input` bitmap.
 - Remove dependency on the `kotlin-parcelize` plugin.
 - Update compile SDK to 33.
-- Downgrade `androidx.appcompat:appcompat-resources` to 1.4.2.
-    - This is to work around [#1423](https://github.com/coil-kt/coil/issues/1423).
+- Downgrade `androidx.appcompat:appcompat-resources` to 1.4.2 to work around [#1423](https://github.com/coil-kt/coil/issues/1423).
 
 ## [2.2.0] - August 16, 2022
 
