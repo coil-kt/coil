@@ -7,7 +7,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@ExperimentalBaselineProfilesApi
+@OptIn(ExperimentalBaselineProfilesApi::class)
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileGenerator {
     @get:Rule

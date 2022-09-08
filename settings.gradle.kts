@@ -21,7 +21,5 @@ include(
     "coil-sample-compose",
     "coil-sample-view",
     "coil-test",
+    "coil-compose-benchmark",
 )
-
-// Baseline profile modules
-include(":coil-compose-benchmark")

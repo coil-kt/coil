@@ -18,7 +18,12 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil.load
 import coil.sample.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
-import sample.common.*
+import sample.common.AssetType
+import sample.common.Image
+import sample.common.MainViewModel
+import sample.common.Screen
+import sample.common.next
+import sample.common.numberOfColumns
 
 class MainActivity : AppCompatActivity() {
 

@@ -1,3 +1,5 @@
+import coil.compileSdk
+import coil.targetSdk
 import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
@@ -7,7 +9,7 @@ plugins {
 
 android {
     namespace = "coil.compose.benchmark"
-    compileSdk = 33
+    compileSdk = project.compileSdk
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -20,7 +22,7 @@ android {
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
+        targetSdk = project.targetSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,10 +55,10 @@ android {
 }
 
 dependencies {
-    implementation("androidx.test.ext:junit:1.1.3")
-    implementation("androidx.test.espresso:espresso-core:3.4.0")
-    implementation("androidx.test.uiautomator:uiautomator:2.2.0")
-    implementation("androidx.benchmark:benchmark-macro-junit4:1.2.0-alpha02")
+    implementation(libs.androidx.test.junit)
+    implementation(libs.androidx.test.espresso)
+    implementation(libs.androidx.test.uiautomator)
+    implementation(libs.androidx.benchmark.macro)
 }
 
 androidComponents {
