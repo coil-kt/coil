@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1] - September 7, 2022
+
+- Fix: Fix `RoundedCornersTransformation` not scaling the input bitmap.
+- Remove dependency on the `kotlin-parcelize` plugin.
+- Update compile SDK to 33.
+- Update `androidx.appcompat:appcompat-resources` to 1.5.1.
+
 ## [2.2.0] - August 16, 2022
 
 - **New**: Add `ImageRequest.videoFramePercent` to `coil-video` to support specifying the video frame as a percent of the video's duration.
