@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.androidx.collection)
     implementation(libs.androidx.core)
     implementation(libs.androidx.exifinterface)
-    api(libs.androidx.lifecycle.common)
+    api(libs.androidx.lifecycle.runtime)
     api(libs.coroutines.android)
     api(libs.kotlin.stdlib)
     api(libs.okhttp)
