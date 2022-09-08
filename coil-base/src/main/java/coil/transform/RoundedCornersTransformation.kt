@@ -60,7 +60,18 @@ class RoundedCornersTransformation(
             drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
             val matrix = Matrix()
-            matrix.setTranslate((outputWidth - input.width) / 2f, (outputHeight - input.height) / 2f)
+            val multiplier = DecodeUtils.computeSizeMultiplier(
+                srcWidth = input.width,
+                srcHeight = input.height,
+                dstWidth = outputWidth,
+                dstHeight = outputHeight,
+                scale = Scale.FILL
+            ).toFloat()
+            val dx = (outputWidth - multiplier * input.width) / 2
+            val dy = (outputHeight - multiplier * input.height) / 2
+            matrix.setTranslate(dx, dy)
+            matrix.preScale(multiplier, multiplier)
+
             val shader = BitmapShader(input, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
             shader.setLocalMatrix(matrix)
             paint.shader = shader
@@ -69,7 +80,7 @@ class RoundedCornersTransformation(
                 topLeft, topLeft,
                 topRight, topRight,
                 bottomRight, bottomRight,
-                bottomLeft, bottomLeft
+                bottomLeft, bottomLeft,
             )
             val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
             val path = Path().apply { addRoundRect(rect, radii, Path.Direction.CW) }

@@ -68,7 +68,7 @@ fun Context.copyAssetToFile(fileName: String): File {
     return file
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 fun runTestMain(
     context: CoroutineContext = EmptyCoroutineContext,
     block: suspend CoroutineScope.() -> Unit
@@ -76,7 +76,7 @@ fun runTestMain(
     withContext(Dispatchers.Main.immediate, block)
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 fun runTestAsync(
     context: CoroutineContext = EmptyCoroutineContext,
     block: suspend CoroutineScope.() -> Unit

@@ -241,7 +241,7 @@ class RealImageLoaderAndroidTest {
         val error = ColorDrawable(Color.BLUE)
         val fallback = ColorDrawable(Color.BLACK)
 
-        suspendCancellableCoroutine<Unit> { continuation ->
+        suspendCancellableCoroutine { continuation ->
             var hasCalledTargetOnError = false
 
             val request = ImageRequest.Builder(context)
@@ -295,7 +295,7 @@ class RealImageLoaderAndroidTest {
         val fileName = IMAGE
         val bitmap = decodeAssetAndAddToMemoryCache(key, fileName)
 
-        suspendCancellableCoroutine<Unit> { continuation ->
+        suspendCancellableCoroutine { continuation ->
             val request = ImageRequest.Builder(context)
                 .memoryCacheKey(key)
                 .placeholderMemoryCacheKey(key)
@@ -621,7 +621,7 @@ class RealImageLoaderAndroidTest {
 
         assertNull(imageView.drawable)
 
-        suspendCancellableCoroutine<Unit> { continuation ->
+        suspendCancellableCoroutine { continuation ->
             val request = ImageRequest.Builder(context)
                 .data(data)
                 .target(imageView)
