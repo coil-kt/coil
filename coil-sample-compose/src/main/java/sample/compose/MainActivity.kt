@@ -39,7 +39,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
-import sample.common.*
+import sample.common.AssetType
+import sample.common.Image
+import sample.common.MainViewModel
+import sample.common.Screen
+import sample.common.calculateScaledSize
+import sample.common.next
+import sample.common.numberOfColumns
 
 class MainActivity : ComponentActivity() {
 

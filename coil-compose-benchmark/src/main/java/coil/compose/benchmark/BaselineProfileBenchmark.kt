@@ -40,5 +40,4 @@ class BaselineProfileBenchmark {
             device.waitForIdle()
         }
     }
-
 }
