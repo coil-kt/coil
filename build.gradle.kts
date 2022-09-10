@@ -94,7 +94,7 @@ allprojects {
         version = project.versionName
 
         extensions.configure<MavenPublishBaseExtension> {
-            publishToMavenCentral(DEFAULT)
+            publishToMavenCentral(DEFAULT, automaticRelease = false)
             signAllPublications()
             pomFromGradleProperties()
         }
