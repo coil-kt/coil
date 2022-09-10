@@ -112,8 +112,9 @@ internal class RequestService(
 
         // Prevent hardware bitmaps for non-hardware accelerated targets.
         val target = request.target
-        if (target is ViewTarget<*> &&
-            target.view.run { isAttachedToWindow && !isHardwareAccelerated }) return false
+        if (target is ViewTarget<*> && target.view.run { isAttachedToWindow && !isHardwareAccelerated }) {
+            return false
+        }
 
         return true
     }
