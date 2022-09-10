@@ -2,7 +2,6 @@ import coil.by
 import coil.groupId
 import coil.versionName
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost.DEFAULT
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
@@ -94,7 +93,7 @@ allprojects {
         version = project.versionName
 
         extensions.configure<MavenPublishBaseExtension> {
-            publishToMavenCentral(DEFAULT, automaticRelease = false)
+            publishToMavenCentral()
             signAllPublications()
             pomFromGradleProperties()
         }
