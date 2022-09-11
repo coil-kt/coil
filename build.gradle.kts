@@ -17,6 +17,14 @@ buildscript {
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
     }
+
+    configurations.classpath {
+        resolutionStrategy.eachDependency {
+            when (requested.group) {
+                libs.ktlint.get().module.group -> useVersion(libs.versions.ktlint.get())
+            }
+        }
+    }
 }
 
 // https://youtrack.jetbrains.com/issue/KTIJ-19369
@@ -52,7 +60,6 @@ allprojects {
     apply(plugin = "org.jmailen.kotlinter")
 
     kotlinter {
-        version = rootProject.libs.versions.ktlint
         disabledRules = arrayOf(
             "annotation",
             "argument-list-wrapping",
