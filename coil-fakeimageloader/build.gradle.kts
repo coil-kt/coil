@@ -1,0 +1,18 @@
+import coil.setupLibraryModule
+
+plugins {
+    id("com.android.library")
+    id("kotlin-android")
+}
+
+setupLibraryModule(name = "coil.fakeimageloader", publish = true)
+
+dependencies {
+    api(projects.coilBase)
+
+    implementation(libs.androidx.core)
+    implementation(libs.okio.fakefilesystem)
+
+    testImplementation(projects.coilTest)
+    testImplementation(libs.bundles.test.jvm)
+}

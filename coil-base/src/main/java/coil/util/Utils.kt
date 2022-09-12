@@ -268,7 +268,7 @@ internal fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
  */
 internal object SingletonDiskCache {
 
-    private const val FOLDER_NAME = "image_cache"
+    private const val DIRECTORY = "image_cache"
     private var instance: DiskCache? = null
 
     @Synchronized
@@ -276,7 +276,7 @@ internal object SingletonDiskCache {
         return instance ?: run {
             // Create the singleton disk cache instance.
             DiskCache.Builder()
-                .directory(context.safeCacheDir.resolve(FOLDER_NAME))
+                .directory(context.safeCacheDir.resolve(DIRECTORY))
                 .build()
                 .also { instance = it }
         }
