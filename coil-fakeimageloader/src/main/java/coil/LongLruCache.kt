@@ -127,8 +127,7 @@ internal open class LongLruCache<K, V>(
             var value: V
             synchronized(this) {
                 check(!(size < 0L || map.isEmpty() && size != 0L)) {
-                    (javaClass.name
-                        + ".sizeOf() is reporting inconsistent results!")
+                    (javaClass.name + ".sizeOf() is reporting inconsistent results!")
                 }
                 if (size <= maxSize || map.isEmpty()) {
                     return

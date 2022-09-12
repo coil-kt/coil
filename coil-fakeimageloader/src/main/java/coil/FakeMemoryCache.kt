@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 @ExperimentalCoilApi
 class FakeMemoryCache private constructor(
     override val maxSize: Int
-): MemoryCache {
+) : MemoryCache {
 
     private val cache = object : LruCache<Key, Value>(maxSize) {
         override fun sizeOf(key: Key, value: Value) = value.bitmap.allocationByteCount

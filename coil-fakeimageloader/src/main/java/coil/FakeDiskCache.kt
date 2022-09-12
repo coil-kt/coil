@@ -186,8 +186,8 @@ class FakeDiskCache private constructor(
     }
 
     sealed interface State {
-        data class Read(val snapshots: Set<Snapshot>): State
-        data class Write(val editor: Editor): State
+        data class Read(val snapshots: Set<Snapshot>) : State
+        data class Write(val editor: Editor) : State
     }
 
     class Builder {
