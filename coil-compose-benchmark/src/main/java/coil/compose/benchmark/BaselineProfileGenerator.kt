@@ -26,7 +26,7 @@ class BaselineProfileGenerator {
         val instrumentedDevice = UiDevice.getInstance(getInstrumentation())
         repeat(3) {
             instrumentedDevice
-                .findObject(By.res("scrollableRow"))
+                .findObject(By.res("scrollableContent"))
                 .fling(Direction.DOWN, 3000)
             device.waitForIdle()
         }
