@@ -216,8 +216,10 @@ internal class RealImageLoader(
     /** Called by [SystemCallbacks.onTrimMemory]. */
     @Suppress("SAFE_CALL_WILL_CHANGE_NULLABILITY", "UNNECESSARY_SAFE_CALL")
     internal fun onTrimMemory(level: Int) {
-        // https://github.com/coil-kt/coil/issues/1211
-        memoryCacheLazy?.value?.trimMemory(level)
+        // https://github.com/coil-kt/coil/issues/1443
+        try {
+            memoryCacheLazy?.value?.trimMemory(level)
+        } catch (_: NullPointerException) {}
     }
 
     override fun shutdown() {
