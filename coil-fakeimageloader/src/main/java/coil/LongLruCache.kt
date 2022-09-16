@@ -11,8 +11,8 @@ package coil
  * the maximum number of entries in the cache. For all other caches,
  * this is the maximum sum of the sizes of the entries in this cache.
  */
-internal open class LongLruCache<K, V>(
-    private var maxSize: Long
+internal open class LongLruCache<K : Any, V : Any>(
+    private val maxSize: Long
 ) {
 
     private val map = LinkedHashMap<K, V>(0, 0.75f, true)
@@ -30,32 +30,18 @@ internal open class LongLruCache<K, V>(
     }
 
     /**
-     * Sets the size of the cache.
-     *
-     * @param maxSize The new maximum size.
-     */
-    fun resize(maxSize: Long) {
-        require(maxSize > 0) { "maxSize <= 0" }
-        synchronized(this) { this.maxSize = maxSize }
-        trimToSize(maxSize)
-    }
-
-    /**
      * Returns the value for `key` if it exists in the cache or can be
      * created by `#create`. If a value was returned, it is moved to the
      * head of the queue. This returns null if a value is not cached and cannot
      * be created.
      */
     operator fun get(key: K): V? {
-        if (key == null) {
-            throw NullPointerException("key == null")
-        }
         var mapValue: V?
         synchronized(this) {
             mapValue = map[key]
             if (mapValue != null) {
                 hitCount++
-                return mapValue
+                return mapValue!!
             }
             missCount++
         }
@@ -77,12 +63,12 @@ internal open class LongLruCache<K, V>(
                 size += safeSizeOf(key, createdValue)
             }
         }
-        return if (mapValue != null) {
+        if (mapValue != null) {
             entryRemoved(false, key, createdValue, mapValue)
-            mapValue
+            return mapValue
         } else {
             trimToSize(maxSize)
-            createdValue
+            return createdValue
         }
     }
 
@@ -93,9 +79,6 @@ internal open class LongLruCache<K, V>(
      * @return the previous value mapped by `key`.
      */
     fun put(key: K, value: V): V? {
-        if (key == null || value == null) {
-            throw NullPointerException("key == null || value == null")
-        }
         var previous: V?
         synchronized(this) {
             putCount++
@@ -147,9 +130,6 @@ internal open class LongLruCache<K, V>(
      * @return the previous value mapped by `key`.
      */
     fun remove(key: K): V? {
-        if (key == null) {
-            throw NullPointerException("key == null")
-        }
         var previous: V?
         synchronized(this) {
             previous = map.remove(key)
@@ -195,9 +175,7 @@ internal open class LongLruCache<K, V>(
      * thread calls [put] while another is creating a value for the same
      * key.
      */
-    protected open fun create(key: K): V? {
-        return null
-    }
+    protected open fun create(key: K): V? = null
 
     private fun safeSizeOf(key: K, value: V): Long {
         val result = sizeOf(key, value)
@@ -212,77 +190,13 @@ internal open class LongLruCache<K, V>(
      *
      * An entry's size must not change while it is in the cache.
      */
-    protected open fun sizeOf(key: K, value: V): Long {
-        return 1L
-    }
+    protected open fun sizeOf(key: K, value: V): Long = 1L
 
     /**
      * Clear the cache, calling [entryRemoved] on each removed entry.
      */
     fun evictAll() {
         trimToSize(-1) // -1 will evict 0-sized elements
-    }
-
-    /**
-     * For caches that do not override [sizeOf], this returns the number
-     * of entries in the cache. For all other caches, this returns the sum of
-     * the sizes of the entries in this cache.
-     */
-    @Synchronized
-    fun size(): Long {
-        return size
-    }
-
-    /**
-     * For caches that do not override [sizeOf], this returns the maximum
-     * number of entries in the cache. For all other caches, this returns the
-     * maximum sum of the sizes of the entries in this cache.
-     */
-    @Synchronized
-    fun maxSize(): Long {
-        return maxSize
-    }
-
-    /**
-     * Returns the number of times [get] returned a value that was
-     * already present in the cache.
-     */
-    @Synchronized
-    fun hitCount(): Int {
-        return hitCount
-    }
-
-    /**
-     * Returns the number of times [get] returned null or required a new
-     * value to be created.
-     */
-    @Synchronized
-    fun missCount(): Int {
-        return missCount
-    }
-
-    /**
-     * Returns the number of times [create] returned a value.
-     */
-    @Synchronized
-    fun createCount(): Int {
-        return createCount
-    }
-
-    /**
-     * Returns the number of times [put] was called.
-     */
-    @Synchronized
-    fun putCount(): Int {
-        return putCount
-    }
-
-    /**
-     * Returns the number of values that have been evicted.
-     */
-    @Synchronized
-    fun evictionCount(): Int {
-        return evictionCount
     }
 
     /**
