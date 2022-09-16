@@ -1,7 +1,5 @@
 package coil
 
-import java.util.Locale
-
 /**
  * Static library version of `android.util.LruCache`. Used to write apps
  * that run on API levels prior to 12. When running on API level 12 or above,
@@ -300,7 +298,6 @@ internal open class LongLruCache<K, V>(
     override fun toString(): String {
         val accesses = hitCount + missCount
         val hitPercent = if (accesses != 0) 100 * hitCount / accesses else 0
-        return "LongLruCache[maxSize=%d,hits=%d,misses=%d,hitRate=%d%%]"
-            .format(Locale.US, maxSize, hitCount, missCount, hitPercent)
+        return "LongLruCache[maxSize=$maxSize,hits=$hitCount,misses=$missCount,hitPercent=$hitPercent]"
     }
 }
