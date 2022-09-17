@@ -23,16 +23,20 @@ class FakeDiskCache private constructor(
     fileSystem: FileSystem,
 ) : DiskCache {
 
-    private val states = LinkedHashMap<String, State>()
+    private val entries = LinkedHashMap<String, State>(0, 0.75f, true)
 
     private val _gets = MutableSharedFlow<String>()
+    private val _edits = MutableSharedFlow<String>()
+    private val _removes = MutableSharedFlow<String>()
+    private val _evicts = MutableSharedFlow<String>()
+
     val gets: Flow<String> get() = _gets
 
-    private val _edits = MutableSharedFlow<String>()
     val edits: Flow<String> get() = _edits
 
-    private val _removes = MutableSharedFlow<String>()
     val removes: Flow<String> get() = _removes
+
+    val evicts: Flow<String> get() = _evicts
 
     override var size = 0L
 
@@ -44,47 +48,52 @@ class FakeDiskCache private constructor(
         }
     }
 
-    val keys: Set<String> get() = states.keys.toImmutableSet()
+    val keys: Set<String> get() = entries.keys.toImmutableSet()
 
-    val snapshot: Map<String, State> get() = states.toImmutableMap()
+    val snapshot: Map<String, State> get() = entries.toImmutableMap()
 
     @Synchronized
     override fun get(key: String): Snapshot? {
-        _gets.tryEmit(key)
-        return when (val state = states[key]) {
-            null -> FakeSnapshot(key).also { snapshot ->
-                states[key] = State.Read(setOf(snapshot))
+        val state = entries.getOrElse(key) { State.Readable(emptySet()) }
+        return when (state) {
+            is State.Readable -> FakeSnapshot(key).also { snapshot ->
+                entries[key] = state.copy(snapshots = state.snapshots + snapshot)
             }
-            is State.Read -> FakeSnapshot(key).also { snapshot ->
-                states[key] = state.copy(snapshots = state.snapshots + snapshot)
-            }
-            is State.Write -> null
-        }
+            is State.Writing -> null
+        }.also { _gets.tryEmit(key) }
     }
 
     @Synchronized
     override fun edit(key: String): Editor? {
-        _edits.tryEmit(key)
-        return when (states[key]) {
-            null -> FakeEditor(key).also { editor ->
-                states[key] = State.Write(editor)
+        val state = entries.getOrElse(key) { State.Readable(emptySet()) }
+        return if (state is State.Readable && state.snapshots.isEmpty()) {
+            FakeEditor(key).also { editor ->
+                entries[key] = State.Writing(editor)
             }
-            else -> null
-        }
+        } else {
+            null
+        }.also { _edits.tryEmit(key) }
     }
 
     @Synchronized
-    override fun remove(key: String): Boolean {
-        _removes.tryEmit(key)
-        return remove(metadata(key)) || remove(data(key))
+    override fun remove(key: String) = delete(key, eviction = false)
+
+    private fun delete(key: String, eviction: Boolean): Boolean {
+        val isRemoved = delete(metadata(key)) || delete(data(key))
+        if (eviction) {
+            _evicts.tryEmit(key)
+        } else {
+            _removes.tryEmit(key)
+        }
+        return isRemoved
     }
 
-    private fun remove(path: Path): Boolean {
+    private fun delete(path: Path): Boolean {
         val exists = fileSystem.exists(path)
         if (exists) {
-            val size = fileSystem.metadata(path).size
+            val fileSize = fileSystem.metadata(path).size
             fileSystem.delete(path)
-            size?.let { this.size -= it }
+            fileSize?.let { size -= it }
         }
         return exists
     }
@@ -96,16 +105,11 @@ class FakeDiskCache private constructor(
 
     @Synchronized
     private fun close(snapshot: FakeSnapshot) {
-        val state = states[snapshot.key]
-        check(state is State.Read && snapshot in state.snapshots) {
-            "unexpected state: ${snapshot.key} = $state"
+        val state = entries[snapshot.key]
+        check(state is State.Readable && snapshot in state.snapshots) {
+            "unexpected state: $state"
         }
-        val snapshots = state.snapshots - snapshot
-        if (snapshots.isEmpty()) {
-            states -= snapshot.key
-        } else {
-            states[snapshot.key] = state.copy(snapshots = snapshots)
-        }
+        entries[snapshot.key] = state.copy(snapshots = state.snapshots - snapshot)
     }
 
     @Synchronized
@@ -126,6 +130,11 @@ class FakeDiskCache private constructor(
         fileSystem.atomicMove(editor.data, data)
         dataSize?.let { size += it }
 
+        // Trim the entries until we're below the maxSize or all entries are pending eviction.
+        while (size > maxSize) {
+            if (!removeOldestEntry()) break
+        }
+
         complete(editor)
     }
 
@@ -142,12 +151,22 @@ class FakeDiskCache private constructor(
         complete(editor)
     }
 
-    private fun complete(editor: FakeEditor) {
-        val state = states[editor.key]
-        check(state is State.Write && state.editor === editor) {
-            "unexpected state: ${editor.key} = $state"
+    private fun removeOldestEntry(): Boolean {
+        for ((key, value) in entries) {
+            if (!value.pendingEviction) {
+                delete(key, eviction = true)
+                return true
+            }
         }
-        states -= editor.key
+        return false
+    }
+
+    private fun complete(editor: FakeEditor) {
+        val state = entries[editor.key]
+        check(state is State.Writing && state.editor === editor) {
+            "unexpected state: $state"
+        }
+        entries[editor.key] = State.Readable(emptySet())
     }
 
     private fun metadata(key: String, tmp: Boolean = false): Path {
@@ -166,8 +185,9 @@ class FakeDiskCache private constructor(
         }
     }
 
+    @Synchronized
     override fun toString(): String {
-        return "FakeDiskCache(states=$states)"
+        return "FakeDiskCache(entries=$entries)"
     }
 
     private inner class FakeSnapshot(val key: String) : Snapshot {
@@ -186,8 +206,22 @@ class FakeDiskCache private constructor(
     }
 
     sealed interface State {
-        data class Read(val snapshots: Set<Snapshot>) : State
-        data class Write(val editor: Editor) : State
+
+        /**
+         * True if this entry has been evicted, but there's an active snapshot or editor
+         * preventing its deletion from the file system.
+         */
+        val pendingEviction: Boolean
+
+        data class Readable(
+            val snapshots: Set<Snapshot>,
+            override val pendingEviction: Boolean = false
+        ) : State
+
+        data class Writing(
+            val editor: Editor,
+            override val pendingEviction: Boolean = false
+        ) : State
     }
 
     class Builder {
@@ -244,8 +278,16 @@ fun FakeDiskCache.assertContains(predicate: (key: String, state: State) -> Boole
  * Assert the [FakeDiskCache] does not contain any entries.
  */
 fun FakeDiskCache.assertEmpty() {
-    val size = size
     if (size != 0L) {
         throw AssertionError("The disk cache is not empty: $this")
+    }
+}
+
+/**
+ * Assert the [FakeDiskCache] does not have any open reads or writes.
+ */
+fun FakeDiskCache.assertNotReadingOrWriting() {
+    if (snapshot.values.any { it !is State.Readable || it.snapshots.isNotEmpty() }) {
+        throw AssertionError("The disk cache has open reads and/or writes: $this")
     }
 }

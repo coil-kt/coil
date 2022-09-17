@@ -19,17 +19,30 @@ class FakeMemoryCache private constructor(
 ) : MemoryCache {
 
     private val cache = object : LruCache<Key, Value>(maxSize) {
-        override fun sizeOf(key: Key, value: Value) = value.bitmap.allocationByteCount
+        override fun sizeOf(key: Key, value: Value): Int {
+            return value.bitmap.allocationByteCountCompat
+        }
+        override fun entryRemoved(evicted: Boolean, key: Key, oldValue: Value, newValue: Value?) {
+            if (evicted) _evicts.tryEmit(key)
+        }
     }
 
     private val _gets = MutableSharedFlow<Key>()
+    private val _sets = MutableSharedFlow<Pair<Key, Value>>()
+    private val _removes = MutableSharedFlow<Key>()
+    private val _evicts = MutableSharedFlow<Key>()
+
+    /** Returns a [Flow] that emits when [get] is called. */
     val gets: Flow<Key> get() = _gets
 
-    private val _sets = MutableSharedFlow<Pair<Key, Value>>()
+    /** Returns a [Flow] that emits when [set] is called. */
     val sets: Flow<Pair<Key, Value>> get() = _sets
 
-    private val _removes = MutableSharedFlow<Key>()
+    /** Returns a [Flow] that emits when [remove] is called. */
     val removes: Flow<Key> get() = _removes
+
+    /** Returns a [Flow] that emits when an entry is evicted due to the cache exceeding [maxSize]. */
+    val evicts: Flow<Key> get() = _evicts
 
     override val size: Int get() = cache.size()
 
@@ -55,7 +68,9 @@ class FakeMemoryCache private constructor(
     }
 
     override fun clear() {
-        cache.evictAll()
+        // Don't use `evictAll` as deletes via this method should be treated
+        // as removals - not evicts.
+        cache.snapshot().keys.forEach(cache::remove)
     }
 
     override fun trimMemory(level: Int) {
