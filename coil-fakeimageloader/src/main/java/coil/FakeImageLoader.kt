@@ -8,6 +8,8 @@ import coil.FakeImageLoader.Engine
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.disk.DiskCache
+import coil.disk.FakeDiskCache
+import coil.memory.FakeMemoryCache
 import coil.memory.MemoryCache
 import coil.request.DefaultRequestOptions
 import coil.request.Disposable

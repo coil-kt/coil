@@ -1,17 +1,20 @@
 @file:JvmName("FakeMemoryCaches")
 
-package coil
+package coil.memory
 
 import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import androidx.collection.LruCache
+import coil.allocationByteCountCompat
 import coil.annotation.ExperimentalCoilApi
-import coil.memory.MemoryCache
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
+import coil.toImmutableMap
+import coil.toImmutableSet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 @ExperimentalCoilApi
 class FakeMemoryCache private constructor(
@@ -33,16 +36,16 @@ class FakeMemoryCache private constructor(
     private val _evicts = MutableSharedFlow<Key>()
 
     /** Returns a [Flow] that emits when [get] is called. */
-    val gets: Flow<Key> get() = _gets
+    val gets: Flow<Key> = _gets.asSharedFlow()
 
     /** Returns a [Flow] that emits when [set] is called. */
-    val sets: Flow<Pair<Key, Value>> get() = _sets
+    val sets: Flow<Pair<Key, Value>> = _sets.asSharedFlow()
 
     /** Returns a [Flow] that emits when [remove] is called. */
-    val removes: Flow<Key> get() = _removes
+    val removes: Flow<Key> = _removes.asSharedFlow()
 
     /** Returns a [Flow] that emits when an entry is evicted due to the cache exceeding [maxSize]. */
-    val evicts: Flow<Key> get() = _evicts
+    val evicts: Flow<Key> = _evicts.asSharedFlow()
 
     override val size: Int get() = cache.size()
 

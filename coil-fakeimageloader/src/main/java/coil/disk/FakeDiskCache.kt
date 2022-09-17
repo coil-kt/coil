@@ -1,14 +1,16 @@
 @file:JvmName("FakeDiskCaches")
 
-package coil
+package coil.disk
 
-import coil.FakeDiskCache.State
 import coil.annotation.ExperimentalCoilApi
-import coil.disk.DiskCache
 import coil.disk.DiskCache.Editor
 import coil.disk.DiskCache.Snapshot
+import coil.disk.FakeDiskCache.State
+import coil.toImmutableMap
+import coil.toImmutableSet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import okio.FileSystem
 import okio.ForwardingFileSystem
 import okio.Path
@@ -30,13 +32,17 @@ class FakeDiskCache private constructor(
     private val _removes = MutableSharedFlow<String>()
     private val _evicts = MutableSharedFlow<String>()
 
-    val gets: Flow<String> get() = _gets
+    /** Returns a [Flow] that emits when [get] is called. */
+    val gets: Flow<String> = _gets.asSharedFlow()
 
-    val edits: Flow<String> get() = _edits
+    /** Returns a [Flow] that emits when [edit] is called. */
+    val edits: Flow<String> = _edits.asSharedFlow()
 
-    val removes: Flow<String> get() = _removes
+    /** Returns a [Flow] that emits when [remove] is called. */
+    val removes: Flow<String> = _removes.asSharedFlow()
 
-    val evicts: Flow<String> get() = _evicts
+    /** Returns a [Flow] that emits when an entry is evicted due to the cache exceeding [maxSize]. */
+    val evicts: Flow<String> = _evicts.asSharedFlow()
 
     override var size = 0L
 
