@@ -113,7 +113,7 @@ internal class RealImageLoader(
     private val isShutdown = AtomicBoolean(false)
 
     init {
-        // The image loader must be fully initialized before registering the component callbacks.
+        // Must be called only after the image loader is fully initialized.
         systemCallbacks.register()
     }
 
