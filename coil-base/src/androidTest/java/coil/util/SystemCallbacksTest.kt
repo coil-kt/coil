@@ -13,6 +13,7 @@ import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SystemCallbacksTest {
@@ -56,10 +57,10 @@ class SystemCallbacksTest {
         memoryCache[Key("1")] = Value(createBitmap(1000, 1000, Bitmap.Config.ARGB_8888))
         memoryCache[Key("2")] = Value(createBitmap(1000, 1000, Bitmap.Config.ARGB_8888))
 
-        assertTrue(memoryCache.size == 8000000)
+        assertEquals(8_000_000, memoryCache.size)
 
         systemCallbacks.onTrimMemory(TRIM_MEMORY_COMPLETE)
 
-        assertTrue(memoryCache.size == 0)
+        assertEquals(0, memoryCache.size)
     }
 }
