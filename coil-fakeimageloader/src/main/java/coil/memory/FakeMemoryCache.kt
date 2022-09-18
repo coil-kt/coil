@@ -54,7 +54,7 @@ class FakeMemoryCache private constructor(
     val values: Set<Value> get() = cache.snapshot().values.toImmutableSet()
 
     /** Returns an immutable snapshot of the entries in this cache. */
-    val snapshot: Map<Key, Value> get() = cache.snapshot().toImmutableMap()
+    val entries: Map<Key, Value> get() = cache.snapshot().toImmutableMap()
 
     override val size: Int get() = cache.size()
 
@@ -115,7 +115,7 @@ fun FakeMemoryCache(): FakeMemoryCache {
  * Assert the [FakeMemoryCache] contains an entry that matches [predicate].
  */
 fun FakeMemoryCache.assertContains(predicate: (key: Key, value: Value) -> Boolean) {
-    snapshot.entries.forEach { (key, value) ->
+    entries.forEach { (key, value) ->
         if (predicate(key, value)) return
     }
     throw AssertionError("No entries matched the predicate: $this")

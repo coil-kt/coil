@@ -64,7 +64,7 @@ class FakeDiskCache private constructor(
 
     /** Returns an immutable snapshot of the entries in this cache. */
     @get:Synchronized
-    val snapshot: Map<String, Value> get() = cache.toImmutableMap()
+    val entries: Map<String, Value> get() = cache.toImmutableMap()
 
     @get:Synchronized
     override var size = 0L
@@ -311,7 +311,7 @@ fun FakeDiskCache(): FakeDiskCache {
  * Assert the [FakeDiskCache] contains an entry that matches [predicate].
  */
 fun FakeDiskCache.assertContains(predicate: (key: String, value: Value) -> Boolean) {
-    snapshot.entries.forEach { (key, value) ->
+    entries.forEach { (key, value) ->
         if (predicate(key, value)) return
     }
     throw AssertionError("No entries matched the predicate: $this")
@@ -330,7 +330,7 @@ fun FakeDiskCache.assertEmpty() {
  * Assert the [FakeDiskCache] does not have any open reads or writes.
  */
 fun FakeDiskCache.assertNotReadingOrWriting() {
-    val readingOrWriting = snapshot.values.any { value ->
+    val readingOrWriting = values.any { value ->
         val state = value.state
         state !is State.Read || state.snapshots.isNotEmpty()
     }
