@@ -265,7 +265,7 @@ class FakeDiskCache private constructor(
 
     class Builder {
 
-        private var maxSize: Long = 0L
+        private var maxSize: Long = Long.MAX_VALUE
         private var directory: Path = "/$DEFAULT_DIRECTORY".toPath()
         private var fileSystem: FileSystem = FakeFileSystem()
 
