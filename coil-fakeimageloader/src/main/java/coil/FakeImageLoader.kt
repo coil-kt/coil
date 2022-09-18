@@ -3,7 +3,6 @@
 package coil
 
 import android.graphics.drawable.Drawable
-import coil.FakeImageLoader.CompositeQueueEngine
 import coil.FakeImageLoader.Engine
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
@@ -78,6 +77,7 @@ class FakeImageLoader private constructor(
     }
 
     private suspend fun executeCommon(request: ImageRequest): ImageResult {
+        // Always call onStart before executing the request.
         request.target?.onStart(request.placeholder)
         return engine.execute(request).also { result ->
             _results.tryEmit(request to result)
@@ -104,52 +104,6 @@ class FakeImageLoader private constructor(
 
     fun interface Engine {
         suspend fun execute(request: ImageRequest): ImageResult
-    }
-
-    class CompositeQueueEngine : Engine {
-
-        private val results = mutableMapOf<Any, Queue<Engine>>()
-        private var default: Engine? = null
-
-        @Synchronized
-        fun enqueue(
-            data: Any,
-            drawable: Drawable,
-            dataSource: DataSource = DataSource.DISK,
-            memoryCacheKey: MemoryCache.Key? = null,
-            diskCacheKey: String? = null,
-        ) = enqueue(
-            data = data,
-            engine = { request ->
-                SuccessResult(
-                    drawable = drawable,
-                    request = request,
-                    dataSource = dataSource,
-                    memoryCacheKey = memoryCacheKey,
-                    diskCacheKey = diskCacheKey
-                )
-            }
-        )
-
-        @Synchronized
-        fun enqueue(data: Any, engine: Engine) = apply {
-            results.getOrPut(data) { LinkedList() }.offer(engine)
-        }
-
-        @Synchronized
-        fun default(default: Engine) = apply {
-            this.default = default
-        }
-
-        override suspend fun execute(request: ImageRequest): ImageResult {
-            // NOTE: synchronized works here because we don't suspend inside the block.
-            val engine = synchronized(this) {
-                checkNotNull(results[request.data]?.poll() ?: default) {
-                    "no queued result for $request. results: $results"
-                }
-            }
-            return engine.execute(request)
-        }
     }
 
     private class JobDisposable(
@@ -244,3 +198,49 @@ fun FakeImageLoader.enqueue(
     data = data,
     engine = engine,
 )
+
+class CompositeQueueEngine : Engine {
+
+    private val results = mutableMapOf<Any, Queue<Engine>>()
+    private var default: Engine? = null
+
+    @Synchronized
+    fun enqueue(
+        data: Any,
+        drawable: Drawable,
+        dataSource: DataSource = DataSource.DISK,
+        memoryCacheKey: MemoryCache.Key? = null,
+        diskCacheKey: String? = null,
+    ) = enqueue(
+        data = data,
+        engine = { request ->
+            SuccessResult(
+                drawable = drawable,
+                request = request,
+                dataSource = dataSource,
+                memoryCacheKey = memoryCacheKey,
+                diskCacheKey = diskCacheKey
+            )
+        }
+    )
+
+    @Synchronized
+    fun enqueue(data: Any, engine: Engine) = apply {
+        results.getOrPut(data) { LinkedList() }.offer(engine)
+    }
+
+    @Synchronized
+    fun default(default: Engine) = apply {
+        this.default = default
+    }
+
+    override suspend fun execute(request: ImageRequest): ImageResult {
+        // NOTE: synchronized works here because we don't suspend inside the block.
+        val engine = synchronized(this) {
+            checkNotNull(results[request.data]?.poll() ?: default) {
+                "no queued result for $request. results: $results"
+            }
+        }
+        return engine.execute(request)
+    }
+}
