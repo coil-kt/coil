@@ -1,0 +1,158 @@
+public final class coil/CompositeQueueEngine : coil/FakeImageLoader$Engine {
+	public fun <init> ()V
+	public final fun default (Lcoil/FakeImageLoader$Engine;)Lcoil/CompositeQueueEngine;
+	public final fun enqueue (Ljava/lang/Object;Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;)Lcoil/CompositeQueueEngine;
+	public final fun enqueue (Ljava/lang/Object;Lcoil/FakeImageLoader$Engine;)Lcoil/CompositeQueueEngine;
+	public static synthetic fun enqueue$default (Lcoil/CompositeQueueEngine;Ljava/lang/Object;Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;ILjava/lang/Object;)Lcoil/CompositeQueueEngine;
+	public fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil/FakeImageLoader : coil/ImageLoader {
+	public synthetic fun <init> (Lkotlin/coroutines/CoroutineContext;Lcoil/request/DefaultRequestOptions;Lcoil/ComponentRegistry;Lcoil/memory/MemoryCache;Lcoil/disk/DiskCache;Lcoil/FakeImageLoader$Engine;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun assertNotShutdown ()V
+	public fun enqueue (Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
+	public fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getComponents ()Lcoil/ComponentRegistry;
+	public fun getDefaults ()Lcoil/request/DefaultRequestOptions;
+	public fun getDiskCache ()Lcoil/disk/DiskCache;
+	public final fun getEngine ()Lcoil/FakeImageLoader$Engine;
+	public final fun getEnqueues ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getExecutes ()Lkotlinx/coroutines/flow/Flow;
+	public fun getMemoryCache ()Lcoil/memory/MemoryCache;
+	public final fun getRequests ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getResults ()Lkotlinx/coroutines/flow/Flow;
+	public fun newBuilder ()Lcoil/ImageLoader$Builder;
+	public fun shutdown ()V
+}
+
+public final class coil/FakeImageLoader$Builder {
+	public fun <init> ()V
+	public final fun build ()Lcoil/FakeImageLoader;
+	public final fun components (Lcoil/ComponentRegistry;)Lcoil/FakeImageLoader$Builder;
+	public final fun coroutineContext (Lkotlin/coroutines/CoroutineContext;)Lcoil/FakeImageLoader$Builder;
+	public final fun defaults (Lcoil/request/DefaultRequestOptions;)Lcoil/FakeImageLoader$Builder;
+	public final fun diskCache (Lcoil/disk/DiskCache;)Lcoil/FakeImageLoader$Builder;
+	public final fun engine (Lcoil/FakeImageLoader$Engine;)Lcoil/FakeImageLoader$Builder;
+	public final fun memoryCache (Lcoil/memory/MemoryCache;)Lcoil/FakeImageLoader$Builder;
+}
+
+public abstract interface class coil/FakeImageLoader$Engine {
+	public abstract fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil/FakeImageLoaders {
+	public static final fun create ()Lcoil/FakeImageLoader;
+	public static final fun enqueue (Lcoil/FakeImageLoader;Ljava/lang/Object;Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;)Lcoil/CompositeQueueEngine;
+	public static final fun enqueue (Lcoil/FakeImageLoader;Ljava/lang/Object;Lcoil/FakeImageLoader$Engine;)Lcoil/CompositeQueueEngine;
+	public static synthetic fun enqueue$default (Lcoil/FakeImageLoader;Ljava/lang/Object;Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;ILjava/lang/Object;)Lcoil/CompositeQueueEngine;
+	public static final fun getFakeDiskCache (Lcoil/FakeImageLoader;)Lcoil/disk/FakeDiskCache;
+	public static final fun getFakeMemoryCache (Lcoil/FakeImageLoader;)Lcoil/memory/FakeMemoryCache;
+}
+
+public final class coil/disk/FakeDiskCache : coil/disk/DiskCache {
+	public synthetic fun <init> (JLokio/Path;Lokio/FileSystem;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun clear ()V
+	public fun edit (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
+	public fun get (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
+	public fun getDirectory ()Lokio/Path;
+	public final fun getEdits ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getEntries ()Ljava/util/Map;
+	public final fun getEvicts ()Lkotlinx/coroutines/flow/Flow;
+	public fun getFileSystem ()Lokio/FileSystem;
+	public final fun getGets ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getKeys ()Ljava/util/Set;
+	public fun getMaxSize ()J
+	public final fun getRemoves ()Lkotlinx/coroutines/flow/Flow;
+	public fun getSize ()J
+	public final fun getValues ()Ljava/util/Set;
+	public fun remove (Ljava/lang/String;)Z
+	public fun setSize (J)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/disk/FakeDiskCache$Builder {
+	public fun <init> ()V
+	public final fun build ()Lcoil/disk/FakeDiskCache;
+	public final fun directory (Lokio/Path;)Lcoil/disk/FakeDiskCache$Builder;
+	public final fun fileSystem (Lokio/FileSystem;)Lcoil/disk/FakeDiskCache$Builder;
+	public final fun maxSize (J)Lcoil/disk/FakeDiskCache$Builder;
+}
+
+public abstract interface class coil/disk/FakeDiskCache$State {
+}
+
+public final class coil/disk/FakeDiskCache$State$Read : coil/disk/FakeDiskCache$State {
+	public fun <init> (Ljava/util/Set;)V
+	public final fun component1 ()Ljava/util/Set;
+	public final fun copy (Ljava/util/Set;)Lcoil/disk/FakeDiskCache$State$Read;
+	public static synthetic fun copy$default (Lcoil/disk/FakeDiskCache$State$Read;Ljava/util/Set;ILjava/lang/Object;)Lcoil/disk/FakeDiskCache$State$Read;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSnapshots ()Ljava/util/Set;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/disk/FakeDiskCache$State$Write : coil/disk/FakeDiskCache$State {
+	public fun <init> (Lcoil/disk/DiskCache$Editor;)V
+	public final fun component1 ()Lcoil/disk/DiskCache$Editor;
+	public final fun copy (Lcoil/disk/DiskCache$Editor;)Lcoil/disk/FakeDiskCache$State$Write;
+	public static synthetic fun copy$default (Lcoil/disk/FakeDiskCache$State$Write;Lcoil/disk/DiskCache$Editor;ILjava/lang/Object;)Lcoil/disk/FakeDiskCache$State$Write;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEditor ()Lcoil/disk/DiskCache$Editor;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/disk/FakeDiskCache$Value {
+	public fun <init> (Lcoil/disk/FakeDiskCache$State;JZ)V
+	public final fun component1 ()Lcoil/disk/FakeDiskCache$State;
+	public final fun component2 ()J
+	public final fun component3 ()Z
+	public final fun copy (Lcoil/disk/FakeDiskCache$State;JZ)Lcoil/disk/FakeDiskCache$Value;
+	public static synthetic fun copy$default (Lcoil/disk/FakeDiskCache$Value;Lcoil/disk/FakeDiskCache$State;JZILjava/lang/Object;)Lcoil/disk/FakeDiskCache$Value;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPendingDeletion ()Z
+	public final fun getSize ()J
+	public final fun getState ()Lcoil/disk/FakeDiskCache$State;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/disk/FakeDiskCaches {
+	public static final fun assertContains (Lcoil/disk/FakeDiskCache;Lkotlin/jvm/functions/Function2;)V
+	public static final fun assertEmpty (Lcoil/disk/FakeDiskCache;)V
+	public static final fun assertNotReadingOrWriting (Lcoil/disk/FakeDiskCache;)V
+	public static final fun create ()Lcoil/disk/FakeDiskCache;
+}
+
+public final class coil/memory/FakeMemoryCache : coil/memory/MemoryCache {
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun clear ()V
+	public fun get (Lcoil/memory/MemoryCache$Key;)Lcoil/memory/MemoryCache$Value;
+	public final fun getEntries ()Ljava/util/Map;
+	public final fun getEvicts ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getGets ()Lkotlinx/coroutines/flow/Flow;
+	public fun getKeys ()Ljava/util/Set;
+	public fun getMaxSize ()I
+	public final fun getRemoves ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getSets ()Lkotlinx/coroutines/flow/Flow;
+	public fun getSize ()I
+	public final fun getValues ()Ljava/util/Set;
+	public fun remove (Lcoil/memory/MemoryCache$Key;)Z
+	public fun set (Lcoil/memory/MemoryCache$Key;Lcoil/memory/MemoryCache$Value;)V
+	public fun toString ()Ljava/lang/String;
+	public fun trimMemory (I)V
+}
+
+public final class coil/memory/FakeMemoryCache$Builder {
+	public fun <init> ()V
+	public final fun build ()Lcoil/memory/FakeMemoryCache;
+	public final fun maxSize (I)Lcoil/memory/FakeMemoryCache$Builder;
+}
+
+public final class coil/memory/FakeMemoryCaches {
+	public static final fun assertContains (Lcoil/memory/FakeMemoryCache;Lkotlin/jvm/functions/Function2;)V
+	public static final fun assertEmpty (Lcoil/memory/FakeMemoryCache;)V
+	public static final fun create ()Lcoil/memory/FakeMemoryCache;
+}
+
