@@ -25,6 +25,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.merge
 import java.util.LinkedList
 import java.util.Queue
 import java.util.concurrent.atomic.AtomicBoolean
@@ -40,21 +42,32 @@ class FakeImageLoader private constructor(
     val engine: Engine,
 ) : ImageLoader {
 
-    private val scope = CoroutineScope(coroutineContext)
+    private val scope = CoroutineScope(SupervisorJob() + coroutineContext)
     private val shutdown = AtomicBoolean(false)
+    private val _enqueues = MutableSharedFlow<ImageRequest>()
+    private val _executes = MutableSharedFlow<ImageRequest>()
+    private val _results = MutableSharedFlow<Pair<ImageRequest, ImageResult>>()
 
-    private val _requests = MutableSharedFlow<ImageRequest>()
-    val requests: Flow<ImageRequest> get() = _requests
+    /** Returns a [Flow] that emits when [enqueue] is called. */
+    val enqueues: Flow<ImageRequest> = _enqueues.asSharedFlow()
 
-    private val _results = MutableSharedFlow<ImageResult>()
-    val results: Flow<ImageResult> get() = _results
+    /** Returns a [Flow] that emits when [execute] is called. */
+    val executes: Flow<ImageRequest> = _executes.asSharedFlow()
+
+    /** Returns a [Flow] that emits when either [enqueue] or [execute] is called. */
+    val requests: Flow<ImageRequest> = merge(enqueues, executes)
+
+    /** Returns a [Flow] that emits when a request completes. */
+    val results: Flow<Pair<ImageRequest, ImageResult>> = _results.asSharedFlow()
 
     override fun enqueue(request: ImageRequest): Disposable {
+        _enqueues.tryEmit(request)
         startCommon(request)
         return JobDisposable(job = scope.async { executeCommon(request) })
     }
 
     override suspend fun execute(request: ImageRequest): ImageResult {
+        _executes.tryEmit(request)
         startCommon(request)
         return executeCommon(request)
     }
@@ -62,14 +75,13 @@ class FakeImageLoader private constructor(
     private fun startCommon(request: ImageRequest) {
         assertNotShutdown()
         assertValidRequest(request)
-        _requests.tryEmit(request)
     }
 
     private suspend fun executeCommon(request: ImageRequest): ImageResult {
         request.target?.onStart(request.placeholder)
-        val result = engine.execute(request)
-        _results.tryEmit(result)
-        return result
+        return engine.execute(request).also { result ->
+            _results.tryEmit(request to result)
+        }
     }
 
     override fun shutdown() {
@@ -155,7 +167,7 @@ class FakeImageLoader private constructor(
 
     class Builder {
 
-        private var coroutineContext = SupervisorJob() + Dispatchers.Unconfined
+        private var coroutineContext: CoroutineContext = Dispatchers.Unconfined
         private var defaults = DefaultRequestOptions()
         private var components = ComponentRegistry()
         private var memoryCache: MemoryCache = FakeMemoryCache()
