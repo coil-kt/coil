@@ -13,6 +13,6 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.okio.fakefilesystem)
 
-    testImplementation(projects.coilTest)
+    testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
 }

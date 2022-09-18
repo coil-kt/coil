@@ -19,9 +19,9 @@ dependencies {
     api(libs.okhttp)
     api(libs.okio)
 
-    testImplementation(projects.coilTest)
+    testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
 
-    androidTestImplementation(projects.coilTest)
+    androidTestImplementation(projects.coilTestInternal)
     androidTestImplementation(libs.bundles.test.android)
 }

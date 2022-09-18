@@ -40,7 +40,7 @@ extensions.configure<ApiValidationExtension> {
         "coil-sample-common",
         "coil-sample-compose",
         "coil-sample-view",
-        "coil-test",
+        "coil-test-internal",
     )
 }
 
