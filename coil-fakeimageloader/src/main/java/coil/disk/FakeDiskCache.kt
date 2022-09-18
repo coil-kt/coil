@@ -257,7 +257,7 @@ class FakeDiskCache private constructor(
         val size: Long,
 
         /**
-         * True if this entry has been removed/evicted, but there's an active snapshot or editor
+         * True if this entry has been removed/evicted, but there are active snapshots or an editor
          * preventing its deletion from the file system.
          */
         val pendingDeletion: Boolean,
