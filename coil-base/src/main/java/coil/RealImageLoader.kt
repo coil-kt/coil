@@ -112,6 +112,11 @@ internal class RealImageLoader(
         EngineInterceptor(this, requestService, logger)
     private val isShutdown = AtomicBoolean(false)
 
+    init {
+        // The image loader must be fully initialized before registering the component callbacks.
+        systemCallbacks.register()
+    }
+
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
         val job = scope.async {
@@ -213,9 +218,7 @@ internal class RealImageLoader(
     @Suppress("SAFE_CALL_WILL_CHANGE_NULLABILITY", "UNNECESSARY_SAFE_CALL")
     internal fun onTrimMemory(level: Int) {
         // https://github.com/coil-kt/coil/issues/1443
-        try {
-            memoryCacheLazy?.value?.trimMemory(level)
-        } catch (_: NullPointerException) {}
+        memoryCacheLazy?.value?.trimMemory(level)
     }
 
     override fun shutdown() {
