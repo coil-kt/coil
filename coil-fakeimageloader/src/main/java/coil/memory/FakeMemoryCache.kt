@@ -50,7 +50,7 @@ class FakeMemoryCache private constructor(
     /** Returns an immutable snapshot of the keys in this cache. */
     override val keys: Set<Key> get() = cache.snapshot().keys.toImmutableSet()
 
-    /** Returns an immutable snapshot of the keys in this cache. */
+    /** Returns an immutable snapshot of the values in this cache. */
     val values: Set<Value> get() = cache.snapshot().values.toImmutableSet()
 
     /** Returns an immutable snapshot of the entries in this cache. */

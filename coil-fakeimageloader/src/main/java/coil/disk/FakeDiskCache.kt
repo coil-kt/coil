@@ -58,7 +58,7 @@ class FakeDiskCache private constructor(
     @get:Synchronized
     val keys: Set<String> get() = cache.keys.toImmutableSet()
 
-    /** Returns an immutable snapshot of the keys in this cache. */
+    /** Returns an immutable snapshot of the values in this cache. */
     @get:Synchronized
     val values: Set<Value> get() = cache.values.toImmutableSet()
 
