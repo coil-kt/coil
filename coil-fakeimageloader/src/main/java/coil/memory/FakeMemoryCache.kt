@@ -47,27 +47,27 @@ class FakeMemoryCache private constructor(
     /** Returns a [Flow] that emits when an entry is evicted due to the cache exceeding [maxSize]. */
     val evicts: Flow<Key> = _evicts.asSharedFlow()
 
-    override val size: Int get() = cache.size()
-
+    /** Returns an immutable snapshot of the keys in this cache. */
     override val keys: Set<Key> get() = cache.snapshot().keys.toImmutableSet()
 
+    /** Returns an immutable snapshot of the keys in this cache. */
     val values: Set<Value> get() = cache.snapshot().values.toImmutableSet()
 
+    /** Returns an immutable snapshot of the entries in this cache. */
     val snapshot: Map<Key, Value> get() = cache.snapshot().toImmutableMap()
 
+    override val size: Int get() = cache.size()
+
     override fun get(key: Key): Value? {
-        _gets.tryEmit(key)
-        return cache.get(key)
+        return cache.get(key).also { _gets.tryEmit(key) }
     }
 
     override fun set(key: Key, value: Value) {
-        _sets.tryEmit(key to value)
-        cache.put(key, value)
+        cache.put(key, value).also { _sets.tryEmit(key to value) }
     }
 
     override fun remove(key: Key): Boolean {
-        _removes.tryEmit(key)
-        return cache.remove(key) != null
+        return (cache.remove(key) != null).also { _removes.tryEmit(key) }
     }
 
     override fun clear() {
@@ -86,7 +86,7 @@ class FakeMemoryCache private constructor(
     }
 
     override fun toString(): String {
-        return "FakeMemoryCache(cache=$cache)"
+        return "FakeMemoryCache(entries=$cache)"
     }
 
     class Builder {
