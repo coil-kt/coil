@@ -9,11 +9,11 @@ include(
     "coil-singleton",
     "coil-compose-base",
     "coil-compose-singleton",
-    "coil-fakeimageloader",
     "coil-gif",
     "coil-svg",
     "coil-video",
     "coil-bom",
+    "coil-test",
 )
 
 // Private modules
