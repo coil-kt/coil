@@ -39,7 +39,7 @@ internal class SystemCallbacks(
     val isOnline get() = _isOnline
     val isShutdown get() = _isShutdown.get()
 
-    init {
+    fun register() {
         context.registerComponentCallbacks(this)
     }
 
