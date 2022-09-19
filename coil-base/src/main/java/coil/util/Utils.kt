@@ -232,6 +232,13 @@ internal fun isAssetUri(uri: Uri): Boolean {
     return uri.scheme == SCHEME_FILE && uri.firstPathSegment == ASSET_FILE_PATH_ROOT
 }
 
+/** Modified from [Headers.Builder.add] */
+internal fun Headers.Builder.addUnsafeNonAscii(line: String) = apply {
+    val index = line.indexOf(':')
+    require(index != -1) { "Unexpected header: $line" }
+    addUnsafeNonAscii(line.substring(0, index).trim(), line.substring(index + 1))
+}
+
 private const val STANDARD_MEMORY_MULTIPLIER = 0.2
 private const val LOW_MEMORY_MULTIPLIER = 0.15
 

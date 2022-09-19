@@ -1,5 +1,6 @@
 package coil.network
 
+import coil.util.addUnsafeNonAscii
 import okhttp3.CacheControl
 import okhttp3.Headers
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -25,7 +26,7 @@ internal class CacheResponse {
         val responseHeadersLineCount = source.readUtf8LineStrict().toInt()
         val responseHeaders = Headers.Builder()
         for (i in 0 until responseHeadersLineCount) {
-            responseHeaders.add(source.readUtf8LineStrict())
+            responseHeaders.addUnsafeNonAscii(source.readUtf8LineStrict())
         }
         this.responseHeaders = responseHeaders.build()
     }
