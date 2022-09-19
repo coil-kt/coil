@@ -11,7 +11,8 @@ internal class FileUriMapper : Mapper<Uri, File> {
 
     override fun map(data: Uri, options: Options): File? {
         if (!isApplicable(data)) return null
-        return File(data.path!!)
+        val uri = if (data.scheme == null) data else data.buildUpon().scheme(null).build()
+        return File(uri.toString())
     }
 
     private fun isApplicable(data: Uri): Boolean {
