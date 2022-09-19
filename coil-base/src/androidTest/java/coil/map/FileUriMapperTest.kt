@@ -47,6 +47,7 @@ class FileUriMapperTest {
         assertNull(mapper.map(uri, Options(context)))
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/1344 */
     @Test
     fun parsesPoundCharacterCorrectly() {
         val path = "/sdcard/fi#le.jpg"
