@@ -46,4 +46,11 @@ class FileUriMapperTest {
         val uri = "generic_string".toUri()
         assertNull(mapper.map(uri, Options(context)))
     }
+
+    @Test
+    fun parsesPoundCharacterCorrectly() {
+        val path = "/sdcard/fi#le.jpg"
+        assertEquals(File(path), mapper.map(path.toUri(), Options(context)))
+        assertEquals(File(path), mapper.map("file://$path".toUri(), Options(context)))
+    }
 }
