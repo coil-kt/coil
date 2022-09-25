@@ -111,15 +111,17 @@ private fun ScaffoldContent(
     onScreenChange: (Screen) -> Unit,
     images: List<Image>,
 ) {
+    // Reset the scroll position when the image list changes.
+    // Preserve the scroll position when navigating to/from the detail screen.
+    val gridState = rememberSaveable(images, saver = LazyStaggeredGridState.Saver) {
+        LazyStaggeredGridState()
+    }
+
     when (screen) {
         is Screen.Detail -> {
             DetailScreen(screen)
         }
         is Screen.List -> {
-            // Reset the scroll position when the image list changes.
-            val gridState = rememberSaveable(images, saver = LazyStaggeredGridState.Saver) {
-                LazyStaggeredGridState()
-            }
             ListScreen(
                 gridState = gridState,
                 images = images,
@@ -153,6 +155,7 @@ private fun ListScreen(
 ) {
     val context = LocalContext.current
     val numColumns = remember(context) { numberOfColumns(context) }
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(numColumns),
         state = gridState,
