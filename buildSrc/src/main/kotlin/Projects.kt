@@ -103,7 +103,15 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(
         )
     }
     testOptions {
-        unitTests.isIncludeAndroidResources = true
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                it.jvmArgs(listOf(
+                    "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                    "--add-opens=java.base/java.util=ALL-UNNAMED"
+                ))
+            }
+        }
     }
     lint {
         warningsAsErrors = true
