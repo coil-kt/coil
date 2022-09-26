@@ -19,7 +19,7 @@ AsyncImage(
 
 ## AsyncImage
 
-`AsyncImage` is a composable that that executes an image request asynchronously and renders the result. It supports the same arguments as the standard `Image` composable and additionally it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads image with a circle crop, crossfade, and sets a placeholder:
+`AsyncImage` is a composable that executes an image request asynchronously and renders the result. It supports the same arguments as the standard `Image` composable and additionally, it supports setting `placeholder`/`error`/`fallback` painters and `onLoading`/`onSuccess`/`onError` callbacks. Here's an example that loads an image with a circle crop, crossfade, and sets a placeholder:
 
 ```kotlin
 AsyncImage(
