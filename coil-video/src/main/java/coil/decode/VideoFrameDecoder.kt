@@ -3,6 +3,7 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.media.MediaMetadataRetriever
+import android.media.MediaMetadataRetriever.BitmapParams
 import android.media.MediaMetadataRetriever.METADATA_KEY_DURATION
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
@@ -21,6 +22,8 @@ import coil.request.videoFramePercent
 import coil.size.Dimension.Pixels
 import coil.size.Size
 import coil.size.pxOrElse
+import coil.util.getFrameAtTimeCompat
+import coil.util.getScaledFrameAtTimeCompat
 import coil.util.heightPx
 import coil.util.use
 import coil.util.widthPx
@@ -78,11 +81,16 @@ class VideoFrameDecoder(
             Size.ORIGINAL
         }
 
+        val params = if (SDK_INT >= 30) {
+            BitmapParams().apply { preferredConfig = options.config }
+        } else {
+            null
+        }
         val (dstWidth, dstHeight) = dstSize
         val rawBitmap: Bitmap? = if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
-            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.px, dstHeight.px)
+            retriever.getScaledFrameAtTimeCompat(frameMicros, option, dstWidth.px, dstHeight.px, params)
         } else {
-            retriever.getFrameAtTime(frameMicros, option)?.also {
+            retriever.getFrameAtTimeCompat(frameMicros, option, params)?.also {
                 srcWidth = it.width
                 srcHeight = it.height
             }

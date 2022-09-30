@@ -2,8 +2,11 @@
 
 package coil.util
 
+import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.media.MediaMetadataRetriever.BitmapParams
 import android.os.Build.VERSION.SDK_INT
+import androidx.annotation.RequiresApi
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
@@ -22,6 +25,29 @@ internal inline fun <T> MediaMetadataRetriever.use(block: (MediaMetadataRetrieve
             release()
         }
     }
+}
+
+internal fun MediaMetadataRetriever.getFrameAtTimeCompat(
+    timeUs: Long,
+    option: Int,
+    params: BitmapParams?
+): Bitmap? = if (SDK_INT >= 30 && params != null) {
+    getFrameAtTime(timeUs, option, params)
+} else {
+    getFrameAtTime(timeUs, option)
+}
+
+@RequiresApi(27)
+internal fun MediaMetadataRetriever.getScaledFrameAtTimeCompat(
+    timeUs: Long,
+    option: Int,
+    dstWidth: Int,
+    dstHeight: Int,
+    params: BitmapParams?
+): Bitmap? = if (SDK_INT >= 30 && params != null) {
+    getScaledFrameAtTime(timeUs, option, dstWidth, dstHeight, params)
+} else {
+    getScaledFrameAtTime(timeUs, option, dstWidth, dstHeight)
 }
 
 internal inline fun Size.widthPx(scale: Scale, original: () -> Int): Int {
