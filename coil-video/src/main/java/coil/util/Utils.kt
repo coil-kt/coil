@@ -27,24 +27,26 @@ internal inline fun <T> MediaMetadataRetriever.use(block: (MediaMetadataRetrieve
     }
 }
 
-internal fun MediaMetadataRetriever.getFrameAtTimeCompat(
+internal fun MediaMetadataRetriever.getFrameAtTime(
     timeUs: Long,
     option: Int,
-    params: BitmapParams?
-): Bitmap? = if (SDK_INT >= 30 && params != null) {
+    config: Bitmap.Config,
+): Bitmap? = if (SDK_INT >= 30) {
+    val params = BitmapParams().apply { preferredConfig = config }
     getFrameAtTime(timeUs, option, params)
 } else {
     getFrameAtTime(timeUs, option)
 }
 
 @RequiresApi(27)
-internal fun MediaMetadataRetriever.getScaledFrameAtTimeCompat(
+internal fun MediaMetadataRetriever.getScaledFrameAtTime(
     timeUs: Long,
     option: Int,
     dstWidth: Int,
     dstHeight: Int,
-    params: BitmapParams?
-): Bitmap? = if (SDK_INT >= 30 && params != null) {
+    config: Bitmap.Config,
+): Bitmap? = if (SDK_INT >= 30) {
+    val params = BitmapParams().apply { preferredConfig = config }
     getScaledFrameAtTime(timeUs, option, dstWidth, dstHeight, params)
 } else {
     getScaledFrameAtTime(timeUs, option, dstWidth, dstHeight)
