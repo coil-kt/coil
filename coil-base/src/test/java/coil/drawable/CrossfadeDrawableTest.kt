@@ -1,19 +1,20 @@
 package coil.drawable
 
 import android.content.Context
-import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
 import coil.size.Scale
-import coil.util.createBitmap
 import coil.util.toDrawable
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class CrossfadeDrawableTest {
@@ -162,38 +163,22 @@ class CrossfadeDrawableTest {
     }
 
     @Test
-    fun `alpha change should not change alpha of original start drawable`() {
+    fun `start and end drawables are mutated`() {
         val startDrawable = TestBitmapDrawable(100, 100)
         val endDrawable = TestBitmapDrawable(100, 100)
-        assertEquals(0, startDrawable.alpha)
+        assertFalse(startDrawable.mutated)
+        assertFalse(endDrawable.mutated)
 
-        val crossfadeDrawable = CrossfadeDrawable(startDrawable, endDrawable)
-        crossfadeDrawable.alpha = 255
-        crossfadeDrawable.start() // Move to the start state.
-        crossfadeDrawable.draw(Canvas())
-
-        assertEquals(0, startDrawable.alpha)
-    }
-
-    @Test
-    fun `alpha change should not change alpha of original end drawable`() {
-        val startDrawable = TestBitmapDrawable(100, 100)
-        val endDrawable = TestBitmapDrawable(100, 100)
-        assertEquals(0, endDrawable.alpha)
-
-        val crossfadeDrawable = CrossfadeDrawable(startDrawable, endDrawable)
-        crossfadeDrawable.alpha = 255
-        crossfadeDrawable.stop() // Move to the end state.
-        crossfadeDrawable.draw(Canvas())
-
-        assertEquals(0, endDrawable.alpha)
+        CrossfadeDrawable(startDrawable, endDrawable)
+        assertTrue(startDrawable.mutated)
+        assertTrue(endDrawable.mutated)
     }
 
     @Test
     fun `preferExactIntrinsicSize=false`() {
         val drawable1 = CrossfadeDrawable(
             start = ColorDrawable(),
-            end = createBitmap().toDrawable(context),
+            end = createBitmap(100, 100).toDrawable(context),
             preferExactIntrinsicSize = false
         )
 
@@ -202,7 +187,7 @@ class CrossfadeDrawableTest {
 
         val drawable2 = CrossfadeDrawable(
             start = null,
-            end = createBitmap().toDrawable(context),
+            end = createBitmap(100, 100).toDrawable(context),
             preferExactIntrinsicSize = false
         )
 
@@ -214,7 +199,7 @@ class CrossfadeDrawableTest {
     fun `preferExactIntrinsicSize=true`() {
         val drawable1 = CrossfadeDrawable(
             start = ColorDrawable(),
-            end = createBitmap().toDrawable(context),
+            end = createBitmap(100, 100).toDrawable(context),
             preferExactIntrinsicSize = true
         )
 
@@ -223,7 +208,7 @@ class CrossfadeDrawableTest {
 
         val drawable2 = CrossfadeDrawable(
             start = null,
-            end = createBitmap().toDrawable(context),
+            end = createBitmap(100, 100).toDrawable(context),
             preferExactIntrinsicSize = true
         )
 
@@ -235,15 +220,23 @@ class CrossfadeDrawableTest {
         private val width: Int,
         private val height: Int
     ) : ColorDrawable() {
+        var mutated = false
+            private set
+
         override fun getIntrinsicWidth() = width
         override fun getIntrinsicHeight() = height
+        override fun mutate() = super.mutate().also { mutated = true }
     }
 
     private inner class TestBitmapDrawable(
         private val width: Int,
         private val height: Int
-    ) : BitmapDrawable(context.resources, createBitmap()) {
+    ) : BitmapDrawable(context.resources, createBitmap(width, height)) {
+        var mutated = false
+            private set
+
         override fun getIntrinsicWidth() = width
         override fun getIntrinsicHeight() = height
+        override fun mutate() = super.mutate().also { mutated = true }
     }
 }
