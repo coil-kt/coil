@@ -169,6 +169,7 @@ class CrossfadeDrawableTest {
 
         val crossfadeDrawable = CrossfadeDrawable(startDrawable, endDrawable)
         crossfadeDrawable.alpha = 255
+        crossfadeDrawable.start() // Move to the start state.
         crossfadeDrawable.draw(Canvas())
 
         assertEquals(0, startDrawable.alpha)
@@ -182,7 +183,7 @@ class CrossfadeDrawableTest {
 
         val crossfadeDrawable = CrossfadeDrawable(startDrawable, endDrawable)
         crossfadeDrawable.alpha = 255
-        crossfadeDrawable.stop()
+        crossfadeDrawable.stop() // Move to the end state.
         crossfadeDrawable.draw(Canvas())
 
         assertEquals(0, endDrawable.alpha)
