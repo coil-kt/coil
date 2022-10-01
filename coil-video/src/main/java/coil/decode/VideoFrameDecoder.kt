@@ -184,7 +184,7 @@ class VideoFrameDecoder(
     private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
         when (val metadata = source.metadata) {
             is AssetMetadata -> {
-                options.context.assets.openFd(metadata.fileName).use {
+                options.context.assets.openFd(metadata.filePath).use {
                     setDataSource(it.fileDescriptor, it.startOffset, it.length)
                 }
             }
