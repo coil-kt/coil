@@ -108,7 +108,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
 
         val metadata = metadata
         if (metadata is AssetMetadata) {
-            return ImageDecoder.createSource(options.context.assets, metadata.fileName)
+            return ImageDecoder.createSource(options.context.assets, metadata.filePath)
         }
         if (metadata is ContentMetadata) {
             return ImageDecoder.createSource(options.context.contentResolver, metadata.uri)

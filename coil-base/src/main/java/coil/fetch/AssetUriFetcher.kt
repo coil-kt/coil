@@ -24,7 +24,7 @@ internal class AssetUriFetcher(
             source = ImageSource(
                 source = options.context.assets.open(path).source().buffer(),
                 context = options.context,
-                metadata = AssetMetadata(data.lastPathSegment!!)
+                metadata = AssetMetadata(path)
             ),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(path),
             dataSource = DataSource.DISK
