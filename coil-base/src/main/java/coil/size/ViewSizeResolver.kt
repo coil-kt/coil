@@ -25,6 +25,7 @@ fun <T : View> ViewSizeResolver(
 /**
  * A [SizeResolver] that measures the size of a [View].
  */
+@JvmDefaultWithCompatibility
 interface ViewSizeResolver<T : View> : SizeResolver {
 
     /** The [View] to measure. This field should be immutable. */

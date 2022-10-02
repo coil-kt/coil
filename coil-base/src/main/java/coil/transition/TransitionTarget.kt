@@ -7,6 +7,7 @@ import coil.target.Target
 /**
  * A [Target] that supports applying [Transition]s.
  */
+@JvmDefaultWithCompatibility
 interface TransitionTarget : Target {
 
     /**

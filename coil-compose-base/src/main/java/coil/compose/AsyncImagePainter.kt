@@ -260,6 +260,8 @@ class AsyncImagePainter internal constructor(
     private fun clear() {
         rememberScope?.cancel()
         rememberScope = null
+        object : coil.target.Target {
+        }
     }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
