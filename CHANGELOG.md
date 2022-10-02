@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.2] - October 1, 2022
+
+* Ensure an image loader is fully initialized before registering its system callbacks. [#1465](https://github.com/coil-kt/coil/pull/1465)
+* Set the preferred bitmap config in `VideoFrameDecoder` on API 30+ to avoid banding. [#1487](https://github.com/coil-kt/coil/pull/1487)
+* Fix parsing paths containing `#` in `FileUriMapper`. [#1466](https://github.com/coil-kt/coil/pull/1466)
+* Fix reading responses with non-ascii headers from the disk cache. [#1468](https://github.com/coil-kt/coil/pull/1468)
+* Fix decoding videos inside asset subfolders. [#1489](https://github.com/coil-kt/coil/pull/1489)
+* Update `androidx.annotation` to 1.5.0.
+
 ## [2.2.1] - September 8, 2022
 
 - Fix: `RoundedCornersTransformation` now properly scales the `input` bitmap.
