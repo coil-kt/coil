@@ -156,6 +156,7 @@ public abstract interface annotation class coil/annotation/ExperimentalCoilApi :
 public final class coil/decode/AssetMetadata : coil/decode/ImageSource$Metadata {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun getFileName ()Ljava/lang/String;
+	public final fun getFilePath ()Ljava/lang/String;
 }
 
 public final class coil/decode/BitmapFactoryDecoder : coil/decode/Decoder {

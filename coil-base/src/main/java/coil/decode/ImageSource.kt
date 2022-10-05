@@ -172,10 +172,17 @@ sealed class ImageSource : Closeable {
 }
 
 /**
- * Metadata containing the [fileName] of an Android asset.
+ * Metadata containing the [filePath] of an Android asset.
  */
 @ExperimentalCoilApi
-class AssetMetadata(val fileName: String) : ImageSource.Metadata()
+class AssetMetadata(val filePath: String) : ImageSource.Metadata() {
+
+    @Deprecated(
+        message = "Migrate to filePath as it supports assets inside subfolders.",
+        level = DeprecationLevel.ERROR
+    )
+    val fileName: String get() = filePath.substringAfterLast('/')
+}
 
 /**
  * Metadata containing the [uri] of a `content` URI.

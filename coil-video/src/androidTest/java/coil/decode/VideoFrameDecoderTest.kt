@@ -34,7 +34,7 @@ class VideoFrameDecoderTest {
 
     @Test
     fun noSetFrameTime() = runTest {
-        // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
         val result = VideoFrameDecoder(
@@ -55,7 +55,7 @@ class VideoFrameDecoderTest {
 
     @Test
     fun specificFrameTime() = runTest {
-        // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
         val result = VideoFrameDecoder(
@@ -81,7 +81,7 @@ class VideoFrameDecoderTest {
 
     @Test
     fun specificFramePercent() = runTest {
-        // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
         val result = VideoFrameDecoder(
@@ -107,7 +107,7 @@ class VideoFrameDecoderTest {
 
     @Test
     fun rotation() = runTest {
-        // MediaMetadataRetriever.getFrameAtTime does not work on the emulator pre-API 23.
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
         val result = VideoFrameDecoder(
@@ -124,5 +124,29 @@ class VideoFrameDecoderTest {
 
         val expected = context.decodeBitmapAsset("video_frame_rotated.jpg")
         actual.assertIsSimilarTo(expected, threshold = 0.97)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1482 */
+    @Test
+    fun nestedAsset() = runTest {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+
+        val path = "nested/video.mp4"
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                source = context.assets.open(path).source().buffer(),
+                context = context,
+                metadata = AssetMetadata(path)
+            ),
+            options = Options(context)
+        ).decode()
+
+        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_1.jpg")
+        actual.assertIsSimilarTo(expected)
     }
 }
