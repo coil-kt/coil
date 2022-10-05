@@ -181,7 +181,7 @@ class AssetMetadata(val filePath: String) : ImageSource.Metadata() {
         message = "Migrate to filePath as it supports assets inside subfolders.",
         level = DeprecationLevel.ERROR
     )
-    val fileName: String get() = filePath.substringAfter('/')
+    val fileName: String get() = filePath.substringAfterLast('/')
 }
 
 /**
