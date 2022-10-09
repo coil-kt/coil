@@ -12,30 +12,30 @@ import coil.util.requestManager
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 
-internal sealed class RequestDelegate : DefaultLifecycleObserver {
+internal sealed interface RequestDelegate : DefaultLifecycleObserver {
 
     /** Throw a [CancellationException] if this request should be cancelled before starting. */
     @MainThread
-    open fun assertActive() {}
+    fun assertActive() {}
 
     /** Register all lifecycle observers. */
     @MainThread
-    open fun start() {}
+    fun start() {}
 
     /** Called when this request's job is cancelled or completes successfully/unsuccessfully. */
     @MainThread
-    open fun complete() {}
+    fun complete() {}
 
     /** Cancel this request's job and clear all lifecycle observers. */
     @MainThread
-    open fun dispose() {}
+    fun dispose() {}
 }
 
 /** A request delegate for a one-shot requests with no target or a non-[ViewTarget]. */
 internal class BaseRequestDelegate(
     private val lifecycle: Lifecycle,
     private val job: Job
-) : RequestDelegate() {
+) : RequestDelegate {
 
     override fun start() {
         lifecycle.addObserver(this)
@@ -59,7 +59,7 @@ internal class ViewTargetRequestDelegate(
     private val target: ViewTarget<*>,
     private val lifecycle: Lifecycle,
     private val job: Job
-) : RequestDelegate() {
+) : RequestDelegate {
 
     /** Repeat this request with the same [ImageRequest]. */
     @MainThread

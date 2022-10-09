@@ -270,6 +270,7 @@ class ImageRequest private constructor(
     /**
      * A set of callbacks for an [ImageRequest].
      */
+    @JvmDefaultWithCompatibility
     interface Listener {
 
         /**

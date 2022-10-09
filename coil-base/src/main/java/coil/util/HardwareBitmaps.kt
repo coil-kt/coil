@@ -21,27 +21,25 @@ internal fun HardwareBitmapService(logger: Logger?): HardwareBitmapService = whe
 }
 
 /** Decides if a request can use [Bitmap.Config.HARDWARE]. */
-internal sealed class HardwareBitmapService {
+internal sealed interface HardwareBitmapService {
 
     /** Return 'true' if we are currently able to create [Bitmap.Config.HARDWARE]. */
     @MainThread
-    abstract fun allowHardwareMainThread(size: Size): Boolean
+    fun allowHardwareMainThread(size: Size): Boolean
 
     /** Perform any hardware bitmap allocation checks that cannot be done on the main thread. */
     @WorkerThread
-    abstract fun allowHardwareWorkerThread(): Boolean
+    fun allowHardwareWorkerThread(): Boolean
 }
 
 /** Returns a fixed value for [allowHardwareMainThread] and [allowHardwareWorkerThread]. */
-private class ImmutableHardwareBitmapService(private val allowHardware: Boolean) : HardwareBitmapService() {
+private class ImmutableHardwareBitmapService(private val allowHardware: Boolean) : HardwareBitmapService {
     override fun allowHardwareMainThread(size: Size) = allowHardware
     override fun allowHardwareWorkerThread() = allowHardware
 }
 
 /** Guards against running out of file descriptors. */
-private class LimitedFileDescriptorHardwareBitmapService(
-    private val logger: Logger?
-) : HardwareBitmapService() {
+private class LimitedFileDescriptorHardwareBitmapService(private val logger: Logger?) : HardwareBitmapService {
 
     override fun allowHardwareMainThread(size: Size): Boolean {
         return size.width.pxOrElse { Int.MAX_VALUE } > MIN_SIZE_DIMENSION &&
