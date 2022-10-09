@@ -2,14 +2,14 @@ package coil.decode
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import okio.buffer
 import okio.source
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class DecodeUtilsTest {

@@ -4,8 +4,8 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
-import okio.Buffer
 import java.nio.ByteBuffer
+import okio.Buffer
 
 internal class ByteBufferFetcher(
     private val data: ByteBuffer,

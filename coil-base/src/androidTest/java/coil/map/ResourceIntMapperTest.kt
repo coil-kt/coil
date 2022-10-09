@@ -6,10 +6,10 @@ import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
 import coil.request.Options
-import org.junit.Before
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import org.junit.Before
+import org.junit.Test
 
 class ResourceIntMapperTest {
 

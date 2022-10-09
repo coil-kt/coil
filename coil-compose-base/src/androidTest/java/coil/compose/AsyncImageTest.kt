@@ -52,18 +52,18 @@ import coil.request.Options
 import coil.request.SuccessResult
 import coil.size.Scale
 import coil.util.ComposeTestActivity
-import kotlinx.coroutines.delay
-import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.fail
+import kotlinx.coroutines.delay
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 
 class AsyncImageTest {
 

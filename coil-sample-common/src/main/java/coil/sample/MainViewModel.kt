@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.request.Parameters
+import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,6 @@ import kotlinx.coroutines.withContext
 import okio.buffer
 import okio.source
 import org.json.JSONArray
-import kotlin.random.Random
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 

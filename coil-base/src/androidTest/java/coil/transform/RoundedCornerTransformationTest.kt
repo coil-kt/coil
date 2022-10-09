@@ -8,11 +8,11 @@ import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
 import coil.util.size
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoundedCornerTransformationTest {

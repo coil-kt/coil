@@ -14,8 +14,8 @@ import coil.util.toPx
 import coil.util.toSoftware
 import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
-import kotlinx.coroutines.runInterruptible
 import kotlin.math.roundToInt
+import kotlinx.coroutines.runInterruptible
 
 /**
  * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG

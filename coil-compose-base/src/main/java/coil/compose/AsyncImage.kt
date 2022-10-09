@@ -27,11 +27,11 @@ import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.Dimension
+import coil.size.Size as CoilSize
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
-import coil.size.Size as CoilSize
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.

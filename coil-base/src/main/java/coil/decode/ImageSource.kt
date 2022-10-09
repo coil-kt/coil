@@ -11,14 +11,14 @@ import coil.annotation.ExperimentalCoilApi
 import coil.fetch.Fetcher
 import coil.util.closeQuietly
 import coil.util.safeCacheDir
+import java.io.Closeable
+import java.io.File
 import okio.BufferedSource
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
 import okio.buffer
 import okio.source
-import java.io.Closeable
-import java.io.File
 
 /**
  * Create a new [ImageSource] backed by a [File].

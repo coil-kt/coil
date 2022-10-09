@@ -44,11 +44,11 @@ import coil.size.Size
 import coil.size.isOriginal
 import coil.size.pxOrElse
 import coil.transform.Transformation
+import java.io.Closeable
+import java.io.File
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
-import java.io.Closeable
-import java.io.File
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {

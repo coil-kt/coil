@@ -1,13 +1,13 @@
 package coil.network
 
 import coil.util.addUnsafeNonAscii
+import kotlin.LazyThreadSafetyMode.NONE
 import okhttp3.CacheControl
 import okhttp3.Headers
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Response
 import okio.BufferedSink
 import okio.BufferedSource
-import kotlin.LazyThreadSafetyMode.NONE
 
 /** Holds the response metadata for an image in the disk cache. */
 internal class CacheResponse {

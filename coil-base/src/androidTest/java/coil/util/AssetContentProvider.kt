@@ -6,10 +6,10 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import java.io.File
 import okio.buffer
 import okio.sink
 import okio.source
-import java.io.File
 
 /**
  * A [ContentProvider] that returns images from the Android assets directory.
