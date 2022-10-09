@@ -11,10 +11,10 @@ import coil.RealImageLoader
 import coil.memory.MemoryCache
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
-import org.junit.Before
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.Before
+import org.junit.Test
 
 class SystemCallbacksTest {
 

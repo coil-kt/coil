@@ -17,6 +17,13 @@ package coil.disk
 
 import coil.disk.DiskLruCache.Editor
 import coil.disk.DiskLruCache.Snapshot
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
+import kotlin.test.fail
 import okio.FileNotFoundException
 import okio.IOException
 import okio.Path
@@ -27,13 +34,6 @@ import okio.fakefilesystem.FakeFileSystem
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
-import kotlin.test.fail
 
 /**
  * Derived from OkHttp's DiskLruCache tests:

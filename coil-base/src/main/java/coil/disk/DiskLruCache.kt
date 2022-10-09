@@ -16,9 +16,11 @@
 package coil.disk
 
 import androidx.annotation.VisibleForTesting
+import coil.disk.DiskLruCache.Editor
 import coil.util.createFile
 import coil.util.deleteContents
 import coil.util.forEachIndices
+import java.io.Flushable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +37,6 @@ import okio.Path
 import okio.Sink
 import okio.blackholeSink
 import okio.buffer
-import java.io.Flushable
 
 /**
  * A cache that uses a bounded amount of space on a filesystem. Each cache entry has a string key

@@ -18,6 +18,7 @@ import coil.util.await
 import coil.util.closeQuietly
 import coil.util.getMimeTypeFromUrl
 import coil.util.isMainThread
+import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.MediaType
@@ -25,7 +26,6 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.IOException
-import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 
 internal class HttpUriFetcher(
     private val url: String,

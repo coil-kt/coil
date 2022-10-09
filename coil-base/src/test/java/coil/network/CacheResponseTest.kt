@@ -1,6 +1,7 @@
 package coil.network
 
 import coil.util.createMockWebServer
+import kotlin.test.assertEquals
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -9,7 +10,6 @@ import okio.Buffer
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class CacheResponseTest {

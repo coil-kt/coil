@@ -12,12 +12,12 @@ import coil.target.ViewTarget
 import coil.util.SystemCallbacks
 import coil.util.allowInexactSize
 import coil.util.createRequest
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class RequestServiceTest {

@@ -1,5 +1,6 @@
 package coil.compose
 
+import coil.size.Size as CoilSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -31,7 +32,6 @@ import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
-import coil.size.Size as CoilSize
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.

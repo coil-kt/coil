@@ -2,9 +2,9 @@
 
 package coil.decode
 
+import kotlin.experimental.and
 import okio.BufferedSource
 import okio.ByteString.Companion.encodeUtf8
-import kotlin.experimental.and
 
 // https://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
 private val GIF_HEADER_87A = "GIF87a".encodeUtf8()

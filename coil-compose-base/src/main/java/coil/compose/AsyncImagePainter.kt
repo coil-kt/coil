@@ -1,5 +1,6 @@
 package coil.compose
 
+import coil.size.Size as CoilSize
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -43,6 +44,7 @@ import coil.size.Precision
 import coil.transition.CrossfadeTransition
 import coil.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
+import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,8 +55,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
-import coil.size.Size as CoilSize
 
 /**
  * Return an [AsyncImagePainter] that executes an [ImageRequest] asynchronously and renders the result.

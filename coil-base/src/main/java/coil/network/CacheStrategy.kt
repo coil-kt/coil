@@ -2,13 +2,13 @@ package coil.network
 
 import coil.util.Time
 import coil.util.toNonNegativeInt
-import okhttp3.Headers
-import okhttp3.Request
-import okhttp3.Response
 import java.util.Date
 import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.math.max
 import kotlin.math.min
+import okhttp3.Headers
+import okhttp3.Request
+import okhttp3.Response
 
 /** Modified from OkHttp's `okhttp3.internal.cache.CacheStrategy`. */
 internal class CacheStrategy private constructor(

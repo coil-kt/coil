@@ -5,8 +5,8 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
-import okio.Path.Companion.toOkioPath
 import java.io.File
+import okio.Path.Companion.toOkioPath
 
 internal class FileFetcher(private val data: File) : Fetcher {
 

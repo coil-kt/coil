@@ -1,10 +1,10 @@
 package coil.disk
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Runnable
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Runnable
 
 /**
  * A simple test dispatcher that queues all tasks and executes one when [runNextTask] is called.

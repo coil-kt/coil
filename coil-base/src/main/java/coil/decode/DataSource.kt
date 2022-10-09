@@ -5,9 +5,9 @@ import androidx.annotation.DrawableRes
 import coil.ImageLoader
 import coil.fetch.DrawableResult
 import coil.fetch.SourceResult
-import okhttp3.HttpUrl
 import java.io.File
 import java.nio.ByteBuffer
+import okhttp3.HttpUrl
 
 /**
  * Represents the source that an image was loaded from.

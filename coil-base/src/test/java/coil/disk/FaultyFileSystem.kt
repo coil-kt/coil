@@ -15,13 +15,13 @@
  */
 package coil.disk
 
+import java.io.IOException
 import okio.Buffer
 import okio.FileSystem
 import okio.ForwardingFileSystem
 import okio.ForwardingSink
 import okio.Path
 import okio.Sink
-import java.io.IOException
 
 class FaultyFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
 

@@ -22,6 +22,10 @@ import androidx.test.rule.GrantPermissionRule
 import coil.ImageLoader
 import coil.request.Options
 import coil.util.assumeTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okio.buffer
@@ -30,10 +34,6 @@ import okio.source
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ContentUriFetcherTest {

@@ -3,12 +3,12 @@ package coil.compose.utils
 import androidx.annotation.RawRes
 import androidx.test.platform.app.InstrumentationRegistry
 import coil.compose.base.test.R
+import java.util.concurrent.TimeUnit
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
-import java.util.concurrent.TimeUnit
 
 /**
  * A [MockWebServer] which returns a valid image responses at various paths, and a 404
