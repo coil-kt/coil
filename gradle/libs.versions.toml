@@ -2,8 +2,8 @@
 androidx-activity = "1.4.0"
 androidx-lifecycle = "2.4.1"
 androidx-test = "1.4.0"
-compose = "1.2.1"
-composeCompiler = "1.3.1"
+compose = "1.3.0-rc01"
+composeCompiler = "1.3.2"
 coroutines = "1.6.4"
 ktlint = "0.47.1"
 okhttp = "4.10.0"
@@ -16,7 +16,7 @@ ktlint = { id = "org.jmailen.kotlinter", version = "3.12.0" }
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:7.3.0"
-gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
+gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.22.0"
 
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.25.1" }
@@ -28,7 +28,7 @@ androidx-annotation = "androidx.annotation:annotation:1.5.0"
 androidx-collection = "androidx.collection:collection:1.2.0"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-core = "androidx.core:core-ktx:1.8.0"
-androidx-exifinterface = "androidx.exifinterface:exifinterface:1.3.3"
+androidx-exifinterface = "androidx.exifinterface:exifinterface:1.3.4"
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }

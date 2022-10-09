@@ -4,13 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -101,16 +105,16 @@ private fun AssetTypeButton(
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun ScaffoldContent(
     screen: Screen,
     onScreenChange: (Screen) -> Unit,
     images: List<Image>,
 ) {
-    val context = LocalContext.current
-    val numColumns = remember(context) { numberOfColumns(context) }
-    val listStates = List(numColumns) {
-        // Reset the scroll position when the image list changes.
-        rememberSaveable(images, saver = LazyListState.Saver) { LazyListState() }
+    // Reset the scroll position when the image list changes.
+    // Preserve the scroll position when navigating to/from the detail screen.
+    val gridState = rememberSaveable(images, saver = LazyStaggeredGridState.Saver) {
+        LazyStaggeredGridState()
     }
 
     when (screen) {
@@ -119,7 +123,7 @@ private fun ScaffoldContent(
         }
         is Screen.List -> {
             ListScreen(
-                listStates = listStates,
+                gridState = gridState,
                 images = images,
                 onImageClick = { image, placeholder ->
                     onScreenChange(Screen.Detail(image, placeholder))
@@ -143,20 +147,24 @@ private fun DetailScreen(screen: Screen.Detail) {
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun ListScreen(
-    listStates: List<LazyListState>,
+    gridState: LazyStaggeredGridState,
     images: List<Image>,
     onImageClick: (Image, MemoryCache.Key?) -> Unit,
 ) {
-    LazyStaggeredGrid(
-        columnCount = listStates.size,
-        states = listStates
+    val context = LocalContext.current
+    val numColumns = remember(context) { numberOfColumns(context) }
+
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(numColumns),
+        state = gridState,
     ) {
         items(images) { image ->
             // Scale the image to fit the width of a column.
             val size = with(LocalDensity.current) {
                 image
-                    .calculateScaledSize(LocalContext.current, listStates.size)
+                    .calculateScaledSize(LocalContext.current, numColumns)
                     .run { DpSize(width.toDp(), height.toDp()) }
             }
 

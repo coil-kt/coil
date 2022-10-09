@@ -1,5 +1,4 @@
 @file:JvmName("-CommonUtils")
-@file:Suppress("NOTHING_TO_INLINE")
 
 package coil.sample
 
@@ -12,7 +11,7 @@ import kotlin.math.ceil
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-inline val AndroidViewModel.context: Context
+val AndroidViewModel.context: Context
     get() = getApplication()
 
 @ColorInt
