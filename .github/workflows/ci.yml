@@ -30,13 +30,13 @@ jobs:
               uses: gradle/wrapper-validation-action@v1
 
             - name: Check style
-              run: ./gradlew lintKotlin || { exit_code=$?; printf "\n*** Run './gradlew formatKotlin' to fix the style issues. ***\n"; exit $exit_code; }
+              run: ./gradlew lintKotlin || { exit_code=$?; printf "*** Run './gradlew formatKotlin' to fix the style issues. ***"; exit $exit_code; }
 
             - name: Check lint
               run: ./gradlew lint
 
             - name: Check binary compatibility
-              run: ./gradlew apiCheck || { exit_code=$?; printf "\n*** This PR changes Coil's public API. If this change is intentional, run './gradlew apiDump' and commit the new API files. ***\n"; exit $exit_code; }
+              run: ./gradlew apiCheck || { exit_code=$?; printf "*** This PR changes Coil's public API. If this change is intentional, run './gradlew apiDump' and commit the new API files. ***"; exit $exit_code; }
 
     unit-tests:
         name: Unit tests
