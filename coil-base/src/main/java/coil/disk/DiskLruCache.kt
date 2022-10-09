@@ -16,7 +16,6 @@
 package coil.disk
 
 import androidx.annotation.VisibleForTesting
-import coil.disk.DiskLruCache.Editor
 import coil.util.createFile
 import coil.util.deleteContents
 import coil.util.forEachIndices
