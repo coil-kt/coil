@@ -4,7 +4,6 @@ package coil
 
 import android.app.Application
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import coil.Coil.imageLoader
 import coil.Coil.setImageLoader
 import coil.request.Disposable
@@ -26,7 +25,9 @@ object Coil {
      * Get the singleton [ImageLoader].
      */
     @JvmStatic
-    fun imageLoader(context: Context) = imageLoader ?: newImageLoader(context)
+    fun imageLoader(context: Context): ImageLoader {
+        return imageLoader ?: newImageLoader(context)
+    }
 
     /**
      * Set the singleton [ImageLoader].
@@ -52,6 +53,18 @@ object Coil {
         imageLoader = null
     }
 
+    /**
+     * Clear the [ImageLoader] and [ImageLoaderFactory] held by this class.
+     *
+     * This method is useful for testing and its use is discouraged in production code.
+     */
+    @JvmStatic
+    @Synchronized
+    fun reset() {
+        imageLoader = null
+        imageLoaderFactory = null
+    }
+
     /** Create and set the new singleton [ImageLoader]. */
     @Synchronized
     private fun newImageLoader(context: Context): ImageLoader {
@@ -65,14 +78,6 @@ object Coil {
         imageLoaderFactory = null
         imageLoader = newImageLoader
         return newImageLoader
-    }
-
-    /** Reset the internal state. */
-    @VisibleForTesting
-    @Synchronized
-    internal fun reset() {
-        imageLoader = null
-        imageLoaderFactory = null
     }
 
     @Deprecated(
