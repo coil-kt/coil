@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package coil
 
 import android.app.Application
@@ -89,6 +87,7 @@ object Coil {
         level = DeprecationLevel.ERROR // Temporary migration aid.
     )
     @JvmStatic
+    @Suppress("UNUSED_PARAMETER")
     fun enqueue(request: ImageRequest): Disposable = error("Unsupported")
 
     @Deprecated(
@@ -100,6 +99,6 @@ object Coil {
         level = DeprecationLevel.ERROR // Temporary migration aid.
     )
     @JvmStatic
-    @Suppress("RedundantSuspendModifier")
+    @Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
     suspend fun execute(request: ImageRequest): ImageResult = error("Unsupported")
 }
