@@ -1,10 +1,7 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package coil
 
 import android.app.Application
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import coil.Coil.imageLoader
 import coil.Coil.setImageLoader
 import coil.request.Disposable
@@ -26,7 +23,9 @@ object Coil {
      * Get the singleton [ImageLoader].
      */
     @JvmStatic
-    fun imageLoader(context: Context) = imageLoader ?: newImageLoader(context)
+    fun imageLoader(context: Context): ImageLoader {
+        return imageLoader ?: newImageLoader(context)
+    }
 
     /**
      * Set the singleton [ImageLoader].
@@ -52,6 +51,18 @@ object Coil {
         imageLoader = null
     }
 
+    /**
+     * Clear the [ImageLoader] and [ImageLoaderFactory] held by this class.
+     *
+     * This method is useful for testing and its use is discouraged in production code.
+     */
+    @JvmStatic
+    @Synchronized
+    fun reset() {
+        imageLoader = null
+        imageLoaderFactory = null
+    }
+
     /** Create and set the new singleton [ImageLoader]. */
     @Synchronized
     private fun newImageLoader(context: Context): ImageLoader {
@@ -67,14 +78,6 @@ object Coil {
         return newImageLoader
     }
 
-    /** Reset the internal state. */
-    @VisibleForTesting
-    @Synchronized
-    internal fun reset() {
-        imageLoader = null
-        imageLoaderFactory = null
-    }
-
     @Deprecated(
         message = "Replace with 'context.imageLoader.enqueue(request)'.",
         replaceWith = ReplaceWith(
@@ -84,6 +87,7 @@ object Coil {
         level = DeprecationLevel.ERROR // Temporary migration aid.
     )
     @JvmStatic
+    @Suppress("UNUSED_PARAMETER")
     fun enqueue(request: ImageRequest): Disposable = error("Unsupported")
 
     @Deprecated(
@@ -95,6 +99,6 @@ object Coil {
         level = DeprecationLevel.ERROR // Temporary migration aid.
     )
     @JvmStatic
-    @Suppress("RedundantSuspendModifier")
+    @Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
     suspend fun execute(request: ImageRequest): ImageResult = error("Unsupported")
 }
