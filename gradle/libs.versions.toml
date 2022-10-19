@@ -53,7 +53,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
 ktlint = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
 
-material = "com.google.android.material:material:1.6.1"
+material = "com.google.android.material:material:1.7.0"
 
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
