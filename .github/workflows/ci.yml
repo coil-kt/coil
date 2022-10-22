@@ -157,3 +157,25 @@ jobs:
                   ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
                   ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
               run: ./publish_remote.sh
+
+    deploy-docs:
+        name: Deploy docs
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        if: github.repository == 'coil-kt/coil'
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  lfs: 'true'
+            - uses: actions/setup-java@v3
+              with:
+                  distribution: 'zulu'
+                  java-version: ${{ env.JAVA_VERSION }}
+            - uses: actions/setup-python@v4
+              with:
+                  python-version: '3.x'
+
+            - name: Deploy Docs
+              run: |
+                  pip3 install mkdocs-material mkdocs-material-extensions mkdocs-minify-plugin
+                  ./deploy_docs.sh
