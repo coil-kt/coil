@@ -144,13 +144,6 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v3
-              with:
-                  path: |
-                      ~/.gradle/caches
-                      ~/.gradle/wrapper
-                  key: ${{ runner.os }}-gradle-${{ env.CACHE_VERSION }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/libs.versions.toml') }}
 
             - name: Deploy Snapshot
               env:
@@ -166,6 +159,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
               with:
+                  fetch-depth: 0
                   lfs: 'true'
             - uses: actions/setup-java@v3
               with:
@@ -177,5 +171,6 @@ jobs:
 
             - name: Deploy Docs
               run: |
-                  pip3 install mkdocs-material mkdocs-material-extensions mkdocs-minify-plugin
+                  git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
+                  pip3 install --upgrade pip && pip3 install mkdocs-material mkdocs-material-extensions mkdocs-minify-plugin
                   ./deploy_docs.sh
