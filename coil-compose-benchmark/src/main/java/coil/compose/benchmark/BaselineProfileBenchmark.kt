@@ -21,10 +21,23 @@ class BaselineProfileBenchmark {
     }
 
     @Test
+    fun startupPartialCompilation() {
+        startup(CompilationMode.Partial(
+            baselineProfileMode = BaselineProfileMode.Disable,
+            warmupIterations = 3
+        ))
+    }
+
+    @Test
     fun startupBaselineProfile() {
         startup(CompilationMode.Partial(
             baselineProfileMode = BaselineProfileMode.Require
         ))
+    }
+
+    @Test
+    fun startupFullCompilation() {
+        startup(CompilationMode.Full())
     }
 
     private fun startup(compilationMode: CompilationMode) {
@@ -33,11 +46,12 @@ class BaselineProfileBenchmark {
             metrics = listOf(StartupTimingMetric()),
             iterations = 10,
             startupMode = StartupMode.COLD,
-            compilationMode = compilationMode
+            compilationMode = compilationMode,
+            setupBlock = {
+                pressHome()
+            }
         ) {
-            pressHome()
             startActivityAndWait()
-            device.waitForIdle()
         }
     }
 }
