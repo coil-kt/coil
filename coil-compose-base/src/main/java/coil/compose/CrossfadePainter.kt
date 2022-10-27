@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.times
-import kotlin.math.max
 
 /**
  * A [Painter] that crossfades from [start] to [end].
@@ -88,8 +87,8 @@ internal class CrossfadePainter(
         val isEndSpecified = endSize.isSpecified
         if (isStartSpecified && isEndSpecified) {
             return Size(
-                width = max(startSize.width, endSize.width),
-                height = max(startSize.height, endSize.height),
+                width = maxOf(startSize.width, endSize.width),
+                height = maxOf(startSize.height, endSize.height),
             )
         }
         if (preferExactIntrinsicSize) {

@@ -23,7 +23,6 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
@@ -64,7 +63,7 @@ internal data class ContentPainterModifier(
             val constraints = Constraints(maxHeight = height)
             val layoutWidth = measurable.minIntrinsicWidth(modifyConstraints(constraints).maxHeight)
             val scaledSize = calculateScaledSize(Size(layoutWidth.toFloat(), height.toFloat()))
-            max(scaledSize.width.roundToInt(), layoutWidth)
+            maxOf(scaledSize.width.roundToInt(), layoutWidth)
         } else {
             measurable.minIntrinsicWidth(height)
         }
@@ -78,7 +77,7 @@ internal data class ContentPainterModifier(
             val constraints = Constraints(maxHeight = height)
             val layoutWidth = measurable.maxIntrinsicWidth(modifyConstraints(constraints).maxHeight)
             val scaledSize = calculateScaledSize(Size(layoutWidth.toFloat(), height.toFloat()))
-            max(scaledSize.width.roundToInt(), layoutWidth)
+            maxOf(scaledSize.width.roundToInt(), layoutWidth)
         } else {
             measurable.maxIntrinsicWidth(height)
         }
@@ -92,7 +91,7 @@ internal data class ContentPainterModifier(
             val constraints = Constraints(maxWidth = width)
             val layoutHeight = measurable.minIntrinsicHeight(modifyConstraints(constraints).maxWidth)
             val scaledSize = calculateScaledSize(Size(width.toFloat(), layoutHeight.toFloat()))
-            max(scaledSize.height.roundToInt(), layoutHeight)
+            maxOf(scaledSize.height.roundToInt(), layoutHeight)
         } else {
             measurable.minIntrinsicHeight(width)
         }
@@ -106,7 +105,7 @@ internal data class ContentPainterModifier(
             val constraints = Constraints(maxWidth = width)
             val layoutHeight = measurable.maxIntrinsicHeight(modifyConstraints(constraints).maxWidth)
             val scaledSize = calculateScaledSize(Size(width.toFloat(), layoutHeight.toFloat()))
-            max(scaledSize.height.roundToInt(), layoutHeight)
+            maxOf(scaledSize.height.roundToInt(), layoutHeight)
         } else {
             measurable.maxIntrinsicHeight(width)
         }

@@ -43,7 +43,6 @@ import java.io.File
 import java.nio.ByteBuffer
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -531,7 +530,7 @@ class RealImageLoaderAndroidTest {
 
         assertIs<SuccessResult>(result)
         val drawable = assertIs<BitmapDrawable>(result.drawable)
-        val maxDimension = context.resources.displayMetrics.run { max(widthPixels, heightPixels) }
+        val maxDimension = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
             srcHeight = 4965,
