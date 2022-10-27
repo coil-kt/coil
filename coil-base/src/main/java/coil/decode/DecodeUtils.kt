@@ -3,8 +3,6 @@ package coil.decode
 import android.graphics.BitmapFactory
 import androidx.annotation.Px
 import coil.size.Scale
-import kotlin.math.max
-import kotlin.math.min
 
 /** A collection of useful utility methods for decoding images. */
 object DecodeUtils {
@@ -21,11 +19,11 @@ object DecodeUtils {
         @Px dstHeight: Int,
         scale: Scale
     ): Int {
-        val widthInSampleSize = Integer.highestOneBit(srcWidth / dstWidth)
-        val heightInSampleSize = Integer.highestOneBit(srcHeight / dstHeight)
+        val widthInSampleSize = (srcWidth / dstWidth).takeHighestOneBit()
+        val heightInSampleSize = (srcHeight / dstHeight).takeHighestOneBit()
         return when (scale) {
-            Scale.FILL -> min(widthInSampleSize, heightInSampleSize)
-            Scale.FIT -> max(widthInSampleSize, heightInSampleSize)
+            Scale.FILL -> minOf(widthInSampleSize, heightInSampleSize)
+            Scale.FIT -> maxOf(widthInSampleSize, heightInSampleSize)
         }.coerceAtLeast(1)
     }
 
@@ -44,8 +42,8 @@ object DecodeUtils {
         val widthPercent = dstWidth / srcWidth.toDouble()
         val heightPercent = dstHeight / srcHeight.toDouble()
         return when (scale) {
-            Scale.FILL -> max(widthPercent, heightPercent)
-            Scale.FIT -> min(widthPercent, heightPercent)
+            Scale.FILL -> maxOf(widthPercent, heightPercent)
+            Scale.FIT -> minOf(widthPercent, heightPercent)
         }
     }
 
@@ -61,8 +59,8 @@ object DecodeUtils {
         val widthPercent = dstWidth / srcWidth
         val heightPercent = dstHeight / srcHeight
         return when (scale) {
-            Scale.FILL -> max(widthPercent, heightPercent)
-            Scale.FIT -> min(widthPercent, heightPercent)
+            Scale.FILL -> maxOf(widthPercent, heightPercent)
+            Scale.FIT -> minOf(widthPercent, heightPercent)
         }
     }
 
@@ -78,8 +76,8 @@ object DecodeUtils {
         val widthPercent = dstWidth / srcWidth
         val heightPercent = dstHeight / srcHeight
         return when (scale) {
-            Scale.FILL -> max(widthPercent, heightPercent)
-            Scale.FIT -> min(widthPercent, heightPercent)
+            Scale.FILL -> maxOf(widthPercent, heightPercent)
+            Scale.FIT -> minOf(widthPercent, heightPercent)
         }
     }
 }
