@@ -22,12 +22,9 @@ class BaselineProfileGenerator {
         pressHome()
         startActivityAndWait()
         val instrumentedDevice = UiDevice.getInstance(getInstrumentation())
-        repeat(3) {
-            instrumentedDevice
-                .findObject(By.res("scrollableContent"))
-                .fling(Direction.DOWN, 3000)
-            device.waitForIdle()
-        }
+        instrumentedDevice
+            .findObject(By.res("scrollableContent"))
+            .fling(Direction.DOWN, 3000)
         device.waitForIdle()
     }
 }
