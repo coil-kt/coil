@@ -3,7 +3,7 @@
 Coil は Kotlin Coroutines で作られた Android 用の画像読み込みライブラリです。 Coil は:
 
 - **高速**: Coil は、メモリとディスクのキャッシング、メモリ内の画像のダウンサンプリング、リクエストの一時停止/キャンセルの自動化など、多くの最適化を実行します。
-- **軽量**: Coil は約 2000 のメソッドを APK に追加します (すでに OkHttp と Coroutines を使用しているアプリの場合)。これは Picasso に匹敵し、Glide や Fresco よりも大幅に少ない数です。
+- **軽量**: Coil は ~2000 のメソッドを APK に追加します (すでに OkHttp と Coroutines を使用しているアプリの場合)。これは Picasso に匹敵し、Glide や Fresco よりも大幅に少ない数です。
 - **使いやすい**: Coil の API は、ボイラープレートの最小化とシンプルさのために Kotlin の言語機能を活用しています。
 - **現代的**: Coil は Kotlin ファーストで、Coroutines、OkHttp、Okio、AndroidX Lifecycles などの最新のライブラリを使用します。
 
@@ -64,23 +64,23 @@ AsyncImage(
 
 #### Image Loaders
 
-`imageView.load` と `AsyncImage` はどちらも、シングルトンの`ImageLoader`を使用して画像リクエストを実行します。 シングルトンの `ImageLoader` には `Context` 拡張関数を使用してアクセスできます:
+`imageView.load` と `AsyncImage` はシングルトンの `ImageLoader` を使用して画像リクエストを実行します。 シングルトンの `ImageLoader` には `Context` 拡張関数を使用してアクセスできます:
 
 ```kotlin
 val imageLoader = context.imageLoader
 ```
 
-`ImageLoader` は共有できるように設計されており、単一のインスタンスを作成してアプリ全体で共有すると最も効率的です。 とはいえ、独自の `ImageLoader` インスタンスを作成することもできます:
+`ImageLoader` は共有できるように設計されており、単一のインスタンスを作成してアプリ全体で共有すると最も効率的です。 また、独自の `ImageLoader` インスタンスを作成することもできます:
 
 ```kotlin
 val imageLoader = ImageLoader(context)
 ```
 
-シングルトンの `ImageLoader` が必要ない場合は、`io.coil-kt:coil` の代わりに `io.coil-kt:coil-base` を使用してください。
+シングルトンの `ImageLoader` が必要ない場合は、 `io.coil-kt:coil` の代わりに `io.coil-kt:coil-base` を使用してください。
 
 #### Requests
 
-画像をカスタム ターゲットにロードするには、 `ImageRequest` を `enqueue` してください:
+画像をカスタムターゲットにロードするには、 `ImageRequest` を `enqueue` してください:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
@@ -110,7 +110,7 @@ val drawable = imageLoader.execute(request).drawable
 
 ## R8 / Proguard
 
-Coil はそのままで R8 と完全に互換性があり、追加のルールを追加する必要はありません。
+Coil は R8 と完全に互換性があり、追加のルールを追加する必要はありません。
 
 Proguardを使用している場合は、[Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro)、[OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/jvmMain/resources/META-INF/proguard/okhttp3.pro)、[Okio](https://github.com/square/okio/blob/master/okio/src/jvmMain/resources/META-INF/proguard/okio.pro)にルールを追加する必要があるかもしれません。
 
