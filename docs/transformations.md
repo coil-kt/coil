@@ -8,5 +8,8 @@ Transformations only modify the pixel data for static images. Adding a transform
 
 See the [API documentation](../api/coil-base/coil.transform/-transformation/) for more information.
 
+!!! Warning
+    When using a custom transformation, the `equals` and `hashCode` methods must be overridden, otherwise it leads to unexpected behavior (glitches, flashes).
+
 !!! Note
     If the `Drawable` returned by the image pipeline is not a `BitmapDrawable`, it will be converted to one. This will cause animated drawables to only draw the first frame of their animation. This behaviour can be disabled by setting `ImageRequest.Builder.allowConversionToBitmap(false)`.
