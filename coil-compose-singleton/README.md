@@ -25,9 +25,10 @@ AsyncImage(
 AsyncImage(
     model = ImageRequest.Builder(LocalContext.current)
         .data("https://example.com/image.jpg")
+        .placeholder(R.drawable.placeholder)
+        .error(R.drawable.error)
         .crossfade(true)
         .build(),
-    placeholder = painterResource(R.drawable.placeholder),
     contentDescription = stringResource(R.string.description),
     contentScale = ContentScale.Crop,
     modifier = Modifier.clip(CircleShape)
