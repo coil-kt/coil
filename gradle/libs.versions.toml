@@ -2,8 +2,8 @@
 androidx-activity = "1.4.0"
 androidx-lifecycle = "2.4.1"
 androidx-profile-installer = "1.3.0-alpha01"
-androidx-test = "1.4.0"
-compose = "1.3.0"
+androidx-test = "1.5.0"
+compose = "1.3.1"
 composeCompiler = "1.3.2"
 coroutines = "1.6.4"
 ktlint = "0.47.1"
@@ -20,7 +20,7 @@ gradlePlugin-android = "com.android.tools.build:gradle:7.3.1"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.22.0"
 
-accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.27.0" }
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.27.1" }
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -38,7 +38,7 @@ androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstall
 androidx-recyclerview = "androidx.recyclerview:recyclerview:1.2.1"
 androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-test-espresso = "androidx.test.espresso:espresso-core:3.4.0"
-androidx-test-junit = "androidx.test.ext:junit-ktx:1.1.3"
+androidx-test-junit = "androidx.test.ext:junit-ktx:1.1.4"
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test" }
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.2.0"
