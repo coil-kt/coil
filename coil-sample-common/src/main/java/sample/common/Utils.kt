@@ -1,6 +1,6 @@
 @file:JvmName("-CommonUtils")
 
-package coil.sample
+package sample.common
 
 import android.content.Context
 import android.graphics.Color

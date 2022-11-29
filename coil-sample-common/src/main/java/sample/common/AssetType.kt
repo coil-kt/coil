@@ -1,4 +1,4 @@
-package coil.sample
+package sample.common
 
 enum class AssetType(val fileName: String) {
     JPG("jpgs.json"),

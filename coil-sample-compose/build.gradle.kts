@@ -5,9 +5,9 @@ plugins {
     id("kotlin-android")
 }
 
-setupAppModule(name = "coil.sample") {
+setupAppModule(name = "sample.compose") {
     defaultConfig {
-        applicationId = "coil.sample"
+        applicationId = "sample.compose"
     }
     buildTypes {
         release {
@@ -15,6 +15,13 @@ setupAppModule(name = "coil.sample") {
             isShrinkResources = true
             proguardFiles("shrinker-rules.pro", "shrinker-rules-android.pro")
             signingConfig = signingConfigs["debug"]
+        }
+
+        create("benchmark") {
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+            proguardFiles("baseline-profile-rules.pro")
         }
     }
     buildFeatures {

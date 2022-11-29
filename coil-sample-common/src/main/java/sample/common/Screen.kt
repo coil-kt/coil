@@ -1,4 +1,4 @@
-package coil.sample
+package sample.common
 
 import coil.memory.MemoryCache
 
