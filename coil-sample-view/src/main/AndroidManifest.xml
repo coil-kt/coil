@@ -15,8 +15,12 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <profileable
+            android:shell="true"
+            tools:targetApi="q"/>
+
         <activity
-            android:name=".MainActivity"
+            android:name="sample.view.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

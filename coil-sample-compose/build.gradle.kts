@@ -6,22 +6,22 @@ plugins {
 }
 
 setupAppModule(name = "sample.compose") {
-    defaultConfig {
-        applicationId = "sample.compose"
-    }
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles("shrinker-rules.pro", "shrinker-rules-android.pro")
+            proguardFiles(
+                "../coil-sample-common/shrinker-rules.pro",
+                "../coil-sample-common/shrinker-rules-android.pro",
+            )
             signingConfig = signingConfigs["debug"]
         }
-
         create("benchmark") {
-            signingConfig = signingConfigs.getByName("debug")
-            matchingFallbacks += listOf("release")
             isDebuggable = false
-            proguardFiles("baseline-profile-rules.pro")
+            isMinifyEnabled = false
+            isShrinkResources = false
+            matchingFallbacks += listOf("release")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     buildFeatures {

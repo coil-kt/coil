@@ -1,4 +1,4 @@
-package coil.sample
+package sample.view
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,10 +11,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.memory.MemoryCache
-import coil.sample.ImageListAdapter.ViewHolder
 import sample.common.Image
 import sample.common.Screen
 import sample.common.calculateScaledSize
+import sample.view.ImageListAdapter.ViewHolder
 
 class ImageListAdapter(
     private val numColumns: Int,

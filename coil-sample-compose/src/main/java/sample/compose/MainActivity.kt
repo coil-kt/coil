@@ -172,9 +172,9 @@ private fun ListScreen(
     val numColumns = remember(context) { numberOfColumns(context) }
 
     LazyVerticalStaggeredGrid(
-        modifier = Modifier.testTag("scrollableContent"),
         columns = StaggeredGridCells.Fixed(numColumns),
         state = gridState,
+        modifier = Modifier.testTag("list"),
     ) {
         items(images) { image ->
             // Scale the image to fit the width of a column.
