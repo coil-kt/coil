@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.memory.MemoryCache
-import coil.sample.R
 import sample.common.Image
 import sample.common.Screen
 import sample.common.calculateScaledSize
