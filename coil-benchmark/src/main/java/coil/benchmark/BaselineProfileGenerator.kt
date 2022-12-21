@@ -19,7 +19,13 @@ class BaselineProfileGenerator {
     @Test
     fun generate() = baselineProfileRule.collectBaselineProfile(
         packageName = BuildConfig.PACKAGE_NAME,
-        filterPredicate = { it == "coil" },
+        filterPredicate = if (BuildConfig.PACKAGE_NAME == "coil.sample.compose") {
+            // Only include Compose-specific rules in the coil-compose module.
+            { it == "coil.compose" }
+        } else {
+            // Include all Coil rules in the coil-base module.
+            { it == "coil" }
+        },
     ) {
         pressHome()
         startActivityAndWait()
