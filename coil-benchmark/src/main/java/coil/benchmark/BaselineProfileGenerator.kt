@@ -1,4 +1,4 @@
-package coil.compose.benchmark
+package coil.benchmark
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -1,4 +1,4 @@
-package coil.compose.benchmark
+package coil.benchmark
 
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode
