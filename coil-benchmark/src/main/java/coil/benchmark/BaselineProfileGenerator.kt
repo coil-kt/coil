@@ -18,7 +18,7 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() = baselineProfileRule.collectBaselineProfile(
-        packageName = "sample.compose",
+        packageName = BuildConfig.PACKAGE_NAME,
         filterPredicate = { it == "coil" },
     ) {
         pressHome()

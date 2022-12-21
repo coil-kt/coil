@@ -6,9 +6,11 @@ plugins {
     id("kotlin-android")
 }
 
-setupTestModule(name = "coil.compose.benchmark") {
+setupTestModule(name = "coil.benchmark") {
+    val targetProject = System.getProperty("project", "view")
     defaultConfig {
         minSdk = 23
+        buildConfigField("String", "PACKAGE_NAME", "\"sample.$targetProject\"")
     }
     buildTypes {
         create("benchmark") {
@@ -28,7 +30,7 @@ setupTestModule(name = "coil.compose.benchmark") {
             }
         }
     }
-    targetProjectPath = ":coil-sample-${System.getProperty("project", "view")}"
+    targetProjectPath = ":coil-sample-$targetProject"
     experimentalProperties["android.experimental.self-instrumenting"] = true
 }
 
