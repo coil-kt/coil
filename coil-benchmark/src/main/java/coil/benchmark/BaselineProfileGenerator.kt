@@ -17,6 +17,7 @@ class BaselineProfileGenerator {
     val baselineProfileRule = BaselineProfileRule()
 
     @Test
+    @Suppress("KotlinConstantConditions") // BuildConfig constant can change.
     fun generate() = baselineProfileRule.collectBaselineProfile(
         packageName = BuildConfig.PACKAGE_NAME,
         filterPredicate = if (BuildConfig.PACKAGE_NAME == "coil.sample.compose") {
