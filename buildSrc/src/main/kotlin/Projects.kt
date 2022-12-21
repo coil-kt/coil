@@ -104,7 +104,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(
             "-Xno-param-assertions",
             "-Xno-receiver-assertions",
         )
-        if (project.name != "coil-test" && project.name != "coil-benchmark") {
+        if (project.name != "coil-benchmark" && project.name != "coil-test") {
             arguments += "-opt-in=coil.annotation.ExperimentalCoilApi"
         }
         // https://youtrack.jetbrains.com/issue/KT-41985

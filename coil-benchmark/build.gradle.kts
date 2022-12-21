@@ -10,7 +10,7 @@ setupTestModule(name = "coil.benchmark") {
     val targetProject = System.getProperty("project", "view")
     defaultConfig {
         minSdk = 23
-        buildConfigField("String", "PACKAGE_NAME", "\"sample.$targetProject\"")
+        buildConfigField("String", "PROJECT", "\"$targetProject\"")
     }
     buildTypes {
         create("benchmark") {
