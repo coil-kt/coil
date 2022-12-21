@@ -24,7 +24,7 @@ class BaselineProfileGenerator {
         pressHome()
         startActivityAndWait()
         UiDevice.getInstance(getInstrumentation())
-            .findObject(By.res("scrollableContent"))
+            .findObject(By.res("list"))
             .fling(Direction.DOWN, 3000)
         device.waitForIdle()
     }

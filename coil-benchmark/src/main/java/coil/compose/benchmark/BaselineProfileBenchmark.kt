@@ -17,24 +17,19 @@ class BaselineProfileBenchmark {
     val benchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun startupNoCompilation() = startup(
-        CompilationMode.None()
-    )
+    fun startupNoCompilation() {
+        startup(CompilationMode.None())
+    }
 
     @Test
-    fun startupPartialCompilation() = startup(
-        CompilationMode.Partial(
-            baselineProfileMode = BaselineProfileMode.Disable,
-            warmupIterations = 3,
-        ),
-    )
+    fun startupPartialCompilation() {
+        startup(CompilationMode.Partial(BaselineProfileMode.Disable, warmupIterations = 3))
+    }
 
     @Test
-    fun startupBaselineProfile() = startup(
-        CompilationMode.Partial(
-            baselineProfileMode = BaselineProfileMode.Require,
-        ),
-    )
+    fun startupBaselineProfile() {
+        startup(CompilationMode.Partial(BaselineProfileMode.Require))
+    }
 
     @Test
     fun startupFullCompilation() {
@@ -49,8 +44,7 @@ class BaselineProfileBenchmark {
             startupMode = StartupMode.COLD,
             compilationMode = compilationMode,
             setupBlock = { pressHome() },
-        ) {
-            startActivityAndWait()
-        }
+            measureBlock = { startActivityAndWait() },
+        )
     }
 }

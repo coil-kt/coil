@@ -55,6 +55,7 @@ fun Project.setupAppModule(
     block: BaseAppModuleExtension.() -> Unit = {}
 ) = setupBaseModule<BaseAppModuleExtension>(name) {
     defaultConfig {
+        applicationId = name
         versionCode = project.versionCode
         versionName = project.versionName
         resourceConfigurations += "en"

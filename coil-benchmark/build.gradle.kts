@@ -28,7 +28,7 @@ setupTestModule(name = "coil.compose.benchmark") {
             }
         }
     }
-    targetProjectPath = ":coil-sample-compose"
+    targetProjectPath = ":coil-sample-${System.getProperty("project", "view")}"
     experimentalProperties["android.experimental.self-instrumenting"] = true
 }
 

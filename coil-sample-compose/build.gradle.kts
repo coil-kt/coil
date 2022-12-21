@@ -6,9 +6,6 @@ plugins {
 }
 
 setupAppModule(name = "sample.compose") {
-    defaultConfig {
-        applicationId = "sample.compose"
-    }
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -20,10 +17,11 @@ setupAppModule(name = "sample.compose") {
             signingConfig = signingConfigs["debug"]
         }
         create("benchmark") {
-            signingConfig = signingConfigs.getByName("debug")
-            matchingFallbacks += listOf("release")
             isDebuggable = false
-            proguardFiles("baseline-profile-rules.pro")
+            isMinifyEnabled = false
+            isShrinkResources = false
+            matchingFallbacks += listOf("release")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     buildFeatures {

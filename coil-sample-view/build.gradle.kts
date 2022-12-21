@@ -5,10 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupAppModule(name = "coil.sample") {
-    defaultConfig {
-        applicationId = "coil.sample"
-    }
+setupAppModule(name = "sample.view") {
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -18,6 +15,13 @@ setupAppModule(name = "coil.sample") {
                 "../coil-sample-common/shrinker-rules-android.pro",
             )
             signingConfig = signingConfigs["debug"]
+        }
+        create("benchmark") {
+            isDebuggable = false
+            isMinifyEnabled = false
+            isShrinkResources = false
+            matchingFallbacks += listOf("release")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     buildFeatures {
