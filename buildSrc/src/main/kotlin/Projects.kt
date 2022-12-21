@@ -4,6 +4,7 @@ import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.Lint
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.TestExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -21,7 +22,7 @@ fun Project.setupLibraryModule(
     buildConfig: Boolean = false,
     publish: Boolean = false,
     document: Boolean = publish,
-    block: LibraryExtension.() -> Unit = {}
+    block: LibraryExtension.() -> Unit = {},
 ) = setupBaseModule<LibraryExtension>(name) {
     libraryVariants.all {
         generateBuildConfigProvider?.configure { enabled = buildConfig }
@@ -62,9 +63,20 @@ fun Project.setupAppModule(
     block()
 }
 
+fun Project.setupTestModule(
+    name: String?,
+    block: TestExtension.() -> Unit = {},
+) = setupBaseModule<TestExtension>(name) {
+    defaultConfig {
+        resourceConfigurations += "en"
+        vectorDrawables.useSupportLibrary = true
+    }
+    block()
+}
+
 private inline fun <reified T : BaseExtension> Project.setupBaseModule(
     name: String?,
-    crossinline block: T.() -> Unit = {}
+    crossinline block: T.() -> Unit = {},
 ) = extensions.configure<T>("android") {
     namespace = name
     compileSdkVersion(project.compileSdk)
@@ -91,7 +103,7 @@ private inline fun <reified T : BaseExtension> Project.setupBaseModule(
             "-Xno-param-assertions",
             "-Xno-receiver-assertions",
         )
-        if (project.name != "coil-test") {
+        if (project.name != "coil-test" && project.name != "coil-benchmark") {
             arguments += "-opt-in=coil.annotation.ExperimentalCoilApi"
         }
         // https://youtrack.jetbrains.com/issue/KT-41985

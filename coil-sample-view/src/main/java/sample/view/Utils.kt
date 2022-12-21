@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package coil.sample
+package sample.view
 
 import android.view.LayoutInflater
 import android.view.View

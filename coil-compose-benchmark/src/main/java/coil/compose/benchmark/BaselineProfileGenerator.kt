@@ -12,17 +12,18 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileGenerator {
+
     @get:Rule
     val baselineProfileRule = BaselineProfileRule()
 
     @Test
     fun generate() = baselineProfileRule.collectBaselineProfile(
-        packageName = "sample.compose", packageFilters = listOf("coil")
+        packageName = "sample.compose",
+        filterPredicate = { it == "coil" },
     ) {
         pressHome()
         startActivityAndWait()
-        val instrumentedDevice = UiDevice.getInstance(getInstrumentation())
-        instrumentedDevice
+        UiDevice.getInstance(getInstrumentation())
             .findObject(By.res("scrollableContent"))
             .fling(Direction.DOWN, 3000)
         device.waitForIdle()

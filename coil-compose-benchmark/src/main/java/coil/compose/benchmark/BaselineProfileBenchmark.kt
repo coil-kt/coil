@@ -12,28 +12,29 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileBenchmark {
+
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun startupNoCompilation() {
-        startup(CompilationMode.None())
-    }
+    fun startupNoCompilation() = startup(
+        CompilationMode.None()
+    )
 
     @Test
-    fun startupPartialCompilation() {
-        startup(CompilationMode.Partial(
+    fun startupPartialCompilation() = startup(
+        CompilationMode.Partial(
             baselineProfileMode = BaselineProfileMode.Disable,
-            warmupIterations = 3
-        ))
-    }
+            warmupIterations = 3,
+        ),
+    )
 
     @Test
-    fun startupBaselineProfile() {
-        startup(CompilationMode.Partial(
-            baselineProfileMode = BaselineProfileMode.Require
-        ))
-    }
+    fun startupBaselineProfile() = startup(
+        CompilationMode.Partial(
+            baselineProfileMode = BaselineProfileMode.Require,
+        ),
+    )
 
     @Test
     fun startupFullCompilation() {
@@ -47,9 +48,7 @@ class BaselineProfileBenchmark {
             iterations = 10,
             startupMode = StartupMode.COLD,
             compilationMode = compilationMode,
-            setupBlock = {
-                pressHome()
-            }
+            setupBlock = { pressHome() },
         ) {
             startActivityAndWait()
         }

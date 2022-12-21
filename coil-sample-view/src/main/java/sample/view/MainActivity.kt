@@ -1,4 +1,4 @@
-package coil.sample
+package sample.view
 
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil.load
+import coil.sample.R
 import coil.sample.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import sample.common.AssetType
