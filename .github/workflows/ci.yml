@@ -5,8 +5,8 @@ on:
             - main
     pull_request:
 env:
-    # Increment this to manually invalidate the cache.
-    CACHE_VERSION: 1
+    CACHE_VERSION: 1 # Increment this to invalidate the cache.
+    JAVA_VERSION: 19
 jobs:
     checks:
         name: Checks
@@ -17,7 +17,7 @@ jobs:
             - uses: actions/setup-java@v3
               with:
                   distribution: 'zulu'
-                  java-version: 17
+                  java-version: ${{ env.JAVA_VERSION }}
             - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v3
               with:
@@ -30,15 +30,13 @@ jobs:
               uses: gradle/wrapper-validation-action@v1
 
             - name: Check style
-              run: ./gradlew lintKotlin
+              run: ./gradlew lintKotlin || { exit_code=$?; printf "*** Run './gradlew formatKotlin' to fix the style issues. ***"; exit $exit_code; }
 
             - name: Check lint
               run: ./gradlew lint
 
-            # Check if there has been a binary incompatible change to the API.
-            # If this change is intentional, run `./gradlew apiDump` and commit the new API files.
             - name: Check binary compatibility
-              run: ./gradlew apiCheck
+              run: ./gradlew apiCheck || { exit_code=$?; printf "*** This PR changes Coil's public API. If this change is intentional, run './gradlew apiDump' and commit the new API files. ***"; exit $exit_code; }
 
     unit-tests:
         name: Unit tests
@@ -49,7 +47,7 @@ jobs:
             - uses: actions/setup-java@v3
               with:
                   distribution: 'zulu'
-                  java-version: 17
+                  java-version: ${{ env.JAVA_VERSION }}
             - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v3
               with:
@@ -75,7 +73,7 @@ jobs:
             - uses: actions/setup-java@v3
               with:
                   distribution: 'zulu'
-                  java-version: 17
+                  java-version: ${{ env.JAVA_VERSION }}
             - run: ./ci_clear_gradle_cache.sh
             - uses: actions/cache@v3
               with:
@@ -137,17 +135,35 @@ jobs:
             - uses: actions/setup-java@v3
               with:
                   distribution: 'zulu'
-                  java-version: 17
-            - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v3
-              with:
-                  path: |
-                      ~/.gradle/caches
-                      ~/.gradle/wrapper
-                  key: ${{ runner.os }}-gradle-${{ env.CACHE_VERSION }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/libs.versions.toml') }}
+                  java-version: ${{ env.JAVA_VERSION }}
 
             - name: Deploy Snapshot
               env:
                   ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
                   ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
               run: ./publish_remote.sh
+
+    deploy-docs:
+        name: Deploy docs
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
+        needs: [checks, unit-tests, instrumentation-tests]
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  lfs: 'true'
+            - uses: actions/setup-java@v3
+              with:
+                  distribution: 'zulu'
+                  java-version: ${{ env.JAVA_VERSION }}
+            - uses: actions/setup-python@v4
+              with:
+                  python-version: '3.x'
+
+            - name: Deploy Docs
+              run: |
+                  git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
+                  pip3 install --upgrade pip && pip3 install mkdocs-material mkdocs-material-extensions mkdocs-minify-plugin
+                  ./deploy_docs.sh

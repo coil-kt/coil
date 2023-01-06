@@ -3,16 +3,16 @@ package coil
 import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.test.assertFalse
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.test.assertFalse
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ImageLoaderFactoryTest {

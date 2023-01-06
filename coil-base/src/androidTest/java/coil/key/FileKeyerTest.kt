@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import coil.request.Options
 import coil.util.copyAssetToFile
-import org.junit.Before
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import org.junit.Before
+import org.junit.Test
 
 class FileKeyerTest {
 

@@ -22,13 +22,13 @@ import coil.util.asPostProcessor
 import coil.util.heightPx
 import coil.util.isHardware
 import coil.util.widthPx
+import java.nio.ByteBuffer
+import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
 import okio.buffer
-import java.nio.ByteBuffer
-import kotlin.math.roundToInt
 
 /**
  * A [Decoder] that uses [ImageDecoder] to decode GIFs, animated WebPs, and animated HEIFs.
@@ -108,7 +108,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
 
         val metadata = metadata
         if (metadata is AssetMetadata) {
-            return ImageDecoder.createSource(options.context.assets, metadata.fileName)
+            return ImageDecoder.createSource(options.context.assets, metadata.filePath)
         }
         if (metadata is ContentMetadata) {
             return ImageDecoder.createSource(options.context.contentResolver, metadata.uri)

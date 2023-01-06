@@ -8,7 +8,6 @@ import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import coil.size.Size
 import coil.util.safeConfig
-import kotlin.math.min
 
 /**
  * A [Transformation] that crops an image using a centered circle as the mask.
@@ -23,7 +22,7 @@ class CircleCropTransformation : Transformation {
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
-        val minSize = min(input.width, input.height)
+        val minSize = minOf(input.width, input.height)
         val radius = minSize / 2f
         val output = createBitmap(minSize, minSize, input.safeConfig)
         output.applyCanvas {

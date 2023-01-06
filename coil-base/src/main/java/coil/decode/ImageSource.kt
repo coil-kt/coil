@@ -11,14 +11,14 @@ import coil.annotation.ExperimentalCoilApi
 import coil.fetch.Fetcher
 import coil.util.closeQuietly
 import coil.util.safeCacheDir
+import java.io.Closeable
+import java.io.File
 import okio.BufferedSource
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
 import okio.buffer
 import okio.source
-import java.io.Closeable
-import java.io.File
 
 /**
  * Create a new [ImageSource] backed by a [File].
@@ -172,10 +172,17 @@ sealed class ImageSource : Closeable {
 }
 
 /**
- * Metadata containing the [fileName] of an Android asset.
+ * Metadata containing the [filePath] of an Android asset.
  */
 @ExperimentalCoilApi
-class AssetMetadata(val fileName: String) : ImageSource.Metadata()
+class AssetMetadata(val filePath: String) : ImageSource.Metadata() {
+
+    @Deprecated(
+        message = "Migrate to filePath as it supports assets inside subfolders.",
+        level = DeprecationLevel.ERROR
+    )
+    val fileName: String get() = filePath.substringAfterLast('/')
+}
 
 /**
  * Metadata containing the [uri] of a `content` URI.

@@ -17,17 +17,17 @@ import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
 import coil.util.isSimilarTo
 import coil.util.size
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okio.buffer
 import okio.source
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BitmapFactoryDecoderTest {
@@ -121,13 +121,13 @@ class BitmapFactoryDecoderTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/619 */
     @Test
-    fun heicExifMetadata() = runTest {
-        // HEIC files are not supported before API 30.
+    fun heifExifMetadata() = runTest {
+        // HEIF files are not supported before API 30.
         assumeTrue(SDK_INT >= 30)
 
         // Ensure this completes and doesn't end up in an infinite loop.
-        val normal = context.decodeBitmapAsset("exif/basic.heic")
-        val actual = decodeBitmap("exif/basic.heic", Size.ORIGINAL)
+        val normal = context.decodeBitmapAsset("exif/basic.heif")
+        val actual = decodeBitmap("exif/basic.heif", Size.ORIGINAL)
         normal.assertIsSimilarTo(actual)
     }
 
@@ -324,31 +324,31 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun largeHeic() = runTest {
-        // HEIC files are not supported before API 30.
+    fun largeHeif() = runTest {
+        // HEIF files are not supported before API 30.
         assumeTrue(SDK_INT >= 30)
 
-        decodeBitmap("large.heic", Size(1080, 1920))
+        decodeBitmap("large.heif", Size(1080, 1920))
     }
 
     private suspend fun decodeBitmap(
         assetName: String,
         size: Size,
         scale: Scale = Scale.FILL,
-        factory: BitmapFactoryDecoder.Factory = this.decoderFactory
+        factory: BitmapFactoryDecoder.Factory = decoderFactory
     ): Bitmap = assertIs<BitmapDrawable>(decode(assetName, size, scale, factory).drawable).bitmap
 
     private suspend fun decodeBitmap(
         assetName: String,
         options: Options,
-        factory: BitmapFactoryDecoder.Factory = this.decoderFactory
+        factory: BitmapFactoryDecoder.Factory = decoderFactory
     ): Bitmap = assertIs<BitmapDrawable>(decode(assetName, options, factory).drawable).bitmap
 
     private suspend fun decode(
         assetName: String,
         size: Size,
         scale: Scale = Scale.FILL,
-        factory: BitmapFactoryDecoder.Factory = this.decoderFactory
+        factory: BitmapFactoryDecoder.Factory = decoderFactory
     ): DecodeResult = decode(assetName, Options(context, size = size, scale = scale), factory)
 
     private suspend fun decode(

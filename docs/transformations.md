@@ -6,6 +6,8 @@ By default, Coil comes packaged with 2 transformations: [circle crop](../api/coi
 
 Transformations only modify the pixel data for static images. Adding a transformation to an `ImageRequest` that produces an animated image will convert it to a static image so the transformation can be applied. To transform the pixel data of each frame of an animated image, see [AnimatedTransformation](../api/coil-gif/coil.transform/-animated-transformation/).
 
+Custom transformations should implement `equals` and `hashCode` to ensure that two `ImageRequest`s with the same properties and using the same transformation are equal.
+
 See the [API documentation](../api/coil-base/coil.transform/-transformation/) for more information.
 
 !!! Note

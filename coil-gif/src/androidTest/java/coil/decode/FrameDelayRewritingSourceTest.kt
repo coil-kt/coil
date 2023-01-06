@@ -2,14 +2,14 @@ package coil.decode
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import okio.Buffer
 import okio.Source
 import okio.buffer
 import okio.source
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class FrameDelayRewritingSourceTest {
 

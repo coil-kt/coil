@@ -44,11 +44,11 @@ import coil.size.Size
 import coil.size.isOriginal
 import coil.size.pxOrElse
 import coil.transform.Transformation
+import java.io.Closeable
+import java.io.File
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
-import java.io.Closeable
-import java.io.File
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {
@@ -230,6 +230,13 @@ internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
 internal fun isAssetUri(uri: Uri): Boolean {
     return uri.scheme == SCHEME_FILE && uri.firstPathSegment == ASSET_FILE_PATH_ROOT
+}
+
+/** Modified from [Headers.Builder.add] */
+internal fun Headers.Builder.addUnsafeNonAscii(line: String) = apply {
+    val index = line.indexOf(':')
+    require(index != -1) { "Unexpected header: $line" }
+    addUnsafeNonAscii(line.substring(0, index).trim(), line.substring(index + 1))
 }
 
 private const val STANDARD_MEMORY_MULTIPLIER = 0.2

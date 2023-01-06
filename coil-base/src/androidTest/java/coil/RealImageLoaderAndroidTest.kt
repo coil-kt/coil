@@ -39,6 +39,19 @@ import coil.util.isMainThread
 import coil.util.runTestAsync
 import coil.util.runTestMain
 import coil.util.size
+import java.io.File
+import java.nio.ByteBuffer
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.math.roundToInt
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,20 +68,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.io.File
-import java.nio.ByteBuffer
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.math.max
-import kotlin.math.roundToInt
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RealImageLoaderAndroidTest {
@@ -531,7 +530,7 @@ class RealImageLoaderAndroidTest {
 
         assertIs<SuccessResult>(result)
         val drawable = assertIs<BitmapDrawable>(result.drawable)
-        val maxDimension = context.resources.displayMetrics.run { max(widthPixels, heightPixels) }
+        val maxDimension = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
             srcHeight = 4965,

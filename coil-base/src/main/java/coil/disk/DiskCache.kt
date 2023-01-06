@@ -3,13 +3,13 @@ package coil.disk
 import android.os.StatFs
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
+import java.io.File
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okio.Closeable
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
-import java.io.File
 
 /**
  * An LRU cache of files.

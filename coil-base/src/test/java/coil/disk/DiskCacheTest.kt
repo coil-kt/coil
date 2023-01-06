@@ -1,15 +1,15 @@
 package coil.disk
 
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class DiskCacheTest {
@@ -30,7 +30,7 @@ class DiskCacheTest {
     @Test
     fun `can read and write empty`() {
         diskCache["test"].use { assertNull(it) }
-        diskCache.edit("test")?.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test")?.use { /* Empty edit to create the file on disk. */ }
         diskCache["test"].use { assertNotNull(it) }
     }
 
@@ -58,8 +58,8 @@ class DiskCacheTest {
 
     @Test
     fun `can remove singular entries`() {
-        diskCache.edit("test1")!!.use { /** Empty edit to create the file on disk. */ }
-        diskCache.edit("test2")!!.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test1")!!.use { /* Empty edit to create the file on disk. */ }
+        diskCache.edit("test2")!!.use { /* Empty edit to create the file on disk. */ }
         assertTrue(diskCache.remove("test1"))
         diskCache["test1"].use { assertNull(it) }
         diskCache["test2"].use { assertNotNull(it) }
@@ -67,8 +67,8 @@ class DiskCacheTest {
 
     @Test
     fun `can clear all entries`() {
-        diskCache.edit("test1")!!.use { /** Empty edit to create the file on disk. */ }
-        diskCache.edit("test2")!!.use { /** Empty edit to create the file on disk. */ }
+        diskCache.edit("test1")!!.use { /* Empty edit to create the file on disk. */ }
+        diskCache.edit("test2")!!.use { /* Empty edit to create the file on disk. */ }
         diskCache.clear()
         diskCache["test1"].use { assertNull(it) }
         diskCache["test2"].use { assertNull(it) }

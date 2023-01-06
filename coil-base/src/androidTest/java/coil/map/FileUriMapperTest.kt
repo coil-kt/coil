@@ -6,11 +6,11 @@ import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.request.Options
 import coil.util.ASSET_FILE_PATH_ROOT
-import org.junit.Before
-import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import org.junit.Before
+import org.junit.Test
 
 class FileUriMapperTest {
 
@@ -45,5 +45,13 @@ class FileUriMapperTest {
     fun doesNotHandleGenericString() {
         val uri = "generic_string".toUri()
         assertNull(mapper.map(uri, Options(context)))
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1344 */
+    @Test
+    fun parsesPoundCharacterCorrectly() {
+        val path = "/sdcard/fi#le.jpg"
+        assertEquals(File(path), mapper.map(path.toUri(), Options(context)))
+        assertEquals(File(path), mapper.map("file://$path".toUri(), Options(context)))
     }
 }

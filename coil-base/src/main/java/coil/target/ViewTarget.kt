@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleObserver
  * Optionally, [ViewTarget]s can implement [LifecycleObserver]. They are automatically registered
  * when the request starts and unregistered when the request completes.
  */
+@JvmDefaultWithCompatibility
 interface ViewTarget<T : View> : Target {
 
     /**

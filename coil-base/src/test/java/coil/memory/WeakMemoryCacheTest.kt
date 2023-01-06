@@ -7,14 +7,14 @@ import coil.memory.MemoryCache.Key
 import coil.util.allocationByteCountCompat
 import coil.util.createBitmap
 import coil.util.forEachIndices
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [21, 28])

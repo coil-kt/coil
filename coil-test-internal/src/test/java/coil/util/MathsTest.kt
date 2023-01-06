@@ -1,7 +1,7 @@
 package coil.util
 
-import org.junit.Test
 import kotlin.test.assertEquals
+import org.junit.Test
 
 class MathsTest {
 

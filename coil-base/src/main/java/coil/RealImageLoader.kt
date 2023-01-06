@@ -48,6 +48,8 @@ import coil.util.get
 import coil.util.log
 import coil.util.requestManager
 import coil.util.toDrawable
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -59,8 +61,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
 import okhttp3.Call
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.coroutines.coroutineContext
 
 internal class RealImageLoader(
     val context: Context,

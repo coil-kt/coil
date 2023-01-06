@@ -21,6 +21,8 @@ import coil.request.videoFramePercent
 import coil.size.Dimension.Pixels
 import coil.size.Size
 import coil.size.pxOrElse
+import coil.util.getFrameAtTime
+import coil.util.getScaledFrameAtTime
 import coil.util.heightPx
 import coil.util.use
 import coil.util.widthPx
@@ -80,9 +82,9 @@ class VideoFrameDecoder(
 
         val (dstWidth, dstHeight) = dstSize
         val rawBitmap: Bitmap? = if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
-            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.px, dstHeight.px)
+            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.px, dstHeight.px, options.config)
         } else {
-            retriever.getFrameAtTime(frameMicros, option)?.also {
+            retriever.getFrameAtTime(frameMicros, option, options.config)?.also {
                 srcWidth = it.width
                 srcHeight = it.height
             }
@@ -182,7 +184,7 @@ class VideoFrameDecoder(
     private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
         when (val metadata = source.metadata) {
             is AssetMetadata -> {
-                options.context.assets.openFd(metadata.fileName).use {
+                options.context.assets.openFd(metadata.filePath).use {
                     setDataSource(it.fileDescriptor, it.startOffset, it.length)
                 }
             }

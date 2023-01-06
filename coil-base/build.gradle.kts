@@ -18,6 +18,7 @@ dependencies {
     api(libs.kotlin.stdlib)
     api(libs.okhttp)
     api(libs.okio)
+    api(libs.androidx.profileinstaller)
 
     testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)

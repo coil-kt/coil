@@ -2,13 +2,11 @@ package coil.network
 
 import coil.util.Time
 import coil.util.toNonNegativeInt
+import java.util.Date
+import java.util.concurrent.TimeUnit.SECONDS
 import okhttp3.Headers
 import okhttp3.Request
 import okhttp3.Response
-import java.util.Date
-import java.util.concurrent.TimeUnit.SECONDS
-import kotlin.math.max
-import kotlin.math.min
 
 /** Modified from OkHttp's `okhttp3.internal.cache.CacheStrategy`. */
 internal class CacheStrategy private constructor(
@@ -108,7 +106,7 @@ internal class CacheStrategy private constructor(
             var freshMillis = computeFreshnessLifetime()
 
             if (requestCaching.maxAgeSeconds != -1) {
-                freshMillis = min(freshMillis, SECONDS.toMillis(requestCaching.maxAgeSeconds.toLong()))
+                freshMillis = minOf(freshMillis, SECONDS.toMillis(requestCaching.maxAgeSeconds.toLong()))
             }
 
             var minFreshMillis = 0L
@@ -188,13 +186,13 @@ internal class CacheStrategy private constructor(
         private fun cacheResponseAge(): Long {
             val servedDate = servedDate
             val apparentReceivedAge = if (servedDate != null) {
-                max(0, receivedResponseMillis - servedDate.time)
+                maxOf(0, receivedResponseMillis - servedDate.time)
             } else {
                 0
             }
 
             val receivedAge = if (ageSeconds != -1) {
-                max(apparentReceivedAge, SECONDS.toMillis(ageSeconds.toLong()))
+                maxOf(apparentReceivedAge, SECONDS.toMillis(ageSeconds.toLong()))
             } else {
                 apparentReceivedAge
             }

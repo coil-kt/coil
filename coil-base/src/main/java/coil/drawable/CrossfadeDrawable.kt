@@ -17,7 +17,6 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DecodeUtils
 import coil.size.Scale
 import coil.util.forEachIndices
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
@@ -258,7 +257,7 @@ class CrossfadeDrawable @JvmOverloads constructor(
 
     private fun computeIntrinsicDimension(startSize: Int?, endSize: Int?): Int {
         if (!preferExactIntrinsicSize && (startSize == -1 || endSize == -1)) return -1
-        return max(startSize ?: -1, endSize ?: -1)
+        return maxOf(startSize ?: -1, endSize ?: -1)
     }
 
     private fun markDone() {

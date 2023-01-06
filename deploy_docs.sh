@@ -12,12 +12,13 @@ cp coil-gif/README.md docs/gifs.md
 cp coil-svg/README.md docs/svgs.md
 cp coil-video/README.md docs/videos.md
 cp logo.svg docs/logo.svg
+cp README-ja.md docs/README-ja.md
 cp README-ko.md docs/README-ko.md
 cp README-tr.md docs/README-tr.md
 cp README-zh.md docs/README-zh.md
 
 # Deploy to Github pages.
-mkdocs gh-deploy
+python3 -m mkdocs gh-deploy
 
 # Clean up.
 rm docs/index.md \
@@ -28,6 +29,7 @@ rm docs/index.md \
    docs/gifs.md \
    docs/svgs.md \
    docs/videos.md \
+   docs/README-ja.md \
    docs/README-ko.md \
    docs/README-tr.md \
    docs/README-zh.md

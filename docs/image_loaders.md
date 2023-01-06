@@ -22,7 +22,7 @@ val imageLoader = ImageLoader.Builder(context)
             .build()
     }
     .diskCache {
-        DiskCache.Builder(context)
+        DiskCache.Builder()
             .directory(context.cacheDir.resolve("image_cache"))
             .maxSizePercent(0.02)
             .build()

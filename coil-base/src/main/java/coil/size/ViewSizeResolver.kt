@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnPreDrawListener
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 /**
  * Create a [ViewSizeResolver] using the default [View] measurement implementation.
@@ -25,6 +25,7 @@ fun <T : View> ViewSizeResolver(
 /**
  * A [SizeResolver] that measures the size of a [View].
  */
+@JvmDefaultWithCompatibility
 interface ViewSizeResolver<T : View> : SizeResolver {
 
     /** The [View] to measure. This field should be immutable. */

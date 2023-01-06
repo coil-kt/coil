@@ -18,6 +18,7 @@ include(
 
 // Private modules
 include(
+    "coil-benchmark",
     "coil-sample-common",
     "coil-sample-compose",
     "coil-sample-view",
