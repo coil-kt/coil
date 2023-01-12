@@ -17,6 +17,10 @@ import coil.request.ImageResult
 import coil.request.NullRequestData
 import coil.request.NullRequestDataException
 import coil.request.SuccessResult
+import java.util.LinkedList
+import java.util.Queue
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -26,10 +30,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.merge
-import java.util.LinkedList
-import java.util.Queue
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoilApi
 class FakeImageLoader private constructor(
