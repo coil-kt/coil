@@ -126,8 +126,8 @@ class BitmapFactoryDecoderTest {
         assumeTrue(SDK_INT >= 30)
 
         // Ensure this completes and doesn't end up in an infinite loop.
-        val normal = context.decodeBitmapAsset("exif/basic.heif")
-        val actual = decodeBitmap("exif/basic.heif", Size.ORIGINAL)
+        val normal = context.decodeBitmapAsset("exif/basic.heic")
+        val actual = decodeBitmap("exif/basic.heic", Size.ORIGINAL)
         normal.assertIsSimilarTo(actual)
     }
 
@@ -328,7 +328,7 @@ class BitmapFactoryDecoderTest {
         // HEIF files are not supported before API 30.
         assumeTrue(SDK_INT >= 30)
 
-        decodeBitmap("large.heif", Size(1080, 1920))
+        decodeBitmap("large.heic", Size(1080, 1920))
     }
 
     private suspend fun decodeBitmap(
