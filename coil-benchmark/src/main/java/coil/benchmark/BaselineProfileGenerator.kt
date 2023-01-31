@@ -44,6 +44,6 @@ class BaselineProfileGenerator {
     private fun newFilterPredicate(): (String) -> Boolean {
         // Only include Compose-specific rules in the coil-compose module.
         val packageName = if (PROJECT == "compose") "coil/compose/" else "coil/"
-        return { line -> packageName in line && "sample/" !in line }
+        return { line -> "sample/" !in line && packageName in line }
     }
 }
