@@ -14,7 +14,7 @@ dokka = "org.jetbrains.dokka:1.7.20"
 ktlint = "org.jmailen.kotlinter:3.13.0"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:7.4.0"
+gradlePlugin-android = "com.android.tools.build:gradle:7.4.1"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.24.0"
 
