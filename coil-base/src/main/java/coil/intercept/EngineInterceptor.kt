@@ -15,6 +15,7 @@ import coil.fetch.DrawableResult
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
+import coil.memory.MemoryCache
 import coil.memory.MemoryCacheService
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -35,7 +36,10 @@ import coil.util.safeConfig
 import coil.util.toDrawable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
 
 /** The last interceptor in the chain which executes the [ImageRequest]. */
 internal class EngineInterceptor(
@@ -43,32 +47,59 @@ internal class EngineInterceptor(
     private val requestService: RequestService,
     private val logger: Logger?,
 ) : Interceptor {
+    val pendingContinuationMap: HashMap<MemoryCache.Key, MutableList<Continuation<Unit>>> = hashMapOf()
 
     private val memoryCacheService = MemoryCacheService(imageLoader, requestService, logger)
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
-        try {
-            val request = chain.request
-            val data = request.data
-            val size = chain.size
-            val eventListener = chain.eventListener
-            val options = requestService.options(request, size)
-            val scale = options.scale
+        val request = chain.request
+        val data = request.data
+        val size = chain.size
+        val eventListener = chain.eventListener
+        val options = requestService.options(request, size)
+        val scale = options.scale
 
-            // Perform any data mapping.
-            eventListener.mapStart(request, data)
-            val mappedData = imageLoader.components.map(data, options)
-            eventListener.mapEnd(request, mappedData)
+        // Perform any data mapping.
+        eventListener.mapStart(request, data)
+        val mappedData = imageLoader.components.map(data, options)
+        eventListener.mapEnd(request, mappedData)
 
-            // Check the memory cache.
-            val cacheKey = memoryCacheService.newCacheKey(request, mappedData, options, eventListener)
-            val cacheValue = cacheKey?.let { memoryCacheService.getCacheValue(request, it, size, scale) }
+        val cacheKey = memoryCacheService.newCacheKey(request, mappedData, options, eventListener)
+        // Check the memory cache.
+        var cacheValue = cacheKey?.let { memoryCacheService.getCacheValue(request, it, size, scale) }
 
-            // Fast path: return the value from the memory cache.
-            if (cacheValue != null) {
-                return memoryCacheService.newResult(chain, request, cacheKey, cacheValue)
+        // Fast path: return the value from the memory cache.
+        if (cacheValue != null) {
+            return memoryCacheService.newResult(chain, request, cacheKey!!, cacheValue)
+        }
+
+        // If a request is to be execute
+        // record its memory key and suspend any other following requests with the same memory key
+        // until execution complete and result is available in memory cache
+        var existPendingContinuations: MutableList<Continuation<Unit>>? = null
+        cacheKey?.let {
+            synchronized(pendingContinuationMap) {
+                existPendingContinuations = pendingContinuationMap[it]
+                if (existPendingContinuations == null) pendingContinuationMap[it] = mutableListOf()
             }
+        }
 
+        existPendingContinuations?.apply {
+            suspendCancellableCoroutine { continuation ->
+                add(continuation)
+                continuation.invokeOnCancellation { remove(continuation) }
+                if (pendingContinuationMap[cacheKey] !== this) continuation.resume(Unit)
+            }
+        }
+
+        // Check memory cache again after pending continuation is resumed
+        cacheValue = cacheKey?.let { memoryCacheService.getCacheValue(request, it, size, scale) }
+
+        if (cacheValue != null) {
+            return memoryCacheService.newResult(chain, request, cacheKey!!, cacheValue)
+        }
+        
+        try {
             // Slow path: fetch, decode, transform, and cache the image.
             return withContext(request.fetcherDispatcher) {
                 // Fetch and decode the image.
@@ -76,6 +107,11 @@ internal class EngineInterceptor(
 
                 // Write the result to the memory cache.
                 val isCached = memoryCacheService.setCacheValue(cacheKey, request, result)
+
+                // Wake all pending continuations shared with the same memory key since we have written it to memory cache
+                synchronized(pendingContinuationMap) {
+                    pendingContinuationMap.remove(cacheKey)?.forEach { it.resume(Unit) }
+                }
 
                 // Return the result.
                 SuccessResult(
@@ -90,8 +126,18 @@ internal class EngineInterceptor(
             }
         } catch (throwable: Throwable) {
             if (throwable is CancellationException) {
+                synchronized(pendingContinuationMap) {
+                    // Wake up a pending continuation to continue executing task
+                    val successor = pendingContinuationMap[cacheKey]?.removeFirstOrNull()?.apply { resume(Unit) }
+                    // if no successor, delete this entry from hashmap
+                    successor ?: pendingContinuationMap.remove(cacheKey)
+                }
                 throw throwable
             } else {
+                // Wake all pending continuations since this request is to be failed
+                synchronized(pendingContinuationMap) {
+                    pendingContinuationMap.remove(cacheKey)?.forEach { it.resume(Unit) }
+                }
                 return requestService.errorResult(chain.request, throwable)
             }
         }
