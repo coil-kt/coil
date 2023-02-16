@@ -9,7 +9,7 @@ okhttp = "4.10.0"
 okio = "3.3.0"
 
 [plugins]
-binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.12.1"
+binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.0"
 dokka = "org.jetbrains.dokka:1.7.20"
 ktlint = "org.jmailen.kotlinter:3.13.0"
 
