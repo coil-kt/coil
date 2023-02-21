@@ -2,6 +2,7 @@ package coil.map
 
 import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.request.Options
@@ -52,6 +53,21 @@ class FileUriMapperTest {
     fun parsesPoundCharacterCorrectly() {
         val path = "/sdcard/fi#le.jpg"
         assertEquals(File(path), mapper.map(path.toUri(), Options(context)))
-        assertEquals(File(path), mapper.map("file://$path".toUri(), Options(context)))
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1513 */
+    @Test
+    fun ignoresAfterPathCorrectly() {
+        val expected = File("/sdcard/file.jpg")
+        val uri = Uri.parse("$SCHEME_FILE:///sdcard/file.jpg?query=value&query2=value#fragment")
+        assertEquals(expected, mapper.map(uri, Options(context)))
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1513 */
+    @Test
+    fun decodesEncodedPath() {
+        val expected = File("/sdcard/Some File.jpg")
+        val uri = Uri.parse("$SCHEME_FILE:///sdcard/Some%20File.jpg")
+        assertEquals(expected, mapper.map(uri, Options(context)))
     }
 }

@@ -198,7 +198,7 @@ interface DiskCache {
             val directory = checkNotNull(directory) { "directory == null" }
             val maxSize = if (maxSizePercent > 0) {
                 try {
-                    val stats = StatFs(directory.toFile().absolutePath)
+                    val stats = StatFs(directory.toFile().apply { mkdir() }.absolutePath)
                     val size = maxSizePercent * stats.blockCountLong * stats.blockSizeLong
                     size.toLong().coerceIn(minimumMaxSizeBytes, maximumMaxSizeBytes)
                 } catch (_: Exception) {

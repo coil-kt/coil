@@ -11,8 +11,13 @@ internal class FileUriMapper : Mapper<Uri, File> {
 
     override fun map(data: Uri, options: Options): File? {
         if (!isApplicable(data)) return null
-        val uri = if (data.scheme == null) data else data.buildUpon().scheme(null).build()
-        return File(uri.toString())
+        if (data.scheme == SCHEME_FILE) {
+            return data.path?.let(::File)
+        } else {
+            // If the scheme is not "file", it's null, representing a literal path on disk.
+            // Assume the entire input, regardless of any reserved characters, is valid.
+            return File(data.toString())
+        }
     }
 
     private fun isApplicable(data: Uri): Boolean {

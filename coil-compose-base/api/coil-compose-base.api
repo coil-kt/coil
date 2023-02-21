@@ -4,6 +4,7 @@ public final class coil/compose/AsyncImageKt {
 }
 
 public final class coil/compose/AsyncImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
+	public static final field $stable I
 	public static final field Companion Lcoil/compose/AsyncImagePainter$Companion;
 	public final fun getImageLoader ()Lcoil/ImageLoader;
 	public fun getIntrinsicSize-NH-jbRc ()J
