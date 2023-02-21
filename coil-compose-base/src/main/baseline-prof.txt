@@ -266,7 +266,7 @@ HPLcoil/compose/CrossfadePainter;->drawPainter(Landroidx/compose/ui/graphics/dra
 HSPLcoil/compose/CrossfadePainter;->getColorFilter()Landroidx/compose/ui/graphics/ColorFilter;
 HPLcoil/compose/CrossfadePainter;->getColorFilter()Landroidx/compose/ui/graphics/ColorFilter;
 HSPLcoil/compose/CrossfadePainter;->getIntrinsicSize-NH-jbRc()J
-HPLcoil/compose/CrossfadePainter;->getIntrinsicSize-NH-jbRc()J
+PLcoil/compose/CrossfadePainter;->getIntrinsicSize-NH-jbRc()J
 HSPLcoil/compose/CrossfadePainter;->getInvalidateTick()I
 HPLcoil/compose/CrossfadePainter;->getInvalidateTick()I
 HSPLcoil/compose/CrossfadePainter;->getMaxAlpha()F
