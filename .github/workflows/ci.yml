@@ -30,7 +30,7 @@ jobs:
               uses: gradle/wrapper-validation-action@v1
 
             - name: Check style
-              run: ./gradlew lintKotlin || { exit_code=$?; printf "*** Run './gradlew formatKotlin' to fix the style issues. ***"; exit $exit_code; }
+              run: ./gradlew spotlessCheck
 
             - name: Check lint
               run: ./gradlew lint
