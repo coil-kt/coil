@@ -92,6 +92,17 @@ allprojects {
         }
     }
 
+    dependencies {
+        modules {
+            module("org.jetbrains.kotlin:kotlin-stdlib-jdk7") {
+                replacedBy("org.jetbrains.kotlin:kotlin-stdlib")
+            }
+            module("org.jetbrains.kotlin:kotlin-stdlib-jdk8") {
+                replacedBy("org.jetbrains.kotlin:kotlin-stdlib")
+            }
+        }
+    }
+
     // Uninstall test APKs after running instrumentation tests.
     tasks.whenTaskAdded {
         if (name == "connectedDebugAndroidTest") {
