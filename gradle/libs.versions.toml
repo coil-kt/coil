@@ -10,7 +10,7 @@ okio = "3.3.0"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.0"
-dokka = "org.jetbrains.dokka:1.7.20"
+dokka = "org.jetbrains.dokka:1.8.10"
 spotless = "com.diffplug.spotless:6.16.0"
 
 [libraries]
