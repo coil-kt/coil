@@ -7,6 +7,15 @@ public final class coil/CompositeQueueEngine : coil/FakeImageLoader$Engine {
 	public fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class coil/FakeImageEngine : coil/intercept/Interceptor {
+	public fun <init> ()V
+	public final fun default (Lcoil/FakeImageLoader$Engine;)Lcoil/FakeImageEngine;
+	public final fun enqueue (Ljava/lang/Object;Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;)Lcoil/FakeImageEngine;
+	public final fun enqueue (Ljava/lang/Object;Lcoil/FakeImageLoader$Engine;)Lcoil/FakeImageEngine;
+	public static synthetic fun enqueue$default (Lcoil/FakeImageEngine;Ljava/lang/Object;Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;ILjava/lang/Object;)Lcoil/FakeImageEngine;
+	public fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class coil/FakeImageLoader : coil/ImageLoader {
 	public synthetic fun <init> (Lkotlin/coroutines/CoroutineContext;Lcoil/request/DefaultRequestOptions;Lcoil/ComponentRegistry;Lcoil/memory/MemoryCache;Lcoil/disk/DiskCache;Lcoil/FakeImageLoader$Engine;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun assertNotShutdown ()V
