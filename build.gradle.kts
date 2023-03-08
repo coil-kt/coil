@@ -2,10 +2,10 @@ import coil.by
 import coil.groupId
 import coil.versionName
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import java.net.URL
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import java.net.URL
 
 buildscript {
     repositories {
@@ -17,14 +17,6 @@ buildscript {
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
     }
-
-    configurations.classpath {
-        resolutionStrategy.eachDependency {
-            when (requested.group) {
-                libs.ktlint.get().module.group -> useVersion(libs.versions.ktlint.get())
-            }
-        }
-    }
 }
 
 // https://youtrack.jetbrains.com/issue/KTIJ-19369
@@ -32,7 +24,7 @@ buildscript {
 plugins {
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.dokka)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.spotless)
 }
 
 extensions.configure<ApiValidationExtension> {
@@ -57,19 +49,13 @@ allprojects {
     group = project.groupId
     version = project.versionName
 
-    apply(plugin = "org.jmailen.kotlinter")
+    apply(plugin = "com.diffplug.spotless")
 
-    kotlinter {
-        disabledRules = arrayOf(
-            "annotation",
-            "argument-list-wrapping",
-            "filename",
-            "indent",
-            "max-line-length",
-            "parameter-list-wrapping",
-            "spacing-between-declarations-with-annotations",
-            "wrapping",
-        )
+    spotless {
+        kotlin {
+            target("**/*.kt", "**/*.kts")
+            ktlint(libs.ktlint.get().version)
+        }
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
@@ -103,6 +89,17 @@ allprojects {
             publishToMavenCentral()
             signAllPublications()
             pomFromGradleProperties()
+        }
+    }
+
+    dependencies {
+        modules {
+            module("org.jetbrains.kotlin:kotlin-stdlib-jdk7") {
+                replacedBy("org.jetbrains.kotlin:kotlin-stdlib")
+            }
+            module("org.jetbrains.kotlin:kotlin-stdlib-jdk8") {
+                replacedBy("org.jetbrains.kotlin:kotlin-stdlib")
+            }
         }
     }
 

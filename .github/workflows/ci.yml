@@ -5,13 +5,13 @@ on:
             - main
     pull_request:
 env:
-    CACHE_VERSION: 1 # Increment this to invalidate the cache.
+    CACHE_VERSION: 2 # Increment this to invalidate the cache.
     JAVA_VERSION: 19
 jobs:
     checks:
         name: Checks
         runs-on: ubuntu-latest
-        timeout-minutes: 10
+        timeout-minutes: 20
         steps:
             - uses: actions/checkout@v3
             - uses: actions/setup-java@v3
@@ -30,13 +30,16 @@ jobs:
               uses: gradle/wrapper-validation-action@v1
 
             - name: Check style
-              run: ./gradlew lintKotlin || { exit_code=$?; printf "*** Run './gradlew formatKotlin' to fix the style issues. ***"; exit $exit_code; }
+              run: ./gradlew spotlessCheck
 
             - name: Check lint
               run: ./gradlew lint
 
             - name: Check binary compatibility
               run: ./gradlew apiCheck || { exit_code=$?; printf "*** This PR changes Coil's public API. If this change is intentional, run './gradlew apiDump' and commit the new API files. ***"; exit $exit_code; }
+
+            - name: Check assemble
+              run: ./gradlew assemble
 
     unit-tests:
         name: Unit tests
@@ -110,6 +113,7 @@ jobs:
                   force-avd-creation: false
                   ram-size: 4096M
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+                  emulator-build: 9475343 # https://dl.google.com/android/repository/repository2-3.xml
                   script: echo "Generated AVD snapshot."
 
             - name: Instrumentation tests
@@ -122,6 +126,7 @@ jobs:
                   force-avd-creation: false
                   ram-size: 4096M
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+                  emulator-build: 9475343 # https://dl.google.com/android/repository/repository2-3.xml
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
