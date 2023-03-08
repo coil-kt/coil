@@ -55,6 +55,9 @@ allprojects {
         kotlin {
             target("**/*.kt", "**/*.kts")
             ktlint(libs.ktlint.get().version)
+            endWithNewline()
+            indentWithSpaces()
+            trimTrailingWhitespace()
         }
     }
 
