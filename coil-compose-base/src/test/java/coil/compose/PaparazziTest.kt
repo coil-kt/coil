@@ -4,6 +4,7 @@ import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_6
 import app.cash.paparazzi.Paparazzi
 import coil.ImageLoader
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -12,9 +13,14 @@ class PaparazziTest {
     @get:Rule
     val paparazzi = Paparazzi(
         deviceConfig = PIXEL_6,
-        theme = "android:Theme.Material.Light.NoActionBar",
+        showSystemUi = false,
     )
-    val imageLoader = ImageLoader(paparazzi.context)
+    lateinit var imageLoader: ImageLoader
+
+    @Before
+    fun before() {
+        imageLoader = ImageLoader(paparazzi.context)
+    }
 
     @After
     fun after() {
@@ -25,7 +31,7 @@ class PaparazziTest {
     fun asyncImage() {
         paparazzi.snapshot {
             AsyncImage(
-                model = null,
+                model = "https://example.com/image.jpg",
                 contentDescription = null,
                 imageLoader = imageLoader,
             )
