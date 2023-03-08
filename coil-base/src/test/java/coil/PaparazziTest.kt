@@ -14,6 +14,7 @@ class PaparazziTest {
     @get:Rule
     val paparazzi = Paparazzi(
         deviceConfig = PIXEL_6,
+        theme = "android:Theme.Material.Light.NoActionBar.Fullscreen",
         showSystemUi = false,
     )
     lateinit var imageLoader: ImageLoader
