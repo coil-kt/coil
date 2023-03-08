@@ -17,6 +17,7 @@ spotless = "com.diffplug.spotless:6.16.0"
 gradlePlugin-android = "com.android.tools.build:gradle:7.4.2"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.24.0"
+gradlePlugin-paparazzi = "app.cash.paparazzi:paparazzi-gradle-plugin:1.2.0"
 
 accompanist-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.28.0"
 

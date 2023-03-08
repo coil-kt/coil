@@ -16,6 +16,7 @@ buildscript {
         classpath(libs.gradlePlugin.android)
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
+        classpath(libs.gradlePlugin.paparazzi)
     }
 }
 
