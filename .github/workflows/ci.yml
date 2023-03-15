@@ -104,7 +104,7 @@ jobs:
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
               if: steps.avd-cache.outputs.cache-hit != 'true'
-              uses: reactivecircus/android-emulator-runner@743ec40
+              uses: reactivecircus/android-emulator-runner@743ec40c5b752113b0a597cc07f6354cc4284c16
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: ${{ steps.avd-info.outputs.arch }}
@@ -112,12 +112,12 @@ jobs:
                   disable-animations: false
                   force-avd-creation: false
                   ram-size: 4096M
-                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   emulator-boot-timeout: 12000
+                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                   script: echo "Generated AVD snapshot."
 
             - name: Instrumentation tests
-              uses: reactivecircus/android-emulator-runner@743ec40
+              uses: reactivecircus/android-emulator-runner@743ec40c5b752113b0a597cc07f6354cc4284c16
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: ${{ steps.avd-info.outputs.arch }}
@@ -125,8 +125,8 @@ jobs:
                   disable-animations: true
                   force-avd-creation: false
                   ram-size: 4096M
-                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
                   emulator-boot-timeout: 12000
+                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
