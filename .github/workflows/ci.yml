@@ -65,7 +65,7 @@ jobs:
     instrumentation-tests:
         name: Instrumentation tests
         runs-on: macOS-latest
-        timeout-minutes: 30
+        timeout-minutes: 45
         strategy:
             fail-fast: true
             matrix:
@@ -104,7 +104,7 @@ jobs:
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
               if: steps.avd-cache.outputs.cache-hit != 'true'
-              uses: reactivecircus/android-emulator-runner@v2
+              uses: reactivecircus/android-emulator-runner@743ec40
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: ${{ steps.avd-info.outputs.arch }}
@@ -113,11 +113,11 @@ jobs:
                   force-avd-creation: false
                   ram-size: 4096M
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                  emulator-build: 9475343 # https://dl.google.com/android/repository/repository2-3.xml
+                  emulator-boot-timeout: 12000
                   script: echo "Generated AVD snapshot."
 
             - name: Instrumentation tests
-              uses: reactivecircus/android-emulator-runner@v2
+              uses: reactivecircus/android-emulator-runner@743ec40
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: ${{ steps.avd-info.outputs.arch }}
@@ -126,7 +126,7 @@ jobs:
                   force-avd-creation: false
                   ram-size: 4096M
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-                  emulator-build: 9475343 # https://dl.google.com/android/repository/repository2-3.xml
+                  emulator-boot-timeout: 12000
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
