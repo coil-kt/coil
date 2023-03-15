@@ -33,7 +33,7 @@ class LifecyclesTest {
     @Test
     fun `does not observe if already started`() = runTest(testDispatcher) {
         val lifecycle = object : Lifecycle() {
-            override fun getCurrentState() = State.STARTED
+            override val currentState get() = State.STARTED
             override fun addObserver(observer: LifecycleObserver) = fail("Should not observe.")
             override fun removeObserver(observer: LifecycleObserver) = fail("Should not observe.")
         }
