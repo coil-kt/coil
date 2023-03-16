@@ -112,11 +112,4 @@ allprojects {
             finalizedBy("uninstallDebugAndroidTest")
         }
     }
-
-    // Work-around: https://issuetracker.google.com/issues/226095015
-    plugins.withType(com.android.build.gradle.LibraryPlugin::class).configureEach {
-        Class.forName("com.android.tools.analytics.AnalyticsSettings")
-            .getMethod("setOptedIn", Boolean::class.java)
-            .invoke(null, false)
-    }
 }
