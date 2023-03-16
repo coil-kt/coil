@@ -20,7 +20,7 @@ buildscript {
 }
 
 // https://youtrack.jetbrains.com/issue/KTIJ-19369
-@Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.dokka)
@@ -64,6 +64,7 @@ allprojects {
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
             jdkVersion by 8
+            failOnWarning by true
             skipDeprecated by true
             suppressInheritedMembers by true
 
@@ -85,9 +86,6 @@ allprojects {
     }
 
     plugins.withId("com.vanniktech.maven.publish.base") {
-        group = project.groupId
-        version = project.versionName
-
         extensions.configure<MavenPublishBaseExtension> {
             publishToMavenCentral()
             signAllPublications()
