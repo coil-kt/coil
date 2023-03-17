@@ -10,6 +10,7 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
 import coil.ImageLoader
+import coil.transition.Transition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -40,6 +41,9 @@ class FakeImageLoaderEngine : Interceptor {
     private var fallbackInterceptor = Interceptor { chain ->
         error("No interceptors handled this request and no fallback is set: ${chain.request.data}")
     }
+    private var requestTransformer = RequestTransformer { request ->
+        request.newBuilder().transitionFactory(Transition.Factory.NONE).build()
+    }
 
     /** Returns the list of [OptionalInterceptor]s. */
     val interceptors: List<OptionalInterceptor> get() = _interceptors.toList()
@@ -51,7 +55,7 @@ class FakeImageLoaderEngine : Interceptor {
     val results: Flow<ResultValue> get() = _results.asSharedFlow()
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
-        val request = RequestValue(chain.request, chain.size)
+        val request = RequestValue(requestTransformer.transform(chain.request), chain.size)
         _requests.emit(request)
 
         var result: ImageResult? = null
@@ -88,6 +92,17 @@ class FakeImageLoaderEngine : Interceptor {
         fallbackInterceptor = interceptor
     }
 
+    /**
+     * Set a callback to modify an incoming [ImageRequest] before it's handled by
+     * the [interceptors].
+     *
+     * By default, [FakeImageLoaderEngine] uses this callback to clear an [ImageRequest]'s
+     * transition and setting this callback replaces that behaviour.
+     */
+    fun setRequestTransformer(transformer: RequestTransformer) {
+        requestTransformer = transformer
+    }
+
     data class RequestValue(
         val request: ImageRequest,
         val size: Size,
@@ -104,6 +119,13 @@ class FakeImageLoaderEngine : Interceptor {
      */
     fun interface OptionalInterceptor {
         suspend fun intercept(chain: Interceptor.Chain): ImageResult?
+    }
+
+    /**
+     * A callback to support modifying an [ImageRequest] before it's handled.
+     */
+    fun interface RequestTransformer {
+        suspend fun transform(request: ImageRequest): ImageRequest
     }
 }
 
