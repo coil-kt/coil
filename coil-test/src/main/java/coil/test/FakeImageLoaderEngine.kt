@@ -135,8 +135,8 @@ fun FakeImageLoaderEngine.set(
 fun FakeImageLoaderEngine.set(
     predicate: (data: Any) -> Boolean,
     interceptor: Interceptor,
-) {
-    addInterceptor { if (predicate(it)) interceptor.intercept(it) else null }
+) = addInterceptor { chain ->
+    if (predicate(chain.request.data)) interceptor.intercept(chain) else null
 }
 
 /**
