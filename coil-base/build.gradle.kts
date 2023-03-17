@@ -24,9 +24,6 @@ dependencies {
     testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
 
-    // https://github.com/cashapp/paparazzi/issues/686
-    testImplementation("androidx.savedstate:savedstate:1.2.0")
-
     androidTestImplementation(projects.coilTestInternal)
     androidTestImplementation(libs.bundles.test.android)
 }
