@@ -10,9 +10,9 @@ import androidx.core.graphics.component2
 import androidx.core.graphics.component3
 import androidx.core.graphics.component4
 import androidx.test.core.app.ApplicationProvider
-import coil.test.R
 import coil.size.Scale
 import coil.size.Size
+import coil.test.R
 import kotlin.test.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
