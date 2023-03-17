@@ -144,6 +144,6 @@ fun FakeImageLoaderEngine.set(
  * If a fallback is not set, any requests not handled by an [OptionalInterceptor] will throw an
  * exception.
  */
-fun FakeImageLoaderEngine.setFallback(drawable: Drawable) {
-    setFallback { imageResultOf(drawable, it.request) }
+fun FakeImageLoaderEngine.setFallback(drawable: Drawable) = setFallback { chain ->
+    imageResultOf(drawable, chain.request)
 }
