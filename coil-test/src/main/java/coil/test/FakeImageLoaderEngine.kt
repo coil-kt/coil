@@ -1,16 +1,15 @@
 @file:JvmName("FakeImageLoaderInterceptors")
 
-package coil
+package coil.test
 
 import android.graphics.drawable.Drawable
-import coil.FakeImageLoaderEngine.OptionalInterceptor
+import coil.test.FakeImageLoaderEngine.OptionalInterceptor
 import coil.annotation.ExperimentalCoilApi
-import coil.decode.DataSource
 import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
-import coil.request.SuccessResult
 import coil.size.Size
+import coil.ImageLoader
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -148,9 +147,3 @@ fun FakeImageLoaderEngine.set(
 fun FakeImageLoaderEngine.setFallback(drawable: Drawable) {
     setFallback { imageResultOf(drawable, it.request) }
 }
-
-private fun imageResultOf(drawable: Drawable, request: ImageRequest) = SuccessResult(
-    drawable = drawable,
-    request = request,
-    dataSource = DataSource.MEMORY,
-)
