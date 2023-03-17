@@ -118,6 +118,7 @@ All `ImageLoader`s support the following non-animated file types:
 * PNG
 * WebP
 * HEIF (Android 8.0+)
+* AVIF (Android 12.0+)
 
 Additionally, Coil has extension libraries for the following file types:
 

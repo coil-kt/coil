@@ -132,6 +132,17 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
+    fun avif() = runTest {
+        // AVIF files are not supported before API 31.
+        assumeTrue(SDK_INT >= 31)
+
+        // Ensure this completes and doesn't end up in an infinite loop.
+        val normal = context.decodeBitmapAsset("kimono.avif")
+        val actual = decodeBitmap("kimono.avif", Size.ORIGINAL)
+        normal.assertIsSimilarTo(actual)
+    }
+
+    @Test
     fun allowInexactSize_true() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
