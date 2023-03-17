@@ -18,8 +18,8 @@ class FakeImageLoaderInterceptor : Interceptor {
     private val _interceptors = mutableListOf<OptionalInterceptor>()
     private val _requests = MutableSharedFlow<RequestValue>()
     private val _results = MutableSharedFlow<ResultValue>()
-    private var defaultResultFactory: (Interceptor.Chain) -> ImageResult = {
-        error("No interceptors handled this request and no default is set: ${it.request.data}")
+    private var fallbackInterceptor = Interceptor { chain ->
+        error("No interceptors handled this request and no fallback is set: ${chain.request.data}")
     }
 
     /** Returns the list of [OptionalInterceptor]s. */
@@ -41,7 +41,7 @@ class FakeImageLoaderInterceptor : Interceptor {
             if (result != null) break
         }
         if (result == null) {
-            result = defaultResultFactory(chain)
+            result = fallbackInterceptor.intercept(chain)
         }
 
         _results.emit(ResultValue(request, result))
@@ -60,8 +60,8 @@ class FakeImageLoaderInterceptor : Interceptor {
         _interceptors -= interceptor
     }
 
-    fun setDefault(resultFactory: (Interceptor.Chain) -> ImageResult) {
-        defaultResultFactory = resultFactory
+    fun setFallback(interceptor: Interceptor) {
+        fallbackInterceptor = interceptor
     }
 
     class RequestValue(
@@ -80,24 +80,24 @@ class FakeImageLoaderInterceptor : Interceptor {
 }
 
 fun FakeImageLoaderInterceptor.set(data: Any, drawable: Drawable) = set(
-    dataPredicate = { it == data },
+    predicate = { it == data },
     drawable = drawable,
 )
 
-fun FakeImageLoaderInterceptor.set(dataPredicate: (Any) -> Boolean, drawable: Drawable) = set(
-    dataPredicate = dataPredicate,
-    resultFactory = { imageResultOf(drawable, it.request) },
+fun FakeImageLoaderInterceptor.set(predicate: (Any) -> Boolean, drawable: Drawable) = set(
+    predicate = predicate,
+    interceptor = { imageResultOf(drawable, it.request) },
 )
 
 fun FakeImageLoaderInterceptor.set(
-    dataPredicate: (Any) -> Boolean,
-    resultFactory: (Interceptor.Chain) -> ImageResult,
+    predicate: (Any) -> Boolean,
+    interceptor: Interceptor,
 ) {
-    addInterceptor { if (dataPredicate(it)) resultFactory(it) else null }
+    addInterceptor { if (predicate(it)) interceptor.intercept(it) else null }
 }
 
-fun FakeImageLoaderInterceptor.setDefault(drawable: Drawable) {
-    setDefault { imageResultOf(drawable, it.request) }
+fun FakeImageLoaderInterceptor.setFallback(drawable: Drawable) {
+    setFallback { imageResultOf(drawable, it.request) }
 }
 
 private fun imageResultOf(drawable: Drawable, request: ImageRequest) = SuccessResult(

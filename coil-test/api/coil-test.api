@@ -58,7 +58,7 @@ public final class coil/FakeImageLoaderInterceptor : coil/intercept/Interceptor 
 	public final fun getResults ()Lkotlinx/coroutines/flow/Flow;
 	public fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun removeInterceptor (Lcoil/FakeImageLoaderInterceptor$OptionalInterceptor;)V
-	public final fun setDefault (Lkotlin/jvm/functions/Function1;)V
+	public final fun setFallback (Lcoil/intercept/Interceptor;)V
 }
 
 public abstract interface class coil/FakeImageLoaderInterceptor$OptionalInterceptor {
@@ -80,8 +80,8 @@ public final class coil/FakeImageLoaderInterceptor$ResultValue {
 public final class coil/FakeImageLoaderInterceptorKt {
 	public static final fun set (Lcoil/FakeImageLoaderInterceptor;Ljava/lang/Object;Landroid/graphics/drawable/Drawable;)V
 	public static final fun set (Lcoil/FakeImageLoaderInterceptor;Lkotlin/jvm/functions/Function1;Landroid/graphics/drawable/Drawable;)V
-	public static final fun set (Lcoil/FakeImageLoaderInterceptor;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
-	public static final fun setDefault (Lcoil/FakeImageLoaderInterceptor;Landroid/graphics/drawable/Drawable;)V
+	public static final fun set (Lcoil/FakeImageLoaderInterceptor;Lkotlin/jvm/functions/Function1;Lcoil/intercept/Interceptor;)V
+	public static final fun setFallback (Lcoil/FakeImageLoaderInterceptor;Landroid/graphics/drawable/Drawable;)V
 }
 
 public final class coil/FakeImageLoaders {
