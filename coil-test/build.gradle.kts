@@ -5,13 +5,12 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(name = "coil.fakeimageloader", publish = true)
+setupLibraryModule(name = "coil.test", publish = true)
 
 dependencies {
     api(projects.coilBase)
 
     implementation(libs.androidx.core)
-    implementation(libs.okio.fakefilesystem)
 
     testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
