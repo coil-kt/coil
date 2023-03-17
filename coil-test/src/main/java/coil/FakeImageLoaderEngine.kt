@@ -3,6 +3,7 @@
 package coil
 
 import android.graphics.drawable.Drawable
+import coil.FakeImageLoaderEngine.OptionalInterceptor
 import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.intercept.Interceptor
@@ -14,8 +15,25 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
+/**
+ * An [ImageLoader] interceptor that intercepts all incoming requests before they're fetched
+ * and decoded by the image loader's real image engine. This class is useful for overriding
+ * an image loader's responses in tests:
+ *
+ * ```
+ * val engine = FakeImageLoaderEngine()
+ * engine.set("https://example.com/image.jpg", testDrawable)
+ * engine.set({ it is String && it.endsWith("test.png") }, testDrawable)
+ * engine.setFallback(ColorDrawable(Color.BLACK))
+ *
+ * val imageLoader = ImageLoader.Builder(context)
+ *     .components { add(engine) }
+ *     .build()
+ * Coil.setImageLoader(imageLoader)
+ * ```
+ */
 @ExperimentalCoilApi
-class FakeImageLoaderInterceptor : Interceptor {
+class FakeImageLoaderEngine : Interceptor {
 
     private val _interceptors = mutableListOf<OptionalInterceptor>()
     private val _requests = MutableSharedFlow<RequestValue>()
@@ -62,6 +80,11 @@ class FakeImageLoaderInterceptor : Interceptor {
         _interceptors -= interceptor
     }
 
+    /**
+     * Set the fallback [Interceptor] that will be called if no [OptionalInterceptor]s
+     * handle the request. If a fallback is not set, any requests not handled by an
+     * [OptionalInterceptor] will throw an exception.
+     */
     fun setFallback(interceptor: Interceptor) {
         fallbackInterceptor = interceptor
     }
@@ -76,29 +99,53 @@ class FakeImageLoaderInterceptor : Interceptor {
         val result: ImageResult,
     )
 
+    /**
+     * An [Interceptor] that supports returning 'null' to delegate to the next
+     * [OptionalInterceptor] in the list.
+     */
     fun interface OptionalInterceptor {
         suspend fun intercept(chain: Interceptor.Chain): ImageResult?
     }
 }
 
-fun FakeImageLoaderInterceptor.set(data: Any, drawable: Drawable) = set(
+/**
+ * Set a [Drawable] that will be returned if [data] equals an incoming [ImageRequest]'s data.
+ */
+fun FakeImageLoaderEngine.set(
+    data: Any,
+    drawable: Drawable,
+) = set(
     predicate = { it == data },
     drawable = drawable,
 )
 
-fun FakeImageLoaderInterceptor.set(predicate: (Any) -> Boolean, drawable: Drawable) = set(
+/**
+ * Set a [Drawable] that will be returned if [predicate] returns `true`.
+ */
+fun FakeImageLoaderEngine.set(
+    predicate: (data: Any) -> Boolean,
+    drawable: Drawable,
+) = set(
     predicate = predicate,
     interceptor = { imageResultOf(drawable, it.request) },
 )
 
-fun FakeImageLoaderInterceptor.set(
-    predicate: (Any) -> Boolean,
+/**
+ * Set an [Interceptor] that will be called if [predicate] returns `true`.
+ */
+fun FakeImageLoaderEngine.set(
+    predicate: (data: Any) -> Boolean,
     interceptor: Interceptor,
 ) {
     addInterceptor { if (predicate(it)) interceptor.intercept(it) else null }
 }
 
-fun FakeImageLoaderInterceptor.setFallback(drawable: Drawable) {
+/**
+ * Set a fallback [Drawable] that will be returned if no [OptionalInterceptor]s handle the request.
+ * If a fallback is not set, any requests not handled by an [OptionalInterceptor] will throw an
+ * exception.
+ */
+fun FakeImageLoaderEngine.setFallback(drawable: Drawable) {
     setFallback { imageResultOf(drawable, it.request) }
 }
 
