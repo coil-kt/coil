@@ -51,7 +51,7 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 
 junit = "junit:junit:4.13.2"
 
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
 ktlint = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
