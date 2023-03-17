@@ -1,3 +1,5 @@
+@file:JvmName("FakeImageLoaderInterceptors")
+
 package coil
 
 import android.graphics.drawable.Drawable
