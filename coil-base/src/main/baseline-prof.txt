@@ -248,7 +248,7 @@ PLcoil/decode/BitmapFactoryDecoder$ExceptionCatchingSource;-><init>(Lokio/Source
 HSPLcoil/decode/BitmapFactoryDecoder$ExceptionCatchingSource;->getException()Ljava/lang/Exception;
 PLcoil/decode/BitmapFactoryDecoder$ExceptionCatchingSource;->getException()Ljava/lang/Exception;
 HSPLcoil/decode/BitmapFactoryDecoder$ExceptionCatchingSource;->read(Lokio/Buffer;J)J
-PLcoil/decode/BitmapFactoryDecoder$ExceptionCatchingSource;->read(Lokio/Buffer;J)J
+HPLcoil/decode/BitmapFactoryDecoder$ExceptionCatchingSource;->read(Lokio/Buffer;J)J
 Lcoil/decode/BitmapFactoryDecoder$Factory;
 HSPLcoil/decode/BitmapFactoryDecoder$Factory;-><init>(ILcoil/decode/ExifOrientationPolicy;)V
 PLcoil/decode/BitmapFactoryDecoder$Factory;-><init>(ILcoil/decode/ExifOrientationPolicy;)V
@@ -490,7 +490,7 @@ PLcoil/disk/DiskLruCache$Entry;->getCleanFiles()Ljava/util/ArrayList;
 HSPLcoil/disk/DiskLruCache$Entry;->getCurrentEditor()Lcoil/disk/DiskLruCache$Editor;
 PLcoil/disk/DiskLruCache$Entry;->getCurrentEditor()Lcoil/disk/DiskLruCache$Editor;
 HSPLcoil/disk/DiskLruCache$Entry;->getDirtyFiles()Ljava/util/ArrayList;
-PLcoil/disk/DiskLruCache$Entry;->getDirtyFiles()Ljava/util/ArrayList;
+HPLcoil/disk/DiskLruCache$Entry;->getDirtyFiles()Ljava/util/ArrayList;
 HSPLcoil/disk/DiskLruCache$Entry;->getKey()Ljava/lang/String;
 PLcoil/disk/DiskLruCache$Entry;->getKey()Ljava/lang/String;
 HSPLcoil/disk/DiskLruCache$Entry;->getLengths()[J
@@ -800,7 +800,7 @@ Lcoil/intercept/RealInterceptorChain$proceed$1;
 HSPLcoil/intercept/RealInterceptorChain$proceed$1;-><init>(Lcoil/intercept/RealInterceptorChain;Lkotlin/coroutines/Continuation;)V
 HPLcoil/intercept/RealInterceptorChain$proceed$1;-><init>(Lcoil/intercept/RealInterceptorChain;Lkotlin/coroutines/Continuation;)V
 HSPLcoil/intercept/RealInterceptorChain$proceed$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
-PLcoil/intercept/RealInterceptorChain$proceed$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
+HPLcoil/intercept/RealInterceptorChain$proceed$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil/key/FileKeyer;
 HSPLcoil/key/FileKeyer;-><init>(Z)V
 PLcoil/key/FileKeyer;-><init>(Z)V
@@ -1017,6 +1017,7 @@ HSPLcoil/network/RealNetworkObserver$networkCallback$1;-><init>(Lcoil/network/Re
 PLcoil/network/RealNetworkObserver$networkCallback$1;-><init>(Lcoil/network/RealNetworkObserver;)V
 HSPLcoil/network/RealNetworkObserver$networkCallback$1;->onAvailable(Landroid/net/Network;)V
 PLcoil/network/RealNetworkObserver$networkCallback$1;->onAvailable(Landroid/net/Network;)V
+PLcoil/network/RealNetworkObserver$networkCallback$1;->onLost(Landroid/net/Network;)V
 Lcoil/request/CachePolicy;
 HSPLcoil/request/CachePolicy;->$values()[Lcoil/request/CachePolicy;
 PLcoil/request/CachePolicy;->$values()[Lcoil/request/CachePolicy;
@@ -1347,6 +1348,7 @@ HPLcoil/request/ViewTargetRequestDelegate;->assertActive()V
 HSPLcoil/request/ViewTargetRequestDelegate;->complete()V
 HPLcoil/request/ViewTargetRequestDelegate;->complete()V
 HSPLcoil/request/ViewTargetRequestDelegate;->dispose()V
+HPLcoil/request/ViewTargetRequestDelegate;->dispose()V
 HSPLcoil/request/ViewTargetRequestDelegate;->onCreate(Landroidx/lifecycle/LifecycleOwner;)V
 HPLcoil/request/ViewTargetRequestDelegate;->onCreate(Landroidx/lifecycle/LifecycleOwner;)V
 HPLcoil/request/ViewTargetRequestDelegate;->onDestroy(Landroidx/lifecycle/LifecycleOwner;)V
@@ -1494,7 +1496,7 @@ Lcoil/target/Target;
 Lcoil/target/ViewTarget;
 Lcoil/transition/CrossfadeTransition;
 HSPLcoil/transition/CrossfadeTransition;-><init>(Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZ)V
-HPLcoil/transition/CrossfadeTransition;-><init>(Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZ)V
+PLcoil/transition/CrossfadeTransition;-><init>(Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZ)V
 HSPLcoil/transition/CrossfadeTransition;->transition()V
 HPLcoil/transition/CrossfadeTransition;->transition()V
 Lcoil/transition/CrossfadeTransition$Factory;
@@ -1606,12 +1608,6 @@ PLcoil/util/-Utils$WhenMappings;-><clinit>()V
 Lcoil/util/ContinuationCallback;
 HSPLcoil/util/ContinuationCallback;-><init>(Lokhttp3/Call;Lkotlinx/coroutines/CancellableContinuation;)V
 PLcoil/util/ContinuationCallback;-><init>(Lokhttp3/Call;Lkotlinx/coroutines/CancellableContinuation;)V
-HSPLcoil/util/ContinuationCallback;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
-PLcoil/util/ContinuationCallback;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
-HSPLcoil/util/ContinuationCallback;->invoke(Ljava/lang/Throwable;)V
-PLcoil/util/ContinuationCallback;->invoke(Ljava/lang/Throwable;)V
-HSPLcoil/util/ContinuationCallback;->onFailure(Lokhttp3/Call;Ljava/io/IOException;)V
-PLcoil/util/ContinuationCallback;->onFailure(Lokhttp3/Call;Ljava/io/IOException;)V
 HSPLcoil/util/ContinuationCallback;->onResponse(Lokhttp3/Call;Lokhttp3/Response;)V
 HPLcoil/util/ContinuationCallback;->onResponse(Lokhttp3/Call;Lokhttp3/Response;)V
 Lcoil/util/HardwareBitmapService;
