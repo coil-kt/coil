@@ -99,7 +99,7 @@ See the docs [here](../api/coil-singleton/coil/) for more information.
 
 The base data types that are supported by all `ImageLoader` instances are:
 
-* String (mapped to a Uri)
+* String
 * HttpUrl
 * Uri (`android.resource`, `content`, `file`, `http`, and `https` schemes)
 * File
