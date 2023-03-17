@@ -49,6 +49,41 @@ public abstract interface class coil/FakeImageLoader$Engine {
 	public abstract fun execute (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class coil/FakeImageLoaderInterceptor : coil/intercept/Interceptor {
+	public fun <init> ()V
+	public final fun addInterceptor (ILcoil/FakeImageLoaderInterceptor$OptionalInterceptor;)V
+	public final fun addInterceptor (Lcoil/FakeImageLoaderInterceptor$OptionalInterceptor;)V
+	public final fun getInterceptors ()Ljava/util/List;
+	public final fun getRequests ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getResults ()Lkotlinx/coroutines/flow/Flow;
+	public fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun removeInterceptor (Lcoil/FakeImageLoaderInterceptor$OptionalInterceptor;)V
+	public final fun setDefault (Lkotlin/jvm/functions/Function1;)V
+}
+
+public abstract interface class coil/FakeImageLoaderInterceptor$OptionalInterceptor {
+	public abstract fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil/FakeImageLoaderInterceptor$RequestValue {
+	public fun <init> (Lcoil/request/ImageRequest;Lcoil/size/Size;)V
+	public final fun getRequest ()Lcoil/request/ImageRequest;
+	public final fun getSize ()Lcoil/size/Size;
+}
+
+public final class coil/FakeImageLoaderInterceptor$ResultValue {
+	public fun <init> (Lcoil/FakeImageLoaderInterceptor$RequestValue;Lcoil/request/ImageResult;)V
+	public final fun getRequest ()Lcoil/FakeImageLoaderInterceptor$RequestValue;
+	public final fun getResult ()Lcoil/request/ImageResult;
+}
+
+public final class coil/FakeImageLoaderInterceptorKt {
+	public static final fun set (Lcoil/FakeImageLoaderInterceptor;Ljava/lang/Object;Landroid/graphics/drawable/Drawable;)V
+	public static final fun set (Lcoil/FakeImageLoaderInterceptor;Lkotlin/jvm/functions/Function1;Landroid/graphics/drawable/Drawable;)V
+	public static final fun set (Lcoil/FakeImageLoaderInterceptor;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public static final fun setDefault (Lcoil/FakeImageLoaderInterceptor;Landroid/graphics/drawable/Drawable;)V
+}
+
 public final class coil/FakeImageLoaders {
 	public static final fun create ()Lcoil/FakeImageLoader;
 	public static final fun enqueue (Lcoil/FakeImageLoader;Ljava/lang/Object;Landroid/graphics/drawable/Drawable;Lcoil/decode/DataSource;Lcoil/memory/MemoryCache$Key;Ljava/lang/String;)Lcoil/CompositeQueueEngine;
