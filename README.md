@@ -103,11 +103,6 @@ val drawable = imageLoader.execute(request).drawable
 
 Check out Coil's [full documentation here](https://coil-kt.github.io/coil/getting_started/).
 
-## Requirements
-
-- Min SDK 21+
-- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
-
 ## R8 / Proguard
 
 Coil is fully compatible with R8 out of the box and doesn't require adding any extra rules.
@@ -116,7 +111,7 @@ If you use Proguard, you may need to add rules for [Coroutines](https://github.c
 
 ## License
 
-    Copyright 2022 Coil Contributors
+    Copyright 2023 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

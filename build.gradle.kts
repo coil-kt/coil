@@ -1,6 +1,8 @@
 import coil.by
 import coil.groupId
 import coil.versionName
+import com.diffplug.gradle.spotless.SpotlessExtension
+import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import java.net.URL
 import kotlinx.validation.ApiValidationExtension
@@ -21,7 +23,7 @@ buildscript {
 }
 
 // https://youtrack.jetbrains.com/issue/KTIJ-19369
-@Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.dokka)
@@ -50,18 +52,10 @@ allprojects {
     group = project.groupId
     version = project.versionName
 
-    apply(plugin = "com.diffplug.spotless")
-
-    spotless {
-        kotlin {
-            target("**/*.kt", "**/*.kts")
-            ktlint(libs.ktlint.get().version)
-        }
-    }
-
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
             jdkVersion by 8
+            failOnWarning by true
             skipDeprecated by true
             suppressInheritedMembers by true
 
@@ -83,9 +77,6 @@ allprojects {
     }
 
     plugins.withId("com.vanniktech.maven.publish.base") {
-        group = project.groupId
-        version = project.versionName
-
         extensions.configure<MavenPublishBaseExtension> {
             publishToMavenCentral()
             signAllPublications()
@@ -109,5 +100,24 @@ allprojects {
         if (name == "connectedDebugAndroidTest") {
             finalizedBy("uninstallDebugAndroidTest")
         }
+    }
+
+    apply(plugin = "com.diffplug.spotless")
+
+    val configureSpotless: SpotlessExtension.() -> Unit = {
+        kotlin {
+            target("**/*.kt", "**/*.kts")
+            ktlint(libs.ktlint.get().version)
+            endWithNewline()
+            indentWithSpaces()
+            trimTrailingWhitespace()
+        }
+    }
+
+    if (project === rootProject) {
+        spotless { predeclareDeps() }
+        extensions.configure<SpotlessExtensionPredeclare>(configureSpotless)
+    } else {
+        extensions.configure(configureSpotless)
     }
 }
