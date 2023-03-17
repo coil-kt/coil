@@ -64,12 +64,12 @@ class FakeImageLoaderInterceptor : Interceptor {
         fallbackInterceptor = interceptor
     }
 
-    class RequestValue(
+    data class RequestValue(
         val request: ImageRequest,
         val size: Size,
     )
 
-    class ResultValue(
+    data class ResultValue(
         val request: RequestValue,
         val result: ImageResult,
     )
