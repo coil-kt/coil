@@ -4,8 +4,9 @@
 
 | Version | Supported          |
 |---------|--------------------|
-| All     | :white_check_mark: |
+| 2.x     | :white_check_mark: |
+| 1.x     | :red_square:       |
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability with Coil, please report it by sending an email to colin at colinwhite.me.
+If you discover a security vulnerability with Coil, please [report the vulnerability through Github](https://github.com/coil-kt/coil/security/advisories).

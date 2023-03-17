@@ -103,10 +103,6 @@ val drawable = imageLoader.execute(request).drawable
 
 [여기서 Coil의 전체 문서](https://coil-kt.github.io/coil/)를 확인하세요.
 
-## 요구사항
-
-- Min SDK 21+
-
 ## R8 / Proguard
 
 Coil은 별도의 설정 없이 R8과 완벽하게 호환 가능하며 추가 규칙이 필요하지 않습니다.
