@@ -130,6 +130,13 @@ class FakeImageLoaderEngine : Interceptor {
 }
 
 /**
+ * Create a new [FakeImageLoaderEngine] that returns [Drawable] for all requests.
+ */
+fun FakeImageLoaderEngine(drawable: Drawable): FakeImageLoaderEngine {
+    return FakeImageLoaderEngine().apply { setFallback(drawable) }
+}
+
+/**
  * Set a [Drawable] that will be returned if [data] equals an incoming [ImageRequest]'s data.
  */
 fun FakeImageLoaderEngine.set(

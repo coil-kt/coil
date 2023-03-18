@@ -29,9 +29,11 @@ class PaparazziTest {
 
     @Before
     fun before() {
-        val engine = FakeImageLoaderEngine()
-        engine.setFallback(ColorDrawable(Color.RED))
-
+        val engine = FakeImageLoaderEngine.Builder()
+            .intercept("https://www.example.com/image.jpg", testDrawable)
+            .intercept({ it is String && it.endsWith("test.png") }, drawable)
+            .fallback(ColorDrawable(Color.RED))
+            .build()
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }
             .build()
