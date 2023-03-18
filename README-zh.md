@@ -24,7 +24,7 @@ implementation("io.coil-kt:coil:2.2.2")
 可以使用 `ImageView` 的扩展函数 `load` 加载一张图片：
 ```kotlin
 // URL
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 
 // Resource
 imageView.load(R.drawable.image)
@@ -38,7 +38,7 @@ imageView.load(File("/path/to/image.jpg"))
 可以使用 lambda 语法轻松配置请求选项：
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -80,7 +80,7 @@ val imageLoader = ImageLoader(context)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target { drawable ->
         // Handle the result.
     }
@@ -92,7 +92,7 @@ val disposable = imageLoader.enqueue(request)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
 ```

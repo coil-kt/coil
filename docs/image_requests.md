@@ -6,7 +6,7 @@
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .crossfade(true)
     .target(imageView)
     .build()

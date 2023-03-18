@@ -27,7 +27,7 @@ implementation("io.coil-kt:coil:2.2.2")
 
 ```kotlin
 // URL
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 
 // File
 imageView.load(File("/path/to/image.jpg"))
@@ -38,7 +38,7 @@ imageView.load(File("/path/to/image.jpg"))
 Requests は、 trailing lambda 式を使用して追加の設定を行うことができます:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -84,7 +84,7 @@ val imageLoader = ImageLoader(context)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target { drawable ->
         // Handle the result.
     }
@@ -96,7 +96,7 @@ val disposable = imageLoader.enqueue(request)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
 ```

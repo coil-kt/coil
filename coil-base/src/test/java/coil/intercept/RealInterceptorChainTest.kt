@@ -39,7 +39,7 @@ class RealInterceptorChainTest {
     @Test
     fun `interceptor cannot set data to null`() = runTest {
         val request = createRequest(context) {
-            data("https://www.example.com/image.jpg")
+            data("https://example.com/image.jpg")
         }
         val interceptor = Interceptor { chain ->
             chain.proceed(chain.request.newBuilder().data(null).build())

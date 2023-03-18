@@ -26,7 +26,7 @@ Görüntüyü `ImageView`'e yüklemek için `load` uzantı fonksiyonunu kullanı
 
 ```kotlin
 // URL
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 
 // Resource
 imageView.load(R.drawable.image)
@@ -40,7 +40,7 @@ imageView.load(File("/path/to/image.jpg"))
 İstekler tercihe bağlı bir takip eden lambda ile yapılandırılabilir:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -69,7 +69,7 @@ Bir görüntüyü özel bir hedefe yüklemek için, bir `ImageRequest`'i `enqueu
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target { drawable ->
         // Sonucu işleyin.
     }
@@ -81,7 +81,7 @@ Bir görüntüyü mecburi bir şekilde yüklemek için, bir `ImageRequest`'i `ex
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
 ```

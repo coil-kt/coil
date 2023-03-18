@@ -58,7 +58,7 @@ class ImageRequestTest {
     @Test
     fun `changing context resets resolved values`() {
         val request = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .build()
 
         assertSame(request.sizeResolver, request.newBuilder().build().sizeResolver)
@@ -69,7 +69,7 @@ class ImageRequestTest {
     fun `changing target resets resolved values`() {
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .target(imageView)
             .build()
 
@@ -83,7 +83,7 @@ class ImageRequestTest {
     fun `changing size resolver resets resolved values`() {
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .size(100, 100)
             .target(imageView)
             .build()
@@ -100,7 +100,7 @@ class ImageRequestTest {
     fun `setting defaults resets resolved scale only`() {
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .size(100, 100)
             .target(imageView)
             .build()
@@ -120,7 +120,7 @@ class ImageRequestTest {
         val lifecycle = FakeLifecycle()
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .size(100, 100)
             .scale(Scale.FILL)
             .lifecycle(lifecycle)
@@ -142,7 +142,7 @@ class ImageRequestTest {
         )
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .target(imageView)
             .defaults(defaults)
             .build()
@@ -156,12 +156,12 @@ class ImageRequestTest {
     fun `equals and hashCode are implemented`() {
         val imageView = ImageView(context)
         val request1 = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .target(imageView)
             .allowHardware(true)
             .build()
         val request2 = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .target(imageView)
             .allowHardware(true)
             .build()
@@ -180,20 +180,20 @@ class ImageRequestTest {
     @Test
     fun `ImageView with scale type MATRIX or CENTER should default to original size`() = runTest {
         val request1 = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .target(ImageView(context).apply { scaleType = MATRIX })
             .build()
         val request2 = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .target(ImageView(context).apply { scaleType = CENTER })
             .build()
         val request3 = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .target(ImageView(context).apply { scaleType = MATRIX })
             .size(100, 100)
             .build()
         val request4 = ImageRequest.Builder(context)
-            .data("https://www.example.com/image.jpg")
+            .data("https://example.com/image.jpg")
             .target(ImageView(context).apply { scaleType = CENTER })
             .size(100, 100)
             .build()
