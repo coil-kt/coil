@@ -67,6 +67,8 @@ HSPLcoil/EventListener$-CC;->$default$mapEnd(Lcoil/EventListener;Lcoil/request/I
 PLcoil/EventListener$-CC;->$default$mapEnd(Lcoil/EventListener;Lcoil/request/ImageRequest;Ljava/lang/Object;)V
 HSPLcoil/EventListener$-CC;->$default$mapStart(Lcoil/EventListener;Lcoil/request/ImageRequest;Ljava/lang/Object;)V
 PLcoil/EventListener$-CC;->$default$mapStart(Lcoil/EventListener;Lcoil/request/ImageRequest;Ljava/lang/Object;)V
+HSPLcoil/EventListener$-CC;->$default$onCancel(Lcoil/EventListener;Lcoil/request/ImageRequest;)V
+PLcoil/EventListener$-CC;->$default$onCancel(Lcoil/EventListener;Lcoil/request/ImageRequest;)V
 HSPLcoil/EventListener$-CC;->$default$onStart(Lcoil/EventListener;Lcoil/request/ImageRequest;)V
 PLcoil/EventListener$-CC;->$default$onStart(Lcoil/EventListener;Lcoil/request/ImageRequest;)V
 HSPLcoil/EventListener$-CC;->$default$onSuccess(Lcoil/EventListener;Lcoil/request/ImageRequest;Lcoil/request/SuccessResult;)V
@@ -105,6 +107,8 @@ HSPLcoil/EventListener$Companion$NONE$1;->mapEnd(Lcoil/request/ImageRequest;Ljav
 HPLcoil/EventListener$Companion$NONE$1;->mapEnd(Lcoil/request/ImageRequest;Ljava/lang/Object;)V
 HSPLcoil/EventListener$Companion$NONE$1;->mapStart(Lcoil/request/ImageRequest;Ljava/lang/Object;)V
 HPLcoil/EventListener$Companion$NONE$1;->mapStart(Lcoil/request/ImageRequest;Ljava/lang/Object;)V
+HSPLcoil/EventListener$Companion$NONE$1;->onCancel(Lcoil/request/ImageRequest;)V
+PLcoil/EventListener$Companion$NONE$1;->onCancel(Lcoil/request/ImageRequest;)V
 HSPLcoil/EventListener$Companion$NONE$1;->onStart(Lcoil/request/ImageRequest;)V
 HPLcoil/EventListener$Companion$NONE$1;->onStart(Lcoil/request/ImageRequest;)V
 HSPLcoil/EventListener$Companion$NONE$1;->onSuccess(Lcoil/request/ImageRequest;Lcoil/request/SuccessResult;)V
@@ -181,6 +185,8 @@ HSPLcoil/RealImageLoader;->getLogger()Lcoil/util/Logger;
 PLcoil/RealImageLoader;->getLogger()Lcoil/util/Logger;
 HSPLcoil/RealImageLoader;->getMemoryCache()Lcoil/memory/MemoryCache;
 HPLcoil/RealImageLoader;->getMemoryCache()Lcoil/memory/MemoryCache;
+HSPLcoil/RealImageLoader;->onCancel(Lcoil/request/ImageRequest;Lcoil/EventListener;)V
+PLcoil/RealImageLoader;->onCancel(Lcoil/request/ImageRequest;Lcoil/EventListener;)V
 HSPLcoil/RealImageLoader;->onSuccess(Lcoil/request/SuccessResult;Lcoil/target/Target;Lcoil/EventListener;)V
 HPLcoil/RealImageLoader;->onSuccess(Lcoil/request/SuccessResult;Lcoil/target/Target;Lcoil/EventListener;)V
 PLcoil/RealImageLoader;->onTrimMemory$coil_base_release(I)V
@@ -1011,6 +1017,7 @@ HSPLcoil/network/RealNetworkObserver$networkCallback$1;-><init>(Lcoil/network/Re
 PLcoil/network/RealNetworkObserver$networkCallback$1;-><init>(Lcoil/network/RealNetworkObserver;)V
 HSPLcoil/network/RealNetworkObserver$networkCallback$1;->onAvailable(Landroid/net/Network;)V
 PLcoil/network/RealNetworkObserver$networkCallback$1;->onAvailable(Landroid/net/Network;)V
+PLcoil/network/RealNetworkObserver$networkCallback$1;->onLost(Landroid/net/Network;)V
 Lcoil/request/CachePolicy;
 HSPLcoil/request/CachePolicy;->$values()[Lcoil/request/CachePolicy;
 PLcoil/request/CachePolicy;->$values()[Lcoil/request/CachePolicy;
@@ -1345,7 +1352,7 @@ HPLcoil/request/ViewTargetRequestDelegate;->dispose()V
 HSPLcoil/request/ViewTargetRequestDelegate;->onCreate(Landroidx/lifecycle/LifecycleOwner;)V
 HPLcoil/request/ViewTargetRequestDelegate;->onCreate(Landroidx/lifecycle/LifecycleOwner;)V
 HPLcoil/request/ViewTargetRequestDelegate;->onDestroy(Landroidx/lifecycle/LifecycleOwner;)V
-HPLcoil/request/ViewTargetRequestDelegate;->onPause(Landroidx/lifecycle/LifecycleOwner;)V
+PLcoil/request/ViewTargetRequestDelegate;->onPause(Landroidx/lifecycle/LifecycleOwner;)V
 HSPLcoil/request/ViewTargetRequestDelegate;->onResume(Landroidx/lifecycle/LifecycleOwner;)V
 HPLcoil/request/ViewTargetRequestDelegate;->onResume(Landroidx/lifecycle/LifecycleOwner;)V
 HSPLcoil/request/ViewTargetRequestDelegate;->onStart(Landroidx/lifecycle/LifecycleOwner;)V
@@ -1367,7 +1374,7 @@ HSPLcoil/request/ViewTargetRequestManager;->onViewDetachedFromWindow(Landroid/vi
 HPLcoil/request/ViewTargetRequestManager;->onViewDetachedFromWindow(Landroid/view/View;)V
 HSPLcoil/request/ViewTargetRequestManager;->setRequest(Lcoil/request/ViewTargetRequestDelegate;)V
 HPLcoil/request/ViewTargetRequestManager;->setRequest(Lcoil/request/ViewTargetRequestDelegate;)V
-PLcoil/request/ViewTargetRequestManager$dispose$1;-><init>(Lcoil/request/ViewTargetRequestManager;Lkotlin/coroutines/Continuation;)V
+HPLcoil/request/ViewTargetRequestManager$dispose$1;-><init>(Lcoil/request/ViewTargetRequestManager;Lkotlin/coroutines/Continuation;)V
 HPLcoil/request/ViewTargetRequestManager$dispose$1;->create(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
 HPLcoil/request/ViewTargetRequestManager$dispose$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil/size/-Dimensions;

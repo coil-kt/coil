@@ -13,7 +13,11 @@ import coil.util.getLifecycle
  */
 internal object GlobalLifecycle : Lifecycle() {
 
-    private val owner = LifecycleOwner { this }
+    private val owner = object : LifecycleOwner {
+        override val lifecycle get() = this@GlobalLifecycle
+    }
+
+    override val currentState get() = State.RESUMED
 
     override fun addObserver(observer: LifecycleObserver) {
         require(observer is DefaultLifecycleObserver) {
@@ -27,8 +31,6 @@ internal object GlobalLifecycle : Lifecycle() {
     }
 
     override fun removeObserver(observer: LifecycleObserver) {}
-
-    override fun getCurrentState() = State.RESUMED
 
     override fun toString() = "coil.request.GlobalLifecycle"
 }

@@ -24,7 +24,7 @@ implementation("io.coil-kt:coil:2.2.2")
 可以使用 `ImageView` 的扩展函数 `load` 加载一张图片：
 ```kotlin
 // URL
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 
 // Resource
 imageView.load(R.drawable.image)
@@ -38,7 +38,7 @@ imageView.load(File("/path/to/image.jpg"))
 可以使用 lambda 语法轻松配置请求选项：
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -80,7 +80,7 @@ val imageLoader = ImageLoader(context)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target { drawable ->
         // Handle the result.
     }
@@ -92,17 +92,12 @@ val disposable = imageLoader.enqueue(request)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
 ```
 
 请至 Coil 的[完整文档](https://coil-kt.github.io/coil/getting_started/)获得更多信息。
-
-## 环境要求
-
-- Min SDK 21+
-- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 
@@ -112,7 +107,7 @@ Coil 兼容 R8 混淆，您无需再添加其他的规则
 
 ## License
 
-    Copyright 2022 Coil Contributors
+    Copyright 2023 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

@@ -7,7 +7,7 @@ class FakeLifecycle : Lifecycle() {
 
     val observers = mutableListOf<LifecycleObserver>()
 
-    var state: State = State.INITIALIZED
+    override var currentState: State = State.INITIALIZED
 
     override fun addObserver(observer: LifecycleObserver) {
         observers += observer
@@ -16,6 +16,4 @@ class FakeLifecycle : Lifecycle() {
     override fun removeObserver(observer: LifecycleObserver) {
         observers -= observer
     }
-
-    override fun getCurrentState() = state
 }

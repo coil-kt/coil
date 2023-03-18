@@ -11,7 +11,7 @@ See a common use case that isn't covered? Feel free to submit a PR with a new se
 You can get access to an image's bitmap by setting a `ImageRequest.Listener` and enqueuing an `ImageRequest`:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     // Disable hardware bitmaps as Palette needs to read the image's pixels.
     allowHardware(false)
     listener(
@@ -49,7 +49,7 @@ Headers can be added to your image requests in one of two ways. You can set head
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .setHeader("Cache-Control", "no-cache")
     .target(imageView)
     .build()
@@ -100,10 +100,10 @@ To achieve this effect, use the `MemoryCache.Key` of the first request as the `I
 
 ```kotlin
 // First request
-listImageView.load("https://www.example.com/image.jpg")
+listImageView.load("https://example.com/image.jpg")
 
 // Second request (once the first request finishes)
-detailImageView.load("https://www.example.com/image.jpg") {
+detailImageView.load("https://example.com/image.jpg") {
     placeholderMemoryCacheKey(listImageView.result.memoryCacheKey)
 }
 ```
@@ -150,7 +150,7 @@ Then `enqueue`/`execute` the request like normal:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target(RemoteViewsTarget(context, componentName, remoteViews, imageViewResId))
     .build()
 imageLoader.enqueue(request)

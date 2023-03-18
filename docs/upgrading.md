@@ -30,7 +30,7 @@ Coil 2.x significantly reworks the Jetpack Compose integration to add features, 
 In Coil 1.x you would use `rememberImagePainter` to load an image:
 
 ```kotlin
-val painter = rememberImagePainter("https://www.example.com/image.jpg") {
+val painter = rememberImagePainter("https://example.com/image.jpg") {
     crossfade(true)
 }
 
@@ -49,7 +49,7 @@ In Coil 2.x `rememberImagePainter` has been changed to `rememberAsyncImagePainte
 ```kotlin
 val painter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalContext.current)
-        .data("https://www.example.com/image.jpg")
+        .data("https://example.com/image.jpg")
         .crossfade(true)
         .build(),
     contentScale = ContentScale.Crop

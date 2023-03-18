@@ -106,7 +106,7 @@ class HttpUriFetcherTest {
         Shadows.shadowOf(MimeTypeMap.getSingleton())
             .addExtensionMimeTypMapping("svg", "image/svg+xml")
 
-        val url1 = "https://www.example.com/image.jpg"
+        val url1 = "https://example.com/image.jpg"
         val type1 = "image/svg+xml".toMediaType()
         assertEquals("image/svg+xml", fetcher.getMimeType(url1, type1))
 

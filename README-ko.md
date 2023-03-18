@@ -27,7 +27,7 @@ implementation("io.coil-kt:coil:2.2.2")
 
 ```kotlin
 // URL
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 
 // File
 imageView.load(File("/path/to/image.jpg"))
@@ -38,7 +38,7 @@ imageView.load(File("/path/to/image.jpg"))
 Requests는 trailing lambda 식을 이용하여 추가 설정을 할 수 있습니다:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -84,7 +84,7 @@ val imageLoader = ImageLoader(context)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target { drawable ->
         // Handle the result.
     }
@@ -96,17 +96,12 @@ Imperative하게 이미지 로드를 하려면, `ImageRequest`를 `execute` 하�
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
 ```
 
 [여기서 Coil의 전체 문서](https://coil-kt.github.io/coil/)를 확인하세요.
-
-## 요구사항
-
-- Min SDK 21+
-- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 
@@ -116,7 +111,7 @@ Proguard를 사용할 경우, [Coroutines](https://github.com/Kotlin/kotlinx.cor
 
 ## 라이선스
 
-    Copyright 2022 Coil Contributors
+    Copyright 2023 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

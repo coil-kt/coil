@@ -27,7 +27,7 @@ To load an image into an `ImageView`, use the `load` extension function:
 
 ```kotlin
 // URL
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 
 // File
 imageView.load(File("/path/to/image.jpg"))
@@ -38,7 +38,7 @@ imageView.load(File("/path/to/image.jpg"))
 Requests can be configured with an optional trailing lambda:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -84,7 +84,7 @@ To load an image into a custom target, `enqueue` an `ImageRequest`:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target { drawable ->
         // Handle the result.
     }
@@ -96,17 +96,12 @@ To load an image imperatively, `execute` an `ImageRequest`:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
 ```
 
 Check out Coil's [full documentation here](https://coil-kt.github.io/coil/getting_started/).
-
-## Requirements
-
-- Min SDK 21+
-- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 
@@ -116,7 +111,7 @@ If you use Proguard, you may need to add rules for [Coroutines](https://github.c
 
 ## License
 
-    Copyright 2022 Coil Contributors
+    Copyright 2023 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

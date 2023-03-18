@@ -26,7 +26,7 @@ Görüntüyü `ImageView`'e yüklemek için `load` uzantı fonksiyonunu kullanı
 
 ```kotlin
 // URL
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 
 // Resource
 imageView.load(R.drawable.image)
@@ -40,7 +40,7 @@ imageView.load(File("/path/to/image.jpg"))
 İstekler tercihe bağlı bir takip eden lambda ile yapılandırılabilir:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -69,7 +69,7 @@ Bir görüntüyü özel bir hedefe yüklemek için, bir `ImageRequest`'i `enqueu
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target { drawable ->
         // Sonucu işleyin.
     }
@@ -81,17 +81,12 @@ Bir görüntüyü mecburi bir şekilde yüklemek için, bir `ImageRequest`'i `ex
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
 ```
 
 Coil'in [dokümantasyonunun tamamına buradan](https://coil-kt.github.io/coil/getting_started/) ulaşabilirsiniz.
-
-## Gereksinimler
-
-- Min SDK 21+
-- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 
@@ -101,7 +96,7 @@ Eğer Proguard kullanıyorsanız, [Coroutines](https://github.com/Kotlin/kotlinx
 
 ## Lisans
 
-    Copyright 2022 Coil Contributors
+    Copyright 2023 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

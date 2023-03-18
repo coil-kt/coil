@@ -27,7 +27,7 @@ implementation("io.coil-kt:coil:2.2.2")
 
 ```kotlin
 // URL
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 
 // File
 imageView.load(File("/path/to/image.jpg"))
@@ -38,7 +38,7 @@ imageView.load(File("/path/to/image.jpg"))
 Requests は、 trailing lambda 式を使用して追加の設定を行うことができます:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -84,7 +84,7 @@ val imageLoader = ImageLoader(context)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target { drawable ->
         // Handle the result.
     }
@@ -96,17 +96,12 @@ val disposable = imageLoader.enqueue(request)
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val drawable = imageLoader.execute(request).drawable
 ```
 
 [こちらで Coil の完全なドキュメント](https://coil-kt.github.io/coil/getting_started/) を確認してください。
-
-## 要件
-
-- Min SDK 21+
-- [Java 8+](https://coil-kt.github.io/coil/faq/#how-do-i-target-java-8)
 
 ## R8 / Proguard
 
@@ -116,7 +111,7 @@ Proguardを使用している場合は、[Coroutines](https://github.com/Kotlin/
 
 ## ライセンス
 
-    Copyright 2022 Coil Contributors
+    Copyright 2023 Coil Contributors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

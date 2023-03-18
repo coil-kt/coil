@@ -52,14 +52,14 @@ Here's an example:
 ```kotlin
 // enqueue
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target(imageView)
     .build()
 val disposable = imageLoader.enqueue(request)
 
 // execute
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .build()
 val result = imageLoader.execute(request)
 ```
@@ -69,7 +69,7 @@ val result = imageLoader.execute(request)
 The `io.coil-kt:coil` artifact provides a set of `ImageView` extension functions. Here's an example for loading a URL into an `ImageView`:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg")
+imageView.load("https://example.com/image.jpg")
 ```
 
 The above call is equivalent to:
@@ -77,7 +77,7 @@ The above call is equivalent to:
 ```kotlin
 val imageLoader = imageView.context.imageLoader
 val request = ImageRequest.Builder(imageView.context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target(imageView)
     .build()
 imageLoader.enqueue(request)
@@ -86,7 +86,7 @@ imageLoader.enqueue(request)
 `ImageView.load` calls can be configured with an optional trailing lambda parameter:
 
 ```kotlin
-imageView.load("https://www.example.com/image.jpg") {
+imageView.load("https://example.com/image.jpg") {
     crossfade(true)
     placeholder(R.drawable.image)
     transformations(CircleCropTransformation())
@@ -99,7 +99,7 @@ See the docs [here](../api/coil-singleton/coil/) for more information.
 
 The base data types that are supported by all `ImageLoader` instances are:
 
-* String (mapped to a Uri)
+* String
 * HttpUrl
 * Uri (`android.resource`, `content`, `file`, `http`, and `https` schemes)
 * File
@@ -118,6 +118,7 @@ All `ImageLoader`s support the following non-animated file types:
 * PNG
 * WebP
 * HEIF (Android 8.0+)
+* AVIF (Android 12.0+)
 
 Additionally, Coil has extension libraries for the following file types:
 
@@ -131,7 +132,7 @@ To preload an image into memory, enqueue or execute an `ImageRequest` without a 
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     // Optional, but setting a ViewSizeResolver will conserve memory by limiting the size the image should be preloaded into memory at.
     .size(ViewSizeResolver(imageView))
     .build()
@@ -142,7 +143,7 @@ To preload a network image only into the disk cache, disable the memory cache fo
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .memoryCachePolicy(CachePolicy.DISABLED)
     .build()
 imageLoader.enqueue(request)
@@ -158,7 +159,7 @@ imageLoader.enqueue(request)
 Additionally, `ImageLoader.enqueue` returns a [Disposable](../api/coil-base/coil.request/-disposable/), which can be used to dispose the request (which cancels it and frees its associated resources):
 
 ```kotlin
-val disposable = imageView.load("https://www.example.com/image.jpg")
+val disposable = imageView.load("https://example.com/image.jpg")
 
 // Cancel the request.
 disposable.dispose()
