@@ -5,7 +5,7 @@ on:
             - main
     pull_request:
 env:
-    CACHE_VERSION: 2 # Increment this to invalidate the cache.
+    CACHE_VERSION: 1 # Increment this to invalidate the cache.
     JAVA_VERSION: 19
 jobs:
     checks:
@@ -65,7 +65,7 @@ jobs:
     instrumentation-tests:
         name: Instrumentation tests
         runs-on: macOS-latest
-        timeout-minutes: 30
+        timeout-minutes: 45
         strategy:
             fail-fast: true
             matrix:
@@ -112,8 +112,8 @@ jobs:
                   disable-animations: false
                   force-avd-creation: false
                   ram-size: 4096M
+                  emulator-boot-timeout: 12000
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                  emulator-build: 9475343 # https://dl.google.com/android/repository/repository2-3.xml
                   script: echo "Generated AVD snapshot."
 
             - name: Instrumentation tests
@@ -125,8 +125,8 @@ jobs:
                   disable-animations: true
                   force-avd-creation: false
                   ram-size: 4096M
+                  emulator-boot-timeout: 12000
                   emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
-                  emulator-build: 9475343 # https://dl.google.com/android/repository/repository2-3.xml
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
 
     deploy-snapshot:
