@@ -653,11 +653,11 @@ Changes since `1.0.0-rc3`:
         crossfade(true)
     }
 
-    val disposable = imageLoader.load(context, "https://www.example.com/image.jpg") {
+    val disposable = imageLoader.load(context, "https://example.com/image.jpg") {
         target(imageView)
     }
 
-    val drawable = imageLoader.get("https://www.example.com/image.jpg") {
+    val drawable = imageLoader.get("https://example.com/image.jpg") {
         size(512, 512)
     }
 
@@ -668,13 +668,13 @@ Changes since `1.0.0-rc3`:
         .build()
 
     val request = LoadRequest.Builder(context)
-        .data("https://www.example.com/image.jpg")
+        .data("https://example.com/image.jpg")
         .target(imageView)
         .build()
     val disposable = imageLoader.execute(request)
 
     val request = GetRequest.Builder(context)
-        .data("https://www.example.com/image.jpg")
+        .data("https://example.com/image.jpg")
         .size(512, 512)
         .build()
     val drawable = imageLoader.execute(request).drawable

@@ -6,7 +6,7 @@ Here's the easiest way to create a custom target:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
-    .data("https://www.example.com/image.jpg")
+    .data("https://example.com/image.jpg")
     .target(
         onStart = { placeholder ->
             // Handle the placeholder drawable.

@@ -28,7 +28,7 @@ inline val Context.imageLoader: ImageLoader
  *
  * Example:
  * ```
- * imageView.load("https://www.example.com/image.jpg") {
+ * imageView.load("https://example.com/image.jpg") {
  *     crossfade(true)
  *     transformations(CircleCropTransformation())
  * }
