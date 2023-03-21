@@ -4,6 +4,7 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("app.cash.paparazzi")
+    id("io.github.takahirom.roborazzi")
 }
 
 setupLibraryModule(name = "coil.compose.base", publish = true) {
