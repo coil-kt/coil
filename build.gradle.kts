@@ -21,8 +21,6 @@ buildscript {
     }
 }
 
-// https://youtrack.jetbrains.com/issue/KTIJ-19369
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.dokka)
