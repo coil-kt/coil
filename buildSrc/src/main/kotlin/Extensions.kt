@@ -52,7 +52,3 @@ private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
 }
 
 inline infix fun <T> Property<T>.by(value: T) = set(value)
-
-inline infix fun <T> Property<T>.by(provider: Provider<T>) = set(provider)
-
-inline infix fun <T> SetProperty<T>.by(value: Set<T>) = set(value)
