@@ -5,8 +5,6 @@ package coil
 import kotlin.math.pow
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
-import org.gradle.api.provider.SetProperty
 
 val Project.minSdk: Int
     get() = intProperty("minSdk")
