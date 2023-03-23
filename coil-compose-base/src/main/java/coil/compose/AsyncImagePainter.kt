@@ -164,7 +164,18 @@ class AsyncImagePainter internal constructor(
     private var rememberScope: CoroutineScope? = null
     private val drawSize = MutableStateFlow(Size.Zero)
 
-    private var painter: Painter? by mutableStateOf(null)
+    private var painterNotifier: Int by mutableStateOf(0)
+    private var painter: Painter? = null
+        get() {
+            painterNotifier
+            return _painter
+        }
+        set(value) {
+            if (field != value) {
+                field = value
+                painterNotifier = value.hashCode()
+            }
+        }
     private var alpha: Float by mutableStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
@@ -187,9 +198,20 @@ class AsyncImagePainter internal constructor(
     internal var filterQuality = DefaultFilterQuality
     internal var isPreview = false
 
+    private var stateNotifier: Int by mutableStateOf(0)
+
     /** The current [AsyncImagePainter.State]. */
-    var state: State by mutableStateOf(State.Empty)
-        private set
+    var state: State = State.Empty
+        get() {
+            stateNotifier
+            return field
+        }
+        private set(value) {
+            if (field != value) {
+                field = value
+                stateNotifier = value.hashCode()
+            }
+        }
 
     /** The current [ImageRequest]. */
     var request: ImageRequest by mutableStateOf(request)
@@ -260,6 +282,7 @@ class AsyncImagePainter internal constructor(
     private fun clear() {
         rememberScope?.cancel()
         rememberScope = null
+        updateState(State.Empty)
     }
 
     /** Update the [request] to work with [AsyncImagePainter]. */
