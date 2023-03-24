@@ -23,4 +23,5 @@ include(
     "coil-sample-compose",
     "coil-sample-view",
     "coil-test-internal",
+    "coil-test-paparazzi",
 )

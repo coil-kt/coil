@@ -11,7 +11,6 @@ dependencies {
     api(projects.coilBase)
 
     implementation(libs.androidx.core)
-    implementation(libs.okio.fakefilesystem)
 
     testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
