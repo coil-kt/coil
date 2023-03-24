@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.asSharedFlow
  *
  * ```
  * val engine = FakeImageLoaderEngine.Builder()
- *     .set("https://www.example.com/image.jpg", drawable)
- *     .set({ it is String && it.endsWith("test.png") }, drawable)
+ *     .intercept("https://www.example.com/image.jpg", drawable)
+ *     .intercept({ it is String && it.endsWith("test.png") }, drawable)
  *     .default(ColorDrawable(Color.BLUE))
  *     .build()
  * val imageLoader = ImageLoader.Builder(context)
@@ -83,7 +83,7 @@ class FakeImageLoaderEngine private constructor(
      * An [Interceptor] that can either:
      *
      * - Return an [ImageResult] so no subsequent interceptors are called.
-     * - Return 'null' to delegate to the next [OptionalInterceptor] in the list.
+     * - Return `null` to delegate to the next [OptionalInterceptor] in the list.
      * - Optionally, call [Interceptor.Chain.proceed] to call through to the [ImageLoader]'s
      *   real interceptor chain. Typically, this will map, fetch, and decode the data using the
      *   image loader's real image engine.
@@ -123,32 +123,32 @@ class FakeImageLoaderEngine private constructor(
         }
 
         /**
-         * Set a [Drawable] that will be returned if [data] is equal to an incoming
+         * Add an interceptor that will return [Drawable] if [data] is equal to an incoming
          * [ImageRequest]'s data.
          */
-        fun set(
+        fun intercept(
             data: Any,
             drawable: Drawable,
-        ) = set(
+        ) = intercept(
             predicate = { it == data },
             drawable = drawable,
         )
 
         /**
-         * Set a [Drawable] that will be returned if [predicate] returns `true`.
+         * Add an interceptor that will return [Drawable] if [predicate] returns `true`.
          */
-        fun set(
+        fun intercept(
             predicate: (data: Any) -> Boolean,
             drawable: Drawable,
-        ) = set(
+        ) = intercept(
             predicate = predicate,
             interceptor = { imageResultOf(drawable, it.request) },
         )
 
         /**
-         * Set an [OptionalInterceptor] that will be called if [predicate] returns `true`.
+         * Add an interceptor that will call [interceptor] if [predicate] returns `true`.
          */
-        fun set(
+        fun intercept(
             predicate: (data: Any) -> Boolean,
             interceptor: OptionalInterceptor,
         ) = addInterceptor { chain ->

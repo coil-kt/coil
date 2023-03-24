@@ -22,16 +22,34 @@ class FakeImageLoaderEngineTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Test
-    fun `intercept data`() = runTest {
+    fun `exact data`() = runTest {
         val url = "https://www.example.com/image.jpg"
         val drawable = ColorDrawable(Color.RED)
-        val engine = FakeImageLoaderEngine()
-        engine.set(url, drawable)
-
+        val engine = FakeImageLoaderEngine.Builder()
+            .intercept(url, drawable)
+            .build()
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }
             .build()
+        val request = ImageRequest.Builder(context)
+            .data(url)
+            .build()
+        val result = imageLoader.execute(request)
+        assertIs<SuccessResult>(result)
+        assertSame(drawable, result.drawable)
+    }
 
+    @Test
+    fun `default drawable`() = runTest {
+        val url = "https://www.example.com/image.jpg"
+        val drawable = ColorDrawable(Color.RED)
+        val engine = FakeImageLoaderEngine.Builder()
+            .intercept("different_string", ColorDrawable(Color.GREEN))
+            .default(drawable)
+            .build()
+        val imageLoader = ImageLoader.Builder(context)
+            .components { add(engine) }
+            .build()
         val request = ImageRequest.Builder(context)
             .data(url)
             .build()

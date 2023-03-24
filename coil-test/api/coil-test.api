@@ -17,11 +17,11 @@ public final class coil/test/FakeImageLoaderEngine$Builder {
 	public final fun clearInterceptors ()Lcoil/test/FakeImageLoaderEngine$Builder;
 	public final fun default (Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine$Builder;
 	public final fun default (Lcoil/intercept/Interceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Ljava/lang/Object;Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Lkotlin/jvm/functions/Function1;Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Lkotlin/jvm/functions/Function1;Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
 	public final fun removeInterceptor (Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
 	public final fun requestTransformer (Lcoil/test/FakeImageLoaderEngine$RequestTransformer;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun set (Ljava/lang/Object;Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun set (Lkotlin/jvm/functions/Function1;Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun set (Lkotlin/jvm/functions/Function1;Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
 }
 
 public abstract interface class coil/test/FakeImageLoaderEngine$OptionalInterceptor {

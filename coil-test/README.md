@@ -10,8 +10,8 @@ testImplementation("io.coil-kt:coil-test:2.3.0")
 
 ```kotlin
 val engine = FakeImageLoaderEngine.Builder()
-    .set("https://www.example.com/image.jpg", ColorDrawable(Color.RED))
-    .set({ it is String && it.endsWith("test.png") }, ColorDrawable(Color.GREEN))
+    .intercept("https://www.example.com/image.jpg", ColorDrawable(Color.RED))
+    .intercept({ it is String && it.endsWith("test.png") }, ColorDrawable(Color.GREEN))
     .default(ColorDrawable(Color.BLUE))
     .build()
 val imageLoader = ImageLoader.Builder(context)
@@ -30,8 +30,8 @@ class PaparazziTest {
     @Before
     fun before() {
         val engine = FakeImageLoaderEngine.Builder()
-            .set("https://www.example.com/image.jpg", ColorDrawable(Color.RED))
-            .set({ it is String && it.endsWith("test.png") }, ColorDrawable(Color.GREEN))
+            .intercept("https://www.example.com/image.jpg", ColorDrawable(Color.RED))
+            .intercept({ it is String && it.endsWith("test.png") }, ColorDrawable(Color.GREEN))
             .default(ColorDrawable(Color.BLUE))
             .build()
         val imageLoader = ImageLoader.Builder(context)
