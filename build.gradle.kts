@@ -36,6 +36,7 @@ extensions.configure<ApiValidationExtension> {
         "coil-sample-view",
         "coil-test-internal",
         "coil-test-paparazzi",
+        "coil-test-roborazzi",
     )
 }
 
