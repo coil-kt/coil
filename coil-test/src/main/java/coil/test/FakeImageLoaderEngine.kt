@@ -3,12 +3,12 @@
 package coil.test
 
 import android.graphics.drawable.Drawable
+import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
-import coil.ImageLoader
 import coil.transition.Transition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,7 +36,7 @@ class FakeImageLoaderEngine private constructor(
     val interceptors: List<OptionalInterceptor>,
     val defaultInterceptor: Interceptor,
     val requestTransformer: RequestTransformer,
-): Interceptor {
+) : Interceptor {
 
     private val _requests = MutableSharedFlow<RequestValue>()
     private val _results = MutableSharedFlow<ResultValue>()

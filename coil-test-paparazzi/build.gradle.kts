@@ -20,7 +20,6 @@ dependencies {
 
     implementation(projects.coilComposeBase)
     implementation(projects.coilTest)
-    implementation(libs.androidx.core)
 
     testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
