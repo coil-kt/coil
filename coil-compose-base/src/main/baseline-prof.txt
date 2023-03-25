@@ -4,7 +4,6 @@ HPLcoil/compose/AsyncImageKt;->AsyncImage-MvsnxeU(Ljava/lang/Object;Ljava/lang/S
 HSPLcoil/compose/AsyncImageKt;->AsyncImage-Q4Kwu38(Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
 HPLcoil/compose/AsyncImageKt;->AsyncImage-Q4Kwu38(Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
 HSPLcoil/compose/AsyncImageKt;->Content(Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Ljava/lang/String;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;I)V
-HPLcoil/compose/AsyncImageKt;->Content(Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Ljava/lang/String;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;I)V
 HSPLcoil/compose/AsyncImageKt;->access$toSizeOrNull-BRTryo0(J)Lcoil/size/Size;
 HPLcoil/compose/AsyncImageKt;->access$toSizeOrNull-BRTryo0(J)Lcoil/size/Size;
 HSPLcoil/compose/AsyncImageKt;->contentDescription(Landroidx/compose/ui/Modifier;Ljava/lang/String;)Landroidx/compose/ui/Modifier;
@@ -165,7 +164,7 @@ HPLcoil/compose/AsyncImagePainter$onRemembered$1$1;-><init>(Lcoil/compose/AsyncI
 HSPLcoil/compose/AsyncImagePainter$onRemembered$1$1;->invoke()Lcoil/request/ImageRequest;
 HPLcoil/compose/AsyncImagePainter$onRemembered$1$1;->invoke()Lcoil/request/ImageRequest;
 HSPLcoil/compose/AsyncImagePainter$onRemembered$1$1;->invoke()Ljava/lang/Object;
-PLcoil/compose/AsyncImagePainter$onRemembered$1$1;->invoke()Ljava/lang/Object;
+HPLcoil/compose/AsyncImagePainter$onRemembered$1$1;->invoke()Ljava/lang/Object;
 Lcoil/compose/AsyncImagePainter$onRemembered$1$2;
 HSPLcoil/compose/AsyncImagePainter$onRemembered$1$2;-><init>(Lcoil/compose/AsyncImagePainter;Lkotlin/coroutines/Continuation;)V
 HPLcoil/compose/AsyncImagePainter$onRemembered$1$2;-><init>(Lcoil/compose/AsyncImagePainter;Lkotlin/coroutines/Continuation;)V
@@ -237,6 +236,8 @@ HSPLcoil/compose/ContentPainterModifier;-><init>(Landroidx/compose/ui/graphics/p
 HPLcoil/compose/ContentPainterModifier;-><init>(Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;)V
 HSPLcoil/compose/ContentPainterModifier;->calculateScaledSize-E7KxVPU(J)J
 HPLcoil/compose/ContentPainterModifier;->calculateScaledSize-E7KxVPU(J)J
+HSPLcoil/compose/ContentPainterModifier;->draw(Landroidx/compose/ui/graphics/drawscope/ContentDrawScope;)V
+HPLcoil/compose/ContentPainterModifier;->draw(Landroidx/compose/ui/graphics/drawscope/ContentDrawScope;)V
 HSPLcoil/compose/ContentPainterModifier;->equals(Ljava/lang/Object;)Z
 HPLcoil/compose/ContentPainterModifier;->equals(Ljava/lang/Object;)Z
 HSPLcoil/compose/ContentPainterModifier;->foldIn(Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)Ljava/lang/Object;
@@ -259,6 +260,8 @@ HSPLcoil/compose/CrossfadePainter;->computeDrawSize-x8L_9b0(JJ)J
 HPLcoil/compose/CrossfadePainter;->computeDrawSize-x8L_9b0(JJ)J
 HSPLcoil/compose/CrossfadePainter;->computeIntrinsicSize-NH-jbRc()J
 HPLcoil/compose/CrossfadePainter;->computeIntrinsicSize-NH-jbRc()J
+HSPLcoil/compose/CrossfadePainter;->drawPainter(Landroidx/compose/ui/graphics/drawscope/DrawScope;Landroidx/compose/ui/graphics/painter/Painter;F)V
+HPLcoil/compose/CrossfadePainter;->drawPainter(Landroidx/compose/ui/graphics/drawscope/DrawScope;Landroidx/compose/ui/graphics/painter/Painter;F)V
 HSPLcoil/compose/CrossfadePainter;->getColorFilter()Landroidx/compose/ui/graphics/ColorFilter;
 HPLcoil/compose/CrossfadePainter;->getColorFilter()Landroidx/compose/ui/graphics/ColorFilter;
 HSPLcoil/compose/CrossfadePainter;->getIntrinsicSize-NH-jbRc()J
