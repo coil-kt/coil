@@ -3,7 +3,7 @@
 To add support for [Jetpack Compose](https://developer.android.com/jetpack/compose), import the extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.2.2")
+implementation("io.coil-kt:coil-compose:2.3.0")
 ```
 
 Then use the `AsyncImage` composable to load and display an image:
