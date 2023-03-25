@@ -5,20 +5,13 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(name = "coil.test")
+setupLibraryModule(name = "coil.test", publish = true)
 
 dependencies {
     api(projects.coilBase)
-    api(libs.androidx.activity)
-    api(libs.androidx.core)
-    api(libs.androidx.test.core)
-    api(libs.androidx.test.junit)
-    api(libs.coroutines.android)
-    api(libs.coroutines.test)
-    api(libs.junit)
-    api(libs.okhttp)
-    api(libs.okhttp.mockwebserver)
-    api(libs.okio)
 
-    testImplementation(libs.kotlin.test)
+    implementation(libs.androidx.core)
+
+    testImplementation(projects.coilTestInternal)
+    testImplementation(libs.bundles.test.jvm)
 }

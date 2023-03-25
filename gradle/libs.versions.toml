@@ -7,6 +7,7 @@ coroutines = "1.6.4"
 ktlint = "0.48.2"
 okhttp = "4.10.0"
 okio = "3.3.0"
+roborazzi = "1.0.0-beta-3"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.0"
@@ -17,6 +18,8 @@ spotless = "com.diffplug.spotless:6.17.0"
 gradlePlugin-android = "com.android.tools.build:gradle:7.4.2"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.25.1"
+gradlePlugin-paparazzi = "app.cash.paparazzi:paparazzi-gradle-plugin:1.2.0"
+gradlePlugin-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
 
 accompanist-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.30.0"
 
@@ -64,7 +67,10 @@ okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 
-robolectric = "org.robolectric:robolectric:4.9.2"
+robolectric = "org.robolectric:robolectric:4.10-alpha-1"
+
+roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
 svg = "com.caverock:androidsvg-aar:1.4"
 

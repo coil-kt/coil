@@ -72,10 +72,10 @@ interface DiskCache {
     @ExperimentalCoilApi
     interface Snapshot : Closeable {
 
-        /** Get the metadata for this entry. */
+        /** Get the metadata file path for this entry. */
         val metadata: Path
 
-        /** Get the data for this entry. */
+        /** Get the data file path for this entry. */
         val data: Path
 
         /** Close the snapshot to allow editing. */
@@ -97,10 +97,10 @@ interface DiskCache {
     @ExperimentalCoilApi
     interface Editor {
 
-        /** Get the metadata for this entry. */
+        /** Get the metadata file path for this entry. */
         val metadata: Path
 
-        /** Get the data for this entry. */
+        /** Get the data file path for this entry. */
         val data: Path
 
         /** Commit the edit so the changes are visible to readers. */

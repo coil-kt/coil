@@ -1,0 +1,64 @@
+public final class coil/test/FakeImageLoaderEngine : coil/intercept/Interceptor {
+	public synthetic fun <init> (Ljava/util/List;Lcoil/intercept/Interceptor;Lcoil/test/FakeImageLoaderEngine$RequestTransformer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDefaultInterceptor ()Lcoil/intercept/Interceptor;
+	public final fun getInterceptors ()Ljava/util/List;
+	public final fun getRequestTransformer ()Lcoil/test/FakeImageLoaderEngine$RequestTransformer;
+	public final fun getRequests ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getResults ()Lkotlinx/coroutines/flow/Flow;
+	public fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun newBuilder ()Lcoil/test/FakeImageLoaderEngine$Builder;
+}
+
+public final class coil/test/FakeImageLoaderEngine$Builder {
+	public fun <init> ()V
+	public fun <init> (Lcoil/test/FakeImageLoaderEngine;)V
+	public final fun addInterceptor (Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun build ()Lcoil/test/FakeImageLoaderEngine;
+	public final fun clearInterceptors ()Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun default (Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun default (Lcoil/intercept/Interceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Ljava/lang/Object;Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Lkotlin/jvm/functions/Function1;Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Lkotlin/jvm/functions/Function1;Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun removeInterceptor (Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public final fun requestTransformer (Lcoil/test/FakeImageLoaderEngine$RequestTransformer;)Lcoil/test/FakeImageLoaderEngine$Builder;
+}
+
+public abstract interface class coil/test/FakeImageLoaderEngine$OptionalInterceptor {
+	public abstract fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class coil/test/FakeImageLoaderEngine$RequestTransformer {
+	public abstract fun transform (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil/test/FakeImageLoaderEngine$RequestValue {
+	public fun <init> (Lcoil/request/ImageRequest;Lcoil/size/Size;)V
+	public final fun component1 ()Lcoil/request/ImageRequest;
+	public final fun component2 ()Lcoil/size/Size;
+	public final fun copy (Lcoil/request/ImageRequest;Lcoil/size/Size;)Lcoil/test/FakeImageLoaderEngine$RequestValue;
+	public static synthetic fun copy$default (Lcoil/test/FakeImageLoaderEngine$RequestValue;Lcoil/request/ImageRequest;Lcoil/size/Size;ILjava/lang/Object;)Lcoil/test/FakeImageLoaderEngine$RequestValue;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRequest ()Lcoil/request/ImageRequest;
+	public final fun getSize ()Lcoil/size/Size;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/test/FakeImageLoaderEngine$ResultValue {
+	public fun <init> (Lcoil/test/FakeImageLoaderEngine$RequestValue;Lcoil/request/ImageResult;)V
+	public final fun component1 ()Lcoil/test/FakeImageLoaderEngine$RequestValue;
+	public final fun component2 ()Lcoil/request/ImageResult;
+	public final fun copy (Lcoil/test/FakeImageLoaderEngine$RequestValue;Lcoil/request/ImageResult;)Lcoil/test/FakeImageLoaderEngine$ResultValue;
+	public static synthetic fun copy$default (Lcoil/test/FakeImageLoaderEngine$ResultValue;Lcoil/test/FakeImageLoaderEngine$RequestValue;Lcoil/request/ImageResult;ILjava/lang/Object;)Lcoil/test/FakeImageLoaderEngine$ResultValue;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRequest ()Lcoil/test/FakeImageLoaderEngine$RequestValue;
+	public final fun getResult ()Lcoil/request/ImageResult;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil/test/FakeImageLoaderEngines {
+	public static final fun create (Landroid/graphics/drawable/Drawable;)Lcoil/test/FakeImageLoaderEngine;
+}
+

@@ -10,9 +10,9 @@ setupLibraryModule(name = "coil.singleton", publish = true)
 dependencies {
     api(projects.coilBase)
 
-    testImplementation(projects.coilTest)
+    testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
 
-    androidTestImplementation(projects.coilTest)
+    androidTestImplementation(projects.coilTestInternal)
     androidTestImplementation(libs.bundles.test.android)
 }

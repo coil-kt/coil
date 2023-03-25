@@ -101,16 +101,10 @@ internal class RealImageLoader(
         .add(BitmapFetcher.Factory())
         .add(ByteBufferFetcher.Factory())
         // Decoders
-        .add(
-            BitmapFactoryDecoder.Factory(
-                maxParallelism = options.bitmapFactoryMaxParallelism,
-                exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy
-            )
-        )
+        .add(BitmapFactoryDecoder.Factory(options.bitmapFactoryMaxParallelism, options.bitmapFactoryExifOrientationPolicy))
         .build()
-    private val interceptors = components.interceptors +
-        EngineInterceptor(this, requestService, logger)
-    private val isShutdown = AtomicBoolean(false)
+    private val interceptors = components.interceptors + EngineInterceptor(this, requestService, logger)
+    private val shutdown = AtomicBoolean(false)
 
     init {
         // Must be called only after the image loader is fully initialized.
@@ -160,13 +154,17 @@ internal class RealImageLoader(
 
         try {
             // Fail before starting if data is null.
-            if (request.data == NullRequestData) throw NullRequestDataException()
+            if (request.data === NullRequestData) {
+                throw NullRequestDataException()
+            }
 
             // Set up the request's lifecycle observers.
             requestDelegate.start()
 
             // Enqueued requests suspend until the lifecycle is started.
-            if (type == REQUEST_TYPE_ENQUEUE) request.lifecycle.awaitStarted()
+            if (type == REQUEST_TYPE_ENQUEUE) {
+                request.lifecycle.awaitStarted()
+            }
 
             // Set the placeholder on the target.
             val placeholderBitmap = memoryCache?.get(request.placeholderMemoryCacheKey)?.bitmap
@@ -222,7 +220,7 @@ internal class RealImageLoader(
     }
 
     override fun shutdown() {
-        if (isShutdown.getAndSet(true)) return
+        if (shutdown.getAndSet(true)) return
         scope.cancel()
         systemCallbacks.shutdown()
         memoryCache?.clear()

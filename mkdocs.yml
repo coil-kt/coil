@@ -47,6 +47,7 @@ nav:
   - 'GIFs': gifs.md
   - 'SVGs': svgs.md
   - 'Video Frames': videos.md
+  - 'Testing': test.md
   - 'Recipes': recipes.md
   - 'FAQ': faq.md
   - 'Migrating from Glide/Picasso': migrating.md

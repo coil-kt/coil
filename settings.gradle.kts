@@ -13,6 +13,7 @@ include(
     "coil-svg",
     "coil-video",
     "coil-bom",
+    "coil-test",
 )
 
 // Private modules
@@ -21,5 +22,7 @@ include(
     "coil-sample-common",
     "coil-sample-compose",
     "coil-sample-view",
-    "coil-test",
+    "coil-test-internal",
+    "coil-test-paparazzi",
+    "coil-test-roborazzi",
 )

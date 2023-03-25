@@ -18,6 +18,8 @@ buildscript {
         classpath(libs.gradlePlugin.android)
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
+        classpath(libs.gradlePlugin.paparazzi)
+        classpath(libs.gradlePlugin.roborazzi)
     }
 }
 
@@ -32,7 +34,9 @@ extensions.configure<ApiValidationExtension> {
         "coil-sample-common",
         "coil-sample-compose",
         "coil-sample-view",
-        "coil-test",
+        "coil-test-internal",
+        "coil-test-paparazzi",
+        "coil-test-roborazzi",
     )
 }
 

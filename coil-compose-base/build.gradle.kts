@@ -21,10 +21,10 @@ dependencies {
     implementation(libs.accompanist.drawablepainter)
     api(libs.compose.foundation)
 
-    testImplementation(projects.coilTest)
+    testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
 
-    androidTestImplementation(projects.coilTest)
+    androidTestImplementation(projects.coilTestInternal)
     androidTestImplementation(libs.bundles.test.android)
     androidTestImplementation(libs.compose.ui.test)
 }
