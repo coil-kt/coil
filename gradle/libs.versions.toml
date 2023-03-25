@@ -16,7 +16,7 @@ spotless = "com.diffplug.spotless:6.17.0"
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:7.4.2"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10"
-gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.24.0"
+gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.25.1"
 
 accompanist-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.30.0"
 
