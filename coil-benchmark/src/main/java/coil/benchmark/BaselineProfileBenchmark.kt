@@ -24,11 +24,6 @@ class BaselineProfileBenchmark {
     }
 
     @Test
-    fun partialCompilation() {
-        startup(CompilationMode.Partial(BaselineProfileMode.Disable, warmupIterations = 3))
-    }
-
-    @Test
     fun baselineProfile() {
         startup(CompilationMode.Partial(BaselineProfileMode.Require))
     }
