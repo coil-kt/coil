@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
+import coil.decode.DataSource
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import kotlin.test.assertIs
@@ -34,9 +35,12 @@ class FakeImageLoaderEngineTest {
         val request = ImageRequest.Builder(context)
             .data(url)
             .build()
-        val result = imageLoader.execute(request)
-        assertIs<SuccessResult>(result)
-        assertSame(drawable, result.drawable)
+
+        repeat(3) {
+            val result = imageLoader.execute(request)
+            assertIs<SuccessResult>(result)
+            assertSame(drawable, result.drawable)
+        }
     }
 
     @Test
@@ -53,8 +57,61 @@ class FakeImageLoaderEngineTest {
         val request = ImageRequest.Builder(context)
             .data(url)
             .build()
-        val result = imageLoader.execute(request)
-        assertIs<SuccessResult>(result)
-        assertSame(drawable, result.drawable)
+
+        repeat(3) {
+            val result = imageLoader.execute(request)
+            assertIs<SuccessResult>(result)
+            assertSame(drawable, result.drawable)
+        }
+    }
+
+    @Test
+    fun `optional interceptor`() = runTest {
+        var index = -1
+        val url = "https://www.example.com/image.jpg"
+        val drawables = listOf(
+            ColorDrawable(Color.RED),
+            ColorDrawable(Color.GREEN),
+            ColorDrawable(Color.BLUE),
+        )
+        val engine = FakeImageLoaderEngine.Builder()
+            .addInterceptor {
+                index++
+                null
+            }
+            .addInterceptor { chain ->
+                if (index == 0) {
+                    SuccessResult(drawables[0], chain.request, DataSource.MEMORY)
+                } else {
+                    null
+                }
+            }
+            .addInterceptor { chain ->
+                if (index == 1) {
+                    SuccessResult(drawables[1], chain.request, DataSource.MEMORY)
+                } else {
+                    null
+                }
+            }
+            .addInterceptor { chain ->
+                if (index == 2) {
+                    SuccessResult(drawables[2], chain.request, DataSource.MEMORY)
+                } else {
+                    null
+                }
+            }
+            .build()
+        val imageLoader = ImageLoader.Builder(context)
+            .components { add(engine) }
+            .build()
+        val request = ImageRequest.Builder(context)
+            .data(url)
+            .build()
+
+        for (drawable in drawables) {
+            val result = imageLoader.execute(request)
+            assertIs<SuccessResult>(result)
+            assertSame(drawable, result.drawable)
+        }
     }
 }
