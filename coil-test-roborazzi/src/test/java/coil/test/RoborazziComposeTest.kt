@@ -3,6 +3,8 @@ package coil.test
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.LayerDrawable
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
@@ -53,6 +55,7 @@ class RoborazziComposeTest {
                 contentDescription = null,
                 imageLoader = imageLoader,
                 contentScale = ContentScale.None,
+                modifier = Modifier.fillMaxSize(),
             )
         }
     }

@@ -2,6 +2,8 @@ package coil.test
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import androidx.core.view.updateLayoutParams
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.ext.junit.rules.activityScenarioRule
@@ -49,6 +51,10 @@ class RoborazziViewTest {
             .data(url)
             .target(activity.imageView)
             .build()
+        activity.imageView.updateLayoutParams {
+            width = MATCH_PARENT
+            height = MATCH_PARENT
+        }
 
         // Don't suspend to test that the image view is updated synchronously.
         imageLoader.enqueue(request)
