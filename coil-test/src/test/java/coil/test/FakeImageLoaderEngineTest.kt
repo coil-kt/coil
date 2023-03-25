@@ -45,6 +45,28 @@ class FakeImageLoaderEngineTest {
     }
 
     @Test
+    fun `predicate data`() = runTest {
+        val url = "https://www.example.com/image.jpg"
+        val drawable = ColorDrawable(Color.RED)
+        val engine = FakeImageLoaderEngine.Builder()
+            .intercept("different_string", ColorDrawable(Color.GREEN))
+            .intercept({ it is String && it == url }, drawable)
+            .build()
+        val imageLoader = ImageLoader.Builder(context)
+            .components { add(engine) }
+            .build()
+        val request = ImageRequest.Builder(context)
+            .data(url)
+            .build()
+
+        repeat(3) {
+            val result = imageLoader.execute(request)
+            assertIs<SuccessResult>(result)
+            assertSame(drawable, result.drawable)
+        }
+    }
+
+    @Test
     fun `default drawable`() = runTest {
         val url = "https://www.example.com/image.jpg"
         val drawable = ColorDrawable(Color.RED)
