@@ -10,7 +10,7 @@ cp CHANGELOG.md docs/changelog.md
 cp coil-compose-singleton/README.md docs/compose.md
 cp coil-gif/README.md docs/gifs.md
 cp coil-svg/README.md docs/svgs.md
-cp coil-test/README.md docs/test.md
+cp coil-test/README.md docs/testing.md
 cp coil-video/README.md docs/videos.md
 cp logo.svg docs/logo.svg
 cp README-ja.md docs/README-ja.md
@@ -29,7 +29,7 @@ rm docs/index.md \
    docs/logo.svg \
    docs/gifs.md \
    docs/svgs.md \
-   docs/test.md \
+   docs/testing.md \
    docs/videos.md \
    docs/README-ja.md \
    docs/README-ko.md \

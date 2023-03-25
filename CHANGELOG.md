@@ -1,13 +1,32 @@
 # Changelog
 
+## [2.3.0] - March 25, 2023
+
+- **New**: Introduce a new `coil-test` artifact, which includes `FakeImageLoaderEngine`. This class is useful for hardcoding image loader responses to ensure consistent and synchronous (from the main thread) responses in tests. See [here](https://coil-kt.github.io/coil/testing) for more info.
+- **New**: Add [baseline profiles](https://developer.android.com/topic/performance/baselineprofiles/overview) to `coil-base` (child module of `coil`) and `coil-compose-base` (child module of `coil-compose`).
+  - This improves Coil's runtime performance and should offer [better frame timings](https://github.com/coil-kt/coil/tree/main/coil-benchmark/benchmark_output.md) depending on how Coil is used in your app.
+- Fix: Fix parsing `file://` URIs with encoded data. [#1601](https://github.com/coil-kt/coil/pull/1601)
+- Fix: `DiskCache` now properly computes its maximum size if passed a directory that does not exist. [#1620](https://github.com/coil-kt/coil/pull/1620)
+- Make `Coil.reset` public API. [#1506](https://github.com/coil-kt/coil/pull/1506)
+- Enable Java default method generation. [#1491](https://github.com/coil-kt/coil/pull/1491)
+- Update Kotlin to 1.8.10.
+- Update `accompanist-drawablepainter` to 0.30.0.
+- Update `androidx.annotation` to 1.6.0.
+- Update `androidx.appcompat:appcompat-resources` to 1.6.1.
+- Update `androidx.compose.foundation` to 1.4.0.
+- Update `androidx.core` to 1.9.0.
+- Update `androidx.exifinterface:exifinterface` to 1.3.6.
+- Update `androidx.lifecycle` to 1.6.1.
+- Update `okio` to 3.3.0.
+
 ## [2.2.2] - October 1, 2022
 
-* Ensure an image loader is fully initialized before registering its system callbacks. [#1465](https://github.com/coil-kt/coil/pull/1465)
-* Set the preferred bitmap config in `VideoFrameDecoder` on API 30+ to avoid banding. [#1487](https://github.com/coil-kt/coil/pull/1487)
-* Fix parsing paths containing `#` in `FileUriMapper`. [#1466](https://github.com/coil-kt/coil/pull/1466)
-* Fix reading responses with non-ascii headers from the disk cache. [#1468](https://github.com/coil-kt/coil/pull/1468)
-* Fix decoding videos inside asset subfolders. [#1489](https://github.com/coil-kt/coil/pull/1489)
-* Update `androidx.annotation` to 1.5.0.
+- Ensure an image loader is fully initialized before registering its system callbacks. [#1465](https://github.com/coil-kt/coil/pull/1465)
+- Set the preferred bitmap config in `VideoFrameDecoder` on API 30+ to avoid banding. [#1487](https://github.com/coil-kt/coil/pull/1487)
+- Fix parsing paths containing `#` in `FileUriMapper`. [#1466](https://github.com/coil-kt/coil/pull/1466)
+- Fix reading responses with non-ascii headers from the disk cache. [#1468](https://github.com/coil-kt/coil/pull/1468)
+- Fix decoding videos inside asset subfolders. [#1489](https://github.com/coil-kt/coil/pull/1489)
+- Update `androidx.annotation` to 1.5.0.
 
 ## [2.2.1] - September 8, 2022
 
