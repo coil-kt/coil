@@ -2,8 +2,7 @@ package coil.test
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import androidx.core.view.updateLayoutParams
+import android.widget.ImageView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.ext.junit.rules.activityScenarioRule
@@ -13,6 +12,7 @@ import coil.request.ImageRequest
 import coil.util.ViewTestActivity
 import coil.util.activity
 import com.github.takahirom.roborazzi.RoborazziRule
+import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,7 +33,6 @@ class RoborazziViewTest {
         )
     )
 
-    // TODO: Update screenshot once https://github.com/takahirom/roborazzi/issues/9 is fixed.
     @Test
     fun loadView() {
         val url = "https://www.example.com/image.jpg"
@@ -48,16 +47,18 @@ class RoborazziViewTest {
         val imageLoader = ImageLoader.Builder(activity)
             .components { add(engine) }
             .build()
+        val imageView = activity.imageView
+        imageView.scaleType = ImageView.ScaleType.CENTER
         val request = ImageRequest.Builder(activity)
             .data(url)
-            .target(activity.imageView)
+            .target(imageView)
             .build()
-        activity.imageView.updateLayoutParams {
-            width = MATCH_PARENT
-            height = MATCH_PARENT
-        }
 
         // Don't suspend to test that the image view is updated synchronously.
         imageLoader.enqueue(request)
+
+        // https://github.com/takahirom/roborazzi/issues/9
+        onView(isRoot())
+            .captureRoboImage("src/test/snapshots/images/coil.test.RoborazziViewTest_loadView.png")
     }
 }
