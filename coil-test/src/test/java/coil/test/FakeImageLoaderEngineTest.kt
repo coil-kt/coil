@@ -8,6 +8,7 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.test.FakeImageLoaderEngine.OptionalInterceptor
 import kotlin.test.assertIs
 import kotlin.test.assertSame
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -67,39 +68,28 @@ class FakeImageLoaderEngineTest {
 
     @Test
     fun `optional interceptor`() = runTest {
-        var index = -1
+        var currentIndex = -1
         val url = "https://www.example.com/image.jpg"
         val drawables = listOf(
             ColorDrawable(Color.RED),
             ColorDrawable(Color.GREEN),
             ColorDrawable(Color.BLUE),
         )
-        val engine = FakeImageLoaderEngine.Builder()
-            .addInterceptor {
-                index++
+        fun testInterceptor(index: Int) = OptionalInterceptor { chain ->
+            if (currentIndex == index) {
+                SuccessResult(drawables[index], chain.request, DataSource.MEMORY)
+            } else {
                 null
             }
-            .addInterceptor { chain ->
-                if (index == 0) {
-                    SuccessResult(drawables[0], chain.request, DataSource.MEMORY)
-                } else {
-                    null
-                }
+        }
+        val engine = FakeImageLoaderEngine.Builder()
+            .addInterceptor {
+                currentIndex++
+                null
             }
-            .addInterceptor { chain ->
-                if (index == 1) {
-                    SuccessResult(drawables[1], chain.request, DataSource.MEMORY)
-                } else {
-                    null
-                }
-            }
-            .addInterceptor { chain ->
-                if (index == 2) {
-                    SuccessResult(drawables[2], chain.request, DataSource.MEMORY)
-                } else {
-                    null
-                }
-            }
+            .addInterceptor(testInterceptor(0))
+            .addInterceptor(testInterceptor(1))
+            .addInterceptor(testInterceptor(2))
             .build()
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }
