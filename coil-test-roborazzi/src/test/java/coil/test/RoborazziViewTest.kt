@@ -33,6 +33,7 @@ class RoborazziViewTest {
         )
     )
 
+    // TODO: Update screenshot once https://github.com/takahirom/roborazzi/issues/9 is fixed.
     @Test
     fun loadView() {
         val url = "https://www.example.com/image.jpg"
