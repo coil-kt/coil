@@ -28,6 +28,7 @@ import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Size as CoilSize
+import androidx.compose.runtime.NonRestartableComposable
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -60,6 +61,7 @@ import kotlinx.coroutines.flow.mapNotNull
  *  destination.
  */
 @Composable
+@NonRestartableComposable
 fun AsyncImage(
     model: Any?,
     contentDescription: String?,
