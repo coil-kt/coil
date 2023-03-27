@@ -1,6 +1,7 @@
 package coil.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -60,6 +61,7 @@ import kotlinx.coroutines.flow.mapNotNull
  *  destination.
  */
 @Composable
+@NonRestartableComposable
 fun AsyncImage(
     model: Any?,
     contentDescription: String?,
