@@ -34,7 +34,7 @@ class PaparazziTest {
             .intercept({ it is String && it.endsWith("test.png") }, ColorDrawable(Color.GREEN))
             .default(ColorDrawable(Color.BLUE))
             .build()
-        val imageLoader = ImageLoader.Builder(context)
+        val imageLoader = ImageLoader.Builder(paparazzi.context)
             .components { add(engine) }
             .build()
         Coil.setImageLoader(imageLoader)
@@ -49,7 +49,10 @@ class PaparazziTest {
     @Test
     fun testContentCompose() {
         paparazzi.snapshot {
-            Content()
+            AsyncImage(
+                model = "https://www.example.com/image.jpg",
+                contentDescription = null,
+            )
         }
     }
 }
