@@ -168,7 +168,7 @@ class AsyncImagePainter internal constructor(
     private var painter: Painter? = null
         get() {
             painterNotifier
-            return _painter
+            return field
         }
         set(value) {
             if (field != value) {
