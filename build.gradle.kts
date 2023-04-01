@@ -8,8 +8,6 @@ import java.net.URL
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 buildscript {
     repositories {
@@ -84,18 +82,6 @@ allprojects {
             publishToMavenCentral()
             signAllPublications()
             pomFromGradleProperties()
-        }
-    }
-
-    plugins.withId("org.jetbrains.kotlin.android") {
-        configure<KotlinAndroidProjectExtension> {
-            jvmToolchain(8)
-        }
-    }
-
-    plugins.withId("org.jetbrains.kotlin.jvm") {
-        configure<KotlinJvmProjectExtension> {
-            jvmToolchain(8)
         }
     }
 
