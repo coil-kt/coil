@@ -1,9 +1,6 @@
 import coil.by
-import coil.groupId
-import coil.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import java.net.URL
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
@@ -30,7 +27,7 @@ plugins {
 }
 
 extensions.configure<ApiValidationExtension> {
-    ignoredProjects += arrayOf(
+    ignoredProjects += listOf(
         "coil-sample-common",
         "coil-sample-compose",
         "coil-sample-view",
@@ -49,9 +46,6 @@ allprojects {
         google()
         mavenCentral()
     }
-
-    group = project.groupId
-    version = project.versionName
 
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
@@ -74,14 +68,6 @@ allprojects {
                 url by URL("https://square.github.io/okio/3.x/okio/")
                 packageListUrl by URL("https://square.github.io/okio/3.x/okio/okio/package-list")
             }
-        }
-    }
-
-    plugins.withId("com.vanniktech.maven.publish.base") {
-        extensions.configure<MavenPublishBaseExtension> {
-            publishToMavenCentral()
-            signAllPublications()
-            pomFromGradleProperties()
         }
     }
 

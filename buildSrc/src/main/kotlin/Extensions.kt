@@ -15,11 +15,8 @@ val Project.targetSdk: Int
 val Project.compileSdk: Int
     get() = intProperty("compileSdk")
 
-val Project.groupId: String
-    get() = stringProperty("GROUP")
-
 val Project.versionName: String
-    get() = stringProperty("VERSION_NAME")
+    get() = stringProperty("POM_VERSION")
 
 val Project.versionCode: Int
     get() = versionName

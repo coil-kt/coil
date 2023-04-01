@@ -37,10 +37,15 @@ fun Project.setupLibraryModule(
             }
         }
         extensions.configure<MavenPublishBaseExtension> {
-            val group = project.property("GROUP").toString()
-            val artifact = project.property("POM_ARTIFACT_ID").toString()
-            val version = project.property("VERSION_NAME").toString()
-            coordinates(group, artifact, version)
+            pomFromGradleProperties()
+            publishToMavenCentral()
+            signAllPublications()
+
+            coordinates(
+                groupId = project.property("POM_GROUP_ID").toString(),
+                artifactId = project.property("POM_ARTIFACT_ID").toString(),
+                version = project.property("POM_VERSION").toString(),
+            )
         }
     }
     action()
@@ -48,7 +53,7 @@ fun Project.setupLibraryModule(
 
 fun Project.setupAppModule(
     name: String,
-    action: BaseAppModuleExtension.() -> Unit = {}
+    action: BaseAppModuleExtension.() -> Unit = {},
 ) = setupBaseModule<BaseAppModuleExtension>(name) {
     defaultConfig {
         applicationId = name
