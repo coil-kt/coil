@@ -6,7 +6,7 @@ on:
     pull_request:
 env:
     CACHE_VERSION: 1 # Increment this to invalidate the cache.
-    JAVA_VERSION: 19
+    JAVA_VERSION: 20
 jobs:
     checks:
         name: Checks
