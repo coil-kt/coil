@@ -16,7 +16,7 @@
 - Update `androidx.compose.foundation` to 1.4.0.
 - Update `androidx.core` to 1.9.0.
 - Update `androidx.exifinterface:exifinterface` to 1.3.6.
-- Update `androidx.lifecycle` to 1.6.1.
+- Update `androidx.lifecycle` to 2.6.1.
 - Update `okio` to 3.3.0.
 
 ## [2.2.2] - October 1, 2022
