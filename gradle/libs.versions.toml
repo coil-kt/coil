@@ -47,7 +47,7 @@ androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-anima
 
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
-compose-ui-test = "androidx.compose.ui:ui-test-junit4:1.4.0"
+compose-ui-test = "androidx.compose.ui:ui-test-junit4:1.4.1"
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
