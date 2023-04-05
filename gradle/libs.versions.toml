@@ -21,7 +21,7 @@ gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.25.1"
 gradlePlugin-paparazzi = "app.cash.paparazzi:paparazzi-gradle-plugin:1.2.0"
 gradlePlugin-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
 
-accompanist-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.30.0"
+accompanist-drawablepainter = "com.google.accompanist:accompanist-drawablepainter:0.30.1"
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
