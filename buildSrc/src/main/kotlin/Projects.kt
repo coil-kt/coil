@@ -67,8 +67,12 @@ fun Project.setupAppModule(
 
 fun Project.setupTestModule(
     name: String,
+    config: Boolean = false,
     action: TestExtension.() -> Unit = {},
 ) = setupBaseModule<TestExtension>(name) {
+    buildFeatures {
+        buildConfig = config
+    }
     defaultConfig {
         resourceConfigurations += "en"
         vectorDrawables.useSupportLibrary = true
