@@ -46,6 +46,7 @@ import coil.request.ImageRequest
 import sample.common.AssetType
 import sample.common.Image
 import sample.common.MainViewModel
+import sample.common.R
 import sample.common.Screen
 import sample.common.calculateScaledSize
 import sample.common.next
