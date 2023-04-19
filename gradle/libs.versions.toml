@@ -1,5 +1,5 @@
 [versions]
-androidx-activity = "1.7.0"
+androidx-activity = "1.7.1"
 androidx-lifecycle = "2.6.1"
 compose = "1.4.2"
 composeCompiler = "1.4.5"
