@@ -10,7 +10,7 @@ okio = "3.3.0"
 roborazzi = "1.0.0-rc-3"
 
 [plugins]
-binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.0"
+binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.1"
 dokka = "org.jetbrains.dokka:1.8.10"
 spotless = "com.diffplug.spotless:6.18.0"
 
