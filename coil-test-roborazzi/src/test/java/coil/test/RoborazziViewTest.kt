@@ -11,7 +11,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.util.ViewTestActivity
 import coil.util.activity
-import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
@@ -24,14 +23,6 @@ class RoborazziViewTest {
 
     @get:Rule
     val activityRule = activityScenarioRule<ViewTestActivity>()
-
-    @get:Rule
-    val roborazziRule = RoborazziRule(
-        captureRoot = onView(isRoot()),
-        options = RoborazziRule.Options(
-            outputDirectoryPath = "src/test/snapshots/images",
-        )
-    )
 
     @Test
     fun loadView() {
@@ -59,6 +50,6 @@ class RoborazziViewTest {
 
         // https://github.com/takahirom/roborazzi/issues/9
         onView(isRoot())
-            .captureRoboImage("src/test/snapshots/images/coil.test.RoborazziViewTest_loadView.png")
+            .captureRoboImage("src/test/snapshots/images/coil_test_RoborazziViewTest_loadView.png")
     }
 }
