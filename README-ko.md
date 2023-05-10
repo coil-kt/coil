@@ -9,8 +9,6 @@ Coil은 Kotlin Coroutines으로 만들어진 Android 백앤드 이미지 로딩 
 
 Coil은: **Co**routine **I**mage **L**oader의 약자입니다.
 
-❤️[Instacart](https://www.instacart.com)에서 ❤️으로 만들었습니다.
-
 ## 다운로드
 
 Coil은 `mavenCentral()`로 이용 가능합니다.
@@ -58,7 +56,7 @@ implementation("io.coil-kt:coil-compose:2.3.0")
 ```kotlin
 AsyncImage(
     model = "https://example.com/image.jpg",
-    contentDescription = null
+    contentDescription = null,
 )
 ```
 

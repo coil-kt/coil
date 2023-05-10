@@ -9,8 +9,6 @@ Coil は Kotlin Coroutines で作られた Android 用の画像読み込みラ�
 
 Coil は **Co**routine **I**mage **L**oader の頭字語です。
 
-[Instacart](https://www.instacart.com) ❤️ で作成されました。
-
 ## ダウンロード
 
 Coil は `mavenCentral()` で利用できます。
@@ -58,7 +56,7 @@ implementation("io.coil-kt:coil-compose:2.3.0")
 ```kotlin
 AsyncImage(
     model = "https://example.com/image.jpg",
-    contentDescription = null
+    contentDescription = null,
 )
 ```
 

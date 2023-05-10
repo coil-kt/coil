@@ -68,7 +68,7 @@ Coil 2.0.0 is a major iteration of the library and includes breaking changes. Ch
 // Display an image from the network.
 AsyncImage(
     model = "https://example.com/image.jpg",
-    contentDescription = null
+    contentDescription = null,
 )
 
 // Display an image from the network with a placeholder, circle crop, and crossfade animation.
@@ -270,7 +270,7 @@ Changes since `2.0.0-alpha09`:
 // Only draw the image.
 AsyncImage(
     model = "https://example.com/image.jpg",
-    contentDescription = null // Avoid `null` and set this to a localized string if possible.
+    contentDescription = null, // Avoid `null` and set this to a localized string if possible.
 )
 
 // Draw the image with a circle crop, crossfade, and overwrite the `loading` state.

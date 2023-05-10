@@ -11,7 +11,7 @@ Then use the `AsyncImage` composable to load and display an image:
 ```kotlin
 AsyncImage(
     model = "https://example.com/image.jpg",
-    contentDescription = null
+    contentDescription = null,
 )
 ```
 

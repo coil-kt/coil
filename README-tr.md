@@ -10,8 +10,6 @@ Android için Kotlin Coroutines tarafından desteklenen bir görüntü yükleme 
 
 Coil şunların baş harflerinden oluşur: **Co**routine **I**mage **L**oader.
 
-[Instacart](https://www.instacart.com)'da ❤️ ile yapıldı. Çeviriler: [Korece](README-ko.md), [Çince](README-zh.md)
-
 ## Yükleme
 
 Coil `mavenCentral()`'da mevcuttur.

@@ -9,8 +9,6 @@ Coil 是一个 Android 图片加载库，通过 Kotlin 协程的方式加载图�
 
 Coil 名字的由来：取 **Co**routine **I**mage **L**oader 首字母得来。
 
-在 [Instacart](https://www.instacart.com) 用❤️打造。
-
 ## 下载
 
 Coil 可以在 `mavenCentral()` 下载
@@ -22,6 +20,7 @@ implementation("io.coil-kt:coil:2.3.0")
 ## 快速上手
 
 可以使用 `ImageView` 的扩展函数 `load` 加载一张图片：
+
 ```kotlin
 // URL
 imageView.load("https://example.com/image.jpg")
@@ -44,6 +43,7 @@ imageView.load("https://example.com/image.jpg") {
     transformations(CircleCropTransformation())
 }
 ```
+
 #### Jetpack Compose
 
 引入 [Jetpack Compose](https://developer.android.com/jetpack/compose) 扩展库:
@@ -57,17 +57,20 @@ implementation("io.coil-kt:coil-compose:2.3.0")
 ```kotlin
 AsyncImage(
     model = "https://example.com/image.jpg",
-    contentDescription = null
+    contentDescription = null,
 )
 ```
 
 ### 图片加载器 `ImageLoader`
+
 `imageView.load` 使用单例 `ImageLoader` 来把 `ImageRequest` 加入队列. `ImageLoader` 单例可以通过扩展方法来获取：
+
 ```kotlin
 val imageLoader = context.imageLoader
 ```
 
 此外，你也可以通过创建 `ImageLoader` 实例从而实现依赖注入：
+
 ```kotlin
 val imageLoader = ImageLoader(context)
 ```
