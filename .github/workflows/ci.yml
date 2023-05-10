@@ -7,7 +7,7 @@ on:
 env:
     CACHE_VERSION: 1 # Increment this to invalidate the cache.
     CI: true
-    JAVA_VERSION: 19
+    JAVA_VERSION: 20
 jobs:
     checks:
         name: Checks
