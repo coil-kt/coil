@@ -17,7 +17,7 @@ import coil.request.onAnimationStart
 import coil.request.repeatCount
 import coil.util.ViewTestActivity
 import coil.util.activity
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -26,7 +26,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AnimationCallbacksTest {
 
     private lateinit var context: Context
@@ -52,7 +51,7 @@ class AnimationCallbacksTest {
     }
 
     @Test
-    fun callbacksTest() = runTest(dispatchTimeoutMs = 30_000) {
+    fun callbacksTest() = runTest(timeout = 30_000.milliseconds) {
         val imageView = activityRule.scenario.activity.imageView
         val isStartCalled = MutableStateFlow(false)
         val isEndCalled = MutableStateFlow(false)
