@@ -17,7 +17,7 @@ import coil.request.onAnimationStart
 import coil.request.repeatCount
 import coil.util.ViewTestActivity
 import coil.util.activity
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -51,7 +51,7 @@ class AnimationCallbacksTest {
     }
 
     @Test
-    fun callbacksTest() = runTest(timeout = 30_000.milliseconds) {
+    fun callbacksTest() = runTest(timeout = 30.seconds) {
         val imageView = activityRule.scenario.activity.imageView
         val isStartCalled = MutableStateFlow(false)
         val isEndCalled = MutableStateFlow(false)
