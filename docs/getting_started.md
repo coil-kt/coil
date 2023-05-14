@@ -140,12 +140,17 @@ val request = ImageRequest.Builder(context)
 imageLoader.enqueue(request)
 ```
 
-To preload a network image only into the disk cache, disable the memory cache for the request:
+To preload a network image only into the disk cache:
 
 ```kotlin
 val request = ImageRequest.Builder(context)
     .data("https://example.com/image.jpg")
+    // Disable reading from/writing to the memory cache.
     .memoryCachePolicy(CachePolicy.DISABLED)
+    // Set a custom `decoderFactory` that skips the decoding step.
+    .decoderFactory { _, _, _ ->
+        Decoder { DecodeResult(ColorDrawable(Color.BLACK), false) }
+    }
     .build()
 imageLoader.enqueue(request)
 ```
