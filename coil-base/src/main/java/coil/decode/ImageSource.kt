@@ -297,7 +297,7 @@ internal class SourceImageSource(
 
     private fun createTempFile(): Path {
         val cacheDirectory = cacheDirectoryFactory!!.invoke()
-        require(cacheDirectory.isDirectory) { "cacheDirectory must be a directory." }
+        check(cacheDirectory.isDirectory) { "cacheDirectory must be a directory." }
 
         // Replace JVM call with https://github.com/square/okio/issues/1090 once it's available.
         return File.createTempFile("tmp", null, cacheDirectory).toOkioPath()
