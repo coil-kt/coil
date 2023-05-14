@@ -18,6 +18,7 @@ import coil.util.await
 import coil.util.closeQuietly
 import coil.util.getMimeTypeFromUrl
 import coil.util.isMainThread
+import coil.util.requireBody
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import okhttp3.CacheControl
 import okhttp3.Call
@@ -270,10 +271,6 @@ internal class HttpUriFetcher(
 
     private fun Response.toDataSource(): DataSource {
         return if (networkResponse != null) DataSource.NETWORK else DataSource.DISK
-    }
-
-    private fun Response.requireBody(): ResponseBody {
-        return checkNotNull(body) { "response body == null" }
     }
 
     private val diskCacheKey get() = options.diskCacheKey ?: url

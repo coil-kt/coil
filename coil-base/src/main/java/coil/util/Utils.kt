@@ -49,6 +49,8 @@ import java.io.File
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
+import okhttp3.Response
+import okhttp3.ResponseBody
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {
@@ -171,7 +173,11 @@ internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
 internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 
 /** https://github.com/coil-kt/coil/issues/675 */
-internal val Context.safeCacheDir: File get() = cacheDir.apply { mkdirs() }
+internal val Context.safeCacheDir: File
+    get() {
+        val cacheDir = checkNotNull(cacheDir) { "cacheDir == null" }
+        return cacheDir.apply { mkdirs() }
+    }
 
 internal inline fun ComponentRegistry.Builder.addFirst(
     pair: Pair<Fetcher.Factory<*>, Class<*>>?
@@ -237,6 +243,10 @@ internal fun Headers.Builder.addUnsafeNonAscii(line: String) = apply {
     val index = line.indexOf(':')
     require(index != -1) { "Unexpected header: $line" }
     addUnsafeNonAscii(line.substring(0, index).trim(), line.substring(index + 1))
+}
+
+internal fun Response.requireBody(): ResponseBody {
+    return checkNotNull(body) { "response body == null" }
 }
 
 private const val STANDARD_MEMORY_MULTIPLIER = 0.2
