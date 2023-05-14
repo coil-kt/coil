@@ -335,7 +335,6 @@ class AsyncImagePainter internal constructor(
     /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
     private fun Drawable.toPainter() = when (this) {
         is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
-        is ColorDrawable -> ColorPainter(Color(color))
         else -> DrawablePainter(mutate())
     }
 

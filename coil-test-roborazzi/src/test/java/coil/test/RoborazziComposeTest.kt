@@ -2,7 +2,6 @@ package coil.test
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.LayerDrawable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -38,7 +37,7 @@ class RoborazziComposeTest {
     fun loadCompose() {
         val url = "https://www.example.com/image.jpg"
         // Wrap the color drawable so it isn't automatically converted into a ColorPainter.
-        val drawable = object : LayerDrawable(arrayOf(ColorDrawable(Color.RED))) {
+        val drawable = object : ColorDrawable(Color.RED) {
             override fun getIntrinsicWidth() = 100
             override fun getIntrinsicHeight() = 100
         }

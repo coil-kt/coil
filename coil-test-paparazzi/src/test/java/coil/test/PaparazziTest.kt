@@ -2,7 +2,6 @@ package coil.test
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.LayerDrawable
 import android.widget.ImageView
 import androidx.compose.ui.layout.ContentScale
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_6
@@ -52,7 +51,7 @@ class PaparazziTest {
     fun loadCompose() {
         val url = "https://www.example.com/image.jpg"
         // Wrap the color drawable so it isn't automatically converted into a ColorPainter.
-        val drawable = object : LayerDrawable(arrayOf(ColorDrawable(Color.RED))) {
+        val drawable = object : ColorDrawable(Color.RED) {
             override fun getIntrinsicWidth() = 100
             override fun getIntrinsicHeight() = 100
         }
