@@ -7,7 +7,7 @@ on:
 env:
     CACHE_VERSION: 1 # Increment this to invalidate the cache.
     CI: true
-    JAVA_VERSION: 19
+    JAVA_VERSION: 20
 jobs:
     checks:
         name: Checks
@@ -133,7 +133,7 @@ jobs:
     deploy-snapshot:
         name: Deploy snapshot
         runs-on: ubuntu-latest
-        timeout-minutes: 10
+        timeout-minutes: 20
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         needs: [checks, unit-tests, instrumentation-tests]
         steps:
@@ -152,7 +152,7 @@ jobs:
     deploy-docs:
         name: Deploy docs
         runs-on: ubuntu-latest
-        timeout-minutes: 10
+        timeout-minutes: 20
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         needs: [checks, unit-tests, instrumentation-tests]
         steps:
