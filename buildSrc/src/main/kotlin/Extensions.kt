@@ -15,6 +15,9 @@ val Project.targetSdk: Int
 val Project.compileSdk: Int
     get() = intProperty("compileSdk")
 
+val Project.groupId: String
+    get() = stringProperty("POM_GROUP_ID")
+
 val Project.versionName: String
     get() = stringProperty("POM_VERSION")
 
@@ -28,6 +31,26 @@ val Project.versionCode: Int
             // 1.2.3 -> 102030
             (unit * 10.0.pow(2 * index + 1)).toInt()
         }
+
+val publicModules = listOf(
+    "coil-base",
+    "coil-singleton",
+    "coil-compose-base",
+    "coil-compose-singleton",
+    "coil-gif",
+    "coil-svg",
+    "coil-video",
+    "coil-test",
+)
+
+val privateModules = listOf(
+    "coil-sample-common",
+    "coil-sample-compose",
+    "coil-sample-view",
+    "coil-test-internal",
+    "coil-test-paparazzi",
+    "coil-test-roborazzi",
+)
 
 private fun Project.intProperty(name: String): Int {
     return (property(name) as String).toInt()

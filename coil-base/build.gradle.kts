@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(name = "coil.base", publish = true)
+setupLibraryModule(name = "coil.base")
 
 dependencies {
     implementation(libs.androidx.annotation)

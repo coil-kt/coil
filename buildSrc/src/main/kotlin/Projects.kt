@@ -6,6 +6,7 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -18,37 +19,36 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 fun Project.setupLibraryModule(
     name: String,
     config: Boolean = false,
-    publish: Boolean = false,
-    document: Boolean = publish,
     action: LibraryExtension.() -> Unit = {},
 ) = setupBaseModule<LibraryExtension>(name) {
     buildFeatures {
         buildConfig = config
     }
-    if (publish) {
-        if (document) {
-            apply(plugin = "org.jetbrains.dokka")
-        }
+    if (project.name in publicModules) {
+        apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
-        publishing {
-            singleVariant("release") {
-                withJavadocJar()
-                withSourcesJar()
-            }
-        }
-        extensions.configure<MavenPublishBaseExtension> {
-            pomFromGradleProperties()
-            publishToMavenCentral()
-            signAllPublications()
-
-            coordinates(
-                groupId = project.property("POM_GROUP_ID").toString(),
-                artifactId = project.property("POM_ARTIFACT_ID").toString(),
-                version = project.property("POM_VERSION").toString(),
-            )
+        setupPublishing {
+            configure(AndroidSingleVariantLibrary())
         }
     }
     action()
+}
+
+fun Project.setupPublishing(
+    action: MavenPublishBaseExtension.() -> Unit = {},
+) {
+    extensions.configure<MavenPublishBaseExtension> {
+        pomFromGradleProperties()
+        publishToMavenCentral()
+        signAllPublications()
+        action()
+
+        coordinates(
+            groupId = project.property("POM_GROUP_ID").toString(),
+            artifactId = project.property("POM_ARTIFACT_ID").toString(),
+            version = project.property("POM_VERSION").toString(),
+        )
+    }
 }
 
 fun Project.setupAppModule(

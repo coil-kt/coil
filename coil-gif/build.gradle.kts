@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(name = "coil.gif", publish = true)
+setupLibraryModule(name = "coil.gif")
 
 dependencies {
     api(projects.coilBase)

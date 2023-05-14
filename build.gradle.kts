@@ -1,4 +1,7 @@
 import coil.by
+import coil.groupId
+import coil.privateModules
+import coil.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import java.net.URL
@@ -27,14 +30,7 @@ plugins {
 }
 
 extensions.configure<ApiValidationExtension> {
-    ignoredProjects += listOf(
-        "coil-sample-common",
-        "coil-sample-compose",
-        "coil-sample-view",
-        "coil-test-internal",
-        "coil-test-paparazzi",
-        "coil-test-roborazzi",
-    )
+    ignoredProjects += privateModules
 }
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
@@ -46,6 +42,10 @@ allprojects {
         google()
         mavenCentral()
     }
+
+    // Necessary to publish to Maven.
+    group = groupId
+    version = versionName
 
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
