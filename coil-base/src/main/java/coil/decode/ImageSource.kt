@@ -65,7 +65,7 @@ fun ImageSource(
 fun ImageSource(
     source: BufferedSource,
     context: Context,
-): ImageSource = SourceImageSource(source, context.safeCacheDir, null)
+): ImageSource = SourceImageSource(source, { context.safeCacheDir }, null)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -80,7 +80,7 @@ fun ImageSource(
     source: BufferedSource,
     context: Context,
     metadata: ImageSource.Metadata? = null,
-): ImageSource = SourceImageSource(source, context.safeCacheDir, metadata)
+): ImageSource = SourceImageSource(source, { context.safeCacheDir }, metadata)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -92,7 +92,7 @@ fun ImageSource(
 fun ImageSource(
     source: BufferedSource,
     cacheDirectory: File,
-): ImageSource = SourceImageSource(source, cacheDirectory, null)
+): ImageSource = SourceImageSource(source, { cacheDirectory }, null)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -107,7 +107,7 @@ fun ImageSource(
     source: BufferedSource,
     cacheDirectory: File,
     metadata: ImageSource.Metadata? = null,
-): ImageSource = SourceImageSource(source, cacheDirectory, metadata)
+): ImageSource = SourceImageSource(source, { cacheDirectory }, metadata)
 
 /**
  * Provides access to the image data to be decoded.
@@ -246,17 +246,14 @@ internal class FileImageSource(
 
 internal class SourceImageSource(
     source: BufferedSource,
-    private val cacheDirectory: File,
+    cacheDirectoryFactory: () -> File,
     override val metadata: Metadata?
 ) : ImageSource() {
 
     private var isClosed = false
     private var source: BufferedSource? = source
+    private var cacheDirectoryFactory: (() -> File)? = cacheDirectoryFactory
     private var file: Path? = null
-
-    init {
-        require(cacheDirectory.isDirectory) { "cacheDirectory must be a directory." }
-    }
 
     override val fileSystem get() = FileSystem.SYSTEM
 
@@ -275,13 +272,14 @@ internal class SourceImageSource(
         file?.let { return it }
 
         // Copy the source to a temp file.
-        // Replace JVM call with https://github.com/square/okio/issues/1090 once it's available.
-        val tempFile = File.createTempFile("tmp", null, cacheDirectory).toOkioPath()
+        val tempFile = createTempFile()
         fileSystem.write(tempFile) {
             writeAll(source!!)
         }
         source = null
-        return tempFile.also { file = it }
+        file = tempFile
+        cacheDirectoryFactory = null
+        return tempFile
     }
 
     @Synchronized
@@ -295,6 +293,14 @@ internal class SourceImageSource(
         isClosed = true
         source?.closeQuietly()
         file?.let(fileSystem::delete)
+    }
+
+    private fun createTempFile(): Path {
+        val cacheDirectory = cacheDirectoryFactory!!.invoke()
+        check(cacheDirectory.isDirectory) { "cacheDirectory must be a directory." }
+
+        // Replace JVM call with https://github.com/square/okio/issues/1090 once it's available.
+        return File.createTempFile("tmp", null, cacheDirectory).toOkioPath()
     }
 
     private fun assertNotClosed() {
