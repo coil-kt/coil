@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(namespace = "coil.compose.base") {
+setupLibraryModule(name = "coil.compose.base") {
     buildFeatures {
         compose = true
     }

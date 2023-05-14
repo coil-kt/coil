@@ -6,7 +6,7 @@ plugins {
     id("app.cash.paparazzi")
 }
 
-setupLibraryModule(namespace = "coil.test.paparazzi") {
+setupLibraryModule(name = "coil.test.paparazzi") {
     buildFeatures {
         compose = true
     }

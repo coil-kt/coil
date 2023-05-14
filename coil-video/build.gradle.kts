@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(namespace = "coil.video")
+setupLibraryModule(name = "coil.video")
 
 dependencies {
     api(projects.coilBase)

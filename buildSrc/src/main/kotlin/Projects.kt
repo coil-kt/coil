@@ -17,14 +17,14 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 fun Project.setupLibraryModule(
-    namespace: String,
+    name: String,
     config: Boolean = false,
     action: LibraryExtension.() -> Unit = {},
-) = setupBaseModule<LibraryExtension>(namespace) {
+) = setupBaseModule<LibraryExtension>(name) {
     buildFeatures {
         buildConfig = config
     }
-    if (name in publicModules) {
+    if (project.name in publicModules) {
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
         setupPublishing {
@@ -52,11 +52,11 @@ fun Project.setupPublishing(
 }
 
 fun Project.setupAppModule(
-    namespace: String,
+    name: String,
     action: BaseAppModuleExtension.() -> Unit = {},
-) = setupBaseModule<BaseAppModuleExtension>(namespace) {
+) = setupBaseModule<BaseAppModuleExtension>(name) {
     defaultConfig {
-        applicationId = namespace
+        applicationId = name
         versionCode = project.versionCode
         versionName = project.versionName
         resourceConfigurations += "en"
@@ -66,10 +66,10 @@ fun Project.setupAppModule(
 }
 
 fun Project.setupTestModule(
-    namespace: String,
+    name: String,
     config: Boolean = false,
     action: TestExtension.() -> Unit = {},
-) = setupBaseModule<TestExtension>(namespace) {
+) = setupBaseModule<TestExtension>(name) {
     buildFeatures {
         buildConfig = config
     }

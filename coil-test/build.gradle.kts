@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(namespace = "coil.test")
+setupLibraryModule(name = "coil.test")
 
 dependencies {
     api(projects.coilBase)

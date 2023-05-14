@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(namespace = "coil.svg")
+setupLibraryModule(name = "coil.svg")
 
 dependencies {
     api(projects.coilBase)

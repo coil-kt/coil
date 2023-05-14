@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(namespace = "coil.compose.singleton") {
+setupLibraryModule(name = "coil.compose.singleton") {
     buildFeatures {
         compose = true
     }
