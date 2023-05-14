@@ -6,7 +6,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupTestModule(name = "coil.benchmark", config = true) {
+setupTestModule(namespace = "coil.benchmark", config = true) {
     val targetProject = System.getProperty("project", "view")
     defaultConfig {
         minSdk = 23

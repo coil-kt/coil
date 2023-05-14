@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupAppModule(name = "sample.compose") {
+setupAppModule(namespace = "sample.compose") {
     buildTypes {
         release {
             isMinifyEnabled = true

@@ -5,7 +5,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupLibraryModule(name = "sample.common", config = true)
+setupLibraryModule(namespace = "sample.common", config = true)
 
 dependencies {
     api(projects.coilSingleton)

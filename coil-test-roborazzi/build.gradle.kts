@@ -6,7 +6,7 @@ plugins {
     id("io.github.takahirom.roborazzi")
 }
 
-setupLibraryModule(name = "coil.test.roborazzi") {
+setupLibraryModule(namespace = "coil.test.roborazzi") {
     buildFeatures {
         compose = true
     }
