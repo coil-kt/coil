@@ -7,12 +7,10 @@ import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 fun Project.setupLibraryModule(
@@ -92,10 +90,6 @@ private fun <T : BaseExtension> Project.setupBaseModule(
             targetSdk = project.targetSdk
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
-        }
         packagingOptions {
             resources.pickFirsts += listOf(
                 "META-INF/AL2.0",
@@ -119,7 +113,6 @@ private fun <T : BaseExtension> Project.setupBaseModule(
     kotlin {
         compilerOptions {
             allWarningsAsErrors by System.getenv("CI").toBoolean()
-            jvmTarget by JvmTarget.JVM_1_8
 
             val arguments = mutableListOf(
                 // https://kotlinlang.org/docs/compiler-reference.html#progressive

@@ -12,3 +12,7 @@ dependencies {
     implementation(libs.gradlePlugin.kotlin)
     implementation(libs.gradlePlugin.mavenPublish)
 }
+
+kotlin {
+    jvmToolchain(11)
+}
