@@ -147,7 +147,7 @@ val request = ImageRequest.Builder(context)
     .data("https://example.com/image.jpg")
     // Disable reading from/writing to the memory cache.
     .memoryCachePolicy(CachePolicy.DISABLED)
-    // Set a custom `DecoderFactory` that skips the decoding step.
+    // Set a custom `Decoder.Factory` that skips the decoding step.
     .decoderFactory { _, _, _ ->
         Decoder { DecodeResult(ColorDrawable(Color.BLACK), false) }
     }
