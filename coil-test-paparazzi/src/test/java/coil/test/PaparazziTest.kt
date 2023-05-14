@@ -9,7 +9,10 @@ import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_6
 import app.cash.paparazzi.Paparazzi
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.ImageSource
 import coil.request.ImageRequest
+import kotlin.test.assertTrue
+import okio.Buffer
 import org.junit.Rule
 import org.junit.Test
 
@@ -71,5 +74,12 @@ class PaparazziTest {
                 contentScale = ContentScale.None,
             )
         }
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1754 */
+    @Test
+    fun createSourceImageSource() {
+        val source = ImageSource(Buffer(), paparazzi.context)
+        assertTrue(source.source().exhausted())
     }
 }
