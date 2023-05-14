@@ -1,20 +1,22 @@
-import coil.setupLibraryModule
+import coil.publicModules
+import coil.setupPublishing
+import com.vanniktech.maven.publish.JavaPlatform
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+    id("java-platform")
+    id("com.vanniktech.maven.publish.base")
 }
 
-setupLibraryModule(name = "coil.bom", publish = true, document = false)
+setupPublishing {
+    configure(JavaPlatform())
+}
 
 dependencies {
     constraints {
-        api(projects.coilBase)
-        api(projects.coilSingleton)
-        api(projects.coilComposeBase)
-        api(projects.coilComposeSingleton)
-        api(projects.coilGif)
-        api(projects.coilSvg)
-        api(projects.coilVideo)
+        for (subproject in rootProject.subprojects) {
+            if (subproject.name in publicModules) {
+                api(subproject)
+            }
+        }
     }
 }
