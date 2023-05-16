@@ -262,13 +262,15 @@ public final class coil/decode/ResourceMetadata : coil/decode/ImageSource$Metada
 
 public abstract interface class coil/disk/DiskCache {
 	public abstract fun clear ()V
-	public abstract fun edit (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
-	public abstract fun get (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
+	public fun edit (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
+	public fun get (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
 	public abstract fun getDirectory ()Lokio/Path;
 	public abstract fun getFileSystem ()Lokio/FileSystem;
 	public abstract fun getMaxSize ()J
 	public abstract fun getSize ()J
+	public abstract fun read (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
 	public abstract fun remove (Ljava/lang/String;)Z
+	public abstract fun write (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
 }
 
 public final class coil/disk/DiskCache$Builder {

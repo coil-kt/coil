@@ -25,11 +25,11 @@ internal class RealDiskCache(
 
     override val size get() = cache.size()
 
-    override fun get(key: String): Snapshot? {
+    override fun read(key: String): Snapshot? {
         return cache[key.hash()]?.let(::RealSnapshot)
     }
 
-    override fun edit(key: String): Editor? {
+    override fun write(key: String): Editor? {
         return cache.edit(key.hash())?.let(::RealEditor)
     }
 

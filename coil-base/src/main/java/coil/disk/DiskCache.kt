@@ -33,23 +33,31 @@ interface DiskCache {
     val fileSystem: FileSystem
 
     /**
-     * Get the entry associated with [key].
+     * Read the entry associated with [key].
      *
      * IMPORTANT: **You must** call either [Snapshot.close] or [Snapshot.closeAndEdit] when finished
      * reading the snapshot. An open snapshot prevents editing the entry or deleting it on disk.
      */
     @ExperimentalCoilApi
-    operator fun get(key: String): Snapshot?
+    fun read(key: String): Snapshot?
+
+    @Deprecated("Renamed to 'read'.", ReplaceWith("read(key)"))
+    @ExperimentalCoilApi
+    operator fun get(key: String): Snapshot? = read(key)
 
     /**
-     * Edit the entry associated with [key].
+     * Write to the entry associated with [key].
      *
      * IMPORTANT: **You must** call one of [Editor.commit], [Editor.commitAndGet], or [Editor.abort]
      * to complete the edit. An open editor prevents opening new [Snapshot]s or opening a new
      * [Editor].
      */
     @ExperimentalCoilApi
-    fun edit(key: String): Editor?
+    fun write(key: String): Editor?
+
+    @Deprecated("Renamed to 'write'.", ReplaceWith("write(key)"))
+    @ExperimentalCoilApi
+    fun edit(key: String): Editor? = write(key)
 
     /**
      * Delete the entry referenced by [key].
