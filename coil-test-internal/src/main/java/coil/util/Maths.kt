@@ -1,6 +1,5 @@
 package coil.util
 
-import androidx.annotation.FloatRange
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -10,7 +9,6 @@ import kotlin.math.sqrt
  *
  * https://en.wikipedia.org/wiki/Cross-correlation
  */
-@FloatRange(from = -1.0, to = 1.0)
 fun crossCorrelation(x: IntArray, y: IntArray): Double {
     require(x.count() == y.count()) { "Input arrays must be of equal size." }
 

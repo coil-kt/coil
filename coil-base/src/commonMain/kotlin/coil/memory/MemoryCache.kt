@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.annotation.FloatRange
 import coil.key.Keyer
 import coil.util.calculateMemoryCacheSize
 import coil.util.defaultMemoryCacheSizePercent
@@ -154,7 +153,7 @@ interface MemoryCache {
          * Set the maximum size of the memory cache as a percentage of this application's
          * available memory.
          */
-        fun maxSizePercent(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
+        fun maxSizePercent(percent: Double) = apply {
             require(percent in 0.0..1.0) { "size must be in the range [0.0, 1.0]." }
             this.maxSizeBytes = 0
             this.maxSizePercent = percent

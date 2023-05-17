@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
-import androidx.annotation.FloatRange
 import androidx.lifecycle.Lifecycle
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.Decoder
@@ -35,7 +34,6 @@ import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.SingletonDiskCache
 import coil.util.getDrawableCompat
-import coil.util.unsupported
 import java.io.File
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

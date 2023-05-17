@@ -2,7 +2,6 @@ package coil.util
 
 import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
-import androidx.annotation.FloatRange
 import androidx.core.graphics.alpha
 import androidx.core.graphics.blue
 import androidx.core.graphics.drawable.toBitmap
@@ -40,7 +39,6 @@ fun Bitmap.getPixels(): Array<IntArray> {
     return arrayOf(alpha, red, green, blue)
 }
 
-@FloatRange(from = -1.0, to = 1.0)
 fun Bitmap.computeSimilarity(other: Bitmap): Double = runBlocking(Dispatchers.Default) {
     val pixels1 = async { getPixels() }
     val pixels2 = async { other.getPixels() }
@@ -75,7 +73,7 @@ fun Bitmap.computeSimilarity(other: Bitmap): Double = runBlocking(Dispatchers.De
  */
 fun Bitmap.isSimilarTo(
     expected: Bitmap,
-    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
+    threshold: Double = 0.99
 ): Boolean {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {
@@ -92,7 +90,7 @@ fun Bitmap.isSimilarTo(
  */
 fun Bitmap.assertIsSimilarTo(
     expected: Bitmap,
-    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
+    threshold: Double = 0.99
 ) {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {
@@ -112,7 +110,7 @@ fun Bitmap.assertIsSimilarTo(
  */
 fun Bitmap.assertIsSimilarTo(
     @DrawableRes expected: Int,
-    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
+    threshold: Double = 0.99
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     assertIsSimilarTo(context.getDrawable(expected)!!.toBitmap(), threshold)

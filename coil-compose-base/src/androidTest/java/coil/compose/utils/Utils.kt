@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
-import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ImageBitmap
@@ -41,7 +40,7 @@ fun resourceUri(@IdRes resId: Int): Uri {
 fun ImageBitmap.assertIsSimilarTo(
     @IdRes resId: Int,
     scale: Scale = Scale.FIT,
-    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.9 // Use a lower threshold by default.
+    threshold: Double = 0.9 // Use a lower threshold by default.
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val expected = context.getDrawable(resId)!!.toBitmap().scale(width, height, scale)
@@ -50,7 +49,7 @@ fun ImageBitmap.assertIsSimilarTo(
 
 fun ImageBitmap.assertIsSimilarTo(
     bitmap: ImageBitmap,
-    @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.9 // Use a lower threshold by default.
+    threshold: Double = 0.9 // Use a lower threshold by default.
 ) {
     asAndroidBitmap().assertIsSimilarTo(bitmap.asAndroidBitmap(), threshold)
 }

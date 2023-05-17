@@ -7,7 +7,6 @@ import android.media.MediaMetadataRetriever.OPTION_CLOSEST
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.media.MediaMetadataRetriever.OPTION_NEXT_SYNC
 import android.media.MediaMetadataRetriever.OPTION_PREVIOUS_SYNC
-import androidx.annotation.FloatRange
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_OPTION_KEY
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_PERCENT_KEY
@@ -45,9 +44,7 @@ fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long): ImageRequest.Build
  *
  * Default: 0.0
  */
-fun ImageRequest.Builder.videoFramePercent(
-    @FloatRange(from = 0.0, to = 1.0) framePercent: Double
-): ImageRequest.Builder {
+fun ImageRequest.Builder.videoFramePercent(framePercent: Double): ImageRequest.Builder {
     require(framePercent in 0.0..1.0) { "framePercent must be in the range [0.0, 1.0]." }
     return setParameter(VIDEO_FRAME_PERCENT_KEY, framePercent)
 }
