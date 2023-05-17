@@ -10,3 +10,10 @@ package coil.annotation
 @Retention(value = AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 annotation class ExperimentalCoilApi
+
+/**
+ * Marks declarations that have their visibility relaxed to make code easier to test.
+ */
+@MustBeDocumented
+@Retention(value = AnnotationRetention.SOURCE)
+internal annotation class VisibleForTesting

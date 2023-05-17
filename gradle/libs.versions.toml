@@ -16,6 +16,7 @@ spotless = "com.diffplug.spotless:6.18.0"
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.0.1"
+gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.20.2"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.25.2"
 gradlePlugin-paparazzi = "app.cash.paparazzi:paparazzi-gradle-plugin:1.2.0"
@@ -47,9 +48,10 @@ androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-anima
 
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
-compose-ui-test = "androidx.compose.ui:ui-test-junit4:1.4.3"
+compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 junit = "junit:junit:4.13.2"

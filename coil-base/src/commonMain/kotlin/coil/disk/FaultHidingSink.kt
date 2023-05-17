@@ -1,15 +1,14 @@
 package coil.disk
 
 import okio.Buffer
-import okio.ForwardingSink
 import okio.IOException
 import okio.Sink
 
 /** A sink that never throws [IOException]s, even if the underlying sink does. */
 internal class FaultHidingSink(
-    delegate: Sink,
-    private val onException: (IOException) -> Unit
-) : ForwardingSink(delegate) {
+    private val delegate: Sink,
+    private val onException: (IOException) -> Unit,
+) : Sink by delegate {
 
     private var hasErrors = false
 
@@ -19,7 +18,7 @@ internal class FaultHidingSink(
             return
         }
         try {
-            super.write(source, byteCount)
+            delegate.write(source, byteCount)
         } catch (e: IOException) {
             hasErrors = true
             onException(e)
@@ -28,7 +27,7 @@ internal class FaultHidingSink(
 
     override fun flush() {
         try {
-            super.flush()
+            delegate.flush()
         } catch (e: IOException) {
             hasErrors = true
             onException(e)
@@ -37,7 +36,7 @@ internal class FaultHidingSink(
 
     override fun close() {
         try {
-            super.close()
+            delegate.close()
         } catch (e: IOException) {
             hasErrors = true
             onException(e)

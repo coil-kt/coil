@@ -3,6 +3,7 @@
 package coil.util
 
 import java.util.Collections
+import kotlin.jvm.JvmName
 
 /**
  * Functionally the same as [Iterable.forEach] except it generates

@@ -1,28 +1,42 @@
+import coil.addAllTargets
 import coil.setupLibraryModule
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    id("kotlin-multiplatform")
+    id("kotlinx-atomicfu")
 }
 
 setupLibraryModule(name = "coil.base")
+addAllTargets(project)
 
-dependencies {
-    implementation(libs.androidx.annotation)
-    implementation(libs.androidx.appcompat.resources)
-    implementation(libs.androidx.collection)
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.exifinterface)
-    implementation(libs.androidx.profileinstaller)
-    api(libs.androidx.lifecycle.runtime)
-    api(libs.coroutines.android)
-    api(libs.kotlin.stdlib)
-    api(libs.okhttp)
-    api(libs.okio)
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(libs.coroutines.core)
+                api(libs.kotlin.stdlib)
+                api(libs.okio)
+            }
+        }
+        android {
+            dependencies {
+                implementation(libs.androidx.annotation)
+                implementation(libs.androidx.appcompat.resources)
+                implementation(libs.androidx.collection)
+                implementation(libs.androidx.core)
+                implementation(libs.androidx.exifinterface)
+                implementation(libs.androidx.profileinstaller)
+                api(libs.androidx.lifecycle.runtime)
+                api(libs.coroutines.android)
+                api(libs.okhttp)
 
-    testImplementation(projects.coilTestInternal)
-    testImplementation(libs.bundles.test.jvm)
+                testImplementation(projects.coilTestInternal)
+                testImplementation(libs.bundles.test.jvm)
 
-    androidTestImplementation(projects.coilTestInternal)
-    androidTestImplementation(libs.bundles.test.android)
+                androidTestImplementation(projects.coilTestInternal)
+                androidTestImplementation(libs.bundles.test.android)
+            }
+        }
+    }
 }

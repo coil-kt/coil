@@ -15,11 +15,12 @@
  */
 package coil.disk
 
-import androidx.annotation.VisibleForTesting
+import coil.annotation.VisibleForTesting
 import coil.util.createFile
 import coil.util.deleteContents
 import coil.util.forEachIndices
-import java.io.Flushable
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -89,7 +90,7 @@ internal class DiskLruCache(
     private val maxSize: Long,
     private val appVersion: Int,
     private val valueCount: Int,
-) : Closeable, Flushable {
+) : Closeable {
 
     /*
      * This cache uses a journal file named "journal". A typical journal file looks like this:
@@ -141,6 +142,7 @@ internal class DiskLruCache(
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
     private val lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
     private val cleanupScope = CoroutineScope(SupervisorJob() + cleanupDispatcher.limitedParallelism(1))
+    private val lock = SynchronizedObject()
     private var size = 0L
     private var operationsSinceRewrite = 0
     private var journalWriter: BufferedSink? = null
@@ -158,8 +160,7 @@ internal class DiskLruCache(
         }
     }
 
-    @Synchronized
-    fun initialize() {
+    fun initialize() = synchronized(lock) {
         if (initialized) return
 
         // If a temporary file exists, delete it.
@@ -313,8 +314,7 @@ internal class DiskLruCache(
     /**
      * Writes [lruEntries] to a new journal file. This replaces the current journal if it exists.
      */
-    @Synchronized
-    private fun writeJournal() {
+    private fun writeJournal() = synchronized(lock) {
         journalWriter?.close()
 
         fileSystem.write(journalFileTmp) {
@@ -358,8 +358,7 @@ internal class DiskLruCache(
      * Returns a snapshot of the entry named [key], or null if it doesn't exist or is not currently
      * readable. If a value is returned, it is moved to the head of the LRU queue.
      */
-    @Synchronized
-    operator fun get(key: String): Snapshot? {
+    operator fun get(key: String): Snapshot? = synchronized(lock) {
         checkNotClosed()
         validateKey(key)
         initialize()
@@ -382,8 +381,7 @@ internal class DiskLruCache(
     }
 
     /** Returns an editor for the entry named [key], or null if another edit is in progress. */
-    @Synchronized
-    fun edit(key: String): Editor? {
+    fun edit(key: String): Editor? = synchronized(lock) {
         checkNotClosed()
         validateKey(key)
         initialize()
@@ -434,14 +432,12 @@ internal class DiskLruCache(
      * Returns the number of bytes currently being used to store the values in this cache.
      * This may be greater than the max size if a background deletion is pending.
      */
-    @Synchronized
-    fun size(): Long {
+    fun size(): Long = synchronized(lock) {
         initialize()
         return size
     }
 
-    @Synchronized
-    private fun completeEdit(editor: Editor, success: Boolean) {
+    private fun completeEdit(editor: Editor, success: Boolean) = synchronized(lock) {
         val entry = editor.entry
         check(entry.currentEditor == editor)
 
@@ -517,8 +513,7 @@ internal class DiskLruCache(
      *
      * @return true if an entry was removed.
      */
-    @Synchronized
-    fun remove(key: String): Boolean {
+    fun remove(key: String): Boolean = synchronized(lock) {
         checkNotClosed()
         validateKey(key)
         initialize()
@@ -574,8 +569,7 @@ internal class DiskLruCache(
     }
 
     /** Closes this cache. Stored values will remain on the filesystem. */
-    @Synchronized
-    override fun close() {
+    override fun close() = synchronized(lock) {
         if (!initialized || closed) {
             closed = true
             return
@@ -594,8 +588,7 @@ internal class DiskLruCache(
         closed = true
     }
 
-    @Synchronized
-    override fun flush() {
+    fun flush() = synchronized(lock) {
         if (!initialized) return
 
         checkNotClosed()
@@ -634,8 +627,7 @@ internal class DiskLruCache(
      * Deletes all stored values from the cache. In-flight edits will complete normally but their
      * values will not be stored.
      */
-    @Synchronized
-    fun evictAll() {
+    fun evictAll() = synchronized(lock) {
         initialize()
         // Copying for concurrent iteration.
         for (entry in lruEntries.values.toTypedArray()) {
@@ -649,7 +641,7 @@ internal class DiskLruCache(
      */
     private fun launchCleanup() {
         cleanupScope.launch {
-            synchronized(this@DiskLruCache) {
+            synchronized(lock) {
                 if (!initialized || closed) return@launch
                 try {
                     trimToSize()
@@ -687,7 +679,7 @@ internal class DiskLruCache(
         override fun close() {
             if (!closed) {
                 closed = true
-                synchronized(this@DiskLruCache) {
+                synchronized(lock) {
                     entry.lockingSnapshotCount--
                     if (entry.lockingSnapshotCount == 0 && entry.zombie) {
                         removeEntry(entry)
@@ -697,7 +689,7 @@ internal class DiskLruCache(
         }
 
         fun closeAndEdit(): Editor? {
-            synchronized(this@DiskLruCache) {
+            synchronized(lock) {
                 close()
                 return edit(entry.key)
             }
@@ -719,7 +711,7 @@ internal class DiskLruCache(
          * This file will become the new value for this index if committed.
          */
         fun file(index: Int): Path {
-            synchronized(this@DiskLruCache) {
+            synchronized(lock) {
                 check(!closed) { "editor is closed" }
                 written[index] = true
                 return entry.dirtyFiles[index].also(fileSystem::createFile)
@@ -746,7 +738,7 @@ internal class DiskLruCache(
          * Commit the edit and open a new [Snapshot] atomically.
          */
         fun commitAndGet(): Snapshot? {
-            synchronized(this@DiskLruCache) {
+            synchronized(lock) {
                 commit()
                 return get(entry.key)
             }
@@ -762,7 +754,7 @@ internal class DiskLruCache(
          * Complete this edit either successfully or unsuccessfully.
          */
         private fun complete(success: Boolean) {
-            synchronized(this@DiskLruCache) {
+            synchronized(lock) {
                 check(!closed) { "editor is closed" }
                 if (entry.currentEditor == this) {
                     completeEdit(this, success)

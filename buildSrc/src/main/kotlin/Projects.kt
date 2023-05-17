@@ -14,6 +14,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 fun Project.setupLibraryModule(
@@ -116,7 +117,14 @@ private fun <T : BaseExtension> Project.setupBaseModule(
         }
         action()
     }
-    kotlin {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        extensions.configure<KotlinMultiplatformExtension> {
+            sourceSets.configureEach {
+                languageSettings.optIn("coil.annotation.ExperimentalCoilApi")
+            }
+        }
+    }
+    tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions {
             allWarningsAsErrors by System.getenv("CI").toBoolean()
             jvmTarget by JvmTarget.JVM_1_8
@@ -141,10 +149,6 @@ private fun <T : BaseExtension> Project.setupBaseModule(
 
 private fun <T : BaseExtension> Project.android(action: T.() -> Unit) {
     extensions.configure("android", action)
-}
-
-private fun Project.kotlin(action: KotlinJvmCompile.() -> Unit) {
-    tasks.withType<KotlinJvmCompile>().configureEach(action)
 }
 
 private fun BaseExtension.lint(action: Lint.() -> Unit) {

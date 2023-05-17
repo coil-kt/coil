@@ -11,7 +11,7 @@ internal class RealDiskCache(
     override val maxSize: Long,
     override val directory: Path,
     override val fileSystem: FileSystem,
-    cleanupDispatcher: CoroutineDispatcher
+    cleanupDispatcher: CoroutineDispatcher,
 ) : DiskCache {
 
     private val cache = DiskLruCache(
@@ -20,7 +20,7 @@ internal class RealDiskCache(
         cleanupDispatcher = cleanupDispatcher,
         maxSize = maxSize,
         appVersion = 1,
-        valueCount = 2
+        valueCount = 2,
     )
 
     override val size get() = cache.size()
