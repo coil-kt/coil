@@ -18,6 +18,10 @@ fun addAllTargets(project: Project) {
             iosX64()
             iosSimulatorArm64()
 
+            js {
+                browser()
+            }
+
             jvm()
 
             macosArm64()
@@ -45,6 +49,16 @@ fun addAllTargets(project: Project) {
             }
             val macosTest = sourceSets.create("macosTest").apply {
                 dependsOn(nativeTest)
+            }
+
+            val jsNativeMain = sourceSets.create("jsNativeMain").apply {
+                dependsOn(commonMain)
+            }
+            sourceSets.getByName("jsMain").apply {
+                dependsOn(jsNativeMain)
+            }
+            sourceSets.getByName("nativeMain").apply {
+                dependsOn(jsNativeMain)
             }
 
             if (hasAndroidPlugin) {

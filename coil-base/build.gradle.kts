@@ -19,7 +19,7 @@ kotlin {
                 api(libs.okio)
             }
         }
-        named("nativeMain") {
+        named("jsNativeMain") {
             dependencies {
                 implementation(libs.kotlinx.immutable.collections)
             }
