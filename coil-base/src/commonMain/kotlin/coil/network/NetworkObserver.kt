@@ -25,7 +25,7 @@ internal fun NetworkObserver(
 ): NetworkObserver {
     val connectivityManager: ConnectivityManager? = context.getSystemService()
     if (connectivityManager == null || !context.isPermissionGranted(ACCESS_NETWORK_STATE)) {
-        logger?.log(TAG, Log.WARN) { "Unable to register network observer." }
+        logger?.log(TAG, Logger.Level.Warn) { "Unable to register network observer." }
         return EmptyNetworkObserver()
     }
 

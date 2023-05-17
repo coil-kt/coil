@@ -87,7 +87,7 @@ private object FileDescriptorCounter {
             val numUsedFileDescriptors = fileDescriptorList.list().orEmpty().count()
             hasAvailableFileDescriptors = numUsedFileDescriptors < FILE_DESCRIPTOR_LIMIT
             if (!hasAvailableFileDescriptors) {
-                logger?.log(TAG, Log.WARN) {
+                logger?.log(TAG, Logger.Level.Warn) {
                     "Unable to allocate more hardware bitmaps. " +
                         "Number of used file descriptors: $numUsedFileDescriptors"
                 }

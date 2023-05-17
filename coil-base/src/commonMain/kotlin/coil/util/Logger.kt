@@ -1,6 +1,5 @@
 package coil.util
 
-import android.util.Log
 import coil.ImageLoader
 
 /**
@@ -13,15 +12,20 @@ interface Logger {
 
     /**
      * The minimum level for this logger to log.
-     *
-     * @see Log
      */
-    var level: Int
+    var minLevel: Level
 
     /**
      * Write [message] and/or [throwable] to a logging destination.
      *
-     * [priority] will be greater than or equal to [level].
+     * [level] will be greater than or equal to [level].
      */
-    fun log(tag: String, priority: Int, message: String?, throwable: Throwable?)
+    fun log(tag: String, level: Level, message: String?, throwable: Throwable?)
+
+    /**
+     * The priority level for a log message.
+     */
+    enum class Level {
+        Verbose, Debug, Info, Warn, Error
+    }
 }

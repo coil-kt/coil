@@ -90,7 +90,7 @@ internal class MemoryCacheService(
     ): Boolean {
         // Ensure we don't return a hardware bitmap if the request doesn't allow it.
         if (!requestService.isConfigValidForHardware(request, cacheValue.bitmap.safeConfig)) {
-            logger?.log(TAG, Log.DEBUG) {
+            logger?.log(TAG, Logger.Level.Debug) {
                 "${request.data}: Cached bitmap is hardware-backed, " +
                     "which is incompatible with the request."
             }
@@ -113,7 +113,7 @@ internal class MemoryCacheService(
         val isSampled = cacheValue.isSampled
         if (size.isOriginal) {
             if (isSampled) {
-                logger?.log(TAG, Log.DEBUG) {
+                logger?.log(TAG, Logger.Level.Debug) {
                     "${request.data}: Requested original size, but cached image is sampled."
                 }
                 return false
@@ -163,7 +163,7 @@ internal class MemoryCacheService(
 
         // The cached value must be equal to the requested size if precision == exact.
         if (multiplier != 1.0 && !allowInexactSize) {
-            logger?.log(TAG, Log.DEBUG) {
+            logger?.log(TAG, Logger.Level.Debug) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) does not exactly match the requested size " +
                     "(${size.width}, ${size.height}, $scale)."
@@ -173,7 +173,7 @@ internal class MemoryCacheService(
 
         // The cached value must be larger than the requested size if the cached value is sampled.
         if (multiplier > 1.0 && isSampled) {
-            logger?.log(TAG, Log.DEBUG) {
+            logger?.log(TAG, Logger.Level.Debug) {
                 "${request.data}: Cached image's request size " +
                     "($srcWidth, $srcHeight) is smaller than the requested size " +
                     "(${size.width}, ${size.height}, $scale)."

@@ -227,7 +227,7 @@ internal class EngineInterceptor(
 
         // Skip the transformations as converting to a bitmap is disabled.
         if (result.drawable !is BitmapDrawable && !request.allowConversionToBitmap) {
-            logger?.log(TAG, Log.INFO) {
+            logger?.log(TAG, Logger.Level.Info) {
                 val type = result.drawable::class.java.canonicalName
                 "allowConversionToBitmap=false, skipping transformations for type $type."
             }
@@ -259,13 +259,13 @@ internal class EngineInterceptor(
             if (config in VALID_TRANSFORMATION_CONFIGS) {
                 return bitmap
             } else {
-                logger?.log(TAG, Log.INFO) {
+                logger?.log(TAG, Logger.Level.Info) {
                     "Converting bitmap with config $config " +
                         "to apply transformations: $transformations."
                 }
             }
         } else {
-            logger?.log(TAG, Log.INFO) {
+            logger?.log(TAG, Logger.Level.Info) {
                 "Converting drawable of type ${drawable::class.java.canonicalName} " +
                     "to apply transformations: $transformations."
             }

@@ -235,7 +235,7 @@ internal class RealImageLoader(
     ) {
         val request = result.request
         val dataSource = result.dataSource
-        logger?.log(TAG, Log.INFO) {
+        logger?.log(TAG, Logger.Level.Info) {
             "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}"
         }
         transition(result, target, eventListener) { target?.onSuccess(result.drawable) }
@@ -249,7 +249,7 @@ internal class RealImageLoader(
         eventListener: EventListener
     ) {
         val request = result.request
-        logger?.log(TAG, Log.INFO) {
+        logger?.log(TAG, Logger.Level.Info) {
             "${Emoji.SIREN} Failed - ${request.data} - ${result.throwable}"
         }
         transition(result, target, eventListener) { target?.onError(result.drawable) }
@@ -258,7 +258,7 @@ internal class RealImageLoader(
     }
 
     private fun onCancel(request: ImageRequest, eventListener: EventListener) {
-        logger?.log(TAG, Log.INFO) {
+        logger?.log(TAG, Logger.Level.Info) {
             "${Emoji.CONSTRUCTION} Cancelled - ${request.data}"
         }
         eventListener.onCancel(request)
