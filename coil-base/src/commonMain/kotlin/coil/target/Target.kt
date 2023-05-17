@@ -6,7 +6,6 @@ import androidx.annotation.MainThread
 /**
  * A listener that accepts the result of an image request.
  */
-@JvmDefaultWithCompatibility
 interface Target {
 
     /**

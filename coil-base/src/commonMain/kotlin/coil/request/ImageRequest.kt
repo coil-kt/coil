@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package coil.request
 
 import android.content.Context
@@ -270,7 +268,6 @@ class ImageRequest private constructor(
     /**
      * A set of callbacks for an [ImageRequest].
      */
-    @JvmDefaultWithCompatibility
     interface Listener {
 
         /**

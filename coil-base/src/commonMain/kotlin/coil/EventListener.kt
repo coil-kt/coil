@@ -28,7 +28,6 @@ import coil.transition.TransitionTarget
  *
  * @see ImageLoader.Builder.eventListenerFactory
  */
-@JvmDefaultWithCompatibility
 interface EventListener : ImageRequest.Listener {
 
     /**

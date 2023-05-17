@@ -35,6 +35,7 @@ import coil.util.Logger
 import coil.util.SingletonDiskCache
 import coil.util.getDrawableCompat
 import java.io.File
+import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Call
