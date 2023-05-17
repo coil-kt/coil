@@ -1,9 +1,12 @@
+// https://youtrack.jetbrains.com/issue/KTIJ-7642
+@file:Suppress("FUN_INTERFACE_WITH_SUSPEND_FUNCTION")
 @file:JvmName("SizeResolvers")
 
 package coil.size
 
-import androidx.annotation.MainThread
+import coil.annotation.MainThread
 import coil.request.ImageRequest
+import kotlin.jvm.JvmName
 
 /**
  * Create a [SizeResolver] with a fixed [size].

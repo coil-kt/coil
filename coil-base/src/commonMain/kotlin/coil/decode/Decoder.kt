@@ -1,6 +1,8 @@
+// https://youtrack.jetbrains.com/issue/KTIJ-7642
+@file:Suppress("FUN_INTERFACE_WITH_SUSPEND_FUNCTION")
+
 package coil.decode
 
-import android.graphics.drawable.Drawable
 import coil.ImageLoader
 import coil.fetch.Fetcher
 import coil.fetch.SourceResult
