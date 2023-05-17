@@ -17,3 +17,18 @@ annotation class ExperimentalCoilApi
 @MustBeDocumented
 @Retention(value = AnnotationRetention.SOURCE)
 internal annotation class VisibleForTesting
+
+/**
+ * Marks declarations that should only be called from the main thread.
+ */
+@MustBeDocumented
+@Retention(value = AnnotationRetention.SOURCE)
+internal annotation class MainThread
+
+/**
+ * Marks declarations that should only be called from a worker thread (on platforms that have
+ * multiple threads).
+ */
+@MustBeDocumented
+@Retention(value = AnnotationRetention.SOURCE)
+internal annotation class WorkerThread

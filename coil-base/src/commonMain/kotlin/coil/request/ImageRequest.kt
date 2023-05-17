@@ -11,13 +11,13 @@ import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER
 import android.widget.ImageView.ScaleType.MATRIX
 import androidx.annotation.DrawableRes
-import androidx.annotation.MainThread
 import androidx.annotation.Px
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
 import coil.ImageLoader
+import coil.annotation.MainThread
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher

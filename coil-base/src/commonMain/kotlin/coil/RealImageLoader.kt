@@ -1,8 +1,7 @@
 package coil
 
 import android.content.Context
-import android.util.Log
-import androidx.annotation.MainThread
+import coil.annotation.MainThread
 import coil.decode.BitmapFactoryDecoder
 import coil.disk.DiskCache
 import coil.fetch.AssetUriFetcher
@@ -48,8 +47,8 @@ import coil.util.get
 import coil.util.log
 import coil.util.requestManager
 import coil.util.toDrawable
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.coroutineContext
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -104,7 +103,7 @@ internal class RealImageLoader(
         .add(BitmapFactoryDecoder.Factory(options.bitmapFactoryMaxParallelism, options.bitmapFactoryExifOrientationPolicy))
         .build()
     private val interceptors = components.interceptors + EngineInterceptor(this, requestService, logger)
-    private val shutdown = AtomicBoolean(false)
+    private val shutdown = atomic(false)
 
     init {
         // Must be called only after the image loader is fully initialized.

@@ -1,9 +1,9 @@
 package coil
 
 import android.graphics.Bitmap
-import androidx.annotation.MainThread
-import androidx.annotation.WorkerThread
 import coil.EventListener.Factory
+import coil.annotation.MainThread
+import coil.annotation.WorkerThread
 import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.fetch.FetchResult
@@ -21,6 +21,7 @@ import coil.transform.Transformation
 import coil.transition.NoneTransition
 import coil.transition.Transition
 import coil.transition.TransitionTarget
+import kotlin.jvm.JvmField
 
 /**
  * A listener for tracking the progress of an image request. This class is useful for

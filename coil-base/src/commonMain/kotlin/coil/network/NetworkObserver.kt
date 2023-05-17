@@ -7,9 +7,8 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
-import android.util.Log
-import androidx.annotation.MainThread
 import androidx.core.content.getSystemService
+import coil.annotation.MainThread
 import coil.network.NetworkObserver.Listener
 import coil.util.Logger
 import coil.util.isPermissionGranted

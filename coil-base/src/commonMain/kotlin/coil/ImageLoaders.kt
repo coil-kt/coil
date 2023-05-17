@@ -3,9 +3,10 @@
 package coil
 
 import android.content.Context
-import androidx.annotation.WorkerThread
+import coil.annotation.WorkerThread
 import coil.request.ImageRequest
 import coil.request.ImageResult
+import kotlin.jvm.JvmName
 import kotlinx.coroutines.runBlocking
 
 /**

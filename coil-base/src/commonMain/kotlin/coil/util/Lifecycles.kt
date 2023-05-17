@@ -2,12 +2,12 @@
 
 package coil.util
 
-import androidx.annotation.MainThread
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import coil.annotation.MainThread
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
