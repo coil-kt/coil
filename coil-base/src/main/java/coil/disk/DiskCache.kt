@@ -39,11 +39,11 @@ interface DiskCache {
      * reading the snapshot. An open snapshot prevents editing the entry or deleting it on disk.
      */
     @ExperimentalCoilApi
-    fun read(key: String): Snapshot?
+    fun openSnapshot(key: String): Snapshot?
 
-    @Deprecated("Renamed to 'read'.", ReplaceWith("read(key)"))
+    @Deprecated("Renamed to 'openSnapshot'.", ReplaceWith("openSnapshot(key)"))
     @ExperimentalCoilApi
-    operator fun get(key: String): Snapshot? = read(key)
+    operator fun get(key: String): Snapshot? = openSnapshot(key)
 
     /**
      * Write to the entry associated with [key].
@@ -53,11 +53,11 @@ interface DiskCache {
      * [Editor].
      */
     @ExperimentalCoilApi
-    fun write(key: String): Editor?
+    fun openEditor(key: String): Editor?
 
-    @Deprecated("Renamed to 'write'.", ReplaceWith("write(key)"))
+    @Deprecated("Renamed to 'openEditor'.", ReplaceWith("openEditor(key)"))
     @ExperimentalCoilApi
-    fun edit(key: String): Editor? = write(key)
+    fun edit(key: String): Editor? = openEditor(key)
 
     /**
      * Delete the entry referenced by [key].
@@ -75,7 +75,7 @@ interface DiskCache {
      * A snapshot of the values for an entry.
      *
      * IMPORTANT: You must **only read** [metadata] or [data]. Mutating either file can corrupt the
-     * disk cache. To modify the contents of those files, use [edit].
+     * disk cache. To modify the contents of those files, use [openEditor].
      */
     @ExperimentalCoilApi
     interface Snapshot : Closeable {
@@ -89,7 +89,7 @@ interface DiskCache {
         /** Close the snapshot to allow editing. */
         override fun close()
 
-        /** Close the snapshot and call [edit] for this entry atomically. */
+        /** Close the snapshot and call [openEditor] for this entry atomically. */
         fun closeAndEdit(): Editor?
     }
 

@@ -153,7 +153,7 @@ class HttpUriFetcherTest {
         val url = server.url(IMAGE).toString()
 
         // Write the image in the disk cache.
-        val editor = diskCache.write(url)!!
+        val editor = diskCache.openEditor(url)!!
         fileSystem.write(editor.data) {
             writeAll(context.assets.open(IMAGE).source())
         }
@@ -185,7 +185,7 @@ class HttpUriFetcherTest {
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
         // Ensure the result file is present.
-        diskCache.read(url)!!.use { snapshot ->
+        diskCache.openSnapshot(url)!!.use { snapshot ->
             assertTrue(snapshot.data in fileSystem.list(diskCache.directory))
             assertEquals(snapshot.data, source.file)
         }
@@ -210,7 +210,7 @@ class HttpUriFetcherTest {
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
         // Ensure the result file is present.
-        val expected = diskCache.read(url)?.data
+        val expected = diskCache.openSnapshot(url)?.data
         assertTrue(expected in fileSystem.list(diskCache.directory))
         assertEquals(expected, (result.source as FileImageSource).file)
     }
@@ -219,7 +219,7 @@ class HttpUriFetcherTest {
     fun `cache control - empty metadata is always returned`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
-        val editor = diskCache.write(url)!!
+        val editor = diskCache.openEditor(url)!!
         fileSystem.write(editor.data) {
             writeAll(context.assets.open(IMAGE).source())
         }
@@ -246,7 +246,7 @@ class HttpUriFetcherTest {
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
-        diskCache.read(url).use(::assertNull)
+        diskCache.openSnapshot(url).use(::assertNull)
 
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = newFetcher(url).fetch()
@@ -271,7 +271,7 @@ class HttpUriFetcherTest {
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
-        diskCache.read(url).use(::assertNotNull)
+        diskCache.openSnapshot(url).use(::assertNotNull)
 
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = newFetcher(url, respectCacheHeaders = false).fetch()
@@ -297,7 +297,7 @@ class HttpUriFetcherTest {
         assertIs<SourceResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-        diskCache.read(url).use(::assertNotNull)
+        diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Don't set a response body as it should be read from the cache.
         server.enqueue(MockResponse().setResponseCode(HTTP_NOT_MODIFIED))
@@ -330,7 +330,7 @@ class HttpUriFetcherTest {
         assertIs<SourceResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-        diskCache.read(url).use(::assertNotNull)
+        diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Don't set a response body as it should be read from the cache.
         val response = MockResponse()
@@ -346,7 +346,7 @@ class HttpUriFetcherTest {
         server.takeRequest() // Discard the first request.
 
         assertEquals(2, server.requestCount)
-        val cacheResponse = diskCache.read(url)!!.use { snapshot ->
+        val cacheResponse = diskCache.openSnapshot(url)!!.use { snapshot ->
             CacheResponse(diskCache.fileSystem.source(snapshot.metadata).buffer())
         }
         val expectedHeaders = headers.newBuilder()
@@ -371,7 +371,7 @@ class HttpUriFetcherTest {
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
-        diskCache.read(url).use(::assertNotNull)
+        diskCache.openSnapshot(url).use(::assertNotNull)
 
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = newFetcher(url).fetch()
@@ -397,7 +397,7 @@ class HttpUriFetcherTest {
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
-        diskCache.read(url).use(::assertNotNull)
+        diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Increase the current time.
         Time.setCurrentMillis(now + 65_000)

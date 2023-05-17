@@ -29,17 +29,17 @@ class DiskCacheTest {
 
     @Test
     fun `can read and write empty`() {
-        diskCache.read("test").use { assertNull(it) }
-        diskCache.write("test")?.use { /* Empty edit to create the file on disk. */ }
-        diskCache.read("test").use { assertNotNull(it) }
+        diskCache.openSnapshot("test").use { assertNull(it) }
+        diskCache.openEditor("test")?.use { /* Empty edit to create the file on disk. */ }
+        diskCache.openSnapshot("test").use { assertNotNull(it) }
     }
 
     @Test
     fun `can read and write data`() {
         assertEquals(0, diskCache.size)
-        diskCache.read("test").use { assertNull(it) }
+        diskCache.openSnapshot("test").use { assertNull(it) }
 
-        diskCache.write("test")!!.use { editor ->
+        diskCache.openEditor("test")!!.use { editor ->
             diskCache.fileSystem.write(editor.metadata) {
                 writeDecimalLong(12345).writeByte('\n'.code)
             }
@@ -50,7 +50,7 @@ class DiskCacheTest {
 
         assertTrue(diskCache.size > 0)
 
-        diskCache.read("test")!!.use { snapshot ->
+        diskCache.openSnapshot("test")!!.use { snapshot ->
             assertEquals(
                 12345,
                 diskCache.fileSystem.read(snapshot.metadata) { readUtf8LineStrict().toLong() }
@@ -64,20 +64,20 @@ class DiskCacheTest {
 
     @Test
     fun `can remove singular entries`() {
-        diskCache.write("test1")!!.use { /* Empty edit to create the file on disk. */ }
-        diskCache.write("test2")!!.use { /* Empty edit to create the file on disk. */ }
+        diskCache.openEditor("test1")!!.use { /* Empty edit to create the file on disk. */ }
+        diskCache.openEditor("test2")!!.use { /* Empty edit to create the file on disk. */ }
         assertTrue(diskCache.remove("test1"))
-        diskCache.read("test1").use { assertNull(it) }
-        diskCache.read("test2").use { assertNotNull(it) }
+        diskCache.openSnapshot("test1").use { assertNull(it) }
+        diskCache.openSnapshot("test2").use { assertNotNull(it) }
     }
 
     @Test
     fun `can clear all entries`() {
-        diskCache.write("test1")!!.use { /* Empty edit to create the file on disk. */ }
-        diskCache.write("test2")!!.use { /* Empty edit to create the file on disk. */ }
+        diskCache.openEditor("test1")!!.use { /* Empty edit to create the file on disk. */ }
+        diskCache.openEditor("test2")!!.use { /* Empty edit to create the file on disk. */ }
         diskCache.clear()
-        diskCache.read("test1").use { assertNull(it) }
-        diskCache.read("test2").use { assertNull(it) }
+        diskCache.openSnapshot("test1").use { assertNull(it) }
+        diskCache.openSnapshot("test2").use { assertNull(it) }
     }
 
     private inline fun <T : DiskCache.Editor?, R> T.use(block: (T) -> R): R {
