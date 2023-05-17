@@ -388,7 +388,7 @@ class RealImageLoaderAndroidTest {
 
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(key, result.diskCacheKey)
-        imageLoader.diskCache!!.openSnapshot(key)!!.use { assertNotNull(it) }
+        imageLoader.diskCache!!.openReader(key)!!.use { assertNotNull(it) }
     }
 
     @Test

@@ -196,10 +196,38 @@ internal fun String.toNonNegativeInt(defaultValue: Int): Int {
     }
 }
 
-internal fun DiskCache.Editor.abortQuietly() {
+internal fun DiskCache.Writer.abortQuietly() {
     try {
         abort()
     } catch (_: Exception) {}
+}
+
+@Suppress("DEPRECATION")
+internal fun DiskCache.Snapshot.asReader(): DiskCache.Reader {
+    return object : DiskCache.Reader, DiskCache.Snapshot by this {
+        override fun closeAndOpenWriter() = closeAndEdit()?.asWriter()
+    }
+}
+
+@Suppress("DEPRECATION")
+internal fun DiskCache.Reader.asSnapshot(): DiskCache.Snapshot {
+    return object : DiskCache.Reader by this, DiskCache.Snapshot {
+        override fun closeAndEdit() = closeAndOpenWriter()?.asEditor()
+    }
+}
+
+@Suppress("DEPRECATION")
+internal fun DiskCache.Editor.asWriter(): DiskCache.Writer {
+    return object : DiskCache.Writer, DiskCache.Editor by this {
+        override fun commitAndOpenReader() = commitAndGet()?.asReader()
+    }
+}
+
+@Suppress("DEPRECATION")
+internal fun DiskCache.Writer.asEditor(): DiskCache.Editor {
+    return object : DiskCache.Writer by this, DiskCache.Editor {
+        override fun commitAndGet() = commitAndOpenReader()?.asSnapshot()
+    }
 }
 
 internal const val MIME_TYPE_JPEG = "image/jpeg"

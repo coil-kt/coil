@@ -3,6 +3,8 @@ package coil.disk
 import android.os.StatFs
 import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
+import coil.util.asEditor
+import coil.util.asSnapshot
 import java.io.File
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -35,29 +37,22 @@ interface DiskCache {
     /**
      * Read the entry associated with [key].
      *
-     * IMPORTANT: **You must** call either [Snapshot.close] or [Snapshot.closeAndEdit] when finished
-     * reading the snapshot. An open snapshot prevents editing the entry or deleting it on disk.
+     * IMPORTANT: **You must** call either [Reader.close] or [Reader.closeAndOpenWriter] when
+     * finished reading the reader. An open reader prevents writing to the entry or deleting it on
+     * disk.
      */
     @ExperimentalCoilApi
-    fun openSnapshot(key: String): Snapshot?
-
-    @Deprecated("Renamed to 'openSnapshot'.", ReplaceWith("openSnapshot(key)"))
-    @ExperimentalCoilApi
-    operator fun get(key: String): Snapshot? = openSnapshot(key)
+    fun openReader(key: String): Reader?
 
     /**
      * Write to the entry associated with [key].
      *
-     * IMPORTANT: **You must** call one of [Editor.commit], [Editor.commitAndGet], or [Editor.abort]
-     * to complete the edit. An open editor prevents opening new [Snapshot]s or opening a new
-     * [Editor].
+     * IMPORTANT: **You must** call one of [Writer.commit], [Writer.commitAndOpenReader], or
+     * [Writer.abort] to complete the write. An open writer prevents opening new [Reader] or
+     * [Writer]s.
      */
     @ExperimentalCoilApi
-    fun openEditor(key: String): Editor?
-
-    @Deprecated("Renamed to 'openEditor'.", ReplaceWith("openEditor(key)"))
-    @ExperimentalCoilApi
-    fun edit(key: String): Editor? = openEditor(key)
+    fun openWriter(key: String): Writer?
 
     /**
      * Delete the entry referenced by [key].
@@ -72,13 +67,13 @@ interface DiskCache {
     fun clear()
 
     /**
-     * A snapshot of the values for an entry.
+     * Allows reading the values for an entry.
      *
      * IMPORTANT: You must **only read** [metadata] or [data]. Mutating either file can corrupt the
-     * disk cache. To modify the contents of those files, use [openEditor].
+     * disk cache. To modify the contents of those files, use [openWriter].
      */
     @ExperimentalCoilApi
-    interface Snapshot : Closeable {
+    interface Reader : Closeable {
 
         /** Get the metadata file path for this entry. */
         val metadata: Path
@@ -86,24 +81,24 @@ interface DiskCache {
         /** Get the data file path for this entry. */
         val data: Path
 
-        /** Close the snapshot to allow editing. */
+        /** Close the reader to allow writing. */
         override fun close()
 
-        /** Close the snapshot and call [openEditor] for this entry atomically. */
-        fun closeAndEdit(): Editor?
+        /** Close the reader and call [openWriter] for this entry atomically. */
+        fun closeAndOpenWriter(): Writer?
     }
 
     /**
-     * Edits the values for an entry.
+     * Allows writing to the values for an entry.
      *
      * Calling [metadata] or [data] marks that file as dirty so it will be persisted to disk
-     * if this editor is committed.
+     * if this writer is committed.
      *
      * IMPORTANT: You must **only read or modify the contents** of [metadata] or [data].
      * Renaming, locking, or other mutating file operations can corrupt the disk cache.
      */
     @ExperimentalCoilApi
-    interface Editor {
+    interface Writer {
 
         /** Get the metadata file path for this entry. */
         val metadata: Path
@@ -111,13 +106,44 @@ interface DiskCache {
         /** Get the data file path for this entry. */
         val data: Path
 
-        /** Commit the edit so the changes are visible to readers. */
+        /** Commit the write so the changes are visible to readers. */
         fun commit()
 
-        /** Commit the edit and open a new [Snapshot] atomically. */
-        fun commitAndGet(): Snapshot?
+        /** Commit the write and call [openReader] for this entry atomically. */
+        fun commitAndOpenReader(): Reader?
 
-        /** Abort the edit. Any written data will be discarded. */
+        /** Abort the write. Any written data will be discarded. */
+        fun abort()
+    }
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Renamed to 'openReader'.", ReplaceWith("openReader(key)"))
+    @ExperimentalCoilApi
+    operator fun get(key: String): Snapshot? = openReader(key)?.asSnapshot()
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Renamed to 'openWriter'.", ReplaceWith("openWriter(key)"))
+    @ExperimentalCoilApi
+    fun edit(key: String): Editor? = openWriter(key)?.asEditor()
+
+    @Suppress("DEPRECATION")
+    @ExperimentalCoilApi
+    @Deprecated("Renamed to 'Reader'.", ReplaceWith("Reader"))
+    interface Snapshot : Closeable {
+        val metadata: Path
+        val data: Path
+        override fun close()
+        fun closeAndEdit(): Editor?
+    }
+
+    @Suppress("DEPRECATION")
+    @ExperimentalCoilApi
+    @Deprecated("Renamed to 'Writer'.", ReplaceWith("Writer"))
+    interface Editor {
+        val metadata: Path
+        val data: Path
+        fun commit()
+        fun commitAndGet(): Snapshot?
         fun abort()
     }
 

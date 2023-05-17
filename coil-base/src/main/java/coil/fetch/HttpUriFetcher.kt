@@ -37,15 +37,15 @@ internal class HttpUriFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        var snapshot = readFromDiskCache()
+        var diskCacheReader = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
             val cacheStrategy: CacheStrategy
-            if (snapshot != null) {
+            if (diskCacheReader != null) {
                 // Always return cached images with empty metadata as they were likely added manually.
-                if (fileSystem.metadata(snapshot.metadata).size == 0L) {
+                if (fileSystem.metadata(diskCacheReader.metadata).size == 0L) {
                     return SourceResult(
-                        source = snapshot.toImageSource(),
+                        source = diskCacheReader.toImageSource(),
                         mimeType = getMimeType(url, null),
                         dataSource = DataSource.DISK
                     )
@@ -53,10 +53,10 @@ internal class HttpUriFetcher(
 
                 // Return the candidate from the cache if it is eligible.
                 if (respectCacheHeaders) {
-                    cacheStrategy = CacheStrategy.Factory(newRequest(), snapshot.toCacheResponse()).compute()
+                    cacheStrategy = CacheStrategy.Factory(newRequest(), diskCacheReader.toCacheResponse()).compute()
                     if (cacheStrategy.networkRequest == null && cacheStrategy.cacheResponse != null) {
                         return SourceResult(
-                            source = snapshot.toImageSource(),
+                            source = diskCacheReader.toImageSource(),
                             mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType),
                             dataSource = DataSource.DISK
                         )
@@ -64,8 +64,8 @@ internal class HttpUriFetcher(
                 } else {
                     // Skip checking the cache headers if the option is disabled.
                     return SourceResult(
-                        source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType),
+                        source = diskCacheReader.toImageSource(),
+                        mimeType = getMimeType(url, diskCacheReader.toCacheResponse()?.contentType),
                         dataSource = DataSource.DISK
                     )
                 }
@@ -78,16 +78,16 @@ internal class HttpUriFetcher(
             var responseBody = response.requireBody()
             try {
                 // Write the response to the disk cache then open a new snapshot.
-                snapshot = writeToDiskCache(
-                    snapshot = snapshot,
+                diskCacheReader = writeToDiskCache(
+                    diskCacheReader = diskCacheReader,
                     request = cacheStrategy.networkRequest,
                     response = response,
                     cacheResponse = cacheStrategy.cacheResponse
                 )
-                if (snapshot != null) {
+                if (diskCacheReader != null) {
                     return SourceResult(
-                        source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType),
+                        source = diskCacheReader.toImageSource(),
+                        mimeType = getMimeType(url, diskCacheReader.toCacheResponse()?.contentType),
                         dataSource = DataSource.NETWORK
                     )
                 }
@@ -117,40 +117,40 @@ internal class HttpUriFetcher(
                 throw e
             }
         } catch (e: Exception) {
-            snapshot?.closeQuietly()
+            diskCacheReader?.closeQuietly()
             throw e
         }
     }
 
-    private fun readFromDiskCache(): DiskCache.Snapshot? {
+    private fun readFromDiskCache(): DiskCache.Reader? {
         return if (options.diskCachePolicy.readEnabled) {
-            diskCache.value?.openSnapshot(diskCacheKey)
+            diskCache.value?.openReader(diskCacheKey)
         } else {
             null
         }
     }
 
     private fun writeToDiskCache(
-        snapshot: DiskCache.Snapshot?,
+        diskCacheReader: DiskCache.Reader?,
         request: Request,
         response: Response,
         cacheResponse: CacheResponse?
-    ): DiskCache.Snapshot? {
+    ): DiskCache.Reader? {
         // Short circuit if we're not allowed to cache this response.
         if (!isCacheable(request, response)) {
-            snapshot?.closeQuietly()
+            diskCacheReader?.closeQuietly()
             return null
         }
 
         // Open a new editor.
-        val editor = if (snapshot != null) {
-            snapshot.closeAndEdit()
+        val diskCacheWriter = if (diskCacheReader != null) {
+            diskCacheReader.closeAndOpenWriter()
         } else {
-            diskCache.value?.openEditor(diskCacheKey)
+            diskCache.value?.openWriter(diskCacheKey)
         }
 
         // Return `null` if we're unable to write to this entry.
-        if (editor == null) return null
+        if (diskCacheWriter == null) return null
 
         try {
             // Write the response to the disk cache.
@@ -159,21 +159,21 @@ internal class HttpUriFetcher(
                 val combinedResponse = response.newBuilder()
                     .headers(combineHeaders(cacheResponse.responseHeaders, response.headers))
                     .build()
-                fileSystem.write(editor.metadata) {
+                fileSystem.write(diskCacheWriter.metadata) {
                     CacheResponse(combinedResponse).writeTo(this)
                 }
             } else {
                 // Update the metadata and the image data.
-                fileSystem.write(editor.metadata) {
+                fileSystem.write(diskCacheWriter.metadata) {
                     CacheResponse(response).writeTo(this)
                 }
-                fileSystem.write(editor.data) {
+                fileSystem.write(diskCacheWriter.data) {
                     response.body!!.source().readAll(this)
                 }
             }
-            return editor.commitAndGet()
+            return diskCacheWriter.commitAndOpenReader()
         } catch (e: Exception) {
-            editor.abortQuietly()
+            diskCacheWriter.abortQuietly()
             throw e
         } finally {
             response.closeQuietly()
@@ -250,7 +250,7 @@ internal class HttpUriFetcher(
             (!respectCacheHeaders || CacheStrategy.isCacheable(request, response))
     }
 
-    private fun DiskCache.Snapshot.toCacheResponse(): CacheResponse? {
+    private fun DiskCache.Reader.toCacheResponse(): CacheResponse? {
         try {
             return fileSystem.read(metadata) {
                 CacheResponse(this)
@@ -261,7 +261,7 @@ internal class HttpUriFetcher(
         }
     }
 
-    private fun DiskCache.Snapshot.toImageSource(): ImageSource {
+    private fun DiskCache.Reader.toImageSource(): ImageSource {
         return ImageSource(data, fileSystem, diskCacheKey, this)
     }
 
