@@ -538,57 +538,5 @@ interface ImageLoader {
                 logger = logger
             )
         }
-
-        @Deprecated(
-            message = "Migrate to 'memoryCache'.",
-            replaceWith = ReplaceWith(
-                expression = "memoryCache { MemoryCache.Builder(context).maxSizePercent(percent).build() }",
-                imports = ["coil.memory.MemoryCache"]
-            ),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        fun availableMemoryPercentage(@FloatRange(from = 0.0, to = 1.0) percent: Double): Builder = unsupported()
-
-        @Deprecated(
-            message = "Migrate to 'memoryCache'.",
-            replaceWith = ReplaceWith(
-                expression = "memoryCache { MemoryCache.Builder(context).weakReferencesEnabled(enable).build() }",
-                imports = ["coil.memory.MemoryCache"]
-            ),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        fun trackWeakReferences(enable: Boolean): Builder = unsupported()
-
-        @Deprecated(
-            message = "Migrate to 'interceptorDispatcher'.",
-            replaceWith = ReplaceWith(
-                expression = "interceptorDispatcher(if (enable) Dispatchers.Main.immediate else Dispatchers.IO)",
-                imports = ["kotlinx.coroutines.Dispatchers"]
-            ),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        fun launchInterceptorChainOnMainThread(enable: Boolean): Builder = unsupported()
-
-        @Deprecated(
-            message = "Replace with 'components'.",
-            replaceWith = ReplaceWith("components(builder)"),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        @JvmSynthetic
-        fun componentRegistry(builder: ComponentRegistry.Builder.() -> Unit): Builder = unsupported()
-
-        @Deprecated(
-            message = "Replace with 'components'.",
-            replaceWith = ReplaceWith("components(registry)"),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        fun componentRegistry(registry: ComponentRegistry): Builder = unsupported()
-
-        @Deprecated(
-            message = "Migrate to 'transitionFactory'.",
-            replaceWith = ReplaceWith("transitionFactory { _, _ -> transition }"),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        fun transition(transition: Transition): Builder = unsupported()
     }
 }
