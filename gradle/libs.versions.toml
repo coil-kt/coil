@@ -79,6 +79,21 @@ roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule
 svg = "com.caverock:androidsvg-aar:1.4"
 
 [bundles]
+test-android = [
+    "androidx-test-core",
+    "androidx-test-junit",
+    "androidx-test-rules",
+    "androidx-test-runner",
+    "coroutines-test",
+    "junit",
+    "kotlin-test",
+    "okhttp-mockwebserver"
+]
+test-common = [
+    "coroutines-test",
+    "kotlin-test",
+    "okio-fakefilesystem",
+]
 test-jvm = [
     "androidx-test-core",
     "androidx-test-junit",
@@ -90,14 +105,4 @@ test-jvm = [
     "okhttp-mockwebserver",
     "okio-fakefilesystem",
     "robolectric"
-]
-test-android = [
-    "androidx-test-core",
-    "androidx-test-junit",
-    "androidx-test-rules",
-    "androidx-test-runner",
-    "coroutines-test",
-    "junit",
-    "kotlin-test",
-    "okhttp-mockwebserver"
 ]

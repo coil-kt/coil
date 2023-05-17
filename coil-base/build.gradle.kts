@@ -19,6 +19,11 @@ kotlin {
                 api(libs.okio)
             }
         }
+        commonTest {
+            dependencies {
+                implementation(libs.bundles.test.common)
+            }
+        }
         named("jsNativeMain") {
             dependencies {
                 implementation(libs.kotlinx.immutable.collections)
