@@ -7,14 +7,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 fun addAllTargets(project: Project) {
     project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
         project.extensions.getByType<KotlinMultiplatformExtension>().apply {
-            if (project.plugins.hasPlugin("com.android.library")) {
+            val hasAndroidPlugin = project.plugins.hasPlugin("com.android.library")
+            if (hasAndroidPlugin) {
                 android {
                     publishLibraryVariants("release")
                 }
-            }
-
-            js {
-                browser()
             }
 
             iosArm64()
@@ -48,6 +45,18 @@ fun addAllTargets(project: Project) {
             }
             val macosTest = sourceSets.create("macosTest").apply {
                 dependsOn(nativeTest)
+            }
+
+            if (hasAndroidPlugin) {
+                val androidJvmMain = sourceSets.create("androidJvmMain").apply {
+                    dependsOn(commonMain)
+                }
+                sourceSets.getByName("androidMain").apply {
+                    dependsOn(androidJvmMain)
+                }
+                sourceSets.getByName("jvmMain").apply {
+                    dependsOn(androidJvmMain)
+                }
             }
 
             targets.forEach { target ->

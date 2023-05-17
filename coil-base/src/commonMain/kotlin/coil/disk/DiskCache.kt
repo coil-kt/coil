@@ -1,15 +1,12 @@
 package coil.disk
 
-import android.os.StatFs
-import androidx.annotation.FloatRange
 import coil.annotation.ExperimentalCoilApi
-import java.io.File
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import okio.Closeable
 import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toOkioPath
 
 /**
  * An LRU cache of files.
@@ -116,7 +113,7 @@ interface DiskCache {
     class Builder {
 
         private var directory: Path? = null
-        private var fileSystem = FileSystem.SYSTEM
+        private var fileSystem: FileSystem? = null
         private var maxSizePercent = 0.02 // 2%
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
@@ -129,20 +126,12 @@ interface DiskCache {
          * IMPORTANT: It is an error to have two [DiskCache] instances active in the same
          * directory at the same time as this can corrupt the disk cache.
          */
-        fun directory(directory: File) = directory(directory.toOkioPath())
-
-        /**
-         * Set the [directory] where the cache stores its data.
-         *
-         * IMPORTANT: It is an error to have two [DiskCache] instances active in the same
-         * directory at the same time as this can corrupt the disk cache.
-         */
         fun directory(directory: Path) = apply {
             this.directory = directory
         }
 
         /**
-         * Set the [fileSystem] where the cache stores its data, usually [FileSystem.SYSTEM].
+         * Set the [fileSystem] where the cache stores its data.
          */
         fun fileSystem(fileSystem: FileSystem) = apply {
             this.fileSystem = fileSystem
@@ -151,7 +140,7 @@ interface DiskCache {
         /**
          * Set the maximum size of the disk cache as a percentage of the device's free disk space.
          */
-        fun maxSizePercent(@FloatRange(from = 0.0, to = 1.0) percent: Double) = apply {
+        fun maxSizePercent(percent: Double) = apply {
             require(percent in 0.0..1.0) { "size must be in the range [0.0, 1.0]." }
             this.maxSizeBytes = 0
             this.maxSizePercent = percent
@@ -196,10 +185,10 @@ interface DiskCache {
          */
         fun build(): DiskCache {
             val directory = checkNotNull(directory) { "directory == null" }
+            val fileSystem = checkNotNull(fileSystem) { "fileSystem == null" }
             val maxSize = if (maxSizePercent > 0) {
                 try {
-                    val stats = StatFs(directory.toFile().apply { mkdir() }.absolutePath)
-                    val size = maxSizePercent * stats.blockCountLong * stats.blockSizeLong
+                    val size = maxSizePercent * fileSystem.remainingFreeSpaceBytes(directory)
                     size.toLong().coerceIn(minimumMaxSizeBytes, maximumMaxSizeBytes)
                 } catch (_: Exception) {
                     minimumMaxSizeBytes
@@ -211,7 +200,7 @@ interface DiskCache {
                 maxSize = maxSize,
                 directory = directory,
                 fileSystem = fileSystem,
-                cleanupDispatcher = cleanupDispatcher
+                cleanupDispatcher = cleanupDispatcher,
             )
         }
     }

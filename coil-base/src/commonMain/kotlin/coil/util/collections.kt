@@ -1,9 +1,22 @@
-@file:JvmName("-Collections")
+@file:JvmName("-collections")
 
 package coil.util
 
-import java.util.Collections
 import kotlin.jvm.JvmName
+
+/**
+ * Create a [MutableMap] that orders its entries by most recently used to least recently used.
+ *
+ * https://youtrack.jetbrains.com/issue/KT-52183
+ */
+internal expect fun <K : Any, V : Any> LruMutableMap(
+    initialCapacity: Int = 0,
+    loadFactor: Float = 0.75f,
+): MutableMap<K, V>
+
+internal expect fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V>
+
+internal expect fun <T> List<T>.toImmutableList(): List<T>
 
 /**
  * Functionally the same as [Iterable.forEach] except it generates
@@ -78,16 +91,4 @@ internal inline fun <K, V, R : Any> Map<K, V>.mapNotNullValues(
         }
     }
     return destination
-}
-
-internal fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> = when (size) {
-    0 -> emptyMap()
-    1 -> entries.first().let { (key, value) -> Collections.singletonMap(key, value) }
-    else -> Collections.unmodifiableMap(LinkedHashMap(this))
-}
-
-internal fun <T> List<T>.toImmutableList(): List<T> = when (size) {
-    0 -> emptyList()
-    1 -> Collections.singletonList(first())
-    else -> Collections.unmodifiableList(ArrayList(this))
 }

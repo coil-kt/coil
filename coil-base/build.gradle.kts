@@ -19,6 +19,11 @@ kotlin {
                 api(libs.okio)
             }
         }
+        named("nativeMain") {
+            dependencies {
+                implementation(libs.kotlinx.immutable.collections)
+            }
+        }
         android {
             dependencies {
                 implementation(libs.androidx.annotation)
