@@ -76,38 +76,3 @@ inline fun ImageView.dispose() {
  */
 inline val ImageView.result: ImageResult?
     get() = CoilUtils.result(this)
-
-@Deprecated(
-    message = "Migrate to 'load'.",
-    replaceWith = ReplaceWith(
-        expression = "load(data, imageLoader, builder)",
-        imports = ["coil.imageLoader", "coil.load"]
-    ),
-    level = DeprecationLevel.ERROR // Temporary migration aid.
-)
-inline fun ImageView.loadAny(
-    data: Any?,
-    imageLoader: ImageLoader = context.imageLoader,
-    builder: ImageRequest.Builder.() -> Unit = {}
-) = load(data, imageLoader, builder)
-
-@Deprecated(
-    message = "Migrate to 'dispose'.",
-    replaceWith = ReplaceWith(
-        expression = "dispose()",
-        imports = ["coil.dispose"]
-    ),
-    level = DeprecationLevel.ERROR // Temporary migration aid.
-)
-inline fun ImageView.clear() = dispose()
-
-@Deprecated(
-    message = "Migrate to 'result'.",
-    replaceWith = ReplaceWith(
-        expression = "result",
-        imports = ["coil.result"]
-    ),
-    level = DeprecationLevel.ERROR // Temporary migration aid.
-)
-inline val ImageView.metadata: ImageResult?
-    get() = CoilUtils.result(this)

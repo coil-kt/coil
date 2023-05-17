@@ -1031,26 +1031,5 @@ class ImageRequest private constructor(
                 return Scale.FIT
             }
         }
-
-        @Deprecated(
-            message = "Migrate to 'fetcherFactory'.",
-            replaceWith = ReplaceWith("fetcherFactory<Any> { _, _, _ -> fetcher }"),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        fun fetcher(fetcher: Fetcher): Builder = unsupported()
-
-        @Deprecated(
-            message = "Migrate to 'decoderFactory'.",
-            replaceWith = ReplaceWith("decoderFactory { _, _, _ -> decoder }"),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        fun decoder(decoder: Decoder): Builder = unsupported()
-
-        @Deprecated(
-            message = "Migrate to 'transitionFactory'.",
-            replaceWith = ReplaceWith("transitionFactory { _, _ -> transition }"),
-            level = DeprecationLevel.ERROR // Temporary migration aid.
-        )
-        fun transition(transition: Transition): Builder = unsupported()
     }
 }

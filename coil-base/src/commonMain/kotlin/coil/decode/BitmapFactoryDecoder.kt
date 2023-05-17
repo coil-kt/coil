@@ -29,19 +29,6 @@ class BitmapFactoryDecoder(
     private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
 ) : Decoder {
 
-    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
-    constructor(
-        source: ImageSource,
-        options: Options
-    ) : this(source, options)
-
-    @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
-    constructor(
-        source: ImageSource,
-        options: Options,
-        parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE)
-    ) : this(source, options, parallelismLock)
-
     override suspend fun decode() = parallelismLock.withPermit {
         runInterruptible { BitmapFactory.Options().decode() }
     }
@@ -189,9 +176,6 @@ class BitmapFactoryDecoder(
         @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
         @SinceKotlin("999.9") // Only public in Java.
         constructor() : this()
-
-        @Deprecated(message = "Kept for binary compatibility.", level = DeprecationLevel.HIDDEN)
-        constructor(maxParallelism: Int = DEFAULT_MAX_PARALLELISM) : this(maxParallelism)
 
         private val parallelismLock = Semaphore(maxParallelism)
 

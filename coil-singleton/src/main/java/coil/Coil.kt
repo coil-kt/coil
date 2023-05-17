@@ -77,28 +77,4 @@ object Coil {
         imageLoader = newImageLoader
         return newImageLoader
     }
-
-    @Deprecated(
-        message = "Replace with 'context.imageLoader.enqueue(request)'.",
-        replaceWith = ReplaceWith(
-            expression = "request.context.imageLoader.enqueue(request)",
-            imports = ["coil.imageLoader"]
-        ),
-        level = DeprecationLevel.ERROR // Temporary migration aid.
-    )
-    @JvmStatic
-    @Suppress("UNUSED_PARAMETER")
-    fun enqueue(request: ImageRequest): Disposable = error("Unsupported")
-
-    @Deprecated(
-        message = "Replace with 'context.imageLoader.execute(request)'.",
-        replaceWith = ReplaceWith(
-            expression = "request.context.imageLoader.execute(request)",
-            imports = ["coil.imageLoader"]
-        ),
-        level = DeprecationLevel.ERROR // Temporary migration aid.
-    )
-    @JvmStatic
-    @Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
-    suspend fun execute(request: ImageRequest): ImageResult = error("Unsupported")
 }

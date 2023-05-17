@@ -46,9 +46,3 @@ fun Size(@Px width: Int, @Px height: Int) = Size(Dimension(width), Dimension(hei
 
 /** Return true if this size is equal to [Size.ORIGINAL]. Else, return false. */
 val Size.isOriginal: Boolean get() = this == Size.ORIGINAL
-
-@Deprecated(
-    message = "Migrate to 'coil.size.Size.ORIGINAL'.",
-    replaceWith = ReplaceWith("Size.ORIGINAL", "coil.size.Size")
-)
-val OriginalSize: Size get() = Size.ORIGINAL

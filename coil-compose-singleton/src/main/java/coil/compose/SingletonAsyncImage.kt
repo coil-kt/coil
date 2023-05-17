@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package coil.compose
 
 import androidx.compose.runtime.Composable
@@ -12,8 +10,10 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
+import coil.imageLoader
 import coil.request.ImageRequest
 
 /**
@@ -61,7 +61,7 @@ fun AsyncImage(
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
-    imageLoader = LocalImageLoader.current,
+    imageLoader = LocalContext.current.imageLoader,
     modifier = modifier,
     placeholder = placeholder,
     error = error,
@@ -114,7 +114,7 @@ fun AsyncImage(
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
-    imageLoader = LocalImageLoader.current,
+    imageLoader = LocalContext.current.imageLoader,
     modifier = modifier,
     transform = transform,
     onState = onState,

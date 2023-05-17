@@ -31,12 +31,4 @@ object CoilUtils {
     fun result(view: View): ImageResult? {
         return view.requestManager.getResult()
     }
-
-    @Deprecated(
-        message = "ImageLoaders no longer (and should not) use OkHttp's disk cache. " +
-            "Use 'ImageLoader.Builder.diskCache' to configure a custom disk cache.",
-        level = DeprecationLevel.ERROR // Temporary migration aid.
-    )
-    @JvmStatic
-    fun createDefaultCache(context: Context): Cache = unsupported()
 }
