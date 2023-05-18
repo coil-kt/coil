@@ -7,8 +7,8 @@ plugins {
     id("kotlinx-atomicfu")
 }
 
-setupLibraryModule(name = "coil.base")
 addAllTargets(project)
+setupLibraryModule(name = "coil.base")
 
 kotlin {
     sourceSets {
@@ -29,7 +29,7 @@ kotlin {
                 implementation(libs.kotlinx.immutable.collections)
             }
         }
-        android {
+        named("androidMain") {
             dependencies {
                 implementation(libs.androidx.annotation)
                 implementation(libs.androidx.appcompat.resources)
@@ -40,12 +40,18 @@ kotlin {
                 api(libs.androidx.lifecycle.runtime)
                 api(libs.coroutines.android)
                 api(libs.okhttp)
-
-                testImplementation(projects.coilTestInternal)
-                testImplementation(libs.bundles.test.jvm)
-
-                androidTestImplementation(projects.coilTestInternal)
-                androidTestImplementation(libs.bundles.test.android)
+            }
+        }
+        named("androidUnitTest") {
+            dependencies {
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.jvm)
+            }
+        }
+        named("androidInstrumentedTest") {
+            dependencies {
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.android)
             }
         }
     }
