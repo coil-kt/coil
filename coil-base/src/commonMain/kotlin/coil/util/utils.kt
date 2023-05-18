@@ -1,5 +1,4 @@
-@file:JvmName("-Utils")
-@file:Suppress("NOTHING_TO_INLINE")
+@file:JvmName("-utils")
 
 package coil.util
 
@@ -26,7 +25,6 @@ import android.widget.ImageView.ScaleType.FIT_START
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.ComponentRegistry
 import coil.EventListener
-import coil.ImageLoader
 import coil.base.R
 import coil.decode.DataSource
 import coil.decode.Decoder
@@ -44,13 +42,14 @@ import coil.size.Size
 import coil.size.isOriginal
 import coil.size.pxOrElse
 import coil.transform.Transformation
-import java.io.Closeable
 import java.io.File
+import kotlin.jvm.JvmName
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okio.Closeable
 
 internal val View.requestManager: ViewTargetRequestManager
     get() {
@@ -274,28 +273,4 @@ internal fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
         DEFAULT_MEMORY_CLASS_MEGABYTES
     }
     return (percent * memoryClassMegabytes * 1024 * 1024).toInt()
-}
-
-/**
- * Holds the singleton instance of the disk cache. We need to have a singleton disk cache
- * instance to support creating multiple [ImageLoader]s without specifying the disk cache
- * directory.
- *
- * @see DiskCache.Builder.directory
- */
-internal object SingletonDiskCache {
-
-    private const val DIRECTORY = "image_cache"
-    private var instance: DiskCache? = null
-
-    @Synchronized
-    fun get(context: Context): DiskCache {
-        return instance ?: run {
-            // Create the singleton disk cache instance.
-            DiskCache.Builder()
-                .directory(context.safeCacheDir.resolve(DIRECTORY))
-                .build()
-                .also { instance = it }
-        }
-    }
 }

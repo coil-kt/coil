@@ -12,6 +12,7 @@ import coil.decode.BitmapFactoryDecoder
 import coil.decode.Decoder
 import coil.decode.ExifOrientationPolicy
 import coil.disk.DiskCache
+import coil.disk.SingletonDiskCache
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.intercept.Interceptor
@@ -32,7 +33,6 @@ import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
-import coil.util.SingletonDiskCache
 import coil.util.getDrawableCompat
 import java.io.File
 import kotlin.jvm.JvmSynthetic
