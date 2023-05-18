@@ -11,7 +11,7 @@ import kotlin.jvm.JvmName
  */
 internal expect fun <K : Any, V : Any> LruMutableMap(
     initialCapacity: Int = 0,
-    loadFactor: Float = 0.75f,
+    loadFactor: Float = 0.75F,
 ): MutableMap<K, V>
 
 internal expect fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V>

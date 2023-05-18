@@ -11,6 +11,8 @@ import coil.map.Mapper
 import coil.request.Options
 import coil.util.forEachIndices
 import coil.util.toImmutableList
+import kotlin.jvm.JvmOverloads
+import kotlin.reflect.KClass
 
 /**
  * Registry for all the components that an [ImageLoader] uses to fulfil image requests.
@@ -20,9 +22,9 @@ import coil.util.toImmutableList
  */
 class ComponentRegistry private constructor(
     val interceptors: List<Interceptor>,
-    val mappers: List<Pair<Mapper<out Any, out Any>, Class<out Any>>>,
-    val keyers: List<Pair<Keyer<out Any>, Class<out Any>>>,
-    val fetcherFactories: List<Pair<Fetcher.Factory<out Any>, Class<out Any>>>,
+    val mappers: List<Pair<Mapper<out Any, out Any>, KClass<out Any>>>,
+    val keyers: List<Pair<Keyer<out Any>, KClass<out Any>>>,
+    val fetcherFactories: List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>,
     val decoderFactories: List<Decoder.Factory>
 ) {
 
@@ -36,7 +38,7 @@ class ComponentRegistry private constructor(
     fun map(data: Any, options: Options): Any {
         var mappedData = data
         mappers.forEachIndices { (mapper, type) ->
-            if (type.isAssignableFrom(mappedData::class.java)) {
+            if (type.isInstance(mappedData)) {
                 (mapper as Mapper<Any, *>).map(mappedData, options)?.let { mappedData = it }
             }
         }
@@ -50,7 +52,7 @@ class ComponentRegistry private constructor(
      */
     fun key(data: Any, options: Options): String? {
         keyers.forEachIndices { (keyer, type) ->
-            if (type.isAssignableFrom(data::class.java)) {
+            if (type.isInstance(data::class)) {
                 (keyer as Keyer<Any>).key(data, options)?.let { return it }
             }
         }
@@ -73,7 +75,7 @@ class ComponentRegistry private constructor(
     ): Pair<Fetcher, Int>? {
         for (index in startIndex until fetcherFactories.size) {
             val (factory, type) = fetcherFactories[index]
-            if (type.isAssignableFrom(data::class.java)) {
+            if (type.isInstance(data)) {
                 val fetcher = (factory as Fetcher.Factory<Any>).create(data, options, imageLoader)
                 if (fetcher != null) return fetcher to index
             }
@@ -108,9 +110,9 @@ class ComponentRegistry private constructor(
     class Builder {
 
         internal val interceptors: MutableList<Interceptor>
-        internal val mappers: MutableList<Pair<Mapper<out Any, *>, Class<out Any>>>
-        internal val keyers: MutableList<Pair<Keyer<out Any>, Class<out Any>>>
-        internal val fetcherFactories: MutableList<Pair<Fetcher.Factory<out Any>, Class<out Any>>>
+        internal val mappers: MutableList<Pair<Mapper<out Any, *>, KClass<out Any>>>
+        internal val keyers: MutableList<Pair<Keyer<out Any>, KClass<out Any>>>
+        internal val fetcherFactories: MutableList<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>
         internal val decoderFactories: MutableList<Decoder.Factory>
 
         constructor() {
@@ -135,26 +137,26 @@ class ComponentRegistry private constructor(
         }
 
         /** Register a [Mapper]. */
-        inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(mapper, T::class.java)
+        inline fun <reified T : Any> add(mapper: Mapper<T, *>) = add(mapper, T::class)
 
         /** Register a [Mapper]. */
-        fun <T : Any> add(mapper: Mapper<T, *>, type: Class<T>) = apply {
+        fun <T : Any> add(mapper: Mapper<T, *>, type: KClass<T>) = apply {
             mappers += mapper to type
         }
 
         /** Register a [Keyer]. */
-        inline fun <reified T : Any> add(keyer: Keyer<T>) = add(keyer, T::class.java)
+        inline fun <reified T : Any> add(keyer: Keyer<T>) = add(keyer, T::class)
 
         /** Register a [Keyer]. */
-        fun <T : Any> add(keyer: Keyer<T>, type: Class<T>) = apply {
+        fun <T : Any> add(keyer: Keyer<T>, type: KClass<T>) = apply {
             keyers += keyer to type
         }
 
         /** Register a [Fetcher.Factory]. */
-        inline fun <reified T : Any> add(factory: Fetcher.Factory<T>) = add(factory, T::class.java)
+        inline fun <reified T : Any> add(factory: Fetcher.Factory<T>) = add(factory, T::class)
 
         /** Register a [Fetcher.Factory]. */
-        fun <T : Any> add(factory: Fetcher.Factory<T>, type: Class<T>) = apply {
+        fun <T : Any> add(factory: Fetcher.Factory<T>, type: KClass<T>) = apply {
             fetcherFactories += factory to type
         }
 
