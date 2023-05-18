@@ -5,12 +5,10 @@ import androidx.test.core.app.ApplicationProvider
 import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CircleCropTransformationTest {
 
     private lateinit var context: Context
