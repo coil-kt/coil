@@ -24,6 +24,11 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
+        named("jsMain") {
+            dependencies {
+                implementation(libs.okio.nodefilesystem)
+            }
+        }
         named("jsNativeMain") {
             dependencies {
                 implementation(libs.kotlinx.immutable.collections)

@@ -1,6 +1,10 @@
 package coil.disk
 
 import coil.annotation.ExperimentalCoilApi
+import coil.util.DEFAULT
+import coil.util.defaultFileSystem
+import coil.util.ioCoroutineDispatcher
+import coil.util.remainingFreeSpaceBytes
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -113,12 +117,12 @@ interface DiskCache {
     class Builder {
 
         private var directory: Path? = null
-        private var fileSystem: FileSystem? = null
+        private var fileSystem = defaultFileSystem()
         private var maxSizePercent = 0.02 // 2%
         private var minimumMaxSizeBytes = 10L * 1024 * 1024 // 10MB
         private var maximumMaxSizeBytes = 250L * 1024 * 1024 // 250MB
         private var maxSizeBytes = 0L
-        private var cleanupDispatcher = Dispatchers.IO
+        private var cleanupDispatcher = ioCoroutineDispatcher()
 
         /**
          * Set the [directory] where the cache stores its data.
@@ -185,7 +189,6 @@ interface DiskCache {
          */
         fun build(): DiskCache {
             val directory = checkNotNull(directory) { "directory == null" }
-            val fileSystem = checkNotNull(fileSystem) { "fileSystem == null" }
             val maxSize = if (maxSizePercent > 0) {
                 try {
                     val size = maxSizePercent * fileSystem.remainingFreeSpaceBytes(directory)

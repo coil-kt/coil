@@ -13,7 +13,11 @@ import coil.util.closeQuietly
 import coil.util.safeCacheDir
 import java.io.Closeable
 import java.io.File
+import kotlin.jvm.JvmName
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import okio.BufferedSource
+import okio.Closeable
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -243,6 +247,7 @@ internal class SourceImageSource(
     override val metadata: Metadata?
 ) : ImageSource() {
 
+    private val lock = SynchronizedObject()
     private var isClosed = false
     private var source: BufferedSource? = source
     private var cacheDirectoryFactory: (() -> File)? = cacheDirectoryFactory
@@ -250,8 +255,7 @@ internal class SourceImageSource(
 
     override val fileSystem get() = FileSystem.SYSTEM
 
-    @Synchronized
-    override fun source(): BufferedSource {
+    override fun source(): BufferedSource = synchronized(lock) {
         assertNotClosed()
         source?.let { return it }
         return fileSystem.source(file!!).buffer().also { source = it }
@@ -259,8 +263,7 @@ internal class SourceImageSource(
 
     override fun sourceOrNull() = source()
 
-    @Synchronized
-    override fun file(): Path {
+    override fun file(): Path = synchronized(lock) {
         assertNotClosed()
         file?.let { return it }
 
@@ -275,14 +278,12 @@ internal class SourceImageSource(
         return tempFile
     }
 
-    @Synchronized
-    override fun fileOrNull(): Path? {
+    override fun fileOrNull(): Path? = synchronized(lock) {
         assertNotClosed()
         return file
     }
 
-    @Synchronized
-    override fun close() {
+    override fun close() = synchronized(lock) {
         isClosed = true
         source?.closeQuietly()
         file?.let(fileSystem::delete)

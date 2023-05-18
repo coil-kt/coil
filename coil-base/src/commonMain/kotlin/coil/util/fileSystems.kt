@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmName("-FileSystems")
+@file:JvmName("-fileSystems")
 
 package coil.util
 
+import kotlin.jvm.JvmName
 import okio.FileNotFoundException
 import okio.FileSystem
 import okio.IOException
 import okio.Path
+
+internal expect fun defaultFileSystem(): FileSystem
+
+internal expect fun FileSystem.createTempFile(directory: Path): Path
+
+internal expect fun FileSystem.remainingFreeSpaceBytes(directory: Path): Long
 
 /** Create a new empty file if one doesn't already exist. */
 internal fun FileSystem.createFile(file: Path) {

@@ -1,4 +1,4 @@
-package coil.disk
+package coil.util
 
 import android.os.StatFs
 import okio.FileSystem

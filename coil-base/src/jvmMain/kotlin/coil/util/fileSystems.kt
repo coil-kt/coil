@@ -1,4 +1,4 @@
-package coil.disk
+package coil.util
 
 import okio.FileSystem
 import okio.Path

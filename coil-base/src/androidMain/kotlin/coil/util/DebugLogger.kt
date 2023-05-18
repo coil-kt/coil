@@ -1,7 +1,6 @@
-package coil.utils
+package coil.util
 
 import android.util.Log
-import coil.util.Logger
 import coil.util.Logger.Level
 import java.io.PrintWriter
 import java.io.StringWriter
