@@ -83,7 +83,6 @@ import okio.buffer
  * @param valueCount the number of values per cache entry. Must be positive.
  * @param maxSize the maximum number of bytes this cache should use to store.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class DiskLruCache(
     fileSystem: FileSystem,
     private val directory: Path,
@@ -143,6 +142,7 @@ internal class DiskLruCache(
     private val journalFileBackup = directory / JOURNAL_FILE_BACKUP
     private val lruEntries = LruMutableMap<String, Entry>()
     private val cleanupScope =
+        @OptIn(ExperimentalCoroutinesApi::class)
         CoroutineScope(SupervisorJob() + cleanupDispatcher.limitedParallelism(1))
     private val lock = SynchronizedObject()
     private var size = 0L

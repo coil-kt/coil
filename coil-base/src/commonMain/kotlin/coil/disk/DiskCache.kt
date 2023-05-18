@@ -1,13 +1,10 @@
 package coil.disk
 
 import coil.annotation.ExperimentalCoilApi
-import coil.util.DEFAULT
 import coil.util.defaultFileSystem
 import coil.util.ioCoroutineDispatcher
 import coil.util.remainingFreeSpaceBytes
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import okio.Closeable
 import okio.FileSystem
 import okio.Path
