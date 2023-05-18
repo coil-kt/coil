@@ -11,13 +11,11 @@ import coil.request.SuccessResult
 import coil.test.FakeImageLoaderEngine.OptionalInterceptor
 import kotlin.test.assertIs
 import kotlin.test.assertSame
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class FakeImageLoaderEngineTest {
 
