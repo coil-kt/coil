@@ -289,14 +289,16 @@ public final class coil/disk/DiskCache$Builder {
 public abstract interface class coil/disk/DiskCache$Editor {
 	public abstract fun abort ()V
 	public abstract fun commit ()V
-	public abstract fun commitAndGet ()Lcoil/disk/DiskCache$Snapshot;
+	public fun commitAndGet ()Lcoil/disk/DiskCache$Snapshot;
+	public abstract fun commitAndOpenSnapshot ()Lcoil/disk/DiskCache$Snapshot;
 	public abstract fun getData ()Lokio/Path;
 	public abstract fun getMetadata ()Lokio/Path;
 }
 
 public abstract interface class coil/disk/DiskCache$Snapshot : java/io/Closeable {
 	public abstract fun close ()V
-	public abstract fun closeAndEdit ()Lcoil/disk/DiskCache$Editor;
+	public fun closeAndEdit ()Lcoil/disk/DiskCache$Editor;
+	public abstract fun closeAndOpenEditor ()Lcoil/disk/DiskCache$Editor;
 	public abstract fun getData ()Lokio/Path;
 	public abstract fun getMetadata ()Lokio/Path;
 }

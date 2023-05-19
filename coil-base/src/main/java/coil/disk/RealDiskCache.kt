@@ -49,7 +49,7 @@ internal class RealDiskCache(
         override val data get() = snapshot.file(ENTRY_DATA)
 
         override fun close() = snapshot.close()
-        override fun closeAndEdit() = snapshot.closeAndEdit()?.let(::RealEditor)
+        override fun closeAndOpenEditor() = snapshot.closeAndEdit()?.let(::RealEditor)
     }
 
     private class RealEditor(private val editor: DiskLruCache.Editor) : Editor {
@@ -58,7 +58,7 @@ internal class RealDiskCache(
         override val data get() = editor.file(ENTRY_DATA)
 
         override fun commit() = editor.commit()
-        override fun commitAndGet() = editor.commitAndGet()?.let(::RealSnapshot)
+        override fun commitAndOpenSnapshot() = editor.commitAndGet()?.let(::RealSnapshot)
         override fun abort() = editor.abort()
     }
 

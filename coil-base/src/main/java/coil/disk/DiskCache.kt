@@ -90,7 +90,13 @@ interface DiskCache {
         override fun close()
 
         /** Close the snapshot and call [openEditor] for this entry atomically. */
-        fun closeAndEdit(): Editor?
+        fun closeAndOpenEditor(): Editor?
+
+        @Deprecated(
+            message = "Renamed to 'closeAndOpenEditor'.",
+            replaceWith = ReplaceWith("closeAndOpenEditor()")
+        )
+        fun closeAndEdit(): Editor? = closeAndOpenEditor()
     }
 
     /**
@@ -114,8 +120,14 @@ interface DiskCache {
         /** Commit the edit so the changes are visible to readers. */
         fun commit()
 
-        /** Commit the edit and open a new [Snapshot] atomically. */
-        fun commitAndGet(): Snapshot?
+        /** Commit the write and call [openSnapshot] for this entry atomically. */
+        fun commitAndOpenSnapshot(): Snapshot?
+
+        @Deprecated(
+            message = "Renamed to 'commitAndOpenSnapshot'.",
+            replaceWith = ReplaceWith("commitAndOpenSnapshot()")
+        )
+        fun commitAndGet(): Snapshot? = commitAndOpenSnapshot()
 
         /** Abort the edit. Any written data will be discarded. */
         fun abort()

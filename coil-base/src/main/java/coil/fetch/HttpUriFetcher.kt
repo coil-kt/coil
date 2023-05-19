@@ -144,7 +144,7 @@ internal class HttpUriFetcher(
 
         // Open a new editor.
         val editor = if (snapshot != null) {
-            snapshot.closeAndEdit()
+            snapshot.closeAndOpenEditor()
         } else {
             diskCache.value?.openEditor(diskCacheKey)
         }
@@ -171,7 +171,7 @@ internal class HttpUriFetcher(
                     response.body!!.source().readAll(this)
                 }
             }
-            return editor.commitAndGet()
+            return editor.commitAndOpenSnapshot()
         } catch (e: Exception) {
             editor.abortQuietly()
             throw e
