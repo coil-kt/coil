@@ -35,8 +35,9 @@ interface DiskCache {
     /**
      * Read the entry associated with [key].
      *
-     * IMPORTANT: **You must** call either [Snapshot.close] or [Snapshot.closeAndEdit] when finished
-     * reading the snapshot. An open snapshot prevents editing the entry or deleting it on disk.
+     * IMPORTANT: **You must** call either [Snapshot.close] or [Snapshot.closeAndOpenEditor] when
+     * finished reading the snapshot. An open snapshot prevents opening a new [Editor] or deleting
+     * the entry on disk.
      */
     @ExperimentalCoilApi
     fun openSnapshot(key: String): Snapshot?
@@ -48,9 +49,9 @@ interface DiskCache {
     /**
      * Write to the entry associated with [key].
      *
-     * IMPORTANT: **You must** call one of [Editor.commit], [Editor.commitAndGet], or [Editor.abort]
-     * to complete the edit. An open editor prevents opening new [Snapshot]s or opening a new
-     * [Editor].
+     * IMPORTANT: **You must** call one of [Editor.commit], [Editor.commitAndOpenSnapshot], or
+     * [Editor.abort] to complete the edit. An open editor prevents opening a new [Snapshot],
+     * opening a new [Editor], or deleting the entry on disk.
      */
     @ExperimentalCoilApi
     fun openEditor(key: String): Editor?
