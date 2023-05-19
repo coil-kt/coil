@@ -268,9 +268,9 @@ public abstract interface class coil/disk/DiskCache {
 	public abstract fun getFileSystem ()Lokio/FileSystem;
 	public abstract fun getMaxSize ()J
 	public abstract fun getSize ()J
-	public abstract fun read (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
+	public abstract fun openEditor (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
+	public abstract fun openSnapshot (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
 	public abstract fun remove (Ljava/lang/String;)Z
-	public abstract fun write (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
 }
 
 public final class coil/disk/DiskCache$Builder {
