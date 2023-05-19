@@ -1,5 +1,7 @@
 package coil.disk
 
+import coil.disk.DiskCache.Editor
+import coil.disk.DiskCache.Snapshot
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.ByteString.Companion.encodeUtf8
 import okio.FileSystem
@@ -23,12 +25,12 @@ internal class RealDiskCache(
 
     override val size get() = cache.size()
 
-    override fun openReader(key: String): DiskCache.Reader? {
-        return cache[key.hash()]?.let(::RealReader)
+    override fun openSnapshot(key: String): Snapshot? {
+        return cache[key.hash()]?.let(::RealSnapshot)
     }
 
-    override fun openWriter(key: String): DiskCache.Writer? {
-        return cache.edit(key.hash())?.let(::RealWriter)
+    override fun openEditor(key: String): Editor? {
+        return cache.edit(key.hash())?.let(::RealEditor)
     }
 
     override fun remove(key: String): Boolean {
@@ -41,22 +43,22 @@ internal class RealDiskCache(
 
     private fun String.hash() = encodeUtf8().sha256().hex()
 
-    private class RealReader(private val snapshot: DiskLruCache.Snapshot) : DiskCache.Reader {
+    private class RealSnapshot(private val snapshot: DiskLruCache.Snapshot) : Snapshot {
 
         override val metadata get() = snapshot.file(ENTRY_METADATA)
         override val data get() = snapshot.file(ENTRY_DATA)
 
         override fun close() = snapshot.close()
-        override fun closeAndOpenWriter() = snapshot.closeAndEdit()?.let(::RealWriter)
+        override fun closeAndEdit() = snapshot.closeAndEdit()?.let(::RealEditor)
     }
 
-    private class RealWriter(private val editor: DiskLruCache.Editor) : DiskCache.Writer {
+    private class RealEditor(private val editor: DiskLruCache.Editor) : Editor {
 
         override val metadata get() = editor.file(ENTRY_METADATA)
         override val data get() = editor.file(ENTRY_DATA)
 
         override fun commit() = editor.commit()
-        override fun commitAndOpenReader() = editor.commitAndGet()?.let(::RealReader)
+        override fun commitAndGet() = editor.commitAndGet()?.let(::RealSnapshot)
         override fun abort() = editor.abort()
     }
 
