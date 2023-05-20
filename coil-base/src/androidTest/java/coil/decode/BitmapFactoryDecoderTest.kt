@@ -22,6 +22,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.test.runTest
 import okio.buffer
 import okio.source
@@ -229,7 +230,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_ignore() = runTest {
+    fun exifOrientationPolicy_ignore() = runTest(timeout = 1.minutes) {
         val factory = BitmapFactoryDecoder.Factory(
             exifOrientationPolicy = ExifOrientationPolicy.IGNORE
         )
@@ -252,7 +253,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_respectPerformance() = runTest {
+    fun exifOrientationPolicy_respectPerformance() = runTest(timeout = 1.minutes) {
         val factory = BitmapFactoryDecoder.Factory(
             exifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
         )
@@ -274,7 +275,7 @@ class BitmapFactoryDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_respectAll() = runTest {
+    fun exifOrientationPolicy_respectAll() = runTest(timeout = 1.minutes) {
         val factory = BitmapFactoryDecoder.Factory(
             exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL
         )
