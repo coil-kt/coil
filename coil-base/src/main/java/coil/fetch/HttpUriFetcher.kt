@@ -124,7 +124,7 @@ internal class HttpUriFetcher(
 
     private fun readFromDiskCache(): DiskCache.Snapshot? {
         return if (options.diskCachePolicy.readEnabled) {
-            diskCache.value?.get(diskCacheKey)
+            diskCache.value?.openSnapshot(diskCacheKey)
         } else {
             null
         }
@@ -144,9 +144,9 @@ internal class HttpUriFetcher(
 
         // Open a new editor.
         val editor = if (snapshot != null) {
-            snapshot.closeAndEdit()
+            snapshot.closeAndOpenEditor()
         } else {
-            diskCache.value?.edit(diskCacheKey)
+            diskCache.value?.openEditor(diskCacheKey)
         }
 
         // Return `null` if we're unable to write to this entry.
@@ -171,7 +171,7 @@ internal class HttpUriFetcher(
                     response.body!!.source().readAll(this)
                 }
             }
-            return editor.commitAndGet()
+            return editor.commitAndOpenSnapshot()
         } catch (e: Exception) {
             editor.abortQuietly()
             throw e

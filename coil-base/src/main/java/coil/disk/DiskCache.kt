@@ -33,23 +33,32 @@ interface DiskCache {
     val fileSystem: FileSystem
 
     /**
-     * Get the entry associated with [key].
+     * Read the entry associated with [key].
      *
-     * IMPORTANT: **You must** call either [Snapshot.close] or [Snapshot.closeAndEdit] when finished
-     * reading the snapshot. An open snapshot prevents editing the entry or deleting it on disk.
+     * IMPORTANT: **You must** call either [Snapshot.close] or [Snapshot.closeAndOpenEditor] when
+     * finished reading the snapshot. An open snapshot prevents opening a new [Editor] or deleting
+     * the entry on disk.
      */
     @ExperimentalCoilApi
-    operator fun get(key: String): Snapshot?
+    fun openSnapshot(key: String): Snapshot?
+
+    @Deprecated("Renamed to 'openSnapshot'.", ReplaceWith("openSnapshot(key)"))
+    @ExperimentalCoilApi
+    operator fun get(key: String): Snapshot? = openSnapshot(key)
 
     /**
-     * Edit the entry associated with [key].
+     * Write to the entry associated with [key].
      *
-     * IMPORTANT: **You must** call one of [Editor.commit], [Editor.commitAndGet], or [Editor.abort]
-     * to complete the edit. An open editor prevents opening new [Snapshot]s or opening a new
-     * [Editor].
+     * IMPORTANT: **You must** call one of [Editor.commit], [Editor.commitAndOpenSnapshot], or
+     * [Editor.abort] to complete the edit. An open editor prevents opening a new [Snapshot],
+     * opening a new [Editor], or deleting the entry on disk.
      */
     @ExperimentalCoilApi
-    fun edit(key: String): Editor?
+    fun openEditor(key: String): Editor?
+
+    @Deprecated("Renamed to 'openEditor'.", ReplaceWith("openEditor(key)"))
+    @ExperimentalCoilApi
+    fun edit(key: String): Editor? = openEditor(key)
 
     /**
      * Delete the entry referenced by [key].
@@ -67,7 +76,7 @@ interface DiskCache {
      * A snapshot of the values for an entry.
      *
      * IMPORTANT: You must **only read** [metadata] or [data]. Mutating either file can corrupt the
-     * disk cache. To modify the contents of those files, use [edit].
+     * disk cache. To modify the contents of those files, use [openEditor].
      */
     @ExperimentalCoilApi
     interface Snapshot : Closeable {
@@ -81,8 +90,14 @@ interface DiskCache {
         /** Close the snapshot to allow editing. */
         override fun close()
 
-        /** Close the snapshot and call [edit] for this entry atomically. */
-        fun closeAndEdit(): Editor?
+        /** Close the snapshot and call [openEditor] for this entry atomically. */
+        fun closeAndOpenEditor(): Editor?
+
+        @Deprecated(
+            message = "Renamed to 'closeAndOpenEditor'.",
+            replaceWith = ReplaceWith("closeAndOpenEditor()")
+        )
+        fun closeAndEdit(): Editor? = closeAndOpenEditor()
     }
 
     /**
@@ -106,8 +121,14 @@ interface DiskCache {
         /** Commit the edit so the changes are visible to readers. */
         fun commit()
 
-        /** Commit the edit and open a new [Snapshot] atomically. */
-        fun commitAndGet(): Snapshot?
+        /** Commit the write and call [openSnapshot] for this entry atomically. */
+        fun commitAndOpenSnapshot(): Snapshot?
+
+        @Deprecated(
+            message = "Renamed to 'commitAndOpenSnapshot'.",
+            replaceWith = ReplaceWith("commitAndOpenSnapshot()")
+        )
+        fun commitAndGet(): Snapshot? = commitAndOpenSnapshot()
 
         /** Abort the edit. Any written data will be discarded. */
         fun abort()
