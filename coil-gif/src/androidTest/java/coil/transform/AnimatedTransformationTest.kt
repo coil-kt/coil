@@ -16,12 +16,10 @@ import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
 import coil.util.decodeBitmapAsset
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AnimatedTransformationTest {
 
     private lateinit var context: Context

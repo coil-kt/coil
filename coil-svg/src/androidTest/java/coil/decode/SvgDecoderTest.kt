@@ -17,7 +17,6 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okio.Buffer
 import okio.BufferedSource
@@ -26,7 +25,6 @@ import okio.source
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class SvgDecoderTest {
 
     private lateinit var context: Context

@@ -15,14 +15,12 @@ import coil.util.decodeBitmapAsset
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okio.buffer
 import okio.source
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class VideoFrameDecoderTest {
 
     private lateinit var context: Context
