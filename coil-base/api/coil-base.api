@@ -268,6 +268,8 @@ public abstract interface class coil/disk/DiskCache {
 	public abstract fun getFileSystem ()Lokio/FileSystem;
 	public abstract fun getMaxSize ()J
 	public abstract fun getSize ()J
+	public abstract fun openEditor (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
+	public abstract fun openSnapshot (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
 	public abstract fun remove (Ljava/lang/String;)Z
 }
 
@@ -288,6 +290,7 @@ public abstract interface class coil/disk/DiskCache$Editor {
 	public abstract fun abort ()V
 	public abstract fun commit ()V
 	public abstract fun commitAndGet ()Lcoil/disk/DiskCache$Snapshot;
+	public abstract fun commitAndOpenSnapshot ()Lcoil/disk/DiskCache$Snapshot;
 	public abstract fun getData ()Lokio/Path;
 	public abstract fun getMetadata ()Lokio/Path;
 }
@@ -295,6 +298,7 @@ public abstract interface class coil/disk/DiskCache$Editor {
 public abstract interface class coil/disk/DiskCache$Snapshot : java/io/Closeable {
 	public abstract fun close ()V
 	public abstract fun closeAndEdit ()Lcoil/disk/DiskCache$Editor;
+	public abstract fun closeAndOpenEditor ()Lcoil/disk/DiskCache$Editor;
 	public abstract fun getData ()Lokio/Path;
 	public abstract fun getMetadata ()Lokio/Path;
 }

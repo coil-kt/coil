@@ -175,6 +175,8 @@ HSPLcoil/RealImageLoader;->access$getInterceptors$p(Lcoil/RealImageLoader;)Ljava
 HPLcoil/RealImageLoader;->access$getInterceptors$p(Lcoil/RealImageLoader;)Ljava/util/List;
 HSPLcoil/RealImageLoader;->enqueue(Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
 HPLcoil/RealImageLoader;->enqueue(Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
+HSPLcoil/RealImageLoader;->executeMain(Lcoil/request/ImageRequest;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HPLcoil/RealImageLoader;->executeMain(Lcoil/request/ImageRequest;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcoil/RealImageLoader;->getComponents()Lcoil/ComponentRegistry;
 HPLcoil/RealImageLoader;->getComponents()Lcoil/ComponentRegistry;
 HSPLcoil/RealImageLoader;->getDefaults()Lcoil/request/DefaultRequestOptions;
@@ -534,10 +536,6 @@ HSPLcoil/disk/RealDiskCache;-><clinit>()V
 PLcoil/disk/RealDiskCache;-><clinit>()V
 HSPLcoil/disk/RealDiskCache;-><init>(JLokio/Path;Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;)V
 PLcoil/disk/RealDiskCache;-><init>(JLokio/Path;Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;)V
-HSPLcoil/disk/RealDiskCache;->edit(Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
-HPLcoil/disk/RealDiskCache;->edit(Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
-HSPLcoil/disk/RealDiskCache;->get(Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
-PLcoil/disk/RealDiskCache;->get(Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
 HSPLcoil/disk/RealDiskCache;->getDirectory()Lokio/Path;
 PLcoil/disk/RealDiskCache;->getDirectory()Lokio/Path;
 HSPLcoil/disk/RealDiskCache;->getFileSystem()Lokio/FileSystem;
@@ -546,6 +544,10 @@ HSPLcoil/disk/RealDiskCache;->getMaxSize()J
 PLcoil/disk/RealDiskCache;->getMaxSize()J
 HSPLcoil/disk/RealDiskCache;->hash(Ljava/lang/String;)Ljava/lang/String;
 HPLcoil/disk/RealDiskCache;->hash(Ljava/lang/String;)Ljava/lang/String;
+HSPLcoil/disk/RealDiskCache;->openEditor(Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
+HPLcoil/disk/RealDiskCache;->openEditor(Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
+HSPLcoil/disk/RealDiskCache;->openSnapshot(Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
+PLcoil/disk/RealDiskCache;->openSnapshot(Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
 Lcoil/disk/RealDiskCache$Companion;
 HSPLcoil/disk/RealDiskCache$Companion;-><init>()V
 PLcoil/disk/RealDiskCache$Companion;-><init>()V
@@ -554,10 +556,10 @@ PLcoil/disk/RealDiskCache$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstru
 Lcoil/disk/RealDiskCache$RealEditor;
 HSPLcoil/disk/RealDiskCache$RealEditor;-><init>(Lcoil/disk/DiskLruCache$Editor;)V
 PLcoil/disk/RealDiskCache$RealEditor;-><init>(Lcoil/disk/DiskLruCache$Editor;)V
-HSPLcoil/disk/RealDiskCache$RealEditor;->commitAndGet()Lcoil/disk/DiskCache$Snapshot;
-PLcoil/disk/RealDiskCache$RealEditor;->commitAndGet()Lcoil/disk/DiskCache$Snapshot;
-HSPLcoil/disk/RealDiskCache$RealEditor;->commitAndGet()Lcoil/disk/RealDiskCache$RealSnapshot;
-PLcoil/disk/RealDiskCache$RealEditor;->commitAndGet()Lcoil/disk/RealDiskCache$RealSnapshot;
+HSPLcoil/disk/RealDiskCache$RealEditor;->commitAndOpenSnapshot()Lcoil/disk/DiskCache$Snapshot;
+PLcoil/disk/RealDiskCache$RealEditor;->commitAndOpenSnapshot()Lcoil/disk/DiskCache$Snapshot;
+HSPLcoil/disk/RealDiskCache$RealEditor;->commitAndOpenSnapshot()Lcoil/disk/RealDiskCache$RealSnapshot;
+PLcoil/disk/RealDiskCache$RealEditor;->commitAndOpenSnapshot()Lcoil/disk/RealDiskCache$RealSnapshot;
 HSPLcoil/disk/RealDiskCache$RealEditor;->getData()Lokio/Path;
 PLcoil/disk/RealDiskCache$RealEditor;->getData()Lokio/Path;
 HSPLcoil/disk/RealDiskCache$RealEditor;->getMetadata()Lokio/Path;
@@ -652,8 +654,6 @@ HSPLcoil/fetch/HttpUriFetcher;->newRequest()Lokhttp3/Request;
 HPLcoil/fetch/HttpUriFetcher;->newRequest()Lokhttp3/Request;
 HSPLcoil/fetch/HttpUriFetcher;->readFromDiskCache()Lcoil/disk/DiskCache$Snapshot;
 HPLcoil/fetch/HttpUriFetcher;->readFromDiskCache()Lcoil/disk/DiskCache$Snapshot;
-HSPLcoil/fetch/HttpUriFetcher;->requireBody(Lokhttp3/Response;)Lokhttp3/ResponseBody;
-PLcoil/fetch/HttpUriFetcher;->requireBody(Lokhttp3/Response;)Lokhttp3/ResponseBody;
 HSPLcoil/fetch/HttpUriFetcher;->toCacheResponse(Lcoil/disk/DiskCache$Snapshot;)Lcoil/network/CacheResponse;
 HPLcoil/fetch/HttpUriFetcher;->toCacheResponse(Lcoil/disk/DiskCache$Snapshot;)Lcoil/network/CacheResponse;
 HSPLcoil/fetch/HttpUriFetcher;->toImageSource(Lcoil/disk/DiskCache$Snapshot;)Lcoil/decode/ImageSource;
@@ -711,6 +711,8 @@ HSPLcoil/intercept/EngineInterceptor;->access$getMemoryCacheService$p(Lcoil/inte
 PLcoil/intercept/EngineInterceptor;->access$getMemoryCacheService$p(Lcoil/intercept/EngineInterceptor;)Lcoil/memory/MemoryCacheService;
 HSPLcoil/intercept/EngineInterceptor;->decode(Lcoil/fetch/SourceResult;Lcoil/ComponentRegistry;Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HPLcoil/intercept/EngineInterceptor;->decode(Lcoil/fetch/SourceResult;Lcoil/ComponentRegistry;Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HSPLcoil/intercept/EngineInterceptor;->execute(Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HPLcoil/intercept/EngineInterceptor;->execute(Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcoil/intercept/EngineInterceptor;->fetch(Lcoil/ComponentRegistry;Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HPLcoil/intercept/EngineInterceptor;->fetch(Lcoil/ComponentRegistry;Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcoil/intercept/EngineInterceptor;->intercept(Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1185,6 +1187,8 @@ HPLcoil/request/ImageRequest;->newBuilder(Landroid/content/Context;)Lcoil/reques
 Lcoil/request/ImageRequest$Builder;
 HSPLcoil/request/ImageRequest$Builder;-><init>(Landroid/content/Context;)V
 HPLcoil/request/ImageRequest$Builder;-><init>(Landroid/content/Context;)V
+HSPLcoil/request/ImageRequest$Builder;-><init>(Lcoil/request/ImageRequest;Landroid/content/Context;)V
+HPLcoil/request/ImageRequest$Builder;-><init>(Lcoil/request/ImageRequest;Landroid/content/Context;)V
 HSPLcoil/request/ImageRequest$Builder;->build()Lcoil/request/ImageRequest;
 HPLcoil/request/ImageRequest$Builder;->build()Lcoil/request/ImageRequest;
 HSPLcoil/request/ImageRequest$Builder;->data(Ljava/lang/Object;)Lcoil/request/ImageRequest$Builder;
@@ -1368,7 +1372,7 @@ HSPLcoil/request/ViewTargetRequestManager;->onViewDetachedFromWindow(Landroid/vi
 HPLcoil/request/ViewTargetRequestManager;->onViewDetachedFromWindow(Landroid/view/View;)V
 HSPLcoil/request/ViewTargetRequestManager;->setRequest(Lcoil/request/ViewTargetRequestDelegate;)V
 HPLcoil/request/ViewTargetRequestManager;->setRequest(Lcoil/request/ViewTargetRequestDelegate;)V
-PLcoil/request/ViewTargetRequestManager$dispose$1;-><init>(Lcoil/request/ViewTargetRequestManager;Lkotlin/coroutines/Continuation;)V
+HPLcoil/request/ViewTargetRequestManager$dispose$1;-><init>(Lcoil/request/ViewTargetRequestManager;Lkotlin/coroutines/Continuation;)V
 HPLcoil/request/ViewTargetRequestManager$dispose$1;->create(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
 HPLcoil/request/ViewTargetRequestManager$dispose$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil/size/-Dimensions;
@@ -1490,7 +1494,7 @@ Lcoil/target/Target;
 Lcoil/target/ViewTarget;
 Lcoil/transition/CrossfadeTransition;
 HSPLcoil/transition/CrossfadeTransition;-><init>(Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZ)V
-PLcoil/transition/CrossfadeTransition;-><init>(Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZ)V
+HPLcoil/transition/CrossfadeTransition;-><init>(Lcoil/transition/TransitionTarget;Lcoil/request/ImageResult;IZ)V
 HSPLcoil/transition/CrossfadeTransition;->transition()V
 HPLcoil/transition/CrossfadeTransition;->transition()V
 Lcoil/transition/CrossfadeTransition$Factory;
@@ -1592,6 +1596,8 @@ HSPLcoil/util/-Utils;->orEmpty(Lcoil/request/Tags;)Lcoil/request/Tags;
 HPLcoil/util/-Utils;->orEmpty(Lcoil/request/Tags;)Lcoil/request/Tags;
 HSPLcoil/util/-Utils;->orEmpty(Lokhttp3/Headers;)Lokhttp3/Headers;
 HPLcoil/util/-Utils;->orEmpty(Lokhttp3/Headers;)Lokhttp3/Headers;
+HSPLcoil/util/-Utils;->requireBody(Lokhttp3/Response;)Lokhttp3/ResponseBody;
+PLcoil/util/-Utils;->requireBody(Lokhttp3/Response;)Lokhttp3/ResponseBody;
 HSPLcoil/util/-Utils;->toPx(Lcoil/size/Dimension;Lcoil/size/Scale;)I
 PLcoil/util/-Utils;->toPx(Lcoil/size/Dimension;Lcoil/size/Scale;)I
 Lcoil/util/-Utils$WhenMappings;
@@ -1600,12 +1606,6 @@ PLcoil/util/-Utils$WhenMappings;-><clinit>()V
 Lcoil/util/ContinuationCallback;
 HSPLcoil/util/ContinuationCallback;-><init>(Lokhttp3/Call;Lkotlinx/coroutines/CancellableContinuation;)V
 PLcoil/util/ContinuationCallback;-><init>(Lokhttp3/Call;Lkotlinx/coroutines/CancellableContinuation;)V
-HSPLcoil/util/ContinuationCallback;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
-PLcoil/util/ContinuationCallback;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
-HSPLcoil/util/ContinuationCallback;->invoke(Ljava/lang/Throwable;)V
-PLcoil/util/ContinuationCallback;->invoke(Ljava/lang/Throwable;)V
-HSPLcoil/util/ContinuationCallback;->onFailure(Lokhttp3/Call;Ljava/io/IOException;)V
-PLcoil/util/ContinuationCallback;->onFailure(Lokhttp3/Call;Ljava/io/IOException;)V
 HSPLcoil/util/ContinuationCallback;->onResponse(Lokhttp3/Call;Lokhttp3/Response;)V
 HPLcoil/util/ContinuationCallback;->onResponse(Lokhttp3/Call;Lokhttp3/Response;)V
 Lcoil/util/HardwareBitmapService;

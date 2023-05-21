@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.4.0] - May 21, 2023
+
+- Rename `DiskCache` `get`/`edit` to `openSnapshot`/`openEditor`.
+- Don't automatically convert `ColorDrawable` to `ColorPainter` in `AsyncImagePainter`.
+- Annotate simple `AsyncImage` overloads with `@NonRestartableComposable`.
+- Fix: Call `Context.cacheDir` lazily in `ImageSource`.
+- Fix: Fix publishing `coil-bom`.
+- Fix: Fix always setting bitmap config to `ARGB_8888` if hardware bitmaps are disabled.
+- Update Kotlin to 1.8.21.
+- Update Coroutines to 1.7.1.
+- Update `accompanist-drawablepainter` to 0.30.1.
+- Update `androidx.compose.foundation` to 1.4.3.
+- Update `androidx.profileinstaller:profileinstaller` to 1.3.1.
+- Update `com.squareup.okhttp3` to 4.11.0.
+
 ## [2.3.0] - March 25, 2023
 
 - **New**: Introduce a new `coil-test` artifact, which includes `FakeImageLoaderEngine`. This class is useful for hardcoding image loader responses to ensure consistent and synchronous (from the main thread) responses in tests. See [here](https://coil-kt.github.io/coil/testing) for more info.
