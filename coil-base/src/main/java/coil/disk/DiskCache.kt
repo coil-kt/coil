@@ -44,7 +44,7 @@ interface DiskCache {
 
     @Deprecated("Renamed to 'openSnapshot'.", ReplaceWith("openSnapshot(key)"))
     @ExperimentalCoilApi
-    operator fun get(key: String): Snapshot? = openSnapshot(key)
+    operator fun get(key: String): Snapshot?
 
     /**
      * Write to the entry associated with [key].
@@ -58,7 +58,7 @@ interface DiskCache {
 
     @Deprecated("Renamed to 'openEditor'.", ReplaceWith("openEditor(key)"))
     @ExperimentalCoilApi
-    fun edit(key: String): Editor? = openEditor(key)
+    fun edit(key: String): Editor?
 
     /**
      * Delete the entry referenced by [key].
@@ -97,7 +97,7 @@ interface DiskCache {
             message = "Renamed to 'closeAndOpenEditor'.",
             replaceWith = ReplaceWith("closeAndOpenEditor()")
         )
-        fun closeAndEdit(): Editor? = closeAndOpenEditor()
+        fun closeAndEdit(): Editor?
     }
 
     /**
@@ -128,7 +128,7 @@ interface DiskCache {
             message = "Renamed to 'commitAndOpenSnapshot'.",
             replaceWith = ReplaceWith("commitAndOpenSnapshot()")
         )
-        fun commitAndGet(): Snapshot? = commitAndOpenSnapshot()
+        fun commitAndGet(): Snapshot?
 
         /** Abort the edit. Any written data will be discarded. */
         fun abort()

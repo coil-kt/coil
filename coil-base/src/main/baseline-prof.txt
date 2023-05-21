@@ -175,6 +175,8 @@ HSPLcoil/RealImageLoader;->access$getInterceptors$p(Lcoil/RealImageLoader;)Ljava
 HPLcoil/RealImageLoader;->access$getInterceptors$p(Lcoil/RealImageLoader;)Ljava/util/List;
 HSPLcoil/RealImageLoader;->enqueue(Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
 HPLcoil/RealImageLoader;->enqueue(Lcoil/request/ImageRequest;)Lcoil/request/Disposable;
+HSPLcoil/RealImageLoader;->executeMain(Lcoil/request/ImageRequest;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HPLcoil/RealImageLoader;->executeMain(Lcoil/request/ImageRequest;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcoil/RealImageLoader;->getComponents()Lcoil/ComponentRegistry;
 HPLcoil/RealImageLoader;->getComponents()Lcoil/ComponentRegistry;
 HSPLcoil/RealImageLoader;->getDefaults()Lcoil/request/DefaultRequestOptions;
@@ -709,6 +711,8 @@ HSPLcoil/intercept/EngineInterceptor;->access$getMemoryCacheService$p(Lcoil/inte
 PLcoil/intercept/EngineInterceptor;->access$getMemoryCacheService$p(Lcoil/intercept/EngineInterceptor;)Lcoil/memory/MemoryCacheService;
 HSPLcoil/intercept/EngineInterceptor;->decode(Lcoil/fetch/SourceResult;Lcoil/ComponentRegistry;Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HPLcoil/intercept/EngineInterceptor;->decode(Lcoil/fetch/SourceResult;Lcoil/ComponentRegistry;Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HSPLcoil/intercept/EngineInterceptor;->execute(Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HPLcoil/intercept/EngineInterceptor;->execute(Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcoil/intercept/EngineInterceptor;->fetch(Lcoil/ComponentRegistry;Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HPLcoil/intercept/EngineInterceptor;->fetch(Lcoil/ComponentRegistry;Lcoil/request/ImageRequest;Ljava/lang/Object;Lcoil/request/Options;Lcoil/EventListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcoil/intercept/EngineInterceptor;->intercept(Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1183,6 +1187,8 @@ HPLcoil/request/ImageRequest;->newBuilder(Landroid/content/Context;)Lcoil/reques
 Lcoil/request/ImageRequest$Builder;
 HSPLcoil/request/ImageRequest$Builder;-><init>(Landroid/content/Context;)V
 HPLcoil/request/ImageRequest$Builder;-><init>(Landroid/content/Context;)V
+HSPLcoil/request/ImageRequest$Builder;-><init>(Lcoil/request/ImageRequest;Landroid/content/Context;)V
+HPLcoil/request/ImageRequest$Builder;-><init>(Lcoil/request/ImageRequest;Landroid/content/Context;)V
 HSPLcoil/request/ImageRequest$Builder;->build()Lcoil/request/ImageRequest;
 HPLcoil/request/ImageRequest$Builder;->build()Lcoil/request/ImageRequest;
 HSPLcoil/request/ImageRequest$Builder;->data(Ljava/lang/Object;)Lcoil/request/ImageRequest$Builder;
@@ -1366,7 +1372,7 @@ HSPLcoil/request/ViewTargetRequestManager;->onViewDetachedFromWindow(Landroid/vi
 HPLcoil/request/ViewTargetRequestManager;->onViewDetachedFromWindow(Landroid/view/View;)V
 HSPLcoil/request/ViewTargetRequestManager;->setRequest(Lcoil/request/ViewTargetRequestDelegate;)V
 HPLcoil/request/ViewTargetRequestManager;->setRequest(Lcoil/request/ViewTargetRequestDelegate;)V
-PLcoil/request/ViewTargetRequestManager$dispose$1;-><init>(Lcoil/request/ViewTargetRequestManager;Lkotlin/coroutines/Continuation;)V
+HPLcoil/request/ViewTargetRequestManager$dispose$1;-><init>(Lcoil/request/ViewTargetRequestManager;Lkotlin/coroutines/Continuation;)V
 HPLcoil/request/ViewTargetRequestManager$dispose$1;->create(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
 HPLcoil/request/ViewTargetRequestManager$dispose$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil/size/-Dimensions;
@@ -1564,8 +1570,6 @@ PLcoil/util/-Requests$WhenMappings;-><clinit>()V
 Lcoil/util/-Utils;
 HSPLcoil/util/-Utils;-><clinit>()V
 PLcoil/util/-Utils;-><clinit>()V
-HSPLcoil/util/-Utils;->addUnsafeNonAscii(Lokhttp3/Headers$Builder;Ljava/lang/String;)Lokhttp3/Headers$Builder;
-HPLcoil/util/-Utils;->addUnsafeNonAscii(Lokhttp3/Headers$Builder;Ljava/lang/String;)Lokhttp3/Headers$Builder;
 HSPLcoil/util/-Utils;->calculateMemoryCacheSize(Landroid/content/Context;D)I
 PLcoil/util/-Utils;->calculateMemoryCacheSize(Landroid/content/Context;D)I
 HSPLcoil/util/-Utils;->closeQuietly(Ljava/io/Closeable;)V
