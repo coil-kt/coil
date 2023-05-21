@@ -1,5 +1,3 @@
-@file:JvmName("-Contexts")
-
 package coil.util
 
 import android.content.Context
