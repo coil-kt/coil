@@ -6,6 +6,7 @@ import coil.ImageLoader
 import coil.size.Precision
 import coil.transition.Transition
 import coil.util.DEFAULT_BITMAP_CONFIG
+import coil.util.ioCoroutineDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
@@ -17,9 +18,9 @@ import kotlinx.coroutines.Dispatchers
  */
 class DefaultRequestOptions(
     val interceptorDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-    val fetcherDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    val decoderDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    val transformationDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    val fetcherDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
+    val decoderDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
+    val transformationDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
     val transitionFactory: Transition.Factory = Transition.Factory.NONE,
     val precision: Precision = Precision.AUTOMATIC,
     val bitmapConfig: Bitmap.Config = DEFAULT_BITMAP_CONFIG,
