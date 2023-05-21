@@ -1,23 +1,27 @@
 package coil.request
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.view.View
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
 import coil.size.Precision
+import coil.size.Size
 import coil.size.ViewSizeResolver
 import coil.target.ViewTarget
 import coil.util.SystemCallbacks
 import coil.util.allowInexactSize
 import coil.util.createRequest
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class RequestServiceTest {
@@ -117,5 +121,17 @@ class RequestServiceTest {
             size(100, 100)
         }
         assertFalse(request.allowInexactSize)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1768 */
+    @Test
+    @Config(sdk = [23])
+    fun `RGB_565 is preserved if hardware bitmaps are disabled`() {
+        val request = ImageRequest.Builder(context)
+            .data(Unit)
+            .bitmapConfig(Bitmap.Config.RGB_565)
+            .build()
+        val options = service.options(request, Size(100, 100))
+        assertEquals(Bitmap.Config.RGB_565, options.config)
     }
 }
