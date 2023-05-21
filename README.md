@@ -16,7 +16,7 @@ Translations: [한국어](README-ko.md), [中文](README-zh.md), [Türkçe](READ
 Coil is available on `mavenCentral()`.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.3.0")
+implementation("io.coil-kt:coil:2.4.0")
 ```
 
 ## Quick Start
@@ -50,7 +50,7 @@ imageView.load("https://example.com/image.jpg") {
 Import the [Jetpack Compose](https://developer.android.com/jetpack/compose) extension library:
 
 ```kotlin
-implementation("io.coil-kt:coil-compose:2.3.0")
+implementation("io.coil-kt:coil-compose:2.4.0")
 ```
 
 To load an image, use the `AsyncImage` composable:

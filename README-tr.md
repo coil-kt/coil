@@ -15,7 +15,7 @@ Coil şunların baş harflerinden oluşur: **Co**routine **I**mage **L**oader.
 Coil `mavenCentral()`'da mevcuttur.
 
 ```kotlin
-implementation("io.coil-kt:coil:2.3.0")
+implementation("io.coil-kt:coil:2.4.0")
 ```
 
 ## Hızlı Başlangıç
