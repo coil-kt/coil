@@ -15,6 +15,7 @@ import coil.util.decodeBitmapAsset
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.test.runTest
 import okio.buffer
 import okio.source
@@ -31,7 +32,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun noSetFrameTime() = runTest {
+    fun noSetFrameTime() = runTest(timeout = 1.minutes) {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -52,7 +53,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun specificFrameTime() = runTest {
+    fun specificFrameTime() = runTest(timeout = 1.minutes) {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -78,7 +79,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun specificFramePercent() = runTest {
+    fun specificFramePercent() = runTest(timeout = 1.minutes) {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -104,7 +105,7 @@ class VideoFrameDecoderTest {
     }
 
     @Test
-    fun rotation() = runTest {
+    fun rotation() = runTest(timeout = 1.minutes) {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
@@ -126,7 +127,7 @@ class VideoFrameDecoderTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1482 */
     @Test
-    fun nestedAsset() = runTest {
+    fun nestedAsset() = runTest(timeout = 1.minutes) {
         // MediaMetadataRetriever does not work on the emulator pre-API 23.
         assumeTrue(SDK_INT >= 23)
 
