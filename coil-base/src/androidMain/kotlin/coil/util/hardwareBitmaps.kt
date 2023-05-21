@@ -1,12 +1,9 @@
-@file:JvmName("-HardwareBitmaps")
-
 package coil.util
 
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.SystemClock
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import coil.size.Size
