@@ -4,7 +4,7 @@
 
 - Rename `DiskCache` `get`/`edit` to `openSnapshot`/`openEditor`.
 - Don't automatically convert `ColorDrawable` to `ColorPainter` in `AsyncImagePainter`.
-- Annotate simple `AsyncImage` overloads as `@NonRestartableComposable`.
+- Annotate simple `AsyncImage` overloads with `@NonRestartableComposable`.
 - Fix: Call `Context.cacheDir` lazily in `ImageSource`.
 - Fix: Fix publishing `coil-bom`.
 - Fix: Fix always setting bitmap config to `ARGB_8888` if hardware bitmaps are disabled.
