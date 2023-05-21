@@ -20,7 +20,7 @@ internal class RealDiskCache(
         cleanupDispatcher = cleanupDispatcher,
         maxSize = maxSize,
         appVersion = 1,
-        valueCount = 2
+        valueCount = 2,
     )
 
     override val size get() = cache.size()
@@ -29,9 +29,15 @@ internal class RealDiskCache(
         return cache[key.hash()]?.let(::RealSnapshot)
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun get(key: String) = openSnapshot(key)
+
     override fun openEditor(key: String): Editor? {
         return cache.edit(key.hash())?.let(::RealEditor)
     }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun edit(key: String) = openEditor(key)
 
     override fun remove(key: String): Boolean {
         return cache.remove(key.hash())
@@ -50,6 +56,8 @@ internal class RealDiskCache(
 
         override fun close() = snapshot.close()
         override fun closeAndOpenEditor() = snapshot.closeAndEdit()?.let(::RealEditor)
+        @Suppress("OVERRIDE_DEPRECATION")
+        override fun closeAndEdit() = closeAndOpenEditor()
     }
 
     private class RealEditor(private val editor: DiskLruCache.Editor) : Editor {
@@ -59,6 +67,8 @@ internal class RealDiskCache(
 
         override fun commit() = editor.commit()
         override fun commitAndOpenSnapshot() = editor.commitAndGet()?.let(::RealSnapshot)
+        @Suppress("OVERRIDE_DEPRECATION")
+        override fun commitAndGet() = commitAndOpenSnapshot()
         override fun abort() = editor.abort()
     }
 
