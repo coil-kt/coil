@@ -12,9 +12,9 @@ HSPLcoil/compose/AsyncImageKt;->toSizeOrNull-BRTryo0(J)Lcoil/size/Size;
 HPLcoil/compose/AsyncImageKt;->toSizeOrNull-BRTryo0(J)Lcoil/size/Size;
 HSPLcoil/compose/AsyncImageKt;->updateRequest(Lcoil/request/ImageRequest;Landroidx/compose/ui/layout/ContentScale;Landroidx/compose/runtime/Composer;I)Lcoil/request/ImageRequest;
 HPLcoil/compose/AsyncImageKt;->updateRequest(Lcoil/request/ImageRequest;Landroidx/compose/ui/layout/ContentScale;Landroidx/compose/runtime/Composer;I)Lcoil/request/ImageRequest;
-Lcoil/compose/AsyncImageKt$AsyncImage$2;
-HSPLcoil/compose/AsyncImageKt$AsyncImage$2;-><init>(Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;IIII)V
-HPLcoil/compose/AsyncImageKt$AsyncImage$2;-><init>(Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;IIII)V
+Lcoil/compose/AsyncImageKt$AsyncImage$1;
+HSPLcoil/compose/AsyncImageKt$AsyncImage$1;-><init>(Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;IIII)V
+HPLcoil/compose/AsyncImageKt$AsyncImage$1;-><init>(Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;IIII)V
 Lcoil/compose/AsyncImageKt$Content$$inlined$Layout$1;
 HSPLcoil/compose/AsyncImageKt$Content$$inlined$Layout$1;-><init>(Lkotlin/jvm/functions/Function0;)V
 HPLcoil/compose/AsyncImageKt$Content$$inlined$Layout$1;-><init>(Lkotlin/jvm/functions/Function0;)V
@@ -217,7 +217,6 @@ HPLcoil/compose/ConstraintsSizeResolver$measure$1;-><init>(Landroidx/compose/ui/
 HSPLcoil/compose/ConstraintsSizeResolver$measure$1;->invoke(Landroidx/compose/ui/layout/Placeable$PlacementScope;)V
 HPLcoil/compose/ConstraintsSizeResolver$measure$1;->invoke(Landroidx/compose/ui/layout/Placeable$PlacementScope;)V
 HSPLcoil/compose/ConstraintsSizeResolver$measure$1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
-HPLcoil/compose/ConstraintsSizeResolver$measure$1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil/compose/ConstraintsSizeResolver$size$$inlined$mapNotNull$1;
 HSPLcoil/compose/ConstraintsSizeResolver$size$$inlined$mapNotNull$1;-><init>(Lkotlinx/coroutines/flow/Flow;)V
 HPLcoil/compose/ConstraintsSizeResolver$size$$inlined$mapNotNull$1;-><init>(Lkotlinx/coroutines/flow/Flow;)V
