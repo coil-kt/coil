@@ -4,7 +4,7 @@ package coil.util
 internal object Time {
     private var provider: () -> Long = ::getTimeMillis
 
-    fun currentMillis() = provider()
+    fun currentMillis(): Long = provider()
 
     fun setCurrentMillis(currentMillis: Long) {
         provider = { currentMillis }
