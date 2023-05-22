@@ -51,6 +51,26 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.Closeable
 
+internal inline fun Logger.log(tag: String, level: Logger.Level, message: () -> String) {
+    if (minLevel <= level) {
+        log(tag, level, message(), null)
+    }
+}
+
+internal fun Logger.log(tag: String, throwable: Throwable) {
+    if (minLevel <= Logger.Level.Error) {
+        log(tag, Logger.Level.Error, null, throwable)
+    }
+}
+
+internal val DataSource.emoji: String
+    get() = when (this) {
+        DataSource.MEMORY_CACHE,
+        DataSource.MEMORY -> "🧠"
+        DataSource.DISK -> "💾"
+        DataSource.NETWORK -> "☁️"
+    }
+
 internal val View.requestManager: ViewTargetRequestManager
     get() {
         var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
@@ -67,14 +87,6 @@ internal val View.requestManager: ViewTargetRequestManager
             }
         }
         return manager
-    }
-
-internal val DataSource.emoji: String
-    get() = when (this) {
-        DataSource.MEMORY_CACHE,
-        DataSource.MEMORY -> Emoji.BRAIN
-        DataSource.DISK -> Emoji.FLOPPY
-        DataSource.NETWORK -> Emoji.CLOUD
     }
 
 internal val Drawable.width: Int
