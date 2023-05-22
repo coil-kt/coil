@@ -1,9 +1,8 @@
 package coil.util
 
-/** A simple wrapper for [System.currentTimeMillis] to support testing. */
+/** A simple wrapper for [getTimeMillis] to support testing. */
 internal object Time {
-
-    private var provider: () -> Long = System::currentTimeMillis
+    private var provider: () -> Long = ::getTimeMillis
 
     fun currentMillis() = provider()
 
@@ -12,6 +11,8 @@ internal object Time {
     }
 
     fun reset() {
-        provider = System::currentTimeMillis
+        provider = ::getTimeMillis
     }
 }
+
+internal expect fun getTimeMillis(): Long
