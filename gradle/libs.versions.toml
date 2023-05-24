@@ -15,7 +15,7 @@ dokka = "org.jetbrains.dokka:1.8.10"
 spotless = "com.diffplug.spotless:6.18.0"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.0.1"
+gradlePlugin-android = "com.android.tools.build:gradle:8.0.2"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.25.2"
 gradlePlugin-paparazzi = "app.cash.paparazzi:paparazzi-gradle-plugin:1.2.0"
