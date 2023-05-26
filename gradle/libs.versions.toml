@@ -1,5 +1,5 @@
 [versions]
-androidx-activity = "1.7.1"
+androidx-activity = "1.7.2"
 androidx-lifecycle = "2.6.1"
 compose = "1.4.3"
 composeCompiler = "1.4.7"
@@ -12,10 +12,10 @@ roborazzi = "1.1.0"
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.1"
 dokka = "org.jetbrains.dokka:1.8.10"
-spotless = "com.diffplug.spotless:6.18.0"
+spotless = "com.diffplug.spotless:6.19.0"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.0.1"
+gradlePlugin-android = "com.android.tools.build:gradle:8.0.2"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.20.2"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.25.2"
