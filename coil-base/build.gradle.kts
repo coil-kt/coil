@@ -65,7 +65,7 @@ kotlin {
                 implementation(libs.okio.nodefilesystem)
             }
         }
-        named("jvmCommon") {
+        named("nonJvmCommon") {
             dependencies {
                 implementation(libs.kotlinx.immutable.collections)
             }
