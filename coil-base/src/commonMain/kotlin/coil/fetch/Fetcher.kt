@@ -8,7 +8,7 @@ import coil.decode.ImageSource
 import coil.request.Options
 
 /**
- * A [Fetcher] translates data into either an [ImageSource] or a [Drawable].
+ * A [Fetcher] translates data (e.g. URI, file, etc.) into a [FetchResult].
  *
  * To accomplish this, fetchers fit into one of two types:
  *
@@ -34,6 +34,10 @@ fun interface Fetcher {
          * @param options A set of configuration options for this request.
          * @param imageLoader The [ImageLoader] that's executing this request.
          */
-        fun create(data: T, options: Options, imageLoader: ImageLoader): Fetcher?
+        fun create(
+            data: T,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Fetcher?
     }
 }

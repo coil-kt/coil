@@ -10,7 +10,7 @@ import coil.request.Options
 import okio.BufferedSource
 
 /**
- * A [Decoder] converts a [SourceResult] into a [Drawable].
+ * A [Decoder] converts a [SourceResult] into a [DecodeResult].
  *
  * Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
  */
@@ -40,6 +40,10 @@ fun interface Decoder {
          * @param options A set of configuration options for this request.
          * @param imageLoader The [ImageLoader] that's executing this request.
          */
-        fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder?
+        fun create(
+            result: SourceResult,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Decoder?
     }
 }

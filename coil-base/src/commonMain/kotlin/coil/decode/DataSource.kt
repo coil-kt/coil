@@ -1,13 +1,8 @@
 package coil.decode
 
-import android.graphics.Bitmap
-import androidx.annotation.DrawableRes
 import coil.ImageLoader
 import coil.fetch.DrawableResult
 import coil.fetch.SourceResult
-import java.io.File
-import java.nio.ByteBuffer
-import okhttp3.HttpUrl
 
 /**
  * Represents the source that an image was loaded from.
@@ -26,17 +21,17 @@ enum class DataSource {
     MEMORY_CACHE,
 
     /**
-     * Represents an in-memory data source (e.g. [Bitmap], [ByteBuffer]).
+     * Represents an in-memory data source (e.g. `Bitmap`, `ByteBuffer`).
      */
     MEMORY,
 
     /**
-     * Represents a disk-based data source (e.g. [DrawableRes], [File]).
+     * Represents a disk-based data source (e.g. `DrawableRes`, `File`).
      */
     DISK,
 
     /**
-     * Represents a network-based data source (e.g. [HttpUrl]).
+     * Represents a network-based data source (e.g. `HttpUrl`).
      */
     NETWORK
 }
