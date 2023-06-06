@@ -19,7 +19,7 @@ sealed class ImageResult {
 /**
  * Indicates that the request completed successfully.
  */
-class SuccessResult(
+data class SuccessResult(
     /**
      * The success drawable.
      */
@@ -56,54 +56,12 @@ class SuccessResult(
      * 'true' if [ImageRequest.placeholderMemoryCacheKey] was present in the memory cache.
      */
     val isPlaceholderCached: Boolean = false,
-) : ImageResult() {
-
-    fun copy(
-        drawable: Drawable = this.drawable,
-        request: ImageRequest = this.request,
-        dataSource: DataSource = this.dataSource,
-        memoryCacheKey: MemoryCache.Key? = this.memoryCacheKey,
-        diskCacheKey: String? = this.diskCacheKey,
-        isSampled: Boolean = this.isSampled,
-        isPlaceholderCached: Boolean = this.isPlaceholderCached,
-    ) = SuccessResult(
-        drawable = drawable,
-        request = request,
-        dataSource = dataSource,
-        memoryCacheKey = memoryCacheKey,
-        diskCacheKey = diskCacheKey,
-        isSampled = isSampled,
-        isPlaceholderCached = isPlaceholderCached,
-    )
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return other is SuccessResult &&
-            drawable == other.drawable &&
-            request == other.request &&
-            dataSource == other.dataSource &&
-            memoryCacheKey == other.memoryCacheKey &&
-            diskCacheKey == other.diskCacheKey &&
-            isSampled == other.isSampled &&
-            isPlaceholderCached == other.isPlaceholderCached
-    }
-
-    override fun hashCode(): Int {
-        var result = drawable.hashCode()
-        result = 31 * result + request.hashCode()
-        result = 31 * result + dataSource.hashCode()
-        result = 31 * result + memoryCacheKey.hashCode()
-        result = 31 * result + diskCacheKey.hashCode()
-        result = 31 * result + isSampled.hashCode()
-        result = 31 * result + isPlaceholderCached.hashCode()
-        return result
-    }
-}
+) : ImageResult()
 
 /**
  * Indicates that an error occurred while executing the request.
  */
-class ErrorResult(
+data class ErrorResult(
     /**
      * The error drawable.
      */
@@ -118,30 +76,4 @@ class ErrorResult(
      * The error that failed the request.
      */
     val throwable: Throwable,
-) : ImageResult() {
-
-    fun copy(
-        drawable: Drawable? = this.drawable,
-        request: ImageRequest = this.request,
-        throwable: Throwable = this.throwable,
-    ) = ErrorResult(
-        drawable = drawable,
-        request = request,
-        throwable = throwable,
-    )
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return other is ErrorResult &&
-            drawable == other.drawable &&
-            request == other.request &&
-            throwable == other.throwable
-    }
-
-    override fun hashCode(): Int {
-        var result = drawable.hashCode()
-        result = 31 * result + request.hashCode()
-        result = 31 * result + throwable.hashCode()
-        return result
-    }
-}
+) : ImageResult()

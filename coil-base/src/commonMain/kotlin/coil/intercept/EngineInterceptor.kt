@@ -281,19 +281,12 @@ internal class EngineInterceptor(
         )
     }
 
-    class ExecuteResult(
+    data class ExecuteResult(
         val drawable: Drawable,
         val isSampled: Boolean,
         val dataSource: DataSource,
         val diskCacheKey: String?
-    ) {
-        fun copy(
-            drawable: Drawable = this.drawable,
-            isSampled: Boolean = this.isSampled,
-            dataSource: DataSource = this.dataSource,
-            diskCacheKey: String? = this.diskCacheKey
-        ) = ExecuteResult(drawable, isSampled, dataSource, diskCacheKey)
-    }
+    )
 
     companion object {
         private const val TAG = "EngineInterceptor"

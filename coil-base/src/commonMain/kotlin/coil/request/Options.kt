@@ -17,7 +17,7 @@ import okhttp3.Headers
  * A set of configuration options for fetching and decoding an image.
  * [Fetcher]s and [Decoder]s should respect these options as best as possible.
  */
-class Options(
+data class Options(
     /**
      * The [Context] used to execute this request.
      */
@@ -101,78 +101,4 @@ class Options(
      * Determines if this request is allowed to read from the network.
      */
     val networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
-) {
-
-    fun copy(
-        context: Context = this.context,
-        config: Bitmap.Config = this.config,
-        colorSpace: ColorSpace? = this.colorSpace,
-        size: Size = this.size,
-        scale: Scale = this.scale,
-        allowInexactSize: Boolean = this.allowInexactSize,
-        allowRgb565: Boolean = this.allowRgb565,
-        premultipliedAlpha: Boolean = this.premultipliedAlpha,
-        diskCacheKey: String? = this.diskCacheKey,
-        headers: Headers = this.headers,
-        tags: Tags = this.tags,
-        parameters: Parameters = this.parameters,
-        memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
-        diskCachePolicy: CachePolicy = this.diskCachePolicy,
-        networkCachePolicy: CachePolicy = this.networkCachePolicy,
-    ) = Options(
-        context = context,
-        config = config,
-        colorSpace = colorSpace,
-        size = size,
-        scale = scale,
-        allowInexactSize = allowInexactSize,
-        allowRgb565 = allowRgb565,
-        premultipliedAlpha = premultipliedAlpha,
-        diskCacheKey = diskCacheKey,
-        headers = headers,
-        tags = tags,
-        parameters = parameters,
-        memoryCachePolicy = memoryCachePolicy,
-        diskCachePolicy = diskCachePolicy,
-        networkCachePolicy = networkCachePolicy,
-    )
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return other is Options &&
-            context == other.context &&
-            config == other.config &&
-            (SDK_INT < 26 || colorSpace == other.colorSpace) &&
-            size == other.size &&
-            scale == other.scale &&
-            allowInexactSize == other.allowInexactSize &&
-            allowRgb565 == other.allowRgb565 &&
-            premultipliedAlpha == other.premultipliedAlpha &&
-            diskCacheKey == other.diskCacheKey &&
-            headers == other.headers &&
-            tags == other.tags &&
-            parameters == other.parameters &&
-            memoryCachePolicy == other.memoryCachePolicy &&
-            diskCachePolicy == other.diskCachePolicy &&
-            networkCachePolicy == other.networkCachePolicy
-    }
-
-    override fun hashCode(): Int {
-        var result = context.hashCode()
-        result = 31 * result + config.hashCode()
-        result = 31 * result + colorSpace.hashCode()
-        result = 31 * result + size.hashCode()
-        result = 31 * result + scale.hashCode()
-        result = 31 * result + allowInexactSize.hashCode()
-        result = 31 * result + allowRgb565.hashCode()
-        result = 31 * result + premultipliedAlpha.hashCode()
-        result = 31 * result + diskCacheKey.hashCode()
-        result = 31 * result + headers.hashCode()
-        result = 31 * result + tags.hashCode()
-        result = 31 * result + parameters.hashCode()
-        result = 31 * result + memoryCachePolicy.hashCode()
-        result = 31 * result + diskCachePolicy.hashCode()
-        result = 31 * result + networkCachePolicy.hashCode()
-        return result
-    }
-}
+)
