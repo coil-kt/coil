@@ -53,7 +53,7 @@ interface MemoryCache {
     class Key(
         val key: String,
         val extras: Map<String, String> = emptyMap(),
-    ) : Parcelable {
+    ) {
 
         fun copy(
             key: String = this.key,
@@ -75,35 +75,6 @@ interface MemoryCache {
 
         override fun toString(): String {
             return "Key(key=$key, extras=$extras)"
-        }
-
-        override fun describeContents() = 0
-
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-            parcel.writeString(key)
-            parcel.writeInt(extras.size)
-            extras.forEach { (key, value) ->
-                parcel.writeString(key)
-                parcel.writeString(value)
-            }
-        }
-
-        private companion object {
-            @JvmField val CREATOR = object : Parcelable.Creator<Key> {
-                override fun createFromParcel(parcel: Parcel): Key {
-                    val key = parcel.readString()!!
-                    val size = parcel.readInt()
-                    val extras = LinkedHashMap<String, String>(size)
-                    repeat(size) {
-                        val extraKey = parcel.readString()!!
-                        val extraValue = parcel.readString()!!
-                        extras[extraKey] = extraValue
-                    }
-                    return Key(key, extras)
-                }
-
-                override fun newArray(size: Int) = arrayOfNulls<Key>(size)
-            }
         }
     }
 
