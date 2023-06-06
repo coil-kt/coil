@@ -18,6 +18,8 @@
 package coil.util
 
 import kotlin.jvm.JvmName
+import kotlin.random.Random
+import kotlin.random.nextULong
 import okio.FileNotFoundException
 import okio.FileSystem
 import okio.IOException
@@ -25,13 +27,20 @@ import okio.Path
 
 internal expect fun defaultFileSystem(): FileSystem
 
-internal expect fun FileSystem.createTempFile(directory: Path): Path
-
 internal expect fun FileSystem.remainingFreeSpaceBytes(directory: Path): Long
 
 /** Create a new empty file if one doesn't already exist. */
 internal fun FileSystem.createFile(file: Path) {
     if (!exists(file)) sink(file).closeQuietly()
+}
+
+/** https://github.com/square/okio/issues/1090 */
+internal fun FileSystem.createTempFile(): Path {
+    var path: Path
+    do {
+        path = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "tmp_${Random.nextULong()}"
+    } while (exists(path))
+    return path
 }
 
 /** Tolerant delete, try to clear as many files as possible even after a failure. */
