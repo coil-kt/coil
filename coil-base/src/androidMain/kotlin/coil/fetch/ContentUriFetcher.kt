@@ -22,7 +22,7 @@ import okio.source
 
 internal class ContentUriFetcher(
     private val data: Uri,
-    private val options: Options
+    private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -49,11 +49,10 @@ internal class ContentUriFetcher(
         return SourceResult(
             source = ImageSource(
                 source = inputStream.source().buffer(),
-                context = options.context,
-                metadata = ContentMetadata(data)
+                metadata = ContentMetadata(data),
             ),
             mimeType = contentResolver.getType(data),
-            dataSource = DataSource.DISK
+            dataSource = DataSource.DISK,
         )
     }
 

@@ -1,5 +1,6 @@
 package coil.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -33,6 +34,7 @@ internal fun Resources.getDrawableCompat(@DrawableRes resId: Int, theme: Resourc
  *
  * Prefer using [Context.getDrawableCompat] for resources that are part of the current package.
  */
+@SuppressLint("ResourceType")
 internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes resId: Int): Drawable {
     // Find the XML's start tag.
     val parser = resources.getXml(resId)

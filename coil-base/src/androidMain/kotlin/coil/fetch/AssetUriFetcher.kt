@@ -14,7 +14,7 @@ import okio.source
 
 internal class AssetUriFetcher(
     private val data: Uri,
-    private val options: Options
+    private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -23,11 +23,10 @@ internal class AssetUriFetcher(
         return SourceResult(
             source = ImageSource(
                 source = options.context.assets.open(path).source().buffer(),
-                context = options.context,
-                metadata = AssetMetadata(path)
+                metadata = AssetMetadata(path),
             ),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(path),
-            dataSource = DataSource.DISK
+            dataSource = DataSource.DISK,
         )
     }
 

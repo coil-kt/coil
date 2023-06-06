@@ -20,7 +20,7 @@ import okio.source
 
 internal class ResourceUriFetcher(
     private val data: Uri,
-    private val options: Options
+    private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -54,13 +54,13 @@ internal class ResourceUriFetcher(
                         config = options.config,
                         size = options.size,
                         scale = options.scale,
-                        allowInexactSize = options.allowInexactSize
+                        allowInexactSize = options.allowInexactSize,
                     ).toDrawable(context)
                 } else {
                     drawable
                 },
                 isSampled = isVector,
-                dataSource = DataSource.DISK
+                dataSource = DataSource.DISK,
             )
         } else {
             val typedValue = TypedValue()
@@ -68,11 +68,10 @@ internal class ResourceUriFetcher(
             SourceResult(
                 source = ImageSource(
                     source = inputStream.source().buffer(),
-                    context = context,
-                    metadata = ResourceMetadata(packageName, resId, typedValue.density)
+                    metadata = ResourceMetadata(packageName, resId, typedValue.density),
                 ),
                 mimeType = mimeType,
-                dataSource = DataSource.DISK
+                dataSource = DataSource.DISK,
             )
         }
     }
