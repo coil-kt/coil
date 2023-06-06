@@ -38,7 +38,7 @@ extensions.configure<ApiValidationExtension> {
 }
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
-    outputDirectory by file("$rootDir/docs/api")
+    outputDirectory by layout.projectDirectory.dir("docs/api")
 }
 
 allprojects {
