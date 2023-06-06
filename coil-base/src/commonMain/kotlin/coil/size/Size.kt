@@ -2,8 +2,9 @@
 
 package coil.size
 
-import androidx.annotation.Px
 import coil.request.ImageRequest
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmName
 
 /**
  * Represents the target size of an image request.
@@ -36,13 +37,13 @@ data class Size(
 }
 
 /** Create a [Size] with a pixel value for width. */
-fun Size(@Px width: Int, height: Dimension) = Size(Dimension(width), height)
+fun Size(width: Int, height: Dimension) = Size(Dimension(width), height)
 
 /** Create a [Size] with a pixel value for height. */
-fun Size(width: Dimension, @Px height: Int) = Size(width, Dimension(height))
+fun Size(width: Dimension, height: Int) = Size(width, Dimension(height))
 
 /** Create a [Size] with pixel values for both width and height. */
-fun Size(@Px width: Int, @Px height: Int) = Size(Dimension(width), Dimension(height))
+fun Size(width: Int, height: Int) = Size(Dimension(width), Dimension(height))
 
 /** Return true if this size is equal to [Size.ORIGINAL]. Else, return false. */
 val Size.isOriginal: Boolean get() = this == Size.ORIGINAL
