@@ -51,28 +51,6 @@ fun addAllTargets(project: Project) {
                 dependsOn(nativeTest)
             }
 
-            val jsNativeMain = sourceSets.create("jsNativeMain").apply {
-                dependsOn(commonMain)
-            }
-            sourceSets.getByName("jsMain").apply {
-                dependsOn(jsNativeMain)
-            }
-            sourceSets.getByName("nativeMain").apply {
-                dependsOn(jsNativeMain)
-            }
-
-            if (hasAndroidPlugin) {
-                val androidJvmMain = sourceSets.create("androidJvmMain").apply {
-                    dependsOn(commonMain)
-                }
-                sourceSets.getByName("androidMain").apply {
-                    dependsOn(androidJvmMain)
-                }
-                sourceSets.getByName("jvmMain").apply {
-                    dependsOn(androidJvmMain)
-                }
-            }
-
             targets.forEach { target ->
                 // Some Kotlin targets do not have this property, but native ones always will.
                 if (target.platformType.name == "native") {

@@ -11,6 +11,42 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.base")
 
 kotlin {
+    // jvmCommon: androidMain, jvmMain
+    val jvmCommon = sourceSets.create("jvmCommon").apply {
+        dependsOn(sourceSets.getByName("commonMain"))
+    }
+    sourceSets.getByName("androidMain").apply {
+        dependsOn(jvmCommon)
+    }
+    sourceSets.getByName("jvmMain").apply {
+        dependsOn(jvmCommon)
+    }
+
+    // nonJvmCommon: jsMain, nativeMain
+    val nonJvmCommon = sourceSets.create("nonJvmCommon").apply {
+        dependsOn(sourceSets.getByName("commonMain"))
+    }
+    sourceSets.getByName("jsMain").apply {
+        dependsOn(nonJvmCommon)
+    }
+    sourceSets.getByName("nativeMain").apply {
+        dependsOn(nonJvmCommon)
+    }
+
+    // nonJsMain: androidMain, jvmMain, nativeMain
+    val nonJsMain = sourceSets.create("nonJsMain").apply {
+        dependsOn(sourceSets.getByName("commonMain"))
+    }
+    sourceSets.getByName("androidMain").apply {
+        dependsOn(nonJsMain)
+    }
+    sourceSets.getByName("jvmMain").apply {
+        dependsOn(nonJsMain)
+    }
+    sourceSets.getByName("nativeMain").apply {
+        dependsOn(nonJsMain)
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -29,7 +65,7 @@ kotlin {
                 implementation(libs.okio.nodefilesystem)
             }
         }
-        named("jsNativeMain") {
+        named("jvmCommon") {
             dependencies {
                 implementation(libs.kotlinx.immutable.collections)
             }
