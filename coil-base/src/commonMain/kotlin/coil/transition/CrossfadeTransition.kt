@@ -5,6 +5,7 @@ import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
+import kotlin.jvm.JvmOverloads
 
 /**
  * A [Transition] that crossfades from the current drawable to a new one.
