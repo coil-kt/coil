@@ -36,11 +36,12 @@ internal fun FileSystem.createFile(file: Path) {
 
 /** https://github.com/square/okio/issues/1090 */
 internal fun FileSystem.createTempFile(): Path {
-    var path: Path
+    var tempFile: Path
     do {
-        path = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "tmp_${Random.nextULong()}"
-    } while (exists(path))
-    return path
+        tempFile = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "tmp_${Random.nextULong()}"
+    } while (exists(tempFile))
+    sink(tempFile).closeQuietly()
+    return tempFile
 }
 
 /** Tolerant delete, try to clear as many files as possible even after a failure. */
