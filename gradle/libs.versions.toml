@@ -11,7 +11,7 @@ roborazzi = "1.2.0"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
-dokka = "org.jetbrains.dokka:1.8.10"
+dokka = "org.jetbrains.dokka:1.8.20"
 spotless = "com.diffplug.spotless:6.19.0"
 
 [libraries]
