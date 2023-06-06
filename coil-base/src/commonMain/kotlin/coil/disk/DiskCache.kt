@@ -1,5 +1,6 @@
 package coil.disk
 
+import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.util.defaultFileSystem
 import coil.util.ioCoroutineDispatcher
@@ -203,6 +204,20 @@ interface DiskCache {
                 fileSystem = fileSystem,
                 cleanupDispatcher = cleanupDispatcher,
             )
+        }
+    }
+
+    companion object {
+        /**
+         * The singleton instance of the disk cache.
+         *
+         * This instance is used by default by [ImageLoader.Builder] and is necessary to avoid
+         * having multiple [DiskCache] instances active in the same directory at the same time.
+         */
+        val INSTANCE by lazy {
+            Builder()
+                .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "image_cache")
+                .build()
         }
     }
 }

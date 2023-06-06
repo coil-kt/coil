@@ -529,7 +529,7 @@ interface ImageLoader {
                 context = applicationContext,
                 defaults = defaults,
                 memoryCacheLazy = memoryCache ?: lazy { MemoryCache.Builder(applicationContext).build() },
-                diskCacheLazy = diskCache ?: lazy { SingletonDiskCache.get(applicationContext) },
+                diskCacheLazy = diskCache ?: lazy { DiskCache.INSTANCE },
                 callFactoryLazy = callFactory ?: lazy { OkHttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
