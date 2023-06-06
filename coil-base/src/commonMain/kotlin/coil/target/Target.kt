@@ -1,7 +1,6 @@
 package coil.target
 
-import android.graphics.drawable.Drawable
-import androidx.annotation.MainThread
+import coil.annotation.MainThread
 
 /**
  * A listener that accepts the result of an image request.
