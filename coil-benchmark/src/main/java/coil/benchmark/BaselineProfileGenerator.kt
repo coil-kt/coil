@@ -1,6 +1,5 @@
 package coil.benchmark
 
-import androidx.benchmark.macro.ExperimentalStableBaselineProfilesApi
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -20,12 +19,9 @@ class BaselineProfileGenerator {
     val baselineProfileRule = BaselineProfileRule()
 
     @Test
-    @OptIn(ExperimentalStableBaselineProfilesApi::class)
-    fun generate() = baselineProfileRule.collectStableBaselineProfile(
+    fun generate() = baselineProfileRule.collectBaselineProfile(
         packageName = "sample.$PROJECT",
         filterPredicate = newFilterPredicate(),
-        maxIterations = 15,
-        stableIterations = 3,
     ) {
         pressHome()
         startActivityAndWait()
