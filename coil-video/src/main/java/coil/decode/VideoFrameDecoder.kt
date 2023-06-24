@@ -8,11 +8,13 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil.ImageLoader
+import coil.fetch.MediaDataSourceFetcher
 import coil.fetch.SourceResult
 import coil.request.Options
 import coil.request.videoFrameMicros
@@ -193,6 +195,11 @@ class VideoFrameDecoder(
             }
             is ResourceMetadata -> {
                 setDataSource("android.resource://${metadata.packageName}/${metadata.resId}")
+            }
+            is MediaDataSourceFetcher.MediaSourceMetadata -> {
+                if (SDK_INT >= Build.VERSION_CODES.M) {
+                    setDataSource(metadata.mediaDataSource)
+                }
             }
             else -> {
                 setDataSource(source.file().toFile().path)
