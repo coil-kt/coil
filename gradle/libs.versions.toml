@@ -2,8 +2,8 @@
 androidx-activity = "1.7.2"
 androidx-lifecycle = "2.6.1"
 compose = "1.4.3"
-composeCompiler = "1.4.7"
-coroutines = "1.7.1"
+composeCompiler = "1.4.8"
+coroutines = "1.7.2"
 ktlint = "0.48.2"
 okhttp = "4.11.0"
 okio = "3.3.0"
@@ -16,8 +16,8 @@ spotless = "com.diffplug.spotless:6.19.0"
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.0.2"
-gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.20.2"
-gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
+gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.21.0"
+gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.22"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.25.2"
 gradlePlugin-paparazzi = "app.cash.paparazzi:paparazzi-gradle-plugin:1.3.0"
 gradlePlugin-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
