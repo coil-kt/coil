@@ -1,7 +1,6 @@
 package coil.disk
 
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.util.defaultFileSystem
 import coil.util.ioCoroutineDispatcher
 import coil.util.remainingFreeSpaceBytes
@@ -16,19 +15,15 @@ import okio.Path
 interface DiskCache {
 
     /** The current size of the cache in bytes. */
-    @ExperimentalCoilApi
     val size: Long
 
     /** The maximum size of the cache in bytes. */
-    @ExperimentalCoilApi
     val maxSize: Long
 
     /** The directory where the cache stores its data. */
-    @ExperimentalCoilApi
     val directory: Path
 
     /** The file system that contains the cache's files. */
-    @ExperimentalCoilApi
     val fileSystem: FileSystem
 
     /**
@@ -38,7 +33,6 @@ interface DiskCache {
      * finished reading the snapshot. An open snapshot prevents opening a new [Editor] or deleting
      * the entry on disk.
      */
-    @ExperimentalCoilApi
     fun openSnapshot(key: String): Snapshot?
 
     /**
@@ -48,7 +42,6 @@ interface DiskCache {
      * [Editor.abort] to complete the edit. An open editor prevents opening a new [Snapshot],
      * opening a new [Editor], or deleting the entry on disk.
      */
-    @ExperimentalCoilApi
     fun openEditor(key: String): Editor?
 
     /**
@@ -56,11 +49,9 @@ interface DiskCache {
      *
      * @return 'true' if [key] was removed successfully. Else, return 'false'.
      */
-    @ExperimentalCoilApi
     fun remove(key: String): Boolean
 
     /** Delete all entries in the disk cache. */
-    @ExperimentalCoilApi
     fun clear()
 
     /**
@@ -69,7 +60,6 @@ interface DiskCache {
      * IMPORTANT: You must **only read** [metadata] or [data]. Mutating either file can corrupt the
      * disk cache. To modify the contents of those files, use [openEditor].
      */
-    @ExperimentalCoilApi
     interface Snapshot : Closeable {
 
         /** Get the metadata file path for this entry. */
@@ -94,7 +84,6 @@ interface DiskCache {
      * IMPORTANT: You must **only read or modify the contents** of [metadata] or [data].
      * Renaming, locking, or other mutating file operations can corrupt the disk cache.
      */
-    @ExperimentalCoilApi
     interface Editor {
 
         /** Get the metadata file path for this entry. */
