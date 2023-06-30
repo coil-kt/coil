@@ -161,7 +161,7 @@ class VideoFrameDecoderTest {
         val dataSource = FileMediaDataSource(file)
         val result = VideoFrameDecoder(
             source = ImageSource(
-                source = MediaDataSourceFetcher.MediaDataSourceOkIoSource(dataSource).buffer(),
+                source = MediaDataSourceFetcher.MediaDataSourceOkioSource(dataSource).buffer(),
                 context = context,
                 metadata = MediaDataSourceFetcher.MediaSourceMetadata(dataSource),
             ),

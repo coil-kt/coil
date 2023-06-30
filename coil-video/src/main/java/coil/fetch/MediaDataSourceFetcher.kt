@@ -22,15 +22,15 @@ class MediaDataSourceFetcher(
 
     override suspend fun fetch(): FetchResult {
         val imageSource = ImageSource(
-            source = MediaDataSourceOkIoSource(data).buffer(),
+            source = MediaDataSourceOkioSource(data).buffer(),
             context = options.context,
             metadata = MediaSourceMetadata(data),
         )
 
         return SourceResult(
             source = imageSource,
-            mimeType = "video/", // TODO: How to get the mime type?
-            dataSource = DataSource.MEMORY, // TODO: MEMORY or DISK?
+            mimeType = null,
+            dataSource = DataSource.DISK
         )
     }
 
@@ -45,8 +45,9 @@ class MediaDataSourceFetcher(
         }
     }
 
-    internal class MediaDataSourceOkIoSource(private val mediaDataSource: MediaDataSource) : Source {
+    internal class MediaDataSourceOkioSource(private val mediaDataSource: MediaDataSource) : Source {
 
+        private val timeout = Timeout()
         private var size = mediaDataSource.size
         private var position: Long = 0L
 
@@ -56,11 +57,7 @@ class MediaDataSourceFetcher(
                 return -1
             }
 
-            val sizeToRead = when {
-                position + byteCount > size -> (size - position)
-                else -> byteCount
-            }
-
+            val sizeToRead = minOf(byteCount, size - position)
             val byteArray = ByteArray(sizeToRead.toInt())
             val readBytes = mediaDataSource.readAt(position, byteArray, 0, byteArray.size)
 
@@ -71,7 +68,7 @@ class MediaDataSourceFetcher(
         }
 
         override fun timeout(): Timeout {
-            return Timeout()
+            return timeout
         }
 
         override fun close() {

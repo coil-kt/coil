@@ -22,11 +22,7 @@ class FileMediaDataSource(private val file: File) : MediaDataSource() {
                 return -1
             }
 
-            val sizeToRead = when {
-                position + size > getSize() -> (getSize() - position).toInt()
-                else -> size
-            }
-
+            val sizeToRead = minOf(size, (getSize() - position).toInt())
             randomAccessFile!!.seek(position)
             return randomAccessFile!!.read(buffer, offset, sizeToRead)
         }
