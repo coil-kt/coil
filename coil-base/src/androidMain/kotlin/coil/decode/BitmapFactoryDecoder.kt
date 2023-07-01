@@ -185,7 +185,7 @@ class BitmapFactoryDecoder(
 
         override fun equals(other: Any?) = other is Factory
 
-        override fun hashCode() = javaClass.hashCode()
+        override fun hashCode() = this::class.hashCode()
     }
 
     /** Prevent [BitmapFactory.decodeStream] from swallowing [Exception]s. */

@@ -211,7 +211,7 @@ class VideoFrameDecoder(
 
         override fun equals(other: Any?) = other is Factory
 
-        override fun hashCode() = javaClass.hashCode()
+        override fun hashCode() = this::class.hashCode()
     }
 
     companion object {

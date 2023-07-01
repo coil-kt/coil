@@ -36,5 +36,5 @@ class CircleCropTransformation : Transformation {
 
     override fun equals(other: Any?) = other is CircleCropTransformation
 
-    override fun hashCode() = javaClass.hashCode()
+    override fun hashCode() = this::class.hashCode()
 }
