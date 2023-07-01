@@ -11,6 +11,20 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.base")
 
 kotlin {
+    // nonAndroidMain: jsMain, jvmMain, nativeMain
+    val nonAndroidMain = sourceSets.create("nonAndroidMain").apply {
+        dependsOn(sourceSets.getByName("commonMain"))
+    }
+    sourceSets.getByName("jsMain").apply {
+        dependsOn(nonAndroidMain)
+    }
+    sourceSets.getByName("jvmMain").apply {
+        dependsOn(nonAndroidMain)
+    }
+    sourceSets.getByName("nativeMain").apply {
+        dependsOn(nonAndroidMain)
+    }
+
     // jvmCommon: androidMain, jvmMain
     val jvmCommon = sourceSets.create("jvmCommon").apply {
         dependsOn(sourceSets.getByName("commonMain"))

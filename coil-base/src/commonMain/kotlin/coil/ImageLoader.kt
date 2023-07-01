@@ -12,7 +12,6 @@ import coil.decode.BitmapFactoryDecoder
 import coil.decode.Decoder
 import coil.decode.ExifOrientationPolicy
 import coil.disk.DiskCache
-import coil.disk.SingletonDiskCache
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.intercept.Interceptor

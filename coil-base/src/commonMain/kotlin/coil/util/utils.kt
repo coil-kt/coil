@@ -16,7 +16,6 @@ import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
 import android.view.View
-import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
