@@ -49,12 +49,12 @@ allprojects {
     group = groupId
     version = versionName
 
+    // Target JVM 8.
     tasks.withType<JavaCompile>().configureEach {
         sourceCompatibility = JavaVersion.VERSION_1_8.toString()
         targetCompatibility = JavaVersion.VERSION_1_8.toString()
         options.compilerArgs = options.compilerArgs + "-Xlint:-options"
     }
-
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions.jvmTarget by JvmTarget.JVM_1_8
     }

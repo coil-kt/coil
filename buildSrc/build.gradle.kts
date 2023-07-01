@@ -16,11 +16,11 @@ dependencies {
     implementation(libs.gradlePlugin.mavenPublish)
 }
 
+// Target JVM 11.
 tasks.withType<JavaCompile>().configureEach {
     sourceCompatibility = JavaVersion.VERSION_11.toString()
     targetCompatibility = JavaVersion.VERSION_11.toString()
 }
-
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
 }
