@@ -205,7 +205,7 @@ interface DiskCache {
          */
         val INSTANCE by lazy {
             Builder()
-                .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "image_cache")
+                .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "coil_v3_image_cache")
                 .build()
         }
     }
