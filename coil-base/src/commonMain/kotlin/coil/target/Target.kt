@@ -1,5 +1,6 @@
 package coil.target
 
+import coil.Image
 import coil.annotation.MainThread
 
 /**
@@ -11,17 +12,17 @@ interface Target {
      * Called when the request starts.
      */
     @MainThread
-    fun onStart(placeholder: Drawable?) {}
+    fun onStart(placeholder: Image?) {}
 
     /**
      * Called if an error occurs while executing the request.
      */
     @MainThread
-    fun onError(error: Drawable?) {}
+    fun onError(error: Image?) {}
 
     /**
      * Called if the request completes successfully.
      */
     @MainThread
-    fun onSuccess(result: Drawable) {}
+    fun onSuccess(result: Image) {}
 }

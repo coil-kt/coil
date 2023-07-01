@@ -25,5 +25,5 @@ enum class Scale {
      *
      * Generally, this is the default value for functions that accept a [Scale].
      */
-    FIT
+    FIT,
 }

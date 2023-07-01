@@ -32,5 +32,5 @@ enum class Precision {
      *
      * This is the default value for [ImageRequest.Builder.precision].
      */
-    AUTOMATIC
+    AUTOMATIC,
 }
