@@ -1,6 +1,6 @@
 package coil.request
 
-import android.graphics.drawable.Drawable
+import coil.Image
 import coil.ImageLoader
 import coil.decode.DataSource
 import coil.memory.MemoryCache
@@ -11,9 +11,9 @@ import coil.memory.MemoryCache
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
-sealed class ImageResult {
-    abstract val drawable: Drawable?
-    abstract val request: ImageRequest
+sealed interface ImageResult {
+    val image: Image?
+    val request: ImageRequest
 }
 
 /**
@@ -23,7 +23,7 @@ data class SuccessResult(
     /**
      * The success drawable.
      */
-    override val drawable: Drawable,
+    override val image: Image,
 
     /**
      * The request that was executed to create this result.
@@ -56,7 +56,7 @@ data class SuccessResult(
      * 'true' if [ImageRequest.placeholderMemoryCacheKey] was present in the memory cache.
      */
     val isPlaceholderCached: Boolean = false,
-) : ImageResult()
+) : ImageResult
 
 /**
  * Indicates that an error occurred while executing the request.
@@ -65,7 +65,7 @@ data class ErrorResult(
     /**
      * The error drawable.
      */
-    override val drawable: Drawable?,
+    override val image: Image?,
 
     /**
      * The request that was executed to create this result.
@@ -76,4 +76,4 @@ data class ErrorResult(
      * The error that failed the request.
      */
     val throwable: Throwable,
-) : ImageResult()
+) : ImageResult

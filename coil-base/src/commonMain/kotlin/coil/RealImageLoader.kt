@@ -236,7 +236,7 @@ internal class RealImageLoader(
         logger?.log(TAG, Logger.Level.Info) {
             "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}"
         }
-        transition(result, target, eventListener) { target?.onSuccess(result.drawable) }
+        transition(result, target, eventListener) { target?.onSuccess(result.image) }
         eventListener.onSuccess(request, result)
         request.listener?.onSuccess(request, result)
     }
@@ -250,7 +250,7 @@ internal class RealImageLoader(
         logger?.log(TAG, Logger.Level.Info) {
             "🚨 Failed - ${request.data} - ${result.throwable}"
         }
-        transition(result, target, eventListener) { target?.onError(result.drawable) }
+        transition(result, target, eventListener) { target?.onError(result.image) }
         eventListener.onError(request, result)
         request.listener?.onError(request, result)
     }

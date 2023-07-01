@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
 import coil.decode.DataSource
-import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
 import coil.request.SuccessResult
 import coil.util.createRequest
@@ -45,7 +44,7 @@ class CrossfadeTransitionTest {
             }
         )
         val result = SuccessResult(
-            drawable = drawable,
+            image = drawable,
             request = createRequest(context),
             dataSource = DataSource.MEMORY_CACHE
         )
@@ -71,7 +70,7 @@ class CrossfadeTransitionTest {
             }
         )
         val result = SuccessResult(
-            drawable = drawable,
+            image = drawable,
             request = createRequest(context),
             dataSource = DataSource.DISK
         )
@@ -94,7 +93,7 @@ class CrossfadeTransitionTest {
                 }
             ),
             result = ErrorResult(
-                drawable = drawable,
+                image = drawable,
                 request = createRequest(context),
                 throwable = Throwable()
             )

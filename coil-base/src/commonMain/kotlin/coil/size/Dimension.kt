@@ -9,12 +9,12 @@ import kotlin.jvm.JvmName
 /**
  * Represents either the width or height of a [Size].
  */
-sealed class Dimension {
+sealed interface Dimension {
 
     /**
      * Represents a fixed, positive number of pixels.
      */
-    class Pixels(@JvmField val px: Int) : Dimension() {
+    class Pixels(@JvmField val px: Int) : Dimension {
 
         init {
             require(px > 0) { "px must be > 0." }
@@ -41,7 +41,7 @@ sealed class Dimension {
      *
      * NOTE: If either dimension is [Undefined], [Options.scale] is always [Scale.FIT].
      */
-    object Undefined : Dimension() {
+    object Undefined : Dimension {
         override fun toString() = "Dimension.Undefined"
     }
 }

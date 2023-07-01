@@ -9,7 +9,7 @@ import coil.request.SuccessResult
 import java.util.Collections
 
 internal fun imageResultOf(drawable: Drawable, request: ImageRequest) = SuccessResult(
-    drawable = drawable,
+    image = drawable,
     request = request,
     dataSource = DataSource.MEMORY,
 )

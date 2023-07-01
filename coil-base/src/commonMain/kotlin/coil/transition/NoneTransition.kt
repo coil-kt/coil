@@ -14,8 +14,8 @@ internal class NoneTransition(
 
     override fun transition() {
         when (result) {
-            is SuccessResult -> target.onSuccess(result.drawable)
-            is ErrorResult -> target.onError(result.drawable)
+            is SuccessResult -> target.onSuccess(result.image)
+            is ErrorResult -> target.onError(result.image)
         }
     }
 

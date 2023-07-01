@@ -67,7 +67,7 @@ class AnimatedAndNormalTransformationTest {
         assertTrue(actual is SuccessResult)
         // Make sure this is still an animated result (has not been flattened to
         // apply CircleCropTransformation).
-        assertTrue(actual.drawable is Animatable)
+        assertTrue(actual.image is Animatable)
     }
 
     @Test
@@ -79,8 +79,8 @@ class AnimatedAndNormalTransformationTest {
         val actual = imageLoader.execute(imageRequest)
         assertTrue(actual is SuccessResult)
         // Make sure this is not an animated result.
-        assertFalse(actual.drawable is Animatable)
-        actual.drawable.toBitmap().assertIsSimilarTo(expected)
+        assertFalse(actual.image is Animatable)
+        actual.image.toBitmap().assertIsSimilarTo(expected)
     }
 
     class AnimatedCircleTransformation : AnimatedTransformation {

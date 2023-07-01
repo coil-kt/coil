@@ -687,7 +687,7 @@ class AsyncImageTest {
     private fun assertLoadedBitmapSize(width: Int, height: Int, requestNumber: Int = 0) {
         val result = requestTracker.results[requestNumber]
         assertIs<SuccessResult>(result)
-        val bitmap = result.drawable.toBitmap()
+        val bitmap = result.image.toBitmap()
         assertContains((width - 1)..(width + 1), bitmap.width)
         assertContains((height - 1)..(height + 1), bitmap.height)
     }

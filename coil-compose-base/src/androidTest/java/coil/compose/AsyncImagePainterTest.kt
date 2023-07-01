@@ -698,7 +698,7 @@ class AsyncImagePainterTest {
     }
 
     private fun assertLoadedBitmapSize(width: Dp, height: Dp, requestNumber: Int = 0) {
-        val bitmap = (requestTracker.results[requestNumber] as SuccessResult).drawable.toBitmap()
+        val bitmap = (requestTracker.results[requestNumber] as SuccessResult).image.toBitmap()
         assertEquals(bitmap.width, width.toPx())
         assertEquals(bitmap.height, height.toPx())
     }

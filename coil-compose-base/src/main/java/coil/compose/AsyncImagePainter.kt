@@ -325,8 +325,8 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun ImageResult.toState() = when (this) {
-        is SuccessResult -> State.Success(drawable.toPainter(), this)
-        is ErrorResult -> State.Error(drawable?.toPainter(), this)
+        is SuccessResult -> State.Success(image.toPainter(), this)
+        is ErrorResult -> State.Error(image?.toPainter(), this)
     }
 
     /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
@@ -338,32 +338,32 @@ class AsyncImagePainter internal constructor(
     /**
      * The current state of the [AsyncImagePainter].
      */
-    sealed class State {
+    sealed interface State {
 
         /** The current painter being drawn by [AsyncImagePainter]. */
-        abstract val painter: Painter?
+        val painter: Painter?
 
         /** The request has not been started. */
-        object Empty : State() {
+        object Empty : State {
             override val painter: Painter? get() = null
         }
 
         /** The request is in-progress. */
         data class Loading(
             override val painter: Painter?,
-        ) : State()
+        ) : State
 
         /** The request was successful. */
         data class Success(
             override val painter: Painter,
             val result: SuccessResult,
-        ) : State()
+        ) : State
 
         /** The request failed due to [ErrorResult.throwable]. */
         data class Error(
             override val painter: Painter?,
             val result: ErrorResult,
-        ) : State()
+        ) : State
     }
 
     companion object {

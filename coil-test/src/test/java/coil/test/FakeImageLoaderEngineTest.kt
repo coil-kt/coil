@@ -38,7 +38,7 @@ class FakeImageLoaderEngineTest {
         repeat(3) {
             val result = imageLoader.execute(request)
             assertIs<SuccessResult>(result)
-            assertSame(drawable, result.drawable)
+            assertSame(drawable, result.image)
         }
     }
 
@@ -60,7 +60,7 @@ class FakeImageLoaderEngineTest {
         repeat(3) {
             val result = imageLoader.execute(request)
             assertIs<SuccessResult>(result)
-            assertSame(drawable, result.drawable)
+            assertSame(drawable, result.image)
         }
     }
 
@@ -82,7 +82,7 @@ class FakeImageLoaderEngineTest {
         repeat(3) {
             val result = imageLoader.execute(request)
             assertIs<SuccessResult>(result)
-            assertSame(drawable, result.drawable)
+            assertSame(drawable, result.image)
         }
     }
 
@@ -121,7 +121,7 @@ class FakeImageLoaderEngineTest {
         for (drawable in drawables) {
             val result = imageLoader.execute(request)
             assertIs<SuccessResult>(result)
-            assertSame(drawable, result.drawable)
+            assertSame(drawable, result.image)
         }
     }
 }

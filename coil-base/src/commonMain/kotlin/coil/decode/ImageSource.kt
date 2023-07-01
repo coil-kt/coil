@@ -3,6 +3,7 @@
 package coil.decode
 
 import coil.annotation.ExperimentalCoilApi
+import coil.decode.ImageSource.Metadata
 import coil.fetch.Fetcher
 import coil.util.closeQuietly
 import coil.util.createTempFile
@@ -48,7 +49,7 @@ fun ImageSource(
     fileSystem: FileSystem = defaultFileSystem(),
     diskCacheKey: String? = null,
     closeable: Closeable? = null,
-    metadata: ImageSource.Metadata? = null,
+    metadata: Metadata? = null,
 ): ImageSource = FileImageSource(file, fileSystem, diskCacheKey, closeable, metadata)
 
 /**
@@ -75,35 +76,35 @@ fun ImageSource(
 fun ImageSource(
     source: BufferedSource,
     fileSystem: FileSystem = defaultFileSystem(),
-    metadata: ImageSource.Metadata? = null,
+    metadata: Metadata? = null,
 ): ImageSource = SourceImageSource(source, fileSystem, metadata)
 
 /**
  * Provides access to the image data to be decoded.
  */
-sealed class ImageSource : Closeable {
+sealed interface ImageSource : Closeable {
 
     /**
      * The [FileSystem] which contains the [file].
      */
-    abstract val fileSystem: FileSystem
+    val fileSystem: FileSystem
 
     /**
      * Return the [Metadata] for this [ImageSource].
      */
     @ExperimentalCoilApi
-    abstract val metadata: Metadata?
+    val metadata: Metadata?
 
     /**
      * Return a [BufferedSource] to read this [ImageSource].
      */
-    abstract fun source(): BufferedSource
+    fun source(): BufferedSource
 
     /**
      * Return the [BufferedSource] to read this [ImageSource] if one has already been created.
      * Else, return 'null'.
      */
-    abstract fun sourceOrNull(): BufferedSource?
+    fun sourceOrNull(): BufferedSource?
 
     /**
      * Return a [Path] that resolves to a file containing this [ImageSource]'s data.
@@ -111,13 +112,13 @@ sealed class ImageSource : Closeable {
      * If this image source is backed by a [BufferedSource], a temporary file containing this
      * [ImageSource]'s data will be created.
      */
-    abstract fun file(): Path
+    fun file(): Path
 
     /**
      * Return a [Path] that resolves to a file containing this [ImageSource]'s data if one has
      * already been created. Else, return 'null'.
      */
-    abstract fun fileOrNull(): Path?
+    fun fileOrNull(): Path?
 
     /**
      * A marker class for metadata for an [ImageSource].
@@ -142,7 +143,7 @@ internal class FileImageSource(
     internal val diskCacheKey: String?,
     private val closeable: Closeable?,
     override val metadata: Metadata?,
-) : ImageSource() {
+) : ImageSource {
 
     private val lock = SynchronizedObject()
     private var isClosed = false
@@ -181,7 +182,7 @@ internal class SourceImageSource(
     source: BufferedSource,
     override val fileSystem: FileSystem,
     override val metadata: Metadata?,
-) : ImageSource() {
+) : ImageSource {
 
     private val lock = SynchronizedObject()
     private var isClosed = false

@@ -78,7 +78,7 @@ internal class EngineInterceptor(
 
                 // Return the result.
                 SuccessResult(
-                    drawable = result.drawable,
+                    image = result.drawable,
                     request = request,
                     dataSource = result.dataSource,
                     memoryCacheKey = cacheKey.takeIf { isCached },

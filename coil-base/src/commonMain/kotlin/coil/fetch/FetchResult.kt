@@ -6,7 +6,7 @@ import coil.decode.Decoder
 import coil.decode.ImageSource
 
 /** The result of [Fetcher.fetch]. */
-sealed class FetchResult
+sealed interface FetchResult
 
 /**
  * An [ImageSource] result, which will be consumed by a relevant [Decoder].
@@ -19,7 +19,7 @@ data class SourceFetchResult(
     val source: ImageSource,
     val mimeType: String?,
     val dataSource: DataSource,
-) : FetchResult()
+) : FetchResult
 
 /**
  * An [Image] result. Return this from a [Fetcher] if its data cannot
@@ -34,4 +34,4 @@ data class ImageFetchResult(
     val image: Image,
     val isSampled: Boolean,
     val dataSource: DataSource,
-) : FetchResult()
+) : FetchResult

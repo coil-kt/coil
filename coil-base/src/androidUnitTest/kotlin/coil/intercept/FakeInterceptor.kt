@@ -9,7 +9,7 @@ class FakeInterceptor : Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         return SuccessResult(
-            drawable = ColorDrawable(),
+            image = ColorDrawable(),
             request = chain.request,
             dataSource = DataSource.MEMORY
         )

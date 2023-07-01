@@ -209,7 +209,7 @@ internal class MemoryCacheService(
         cacheKey: MemoryCache.Key,
         cacheValue: MemoryCache.Value
     ) = SuccessResult(
-        drawable = cacheValue.bitmap.toDrawable(request.context),
+        image = cacheValue.bitmap.toDrawable(request.context),
         request = request,
         dataSource = DataSource.MEMORY_CACHE,
         memoryCacheKey = cacheKey,

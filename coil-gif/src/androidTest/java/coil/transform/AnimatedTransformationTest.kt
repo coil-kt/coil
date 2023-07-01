@@ -47,7 +47,7 @@ class AnimatedTransformationTest {
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_gif_rounded.png")
         assertTrue(actual is SuccessResult)
-        actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
+        actual.image.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
@@ -64,7 +64,7 @@ class AnimatedTransformationTest {
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_heif_rounded.png")
         assertTrue(actual is SuccessResult)
-        actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
+        actual.image.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
@@ -81,6 +81,6 @@ class AnimatedTransformationTest {
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_webp_rounded.png")
         assertTrue(actual is SuccessResult)
-        actual.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
+        actual.image.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 }
