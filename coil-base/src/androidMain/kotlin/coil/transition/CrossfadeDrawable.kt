@@ -1,4 +1,4 @@
-package coil.drawable
+package coil.transition
 
 import android.content.res.ColorStateList
 import android.graphics.BlendMode
@@ -256,8 +256,11 @@ class CrossfadeDrawable @JvmOverloads constructor(
     }
 
     private fun computeIntrinsicDimension(startSize: Int?, endSize: Int?): Int {
-        if (!preferExactIntrinsicSize && (startSize == -1 || endSize == -1)) return -1
-        return maxOf(startSize ?: -1, endSize ?: -1)
+        if (!preferExactIntrinsicSize && (startSize == -1 || endSize == -1)) {
+            return -1
+        } else {
+            return maxOf(startSize ?: -1, endSize ?: -1)
+        }
     }
 
     private fun markDone() {
