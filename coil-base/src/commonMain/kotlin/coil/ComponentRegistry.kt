@@ -25,7 +25,7 @@ class ComponentRegistry private constructor(
     val mappers: List<Pair<Mapper<out Any, out Any>, KClass<out Any>>>,
     val keyers: List<Pair<Keyer<out Any>, KClass<out Any>>>,
     val fetcherFactories: List<Pair<Fetcher.Factory<out Any>, KClass<out Any>>>,
-    val decoderFactories: List<Decoder.Factory>
+    val decoderFactories: List<Decoder.Factory>,
 ) {
 
     constructor() : this(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
@@ -171,7 +171,7 @@ class ComponentRegistry private constructor(
                 mappers = mappers.toImmutableList(),
                 keyers = keyers.toImmutableList(),
                 fetcherFactories = fetcherFactories.toImmutableList(),
-                decoderFactories = decoderFactories.toImmutableList()
+                decoderFactories = decoderFactories.toImmutableList(),
             )
         }
     }
