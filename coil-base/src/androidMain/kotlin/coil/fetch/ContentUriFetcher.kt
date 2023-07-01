@@ -46,7 +46,7 @@ internal class ContentUriFetcher(
             checkNotNull(stream) { "Unable to open '$data'." }
         }
 
-        return SourceResult(
+        return SourceFetchResult(
             source = ImageSource(
                 source = inputStream.source().buffer(),
                 metadata = ContentMetadata(data),

@@ -44,7 +44,7 @@ class ResourceUriFetcherTest {
         val options = Options(context, size = Size(100, 100))
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
-        assertTrue(result is SourceResult)
+        assertTrue(result is SourceFetchResult)
         assertEquals("image/jpeg", result.mimeType)
         assertFalse(result.source.source().exhausted())
     }
@@ -55,7 +55,7 @@ class ResourceUriFetcherTest {
         val options = Options(context, size = Size(100, 100))
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
-        assertTrue(result is DrawableResult)
+        assertTrue(result is ImageFetchResult)
         assertTrue(result.image is BitmapDrawable)
         assertTrue(result.isSampled)
     }
@@ -69,7 +69,7 @@ class ResourceUriFetcherTest {
         val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
-        assertTrue(result is SourceResult)
+        assertTrue(result is SourceFetchResult)
         assertEquals("image/png", result.mimeType)
         assertFalse(result.source.source().exhausted())
     }
@@ -85,7 +85,7 @@ class ResourceUriFetcherTest {
         val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
-        assertTrue(result is DrawableResult)
+        assertTrue(result is ImageFetchResult)
         assertTrue(result.image is BitmapDrawable)
         assertTrue(result.isSampled)
     }
@@ -101,7 +101,7 @@ class ResourceUriFetcherTest {
             fetcherFactory.create(uri, options, imageLoader)?.fetch()
         }
         val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
-        val actual = (result as DrawableResult).image.toBitmap()
+        val actual = (result as ImageFetchResult).image.toBitmap()
         actual.assertIsSimilarTo(expected)
     }
 }

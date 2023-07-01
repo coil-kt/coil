@@ -1,14 +1,14 @@
 package coil.decode
 
 import coil.ImageLoader
-import coil.fetch.DrawableResult
-import coil.fetch.SourceResult
+import coil.fetch.ImageFetchResult
+import coil.fetch.SourceFetchResult
 
 /**
  * Represents the source that an image was loaded from.
  *
- * @see SourceResult.dataSource
- * @see DrawableResult.dataSource
+ * @see SourceFetchResult.dataSource
+ * @see ImageFetchResult.dataSource
  */
 enum class DataSource {
 
@@ -33,5 +33,5 @@ enum class DataSource {
     /**
      * Represents a network-based data source (e.g. `HttpUrl`).
      */
-    NETWORK
+    NETWORK,
 }

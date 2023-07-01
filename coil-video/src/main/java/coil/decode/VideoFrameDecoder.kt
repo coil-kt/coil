@@ -13,7 +13,7 @@ import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil.ImageLoader
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.request.videoFrameMicros
 import coil.request.videoFrameOption
@@ -200,7 +200,7 @@ class VideoFrameDecoder(
 
     class Factory : Decoder.Factory {
 
-        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
             if (!isApplicable(result.mimeType)) return null
             return VideoFrameDecoder(result.source, options)
         }

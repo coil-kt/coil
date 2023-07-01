@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build.VERSION.SDK_INT
 import coil.ImageLoader
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.size.isOriginal
 import coil.util.MIME_TYPE_JPEG
@@ -179,7 +179,7 @@ class BitmapFactoryDecoder(
 
         private val parallelismLock = Semaphore(maxParallelism)
 
-        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder {
+        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder {
             return BitmapFactoryDecoder(result.source, options, parallelismLock, exifOrientationPolicy)
         }
 

@@ -32,7 +32,7 @@ class FileFetcherTest {
 
         val result = fetcher.fetch()
 
-        assertTrue(result is SourceResult)
+        assertTrue(result is SourceFetchResult)
         assertEquals("image/jpeg", result.mimeType)
         assertNotNull(result.source.file())
     }

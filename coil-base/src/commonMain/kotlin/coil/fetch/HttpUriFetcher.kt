@@ -44,7 +44,7 @@ internal class HttpUriFetcher(
             if (snapshot != null) {
                 // Always return cached images with empty metadata as they were likely added manually.
                 if (fileSystem.metadata(snapshot.metadata).size == 0L) {
-                    return SourceResult(
+                    return SourceFetchResult(
                         source = snapshot.toImageSource(),
                         mimeType = getMimeType(url, null),
                         dataSource = DataSource.DISK
@@ -55,7 +55,7 @@ internal class HttpUriFetcher(
                 if (respectCacheHeaders) {
                     cacheStrategy = CacheStrategy.Factory(newRequest(), snapshot.toCacheResponse()).compute()
                     if (cacheStrategy.networkRequest == null && cacheStrategy.cacheResponse != null) {
-                        return SourceResult(
+                        return SourceFetchResult(
                             source = snapshot.toImageSource(),
                             mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType),
                             dataSource = DataSource.DISK
@@ -63,7 +63,7 @@ internal class HttpUriFetcher(
                     }
                 } else {
                     // Skip checking the cache headers if the option is disabled.
-                    return SourceResult(
+                    return SourceFetchResult(
                         source = snapshot.toImageSource(),
                         mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType),
                         dataSource = DataSource.DISK
@@ -85,7 +85,7 @@ internal class HttpUriFetcher(
                     cacheResponse = cacheStrategy.cacheResponse
                 )
                 if (snapshot != null) {
-                    return SourceResult(
+                    return SourceFetchResult(
                         source = snapshot.toImageSource(),
                         mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType),
                         dataSource = DataSource.NETWORK
@@ -94,7 +94,7 @@ internal class HttpUriFetcher(
 
                 // If we failed to read a new snapshot then read the response body if it's not empty.
                 if (responseBody.contentLength() > 0) {
-                    return SourceResult(
+                    return SourceFetchResult(
                         source = responseBody.toImageSource(),
                         mimeType = getMimeType(url, responseBody.contentType()),
                         dataSource = response.toDataSource()
@@ -106,7 +106,7 @@ internal class HttpUriFetcher(
                     response = executeNetworkRequest(newRequest())
                     responseBody = response.requireBody()
 
-                    return SourceResult(
+                    return SourceFetchResult(
                         source = responseBody.toImageSource(),
                         mimeType = getMimeType(url, responseBody.contentType()),
                         dataSource = response.toDataSource()

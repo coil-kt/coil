@@ -19,7 +19,7 @@ internal class ByteBufferFetcher(
             // Reset the position so we can read the byte buffer again.
             data.position(0)
         }
-        return SourceResult(
+        return SourceFetchResult(
             source = ImageSource(source, options.context),
             mimeType = null,
             dataSource = DataSource.MEMORY

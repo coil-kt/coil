@@ -11,7 +11,7 @@ import okio.Path.Companion.toOkioPath
 internal class FileFetcher(private val data: File) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        return SourceResult(
+        return SourceFetchResult(
             source = ImageSource(file = data.toOkioPath()),
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(data.extension),
             dataSource = DataSource.DISK

@@ -10,10 +10,10 @@ import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.FileImageSource
-import coil.fetch.DrawableResult
+import coil.fetch.ImageFetchResult
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.memory.MemoryCacheService
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -122,10 +122,10 @@ internal class EngineInterceptor(
 
             // Decode the data.
             when (fetchResult) {
-                is SourceResult -> withContext(request.decoderDispatcher) {
+                is SourceFetchResult -> withContext(request.decoderDispatcher) {
                     decode(fetchResult, components, request, mappedData, options, eventListener)
                 }
-                is DrawableResult -> {
+                is ImageFetchResult -> {
                     ExecuteResult(
                         drawable = fetchResult.image,
                         isSampled = fetchResult.isSampled,
@@ -136,7 +136,7 @@ internal class EngineInterceptor(
             }
         } finally {
             // Ensure the fetch result's source is always closed.
-            (fetchResult as? SourceResult)?.source?.closeQuietly()
+            (fetchResult as? SourceFetchResult)?.source?.closeQuietly()
         }
 
         // Apply any transformations and prepare to draw.
@@ -166,7 +166,7 @@ internal class EngineInterceptor(
                 eventListener.fetchEnd(request, fetcher, options, result)
             } catch (throwable: Throwable) {
                 // Ensure the source is closed if an exception occurs before returning the result.
-                (result as? SourceResult)?.source?.closeQuietly()
+                (result as? SourceFetchResult)?.source?.closeQuietly()
                 throw throwable
             }
 
@@ -179,7 +179,7 @@ internal class EngineInterceptor(
     }
 
     private suspend fun decode(
-        fetchResult: SourceResult,
+        fetchResult: SourceFetchResult,
         components: ComponentRegistry,
         request: ImageRequest,
         mappedData: Any,

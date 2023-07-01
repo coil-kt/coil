@@ -11,7 +11,7 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import coil.ImageLoader
 import coil.drawable.ScaleDrawable
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.request.animatedTransformation
 import coil.request.animationEndCallback
@@ -168,7 +168,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         private val enforceMinimumFrameDelay: Boolean = true
     ) : Decoder.Factory {
 
-        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
             if (!isApplicable(result.source.source())) return null
             return ImageDecoderDecoder(result.source, options, enforceMinimumFrameDelay)
         }

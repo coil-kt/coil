@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Movie
 import coil.ImageLoader
 import coil.drawable.MovieDrawable
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.request.animatedTransformation
 import coil.request.animationEndCallback
@@ -73,7 +73,7 @@ class GifDecoder @JvmOverloads constructor(
         private val enforceMinimumFrameDelay: Boolean = true
     ) : Decoder.Factory {
 
-        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
             if (!DecodeUtils.isGif(result.source.source())) return null
             return GifDecoder(result.source, options, enforceMinimumFrameDelay)
         }

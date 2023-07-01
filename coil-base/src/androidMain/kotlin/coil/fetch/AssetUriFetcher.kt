@@ -20,7 +20,7 @@ internal class AssetUriFetcher(
     override suspend fun fetch(): FetchResult {
         val path = data.pathSegments.drop(1).joinToString("/")
 
-        return SourceResult(
+        return SourceFetchResult(
             source = ImageSource(
                 source = options.context.assets.open(path).source().buffer(),
                 metadata = AssetMetadata(path),

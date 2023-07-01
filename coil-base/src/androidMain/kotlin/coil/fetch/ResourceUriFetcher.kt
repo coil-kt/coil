@@ -47,7 +47,7 @@ internal class ResourceUriFetcher(
             }
 
             val isVector = drawable.isVector
-            DrawableResult(
+            ImageFetchResult(
                 image = if (isVector) {
                     DrawableUtils.convertToBitmap(
                         drawable = drawable,
@@ -65,7 +65,7 @@ internal class ResourceUriFetcher(
         } else {
             val typedValue = TypedValue()
             val inputStream = resources.openRawResource(resId, typedValue)
-            SourceResult(
+            SourceFetchResult(
                 source = ImageSource(
                     source = inputStream.source().buffer(),
                     metadata = ResourceMetadata(packageName, resId, typedValue.density),

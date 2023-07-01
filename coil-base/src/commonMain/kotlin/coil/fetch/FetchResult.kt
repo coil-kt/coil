@@ -4,7 +4,6 @@ import coil.Image
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.decode.ImageSource
-import okio.BufferedSource
 
 /** The result of [Fetcher.fetch]. */
 sealed class FetchResult
@@ -16,7 +15,7 @@ sealed class FetchResult
  * @param mimeType An optional MIME type for the [source].
  * @param dataSource The source that [source] was fetched from.
  */
-data class SourceResult(
+data class SourceFetchResult(
     val source: ImageSource,
     val mimeType: String?,
     val dataSource: DataSource,
@@ -31,7 +30,7 @@ data class SourceResult(
  *  at less than its original size).
  * @param dataSource The source that [image] was fetched from.
  */
-data class DrawableResult(
+data class ImageFetchResult(
     val image: Image,
     val isSampled: Boolean,
     val dataSource: DataSource,

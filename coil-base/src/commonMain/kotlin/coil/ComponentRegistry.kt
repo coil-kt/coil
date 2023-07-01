@@ -4,7 +4,7 @@ package coil
 
 import coil.decode.Decoder
 import coil.fetch.Fetcher
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.intercept.Interceptor
 import coil.key.Keyer
 import coil.map.Mapper
@@ -92,7 +92,7 @@ class ComponentRegistry private constructor(
      */
     @JvmOverloads
     fun newDecoder(
-        result: SourceResult,
+        result: SourceFetchResult,
         options: Options,
         imageLoader: ImageLoader,
         startIndex: Int = 0

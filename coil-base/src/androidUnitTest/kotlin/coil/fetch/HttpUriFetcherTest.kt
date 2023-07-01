@@ -88,7 +88,7 @@ class HttpUriFetcherTest {
         val url = server.url(IMAGE).toString()
         val result = newFetcher(url).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
 
@@ -142,7 +142,7 @@ class HttpUriFetcherTest {
         val url = server.url(IMAGE).toString()
         val result = newFetcher(url, diskCache = null).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertIs<SourceImageSource>(result.source)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
@@ -165,7 +165,7 @@ class HttpUriFetcherTest {
             options = Options(context, networkCachePolicy = CachePolicy.DISABLED)
         ).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertNotNull(result.source.fileOrNull())
         assertEquals(DataSource.DISK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
@@ -177,7 +177,7 @@ class HttpUriFetcherTest {
         val url = server.url(IMAGE).toString()
         val result = newFetcher(url).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         val source = result.source
         assertTrue(source is FileImageSource)
 
@@ -198,14 +198,14 @@ class HttpUriFetcherTest {
         // Run the fetcher once to create the disk cache file.
         var expectedSize = server.enqueueImage(IMAGE)
         var result = newFetcher(url).fetch()
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertTrue(result.source is FileImageSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
         // Run the fetcher a second time.
         expectedSize = server.enqueueImage(IMAGE)
         result = newFetcher(url).fetch()
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertTrue(result.source is FileImageSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
@@ -228,7 +228,7 @@ class HttpUriFetcherTest {
         val result = newFetcher(url).fetch()
 
         assertEquals(0, server.requestCount)
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.DISK, result.dataSource)
     }
 
@@ -242,7 +242,7 @@ class HttpUriFetcherTest {
         var expectedSize = server.enqueueImage(IMAGE, headers)
         var result = newFetcher(url).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
@@ -252,7 +252,7 @@ class HttpUriFetcherTest {
         result = newFetcher(url).fetch()
 
         assertEquals(2, server.requestCount)
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
@@ -267,7 +267,7 @@ class HttpUriFetcherTest {
         var expectedSize = server.enqueueImage(IMAGE, headers)
         var result = newFetcher(url, respectCacheHeaders = false).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
@@ -277,7 +277,7 @@ class HttpUriFetcherTest {
         result = newFetcher(url, respectCacheHeaders = false).fetch()
 
         assertEquals(1, server.requestCount)
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.DISK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
@@ -294,7 +294,7 @@ class HttpUriFetcherTest {
         var result = newFetcher(url).fetch()
 
         assertEquals(1, server.requestCount)
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
         diskCache.openSnapshot(url).use(::assertNotNull)
@@ -303,7 +303,7 @@ class HttpUriFetcherTest {
         server.enqueue(MockResponse().setResponseCode(HTTP_NOT_MODIFIED))
         result = newFetcher(url).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
@@ -327,7 +327,7 @@ class HttpUriFetcherTest {
         var result = newFetcher(url).fetch()
 
         assertEquals(1, server.requestCount)
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
         diskCache.openSnapshot(url).use(::assertNotNull)
@@ -339,7 +339,7 @@ class HttpUriFetcherTest {
         server.enqueue(response)
         result = newFetcher(url).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
@@ -367,7 +367,7 @@ class HttpUriFetcherTest {
         var expectedSize = server.enqueueImage(IMAGE, headers)
         var result = newFetcher(url).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
@@ -377,7 +377,7 @@ class HttpUriFetcherTest {
         result = newFetcher(url).fetch()
 
         assertEquals(1, server.requestCount)
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.DISK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }
@@ -393,7 +393,7 @@ class HttpUriFetcherTest {
         var expectedSize = server.enqueueImage(IMAGE, headers)
         var result = newFetcher(url).fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 
@@ -406,7 +406,7 @@ class HttpUriFetcherTest {
         result = newFetcher(url).fetch()
 
         assertEquals(2, server.requestCount)
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
     }

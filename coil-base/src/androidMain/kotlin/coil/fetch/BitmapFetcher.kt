@@ -12,7 +12,7 @@ internal class BitmapFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        return DrawableResult(
+        return ImageFetchResult(
             image = data.toDrawable(options.context),
             isSampled = false,
             dataSource = DataSource.MEMORY

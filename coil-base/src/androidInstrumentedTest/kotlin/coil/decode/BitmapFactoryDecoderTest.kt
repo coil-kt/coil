@@ -7,7 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.size.Dimension
 import coil.size.Scale
@@ -368,7 +368,7 @@ class BitmapFactoryDecoderTest {
     ): DecodeResult {
         val source = context.assets.open(assetName).source().buffer()
         val decoder = factory.create(
-            result = SourceResult(
+            result = SourceFetchResult(
                 source = ImageSource(source, context),
                 mimeType = null,
                 dataSource = DataSource.DISK

@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.size.Dimension
 import coil.size.Scale
@@ -164,7 +164,7 @@ class SvgDecoderTest {
     private fun BufferedSource.asSourceResult(
         mimeType: String? = null,
         dataSource: DataSource = DataSource.DISK
-    ) = SourceResult(
+    ) = SourceFetchResult(
         source = ImageSource(this, context),
         mimeType = mimeType,
         dataSource = dataSource

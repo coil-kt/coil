@@ -8,7 +8,7 @@ import coil.decode.DecodeResult
 import coil.decode.Decoder
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.key.Keyer
 import coil.map.Mapper
 import coil.request.ErrorResult
@@ -107,7 +107,7 @@ interface EventListener : ImageRequest.Listener {
     /**
      * Called before [Decoder.decode].
      *
-     * This is skipped if [Fetcher.fetch] does not return a [SourceResult].
+     * This is skipped if [Fetcher.fetch] does not return a [SourceFetchResult].
      *
      * @param decoder The [Decoder] that will be used to handle the request.
      * @param options The [Options] that will be passed to [Decoder.decode].
@@ -118,7 +118,7 @@ interface EventListener : ImageRequest.Listener {
     /**
      * Called after [Decoder.decode].
      *
-     * This is skipped if [Fetcher.fetch] does not return a [SourceResult].
+     * This is skipped if [Fetcher.fetch] does not return a [SourceFetchResult].
      *
      * @param decoder The [Decoder] that was used to handle the request.
      * @param options The [Options] that were passed to [Decoder.decode].

@@ -5,7 +5,7 @@ import android.graphics.RectF
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil.ImageLoader
-import coil.fetch.SourceResult
+import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.request.css
 import coil.size.Scale
@@ -95,12 +95,12 @@ class SvgDecoder @JvmOverloads constructor(
         val useViewBoundsAsIntrinsicSize: Boolean = true
     ) : Decoder.Factory {
 
-        override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
             if (!isApplicable(result)) return null
             return SvgDecoder(result.source, options, useViewBoundsAsIntrinsicSize)
         }
 
-        private fun isApplicable(result: SourceResult): Boolean {
+        private fun isApplicable(result: SourceFetchResult): Boolean {
             return result.mimeType == MIME_TYPE_SVG || DecodeUtils.isSvg(result.source.source())
         }
 
