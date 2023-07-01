@@ -56,7 +56,7 @@ class ResourceUriFetcherTest {
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
         assertTrue(result is DrawableResult)
-        assertTrue(result.drawable is BitmapDrawable)
+        assertTrue(result.image is BitmapDrawable)
         assertTrue(result.isSampled)
     }
 
@@ -86,7 +86,7 @@ class ResourceUriFetcherTest {
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
         assertTrue(result is DrawableResult)
-        assertTrue(result.drawable is BitmapDrawable)
+        assertTrue(result.image is BitmapDrawable)
         assertTrue(result.isSampled)
     }
 
@@ -101,7 +101,7 @@ class ResourceUriFetcherTest {
             fetcherFactory.create(uri, options, imageLoader)?.fetch()
         }
         val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
-        val actual = (result as DrawableResult).drawable.toBitmap()
+        val actual = (result as DrawableResult).image.toBitmap()
         actual.assertIsSimilarTo(expected)
     }
 }

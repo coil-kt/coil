@@ -3,7 +3,6 @@ package coil.intercept
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import coil.ComponentRegistry
 import coil.EventListener
@@ -128,7 +127,7 @@ internal class EngineInterceptor(
                 }
                 is DrawableResult -> {
                     ExecuteResult(
-                        drawable = fetchResult.drawable,
+                        drawable = fetchResult.image,
                         isSampled = fetchResult.isSampled,
                         dataSource = fetchResult.dataSource,
                         diskCacheKey = null // This result has no file source.
@@ -207,7 +206,7 @@ internal class EngineInterceptor(
 
         // Combine the fetch and decode operations' results.
         return ExecuteResult(
-            drawable = decodeResult.drawable,
+            drawable = decodeResult.image,
             isSampled = decodeResult.isSampled,
             dataSource = fetchResult.dataSource,
             diskCacheKey = (fetchResult.source as? FileImageSource)?.diskCacheKey

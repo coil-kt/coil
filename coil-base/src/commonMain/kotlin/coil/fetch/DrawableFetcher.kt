@@ -16,7 +16,7 @@ internal class DrawableFetcher(
     override suspend fun fetch(): FetchResult {
         val isVector = data.isVector
         return DrawableResult(
-            drawable = if (isVector) {
+            image = if (isVector) {
                 DrawableUtils.convertToBitmap(
                     drawable = data,
                     config = options.config,

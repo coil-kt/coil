@@ -64,7 +64,7 @@ class GifDecoder @JvmOverloads constructor(
         drawable.setAnimatedTransformation(options.parameters.animatedTransformation())
 
         DecodeResult(
-            drawable = drawable,
+            image = drawable,
             isSampled = false
         )
     }

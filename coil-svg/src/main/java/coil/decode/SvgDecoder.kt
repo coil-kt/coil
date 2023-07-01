@@ -75,7 +75,7 @@ class SvgDecoder @JvmOverloads constructor(
         svg.renderToCanvas(Canvas(bitmap), renderOptions)
 
         DecodeResult(
-            drawable = bitmap.toDrawable(options.context.resources),
+            image = bitmap.toDrawable(options.context.resources),
             isSampled = true // SVGs can always be re-decoded at a higher resolution.
         )
     }

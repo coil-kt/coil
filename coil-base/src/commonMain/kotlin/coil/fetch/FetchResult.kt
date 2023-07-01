@@ -1,6 +1,6 @@
 package coil.fetch
 
-import android.graphics.drawable.Drawable
+import coil.Image
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.decode.ImageSource
@@ -10,7 +10,7 @@ import okio.BufferedSource
 sealed class FetchResult
 
 /**
- * An [ImageSource] result, which will be consumed by the relevant [Decoder].
+ * An [ImageSource] result, which will be consumed by a relevant [Decoder].
  *
  * @param source The [ImageSource] to read from.
  * @param mimeType An optional MIME type for the [source].
@@ -23,16 +23,16 @@ data class SourceResult(
 ) : FetchResult()
 
 /**
- * A direct [Drawable] result. Return this from a [Fetcher] if its data cannot
- * be converted into a [BufferedSource].
+ * An [Image] result. Return this from a [Fetcher] if its data cannot
+ * be converted into an [ImageSource].
  *
- * @param drawable The fetched [Drawable].
- * @param isSampled 'true' if [drawable] is sampled (i.e. loaded into memory
+ * @param image The fetched [Image].
+ * @param isSampled 'true' if [image] is sampled (i.e. loaded into memory
  *  at less than its original size).
- * @param dataSource The source that [drawable] was fetched from.
+ * @param dataSource The source that [image] was fetched from.
  */
 data class DrawableResult(
-    val drawable: Drawable,
+    val image: Image,
     val isSampled: Boolean,
     val dataSource: DataSource,
 ) : FetchResult()

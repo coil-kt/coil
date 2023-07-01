@@ -21,8 +21,6 @@ import coil.request.videoFramePercent
 import coil.size.Dimension.Pixels
 import coil.size.Size
 import coil.size.pxOrElse
-import coil.util.getFrameAtTime
-import coil.util.getScaledFrameAtTime
 import coil.util.heightPx
 import coil.util.use
 import coil.util.widthPx
@@ -110,7 +108,7 @@ class VideoFrameDecoder(
         }
 
         DecodeResult(
-            drawable = bitmap.toDrawable(options.context.resources),
+            image = bitmap.toDrawable(options.context.resources),
             isSampled = isSampled
         )
     }

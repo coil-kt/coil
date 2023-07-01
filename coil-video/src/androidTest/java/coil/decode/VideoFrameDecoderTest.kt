@@ -44,7 +44,7 @@ class VideoFrameDecoderTest {
             options = Options(context)
         ).decode()
 
-        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        val actual = (result.image as? BitmapDrawable)?.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 
@@ -70,7 +70,7 @@ class VideoFrameDecoderTest {
             )
         ).decode()
 
-        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        val actual = (result.image as? BitmapDrawable)?.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 
@@ -96,7 +96,7 @@ class VideoFrameDecoderTest {
             )
         ).decode()
 
-        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        val actual = (result.image as? BitmapDrawable)?.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 
@@ -117,7 +117,7 @@ class VideoFrameDecoderTest {
             options = Options(context, size = Size(150, 150))
         ).decode()
 
-        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        val actual = (result.image as? BitmapDrawable)?.bitmap
         assertNotNull(actual)
         assertTrue(result.isSampled)
 
@@ -141,7 +141,7 @@ class VideoFrameDecoderTest {
             options = Options(context)
         ).decode()
 
-        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        val actual = (result.image as? BitmapDrawable)?.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 

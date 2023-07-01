@@ -1,17 +1,17 @@
 package coil.decode
 
-import android.graphics.drawable.Drawable
+import coil.Image
 
 /**
  * The result of [Decoder.decode].
  *
- * @param drawable The decoded [Drawable].
- * @param isSampled 'true' if [drawable] is sampled (i.e. loaded into memory at less than its
- *  original size).
+ * @param image The decoded [Image].
+ * @param isSampled 'true' if [image] is sampled
+ *  (i.e. loaded into memory at less than its original size).
  *
  * @see Decoder
  */
 data class DecodeResult(
-    val drawable: Drawable,
+    val image: Image,
     val isSampled: Boolean,
 )

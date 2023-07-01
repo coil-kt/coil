@@ -76,7 +76,7 @@ class BitmapFactoryDecoder(
         val bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
 
         return DecodeResult(
-            drawable = bitmap.toDrawable(options.context),
+            image = bitmap.toDrawable(options.context),
             isSampled = inSampleSize > 1 || inScaled
         )
     }

@@ -12,7 +12,7 @@ import coil.size.Size
 /**
  * An interface for making transformations to an image's pixel data.
  *
- * NOTE: If [DrawableResult.drawable] or [DecodeResult.drawable] is not a [BitmapDrawable],
+ * NOTE: If [DrawableResult.image] or [DecodeResult.image] is not a [BitmapDrawable],
  * it will be converted to one. This will cause animated drawables to only draw the first frame of
  * their animation.
  *
