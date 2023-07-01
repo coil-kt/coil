@@ -4,6 +4,8 @@ import coil.Image
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
 import coil.util.LruCache
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 
 /**
  * An in-memory cache that holds strong references.
@@ -54,29 +56,39 @@ internal class EmptyStrongMemoryCache(
 
 internal class RealStrongMemoryCache(
     maxSize: Long,
-    private val weakMemoryCache: WeakMemoryCache
+    private val weakMemoryCache: WeakMemoryCache,
 ) : StrongMemoryCache {
 
+    private val lock = SynchronizedObject()
     private val cache = object : LruCache<Key, InternalValue>(maxSize) {
-        override fun sizeOf(key: Key, value: InternalValue) = value.size
+        override fun sizeOf(
+            key: Key,
+            value: InternalValue,
+        ) = value.size
+
         override fun entryRemoved(
             key: Key,
             oldValue: InternalValue,
-            newValue: InternalValue?
+            newValue: InternalValue?,
         ) = weakMemoryCache.set(key, oldValue.image, oldValue.extras, oldValue.size)
     }
 
-    override val size get() = cache.size
+    override val size get() = synchronized(lock) { cache.size }
 
-    override val maxSize get() = cache.maxSize
+    override val maxSize get() = synchronized(lock) { cache.maxSize }
 
-    override val keys get() = cache.keys
+    override val keys get() = synchronized(lock) { cache.keys }
 
-    override fun get(key: Key): Value? {
+    override fun get(key: Key): Value? = synchronized(lock) {
         return cache.get(key)?.let { Value(it.image, it.extras) }
     }
 
-    override fun set(key: Key, image: Image, extras: Map<String, Any>, size: Long) {
+    override fun set(
+        key: Key,
+        image: Image,
+        extras: Map<String, Any>,
+        size: Long,
+    ): Unit = synchronized(lock) {
         if (size <= maxSize) {
             cache.put(key, InternalValue(image, extras, size))
         } else {
@@ -88,15 +100,15 @@ internal class RealStrongMemoryCache(
         }
     }
 
-    override fun remove(key: Key): Boolean {
+    override fun remove(key: Key): Boolean = synchronized(lock) {
         return cache.remove(key) != null
     }
 
-    override fun clear() {
+    override fun clear() = synchronized(lock) {
         cache.clear()
     }
 
-    override fun trimToSize(size: Long) {
+    override fun trimToSize(size: Long) = synchronized(lock) {
         cache.trimToSize(size)
     }
 
