@@ -1,94 +1,90 @@
 package coil.memory
 
-import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
-import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
-import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
-import android.graphics.Bitmap
-import androidx.collection.LruCache
+import coil.Image
 import coil.memory.MemoryCache.Key
 import coil.memory.MemoryCache.Value
-import coil.util.allocationByteCountCompat
+import coil.util.LruCache
 
-/** An in-memory cache that holds strong references [Bitmap]s. */
+/**
+ * An in-memory cache that holds strong references.
+ *
+ * Values are added to [WeakMemoryCache] when they're evicted from [StrongMemoryCache].
+ */
 internal interface StrongMemoryCache {
 
-    val size: Int
+    val size: Long
 
-    val maxSize: Int
+    val maxSize: Long
 
     val keys: Set<Key>
 
     fun get(key: Key): Value?
 
-    fun set(key: Key, bitmap: Bitmap, extras: Map<String, Any>)
+    fun set(key: Key, image: Image, extras: Map<String, Any>, size: Long)
 
     fun remove(key: Key): Boolean
 
-    fun clearMemory()
+    fun trimToSize(size: Long)
 
-    fun trimMemory(level: Int)
+    fun clear()
 }
 
-/** A [StrongMemoryCache] implementation that caches nothing. */
 internal class EmptyStrongMemoryCache(
     private val weakMemoryCache: WeakMemoryCache
 ) : StrongMemoryCache {
 
-    override val size get() = 0
+    override val size get() = 0L
 
-    override val maxSize get() = 0
+    override val maxSize get() = 0L
 
     override val keys get() = emptySet<Key>()
 
     override fun get(key: Key): Value? = null
 
-    override fun set(key: Key, bitmap: Bitmap, extras: Map<String, Any>) {
-        weakMemoryCache.set(key, bitmap, extras, bitmap.allocationByteCountCompat)
+    override fun set(key: Key, image: Image, extras: Map<String, Any>, size: Long) {
+        weakMemoryCache.set(key, image, extras, size)
     }
 
     override fun remove(key: Key) = false
 
-    override fun clearMemory() {}
+    override fun trimToSize(size: Long) {}
 
-    override fun trimMemory(level: Int) {}
+    override fun clear() {}
 }
 
-/** A [StrongMemoryCache] implementation backed by an [LruCache]. */
 internal class RealStrongMemoryCache(
-    maxSize: Int,
+    maxSize: Long,
     private val weakMemoryCache: WeakMemoryCache
 ) : StrongMemoryCache {
 
     private val cache = object : LruCache<Key, InternalValue>(maxSize) {
         override fun sizeOf(key: Key, value: InternalValue) = value.size
         override fun entryRemoved(
-            evicted: Boolean,
             key: Key,
             oldValue: InternalValue,
             newValue: InternalValue?
-        ) = weakMemoryCache.set(key, oldValue.bitmap, oldValue.extras, oldValue.size)
+        ) = weakMemoryCache.set(key, oldValue.image, oldValue.extras, oldValue.size)
     }
 
-    override val size get() = cache.size()
+    override val size get() = cache.size
 
-    override val maxSize get() = cache.maxSize()
+    override val maxSize get() = cache.maxSize
 
-    override val keys get() = cache.snapshot().keys
+    override val keys get() = cache.keys
 
     override fun get(key: Key): Value? {
-        return cache.get(key)?.let { Value(it.bitmap, it.extras) }
+        return cache.get(key)?.let { Value(it.image, it.extras) }
     }
 
-    override fun set(key: Key, bitmap: Bitmap, extras: Map<String, Any>) {
-        val size = bitmap.allocationByteCountCompat
+    override fun set(key: Key, image: Image, extras: Map<String, Any>, size: Long) {
         if (size <= maxSize) {
-            cache.put(key, InternalValue(bitmap, extras, size))
+            cache.put(key, InternalValue(image, extras, size))
         } else {
-            // If the bitmap is too big for the cache, don't attempt to store it as doing
+            // If the value is too big for the cache, don't attempt to store it as doing
             // so will cause the cache to be cleared. Instead, evict an existing element
-            // with the same key if it exists and add the bitmap to the weak memory cache.
+            // with the same key if it exists and add the value to the weak memory cache.
             cache.remove(key)
-            weakMemoryCache.set(key, bitmap, extras, size)
+            weakMemoryCache.set(key, image, extras, size)
         }
     }
 
@@ -96,21 +92,17 @@ internal class RealStrongMemoryCache(
         return cache.remove(key) != null
     }
 
-    override fun clearMemory() {
-        cache.evictAll()
+    override fun clear() {
+        cache.clear()
     }
 
-    override fun trimMemory(level: Int) {
-        if (level >= TRIM_MEMORY_BACKGROUND) {
-            clearMemory()
-        } else if (level in TRIM_MEMORY_RUNNING_LOW until TRIM_MEMORY_UI_HIDDEN) {
-            cache.trimToSize(size / 2)
-        }
+    override fun trimToSize(size: Long) {
+        cache.trimToSize(size)
     }
 
     private class InternalValue(
-        val bitmap: Bitmap,
+        val image: Image,
         val extras: Map<String, Any>,
-        val size: Int
+        val size: Long,
     )
 }

@@ -5,7 +5,7 @@ import coil.util.toImmutableMap
 
 internal class RealMemoryCache(
     private val strongMemoryCache: StrongMemoryCache,
-    private val weakMemoryCache: WeakMemoryCache
+    private val weakMemoryCache: WeakMemoryCache,
 ) : MemoryCache {
 
     override val size get() = strongMemoryCache.size
@@ -22,8 +22,9 @@ internal class RealMemoryCache(
         // Ensure that stored keys and values are immutable.
         strongMemoryCache.set(
             key = key.copy(extras = key.extras.toImmutableMap()),
-            bitmap = value.bitmap,
-            extras = value.extras.toImmutableMap()
+            image = value.image,
+            extras = value.extras.toImmutableMap(),
+            size = value.image.size,
         )
         // weakMemoryCache.set() is called by strongMemoryCache when
         // a value is evicted from the strong reference cache.
@@ -36,13 +37,12 @@ internal class RealMemoryCache(
         return removedStrong || removedWeak
     }
 
-    override fun clear() {
-        strongMemoryCache.clearMemory()
-        weakMemoryCache.clearMemory()
+    override fun trimToSize(size: Long) {
+        strongMemoryCache.trimToSize(size)
     }
 
-    override fun trimMemory(level: Int) {
-        strongMemoryCache.trimMemory(level)
-        weakMemoryCache.trimMemory(level)
+    override fun clear() {
+        strongMemoryCache.clear()
+        weakMemoryCache.clear()
     }
 }

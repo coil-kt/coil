@@ -74,7 +74,6 @@ kotlin {
             dependencies {
                 implementation(libs.androidx.annotation)
                 implementation(libs.androidx.appcompat.resources)
-                implementation(libs.androidx.collection)
                 implementation(libs.androidx.core)
                 implementation(libs.androidx.exifinterface)
                 implementation(libs.androidx.profileinstaller)

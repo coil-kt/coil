@@ -1,10 +1,9 @@
 package coil.memory
 
 import android.graphics.drawable.BitmapDrawable
-import android.util.Log
-import androidx.annotation.VisibleForTesting
 import coil.EventListener
 import coil.ImageLoader
+import coil.annotation.VisibleForTesting
 import coil.decode.DataSource
 import coil.decode.DecodeUtils
 import coil.intercept.EngineInterceptor.ExecuteResult

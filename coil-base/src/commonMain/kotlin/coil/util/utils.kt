@@ -276,7 +276,7 @@ internal fun defaultMemoryCacheSizePercent(context: Context): Double {
 private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
 
 /** Return a [percent] of the application's total memory in bytes. */
-internal fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
+internal fun calculateMemoryCacheSize(context: Context, percent: Double): Long {
     val memoryClassMegabytes = try {
         val activityManager: ActivityManager = context.requireSystemService()
         val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
@@ -284,5 +284,5 @@ internal fun calculateMemoryCacheSize(context: Context, percent: Double): Int {
     } catch (_: Exception) {
         DEFAULT_MEMORY_CLASS_MEGABYTES
     }
-    return (percent * memoryClassMegabytes * 1024 * 1024).toInt()
+    return (percent * memoryClassMegabytes * 1024 * 1024).toLong()
 }

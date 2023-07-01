@@ -1,24 +1,20 @@
 package coil.memory
 
-import android.content.ComponentCallbacks2
-import android.content.Context
-import android.graphics.Bitmap
-import android.os.Parcel
-import android.os.Parcelable
+import coil.Image
 import coil.key.Keyer
 import coil.util.calculateMemoryCacheSize
 import coil.util.defaultMemoryCacheSizePercent
 
 /**
- * An LRU cache of [Bitmap]s.
+ * An LRU cache of [Image]s.
  */
 interface MemoryCache {
 
     /** The current size of the cache in bytes. */
-    val size: Int
+    val size: Long
 
     /** The maximum size of the cache in bytes. */
-    val maxSize: Int
+    val maxSize: Long
 
     /** The keys present in the cache. */
     val keys: Set<Key>
@@ -36,14 +32,14 @@ interface MemoryCache {
      */
     fun remove(key: Key): Boolean
 
+    /** Remove the eldest entries until the cache's size is at or below [size]. */
+    fun trimToSize(size: Long)
+
     /** Remove all values from the memory cache. */
     fun clear()
 
-    /** @see ComponentCallbacks2.onTrimMemory */
-    fun trimMemory(level: Int)
-
     /**
-     * The cache key for a [Bitmap] in the memory cache.
+     * The cache key for a [Value] in the memory cache.
      *
      * @param key The value returned by [Keyer.key] (or a custom value).
      * @param extras Extra values that differentiate the associated
@@ -56,21 +52,21 @@ interface MemoryCache {
     )
 
     /**
-     * The value for a [Bitmap] in the memory cache.
+     * The value for an [Image] in the memory cache.
      *
-     * @param bitmap The cached [Bitmap].
-     * @param extras Metadata for [bitmap]. This map **must be**
+     * @param image The cached [Image].
+     * @param extras Metadata for the [image]. This map **must be**
      *  treated as immutable and should not be modified.
      */
     data class Value(
-        val bitmap: Bitmap,
+        val image: Image,
         val extras: Map<String, Any> = emptyMap(),
     )
 
     class Builder(private val context: Context) {
 
         private var maxSizePercent = defaultMemoryCacheSizePercent(context)
-        private var maxSizeBytes = 0
+        private var maxSizeBytes = 0L
         private var strongReferencesEnabled = true
         private var weakReferencesEnabled = true
 
@@ -79,7 +75,7 @@ interface MemoryCache {
          * available memory.
          */
         fun maxSizePercent(percent: Double) = apply {
-            require(percent in 0.0..1.0) { "size must be in the range [0.0, 1.0]." }
+            require(percent in 0.0..1.0) { "percent must be in the range [0.0, 1.0]." }
             this.maxSizeBytes = 0
             this.maxSizePercent = percent
         }
@@ -87,7 +83,7 @@ interface MemoryCache {
         /**
          * Set the maximum size of the memory cache in bytes.
          */
-        fun maxSizeBytes(size: Int) = apply {
+        fun maxSizeBytes(size: Long) = apply {
             require(size >= 0) { "size must be >= 0." }
             this.maxSizePercent = 0.0
             this.maxSizeBytes = size
@@ -103,7 +99,7 @@ interface MemoryCache {
         /**
          * Enables/disables weak reference tracking of values added to this memory cache.
          * Weak references do not contribute to the current size of the memory cache.
-         * This ensures that if a [Bitmap] hasn't been garbage collected yet it will be
+         * This ensures that if a [Value] hasn't been garbage collected yet it will be
          * returned from the memory cache.
          */
         fun weakReferencesEnabled(enable: Boolean) = apply {
