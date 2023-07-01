@@ -2,9 +2,9 @@ package coil.request
 
 import android.view.View
 import androidx.annotation.MainThread
+import coil.base.R
 import coil.util.getCompletedOrNull
 import coil.util.isMainThread
-import coil.util.requestManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -13,9 +13,28 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
+ * Get the [ViewTargetRequestManager] attached to this view.
+ */
+internal val View.requestManager: ViewTargetRequestManager
+    get() {
+        var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
+        if (manager == null) {
+            manager = synchronized(this) {
+                // Check again in case coil_request_manager was just set.
+                (getTag(R.id.coil_request_manager) as? ViewTargetRequestManager)
+                    ?.let { return@synchronized it }
+
+                ViewTargetRequestManager(this).apply {
+                    addOnAttachStateChangeListener(this)
+                    setTag(R.id.coil_request_manager, this)
+                }
+            }
+        }
+        return manager
+    }
+
+/**
  * Ensures that at most one executed [ImageRequest] can be attached to a given [View] at one time.
- *
- * @see requestManager
  */
 internal class ViewTargetRequestManager(private val view: View) : View.OnAttachStateChangeListener {
 

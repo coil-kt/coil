@@ -1,5 +1,3 @@
-@file:JvmName("-Calls")
-
 package coil.util
 
 import java.io.IOException

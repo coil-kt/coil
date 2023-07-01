@@ -52,5 +52,3 @@ class DebugLogger @JvmOverloads constructor(
         }
     }
 }
-
-internal expect fun println(level: Logger.Level, tag: String, message: String)

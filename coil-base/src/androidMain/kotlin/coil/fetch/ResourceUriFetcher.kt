@@ -3,15 +3,14 @@ package coil.fetch
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.net.Uri
 import android.util.TypedValue
-import android.webkit.MimeTypeMap
 import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.decode.ResourceMetadata
 import coil.request.Options
 import coil.util.DrawableUtils
+import coil.util.MimeTypeMap
 import coil.util.getDrawableCompat
-import coil.util.getMimeTypeFromUrl
 import coil.util.getXmlDrawableCompat
 import coil.util.isVector
 import coil.util.toDrawable
@@ -36,7 +35,7 @@ internal class ResourceUriFetcher(
         }
         val path = TypedValue().apply { resources.getValue(resId, this, true) }.string
         val entryName = path.substring(path.lastIndexOf('/'))
-        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(entryName)
+        val mimeType = MimeTypeMap.getMimeTypeFromUrl(entryName)
 
         return if (mimeType == MIME_TYPE_XML) {
             // getDrawableCompat can only load resources that are in the current package.

@@ -276,7 +276,7 @@ internal class EngineInterceptor(
             config = options.config,
             size = options.size,
             scale = options.scale,
-            allowInexactSize = options.allowInexactSize
+            allowInexactSize = options.allowInexactSize,
         )
     }
 

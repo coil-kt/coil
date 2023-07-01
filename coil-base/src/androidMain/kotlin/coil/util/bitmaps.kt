@@ -1,4 +1,3 @@
-@file:JvmName("-Bitmaps")
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil.util
@@ -38,7 +37,8 @@ internal val Bitmap.allocationByteCountCompat: Int
 internal val Bitmap.Config.isHardware: Boolean
     get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
 
-/** Guard against null bitmap configs. */
+/** Guard against null bitmap configs, which can occur on earlier API levels. */
+@Suppress("USELESS_ELVIS")
 internal val Bitmap.safeConfig: Bitmap.Config
     get() = config ?: Bitmap.Config.ARGB_8888
 

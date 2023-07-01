@@ -10,7 +10,7 @@ import coil.util.toDrawable
 
 internal class DrawableFetcher(
     private val data: Drawable,
-    private val options: Options
+    private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {

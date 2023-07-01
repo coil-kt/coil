@@ -1,12 +1,9 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package coil.util
 
-import android.content.Context
 import android.view.View
 import coil.request.Disposable
 import coil.request.ImageResult
-import okhttp3.Cache
+import coil.request.requestManager
 
 /** Public utility methods for Coil. */
 object CoilUtils {

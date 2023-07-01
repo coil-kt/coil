@@ -32,6 +32,8 @@ import coil.fetch.Fetcher
 import coil.intercept.Interceptor
 import coil.intercept.RealInterceptorChain
 import coil.memory.MemoryCache
+import coil.request.DefaultRequestOptions
+import coil.request.ImageRequest
 import coil.request.Parameters
 import coil.request.Tags
 import coil.request.ViewTargetRequestManager
@@ -63,6 +65,8 @@ internal fun Logger.log(tag: String, throwable: Throwable) {
     }
 }
 
+internal expect fun println(level: Logger.Level, tag: String, message: String)
+
 internal val DataSource.emoji: String
     get() = when (this) {
         DataSource.MEMORY_CACHE,
@@ -71,32 +75,11 @@ internal val DataSource.emoji: String
         DataSource.NETWORK -> "☁️"
     }
 
-internal val View.requestManager: ViewTargetRequestManager
+internal val String.scheme: String?
     get() {
-        var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
-        if (manager == null) {
-            manager = synchronized(this) {
-                // Check again in case coil_request_manager was just set.
-                (getTag(R.id.coil_request_manager) as? ViewTargetRequestManager)
-                    ?.let { return@synchronized it }
-
-                ViewTargetRequestManager(this).apply {
-                    addOnAttachStateChangeListener(this)
-                    setTag(R.id.coil_request_manager, this)
-                }
-            }
-        }
-        return manager
+        val index = indexOf("://")
+        return if (index == -1) null else substring(0, index)
     }
-
-internal val Drawable.width: Int
-    get() = (this as? BitmapDrawable)?.bitmap?.width ?: intrinsicWidth
-
-internal val Drawable.height: Int
-    get() = (this as? BitmapDrawable)?.bitmap?.height ?: intrinsicHeight
-
-internal val Drawable.isVector: Boolean
-    get() = this is VectorDrawable || this is VectorDrawableCompat
 
 internal fun Closeable.closeQuietly() {
     try {
@@ -106,40 +89,14 @@ internal fun Closeable.closeQuietly() {
     } catch (_: Exception) {}
 }
 
-internal val ImageView.scale: Scale
-    get() = when (scaleType) {
-        FIT_START, FIT_CENTER, FIT_END, CENTER_INSIDE -> Scale.FIT
-        else -> Scale.FILL
-    }
+/**
+ * Return 'true' if the request does not require the output image's size to match the
+ * requested dimensions exactly.
+ */
+internal expect val ImageRequest.allowInexactSize: Boolean
 
 internal val Uri.firstPathSegment: String?
     get() = pathSegments.firstOrNull()
-
-internal val Configuration.nightMode: Int
-    get() = uiMode and Configuration.UI_MODE_NIGHT_MASK
-
-/**
- * An allowlist of valid bitmap configs for the input and output bitmaps of
- * [Transformation.transform].
- */
-internal val VALID_TRANSFORMATION_CONFIGS = if (SDK_INT >= 26) {
-    arrayOf(Bitmap.Config.ARGB_8888, Bitmap.Config.RGBA_F16)
-} else {
-    arrayOf(Bitmap.Config.ARGB_8888)
-}
-
-/**
- * Prefer hardware bitmaps on API 26 and above since they are optimized for drawing without
- * transformations.
- */
-internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
-    Bitmap.Config.HARDWARE
-} else {
-    Bitmap.Config.ARGB_8888
-}
-
-/** Required for compatibility with API 25 and below. */
-internal val NULL_COLOR_SPACE: ColorSpace? = null
 
 internal val EMPTY_HEADERS = Headers.Builder().build()
 
@@ -159,6 +116,8 @@ internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
         null
     }
 }
+
+internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
 
 internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 

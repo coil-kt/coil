@@ -266,7 +266,7 @@ internal class HttpUriFetcher(
     }
 
     private fun ResponseBody.toImageSource(): ImageSource {
-        return ImageSource(source(), options.context)
+        return ImageSource(source(), options.fileSystem)
     }
 
     private fun Response.toDataSource(): DataSource {
