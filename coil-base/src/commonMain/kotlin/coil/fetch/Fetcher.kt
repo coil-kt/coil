@@ -3,6 +3,7 @@
 
 package coil.fetch
 
+import coil.Image
 import coil.ImageLoader
 import coil.decode.ImageSource
 import coil.request.Options
@@ -13,8 +14,8 @@ import coil.request.Options
  * To accomplish this, fetchers fit into one of two types:
  *
  * - Uses the data as a key to fetch bytes from a remote source (e.g. network, disk)
- *   and exposes it as an [ImageSource] (e.g. [HttpUriFetcher]).
- * - Reads the data directly and translates it into a [Drawable] (e.g. [BitmapFetcher]).
+ *   and exposes it as an [ImageSource].
+ * - Reads the data directly and translates it into an [Image].
  */
 fun interface Fetcher {
 

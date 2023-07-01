@@ -17,8 +17,8 @@ import okio.BufferedSource
 fun interface Decoder {
 
     /**
-     * Decode the [SourceFetchResult] provided by [Factory.create] or return 'null' to delegate to the
-     * next [Factory] in the component registry.
+     * Decode the [SourceFetchResult] provided by [Factory.create] or return 'null' to delegate
+     * to the next [Factory] in the component registry.
      */
     suspend fun decode(): DecodeResult?
 
@@ -33,8 +33,8 @@ fun interface Decoder {
          *
          * Prefer using [BufferedSource.peek], [BufferedSource.rangeEquals], or other
          * non-consuming methods to check for the presence of header bytes or other markers.
-         * Implementations can also rely on [SourceFetchResult.mimeType], however it is not guaranteed
-         * to be accurate (e.g. a file that ends with .png, but is encoded as a .jpg).
+         * Implementations can also rely on [SourceFetchResult.mimeType], however it is not
+         * guaranteed to be accurate (e.g. a file that ends with .png, but is encoded as a .jpg).
          *
          * @param result The result from the [Fetcher].
          * @param options A set of configuration options for this request.

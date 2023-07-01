@@ -1,5 +1,6 @@
 package coil.fetch
 
+import coil.ImageLoader
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
@@ -16,5 +17,11 @@ internal class ByteArrayFetcher(
             mimeType = null,
             dataSource = DataSource.MEMORY,
         )
+    }
+
+    class Factory : Fetcher.Factory<ByteArray> {
+        override fun create(data: ByteArray, options: Options, imageLoader: ImageLoader): Fetcher {
+            return ByteArrayFetcher(data, options)
+        }
     }
 }

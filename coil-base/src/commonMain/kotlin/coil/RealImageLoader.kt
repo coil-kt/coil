@@ -9,12 +9,12 @@ import coil.fetch.BitmapFetcher
 import coil.fetch.ByteBufferFetcher
 import coil.fetch.ContentUriFetcher
 import coil.fetch.DrawableFetcher
-import coil.fetch.FileFetcher
+import coil.fetch.PathFetcher
 import coil.fetch.HttpUriFetcher
 import coil.fetch.ResourceUriFetcher
 import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
-import coil.key.FileKeyer
+import coil.key.PathKeyer
 import coil.key.UriKeyer
 import coil.map.ByteArrayMapper
 import coil.map.FileUriMapper
@@ -37,7 +37,6 @@ import coil.target.Target
 import coil.target.ViewTarget
 import coil.transition.NoneTransition
 import coil.transition.TransitionTarget
-import coil.util.Emoji
 import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.SystemCallbacks
@@ -89,10 +88,10 @@ internal class RealImageLoader(
         .add(ByteArrayMapper())
         // Keyers
         .add(UriKeyer())
-        .add(FileKeyer(options.addLastModifiedToFileCacheKey))
+        .add(PathKeyer(options.addLastModifiedToFileCacheKey))
         // Fetchers
         .add(HttpUriFetcher.Factory(callFactoryLazy, diskCacheLazy, options.respectCacheHeaders))
-        .add(FileFetcher.Factory())
+        .add(PathFetcher.Factory())
         .add(AssetUriFetcher.Factory())
         .add(ContentUriFetcher.Factory())
         .add(ResourceUriFetcher.Factory())

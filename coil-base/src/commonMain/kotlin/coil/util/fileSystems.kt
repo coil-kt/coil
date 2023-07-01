@@ -72,3 +72,10 @@ internal fun FileSystem.deleteContents(directory: Path) {
         throw exception
     }
 }
+
+/**
+ * Returns the extension of this file (not including the dot), or an empty string
+ * if it doesn't have one.
+ */
+internal val Path.extension: String
+    get() = name.substringAfterLast('.', "")

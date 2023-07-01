@@ -44,6 +44,7 @@ import coil.size.pxOrElse
 import coil.transform.Transformation
 import java.io.File
 import kotlin.jvm.JvmName
+import kotlin.reflect.KClass
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
@@ -112,24 +113,6 @@ internal val ImageView.scale: Scale
         else -> Scale.FILL
     }
 
-/**
- * Modified from [MimeTypeMap.getFileExtensionFromUrl] to be more permissive
- * with special characters.
- */
-internal fun MimeTypeMap.getMimeTypeFromUrl(url: String?): String? {
-    if (url.isNullOrBlank()) {
-        return null
-    }
-
-    val extension = url
-        .substringBeforeLast('#') // Strip the fragment.
-        .substringBeforeLast('?') // Strip the query.
-        .substringAfterLast('/') // Get the last path segment.
-        .substringAfterLast('.', missingDelimiterValue = "") // Get the file extension.
-
-    return getMimeTypeFromExtension(extension)
-}
-
 internal val Uri.firstPathSegment: String?
     get() = pathSegments.firstOrNull()
 
@@ -169,9 +152,6 @@ internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 
-internal inline val Any.identityHashCode: Int
-    get() = System.identityHashCode(this)
-
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
     return try {
@@ -191,7 +171,7 @@ internal val Context.safeCacheDir: File
     }
 
 internal inline fun ComponentRegistry.Builder.addFirst(
-    pair: Pair<Fetcher.Factory<*>, Class<*>>?
+    pair: Pair<Fetcher.Factory<*>, KClass<*>>?
 ) = apply { if (pair != null) fetcherFactories.add(0, pair) }
 
 internal inline fun ComponentRegistry.Builder.addFirst(

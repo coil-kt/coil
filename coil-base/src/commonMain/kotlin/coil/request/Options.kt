@@ -11,7 +11,9 @@ import coil.size.Scale
 import coil.size.Size
 import coil.util.EMPTY_HEADERS
 import coil.util.NULL_COLOR_SPACE
+import coil.util.defaultFileSystem
 import okhttp3.Headers
+import okio.FileSystem
 
 /**
  * A set of configuration options for fetching and decoding an image.
@@ -71,6 +73,11 @@ data class Options(
      * compute its own.
      */
     val diskCacheKey: String? = null,
+
+    /**
+     * TODO
+     */
+    val fileSystem: FileSystem = defaultFileSystem(),
 
     /**
      * The header fields to use for any network requests.

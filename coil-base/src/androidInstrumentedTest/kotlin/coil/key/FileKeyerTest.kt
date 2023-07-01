@@ -21,7 +21,7 @@ class FileKeyerTest {
     @Test
     fun fileCacheKeyWithLastModified() {
         val file = context.copyAssetToFile("normal.jpg")
-        val keyer = FileKeyer(addLastModifiedToFileCacheKey = true)
+        val keyer = PathKeyer(addLastModifiedToFileCacheKey = true)
 
         file.setLastModified(1234L)
         val firstKey = keyer.key(file, Options(context))
@@ -35,7 +35,7 @@ class FileKeyerTest {
     @Test
     fun fileCacheKeyWithoutLastModified() {
         val file = context.copyAssetToFile("normal.jpg")
-        val keyer = FileKeyer(addLastModifiedToFileCacheKey = false)
+        val keyer = PathKeyer(addLastModifiedToFileCacheKey = false)
 
         file.setLastModified(1234L)
         val firstKey = keyer.key(file, Options(context))

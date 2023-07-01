@@ -1,13 +1,12 @@
 package coil.fetch
 
 import android.net.Uri
-import android.webkit.MimeTypeMap
 import coil.ImageLoader
 import coil.decode.AssetMetadata
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
-import coil.util.getMimeTypeFromUrl
+import coil.util.MimeTypeMap
 import coil.util.isAssetUri
 import okio.buffer
 import okio.source
@@ -25,7 +24,7 @@ internal class AssetUriFetcher(
                 source = options.context.assets.open(path).source().buffer(),
                 metadata = AssetMetadata(path),
             ),
-            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromUrl(path),
+            mimeType = MimeTypeMap.getMimeTypeFromUrl(path),
             dataSource = DataSource.DISK,
         )
     }
