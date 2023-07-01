@@ -8,9 +8,8 @@ import java.net.URL
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
     repositories {
@@ -50,17 +49,18 @@ allprojects {
     group = groupId
     version = versionName
 
-    val configureTopLevelExtension: KotlinTopLevelExtension.() -> Unit = {
-        jvmToolchain(11)
+    // Target JVM 8.
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_1_8.toString()
+        targetCompatibility = JavaVersion.VERSION_1_8.toString()
+        options.compilerArgs = options.compilerArgs + "-Xlint:-options"
     }
-    plugins.withId("org.jetbrains.kotlin.android") {
-        configure<KotlinAndroidProjectExtension>(configureTopLevelExtension)
-    }
-    plugins.withId("org.jetbrains.kotlin.jvm") {
-        configure<KotlinJvmProjectExtension>(configureTopLevelExtension)
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions.jvmTarget by JvmTarget.JVM_1_8
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
+        @Suppress("DEPRECATION") // https://github.com/Kotlin/dokka/issues/2993
         dokkaSourceSets.configureEach {
             jdkVersion by 8
             failOnWarning by true
