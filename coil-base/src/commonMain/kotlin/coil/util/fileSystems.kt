@@ -29,9 +29,13 @@ internal expect fun defaultFileSystem(): FileSystem
 
 internal expect fun FileSystem.remainingFreeSpaceBytes(directory: Path): Long
 
-/** Create a new empty file if one doesn't already exist. */
-internal fun FileSystem.createFile(file: Path) {
-    if (!exists(file)) sink(file).closeQuietly()
+/** Create a new empty file. */
+internal fun FileSystem.createFile(file: Path, mustCreate: Boolean = false) {
+    if (mustCreate) {
+        sink(file, mustCreate = true).closeQuietly()
+    } else if (!exists(file)) {
+        sink(file).closeQuietly()
+    }
 }
 
 /** https://github.com/square/okio/issues/1090 */
@@ -40,7 +44,7 @@ internal fun FileSystem.createTempFile(): Path {
     do {
         tempFile = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "tmp_${Random.nextULong()}"
     } while (exists(tempFile))
-    sink(tempFile).closeQuietly()
+    createFile(tempFile, mustCreate = true)
     return tempFile
 }
 
