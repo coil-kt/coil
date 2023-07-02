@@ -20,6 +20,7 @@ fun addAllTargets(project: Project) {
 
             js {
                 browser()
+                binaries.executable()
             }
 
             jvm()

@@ -15,50 +15,32 @@ kotlin {
     val nonAndroidMain = sourceSets.create("nonAndroidMain").apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }
-    sourceSets.getByName("jsMain").apply {
-        dependsOn(nonAndroidMain)
-    }
-    sourceSets.getByName("jvmMain").apply {
-        dependsOn(nonAndroidMain)
-    }
-    sourceSets.getByName("nativeMain").apply {
-        dependsOn(nonAndroidMain)
+    listOf("jsMain", "jvmMain", "nativeMain").forEach { name ->
+        sourceSets.getByName(name).dependsOn(nonAndroidMain)
     }
 
     // jvmCommon: androidMain, jvmMain
     val jvmCommon = sourceSets.create("jvmCommon").apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }
-    sourceSets.getByName("androidMain").apply {
-        dependsOn(jvmCommon)
-    }
-    sourceSets.getByName("jvmMain").apply {
-        dependsOn(jvmCommon)
+    listOf("androidMain", "jvmMain").forEach { name ->
+        sourceSets.getByName(name).dependsOn(jvmCommon)
     }
 
     // nonJvmCommon: jsMain, nativeMain
     val nonJvmCommon = sourceSets.create("nonJvmCommon").apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }
-    sourceSets.getByName("jsMain").apply {
-        dependsOn(nonJvmCommon)
-    }
-    sourceSets.getByName("nativeMain").apply {
-        dependsOn(nonJvmCommon)
+    listOf("jsMain", "nativeMain").forEach { name ->
+        sourceSets.getByName(name).dependsOn(nonJvmCommon)
     }
 
     // nonJsMain: androidMain, jvmMain, nativeMain
     val nonJsMain = sourceSets.create("nonJsMain").apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }
-    sourceSets.getByName("androidMain").apply {
-        dependsOn(nonJsMain)
-    }
-    sourceSets.getByName("jvmMain").apply {
-        dependsOn(nonJsMain)
-    }
-    sourceSets.getByName("nativeMain").apply {
-        dependsOn(nonJsMain)
+    listOf("androidMain", "jvmMain", "nativeMain").forEach { name ->
+        sourceSets.getByName(name).dependsOn(nonJsMain)
     }
 
     sourceSets {
@@ -82,6 +64,11 @@ kotlin {
         named("nonJvmCommon") {
             dependencies {
                 implementation(libs.kotlinx.immutable.collections)
+            }
+        }
+        named("nonAndroidMain") {
+            dependencies {
+                implementation(libs.skiko)
             }
         }
         named("androidMain") {

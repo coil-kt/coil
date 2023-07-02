@@ -72,6 +72,8 @@ robolectric = "org.robolectric:robolectric:4.10.3"
 roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
+skiko = "org.jetbrains.skiko:skiko:0.7.67"
+
 svg = "com.caverock:androidsvg-aar:1.4"
 
 [bundles]
