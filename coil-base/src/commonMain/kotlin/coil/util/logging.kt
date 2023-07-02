@@ -32,7 +32,7 @@ interface Logger {
 }
 
 /**
- * A [Logger] implementation that writes to Android's [Log].
+ * A [Logger] implementation that writes to the platform's default logging mechanism.
  *
  * NOTE: You **should not** enable this in release builds. Adding this to your image loader
  * reduces performance. Additionally, this will log URLs which can contain personally identifiable
