@@ -24,22 +24,6 @@ import okio.buffer
  * @param fileSystem The file system which contains [file].
  * @param diskCacheKey An optional cache key for the [file] in the disk cache.
  * @param closeable An optional closeable reference that will be closed when the image source is closed.
- */
-@JvmName("create")
-fun ImageSource(
-    file: Path,
-    fileSystem: FileSystem = defaultFileSystem(),
-    diskCacheKey: String? = null,
-    closeable: Closeable? = null,
-): ImageSource = FileImageSource(file, fileSystem, diskCacheKey, closeable, null)
-
-/**
- * Create a new [ImageSource] backed by a [Path].
- *
- * @param file The file to read from.
- * @param fileSystem The file system which contains [file].
- * @param diskCacheKey An optional cache key for the [file] in the disk cache.
- * @param closeable An optional closeable reference that will be closed when the image source is closed.
  * @param metadata Metadata for this image source.
  */
 @ExperimentalCoilApi
@@ -51,18 +35,6 @@ fun ImageSource(
     closeable: Closeable? = null,
     metadata: Metadata? = null,
 ): ImageSource = FileImageSource(file, fileSystem, diskCacheKey, closeable, metadata)
-
-/**
- * Create a new [ImageSource] backed by a [BufferedSource].
- *
- * @param source The buffered source to read from.
- * @param fileSystem The file system which will be used to create a temporary file if necessary.
- */
-@JvmName("create")
-fun ImageSource(
-    source: BufferedSource,
-    fileSystem: FileSystem = defaultFileSystem(),
-): ImageSource = SourceImageSource(source, fileSystem, null)
 
 /**
  * Create a new [ImageSource] backed by a [BufferedSource].
@@ -92,7 +64,6 @@ sealed interface ImageSource : Closeable {
     /**
      * Return the [Metadata] for this [ImageSource].
      */
-    @ExperimentalCoilApi
     val metadata: Metadata?
 
     /**
@@ -133,7 +104,6 @@ sealed interface ImageSource : Closeable {
      * a [BufferedSource] and want to avoid creating a temporary file (e.g. `ImageDecoder`,
      * `MediaMetadataRetriever`).
      */
-    @ExperimentalCoilApi
     abstract class Metadata
 }
 
