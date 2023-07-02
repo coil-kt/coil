@@ -55,9 +55,8 @@ internal class RealImageLoader(
     override val components = options.componentRegistry.newBuilder()
         .addPlatformComponents(options)
         .addCommonComponents(options)
+        .add(EngineInterceptor(this, requestService, options.logger))
         .build()
-    private val interceptors = components.interceptors +
-        EngineInterceptor(this, requestService, options.logger)
     private val shutdown = atomic(false)
 
     init {
@@ -136,7 +135,7 @@ internal class RealImageLoader(
             val result = withContext(request.interceptorDispatcher) {
                 RealInterceptorChain(
                     initialRequest = request,
-                    interceptors = interceptors,
+                    interceptors = components.interceptors,
                     index = 0,
                     request = request,
                     size = size,
