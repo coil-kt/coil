@@ -15,7 +15,6 @@ import coil.request.ImageResult
 import coil.util.CoilUtils
 import java.io.File
 import java.nio.ByteBuffer
-import okhttp3.HttpUrl
 
 /**
  * Get the singleton [ImageLoader].
@@ -38,7 +37,6 @@ inline val Context.imageLoader: ImageLoader
  *
  * - [String] (treated as a [Uri])
  * - [Uri] (`android.resource`, `content`, `file`, `http`, and `https` schemes)
- * - [HttpUrl]
  * - [File]
  * - [DrawableRes] [Int]
  * - [Drawable]

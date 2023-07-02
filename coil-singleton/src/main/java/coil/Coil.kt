@@ -4,9 +4,6 @@ import android.app.Application
 import android.content.Context
 import coil.Coil.imageLoader
 import coil.Coil.setImageLoader
-import coil.request.Disposable
-import coil.request.ImageRequest
-import coil.request.ImageResult
 
 /**
  * A class that holds the singleton [ImageLoader] instance.
