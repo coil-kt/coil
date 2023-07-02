@@ -16,8 +16,6 @@ dependencies {
     api(libs.coroutines.android)
     api(libs.coroutines.test)
     api(libs.junit)
-    api(libs.okhttp)
-    api(libs.okhttp.mockwebserver)
     api(libs.okio)
 
     testImplementation(libs.kotlin.test)

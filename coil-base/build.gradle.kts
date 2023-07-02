@@ -93,7 +93,6 @@ kotlin {
                 implementation(libs.androidx.profileinstaller)
                 api(libs.androidx.lifecycle.runtime)
                 api(libs.coroutines.android)
-                api(libs.okhttp)
             }
         }
         named("androidUnitTest") {
