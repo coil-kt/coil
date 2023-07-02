@@ -2,7 +2,6 @@
 
 package coil.decode
 
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.ImageSource.Metadata
 import coil.fetch.Fetcher
 import coil.util.closeQuietly
@@ -26,7 +25,6 @@ import okio.buffer
  * @param closeable An optional closeable reference that will be closed when the image source is closed.
  * @param metadata Metadata for this image source.
  */
-@ExperimentalCoilApi
 @JvmName("create")
 fun ImageSource(
     file: Path,
@@ -43,7 +41,6 @@ fun ImageSource(
  * @param fileSystem The file system which will be used to create a temporary file if necessary.
  * @param metadata Metadata for this image source.
  */
-@ExperimentalCoilApi
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
