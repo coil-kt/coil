@@ -2,29 +2,11 @@
 
 package coil.util
 
-import android.app.ActivityManager
 import android.content.ContentResolver.SCHEME_FILE
-import android.content.Context
-import android.content.pm.ApplicationInfo
-import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.ColorSpace
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.VectorDrawable
 import android.net.Uri
-import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
-import android.view.View
-import android.widget.ImageView
-import android.widget.ImageView.ScaleType.CENTER_INSIDE
-import android.widget.ImageView.ScaleType.FIT_CENTER
-import android.widget.ImageView.ScaleType.FIT_END
-import android.widget.ImageView.ScaleType.FIT_START
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.ComponentRegistry
 import coil.EventListener
-import coil.base.R
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.disk.DiskCache
@@ -36,14 +18,11 @@ import coil.request.DefaultRequestOptions
 import coil.request.ImageRequest
 import coil.request.Parameters
 import coil.request.Tags
-import coil.request.ViewTargetRequestManager
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
 import coil.size.isOriginal
 import coil.size.pxOrElse
-import coil.transform.Transformation
-import java.io.File
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
 import kotlinx.coroutines.Deferred
@@ -121,13 +100,6 @@ internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
 
 internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 
-/** https://github.com/coil-kt/coil/issues/675 */
-internal val Context.safeCacheDir: File
-    get() {
-        val cacheDir = checkNotNull(cacheDir) { "cacheDir == null" }
-        return cacheDir.apply { mkdirs() }
-    }
-
 internal inline fun ComponentRegistry.Builder.addFirst(
     pair: Pair<Fetcher.Factory<*>, KClass<*>>?
 ) = apply { if (pair != null) fetcherFactories.add(0, pair) }
@@ -179,8 +151,6 @@ internal fun Dimension.toPx(scale: Scale) = pxOrElse {
     }
 }
 
-internal fun unsupported(): Nothing = error("Unsupported")
-
 internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
 internal fun isAssetUri(uri: Uri): Boolean {
@@ -196,31 +166,4 @@ internal fun Headers.Builder.addUnsafeNonAscii(line: String) = apply {
 
 internal fun Response.requireBody(): ResponseBody {
     return checkNotNull(body) { "response body == null" }
-}
-
-private const val STANDARD_MEMORY_MULTIPLIER = 0.2
-private const val LOW_MEMORY_MULTIPLIER = 0.15
-
-/** Return the default percent of the application's total memory to use for the memory cache. */
-internal fun defaultMemoryCacheSizePercent(context: Context): Double {
-    return try {
-        val activityManager: ActivityManager = context.requireSystemService()
-        if (activityManager.isLowRamDevice) LOW_MEMORY_MULTIPLIER else STANDARD_MEMORY_MULTIPLIER
-    } catch (_: Exception) {
-        STANDARD_MEMORY_MULTIPLIER
-    }
-}
-
-private const val DEFAULT_MEMORY_CLASS_MEGABYTES = 256
-
-/** Return a [percent] of the application's total memory in bytes. */
-internal fun calculateMemoryCacheSize(context: Context, percent: Double): Long {
-    val memoryClassMegabytes = try {
-        val activityManager: ActivityManager = context.requireSystemService()
-        val isLargeHeap = (context.applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
-        if (isLargeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
-    } catch (_: Exception) {
-        DEFAULT_MEMORY_CLASS_MEGABYTES
-    }
-    return (percent * memoryClassMegabytes * 1024 * 1024).toLong()
 }
