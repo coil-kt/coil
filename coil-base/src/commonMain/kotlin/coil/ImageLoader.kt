@@ -30,9 +30,9 @@ import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.DEFAULT_REQUEST_OPTIONS
-import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.getDrawableCompat
+import io.ktor.client.HttpClient
 import java.io.File
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
@@ -113,10 +113,9 @@ interface ImageLoader {
         private var defaults: DefaultRequestOptions
         private var memoryCache: Lazy<MemoryCache?>?
         private var diskCache: Lazy<DiskCache?>?
-        private var callFactory: Lazy<Call.Factory>?
+        private var httpClient: Lazy<HttpClient>?
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
-        private var options: ImageLoaderOptions
         private var logger: Logger?
 
         constructor(context: Context) {
@@ -124,23 +123,21 @@ interface ImageLoader {
             defaults = DEFAULT_REQUEST_OPTIONS
             memoryCache = null
             diskCache = null
-            callFactory = null
+            httpClient = null
             eventListenerFactory = null
             componentRegistry = null
-            options = ImageLoaderOptions()
             logger = null
         }
 
-        internal constructor(imageLoader: RealImageLoader) {
-            applicationContext = imageLoader.context.applicationContext
-            defaults = imageLoader.defaults
-            memoryCache = imageLoader.memoryCacheLazy
-            diskCache = imageLoader.diskCacheLazy
-            callFactory = imageLoader.callFactoryLazy
-            eventListenerFactory = imageLoader.eventListenerFactory
-            componentRegistry = imageLoader.componentRegistry
-            options = imageLoader.options
-            logger = imageLoader.logger
+        internal constructor(options: RealImageLoader.Options) {
+            applicationContext = options.applicationContext
+            defaults = options.defaults
+            memoryCache = options.memoryCacheLazy
+            diskCache = options.diskCacheLazy
+            httpClient = options.callFactoryLazy
+            eventListenerFactory = options.eventListenerFactory
+            componentRegistry = options.componentRegistry
+            logger = options.logger
         }
 
         /**
@@ -166,7 +163,7 @@ interface ImageLoader {
          * Set the [Call.Factory] used for network requests.
          */
         fun callFactory(callFactory: Call.Factory) = apply {
-            this.callFactory = lazyOf(callFactory)
+            this.httpClient = lazyOf(callFactory)
         }
 
         /**
@@ -178,7 +175,7 @@ interface ImageLoader {
          * Prefer using this instead of `callFactory(Call.Factory)`.
          */
         fun callFactory(initializer: () -> Call.Factory) = apply {
-            this.callFactory = lazy(initializer)
+            this.httpClient = lazy(initializer)
         }
 
         /**
@@ -524,17 +521,17 @@ interface ImageLoader {
          * Create a new [ImageLoader] instance.
          */
         fun build(): ImageLoader {
-            return RealImageLoader(
-                context = applicationContext,
+            val options = RealImageLoader.Options(
                 defaults = defaults,
                 memoryCacheLazy = memoryCache ?: lazy { MemoryCache.Builder(applicationContext).build() },
                 diskCacheLazy = diskCache ?: lazy { DiskCache.INSTANCE },
-                callFactoryLazy = callFactory ?: lazy { OkHttpClient() },
+                httpClientLazy = httpClient ?: TODO(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
-                options = options,
-                logger = logger
+                logger = logger,
+                extras = emptyMap(),
             )
+            return RealImageLoader(options)
         }
     }
 }

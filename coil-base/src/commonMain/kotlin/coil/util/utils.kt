@@ -25,6 +25,7 @@ import coil.size.isOriginal
 import coil.size.pxOrElse
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers

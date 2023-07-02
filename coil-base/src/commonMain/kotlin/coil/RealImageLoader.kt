@@ -1,27 +1,10 @@
 package coil
 
-import android.content.Context
 import coil.annotation.MainThread
-import coil.decode.BitmapFactoryDecoder
 import coil.disk.DiskCache
-import coil.fetch.AssetUriFetcher
-import coil.fetch.BitmapFetcher
-import coil.fetch.ByteBufferFetcher
-import coil.fetch.ContentUriFetcher
-import coil.fetch.DrawableFetcher
-import coil.fetch.PathFetcher
-import coil.fetch.HttpUriFetcher
-import coil.fetch.ResourceUriFetcher
+import coil.fetch.ByteArrayFetcher
 import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
-import coil.key.PathKeyer
-import coil.key.UriKeyer
-import coil.map.ByteArrayMapper
-import coil.map.FileUriMapper
-import coil.map.HttpUrlMapper
-import coil.map.ResourceIntMapper
-import coil.map.ResourceUriMapper
-import coil.map.StringMapper
 import coil.memory.MemoryCache
 import coil.request.DefaultRequestOptions
 import coil.request.Disposable
@@ -37,7 +20,6 @@ import coil.target.Target
 import coil.target.ViewTarget
 import coil.transition.NoneTransition
 import coil.transition.TransitionTarget
-import coil.util.ImageLoaderOptions
 import coil.util.Logger
 import coil.util.SystemCallbacks
 import coil.util.awaitStarted
@@ -46,6 +28,7 @@ import coil.util.get
 import coil.util.log
 import coil.util.requestManager
 import coil.util.toDrawable
+import io.ktor.client.HttpClient
 import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
@@ -58,62 +41,35 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
-import okhttp3.Call
 
 internal class RealImageLoader(
-    val context: Context,
-    override val defaults: DefaultRequestOptions,
-    val memoryCacheLazy: Lazy<MemoryCache?>,
-    val diskCacheLazy: Lazy<DiskCache?>,
-    val callFactoryLazy: Lazy<Call.Factory>,
-    val eventListenerFactory: EventListener.Factory,
-    val componentRegistry: ComponentRegistry,
-    val options: ImageLoaderOptions,
-    val logger: Logger?,
+    val options: Options,
 ) : ImageLoader {
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate +
-        CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) })
-    private val systemCallbacks = SystemCallbacks(this, context, options.networkObserverEnabled)
-    private val requestService = RequestService(this, systemCallbacks, logger)
-    override val memoryCache by memoryCacheLazy
-    override val diskCache by diskCacheLazy
-    override val components = componentRegistry.newBuilder()
-        // Mappers
-        .add(HttpUrlMapper())
-        .add(StringMapper())
-        .add(FileUriMapper())
-        .add(ResourceUriMapper())
-        .add(ResourceIntMapper())
-        .add(ByteArrayMapper())
-        // Keyers
-        .add(UriKeyer())
-        .add(PathKeyer(options.addLastModifiedToFileCacheKey))
-        // Fetchers
-        .add(HttpUriFetcher.Factory(callFactoryLazy, diskCacheLazy, options.respectCacheHeaders))
-        .add(PathFetcher.Factory())
-        .add(AssetUriFetcher.Factory())
-        .add(ContentUriFetcher.Factory())
-        .add(ResourceUriFetcher.Factory())
-        .add(DrawableFetcher.Factory())
-        .add(BitmapFetcher.Factory())
-        .add(ByteBufferFetcher.Factory())
-        // Decoders
-        .add(BitmapFactoryDecoder.Factory(options.bitmapFactoryMaxParallelism, options.bitmapFactoryExifOrientationPolicy))
+    private val scope = CoroutineScope(options.logger)
+    private val systemCallbacks = SystemCallbacks(options)
+    private val requestService = RequestService(this, systemCallbacks, options.logger)
+    override val defaults get() = options.defaults
+    override val memoryCache by options.memoryCacheLazy
+    override val diskCache by options.diskCacheLazy
+    override val components = options.componentRegistry.newBuilder()
+        .addPlatformComponents(options)
+        .addCommonComponents(options)
         .build()
-    private val interceptors = components.interceptors + EngineInterceptor(this, requestService, logger)
+    private val interceptors = components.interceptors +
+        EngineInterceptor(this, requestService, options.logger)
     private val shutdown = atomic(false)
 
     init {
-        // Must be called only after the image loader is fully initialized.
-        systemCallbacks.register()
+        // Must be called after the image loader is fully initialized.
+        systemCallbacks.register(this)
     }
 
     override fun enqueue(request: ImageRequest): Disposable {
         // Start executing the request on the main thread.
         val job = scope.async {
             executeMain(request, REQUEST_TYPE_ENQUEUE).also { result ->
-                if (result is ErrorResult) logger?.log(TAG, result.throwable)
+                if (result is ErrorResult) options.logger?.log(TAG, result.throwable)
             }
         }
 
@@ -148,7 +104,7 @@ internal class RealImageLoader(
         val request = initialRequest.newBuilder().defaults(defaults).build()
 
         // Create a new event listener.
-        val eventListener = eventListenerFactory.create(request)
+        val eventListener = options.eventListenerFactory.create(request)
 
         try {
             // Fail before starting if data is null.
@@ -165,8 +121,8 @@ internal class RealImageLoader(
             }
 
             // Set the placeholder on the target.
-            val placeholderBitmap = memoryCache?.get(request.placeholderMemoryCacheKey)?.bitmap
-            val placeholder = placeholderBitmap?.toDrawable(request.context) ?: request.placeholder
+            val placeholderImage = memoryCache?.get(request.placeholderMemoryCacheKey)?.image
+            val placeholder = placeholderImage?.toDrawable(request.context) ?: request.placeholder
             request.target?.onStart(placeholder)
             eventListener.onStart(request)
             request.listener?.onStart(request)
@@ -185,7 +141,7 @@ internal class RealImageLoader(
                     request = request,
                     size = size,
                     eventListener = eventListener,
-                    isPlaceholderCached = placeholderBitmap != null
+                    isPlaceholderCached = placeholderImage != null
                 ).proceed(request)
             }
 
@@ -210,13 +166,6 @@ internal class RealImageLoader(
         }
     }
 
-    /** Called by [SystemCallbacks.onTrimMemory]. */
-    @Suppress("UNNECESSARY_SAFE_CALL")
-    internal fun onTrimMemory(level: Int) {
-        // https://github.com/coil-kt/coil/issues/1443
-        memoryCacheLazy?.value?.trimMemory(level)
-    }
-
     override fun shutdown() {
         if (shutdown.getAndSet(true)) return
         scope.cancel()
@@ -233,7 +182,7 @@ internal class RealImageLoader(
     ) {
         val request = result.request
         val dataSource = result.dataSource
-        logger?.log(TAG, Logger.Level.Info) {
+        options.logger?.log(TAG, Logger.Level.Info) {
             "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}"
         }
         transition(result, target, eventListener) { target?.onSuccess(result.image) }
@@ -247,7 +196,7 @@ internal class RealImageLoader(
         eventListener: EventListener
     ) {
         val request = result.request
-        logger?.log(TAG, Logger.Level.Info) {
+        options.logger?.log(TAG, Logger.Level.Info) {
             "🚨 Failed - ${request.data} - ${result.throwable}"
         }
         transition(result, target, eventListener) { target?.onError(result.image) }
@@ -255,8 +204,11 @@ internal class RealImageLoader(
         request.listener?.onError(request, result)
     }
 
-    private fun onCancel(request: ImageRequest, eventListener: EventListener) {
-        logger?.log(TAG, Logger.Level.Info) {
+    private fun onCancel(
+        request: ImageRequest,
+        eventListener: EventListener,
+    ) {
+        options.logger?.log(TAG, Logger.Level.Info) {
             "🏗 Cancelled - ${request.data}"
         }
         eventListener.onCancel(request)
@@ -285,9 +237,36 @@ internal class RealImageLoader(
         eventListener.transitionEnd(result.request, transition)
     }
 
-    companion object {
-        private const val TAG = "RealImageLoader"
-        private const val REQUEST_TYPE_ENQUEUE = 0
-        private const val REQUEST_TYPE_EXECUTE = 1
-    }
+    data class Options(
+        val defaults: DefaultRequestOptions,
+        val memoryCacheLazy: Lazy<MemoryCache?>,
+        val diskCacheLazy: Lazy<DiskCache?>,
+        val httpClientLazy: Lazy<HttpClient>,
+        val eventListenerFactory: EventListener.Factory,
+        val componentRegistry: ComponentRegistry,
+        val logger: Logger?,
+        val extras: Map<String, Any>,
+    )
 }
+
+private fun CoroutineScope(logger: Logger?): CoroutineScope {
+    val context = SupervisorJob() +
+        Dispatchers.Main.immediate +
+        CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
+    return CoroutineScope(context)
+}
+
+internal expect fun ComponentRegistry.Builder.addPlatformComponents(
+    options: RealImageLoader.Options,
+): ComponentRegistry.Builder
+
+internal fun ComponentRegistry.Builder.addCommonComponents(
+    options: RealImageLoader.Options,
+): ComponentRegistry.Builder {
+    return this
+        .add(ByteArrayFetcher.Factory())
+}
+
+private const val TAG = "RealImageLoader"
+private const val REQUEST_TYPE_ENQUEUE = 0
+private const val REQUEST_TYPE_EXECUTE = 1

@@ -48,6 +48,7 @@ kotlin {
             dependencies {
                 api(libs.coroutines.core)
                 api(libs.kotlin.stdlib)
+                api(libs.ktor.core)
                 api(libs.okio)
             }
         }

@@ -3,6 +3,7 @@ package coil.request
 import android.graphics.Bitmap
 import androidx.annotation.WorkerThread
 import coil.ImageLoader
+import coil.annotation.WorkerThread
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
