@@ -37,8 +37,6 @@ import java.io.File
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import okhttp3.Call
-import okhttp3.OkHttpClient
 
 /**
  * A service class that loads images by executing [ImageRequest]s. Image loaders handle
@@ -111,9 +109,9 @@ interface ImageLoader {
 
         private val applicationContext: Context
         private var defaults: DefaultRequestOptions
-        private var memoryCache: Lazy<MemoryCache?>?
-        private var diskCache: Lazy<DiskCache?>?
-        private var httpClient: Lazy<HttpClient>?
+        private var memoryCacheLazy: Lazy<MemoryCache?>?
+        private var diskCacheLazy: Lazy<DiskCache?>?
+        private var httpClientLazy: Lazy<HttpClient>?
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
         private var logger: Logger?
@@ -121,9 +119,9 @@ interface ImageLoader {
         constructor(context: Context) {
             applicationContext = context.applicationContext
             defaults = DEFAULT_REQUEST_OPTIONS
-            memoryCache = null
-            diskCache = null
-            httpClient = null
+            memoryCacheLazy = null
+            diskCacheLazy = null
+            httpClientLazy = null
             eventListenerFactory = null
             componentRegistry = null
             logger = null
@@ -132,50 +130,31 @@ interface ImageLoader {
         internal constructor(options: RealImageLoader.Options) {
             applicationContext = options.applicationContext
             defaults = options.defaults
-            memoryCache = options.memoryCacheLazy
-            diskCache = options.diskCacheLazy
-            httpClient = options.callFactoryLazy
+            memoryCacheLazy = options.memoryCacheLazy
+            diskCacheLazy = options.diskCacheLazy
+            httpClientLazy = options.httpClientLazy
             eventListenerFactory = options.eventListenerFactory
             componentRegistry = options.componentRegistry
             logger = options.logger
         }
 
         /**
-         * Set the [OkHttpClient] used for network requests.
-         *
-         * This is a convenience function for calling `callFactory(Call.Factory)`.
+         * Set the [HttpClient] used for network requests.
          */
-        fun okHttpClient(okHttpClient: OkHttpClient) = callFactory(okHttpClient)
-
-        /**
-         * Set a lazy callback to create the [OkHttpClient] used for network requests.
-         *
-         * This allows lazy creation of the [OkHttpClient] on a background thread.
-         * [initializer] is guaranteed to be called at most once.
-         *
-         * Prefer using this instead of `okHttpClient(OkHttpClient)`.
-         *
-         * This is a convenience function for calling `callFactory(() -> Call.Factory)`.
-         */
-        fun okHttpClient(initializer: () -> OkHttpClient) = callFactory(initializer)
-
-        /**
-         * Set the [Call.Factory] used for network requests.
-         */
-        fun callFactory(callFactory: Call.Factory) = apply {
-            this.httpClient = lazyOf(callFactory)
+        fun httpClient(httpClient: HttpClient) = apply {
+            this.httpClientLazy = lazyOf(httpClient)
         }
 
         /**
-         * Set a lazy callback to create the [Call.Factory] used for network requests.
+         * Set a lazy callback to create the [HttpClient] used for network requests.
          *
-         * This allows lazy creation of the [Call.Factory] on a background thread.
+         * This allows lazy creation of the [HttpClient] on a background thread.
          * [initializer] is guaranteed to be called at most once.
          *
-         * Prefer using this instead of `callFactory(Call.Factory)`.
+         * Prefer using this instead of `httpClient(HttpClient)`.
          */
-        fun callFactory(initializer: () -> Call.Factory) = apply {
-            this.httpClient = lazy(initializer)
+        fun httpClient(initializer: () -> HttpClient) = apply {
+            this.httpClientLazy = lazy(initializer)
         }
 
         /**
@@ -197,7 +176,7 @@ interface ImageLoader {
          * Set the [MemoryCache].
          */
         fun memoryCache(memoryCache: MemoryCache?) = apply {
-            this.memoryCache = lazyOf(memoryCache)
+            this.memoryCacheLazy = lazyOf(memoryCache)
         }
 
         /**
@@ -206,7 +185,7 @@ interface ImageLoader {
          * Prefer using this instead of `memoryCache(MemoryCache)`.
          */
         fun memoryCache(initializer: () -> MemoryCache?) = apply {
-            this.memoryCache = lazy(initializer)
+            this.memoryCacheLazy = lazy(initializer)
         }
 
         /**
@@ -219,7 +198,7 @@ interface ImageLoader {
          * @see DiskCache.directory
          */
         fun diskCache(diskCache: DiskCache?) = apply {
-            this.diskCache = lazyOf(diskCache)
+            this.diskCacheLazy = lazyOf(diskCache)
         }
 
         /**
@@ -234,7 +213,7 @@ interface ImageLoader {
          * @see DiskCache.directory
          */
         fun diskCache(initializer: () -> DiskCache?) = apply {
-            this.diskCache = lazy(initializer)
+            this.diskCacheLazy = lazy(initializer)
         }
 
         /**
@@ -406,7 +385,7 @@ interface ImageLoader {
             this.defaults = this.defaults.copy(
                 fetcherDispatcher = dispatcher,
                 decoderDispatcher = dispatcher,
-                transformationDispatcher = dispatcher
+                transformationDispatcher = dispatcher,
             )
         }
 
@@ -523,9 +502,9 @@ interface ImageLoader {
         fun build(): ImageLoader {
             val options = RealImageLoader.Options(
                 defaults = defaults,
-                memoryCacheLazy = memoryCache ?: lazy { MemoryCache.Builder(applicationContext).build() },
-                diskCacheLazy = diskCache ?: lazy { DiskCache.INSTANCE },
-                httpClientLazy = httpClient ?: TODO(),
+                memoryCacheLazy = memoryCacheLazy ?: lazy { MemoryCache.Builder(applicationContext).build() },
+                diskCacheLazy = diskCacheLazy ?: lazy { DiskCache.INSTANCE },
+                httpClientLazy = httpClientLazy ?: TODO(),
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 logger = logger,
