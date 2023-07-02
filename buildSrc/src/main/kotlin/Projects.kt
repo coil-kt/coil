@@ -93,10 +93,6 @@ private fun <T : BaseExtension> Project.setupBaseModule(
             targetSdk = project.targetSdk
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
-        }
         packagingOptions {
             resources.pickFirsts += listOf(
                 "META-INF/AL2.0",
@@ -127,7 +123,6 @@ private fun <T : BaseExtension> Project.setupBaseModule(
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions {
             allWarningsAsErrors by System.getenv("CI").toBoolean()
-            jvmTarget by JvmTarget.JVM_1_8
 
             val arguments = mutableListOf(
                 // https://kotlinlang.org/docs/compiler-reference.html#progressive
