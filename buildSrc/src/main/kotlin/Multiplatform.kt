@@ -19,7 +19,7 @@ fun addAllTargets(project: Project) {
             iosSimulatorArm64()
 
             js {
-                nodejs()
+                browser()
                 binaries.executable()
             }
 

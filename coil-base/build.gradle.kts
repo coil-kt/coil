@@ -57,11 +57,6 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
-        named("jsMain") {
-            dependencies {
-                implementation(libs.okio.nodefilesystem)
-            }
-        }
         named("nonJvmCommon") {
             dependencies {
                 implementation(libs.kotlinx.immutable.collections)

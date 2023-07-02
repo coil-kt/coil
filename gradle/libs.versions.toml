@@ -67,7 +67,6 @@ material = "com.google.android.material:material:1.9.0"
 
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
-okio-nodefilesystem = { module = "com.squareup.okio:okio-nodefilesystem", version.ref = "okio" }
 
 robolectric = "org.robolectric:robolectric:4.10.3"
 
