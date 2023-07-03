@@ -1,5 +1,9 @@
 package coil.util
 
+/**
+ * A least recently used cache that evicts the eldest entry when the cache's current size
+ * exceeds its max size.
+ */
 internal abstract class LruCache<K : Any, V : Any>(
     val maxSize: Long,
 ) {

@@ -8,7 +8,7 @@ import coil.util.toDrawable
 
 internal class BitmapFetcher(
     private val data: Bitmap,
-    private val options: Options
+    private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {

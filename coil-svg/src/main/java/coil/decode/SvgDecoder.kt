@@ -27,7 +27,7 @@ import kotlinx.coroutines.runInterruptible
 class SvgDecoder @JvmOverloads constructor(
     private val source: ImageSource,
     private val options: Options,
-    val useViewBoundsAsIntrinsicSize: Boolean = true
+    val useViewBoundsAsIntrinsicSize: Boolean = true,
 ) : Decoder {
 
     override suspend fun decode() = runInterruptible {

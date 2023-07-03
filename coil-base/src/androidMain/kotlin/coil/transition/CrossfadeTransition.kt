@@ -4,6 +4,7 @@ import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
+import coil.util.DEFAULT_CROSSFADE_MILLIS
 import kotlin.jvm.JvmOverloads
 
 /**
@@ -15,7 +16,7 @@ import kotlin.jvm.JvmOverloads
 class CrossfadeTransition @JvmOverloads constructor(
     private val target: TransitionTarget,
     private val result: ImageResult,
-    val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
+    val durationMillis: Int = DEFAULT_CROSSFADE_MILLIS,
     val preferExactIntrinsicSize: Boolean = false
 ) : Transition {
 
@@ -30,7 +31,7 @@ class CrossfadeTransition @JvmOverloads constructor(
             scale = result.request.scale,
             durationMillis = durationMillis,
             fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
-            preferExactIntrinsicSize = preferExactIntrinsicSize
+            preferExactIntrinsicSize = preferExactIntrinsicSize,
         )
         when (result) {
             is SuccessResult -> target.onSuccess(drawable)
@@ -39,7 +40,7 @@ class CrossfadeTransition @JvmOverloads constructor(
     }
 
     class Factory @JvmOverloads constructor(
-        val durationMillis: Int = CrossfadeDrawable.DEFAULT_DURATION,
+        val durationMillis: Int = DEFAULT_CROSSFADE_MILLIS,
         val preferExactIntrinsicSize: Boolean = false
     ) : Transition.Factory {
 

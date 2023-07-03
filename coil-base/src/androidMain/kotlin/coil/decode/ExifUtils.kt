@@ -17,8 +17,7 @@ import okio.BufferedSource
 
 /** Utility methods for interacting with Exchangeable Image File Format data. */
 internal object ExifUtils {
-
-    private val PAINT = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     /**
      * Return the image's EXIF data.
@@ -68,7 +67,7 @@ internal object ExifUtils {
         }
 
         outBitmap.applyCanvas {
-            drawBitmap(inBitmap, matrix, PAINT)
+            drawBitmap(inBitmap, matrix, paint)
         }
         inBitmap.recycle()
         return outBitmap
@@ -78,7 +77,7 @@ internal object ExifUtils {
 /** Properties read from an image's EXIF header. */
 internal class ExifData(
     val isFlipped: Boolean,
-    val rotationDegrees: Int
+    val rotationDegrees: Int,
 ) {
 
     companion object {

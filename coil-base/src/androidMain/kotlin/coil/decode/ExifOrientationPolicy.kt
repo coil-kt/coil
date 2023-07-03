@@ -32,5 +32,5 @@ enum class ExifOrientationPolicy {
      * NOTE: This policy can potentially cause out of memory errors as certain image formats
      * (e.g. PNG) will be buffered entirely into memory while being decoded.
      */
-    RESPECT_ALL
+    RESPECT_ALL,
 }

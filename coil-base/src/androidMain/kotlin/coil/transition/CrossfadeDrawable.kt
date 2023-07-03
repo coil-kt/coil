@@ -16,6 +16,7 @@ import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DecodeUtils
 import coil.size.Scale
+import coil.util.DEFAULT_CROSSFADE_MILLIS
 import coil.util.forEachIndices
 import kotlin.math.roundToInt
 
@@ -273,7 +274,6 @@ class CrossfadeDrawable @JvmOverloads constructor(
         private const val STATE_START = 0
         private const val STATE_RUNNING = 1
         private const val STATE_DONE = 2
-
-        const val DEFAULT_DURATION = 100
+        const val DEFAULT_DURATION = DEFAULT_CROSSFADE_MILLIS
     }
 }

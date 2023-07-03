@@ -75,12 +75,6 @@ internal fun Closeable.closeQuietly() {
  */
 internal expect val ImageRequest.allowInexactSize: Boolean
 
-internal val EMPTY_HEADERS = Headers.Builder().build()
-
-internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
-
-internal fun Tags?.orEmpty() = this ?: Tags.EMPTY
-
 internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
@@ -148,6 +142,8 @@ internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
         Scale.FIT -> Int.MAX_VALUE
     }
 }
+
+internal const val DEFAULT_CROSSFADE_MILLIS = 100
 
 /** Modified from [Headers.Builder.add] */
 internal fun Headers.Builder.addUnsafeNonAscii(line: String) = apply {

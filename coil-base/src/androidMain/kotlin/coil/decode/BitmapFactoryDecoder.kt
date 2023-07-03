@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build.VERSION.SDK_INT
 import coil.ImageLoader
+import coil.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
 import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.size.isOriginal
@@ -26,7 +27,7 @@ class BitmapFactoryDecoder(
     private val source: ImageSource,
     private val options: Options,
     private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
-    private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
+    private val exifOrientationPolicy: ExifOrientationPolicy = RESPECT_PERFORMANCE,
 ) : Decoder {
 
     override suspend fun decode() = parallelismLock.withPermit {
@@ -168,15 +169,10 @@ class BitmapFactoryDecoder(
         }
     }
 
-    class Factory(
+    class Factory @JvmOverloads constructor(
         maxParallelism: Int = DEFAULT_MAX_PARALLELISM,
-        private val exifOrientationPolicy: ExifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
+        private val exifOrientationPolicy: ExifOrientationPolicy = RESPECT_PERFORMANCE,
     ) : Decoder.Factory {
-
-        @Suppress("NEWER_VERSION_IN_SINCE_KOTLIN")
-        @SinceKotlin("999.9") // Only public in Java.
-        constructor() : this()
-
         private val parallelismLock = Semaphore(maxParallelism)
 
         override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder {

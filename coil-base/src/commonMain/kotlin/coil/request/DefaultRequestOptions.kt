@@ -2,6 +2,7 @@ package coil.request
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import coil.Image
 import coil.ImageLoader
 import coil.size.Precision
 import coil.transition.Transition
@@ -26,9 +27,9 @@ data class DefaultRequestOptions(
     val bitmapConfig: Bitmap.Config = DEFAULT_BITMAP_CONFIG,
     val allowHardware: Boolean = true,
     val allowRgb565: Boolean = false,
-    val placeholder: Drawable? = null,
-    val error: Drawable? = null,
-    val fallback: Drawable? = null,
+    val placeholder: Image? = null,
+    val error: Image? = null,
+    val fallback: Image? = null,
     val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
     val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
     val networkCachePolicy: CachePolicy = CachePolicy.ENABLED,

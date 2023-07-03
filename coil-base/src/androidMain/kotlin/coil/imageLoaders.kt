@@ -21,7 +21,7 @@ fun ImageLoader.Builder.bitmapFactoryMaxParallelism(maxParallelism: Int) = apply
 }
 
 private val bitmapFactoryMaxParallelismKey = internalExtraKeyOf("bitmapFactoryMaxParallelism")
-private const val bitmapFactoryMaxParallelismDefault = 4
+private const val bitmapFactoryMaxParallelismDefault = BitmapFactoryDecoder.DEFAULT_MAX_PARALLELISM
 internal val RealImageLoader.Options.bitmapFactoryMaxParallelism
     get() = extras.get(bitmapFactoryMaxParallelismKey) ?: bitmapFactoryMaxParallelismDefault
 

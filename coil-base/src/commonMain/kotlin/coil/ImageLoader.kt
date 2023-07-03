@@ -1,10 +1,6 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package coil
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import androidx.annotation.DrawableRes
 import androidx.lifecycle.Lifecycle
 import coil.decode.Decoder
 import coil.disk.DiskCache
@@ -22,12 +18,11 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
 import coil.target.ViewTarget
-import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
+import coil.util.DEFAULT_CROSSFADE_MILLIS
 import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.Logger
-import coil.util.getDrawableCompat
 import io.ktor.client.HttpClient
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
@@ -157,7 +152,7 @@ interface ImageLoader {
          */
         @JvmSynthetic
         inline fun components(
-            builder: ComponentRegistry.Builder.() -> Unit
+            builder: ComponentRegistry.Builder.() -> Unit,
         ) = components(ComponentRegistry.Builder().apply(builder).build())
 
         /**
@@ -232,8 +227,9 @@ interface ImageLoader {
          *
          * Default: false
          */
-        fun crossfade(enable: Boolean) =
-            crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
+        fun crossfade(
+            enable: Boolean,
+        ) = crossfade(if (enable) DEFAULT_CROSSFADE_MILLIS else 0)
 
         /**
          * Enable a crossfade animation with [durationMillis] milliseconds when a request completes
@@ -307,51 +303,24 @@ interface ImageLoader {
         }
 
         /**
-         * The [CoroutineDispatcher] that [Transformation.transform] will be executed on.
-         *
-         * Default: `Dispatchers.IO`
+         * Set the default placeholder image to use when a request starts.
          */
-        fun transformationDispatcher(dispatcher: CoroutineDispatcher) = apply {
-            this.defaults = this.defaults.copy(transformationDispatcher = dispatcher)
+        fun placeholder(image: Image?) = apply {
+            this.defaults = this.defaults.copy(placeholder = image)
         }
 
         /**
-         * Set the default placeholder drawable to use when a request starts.
+         * Set the default error image to use when a request fails.
          */
-        fun placeholder(@DrawableRes drawableResId: Int) =
-            placeholder(applicationContext.getDrawableCompat(drawableResId))
-
-        /**
-         * Set the default placeholder drawable to use when a request starts.
-         */
-        fun placeholder(drawable: Drawable?) = apply {
-            this.defaults = this.defaults.copy(placeholder = drawable?.mutate())
+        fun error(image: Image?) = apply {
+            this.defaults = this.defaults.copy(error = image)
         }
 
         /**
-         * Set the default error drawable to use when a request fails.
+         * Set the default fallback image to use if [ImageRequest.data] is null.
          */
-        fun error(@DrawableRes drawableResId: Int) =
-            error(applicationContext.getDrawableCompat(drawableResId))
-
-        /**
-         * Set the default error drawable to use when a request fails.
-         */
-        fun error(drawable: Drawable?) = apply {
-            this.defaults = this.defaults.copy(error = drawable?.mutate())
-        }
-
-        /**
-         * Set the default fallback drawable to use if [ImageRequest.data] is null.
-         */
-        fun fallback(@DrawableRes drawableResId: Int) =
-            fallback(applicationContext.getDrawableCompat(drawableResId))
-
-        /**
-         * Set the default fallback drawable to use if [ImageRequest.data] is null.
-         */
-        fun fallback(drawable: Drawable?) = apply {
-            this.defaults = this.defaults.copy(fallback = drawable?.mutate())
+        fun fallback(image: Image?) = apply {
+            this.defaults = this.defaults.copy(fallback = image)
         }
 
         /**
