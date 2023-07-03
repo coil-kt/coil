@@ -69,6 +69,12 @@ internal fun Closeable.closeQuietly() {
     } catch (_: Exception) {}
 }
 
+internal fun DiskCache.Editor.abortQuietly() {
+    try {
+        abort()
+    } catch (_: Exception) {}
+}
+
 /**
  * Return 'true' if the request does not require the output image's size to match the
  * requested dimensions exactly.
@@ -78,15 +84,6 @@ internal expect val ImageRequest.allowInexactSize: Boolean
 internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
 
 internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
-
-@OptIn(ExperimentalCoroutinesApi::class)
-internal fun <T> Deferred<T>.getCompletedOrNull(): T? {
-    return try {
-        getCompleted()
-    } catch (_: Throwable) {
-        null
-    }
-}
 
 internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
 
@@ -107,12 +104,6 @@ internal fun String.toNonNegativeInt(defaultValue: Int): Int {
         value < 0 -> 0
         else -> value.toInt()
     }
-}
-
-internal fun DiskCache.Editor.abortQuietly() {
-    try {
-        abort()
-    } catch (_: Exception) {}
 }
 
 internal const val MIME_TYPE_JPEG = "image/jpeg"
