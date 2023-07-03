@@ -3,7 +3,6 @@ package coil.transition
 import coil.annotation.MainThread
 import coil.request.ImageResult
 import coil.target.Target
-import kotlin.jvm.JvmField
 
 /**
  * A class to animate between a [Target]'s current drawable and the result of an image request.

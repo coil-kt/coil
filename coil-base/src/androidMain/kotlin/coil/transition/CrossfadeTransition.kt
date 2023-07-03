@@ -1,7 +1,6 @@
 package coil.transition
 
 import coil.decode.DataSource
-import coil.drawable.CrossfadeDrawable
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
