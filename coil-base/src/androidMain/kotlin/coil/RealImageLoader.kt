@@ -16,6 +16,49 @@ import coil.map.HttpUrlMapper
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.map.StringMapper
+import coil.request.Disposable
+import coil.request.ImageRequest
+import coil.request.ImageResult
+import coil.request.OneShotDisposable
+import coil.request.requestManager
+import coil.target.Target
+import coil.target.ViewTarget
+import coil.transition.NoneTransition
+import coil.transition.TransitionTarget
+import kotlinx.coroutines.Deferred
+
+internal actual fun getDisposable(
+    request: ImageRequest,
+    job: Deferred<ImageResult>,
+): Disposable {
+    if (request.target is ViewTarget<*>) {
+        return request.target.view.requestManager.getDisposable(job)
+    } else {
+        return OneShotDisposable(job)
+    }
+}
+
+internal actual inline fun transition(
+    result: ImageResult,
+    target: Target?,
+    eventListener: EventListener,
+    setDrawable: () -> Unit
+) {
+    if (target !is TransitionTarget) {
+        setDrawable()
+        return
+    }
+
+    val transition = result.request.transitionFactory.create(target, result)
+    if (transition is NoneTransition) {
+        setDrawable()
+        return
+    }
+
+    eventListener.transitionStart(result.request, transition)
+    transition.transition()
+    eventListener.transitionEnd(result.request, transition)
+}
 
 internal actual fun ComponentRegistry.Builder.addPlatformComponents(
     options: RealImageLoader.Options,

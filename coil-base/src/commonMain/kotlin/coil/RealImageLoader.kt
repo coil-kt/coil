@@ -13,27 +13,22 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.NullRequestData
 import coil.request.NullRequestDataException
-import coil.request.OneShotDisposable
 import coil.request.RequestService
 import coil.request.SuccessResult
 import coil.target.Target
-import coil.target.ViewTarget
-import coil.transition.NoneTransition
-import coil.transition.TransitionTarget
 import coil.util.Logger
 import coil.util.SystemCallbacks
 import coil.util.awaitStarted
 import coil.util.emoji
 import coil.util.get
 import coil.util.log
-import coil.util.requestManager
-import coil.util.toDrawable
 import io.ktor.client.HttpClient
 import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
@@ -73,11 +68,7 @@ internal class RealImageLoader(
         }
 
         // Update the current request attached to the view and return a new disposable.
-        return if (request.target is ViewTarget<*>) {
-            request.target.view.requestManager.getDisposable(job)
-        } else {
-            OneShotDisposable(job)
-        }
+        return getDisposable(request, job)
     }
 
     override suspend fun execute(request: ImageRequest) = coroutineScope {
@@ -87,10 +78,7 @@ internal class RealImageLoader(
         }
 
         // Update the current request attached to the view and await the result.
-        if (request.target is ViewTarget<*>) {
-            request.target.view.requestManager.getDisposable(job)
-        }
-        return@coroutineScope job.await()
+        return@coroutineScope getDisposable(request, job).job.await()
     }
 
     @MainThread
@@ -107,7 +95,7 @@ internal class RealImageLoader(
 
         try {
             // Fail before starting if data is null.
-            if (request.data === NullRequestData) {
+            if (request.data == NullRequestData) {
                 throw NullRequestDataException()
             }
 
@@ -120,9 +108,8 @@ internal class RealImageLoader(
             }
 
             // Set the placeholder on the target.
-            val placeholderImage = memoryCache?.get(request.placeholderMemoryCacheKey)?.image
-            val placeholder = placeholderImage?.toDrawable(request.context) ?: request.placeholder
-            request.target?.onStart(placeholder)
+            val cachedPlaceholder = memoryCache?.get(request.placeholderMemoryCacheKey)?.image
+            request.target?.onStart(cachedPlaceholder ?: request.placeholder)
             eventListener.onStart(request)
             request.listener?.onStart(request)
 
@@ -140,7 +127,7 @@ internal class RealImageLoader(
                     request = request,
                     size = size,
                     eventListener = eventListener,
-                    isPlaceholderCached = placeholderImage != null
+                    isPlaceholderCached = cachedPlaceholder != null,
                 ).proceed(request)
             }
 
@@ -184,7 +171,9 @@ internal class RealImageLoader(
         options.logger?.log(TAG, Logger.Level.Info) {
             "${dataSource.emoji} Successful (${dataSource.name}) - ${request.data}"
         }
-        transition(result, target, eventListener) { target?.onSuccess(result.image) }
+        transition(result, target, eventListener) {
+            target?.onSuccess(result.image)
+        }
         eventListener.onSuccess(request, result)
         request.listener?.onSuccess(request, result)
     }
@@ -198,7 +187,9 @@ internal class RealImageLoader(
         options.logger?.log(TAG, Logger.Level.Info) {
             "🚨 Failed - ${request.data} - ${result.throwable}"
         }
-        transition(result, target, eventListener) { target?.onError(result.image) }
+        transition(result, target, eventListener) {
+            target?.onError(result.image)
+        }
         eventListener.onError(request, result)
         request.listener?.onError(request, result)
     }
@@ -212,28 +203,6 @@ internal class RealImageLoader(
         }
         eventListener.onCancel(request)
         request.listener?.onCancel(request)
-    }
-
-    private inline fun transition(
-        result: ImageResult,
-        target: Target?,
-        eventListener: EventListener,
-        setDrawable: () -> Unit
-    ) {
-        if (target !is TransitionTarget) {
-            setDrawable()
-            return
-        }
-
-        val transition = result.request.transitionFactory.create(target, result)
-        if (transition is NoneTransition) {
-            setDrawable()
-            return
-        }
-
-        eventListener.transitionStart(result.request, transition)
-        transition.transition()
-        eventListener.transitionEnd(result.request, transition)
     }
 
     data class Options(
@@ -254,6 +223,18 @@ private fun CoroutineScope(logger: Logger?): CoroutineScope {
         CoroutineExceptionHandler { _, throwable -> logger?.log(TAG, throwable) }
     return CoroutineScope(context)
 }
+
+internal expect fun getDisposable(
+    request: ImageRequest,
+    job: Deferred<ImageResult>,
+): Disposable
+
+internal expect inline fun transition(
+    result: ImageResult,
+    target: Target?,
+    eventListener: EventListener,
+    setDrawable: () -> Unit,
+)
 
 internal expect fun ComponentRegistry.Builder.addPlatformComponents(
     options: RealImageLoader.Options,
