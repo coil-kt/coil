@@ -98,9 +98,6 @@ class ImageRequest private constructor(
     /** @see Builder.headers */
     val headers: Headers,
 
-    /** @see Builder.tags */
-    val tags: Tags,
-
     /** @see Builder.allowConversionToBitmap */
     val allowConversionToBitmap: Boolean,
 
@@ -195,7 +192,6 @@ class ImageRequest private constructor(
             transformations == other.transformations &&
             transitionFactory == other.transitionFactory &&
             headers == other.headers &&
-            tags == other.tags &&
             allowConversionToBitmap == other.allowConversionToBitmap &&
             allowHardware == other.allowHardware &&
             allowRgb565 == other.allowRgb565 &&
@@ -237,7 +233,6 @@ class ImageRequest private constructor(
         result = 31 * result + transformations.hashCode()
         result = 31 * result + transitionFactory.hashCode()
         result = 31 * result + headers.hashCode()
-        result = 31 * result + tags.hashCode()
         result = 31 * result + allowConversionToBitmap.hashCode()
         result = 31 * result + allowHardware.hashCode()
         result = 31 * result + allowRgb565.hashCode()
@@ -312,7 +307,6 @@ class ImageRequest private constructor(
         private var transformations: List<Transformation>
         private var transitionFactory: Transition.Factory?
         private var headers: Headers.Builder?
-        private var tags: MutableMap<Class<*>, Any>?
         private var allowConversionToBitmap: Boolean
         private var allowHardware: Boolean?
         private var allowRgb565: Boolean?
@@ -357,7 +351,6 @@ class ImageRequest private constructor(
             transformations = emptyList()
             transitionFactory = null
             headers = null
-            tags = null
             allowConversionToBitmap = true
             allowHardware = null
             allowRgb565 = null
@@ -402,7 +395,6 @@ class ImageRequest private constructor(
             transformations = request.transformations
             transitionFactory = request.defined.transitionFactory
             headers = request.headers.newBuilder()
-            tags = request.tags.asMap().toMutableMap()
             allowConversionToBitmap = request.allowConversionToBitmap
             allowHardware = request.defined.allowHardware
             allowRgb565 = request.defined.allowRgb565
@@ -740,30 +732,6 @@ class ImageRequest private constructor(
          */
         fun removeHeader(name: String) = apply {
             this.headers?.removeAll(name)
-        }
-
-        /**
-         * Attach [tag] to this request using [T] as the key.
-         */
-        inline fun <reified T : Any> tag(tag: T?) = tag(T::class.java, tag)
-
-        /**
-         * Attach [tag] to this request using [type] as the key.
-         */
-        fun <T : Any> tag(type: Class<in T>, tag: T?) = apply {
-            if (tag == null) {
-                this.tags?.remove(type)
-            } else {
-                val tags = this.tags ?: mutableMapOf<Class<*>, Any>().also { this.tags = it }
-                tags[type] = type.cast(tag)!!
-            }
-        }
-
-        /**
-         * Set the tags for this request.
-         */
-        fun tags(tags: Tags) = apply {
-            this.tags = tags.asMap().toMutableMap()
         }
 
         /**

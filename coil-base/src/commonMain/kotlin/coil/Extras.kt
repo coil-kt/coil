@@ -2,7 +2,7 @@ package coil
 
 import kotlin.jvm.JvmField
 
-class Extras(
+class Extras private constructor(
     private val data: Map<String, Any>,
 ) {
 
@@ -40,7 +40,6 @@ class Extras(
     }
 
     companion object {
-        @JvmField
-        val EMPTY = Builder().build()
+        @JvmField val EMPTY = Builder().build()
     }
 }
