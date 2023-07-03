@@ -403,7 +403,7 @@ interface ImageLoader {
                 defaults = defaults,
                 memoryCacheLazy = memoryCacheLazy ?: lazy { MemoryCache.Builder(applicationContext).build() },
                 diskCacheLazy = diskCacheLazy ?: lazy { DiskCache.INSTANCE },
-                httpClientLazy = httpClientLazy ?: TODO(),
+                httpClientLazy = httpClientLazy ?: lazy { HttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 logger = logger,

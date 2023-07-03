@@ -1,6 +1,5 @@
 package coil
 
-import android.graphics.Bitmap
 import coil.EventListener.Factory
 import coil.annotation.MainThread
 import coil.annotation.WorkerThread
@@ -132,20 +131,20 @@ interface EventListener : ImageRequest.Listener {
      *
      * This is skipped if [ImageRequest.transformations] is empty.
      *
-     * @param input The [Bitmap] that will be transformed.
+     * @param input The [Image] that will be transformed.
      */
     @WorkerThread
-    fun transformStart(request: ImageRequest, input: Bitmap) {}
+    fun transformStart(request: ImageRequest, input: Image) {}
 
     /**
      * Called after any [Transformation]s are applied.
      *
      * This is skipped if [ImageRequest.transformations] is empty.
      *
-     * @param output The [Bitmap] that was transformed.
+     * @param output The [Image] that was transformed.
      */
     @WorkerThread
-    fun transformEnd(request: ImageRequest, output: Bitmap) {}
+    fun transformEnd(request: ImageRequest, output: Image) {}
 
     /**
      * Called before [Transition.transition].
