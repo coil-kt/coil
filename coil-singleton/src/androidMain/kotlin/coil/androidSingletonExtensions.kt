@@ -19,7 +19,7 @@ import java.nio.ByteBuffer
  * Get the singleton [ImageLoader].
  */
 inline val Context.imageLoader: ImageLoader
-    get() = Coil.imageLoader(asPlatformContext())
+    get() = SingletonImageLoader.get(asPlatformContext())
 
 /**
  * Load the image referenced by [data] and set it on this [ImageView].
