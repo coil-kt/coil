@@ -75,9 +75,6 @@ internal fun Closeable.closeQuietly() {
  */
 internal expect val ImageRequest.allowInexactSize: Boolean
 
-internal val Uri.firstPathSegment: String?
-    get() = pathSegments.firstOrNull()
-
 internal val EMPTY_HEADERS = Headers.Builder().build()
 
 internal fun Headers?.orEmpty() = this ?: EMPTY_HEADERS
@@ -145,17 +142,11 @@ internal inline fun Size.heightPx(scale: Scale, original: () -> Int): Int {
     return if (isOriginal) original() else height.toPx(scale)
 }
 
-internal fun Dimension.toPx(scale: Scale) = pxOrElse {
+internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
     when (scale) {
         Scale.FILL -> Int.MIN_VALUE
         Scale.FIT -> Int.MAX_VALUE
     }
-}
-
-internal const val ASSET_FILE_PATH_ROOT = "android_asset"
-
-internal fun isAssetUri(uri: Uri): Boolean {
-    return uri.scheme == SCHEME_FILE && uri.firstPathSegment == ASSET_FILE_PATH_ROOT
 }
 
 /** Modified from [Headers.Builder.add] */

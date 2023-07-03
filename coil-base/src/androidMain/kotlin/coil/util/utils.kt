@@ -1,6 +1,7 @@
 package coil.util
 
 import android.app.ActivityManager
+import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
@@ -9,12 +10,13 @@ import android.graphics.ColorSpace
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
-import android.widget.ImageView.ScaleType.FIT_START
+import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
 import android.widget.ImageView.ScaleType.FIT_END
-import android.widget.ImageView.ScaleType.CENTER_INSIDE
+import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.request.ImageRequest
@@ -101,6 +103,15 @@ internal actual val ImageRequest.allowInexactSize: Boolean
                 target.view === sizeResolver.view
         }
     }
+
+internal val Uri.firstPathSegment: String?
+    get() = pathSegments.firstOrNull()
+
+internal const val ASSET_FILE_PATH_ROOT = "android_asset"
+
+internal fun isAssetUri(uri: Uri): Boolean {
+    return uri.scheme == SCHEME_FILE && uri.firstPathSegment == ASSET_FILE_PATH_ROOT
+}
 
 internal val ImageView.scale: Scale
     get() = when (scaleType) {
