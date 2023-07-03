@@ -1,12 +1,10 @@
 package coil
 
-import android.app.Application
-
 /**
  * A factory that creates new [ImageLoader] instances.
  *
  * To configure how the singleton [ImageLoader] is created **either**:
- * - Implement [ImageLoaderFactory] in your [Application].
+ * - Implement [ImageLoaderFactory] on your Android `Application` class.
  * - **Or** call [Coil.setImageLoader] with your [ImageLoaderFactory].
  */
 fun interface ImageLoaderFactory {

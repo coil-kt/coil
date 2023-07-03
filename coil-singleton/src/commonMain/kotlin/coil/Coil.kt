@@ -1,18 +1,14 @@
 package coil
 
-import android.app.Application
-import android.content.Context
-import coil.Coil.imageLoader
-import coil.Coil.setImageLoader
+import kotlin.jvm.JvmStatic
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 
 /**
  * A class that holds the singleton [ImageLoader] instance.
- *
- * - To get the singleton [ImageLoader] use [Context.imageLoader] (preferred) or [imageLoader].
- * - To set the singleton [ImageLoader] use [ImageLoaderFactory] (preferred) or [setImageLoader].
  */
 object Coil {
-
+    private val lock = SynchronizedObject()
     private var imageLoader: ImageLoader? = null
     private var imageLoaderFactory: ImageLoaderFactory? = null
 
@@ -20,7 +16,7 @@ object Coil {
      * Get the singleton [ImageLoader].
      */
     @JvmStatic
-    fun imageLoader(context: Context): ImageLoader {
+    fun imageLoader(context: PlatformContext): ImageLoader {
         return imageLoader ?: newImageLoader(context)
     }
 
@@ -29,8 +25,7 @@ object Coil {
      * Prefer using `setImageLoader(ImageLoaderFactory)` to create the [ImageLoader] lazily.
      */
     @JvmStatic
-    @Synchronized
-    fun setImageLoader(imageLoader: ImageLoader) {
+    fun setImageLoader(imageLoader: ImageLoader) = synchronized(lock) {
         this.imageLoaderFactory = null
         this.imageLoader = imageLoader
     }
@@ -38,12 +33,9 @@ object Coil {
     /**
      * Set the [ImageLoaderFactory] that will be used to create the singleton [ImageLoader].
      * The [factory] is guaranteed to be called at most once.
-     *
-     * NOTE: [factory] will take precedence over an [Application] that implements [ImageLoaderFactory].
      */
     @JvmStatic
-    @Synchronized
-    fun setImageLoader(factory: ImageLoaderFactory) {
+    fun setImageLoader(factory: ImageLoaderFactory) = synchronized(lock) {
         imageLoaderFactory = factory
         imageLoader = null
     }
@@ -54,24 +46,24 @@ object Coil {
      * This method is useful for testing and its use is discouraged in production code.
      */
     @JvmStatic
-    @Synchronized
-    fun reset() {
+    fun reset() = synchronized(lock) {
         imageLoader = null
         imageLoaderFactory = null
     }
 
     /** Create and set the new singleton [ImageLoader]. */
-    @Synchronized
-    private fun newImageLoader(context: Context): ImageLoader {
+    private fun newImageLoader(context: PlatformContext): ImageLoader = synchronized(lock) {
         // Check again in case imageLoader was just set.
         imageLoader?.let { return it }
 
         // Create a new ImageLoader.
         val newImageLoader = imageLoaderFactory?.newImageLoader()
-            ?: (context.applicationContext as? ImageLoaderFactory)?.newImageLoader()
-            ?: ImageLoader(context)
+            ?: context.applicationImageLoaderFactory()?.newImageLoader()
+            ?: ImageLoader.Builder(context).build()
         imageLoaderFactory = null
         imageLoader = newImageLoader
         return newImageLoader
     }
 }
+
+internal expect fun PlatformContext.applicationImageLoaderFactory(): ImageLoaderFactory?

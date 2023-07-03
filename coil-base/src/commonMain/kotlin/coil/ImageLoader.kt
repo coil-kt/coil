@@ -96,7 +96,7 @@ interface ImageLoader {
 
     class Builder {
 
-        private val applicationContext: Context
+        private val applicationContext: PlatformContext
         private var defaults: DefaultRequestOptions
         private var memoryCacheLazy: Lazy<MemoryCache?>?
         private var diskCacheLazy: Lazy<DiskCache?>?
@@ -106,8 +106,8 @@ interface ImageLoader {
         private var logger: Logger?
         private val extras = Extras.Builder()
 
-        constructor(context: Context) {
-            applicationContext = context.applicationContext
+        constructor(context: PlatformContext) {
+            applicationContext = context.application
             defaults = DEFAULT_REQUEST_OPTIONS
             memoryCacheLazy = null
             diskCacheLazy = null
@@ -367,6 +367,7 @@ interface ImageLoader {
          */
         fun build(): ImageLoader {
             val options = RealImageLoader.Options(
+                applicationContext = applicationContext,
                 defaults = defaults,
                 memoryCacheLazy = memoryCacheLazy ?: lazy { MemoryCache.Builder(applicationContext).build() },
                 diskCacheLazy = diskCacheLazy ?: lazy { singletonDiskCache() },

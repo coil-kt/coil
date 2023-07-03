@@ -1,4 +1,3 @@
-@file:JvmName("-SingletonExtensions")
 @file:Suppress("NOTHING_TO_INLINE")
 
 package coil
@@ -20,7 +19,7 @@ import java.nio.ByteBuffer
  * Get the singleton [ImageLoader].
  */
 inline val Context.imageLoader: ImageLoader
-    get() = Coil.imageLoader(this)
+    get() = Coil.imageLoader(asPlatformContext())
 
 /**
  * Load the image referenced by [data] and set it on this [ImageView].
@@ -52,7 +51,7 @@ inline val Context.imageLoader: ImageLoader
 inline fun ImageView.load(
     data: Any?,
     imageLoader: ImageLoader = context.imageLoader,
-    builder: ImageRequest.Builder.() -> Unit = {}
+    builder: ImageRequest.Builder.() -> Unit = {},
 ): Disposable {
     val request = ImageRequest.Builder(context)
         .data(data)

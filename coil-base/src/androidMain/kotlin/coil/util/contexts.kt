@@ -12,7 +12,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.XmlRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -74,8 +73,6 @@ internal fun Context?.getLifecycle(): Lifecycle? {
         }
     }
 }
-
-internal inline fun <reified T : Any> Context.requireSystemService(): T = getSystemService()!!
 
 internal fun Context.isPermissionGranted(permission: String): Boolean {
     return ContextCompat.checkSelfPermission(this, permission) == PERMISSION_GRANTED

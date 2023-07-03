@@ -1,18 +1,41 @@
+import coil.addAllTargets
 import coil.setupLibraryModule
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    id("kotlin-multiplatform")
+    id("kotlinx-atomicfu")
 }
 
+addAllTargets(project)
 setupLibraryModule(name = "coil.singleton")
 
-dependencies {
-    api(projects.coilBase)
+kotlin {
+    // nonAndroidMain: jsMain, jvmMain, nativeMain
+    val nonAndroidMain = sourceSets.create("nonAndroidMain").apply {
+        dependsOn(sourceSets.getByName("commonMain"))
+    }
+    listOf("jsMain", "jvmMain", "nativeMain").forEach { name ->
+        sourceSets.getByName(name).dependsOn(nonAndroidMain)
+    }
 
-    testImplementation(projects.coilTestInternal)
-    testImplementation(libs.bundles.test.jvm)
-
-    androidTestImplementation(projects.coilTestInternal)
-    androidTestImplementation(libs.bundles.test.android)
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.coilBase)
+            }
+        }
+        named("androidUnitTest") {
+            dependencies {
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.jvm)
+            }
+        }
+        named("androidInstrumentedTest") {
+            dependencies {
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.android)
+            }
+        }
+    }
 }

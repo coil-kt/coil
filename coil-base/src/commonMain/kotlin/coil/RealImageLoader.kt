@@ -18,7 +18,6 @@ import coil.request.SuccessResult
 import coil.target.Target
 import coil.util.Logger
 import coil.util.SystemCallbacks
-import coil.util.awaitStarted
 import coil.util.emoji
 import coil.util.get
 import coil.util.log
@@ -159,7 +158,7 @@ internal class RealImageLoader(
         memoryCache?.clear()
     }
 
-    override fun newBuilder() = ImageLoader.Builder(this)
+    override fun newBuilder() = ImageLoader.Builder(options)
 
     private fun onSuccess(
         result: SuccessResult,
@@ -206,6 +205,7 @@ internal class RealImageLoader(
     }
 
     data class Options(
+        val applicationContext: PlatformContext,
         val defaults: DefaultRequestOptions,
         val memoryCacheLazy: Lazy<MemoryCache?>,
         val diskCacheLazy: Lazy<DiskCache?>,

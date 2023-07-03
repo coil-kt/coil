@@ -1,9 +1,8 @@
 package coil.memory
 
 import coil.Image
+import coil.PlatformContext
 import coil.key.Keyer
-import coil.util.calculateMemoryCacheSize
-import coil.util.defaultMemoryCacheSizePercent
 
 /**
  * An LRU cache of [Image]s.
@@ -63,9 +62,9 @@ interface MemoryCache {
         val extras: Map<String, Any> = emptyMap(),
     )
 
-    class Builder(private val context: Context) {
+    class Builder(private val context: PlatformContext) {
 
-        private var maxSizePercent = defaultMemoryCacheSizePercent(context)
+        private var maxSizePercent = context.defaultMemoryCacheSizePercent()
         private var maxSizeBytes = 0L
         private var strongReferencesEnabled = true
         private var weakReferencesEnabled = true
@@ -117,7 +116,7 @@ interface MemoryCache {
             }
             val strongMemoryCache = if (strongReferencesEnabled) {
                 val maxSize = if (maxSizePercent > 0) {
-                    calculateMemoryCacheSize(context, maxSizePercent)
+                    (maxSizePercent * context.totalAvailableMemory).toLong()
                 } else {
                     maxSizeBytes
                 }

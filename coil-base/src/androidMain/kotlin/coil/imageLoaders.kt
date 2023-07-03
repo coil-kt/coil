@@ -1,11 +1,19 @@
 package coil
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import coil.decode.BitmapFactoryDecoder
 import coil.decode.ExifOrientationPolicy
 import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.internalExtraKeyOf
+
+/**
+ * Create a new [ImageLoader] without configuration.
+ */
+fun ImageLoader(context: Context): ImageLoader {
+    return ImageLoader(context.asPlatformContext())
+}
 
 /**
  * Sets the maximum number of parallel [BitmapFactory] decode operations at once.

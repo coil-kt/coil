@@ -3,6 +3,13 @@ package coil
 import coil.util.internalExtraKeyOf
 
 /**
+ * Create a new [ImageLoader] without configuration.
+ */
+fun ImageLoader(context: PlatformContext): ImageLoader {
+    return ImageLoader.Builder(context).build()
+}
+
+/**
  * Enables adding a file's last modified timestamp to the memory cache key when loading an image
  * from a file.
  *
