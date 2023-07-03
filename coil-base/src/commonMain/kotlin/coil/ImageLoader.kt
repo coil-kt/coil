@@ -3,12 +3,12 @@
 package coil
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.Lifecycle
 import coil.decode.Decoder
 import coil.disk.DiskCache
+import coil.disk.singletonDiskCache
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.intercept.Interceptor
@@ -25,14 +25,12 @@ import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
-import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.Logger
 import coil.util.getDrawableCompat
 import io.ktor.client.HttpClient
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 /**
  * A service class that loads images by executing [ImageRequest]s. Image loaders handle
@@ -402,7 +400,7 @@ interface ImageLoader {
             val options = RealImageLoader.Options(
                 defaults = defaults,
                 memoryCacheLazy = memoryCacheLazy ?: lazy { MemoryCache.Builder(applicationContext).build() },
-                diskCacheLazy = diskCacheLazy ?: lazy { DiskCache.INSTANCE },
+                diskCacheLazy = diskCacheLazy ?: lazy { singletonDiskCache() },
                 httpClientLazy = httpClientLazy ?: lazy { HttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
