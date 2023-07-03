@@ -3,7 +3,8 @@ package coil
 import android.content.Context
 import coil.memory.totalAvailableMemoryBytes
 
-internal class AndroidPlatformContext(
+@JvmInline
+private value class AndroidPlatformContext(
     val context: Context,
 ) : PlatformContext {
 

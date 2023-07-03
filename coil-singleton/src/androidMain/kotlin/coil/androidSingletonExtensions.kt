@@ -19,7 +19,14 @@ import java.nio.ByteBuffer
  * Get the singleton [ImageLoader].
  */
 inline val Context.imageLoader: ImageLoader
-    get() = SingletonImageLoader.get(asPlatformContext())
+    get() = SingletonImageLoader.get(this)
+
+/**
+ * Get the singleton [ImageLoader].
+ */
+inline fun SingletonImageLoader.get(context: Context): ImageLoader {
+    return get(context.asPlatformContext())
+}
 
 /**
  * Load the image referenced by [data] and set it on this [ImageView].
