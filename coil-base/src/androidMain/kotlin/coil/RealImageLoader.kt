@@ -31,7 +31,13 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents(
         .add(UriKeyer())
         .add(PathKeyer(options.addLastModifiedToFileCacheKey))
         // Fetchers
-        .add(HttpUriFetcher.Factory(options.httpClientLazy, options.diskCacheLazy, options.respectCacheHeaders))
+        .add(
+            HttpUriFetcher.Factory(
+                callFactory = options.httpClientLazy,
+                diskCache = options.diskCacheLazy,
+                respectCacheHeaders = options.respectCacheHeaders,
+            ),
+        )
         .add(PathFetcher.Factory())
         .add(AssetUriFetcher.Factory())
         .add(ContentUriFetcher.Factory())
@@ -40,5 +46,10 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents(
         .add(BitmapFetcher.Factory())
         .add(ByteBufferFetcher.Factory())
         // Decoders
-        .add(BitmapFactoryDecoder.Factory(options.bitmapFactoryMaxParallelism, options.bitmapFactoryExifOrientationPolicy))
+        .add(
+            BitmapFactoryDecoder.Factory(
+                maxParallelism = options.bitmapFactoryMaxParallelism,
+                exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy,
+            ),
+        )
 }

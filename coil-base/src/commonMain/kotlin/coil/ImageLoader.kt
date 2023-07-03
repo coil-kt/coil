@@ -4,13 +4,10 @@ package coil
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.Lifecycle
-import coil.decode.BitmapFactoryDecoder
 import coil.decode.Decoder
-import coil.decode.ExifOrientationPolicy
 import coil.disk.DiskCache
 import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
@@ -33,7 +30,6 @@ import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.Logger
 import coil.util.getDrawableCompat
 import io.ktor.client.HttpClient
-import java.io.File
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -115,6 +111,7 @@ interface ImageLoader {
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
         private var logger: Logger?
+        private val extras = Extras.Builder()
 
         constructor(context: Context) {
             applicationContext = context.applicationContext
@@ -217,100 +214,6 @@ interface ImageLoader {
         }
 
         /**
-         * Allow the use of [Bitmap.Config.HARDWARE].
-         *
-         * If false, any use of [Bitmap.Config.HARDWARE] will be treated as
-         * [Bitmap.Config.ARGB_8888].
-         *
-         * NOTE: Setting this to false this will reduce performance on API 26 and above. Only
-         * disable this if necessary.
-         *
-         * Default: true
-         */
-        fun allowHardware(enable: Boolean) = apply {
-            this.defaults = this.defaults.copy(allowHardware = enable)
-        }
-
-        /**
-         * Allow automatically using [Bitmap.Config.RGB_565] when an image is guaranteed to not
-         * have alpha.
-         *
-         * This will reduce the visual quality of the image, but will also reduce memory usage.
-         *
-         * Prefer only enabling this for low memory and resource constrained devices.
-         *
-         * Default: false
-         */
-        fun allowRgb565(enable: Boolean) = apply {
-            this.defaults = this.defaults.copy(allowRgb565 = enable)
-        }
-
-        /**
-         * Enables adding [File.lastModified] to the memory cache key when loading an image from a
-         * [File].
-         *
-         * This allows subsequent requests that load the same file to miss the memory cache if the
-         * file has been updated. However, if the memory cache check occurs on the main thread
-         * (see [interceptorDispatcher]) calling [File.lastModified] will cause a strict mode
-         * violation.
-         *
-         * Default: true
-         */
-        fun addLastModifiedToFileCacheKey(enable: Boolean) = apply {
-            this.options = this.options.copy(addLastModifiedToFileCacheKey = enable)
-        }
-
-        /**
-         * Enables short circuiting network requests if the device is offline.
-         *
-         * If true, reading from the network will automatically be disabled if the device is
-         * offline. If a cached response is unavailable the request will fail with a
-         * '504 Unsatisfiable Request' response.
-         *
-         * If false, the image loader will attempt a network request even if the device is offline.
-         *
-         * Default: true
-         */
-        fun networkObserverEnabled(enable: Boolean) = apply {
-            this.options = this.options.copy(networkObserverEnabled = enable)
-        }
-
-        /**
-         * Enables support for network cache headers. If enabled, this image loader will respect the
-         * cache headers returned by network responses when deciding if an image can be stored or
-         * served from the disk cache. If disabled, images will always be served from the disk cache
-         * (if present) and will only be evicted to stay under the maximum size.
-         *
-         * Default: true
-         */
-        fun respectCacheHeaders(enable: Boolean) = apply {
-            this.options = this.options.copy(respectCacheHeaders = enable)
-        }
-
-        /**
-         * Sets the maximum number of parallel [BitmapFactory] decode operations at once.
-         *
-         * Increasing this number will allow more parallel [BitmapFactory] decode operations,
-         * however it can result in worse UI performance.
-         *
-         * Default: 4
-         */
-        fun bitmapFactoryMaxParallelism(maxParallelism: Int) = apply {
-            require(maxParallelism > 0) { "maxParallelism must be > 0." }
-            this.options = this.options.copy(bitmapFactoryMaxParallelism = maxParallelism)
-        }
-
-        /**
-         * Sets the policy for handling the EXIF orientation flag for images decoded by
-         * [BitmapFactoryDecoder].
-         *
-         * Default: [ExifOrientationPolicy.RESPECT_PERFORMANCE]
-         */
-        fun bitmapFactoryExifOrientationPolicy(policy: ExifOrientationPolicy) = apply {
-            this.options = this.options.copy(bitmapFactoryExifOrientationPolicy = policy)
-        }
-
-        /**
          * Set a single [EventListener] that will receive all callbacks for requests launched by
          * this image loader.
          *
@@ -367,17 +270,6 @@ interface ImageLoader {
         }
 
         /**
-         * Set the preferred [Bitmap.Config].
-         *
-         * This is not guaranteed and a different config may be used in some situations.
-         *
-         * Default: [DEFAULT_BITMAP_CONFIG]
-         */
-        fun bitmapConfig(bitmapConfig: Bitmap.Config) = apply {
-            this.defaults = this.defaults.copy(bitmapConfig = bitmapConfig)
-        }
-
-        /**
          * A convenience function to set [fetcherDispatcher], [decoderDispatcher], and
          * [transformationDispatcher] in one call.
          */
@@ -401,7 +293,7 @@ interface ImageLoader {
         /**
          * The [CoroutineDispatcher] that [Fetcher.fetch] will be executed on.
          *
-         * Default: [Dispatchers.IO]
+         * Default: `Dispatchers.IO`
          */
         fun fetcherDispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.defaults = this.defaults.copy(fetcherDispatcher = dispatcher)
@@ -410,7 +302,7 @@ interface ImageLoader {
         /**
          * The [CoroutineDispatcher] that [Decoder.decode] will be executed on.
          *
-         * Default: [Dispatchers.IO]
+         * Default: `Dispatchers.IO`
          */
         fun decoderDispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.defaults = this.defaults.copy(decoderDispatcher = dispatcher)
@@ -419,7 +311,7 @@ interface ImageLoader {
         /**
          * The [CoroutineDispatcher] that [Transformation.transform] will be executed on.
          *
-         * Default: [Dispatchers.IO]
+         * Default: `Dispatchers.IO`
          */
         fun transformationDispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.defaults = this.defaults.copy(transformationDispatcher = dispatcher)
@@ -497,6 +389,13 @@ interface ImageLoader {
         }
 
         /**
+         * Set an extra for extension.
+         */
+        fun extra(key: String, value: Any?) = apply {
+            extras.put(key, value)
+        }
+
+        /**
          * Create a new [ImageLoader] instance.
          */
         fun build(): ImageLoader {
@@ -508,7 +407,7 @@ interface ImageLoader {
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 logger = logger,
-                extras = emptyMap(),
+                extras = extras.build(),
             )
             return RealImageLoader(options)
         }

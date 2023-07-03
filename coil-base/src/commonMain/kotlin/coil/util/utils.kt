@@ -168,3 +168,5 @@ internal fun Headers.Builder.addUnsafeNonAscii(line: String) = apply {
 internal fun Response.requireBody(): ResponseBody {
     return checkNotNull(body) { "response body == null" }
 }
+
+internal fun internalExtraKeyOf(name: String) = "coil_$name"
