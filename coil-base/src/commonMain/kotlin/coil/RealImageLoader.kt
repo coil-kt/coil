@@ -39,7 +39,6 @@ import kotlinx.coroutines.withContext
 internal class RealImageLoader(
     val options: Options,
 ) : ImageLoader {
-
     private val scope = CoroutineScope(options.logger)
     private val systemCallbacks = SystemCallbacks(options)
     private val requestService = RequestService(this, systemCallbacks, options.logger)
@@ -48,7 +47,7 @@ internal class RealImageLoader(
     override val diskCache by options.diskCacheLazy
     override val components = options.componentRegistry.newBuilder()
         .addPlatformComponents(options)
-        .addCommonComponents(options)
+        .addCommonComponents()
         .add(EngineInterceptor(this, requestService, options.logger))
         .build()
     private val shutdown = atomic(false)
@@ -84,7 +83,7 @@ internal class RealImageLoader(
     private suspend fun executeMain(initialRequest: ImageRequest, type: Int): ImageResult {
         // Wrap the request to manage its lifecycle.
         val requestDelegate = requestService.requestDelegate(initialRequest, coroutineContext.job)
-            .apply { assertActive() }
+        requestDelegate.assertActive()
 
         // Apply this image loader's defaults to this request.
         val request = initialRequest.newBuilder().defaults(defaults).build()
@@ -240,9 +239,7 @@ internal expect fun ComponentRegistry.Builder.addPlatformComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder
 
-internal fun ComponentRegistry.Builder.addCommonComponents(
-    options: RealImageLoader.Options,
-): ComponentRegistry.Builder {
+internal fun ComponentRegistry.Builder.addCommonComponents(): ComponentRegistry.Builder {
     return this
         .add(ByteArrayFetcher.Factory())
 }

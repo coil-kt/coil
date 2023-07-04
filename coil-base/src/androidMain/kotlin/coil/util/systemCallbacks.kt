@@ -40,8 +40,8 @@ internal class AndroidSystemCallbacks(
     private val _isOnline = atomic(networkObserver.isOnline)
     private val _isShutdown = atomic(false)
 
-    val isOnline by _isOnline
-    val isShutdown by _isShutdown
+    override val isOnline by _isOnline
+    override val isShutdown by _isShutdown
 
     override fun register(imageLoader: RealImageLoader) {
         this.imageLoader = WeakReference(imageLoader)

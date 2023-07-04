@@ -7,6 +7,9 @@ internal expect fun SystemCallbacks(
 ): SystemCallbacks
 
 internal interface SystemCallbacks {
+    val isOnline: Boolean
+    val isShutdown: Boolean
+
     fun register(imageLoader: RealImageLoader)
     fun shutdown()
 }
