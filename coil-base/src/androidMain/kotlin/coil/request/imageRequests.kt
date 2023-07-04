@@ -29,9 +29,12 @@ fun ImageLoader.Builder.bitmapConfig(config: Bitmap.Config) = apply {
 }
 
 val ImageRequest.bitmapConfig: Bitmap.Config
-    get() = extras.get(bitmapConfigKey) ?: defaults.extras.get(bitmapConfigKey) ?: DEFAULT_BITMAP_CONFIG
+    get() = extras.get(bitmapConfigKey)
+        ?: defaults.extras.get(bitmapConfigKey)
+        ?: bitmapConfigDefault
 
 private val bitmapConfigKey = internalExtraKeyOf("bitmapConfig")
+private val bitmapConfigDefault = DEFAULT_BITMAP_CONFIG
 
 // colorSpace
 
@@ -51,9 +54,12 @@ fun ImageLoader.Builder.colorSpace(colorSpace: ColorSpace) = apply {
 }
 
 val ImageRequest.colorSpace: ColorSpace?
-    @RequiresApi(26) get() = extras.get(colorSpaceKey) ?: defaults.extras.get(colorSpaceKey) ?: NULL_COLOR_SPACE
+    @RequiresApi(26) get() = extras.get(colorSpaceKey)
+        ?: defaults.extras.get(colorSpaceKey)
+        ?: colorSpaceDefault
 
 private val colorSpaceKey = internalExtraKeyOf("colorSpace")
+private val colorSpaceDefault = NULL_COLOR_SPACE
 
 // premultipliedAlpha
 
@@ -73,9 +79,12 @@ fun ImageLoader.Builder.premultipliedAlpha(enable: Boolean) = apply {
 }
 
 val ImageRequest.premultipliedAlpha: Boolean
-    get() = extras.get(premultipliedAlphaKey) ?: defaults.extras.get(premultipliedAlphaKey) ?: true
+    get() = extras.get(premultipliedAlphaKey)
+        ?: defaults.extras.get(premultipliedAlphaKey)
+        ?: premultipliedAlphaDefault
 
 private val premultipliedAlphaKey = internalExtraKeyOf("premultipliedAlpha")
+private const val premultipliedAlphaDefault = true
 
 // lifecycle
 
@@ -101,9 +110,12 @@ fun ImageLoader.Builder.allowConversionToBitmap(enable: Boolean) = apply {
 }
 
 val ImageRequest.allowConversionToBitmap: Boolean
-    get() = extras.get(allowConversionToBitmapKey) ?: defaults.extras.get(allowConversionToBitmapKey) ?: true
+    get() = extras.get(allowConversionToBitmapKey)
+        ?: defaults.extras.get(allowConversionToBitmapKey)
+        ?: allowConversionToBitmapDefault
 
 private val allowConversionToBitmapKey = internalExtraKeyOf("allowConversionToBitmap")
+private const val allowConversionToBitmapDefault = true
 
 // allowHardware
 
@@ -116,9 +128,12 @@ fun ImageLoader.Builder.allowHardware(enable: Boolean) = apply {
 }
 
 val ImageRequest.allowHardware: Boolean
-    get() = extras.get(allowHardwareKey) ?: defaults.extras.get(allowHardwareKey) ?: true
+    get() = extras.get(allowHardwareKey)
+        ?: defaults.extras.get(allowHardwareKey)
+        ?: allowHardwareDefault
 
 private val allowHardwareKey = internalExtraKeyOf("allowHardware")
+private const val allowHardwareDefault = true
 
 // allowRgb565
 
@@ -131,6 +146,9 @@ fun ImageLoader.Builder.allowRgb565(enable: Boolean) = apply {
 }
 
 val ImageRequest.allowRgb565: Boolean
-    get() = extras.get(allowRgb565Key) ?: defaults.extras.get(allowRgb565Key) ?: false
+    get() = extras.get(allowRgb565Key)
+        ?: defaults.extras.get(allowRgb565Key)
+        ?: allowRgb565Default
 
 private val allowRgb565Key = internalExtraKeyOf("allowRgb565")
+private const val allowRgb565Default = false
