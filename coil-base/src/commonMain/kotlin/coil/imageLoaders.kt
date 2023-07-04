@@ -9,6 +9,8 @@ fun ImageLoader(context: PlatformContext): ImageLoader {
     return ImageLoader.Builder(context).build()
 }
 
+// addLastModifiedToFileCacheKey
+
 /**
  * Enables adding a file's last modified timestamp to the memory cache key when loading an image
  * from a file.
@@ -24,10 +26,13 @@ fun ImageLoader.Builder.addLastModifiedToFileCacheKey(enable: Boolean) = apply {
     extra(addLastModifiedToFileCacheKeyKey, enable)
 }
 
+internal val RealImageLoader.Options.addLastModifiedToFileCacheKey: Boolean
+    get() = extras.get(addLastModifiedToFileCacheKeyKey) ?: addLastModifiedToFileCacheKeyDefault
+
 private val addLastModifiedToFileCacheKeyKey = internalExtraKeyOf("addLastModifiedToFileCacheKey")
 private const val addLastModifiedToFileCacheKeyDefault = true
-internal val RealImageLoader.Options.addLastModifiedToFileCacheKey
-    get() = extras.get(addLastModifiedToFileCacheKeyKey) ?: addLastModifiedToFileCacheKeyDefault
+
+// networkObserverEnabled
 
 /**
  * Enables short circuiting network requests if the device is offline.
@@ -44,10 +49,13 @@ fun ImageLoader.Builder.networkObserverEnabled(enable: Boolean) = apply {
     extra(networkObserverEnabledKey, enable)
 }
 
+internal val RealImageLoader.Options.networkObserverEnabled: Boolean
+    get() = extras.get(networkObserverEnabledKey) ?: networkObserverEnabledDefault
+
 private val networkObserverEnabledKey = internalExtraKeyOf("networkObserverEnabled")
 private const val networkObserverEnabledDefault = true
-internal val RealImageLoader.Options.networkObserverEnabled
-    get() = extras.get(networkObserverEnabledKey) ?: networkObserverEnabledDefault
+
+// respectCacheHeaders
 
 /**
  * Enables support for network cache headers. If enabled, this image loader will respect the
@@ -61,7 +69,8 @@ fun ImageLoader.Builder.respectCacheHeaders(enable: Boolean) = apply {
     extra(respectCacheHeadersKey, enable)
 }
 
+internal val RealImageLoader.Options.respectCacheHeaders: Boolean
+    get() = extras.get(respectCacheHeadersKey) ?: respectCacheHeadersDefault
+
 private val respectCacheHeadersKey = internalExtraKeyOf("respectCacheHeaders")
 private const val respectCacheHeadersDefault = true
-internal val RealImageLoader.Options.respectCacheHeaders
-    get() = extras.get(respectCacheHeadersKey) ?: respectCacheHeadersDefault
