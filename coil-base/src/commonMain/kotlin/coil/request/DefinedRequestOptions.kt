@@ -21,7 +21,6 @@ data class DefinedRequestOptions(
     val interceptorDispatcher: CoroutineDispatcher?,
     val fetcherDispatcher: CoroutineDispatcher?,
     val decoderDispatcher: CoroutineDispatcher?,
-    val transformationDispatcher: CoroutineDispatcher?,
     val transitionFactory: Transition.Factory?,
     val precision: Precision?,
     val bitmapConfig: Bitmap.Config?,

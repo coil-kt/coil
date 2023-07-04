@@ -32,6 +32,7 @@ import coil.util.isPlaceholderCached
 import coil.util.log
 import coil.util.safeConfig
 import coil.util.toDrawable
+import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -234,15 +235,13 @@ internal class EngineInterceptor(
         }
 
         // Apply the transformations.
-        return withContext(request.transformationDispatcher) {
-            val input = convertDrawableToBitmap(result.drawable, options, transformations)
-            eventListener.transformStart(request, input)
-            val output = transformations.foldIndices(input) { bitmap, transformation ->
-                transformation.transform(bitmap, options.size).also { ensureActive() }
-            }
-            eventListener.transformEnd(request, output)
-            result.copy(drawable = output.toDrawable(request.context))
+        val input = convertDrawableToBitmap(result.drawable, options, transformations)
+        eventListener.transformStart(request, input)
+        val output = transformations.foldIndices(input) { bitmap, transformation ->
+            transformation.transform(bitmap, options.size).also { coroutineContext.ensureActive() }
         }
+        eventListener.transformEnd(request, output)
+        return result.copy(drawable = output.toDrawable(request.context))
     }
 
     /** Convert [drawable] to a [Bitmap]. */

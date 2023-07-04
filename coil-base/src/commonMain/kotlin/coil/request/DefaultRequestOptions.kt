@@ -21,7 +21,6 @@ data class DefaultRequestOptions(
     val interceptorDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
     val fetcherDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
     val decoderDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
-    val transformationDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
     val transitionFactory: Transition.Factory = Transition.Factory.NONE,
     val precision: Precision = Precision.AUTOMATIC,
     val bitmapConfig: Bitmap.Config = DEFAULT_BITMAP_CONFIG,

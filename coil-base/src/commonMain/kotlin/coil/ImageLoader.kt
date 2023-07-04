@@ -252,14 +252,12 @@ interface ImageLoader {
         }
 
         /**
-         * A convenience function to set [fetcherDispatcher], [decoderDispatcher], and
-         * [transformationDispatcher] in one call.
+         * A convenience function to set [fetcherDispatcher] and [decoderDispatcher] in one call.
          */
         fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.defaults = this.defaults.copy(
                 fetcherDispatcher = dispatcher,
                 decoderDispatcher = dispatcher,
-                transformationDispatcher = dispatcher,
             )
         }
 

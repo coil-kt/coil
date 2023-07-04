@@ -128,9 +128,6 @@ class ImageRequest private constructor(
     /** @see Builder.decoderDispatcher */
     val decoderDispatcher: CoroutineDispatcher,
 
-    /** @see Builder.transformationDispatcher */
-    val transformationDispatcher: CoroutineDispatcher,
-
     /** @see Builder.lifecycle */
     val lifecycle: Lifecycle,
 
@@ -202,7 +199,6 @@ class ImageRequest private constructor(
             interceptorDispatcher == other.interceptorDispatcher &&
             fetcherDispatcher == other.fetcherDispatcher &&
             decoderDispatcher == other.decoderDispatcher &&
-            transformationDispatcher == other.transformationDispatcher &&
             placeholderMemoryCacheKey == other.placeholderMemoryCacheKey &&
             placeholderResId == other.placeholderResId &&
             placeholderDrawable == other.placeholderDrawable &&
@@ -243,7 +239,6 @@ class ImageRequest private constructor(
         result = 31 * result + interceptorDispatcher.hashCode()
         result = 31 * result + fetcherDispatcher.hashCode()
         result = 31 * result + decoderDispatcher.hashCode()
-        result = 31 * result + transformationDispatcher.hashCode()
         result = 31 * result + lifecycle.hashCode()
         result = 31 * result + sizeResolver.hashCode()
         result = 31 * result + scale.hashCode()
@@ -317,7 +312,6 @@ class ImageRequest private constructor(
         private var interceptorDispatcher: CoroutineDispatcher?
         private var fetcherDispatcher: CoroutineDispatcher?
         private var decoderDispatcher: CoroutineDispatcher?
-        private var transformationDispatcher: CoroutineDispatcher?
         private var parameters: Parameters.Builder?
 
         private var placeholderMemoryCacheKey: MemoryCache.Key?
@@ -361,7 +355,6 @@ class ImageRequest private constructor(
             interceptorDispatcher = null
             fetcherDispatcher = null
             decoderDispatcher = null
-            transformationDispatcher = null
             parameters = null
             placeholderMemoryCacheKey = null
             placeholderResId = null
@@ -405,7 +398,6 @@ class ImageRequest private constructor(
             interceptorDispatcher = request.defined.interceptorDispatcher
             fetcherDispatcher = request.defined.fetcherDispatcher
             decoderDispatcher = request.defined.decoderDispatcher
-            transformationDispatcher = request.defined.transformationDispatcher
             parameters = request.parameters.newBuilder()
             placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
             placeholderResId = request.placeholderResId
@@ -501,7 +493,6 @@ class ImageRequest private constructor(
         fun dispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.fetcherDispatcher = dispatcher
             this.decoderDispatcher = dispatcher
-            this.transformationDispatcher = dispatcher
         }
 
         /**
@@ -523,13 +514,6 @@ class ImageRequest private constructor(
          */
         fun decoderDispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.decoderDispatcher = dispatcher
-        }
-
-        /**
-         * @see ImageLoader.Builder.transformationDispatcher
-         */
-        fun transformationDispatcher(dispatcher: CoroutineDispatcher) = apply {
-            this.transformationDispatcher = dispatcher
         }
 
         /**
@@ -933,7 +917,6 @@ class ImageRequest private constructor(
                 interceptorDispatcher = interceptorDispatcher ?: defaults.interceptorDispatcher,
                 fetcherDispatcher = fetcherDispatcher ?: defaults.fetcherDispatcher,
                 decoderDispatcher = decoderDispatcher ?: defaults.decoderDispatcher,
-                transformationDispatcher = transformationDispatcher ?: defaults.transformationDispatcher,
                 lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
                 sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
                 scale = scale ?: resolvedScale ?: resolveScale(),
@@ -947,9 +930,8 @@ class ImageRequest private constructor(
                 fallbackDrawable = fallbackDrawable,
                 defined = DefinedRequestOptions(lifecycle, sizeResolver, scale,
                     interceptorDispatcher, fetcherDispatcher, decoderDispatcher,
-                    transformationDispatcher, transitionFactory, precision, bitmapConfig,
-                    allowHardware, allowRgb565, memoryCachePolicy, diskCachePolicy,
-                    networkCachePolicy),
+                    transitionFactory, precision, bitmapConfig, allowHardware, allowRgb565,
+                    memoryCachePolicy, diskCachePolicy, networkCachePolicy),
                 defaults = defaults,
             )
         }
