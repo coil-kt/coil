@@ -85,11 +85,6 @@ data class Options(
     val headers: Headers = EMPTY_HEADERS,
 
     /**
-     * A map of custom objects. These are used to attach custom data to a request.
-     */
-    val tags: Tags = Tags.EMPTY,
-
-    /**
      * A map of custom parameters. These are used to pass custom data to a component.
      */
     val parameters: Parameters = Parameters.EMPTY,
