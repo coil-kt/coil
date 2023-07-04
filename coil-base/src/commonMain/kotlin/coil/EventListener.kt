@@ -1,6 +1,5 @@
 package coil
 
-import coil.EventListener.Factory
 import coil.annotation.MainThread
 import coil.annotation.WorkerThread
 import coil.decode.DecodeResult
@@ -16,11 +15,6 @@ import coil.request.Options
 import coil.request.SuccessResult
 import coil.size.Size
 import coil.size.SizeResolver
-import coil.transform.Transformation
-import coil.transition.NoneTransition
-import coil.transition.Transition
-import coil.transition.TransitionTarget
-import kotlin.jvm.JvmField
 
 /**
  * A listener for tracking the progress of an image request. This class is useful for
@@ -28,19 +22,19 @@ import kotlin.jvm.JvmField
  *
  * @see ImageLoader.Builder.eventListenerFactory
  */
-interface EventListener : ImageRequest.Listener {
+expect abstract class EventListener : ImageRequest.Listener {
 
     /**
      * @see ImageRequest.Listener.onStart
      */
     @MainThread
-    override fun onStart(request: ImageRequest) {}
+    override fun onStart(request: ImageRequest)
 
     /**
      * Called before [SizeResolver.size].
      */
     @MainThread
-    fun resolveSizeStart(request: ImageRequest) {}
+    fun resolveSizeStart(request: ImageRequest)
 
     /**
      * Called after [SizeResolver.size].
@@ -48,7 +42,7 @@ interface EventListener : ImageRequest.Listener {
      * @param size The resolved [Size] for this request.
      */
     @MainThread
-    fun resolveSizeEnd(request: ImageRequest, size: Size) {}
+    fun resolveSizeEnd(request: ImageRequest, size: Size)
 
     /**
      * Called before [Mapper.map].
@@ -56,7 +50,7 @@ interface EventListener : ImageRequest.Listener {
      * @param input The data that will be converted.
      */
     @MainThread
-    fun mapStart(request: ImageRequest, input: Any) {}
+    fun mapStart(request: ImageRequest, input: Any)
 
     /**
      * Called after [Mapper.map].
@@ -65,7 +59,7 @@ interface EventListener : ImageRequest.Listener {
      *  applicable mappers, [output] will be the same as [ImageRequest.data].
      */
     @MainThread
-    fun mapEnd(request: ImageRequest, output: Any) {}
+    fun mapEnd(request: ImageRequest, output: Any)
 
     /**
      * Called before [Keyer.key].
@@ -73,7 +67,7 @@ interface EventListener : ImageRequest.Listener {
      * @param input The data that will be converted.
      */
     @MainThread
-    fun keyStart(request: ImageRequest, input: Any) {}
+    fun keyStart(request: ImageRequest, input: Any)
 
     /**
      * Called after [Keyer.key].
@@ -82,7 +76,7 @@ interface EventListener : ImageRequest.Listener {
      *  If [output] is 'null' it will not be cached in the memory cache.
      */
     @MainThread
-    fun keyEnd(request: ImageRequest, output: String?) {}
+    fun keyEnd(request: ImageRequest, output: String?)
 
     /**
      * Called before [Fetcher.fetch].
@@ -91,7 +85,7 @@ interface EventListener : ImageRequest.Listener {
      * @param options The [Options] that will be passed to [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchStart(request: ImageRequest, fetcher: Fetcher, options: Options) {}
+    fun fetchStart(request: ImageRequest, fetcher: Fetcher, options: Options)
 
     /**
      * Called after [Fetcher.fetch].
@@ -101,7 +95,7 @@ interface EventListener : ImageRequest.Listener {
      * @param result The result of [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchEnd(request: ImageRequest, fetcher: Fetcher, options: Options, result: FetchResult?) {}
+    fun fetchEnd(request: ImageRequest, fetcher: Fetcher, options: Options, result: FetchResult?)
 
     /**
      * Called before [Decoder.decode].
@@ -112,7 +106,7 @@ interface EventListener : ImageRequest.Listener {
      * @param options The [Options] that will be passed to [Decoder.decode].
      */
     @WorkerThread
-    fun decodeStart(request: ImageRequest, decoder: Decoder, options: Options) {}
+    fun decodeStart(request: ImageRequest, decoder: Decoder, options: Options)
 
     /**
      * Called after [Decoder.decode].
@@ -124,74 +118,36 @@ interface EventListener : ImageRequest.Listener {
      * @param result The result of [Decoder.decode].
      */
     @WorkerThread
-    fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult?) {}
-
-    /**
-     * Called before any [Transformation]s are applied.
-     *
-     * This is skipped if [ImageRequest.transformations] is empty.
-     *
-     * @param input The [Image] that will be transformed.
-     */
-    @WorkerThread
-    fun transformStart(request: ImageRequest, input: Image) {}
-
-    /**
-     * Called after any [Transformation]s are applied.
-     *
-     * This is skipped if [ImageRequest.transformations] is empty.
-     *
-     * @param output The [Image] that was transformed.
-     */
-    @WorkerThread
-    fun transformEnd(request: ImageRequest, output: Image) {}
-
-    /**
-     * Called before [Transition.transition].
-     *
-     * This is skipped if [transition] is a [NoneTransition]
-     * or [ImageRequest.target] does not implement [TransitionTarget].
-     */
-    @MainThread
-    fun transitionStart(request: ImageRequest, transition: Transition) {}
-
-    /**
-     * Called after [Transition.transition].
-     *
-     * This is skipped if [transition] is a [NoneTransition]
-     * or [ImageRequest.target] does not implement [TransitionTarget].
-     */
-    @MainThread
-    fun transitionEnd(request: ImageRequest, transition: Transition) {}
+    fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult?)
 
     /**
      * @see ImageRequest.Listener.onCancel
      */
     @MainThread
-    override fun onCancel(request: ImageRequest) {}
+    override fun onCancel(request: ImageRequest)
 
     /**
      * @see ImageRequest.Listener.onError
      */
     @MainThread
-    override fun onError(request: ImageRequest, result: ErrorResult) {}
+    override fun onError(request: ImageRequest, result: ErrorResult)
 
     /**
      * @see ImageRequest.Listener.onSuccess
      */
     @MainThread
-    override fun onSuccess(request: ImageRequest, result: SuccessResult) {}
+    override fun onSuccess(request: ImageRequest, result: SuccessResult)
 
     fun interface Factory {
 
         fun create(request: ImageRequest): EventListener
 
         companion object {
-            @JvmField val NONE = Factory { EventListener.NONE }
+            val NONE: Factory
         }
     }
 
     companion object {
-        @JvmField val NONE = object : EventListener {}
+        val NONE: EventListener
     }
 }
