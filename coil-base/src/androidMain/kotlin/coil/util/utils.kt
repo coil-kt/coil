@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
+import android.os.Looper
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.ImageView.ScaleType.FIT_CENTER
@@ -17,6 +18,7 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import coil.asAndroidContext
 import coil.request.ImageRequest
 import coil.size.DisplaySizeResolver
 import coil.size.Precision
@@ -48,6 +50,8 @@ internal val Context.safeCacheDir: File
         return cacheDir.apply { mkdirs() }
     }
 
+internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
+
 /**
  * An allowlist of valid bitmap configs for the input and output bitmaps of
  * [Transformation.transform].
@@ -74,10 +78,14 @@ internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
 internal fun ImageRequest.getDrawableCompat(
     drawable: Drawable?,
     @DrawableRes resId: Int?,
-    default: Drawable?
+    default: Drawable?,
 ): Drawable? = when {
     drawable != null -> drawable
-    resId != null -> if (resId == 0) null else context.getDrawableCompat(resId)
+    resId != null -> if (resId != 0) {
+        context.asAndroidContext().getDrawableCompat(resId)
+    } else {
+        null
+    }
     else -> default
 }
 

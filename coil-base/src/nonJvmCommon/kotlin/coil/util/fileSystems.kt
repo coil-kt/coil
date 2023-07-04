@@ -5,5 +5,5 @@ import okio.Path
 
 internal actual fun FileSystem.remainingFreeSpaceBytes(directory: Path): Long {
     // TODO: Figure out how to compute remaining free space.
-    return 4_294_967_296
+    return 4L * 1024 * 1024 * 1024 // 4 GB
 }

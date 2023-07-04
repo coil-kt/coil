@@ -16,7 +16,10 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
+import coil.Extras
+import coil.Image
 import coil.ImageLoader
+import coil.PlatformContext
 import coil.annotation.MainThread
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
@@ -37,16 +40,24 @@ import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.DEFAULT_REQUEST_OPTIONS
+import coil.util.EMPTY_IMAGE_FACTORY
 import coil.util.allowInexactSize
 import coil.util.getDrawableCompat
 import coil.util.getLifecycle
+import coil.util.ioCoroutineDispatcher
 import coil.util.orEmpty
 import coil.util.scale
 import coil.util.toImmutableList
 import coil.util.unsupported
+import io.ktor.http.Headers
+import io.ktor.http.HeadersBuilder
 import java.io.File
 import java.nio.ByteBuffer
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmOverloads
+import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import okhttp3.Headers
 import okhttp3.HttpUrl
 
@@ -57,7 +68,7 @@ import okhttp3.HttpUrl
  * @see ImageLoader.execute
  */
 class ImageRequest private constructor(
-    val context: Context,
+    val context: PlatformContext,
 
     /** @see Builder.data */
     val data: Any,
@@ -84,7 +95,7 @@ class ImageRequest private constructor(
     val precision: Precision,
 
     /** @see Builder.fetcherFactory */
-    val fetcherFactory: Pair<Fetcher.Factory<*>, Class<*>>?,
+    val fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?,
 
     /** @see Builder.decoderFactory */
     val decoderFactory: Decoder.Factory?,
@@ -128,132 +139,37 @@ class ImageRequest private constructor(
     /** @see Builder.decoderDispatcher */
     val decoderDispatcher: CoroutineDispatcher,
 
-    /** @see Builder.lifecycle */
-    val lifecycle: Lifecycle,
-
     /** @see Builder.size */
     val sizeResolver: SizeResolver,
 
     /** @see Builder.scale */
     val scale: Scale,
 
-    /** @see Builder.parameters */
-    val parameters: Parameters,
-
     /** @see Builder.placeholderMemoryCacheKey */
     val placeholderMemoryCacheKey: MemoryCache.Key?,
 
-    private val placeholderResId: Int?,
-    private val placeholderDrawable: Drawable?,
-    private val errorResId: Int?,
-    private val errorDrawable: Drawable?,
-    private val fallbackResId: Int?,
-    private val fallbackDrawable: Drawable?,
+    private val imageFactories: ImageFactories,
 
     /** The raw values set on [Builder]. */
     val defined: DefinedRequestOptions,
 
     /** The defaults used to fill unset values. */
-    val defaults: DefaultRequestOptions,
+    val defaults: Defaults,
 ) {
 
     /** @see Builder.placeholder */
-    val placeholder: Drawable?
-        get() = getDrawableCompat(placeholderDrawable, placeholderResId, defaults.placeholder)
+    val placeholder: Image? get() = imageFactories.placeholder()
 
     /** @see Builder.error */
-    val error: Drawable?
-        get() = getDrawableCompat(errorDrawable, errorResId, defaults.error)
+    val error: Image? get() = imageFactories.error()
 
     /** @see Builder.fallback */
-    val fallback: Drawable?
-        get() = getDrawableCompat(fallbackDrawable, fallbackResId, defaults.fallback)
+    val fallback: Image? get() = imageFactories.fallback()
 
     @JvmOverloads
-    fun newBuilder(context: Context = this.context) = Builder(this, context)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return other is ImageRequest &&
-            context == other.context &&
-            data == other.data &&
-            target == other.target &&
-            listener == other.listener &&
-            memoryCacheKey == other.memoryCacheKey &&
-            diskCacheKey == other.diskCacheKey &&
-            bitmapConfig == other.bitmapConfig &&
-            (SDK_INT < 26 || colorSpace == other.colorSpace) &&
-            precision == other.precision &&
-            fetcherFactory == other.fetcherFactory &&
-            decoderFactory == other.decoderFactory &&
-            transformations == other.transformations &&
-            transitionFactory == other.transitionFactory &&
-            headers == other.headers &&
-            allowConversionToBitmap == other.allowConversionToBitmap &&
-            allowHardware == other.allowHardware &&
-            allowRgb565 == other.allowRgb565 &&
-            premultipliedAlpha == other.premultipliedAlpha &&
-            memoryCachePolicy == other.memoryCachePolicy &&
-            diskCachePolicy == other.diskCachePolicy &&
-            networkCachePolicy == other.networkCachePolicy &&
-            interceptorDispatcher == other.interceptorDispatcher &&
-            fetcherDispatcher == other.fetcherDispatcher &&
-            decoderDispatcher == other.decoderDispatcher &&
-            placeholderMemoryCacheKey == other.placeholderMemoryCacheKey &&
-            placeholderResId == other.placeholderResId &&
-            placeholderDrawable == other.placeholderDrawable &&
-            errorResId == other.errorResId &&
-            errorDrawable == other.errorDrawable &&
-            fallbackResId == other.fallbackResId &&
-            fallbackDrawable == other.fallbackDrawable &&
-            lifecycle == other.lifecycle &&
-            sizeResolver == other.sizeResolver &&
-            scale == other.scale &&
-            parameters == other.parameters &&
-            defined == other.defined &&
-            defaults == other.defaults
-    }
-
-    override fun hashCode(): Int {
-        var result = context.hashCode()
-        result = 31 * result + data.hashCode()
-        result = 31 * result + target.hashCode()
-        result = 31 * result + listener.hashCode()
-        result = 31 * result + memoryCacheKey.hashCode()
-        result = 31 * result + diskCacheKey.hashCode()
-        result = 31 * result + bitmapConfig.hashCode()
-        result = 31 * result + colorSpace.hashCode()
-        result = 31 * result + precision.hashCode()
-        result = 31 * result + fetcherFactory.hashCode()
-        result = 31 * result + decoderFactory.hashCode()
-        result = 31 * result + transformations.hashCode()
-        result = 31 * result + transitionFactory.hashCode()
-        result = 31 * result + headers.hashCode()
-        result = 31 * result + allowConversionToBitmap.hashCode()
-        result = 31 * result + allowHardware.hashCode()
-        result = 31 * result + allowRgb565.hashCode()
-        result = 31 * result + premultipliedAlpha.hashCode()
-        result = 31 * result + memoryCachePolicy.hashCode()
-        result = 31 * result + diskCachePolicy.hashCode()
-        result = 31 * result + networkCachePolicy.hashCode()
-        result = 31 * result + interceptorDispatcher.hashCode()
-        result = 31 * result + fetcherDispatcher.hashCode()
-        result = 31 * result + decoderDispatcher.hashCode()
-        result = 31 * result + lifecycle.hashCode()
-        result = 31 * result + sizeResolver.hashCode()
-        result = 31 * result + scale.hashCode()
-        result = 31 * result + parameters.hashCode()
-        result = 31 * result + placeholderMemoryCacheKey.hashCode()
-        result = 31 * result + placeholderResId.hashCode()
-        result = 31 * result + placeholderDrawable.hashCode()
-        result = 31 * result + errorResId.hashCode()
-        result = 31 * result + errorDrawable.hashCode()
-        result = 31 * result + fallbackResId.hashCode()
-        result = 31 * result + fallbackDrawable.hashCode()
-        result = 31 * result + defined.hashCode()
-        result = 31 * result + defaults.hashCode()
-        return result
-    }
+    fun newBuilder(
+        context: PlatformContext = this.context,
+    ) = Builder(this, context)
 
     /**
      * A set of callbacks for an [ImageRequest].
@@ -285,10 +201,50 @@ class ImageRequest private constructor(
         fun onSuccess(request: ImageRequest, result: SuccessResult) {}
     }
 
+    /**
+     * Tracks which values have been set (instead of computed automatically using a default)
+     * when building an [ImageRequest].
+     */
+    data class Defined(
+        val interceptorDispatcher: CoroutineDispatcher?,
+        val fetcherDispatcher: CoroutineDispatcher?,
+        val decoderDispatcher: CoroutineDispatcher?,
+        val placeholderFactory: () -> Image?,
+        val errorFactory: () -> Image?,
+        val fallbackFactory: () -> Image?,
+        val memoryCachePolicy: CachePolicy?,
+        val diskCachePolicy: CachePolicy?,
+        val networkCachePolicy: CachePolicy?,
+        val sizeResolver: SizeResolver?,
+        val scale: Scale?,
+        val precision: Precision?,
+    )
+
+    /**
+     * A set of default options that are used to fill in unset [ImageRequest] values.
+     */
+    data class Defaults(
+        val interceptorDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
+        val fetcherDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
+        val decoderDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
+        val placeholderFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
+        val errorFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
+        val fallbackFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
+        val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
+        val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
+        val networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
+        val extras: Extras = Extras.EMPTY,
+        val precision: Precision = Precision.AUTOMATIC,
+    ) {
+        companion object {
+            @JvmField val DEFAULT = Defaults()
+        }
+    }
+
     class Builder {
 
-        private val context: Context
-        private var defaults: DefaultRequestOptions
+        private val context: PlatformContext
+        private var defaults: Defaults
         private var data: Any?
         private var target: Target?
         private var listener: Listener?
@@ -297,11 +253,11 @@ class ImageRequest private constructor(
         private var bitmapConfig: Bitmap.Config?
         private var colorSpace: ColorSpace? = null
         private var precision: Precision?
-        private var fetcherFactory: Pair<Fetcher.Factory<*>, Class<*>>?
+        private var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
         private var decoderFactory: Decoder.Factory?
         private var transformations: List<Transformation>
         private var transitionFactory: Transition.Factory?
-        private var headers: Headers.Builder?
+        private var headers: HeadersBuilder?
         private var allowConversionToBitmap: Boolean
         private var allowHardware: Boolean?
         private var allowRgb565: Boolean?
@@ -312,15 +268,7 @@ class ImageRequest private constructor(
         private var interceptorDispatcher: CoroutineDispatcher?
         private var fetcherDispatcher: CoroutineDispatcher?
         private var decoderDispatcher: CoroutineDispatcher?
-        private var parameters: Parameters.Builder?
-
         private var placeholderMemoryCacheKey: MemoryCache.Key?
-        @DrawableRes private var placeholderResId: Int?
-        private var placeholderDrawable: Drawable?
-        @DrawableRes private var errorResId: Int?
-        private var errorDrawable: Drawable?
-        @DrawableRes private var fallbackResId: Int?
-        private var fallbackDrawable: Drawable?
 
         private var lifecycle: Lifecycle?
         private var sizeResolver: SizeResolver?
@@ -331,7 +279,7 @@ class ImageRequest private constructor(
 
         constructor(context: Context) {
             this.context = context
-            defaults = DEFAULT_REQUEST_OPTIONS
+            defaults = Defaults.DEFAULT
             data = null
             target = null
             listener = null
@@ -355,14 +303,7 @@ class ImageRequest private constructor(
             interceptorDispatcher = null
             fetcherDispatcher = null
             decoderDispatcher = null
-            parameters = null
             placeholderMemoryCacheKey = null
-            placeholderResId = null
-            placeholderDrawable = null
-            errorResId = null
-            errorDrawable = null
-            fallbackResId = null
-            fallbackDrawable = null
             lifecycle = null
             sizeResolver = null
             scale = null
@@ -372,7 +313,7 @@ class ImageRequest private constructor(
         }
 
         @JvmOverloads
-        constructor(request: ImageRequest, context: Context = request.context) {
+        constructor(request: ImageRequest, context: PlatformContext = request.context) {
             this.context = context
             defaults = request.defaults
             data = request.data
@@ -381,7 +322,6 @@ class ImageRequest private constructor(
             memoryCacheKey = request.memoryCacheKey
             diskCacheKey = request.diskCacheKey
             bitmapConfig = request.defined.bitmapConfig
-            if (SDK_INT >= 26) colorSpace = request.colorSpace
             precision = request.defined.precision
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory

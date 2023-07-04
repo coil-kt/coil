@@ -11,11 +11,12 @@ internal actual fun SystemCallbacks(
 private class NoopSystemCallbacks : SystemCallbacks {
     override val isOnline get() = true
 
-    override var isShutdown by atomic(false)
+    private var _isShutdown = atomic(false)
+    override val isShutdown by _isShutdown
 
     override fun register(imageLoader: RealImageLoader) {}
 
     override fun shutdown() {
-        isShutdown = true
+        _isShutdown.value = true
     }
 }

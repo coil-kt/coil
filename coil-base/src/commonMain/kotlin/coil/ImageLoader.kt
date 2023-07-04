@@ -3,22 +3,16 @@ package coil
 import coil.decode.Decoder
 import coil.disk.DiskCache
 import coil.disk.singletonDiskCache
-import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.intercept.Interceptor
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
-import coil.request.DefaultRequestOptions
 import coil.request.Disposable
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
-import coil.transition.CrossfadeTransition
-import coil.transition.Transition
-import coil.util.DEFAULT_CROSSFADE_MILLIS
-import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.Logger
 import io.ktor.client.HttpClient
 import kotlin.jvm.JvmSynthetic
@@ -34,9 +28,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 interface ImageLoader {
 
     /**
-     * The default options that are used to fill in unset [ImageRequest] values.
+     * The default values that are used to fill in unset [ImageRequest] values.
      */
-    val defaults: DefaultRequestOptions
+    val defaults: ImageRequest.Defaults
 
     /**
      * The components used to fulfil image requests.
@@ -84,8 +78,8 @@ interface ImageLoader {
 
     class Builder {
 
-        private val applicationContext: PlatformContext
-        private var defaults: DefaultRequestOptions
+        private val application: PlatformContext
+        private var defaults: ImageRequest.Defaults
         private var memoryCacheLazy: Lazy<MemoryCache?>?
         private var diskCacheLazy: Lazy<DiskCache?>?
         private var httpClientLazy: Lazy<HttpClient>?
@@ -95,8 +89,8 @@ interface ImageLoader {
         private val extras = Extras.Builder()
 
         constructor(context: PlatformContext) {
-            applicationContext = context.application
-            defaults = DEFAULT_REQUEST_OPTIONS
+            application = context.application
+            defaults = ImageRequest.Defaults.DEFAULT
             memoryCacheLazy = null
             diskCacheLazy = null
             httpClientLazy = null
@@ -106,7 +100,7 @@ interface ImageLoader {
         }
 
         internal constructor(options: RealImageLoader.Options) {
-            applicationContext = options.applicationContext
+            application = options.application
             defaults = options.defaults
             memoryCacheLazy = options.memoryCacheLazy
             diskCacheLazy = options.diskCacheLazy
@@ -210,38 +204,6 @@ interface ImageLoader {
         }
 
         /**
-         * Enable a crossfade animation with duration [CrossfadeDrawable.DEFAULT_DURATION]
-         * milliseconds when a request completes successfully.
-         *
-         * Default: false
-         */
-        fun crossfade(
-            enable: Boolean,
-        ) = crossfade(if (enable) DEFAULT_CROSSFADE_MILLIS else 0)
-
-        /**
-         * Enable a crossfade animation with [durationMillis] milliseconds when a request completes
-         * successfully.
-         *
-         * @see `crossfade(Boolean)`
-         */
-        fun crossfade(durationMillis: Int) = apply {
-            val factory = if (durationMillis > 0) {
-                CrossfadeTransition.Factory(durationMillis)
-            } else {
-                Transition.Factory.NONE
-            }
-            transitionFactory(factory)
-        }
-
-        /**
-         * Set the default [Transition.Factory] for each request.
-         */
-        fun transitionFactory(factory: Transition.Factory) = apply {
-            this.defaults = this.defaults.copy(transitionFactory = factory)
-        }
-
-        /**
          * Set the default precision for a request. [Precision] controls whether the size of the
          * loaded image must match the request's size exactly or not.
          *
@@ -291,22 +253,37 @@ interface ImageLoader {
         /**
          * Set the default placeholder image to use when a request starts.
          */
-        fun placeholder(image: Image?) = apply {
-            this.defaults = this.defaults.copy(placeholder = image)
+        fun placeholder(image: Image?) = placeholder { image }
+
+        /**
+         * Set the default placeholder image to use when a request starts.
+         */
+        fun placeholder(factory: () -> Image?) = apply {
+            this.defaults = this.defaults.copy(placeholderFactory = factory)
         }
 
         /**
          * Set the default error image to use when a request fails.
          */
-        fun error(image: Image?) = apply {
-            this.defaults = this.defaults.copy(error = image)
+        fun error(image: Image?) = error { image }
+
+        /**
+         * Set the default error image to use when a request fails.
+         */
+        fun error(factory: () -> Image?) = apply {
+            this.defaults = this.defaults.copy(errorFactory = factory)
         }
 
         /**
          * Set the default fallback image to use if [ImageRequest.data] is null.
          */
-        fun fallback(image: Image?) = apply {
-            this.defaults = this.defaults.copy(fallback = image)
+        fun fallback(image: Image?) = fallback { image }
+
+        /**
+         * Set the default fallback image to use if [ImageRequest.data] is null.
+         */
+        fun fallback(factory: () -> Image?) = apply {
+            this.defaults = this.defaults.copy(fallbackFactory = factory)
         }
 
         /**
@@ -353,9 +330,9 @@ interface ImageLoader {
          */
         fun build(): ImageLoader {
             val options = RealImageLoader.Options(
-                applicationContext = applicationContext,
+                application = application,
                 defaults = defaults,
-                memoryCacheLazy = memoryCacheLazy ?: lazy { MemoryCache.Builder(applicationContext).build() },
+                memoryCacheLazy = memoryCacheLazy ?: lazy { MemoryCache.Builder(application).build() },
                 diskCacheLazy = diskCacheLazy ?: lazy { singletonDiskCache() },
                 httpClientLazy = httpClientLazy ?: lazy { HttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,

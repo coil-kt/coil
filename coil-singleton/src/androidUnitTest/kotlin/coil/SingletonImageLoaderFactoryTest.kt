@@ -49,7 +49,9 @@ class SingletonImageLoaderFactoryTest {
 
         val isInitialized = atomic(false)
         SingletonImageLoader.set {
-            check(!isInitialized.getAndSet(true)) { "newImageLoader was invoked more than once." }
+            check(!isInitialized.getAndSet(true)) {
+                "newImageLoader was invoked more than once."
+            }
             imageLoader1
         }
 

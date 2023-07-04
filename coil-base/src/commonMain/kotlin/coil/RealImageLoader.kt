@@ -6,7 +6,6 @@ import coil.fetch.ByteArrayFetcher
 import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
 import coil.memory.MemoryCache
-import coil.request.DefaultRequestOptions
 import coil.request.Disposable
 import coil.request.ErrorResult
 import coil.request.ImageRequest
@@ -204,8 +203,8 @@ internal class RealImageLoader(
     }
 
     data class Options(
-        val applicationContext: PlatformContext,
-        val defaults: DefaultRequestOptions,
+        val application: PlatformContext,
+        val defaults: ImageRequest.Defaults,
         val memoryCacheLazy: Lazy<MemoryCache?>,
         val diskCacheLazy: Lazy<DiskCache?>,
         val httpClientLazy: Lazy<HttpClient>,

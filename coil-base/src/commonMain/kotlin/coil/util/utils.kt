@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Looper
 import coil.ComponentRegistry
 import coil.EventListener
+import coil.Image
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.disk.DiskCache
@@ -81,11 +82,7 @@ internal fun DiskCache.Editor.abortQuietly() {
  */
 internal expect val ImageRequest.allowInexactSize: Boolean
 
-internal fun Parameters?.orEmpty() = this ?: Parameters.EMPTY
-
-internal fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
-
-internal val DEFAULT_REQUEST_OPTIONS = DefaultRequestOptions()
+internal val EMPTY_IMAGE_FACTORY: () -> Image? = { null }
 
 internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 
