@@ -41,7 +41,7 @@ val imageLoader = ImageLoader.Builder(context)
 ```
 
 !!! Note
-    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/new-builder/) to build a new client that shares resources with the original.
+    If you already have a built `OkHttpClient`, use [`newBuilder()`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-ok-http-client/#customize-your-client-with-newbuilder) to build a new client that shares resources with the original.
 
 #### Headers
 
