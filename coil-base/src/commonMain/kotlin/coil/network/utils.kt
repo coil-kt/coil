@@ -9,9 +9,6 @@ import okio.Source
 import okio.buffer
 import okio.use
 
-// Okio uses 8 KB internally.
-private const val OKIO_BUFFER_SIZE: Int = 8 * 1024
-
 internal suspend fun ByteReadChannel.readFully(sink: Sink) {
     sink.buffer().use { bufferedSink ->
         val buffer = ByteArray(OKIO_BUFFER_SIZE)
@@ -40,3 +37,6 @@ internal suspend fun ByteWriteChannel.writeAll(source: Source) {
         }
     }
 }
+
+// Okio uses 8 KB internally.
+private const val OKIO_BUFFER_SIZE: Int = 8 * 1024
