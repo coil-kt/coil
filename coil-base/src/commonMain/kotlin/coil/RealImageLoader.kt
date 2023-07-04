@@ -38,6 +38,7 @@ import kotlinx.coroutines.withContext
 internal class RealImageLoader(
     val options: Options,
 ) : ImageLoader {
+
     private val scope = CoroutineScope(options.logger)
     private val systemCallbacks = SystemCallbacks(options)
     private val requestService = RequestService(this, systemCallbacks, options.logger)
@@ -101,12 +102,12 @@ internal class RealImageLoader(
 
             // Enqueued requests suspend until the lifecycle is started.
             if (type == REQUEST_TYPE_ENQUEUE) {
-                request.lifecycle.awaitStarted()
+                awaitLifecycleStarted(request)
             }
 
             // Set the placeholder on the target.
             val cachedPlaceholder = memoryCache?.get(request.placeholderMemoryCacheKey)?.image
-            request.target?.onStart(cachedPlaceholder ?: request.placeholder)
+            request.target?.onStart(cachedPlaceholder ?: request.placeholderFactory())
             eventListener.onStart(request)
             request.listener?.onStart(request)
 
@@ -226,6 +227,10 @@ internal expect fun getDisposable(
     request: ImageRequest,
     job: Deferred<ImageResult>,
 ): Disposable
+
+internal expect suspend fun awaitLifecycleStarted(
+    request: ImageRequest,
+)
 
 internal expect inline fun transition(
     result: ImageResult,

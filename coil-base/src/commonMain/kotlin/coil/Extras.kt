@@ -1,5 +1,6 @@
 package coil
 
+import coil.util.toImmutableMap
 import kotlin.jvm.JvmField
 
 class Extras private constructor(
@@ -35,7 +36,7 @@ class Extras private constructor(
         }
 
         fun build(): Extras {
-            return Extras(data)
+            return Extras(data.toImmutableMap())
         }
     }
 

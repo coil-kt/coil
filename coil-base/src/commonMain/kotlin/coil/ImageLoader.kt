@@ -253,11 +253,6 @@ interface ImageLoader {
         /**
          * Set the default placeholder image to use when a request starts.
          */
-        fun placeholder(image: Image?) = placeholder { image }
-
-        /**
-         * Set the default placeholder image to use when a request starts.
-         */
         fun placeholder(factory: () -> Image?) = apply {
             this.defaults = this.defaults.copy(placeholderFactory = factory)
         }
@@ -265,19 +260,9 @@ interface ImageLoader {
         /**
          * Set the default error image to use when a request fails.
          */
-        fun error(image: Image?) = error { image }
-
-        /**
-         * Set the default error image to use when a request fails.
-         */
         fun error(factory: () -> Image?) = apply {
             this.defaults = this.defaults.copy(errorFactory = factory)
         }
-
-        /**
-         * Set the default fallback image to use if [ImageRequest.data] is null.
-         */
-        fun fallback(image: Image?) = fallback { image }
 
         /**
          * Set the default fallback image to use if [ImageRequest.data] is null.

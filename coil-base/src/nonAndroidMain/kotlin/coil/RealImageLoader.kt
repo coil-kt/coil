@@ -12,6 +12,12 @@ internal actual fun getDisposable(
     job: Deferred<ImageResult>,
 ): Disposable = OneShotDisposable(job)
 
+internal actual suspend fun awaitLifecycleStarted(
+    request: ImageRequest,
+) {
+    // Do nothing.
+}
+
 internal actual inline fun transition(
     result: ImageResult,
     target: Target?,
