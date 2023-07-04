@@ -80,20 +80,15 @@ internal class AndroidRequestService(
 
         return Options(
             context = request.context,
-            config = config,
-            colorSpace = request.colorSpace,
             size = size,
             scale = scale,
             allowInexactSize = request.allowInexactSize,
-            allowRgb565 = allowRgb565,
-            premultipliedAlpha = request.premultipliedAlpha,
             diskCacheKey = request.diskCacheKey,
             headers = request.headers,
-            tags = request.tags,
-            parameters = request.parameters,
             memoryCachePolicy = request.memoryCachePolicy,
             diskCachePolicy = request.diskCachePolicy,
-            networkCachePolicy = networkCachePolicy
+            networkCachePolicy = networkCachePolicy,
+            extras = request.extras,
         )
     }
 
@@ -123,7 +118,7 @@ internal class AndroidRequestService(
 
     /** Return 'true' if we can allocate a hardware bitmap. */
     override fun allowHardwareWorkerThread(options: Options): Boolean {
-        return !options.config.isHardware || hardwareBitmapService.allowHardwareWorkerThread()
+        return !options.bitmapConfig.isHardware || hardwareBitmapService.allowHardwareWorkerThread()
     }
 
     /**

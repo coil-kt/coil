@@ -50,7 +50,7 @@ internal actual inline fun transition(
     result: ImageResult,
     target: Target?,
     eventListener: EventListener,
-    setDrawable: () -> Unit
+    setDrawable: () -> Unit,
 ) {
     if (target !is TransitionTarget) {
         setDrawable()
@@ -80,7 +80,11 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents(
         .add(ResourceIntMapper())
         // Keyers
         .add(UriKeyer())
-        .add(PathKeyer(options.addLastModifiedToFileCacheKey))
+        .add(
+            PathKeyer(
+                addLastModifiedToFileCacheKey = options.addLastModifiedToFileCacheKey,
+            ),
+        )
         // Fetchers
         .add(
             HttpUriFetcher.Factory(

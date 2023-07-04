@@ -19,7 +19,7 @@ interface DiskCache {
     /** The maximum size of the cache in bytes. */
     val maxSize: Long
 
-    /** The directory where the cache stores its data. */
+    /** The directory that contains the cache's files. */
     val directory: Path
 
     /** The file system that contains the cache's files. */

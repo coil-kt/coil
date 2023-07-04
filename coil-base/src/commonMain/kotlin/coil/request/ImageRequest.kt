@@ -1,20 +1,13 @@
 package coil.request
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.ColorSpace
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build.VERSION.SDK_INT
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER
 import android.widget.ImageView.ScaleType.MATRIX
 import androidx.annotation.DrawableRes
-import androidx.annotation.Px
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import coil.ComponentRegistry
 import coil.Extras
 import coil.Image
@@ -33,22 +26,18 @@ import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
 import coil.size.ViewSizeResolver
-import coil.target.ImageViewTarget
 import coil.target.Target
 import coil.target.ViewTarget
 import coil.transform.Transformation
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
-import coil.util.DEFAULT_REQUEST_OPTIONS
 import coil.util.EMPTY_IMAGE_FACTORY
 import coil.util.allowInexactSize
-import coil.util.getDrawableCompat
 import coil.util.getLifecycle
 import coil.util.ioCoroutineDispatcher
 import coil.util.orEmpty
 import coil.util.scale
 import coil.util.toImmutableList
-import coil.util.unsupported
 import io.ktor.http.Headers
 import io.ktor.http.HeadersBuilder
 import java.io.File
@@ -58,7 +47,6 @@ import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import okhttp3.Headers
 import okhttp3.HttpUrl
 
 /**
@@ -90,12 +78,6 @@ class ImageRequest private constructor(
 
     /** @see Builder.decoderFactory */
     val decoderFactory: Decoder.Factory?,
-
-    /** @see Builder.transformations */
-    val transformations: List<Transformation>,
-
-    /** @see Builder.transitionFactory */
-    val transitionFactory: Transition.Factory,
 
     /** @see Builder.headers */
     val headers: Headers,
