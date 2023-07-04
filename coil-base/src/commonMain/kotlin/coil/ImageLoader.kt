@@ -1,7 +1,5 @@
 package coil
 
-import android.content.Context
-import androidx.lifecycle.Lifecycle
 import coil.decode.Decoder
 import coil.disk.DiskCache
 import coil.disk.singletonDiskCache
@@ -17,7 +15,6 @@ import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
-import coil.target.ViewTarget
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.DEFAULT_CROSSFADE_MILLIS
@@ -59,9 +56,6 @@ interface ImageLoader {
     /**
      * Enqueue the [request] to be executed asynchronously.
      *
-     * NOTE: The request will wait until [ImageRequest.lifecycle] is at least
-     * [Lifecycle.State.STARTED] before being executed.
-     *
      * @param request The request to execute.
      * @return A [Disposable] which can be used to cancel or check the status of the request.
      */
@@ -69,9 +63,6 @@ interface ImageLoader {
 
     /**
      * Execute the [request] in the current coroutine scope.
-     *
-     * NOTE: If [ImageRequest.target] is a [ViewTarget], the job will automatically be cancelled
-     * if its view is detached.
      *
      * @param request The request to execute.
      * @return A [SuccessResult] if the request completes successfully.
@@ -82,9 +73,6 @@ interface ImageLoader {
     /**
      * Cancel any new and in progress requests, clear the [MemoryCache], and close any open
      * system resources.
-     *
-     * Shutting down an image loader is optional. It will be shut down automatically if
-     * dereferenced.
      */
     fun shutdown()
 
