@@ -1,4 +1,5 @@
 import coil.addAllTargets
+import coil.createNonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
@@ -11,13 +12,7 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.singleton")
 
 kotlin {
-    // nonAndroidMain: jsMain, jvmMain, nativeMain
-    val nonAndroidMain = sourceSets.create("nonAndroidMain").apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    listOf("jsMain", "jvmMain", "nativeMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(nonAndroidMain)
-    }
+    createNonAndroidMain()
 
     sourceSets {
         commonMain {

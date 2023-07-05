@@ -1,4 +1,8 @@
 import coil.addAllTargets
+import coil.createJvmCommon
+import coil.createNonAndroidMain
+import coil.createNonJsMain
+import coil.createNonJvmCommon
 import coil.setupLibraryModule
 
 plugins {
@@ -11,37 +15,10 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.base")
 
 kotlin {
-    // nonAndroidMain: jsMain, jvmMain, nativeMain
-    val nonAndroidMain = sourceSets.create("nonAndroidMain").apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    listOf("jsMain", "jvmMain", "nativeMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(nonAndroidMain)
-    }
-
-    // jvmCommon: androidMain, jvmMain
-    val jvmCommon = sourceSets.create("jvmCommon").apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    listOf("androidMain", "jvmMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(jvmCommon)
-    }
-
-    // nonJvmCommon: jsMain, nativeMain
-    val nonJvmCommon = sourceSets.create("nonJvmCommon").apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    listOf("jsMain", "nativeMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(nonJvmCommon)
-    }
-
-    // nonJsMain: androidMain, jvmMain, nativeMain
-    val nonJsMain = sourceSets.create("nonJsMain").apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    listOf("androidMain", "jvmMain", "nativeMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(nonJsMain)
-    }
+    createNonAndroidMain()
+    createNonJsMain()
+    createJvmCommon()
+    createNonJvmCommon()
 
     sourceSets {
         commonMain {
