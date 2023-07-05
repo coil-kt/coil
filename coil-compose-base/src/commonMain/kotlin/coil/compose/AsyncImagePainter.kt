@@ -378,7 +378,7 @@ private fun validateRequest(request: ImageRequest) {
     when (request.data) {
         is ImageRequest.Builder -> unsupportedData(
             name = "ImageRequest.Builder",
-            description = "Did you forget to call ImageRequest.Builder.build()?"
+            description = "Did you forget to call ImageRequest.Builder.build()?",
         )
         is ImageBitmap -> unsupportedData("ImageBitmap")
         is ImageVector -> unsupportedData("ImageVector")

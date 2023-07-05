@@ -1,20 +1,31 @@
+import coil.addAllTargets
+import coil.by
+import coil.createNonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    id("kotlin-multiplatform")
+    id("kotlinx-atomicfu")
+    id("org.jetbrains.compose")
 }
 
-setupLibraryModule(name = "coil.compose.singleton") {
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
+addAllTargets(project)
+setupLibraryModule(name = "coil.compose.singleton")
+
+compose {
+    kotlinCompilerPlugin by libs.jetbrains.compose.compiler.get().toString()
 }
 
-dependencies {
-    api(projects.coilComposeBase)
-    api(projects.coilSingleton)
+kotlin {
+    createNonAndroidMain()
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.coilComposeBase)
+                api(projects.coilSingleton)
+            }
+        }
+    }
 }

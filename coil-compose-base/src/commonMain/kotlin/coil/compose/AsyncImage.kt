@@ -1,5 +1,6 @@
 package coil.compose
 
+import coil.size.Size as CoilSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
@@ -28,7 +29,6 @@ import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.size.Dimension
-import coil.size.Size as CoilSize
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first

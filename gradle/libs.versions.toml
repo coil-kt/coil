@@ -1,9 +1,11 @@
 [versions]
 androidx-activity = "1.7.2"
 androidx-lifecycle = "2.6.1"
-compose = "1.4.3"
-composeCompiler = "1.4.8"
+androidx-compose = "1.4.3"
+androidx-compose-compiler = "1.4.8"
 coroutines = "1.7.2"
+jetbrains-compose = "1.4.1"
+jetbrains-compose-compiler = "1.4.8"
 ktlint = "0.48.2"
 okio = "3.3.0"
 roborazzi = "1.2.0"
@@ -16,6 +18,7 @@ spotless = "com.diffplug.spotless:6.19.0"
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.0.2"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.21.0"
+gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.22"
 gradlePlugin-mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:0.25.3"
 gradlePlugin-paparazzi = "app.cash.paparazzi:paparazzi-gradle-plugin:1.3.0"
@@ -44,9 +47,13 @@ androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.2.0"
 androidx-vectordrawable-animated = "androidx.vectordrawable:vectordrawable-animated:1.1.0"
 
-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "androidx-compose" }
+androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
+androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose" }
+
+jetbrains-compose-compiler = { module = "org.jetbrains.compose.compiler:compiler", version.ref = "jetbrains-compose-compiler" }
+jetbrains-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrains-compose" }
+jetbrains-compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "jetbrains-compose" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }

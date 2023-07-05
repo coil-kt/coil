@@ -11,7 +11,7 @@ setupLibraryModule(name = "coil.test.roborazzi") {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
 }
 
@@ -23,7 +23,7 @@ dependencies {
 
     testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
-    testImplementation(libs.compose.ui.test)
+    testImplementation(libs.androidx.compose.ui.test)
     testImplementation(libs.roborazzi.core)
     testImplementation(libs.roborazzi.junit)
 }

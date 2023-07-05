@@ -1,30 +1,49 @@
+import coil.addAllTargets
+import coil.by
+import coil.createNonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    id("kotlin-multiplatform")
+    id("kotlinx-atomicfu")
+    id("org.jetbrains.compose")
 }
 
-setupLibraryModule(name = "coil.compose.base") {
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
+addAllTargets(project)
+setupLibraryModule(name = "coil.compose.base")
+
+compose {
+    kotlinCompilerPlugin by libs.jetbrains.compose.compiler.get().toString()
 }
 
-dependencies {
-    api(projects.coilBase)
+kotlin {
+    createNonAndroidMain()
 
-    implementation(libs.androidx.core)
-    implementation(libs.accompanist.drawablepainter)
-    api(libs.compose.foundation)
-
-    testImplementation(projects.coilTestInternal)
-    testImplementation(libs.bundles.test.jvm)
-
-    androidTestImplementation(projects.coilTestInternal)
-    androidTestImplementation(libs.bundles.test.android)
-    androidTestImplementation(libs.compose.ui.test)
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.coilBase)
+                api(libs.jetbrains.compose.foundation)
+            }
+        }
+        named("androidMain") {
+            dependencies {
+                implementation(libs.accompanist.drawablepainter)
+            }
+        }
+        named("androidUnitTest") {
+            dependencies {
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.jvm)
+            }
+        }
+        named("androidInstrumentedTest") {
+            dependencies {
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.android)
+                implementation(libs.androidx.compose.ui.test)
+            }
+        }
+    }
 }

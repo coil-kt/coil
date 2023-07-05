@@ -15,10 +15,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
     dependencies {
         classpath(libs.gradlePlugin.android)
         classpath(libs.gradlePlugin.atomicFu)
+        classpath(libs.gradlePlugin.jetbrainsCompose)
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
         classpath(libs.gradlePlugin.paparazzi)
