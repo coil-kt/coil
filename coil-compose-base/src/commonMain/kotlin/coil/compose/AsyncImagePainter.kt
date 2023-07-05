@@ -1,7 +1,6 @@
 package coil.compose
 
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
+import coil.size.Size as CoilSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,15 +18,14 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Constraints
+import coil.Image
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
@@ -37,10 +35,6 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Dimension
 import coil.size.Precision
-import coil.size.Size as CoilSize
-import coil.transition.CrossfadeTransition
-import coil.transition.TransitionTarget
-import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -232,7 +226,7 @@ class AsyncImagePainter internal constructor(
         // If we're in inspection mode skip the image request and set the state to loading.
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
-            updateState(State.Loading(request.placeholder?.toPainter()))
+            updateState(State.Loading(request.placeholderFactory()?.toPainter(filterQuality)))
             return
         }
 
@@ -263,7 +257,7 @@ class AsyncImagePainter internal constructor(
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
             .target(onStart = { placeholder ->
-                updateState(State.Loading(placeholder?.toPainter()))
+                updateState(State.Loading(placeholder?.toPainter(filterQuality)))
             })
             .apply {
                 if (request.defined.sizeResolver == null) {
@@ -286,7 +280,7 @@ class AsyncImagePainter internal constructor(
         val previous = _state
         val current = transform(input)
         _state = current
-        _painter = maybeNewCrossfadePainter(previous, current) ?: current.painter
+        _painter = maybeNewCrossfadePainter(previous, current, contentScale) ?: current.painter
 
         // Manually forget and remember the old/new painters if we're already remembered.
         if (rememberScope != null && previous.painter !== current.painter) {
@@ -298,41 +292,9 @@ class AsyncImagePainter internal constructor(
         onState?.invoke(current)
     }
 
-    /** Create and return a [CrossfadePainter] if requested. */
-    private fun maybeNewCrossfadePainter(previous: State, current: State): CrossfadePainter? {
-        // We can only invoke the transition factory if the state is success or error.
-        val result = when (current) {
-            is State.Success -> current.result
-            is State.Error -> current.result
-            else -> return null
-        }
-
-        // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
-        // a `CrossfadeTransformation`.
-        val transition = result.request.transitionFactory.create(FakeTransitionTarget, result)
-        if (transition is CrossfadeTransition) {
-            return CrossfadePainter(
-                start = previous.painter.takeIf { previous is State.Loading },
-                end = current.painter,
-                contentScale = contentScale,
-                durationMillis = transition.durationMillis,
-                fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
-                preferExactIntrinsicSize = transition.preferExactIntrinsicSize
-            )
-        } else {
-            return null
-        }
-    }
-
     private fun ImageResult.toState() = when (this) {
-        is SuccessResult -> State.Success(image.toPainter(), this)
-        is ErrorResult -> State.Error(image?.toPainter(), this)
-    }
-
-    /** Convert this [Drawable] into a [Painter] using Compose primitives if possible. */
-    private fun Drawable.toPainter() = when (this) {
-        is BitmapDrawable -> BitmapPainter(bitmap.asImageBitmap(), filterQuality = filterQuality)
-        else -> DrawablePainter(mutate())
+        is SuccessResult -> State.Success(image.toPainter(filterQuality), this)
+        is ErrorResult -> State.Error(image?.toPainter(filterQuality), this)
     }
 
     /**
@@ -403,7 +365,14 @@ private fun Size.toSizeOrNull() = when {
     else -> null
 }
 
-private val FakeTransitionTarget = object : TransitionTarget {
-    override val view get() = throw UnsupportedOperationException()
-    override val drawable: Drawable? get() = null
-}
+/** Convert this [Image] into a [Painter] using Compose primitives if possible. */
+internal expect fun Image.toPainter(
+    filterQuality: FilterQuality,
+): Painter
+
+/** Create and return a [CrossfadePainter] if requested. */
+internal expect fun maybeNewCrossfadePainter(
+    previous: State,
+    current: State,
+    contentScale: ContentScale,
+): CrossfadePainter?
