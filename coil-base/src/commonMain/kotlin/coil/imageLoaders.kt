@@ -73,4 +73,4 @@ internal val RealImageLoader.Options.respectCacheHeaders: Boolean
     get() = extras.get(respectCacheHeadersKey) ?: respectCacheHeadersDefault
 
 private val respectCacheHeadersKey = internalExtraKeyOf("respectCacheHeaders")
-private const val respectCacheHeadersDefault = true
+private const val respectCacheHeadersDefault = false
