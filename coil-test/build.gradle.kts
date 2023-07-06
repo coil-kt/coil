@@ -1,17 +1,25 @@
+import coil.addAllTargets
 import coil.setupLibraryModule
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    id("kotlin-multiplatform")
 }
 
+addAllTargets(project)
 setupLibraryModule(name = "coil.test")
 
-dependencies {
-    api(projects.coilBase)
-
-    implementation(libs.androidx.core)
-
-    testImplementation(projects.coilTestInternal)
-    testImplementation(libs.bundles.test.jvm)
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.coilBase)
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation(libs.bundles.test.common)
+            }
+        }
+    }
 }

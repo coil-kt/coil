@@ -1,15 +1,18 @@
+// https://youtrack.jetbrains.com/issue/KTIJ-7642
+@file:Suppress("FUN_INTERFACE_WITH_SUSPEND_FUNCTION")
 @file:JvmName("FakeImageLoaderEngines")
 
 package coil.test
 
-import android.graphics.drawable.Drawable
+import coil.Image
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
-import coil.transition.Transition
+import coil.test.FakeImageLoaderEngine.RequestTransformer
+import kotlin.jvm.JvmName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -122,26 +125,26 @@ class FakeImageLoaderEngine private constructor(
         }
 
         /**
-         * Add an interceptor that will return [Drawable] if [data] is equal to an incoming
+         * Add an interceptor that will return [Image] if [data] is equal to an incoming
          * [ImageRequest]'s data.
          */
         fun intercept(
             data: Any,
-            drawable: Drawable,
+            image: Image,
         ) = intercept(
             predicate = { it == data },
-            drawable = drawable,
+            image = image,
         )
 
         /**
-         * Add an interceptor that will return [Drawable] if [predicate] returns `true`.
+         * Add an interceptor that will return [Image] if [predicate] returns `true`.
          */
         fun intercept(
             predicate: (data: Any) -> Boolean,
-            drawable: Drawable,
+            image: Image,
         ) = intercept(
             predicate = predicate,
-            interceptor = { imageResultOf(drawable, it.request) },
+            interceptor = { imageResultOf(image, it.request) },
         )
 
         /**
@@ -176,12 +179,12 @@ class FakeImageLoaderEngine private constructor(
         }
 
         /**
-         * Set a default [Drawable] that will be returned if no [OptionalInterceptor]s handle the
+         * Set a default [Image] that will be returned if no [OptionalInterceptor]s handle the
          * request. If a default is not set, any requests not handled by an [OptionalInterceptor]
          * will throw an exception.
          */
-        fun default(drawable: Drawable) = default { chain ->
-            imageResultOf(drawable, chain.request)
+        fun default(image: Image) = default { chain ->
+            imageResultOf(image, chain.request)
         }
 
         /**
@@ -209,7 +212,7 @@ class FakeImageLoaderEngine private constructor(
          */
         fun build(): FakeImageLoaderEngine {
             return FakeImageLoaderEngine(
-                interceptors = interceptors.toImmutableList(),
+                interceptors = interceptors.toList(),
                 defaultInterceptor = defaultInterceptor,
                 requestTransformer = requestTransformer,
             )
@@ -218,11 +221,11 @@ class FakeImageLoaderEngine private constructor(
 }
 
 /**
- * Create a new [FakeImageLoaderEngine] that returns [Drawable] for all requests.
+ * Create a new [FakeImageLoaderEngine] that returns [Image] for all requests.
  */
 @JvmName("create")
-fun FakeImageLoaderEngine(drawable: Drawable): FakeImageLoaderEngine {
+fun FakeImageLoaderEngine(image: Image): FakeImageLoaderEngine {
     return FakeImageLoaderEngine.Builder()
-        .default(drawable)
+        .default(image)
         .build()
 }

@@ -1,28 +1,19 @@
 package coil.test
 
-import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.decode.DataSource
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.test.FakeImageLoaderEngine.OptionalInterceptor
+import kotlin.test.Test
 import kotlin.test.assertIs
 import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class FakeImageLoaderEngineTest {
 
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
     @Test
-    fun `exact data`() = runTest {
+    fun extraData() = runTest {
         val url = "https://www.example.com/image.jpg"
         val drawable = ColorDrawable(Color.RED)
         val engine = FakeImageLoaderEngine.Builder()
@@ -43,7 +34,7 @@ class FakeImageLoaderEngineTest {
     }
 
     @Test
-    fun `predicate data`() = runTest {
+    fun predicateData() = runTest {
         val url = "https://www.example.com/image.jpg"
         val drawable = ColorDrawable(Color.RED)
         val engine = FakeImageLoaderEngine.Builder()
@@ -65,7 +56,7 @@ class FakeImageLoaderEngineTest {
     }
 
     @Test
-    fun `default drawable`() = runTest {
+    fun defaultDrawable() = runTest {
         val url = "https://www.example.com/image.jpg"
         val drawable = ColorDrawable(Color.RED)
         val engine = FakeImageLoaderEngine.Builder()
@@ -87,7 +78,7 @@ class FakeImageLoaderEngineTest {
     }
 
     @Test
-    fun `optional interceptor`() = runTest {
+    fun optionalInterceptor() = runTest {
         var currentIndex = -1
         val url = "https://www.example.com/image.jpg"
         val drawables = listOf(
