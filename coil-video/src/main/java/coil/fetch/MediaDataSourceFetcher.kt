@@ -4,7 +4,6 @@ import android.media.MediaDataSource
 import android.os.Build
 import androidx.annotation.RequiresApi
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.request.Options
@@ -14,7 +13,6 @@ import okio.Timeout
 import okio.buffer
 
 @RequiresApi(Build.VERSION_CODES.M)
-@OptIn(ExperimentalCoilApi::class)
 class MediaDataSourceFetcher(
     private val data: MediaDataSource,
     private val options: Options,
@@ -47,7 +45,6 @@ class MediaDataSourceFetcher(
 
     internal class MediaDataSourceOkioSource(private val mediaDataSource: MediaDataSource) : Source {
 
-        private val timeout = Timeout()
         private var size = mediaDataSource.size
         private var position: Long = 0L
 
@@ -68,7 +65,7 @@ class MediaDataSourceFetcher(
         }
 
         override fun timeout(): Timeout {
-            return timeout
+            return Timeout.NONE
         }
 
         override fun close() {
