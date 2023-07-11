@@ -159,7 +159,7 @@ class AsyncImagePainter internal constructor(
 ) : Painter(), RememberObserver {
 
     private var rememberScope: CoroutineScope? = null
-    private val drawSize = MutableStateFlow(Size.Zero)
+    private val drawSize = MutableStateFlow(Size.Unspecified)
 
     private var painter: Painter? by mutableStateOf(null)
     private var alpha: Float by mutableStateOf(DefaultAlpha)
