@@ -206,7 +206,8 @@ private val IS_DEVICE_BLOCKED = when (SDK_INT) {
             "S80Lite", // Doogee S80Lite
             "SGINO6", // SGiNO 6
             "st18c10bnn", // Barnes and Noble BNTV650
-            "TECNO-CA8" // Tecno CAMON X Pro
+            "TECNO-CA8", // Tecno CAMON X Pro,
+            "SHIFT6m" // SHIFT 6m
         )
     }
     else -> false
