@@ -121,6 +121,7 @@ public final class coil/transform/PixelOpacity : java/lang/Enum {
 	public static final field OPAQUE Lcoil/transform/PixelOpacity;
 	public static final field TRANSLUCENT Lcoil/transform/PixelOpacity;
 	public static final field UNCHANGED Lcoil/transform/PixelOpacity;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcoil/transform/PixelOpacity;
 	public static fun values ()[Lcoil/transform/PixelOpacity;
 }

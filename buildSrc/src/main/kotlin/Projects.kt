@@ -103,6 +103,8 @@ private fun <T : BaseExtension> Project.setupBaseModule(
         lint {
             warningsAsErrors = true
             disable += listOf(
+                "ComposableNaming",
+                "UnknownIssueId",
                 "UnusedResources",
                 "VectorPath",
                 "VectorRaster",
