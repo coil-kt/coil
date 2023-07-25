@@ -24,6 +24,7 @@ dependencies {
     testImplementation(projects.coilTestInternal)
     testImplementation(libs.bundles.test.jvm)
     testImplementation(libs.compose.ui.test)
+    testImplementation(libs.roborazzi.compose)
     testImplementation(libs.roborazzi.core)
     testImplementation(libs.roborazzi.junit)
 }

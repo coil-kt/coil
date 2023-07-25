@@ -50,6 +50,6 @@ class RoborazziViewTest {
 
         // https://github.com/takahirom/roborazzi/issues/9
         onView(isRoot())
-            .captureRoboImage("src/test/snapshots/images/coil_test_RoborazziViewTest_loadView.png")
+            .captureRoboImage("src/test/snapshots/images/coil.test.RoborazziViewTest.loadView.png")
     }
 }
