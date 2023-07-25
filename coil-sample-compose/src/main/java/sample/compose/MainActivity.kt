@@ -28,9 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -193,21 +191,16 @@ private fun ListScreen(
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(image.uri)
-                    .crossfade(true)
+                    .parameters(image.parameters)
                     .build(),
                 placeholder = ColorPainter(Color(image.color)),
-                error = BrushPainter(
-                    Brush.verticalGradient(
-                        0.0f to Color.Gray,
-                        0.5f to Color.White,
-                    ),
-                ),
+                error = ColorPainter(Color.Red),
                 onSuccess = { placeholder = it.result.memoryCacheKey },
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(size)
-                    .clickable { onImageClick(image, placeholder) },
+                    .clickable { onImageClick(image, placeholder) }
             )
         }
     }
