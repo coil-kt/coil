@@ -189,6 +189,7 @@ public final class coil/decode/DataSource : java/lang/Enum {
 	public static final field MEMORY Lcoil/decode/DataSource;
 	public static final field MEMORY_CACHE Lcoil/decode/DataSource;
 	public static final field NETWORK Lcoil/decode/DataSource;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcoil/decode/DataSource;
 	public static fun values ()[Lcoil/decode/DataSource;
 }
@@ -223,6 +224,7 @@ public final class coil/decode/ExifOrientationPolicy : java/lang/Enum {
 	public static final field IGNORE Lcoil/decode/ExifOrientationPolicy;
 	public static final field RESPECT_ALL Lcoil/decode/ExifOrientationPolicy;
 	public static final field RESPECT_PERFORMANCE Lcoil/decode/ExifOrientationPolicy;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcoil/decode/ExifOrientationPolicy;
 	public static fun values ()[Lcoil/decode/ExifOrientationPolicy;
 }
@@ -453,6 +455,7 @@ public final class coil/request/CachePolicy : java/lang/Enum {
 	public static final field ENABLED Lcoil/request/CachePolicy;
 	public static final field READ_ONLY Lcoil/request/CachePolicy;
 	public static final field WRITE_ONLY Lcoil/request/CachePolicy;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getReadEnabled ()Z
 	public final fun getWriteEnabled ()Z
 	public static fun valueOf (Ljava/lang/String;)Lcoil/request/CachePolicy;
@@ -799,6 +802,7 @@ public final class coil/size/Precision : java/lang/Enum {
 	public static final field AUTOMATIC Lcoil/size/Precision;
 	public static final field EXACT Lcoil/size/Precision;
 	public static final field INEXACT Lcoil/size/Precision;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcoil/size/Precision;
 	public static fun values ()[Lcoil/size/Precision;
 }
@@ -806,6 +810,7 @@ public final class coil/size/Precision : java/lang/Enum {
 public final class coil/size/Scale : java/lang/Enum {
 	public static final field FILL Lcoil/size/Scale;
 	public static final field FIT Lcoil/size/Scale;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcoil/size/Scale;
 	public static fun values ()[Lcoil/size/Scale;
 }
