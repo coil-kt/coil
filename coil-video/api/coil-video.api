@@ -17,6 +17,22 @@ public final class coil/decode/VideoFrameDecoder$Factory : coil/decode/Decoder$F
 	public fun hashCode ()I
 }
 
+public final class coil/fetch/MediaDataSourceFetcher : coil/fetch/Fetcher {
+	public fun <init> (Landroid/media/MediaDataSource;Lcoil/request/Options;)V
+	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class coil/fetch/MediaDataSourceFetcher$Factory : coil/fetch/Fetcher$Factory {
+	public fun <init> ()V
+	public fun create (Landroid/media/MediaDataSource;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/fetch/Fetcher;
+	public synthetic fun create (Ljava/lang/Object;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/fetch/Fetcher;
+}
+
+public final class coil/fetch/MediaDataSourceFetcher$MediaSourceMetadata : coil/decode/ImageSource$Metadata {
+	public fun <init> (Landroid/media/MediaDataSource;)V
+	public final fun getMediaDataSource ()Landroid/media/MediaDataSource;
+}
+
 public final class coil/request/Videos {
 	public static final fun videoFrameMicros (Lcoil/request/ImageRequest$Builder;J)Lcoil/request/ImageRequest$Builder;
 	public static final fun videoFrameMicros (Lcoil/request/Parameters;)Ljava/lang/Long;

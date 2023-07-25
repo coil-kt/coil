@@ -4,13 +4,16 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
+import coil.FileMediaDataSource
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
 import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_PERCENT_KEY
+import coil.fetch.MediaDataSourceFetcher
 import coil.request.Options
 import coil.request.Parameters
 import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
+import coil.util.copyAssetToFile
 import coil.util.decodeBitmapAsset
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -139,6 +142,30 @@ class VideoFrameDecoderTest {
                 metadata = AssetMetadata(path)
             ),
             options = Options(context)
+        ).decode()
+
+        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        assertNotNull(actual)
+        assertFalse(result.isSampled)
+
+        val expected = context.decodeBitmapAsset("video_frame_1.jpg")
+        actual.assertIsSimilarTo(expected)
+    }
+
+    @Test
+    fun mediaDataSource() = runTest(timeout = 1.minutes) {
+        // MediaMetadataRetriever does not work on the emulator pre-API 23.
+        assumeTrue(SDK_INT >= 23)
+        val file = context.copyAssetToFile("video.mp4")
+
+        val dataSource = FileMediaDataSource(file)
+        val result = VideoFrameDecoder(
+            source = ImageSource(
+                source = MediaDataSourceFetcher.MediaDataSourceOkioSource(dataSource).buffer(),
+                context = context,
+                metadata = MediaDataSourceFetcher.MediaSourceMetadata(dataSource),
+            ),
+            options = Options(context),
         ).decode()
 
         val actual = (result.drawable as? BitmapDrawable)?.bitmap
