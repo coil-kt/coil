@@ -20,7 +20,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -674,6 +676,41 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         assertLoadedBitmapSize(SampleWidth, SampleHeight)
+    }
+
+    /** Regression test: https://github.com/coil-kt/coil/issues/1821 */
+    @Test
+    fun painterWithOneDimensionInfiniteConstraint() {
+        assumeSupportsCaptureToImage()
+
+        val expectedSize = 32.dp
+
+        composeTestRule.setContent {
+            AsyncImage(
+                model = Unit,
+                contentDescription = null,
+                imageLoader = imageLoader,
+                error = BrushPainter(
+                    Brush.verticalGradient(
+                        0.0f to Color.Gray,
+                        0.5f to Color.White,
+                    ),
+                ),
+                modifier = Modifier
+                    .size(expectedSize)
+                    .testTag(Image),
+                contentScale = ContentScale.Crop,
+            )
+        }
+
+        waitForRequestComplete()
+
+        composeTestRule.onNodeWithTag(Image)
+            .assertIsDisplayed()
+            .assertWidthIsEqualTo(expectedSize)
+            .assertHeightIsEqualTo(expectedSize)
+            .captureToImage()
+            .assertIsSimilarTo(R.drawable.vertical_gradient)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
