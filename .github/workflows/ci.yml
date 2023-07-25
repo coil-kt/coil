@@ -40,7 +40,7 @@ jobs:
               run: ./gradlew apiCheck || { exit_code=$?; printf "*** This PR changes Coil's public API. If this change is intentional, run './gradlew apiDump' and commit the new API files. ***"; exit $exit_code; }
 
             - name: Check assemble
-              run: ./gradlew assemble
+              run: ./gradlew assembleDebug
 
     unit-tests:
         name: Unit tests
