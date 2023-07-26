@@ -711,7 +711,7 @@ class AsyncImageTest {
             .assertWidthIsEqualTo(expectedSize)
             .assertHeightIsEqualTo(expectedSize)
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.vertical_gradient, ignoreAlpha = true)
+            .assertIsSimilarTo(R.drawable.vertical_gradient)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {
