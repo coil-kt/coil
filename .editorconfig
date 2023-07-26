@@ -26,4 +26,3 @@ ktlint_standard_argument-list-wrapping=disabled
 ktlint_standard_parameter-list-wrapping=disabled
 ktlint_standard_trailing-comma-on-call-site=disabled
 ktlint_standard_trailing-comma-on-declaration-site=disabled
-
