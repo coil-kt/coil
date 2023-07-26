@@ -58,7 +58,7 @@ fun Bitmap.computeSimilarity(
 
         // Fall back to ensuring that each value in the array is at most one off from each other.
         for (i in channel1.indices) {
-            if (channel1[i] !in channel2[i] - 1 .. channel2[i] + 1) {
+            if (channel1[i] !in channel2[i] - 1..channel2[i] + 1) {
                 return@async 0.0
             }
         }
