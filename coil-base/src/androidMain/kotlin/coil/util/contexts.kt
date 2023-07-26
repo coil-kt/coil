@@ -34,7 +34,7 @@ internal fun Resources.getDrawableCompat(@DrawableRes resId: Int, theme: Resourc
  * Prefer using [Context.getDrawableCompat] for resources that are part of the current package.
  */
 @SuppressLint("ResourceType")
-internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes resId: Int): Drawable {
+internal fun Context.getXmlDrawableCompat(resources: Resources, @XmlRes @DrawableRes resId: Int): Drawable {
     // Find the XML's start tag.
     val parser = resources.getXml(resId)
     var type = parser.next()

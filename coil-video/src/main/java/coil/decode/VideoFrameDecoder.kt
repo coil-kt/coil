@@ -13,6 +13,7 @@ import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil.ImageLoader
+import coil.fetch.MediaDataSourceFetcher.MediaSourceMetadata
 import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.request.videoFrameMicros
@@ -180,6 +181,11 @@ class VideoFrameDecoder(
     }
 
     private fun MediaMetadataRetriever.setDataSource(source: ImageSource) {
+        if (SDK_INT >= 23 && source.metadata is MediaSourceMetadata) {
+            setDataSource((source.metadata as MediaSourceMetadata).mediaDataSource)
+            return
+        }
+
         when (val metadata = source.metadata) {
             is AssetMetadata -> {
                 options.context.assets.openFd(metadata.filePath).use {
