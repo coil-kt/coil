@@ -11,7 +11,7 @@ fun addAllTargets(project: Project) {
         project.extensions.getByType<KotlinMultiplatformExtension>().apply {
             val hasAndroidPlugin = project.plugins.hasPlugin("com.android.library")
             if (hasAndroidPlugin) {
-                android {
+                androidTarget {
                     publishLibraryVariants("release")
                 }
             }
