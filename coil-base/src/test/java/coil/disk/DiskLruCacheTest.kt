@@ -34,11 +34,14 @@ import okio.fakefilesystem.FakeFileSystem
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 /**
  * Derived from OkHttp's DiskLruCache tests:
  * https://github.com/square/okhttp/blob/master/okhttp/src/jvmTest/java/okhttp3/internal/cache/DiskLruCacheTest.kt
  */
+@RunWith(RobolectricTestRunner::class)
 class DiskLruCacheTest {
 
     private lateinit var fileSystem: FaultyFileSystem
