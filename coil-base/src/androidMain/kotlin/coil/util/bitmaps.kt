@@ -37,7 +37,11 @@ internal val Bitmap.allocationByteCountCompat: Int
 internal val Bitmap.Config.isHardware: Boolean
     get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
 
-/** Guard against null bitmap configs, which can occur on earlier API levels. */
+/**
+ * Guard against null bitmap configs.
+ *
+ * Don't believe the nullability annotation: [Bitmap.getConfig] is null for static GIF images.
+ */
 @Suppress("USELESS_ELVIS")
 internal val Bitmap.safeConfig: Bitmap.Config
     get() = config ?: Bitmap.Config.ARGB_8888
