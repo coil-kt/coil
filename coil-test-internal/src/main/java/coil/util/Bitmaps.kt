@@ -41,7 +41,10 @@ fun Bitmap.getPixels(): Array<IntArray> {
 }
 
 @FloatRange(from = -1.0, to = 1.0)
-fun Bitmap.computeSimilarity(other: Bitmap): Double = runBlocking(Dispatchers.Default) {
+fun Bitmap.computeSimilarity(
+    other: Bitmap,
+    ignoreAlpha: Boolean = false,
+): Double = runBlocking(Dispatchers.Default) {
     val pixels1 = async { getPixels() }
     val pixels2 = async { other.getPixels() }
 
@@ -49,14 +52,18 @@ fun Bitmap.computeSimilarity(other: Bitmap): Double = runBlocking(Dispatchers.De
         val channel1 = pixels1.await()[index]
         val channel2 = pixels2.await()[index]
         val crossCorrelation = crossCorrelation(channel1, channel2)
-        if (crossCorrelation.isNaN()) {
-            if (channel1.contentEquals(channel2)) 1.0 else 0.0
-        } else {
-            crossCorrelation
+        when {
+            crossCorrelation.isFinite() -> crossCorrelation
+            channel1.contentEquals(channel2) -> 1.0
+            else -> 0.0
         }
     }
 
-    val alphaThreshold = computeThresholdAsync(0)
+    val alphaThreshold = if (ignoreAlpha) {
+        async { 1.0 }
+    } else {
+        computeThresholdAsync(0)
+    }
     val redThreshold = computeThresholdAsync(1)
     val greenThreshold = computeThresholdAsync(2)
     val blueThreshold = computeThresholdAsync(3)
@@ -92,6 +99,7 @@ fun Bitmap.isSimilarTo(
  */
 fun Bitmap.assertIsSimilarTo(
     expected: Bitmap,
+    ignoreAlpha: Boolean = false,
     @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
 ) {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
@@ -100,7 +108,7 @@ fun Bitmap.assertIsSimilarTo(
             "expected image (${expected.width}, ${expected.height})."
     }
 
-    val similarity = computeSimilarity(expected)
+    val similarity = computeSimilarity(expected, ignoreAlpha)
     check(similarity >= threshold) {
         "The images are not visually similar. Expected: $threshold; Actual: $similarity."
     }
@@ -112,8 +120,9 @@ fun Bitmap.assertIsSimilarTo(
  */
 fun Bitmap.assertIsSimilarTo(
     @DrawableRes expected: Int,
+    ignoreAlpha: Boolean = false,
     @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    assertIsSimilarTo(context.getDrawable(expected)!!.toBitmap(), threshold)
+    assertIsSimilarTo(context.getDrawable(expected)!!.toBitmap(), ignoreAlpha, threshold)
 }

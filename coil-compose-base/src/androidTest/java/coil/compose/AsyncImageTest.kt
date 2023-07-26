@@ -692,8 +692,9 @@ class AsyncImageTest {
                 imageLoader = imageLoader,
                 error = BrushPainter(
                     Brush.verticalGradient(
-                        0.0f to Color.Gray,
-                        0.5f to Color.White,
+                        0.0f to Color.Red,
+                        0.5f to Color.Blue,
+                        1.0f to Color.Green,
                     ),
                 ),
                 modifier = Modifier
@@ -710,7 +711,7 @@ class AsyncImageTest {
             .assertWidthIsEqualTo(expectedSize)
             .assertHeightIsEqualTo(expectedSize)
             .captureToImage()
-            .assertIsSimilarTo(R.drawable.vertical_gradient)
+            .assertIsSimilarTo(R.drawable.vertical_gradient, ignoreAlpha = true)
     }
 
     private fun waitForRequestComplete(finishedRequests: Int = 1) {

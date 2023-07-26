@@ -41,18 +41,20 @@ fun resourceUri(@IdRes resId: Int): Uri {
 fun ImageBitmap.assertIsSimilarTo(
     @IdRes resId: Int,
     scale: Scale = Scale.FIT,
+    ignoreAlpha: Boolean = false,
     @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.9 // Use a lower threshold by default.
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val expected = context.getDrawable(resId)!!.toBitmap().scale(width, height, scale)
-    asAndroidBitmap().assertIsSimilarTo(expected, threshold)
+    asAndroidBitmap().assertIsSimilarTo(expected, ignoreAlpha, threshold)
 }
 
 fun ImageBitmap.assertIsSimilarTo(
     bitmap: ImageBitmap,
+    ignoreAlpha: Boolean = false,
     @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.9 // Use a lower threshold by default.
 ) {
-    asAndroidBitmap().assertIsSimilarTo(bitmap.asAndroidBitmap(), threshold)
+    asAndroidBitmap().assertIsSimilarTo(bitmap.asAndroidBitmap(), ignoreAlpha, threshold)
 }
 
 private fun Bitmap.scale(width: Int, height: Int, scale: Scale = Scale.FIT): Bitmap {
