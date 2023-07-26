@@ -50,6 +50,7 @@ fun Bitmap.computeSimilarity(
     suspend fun computeThresholdAsync(index: Int) = async {
         val channel1 = pixels1.await()[index]
         val channel2 = pixels2.await()[index]
+
         val crossCorrelation = crossCorrelation(channel1, channel2)
         if (crossCorrelation.isFinite()) {
             return@async crossCorrelation
