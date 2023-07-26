@@ -41,19 +41,28 @@ fun Bitmap.getPixels(): Array<IntArray> {
 }
 
 @FloatRange(from = -1.0, to = 1.0)
-fun Bitmap.computeSimilarity(other: Bitmap): Double = runBlocking(Dispatchers.Default) {
+fun Bitmap.computeSimilarity(
+    other: Bitmap,
+): Double = runBlocking(Dispatchers.Default) {
     val pixels1 = async { getPixels() }
     val pixels2 = async { other.getPixels() }
 
     suspend fun computeThresholdAsync(index: Int) = async {
         val channel1 = pixels1.await()[index]
         val channel2 = pixels2.await()[index]
+
         val crossCorrelation = crossCorrelation(channel1, channel2)
-        if (crossCorrelation.isNaN()) {
-            if (channel1.contentEquals(channel2)) 1.0 else 0.0
-        } else {
-            crossCorrelation
+        if (crossCorrelation.isFinite()) {
+            return@async crossCorrelation
         }
+
+        // Fall back to ensuring that each value in the array is at most one off from each other.
+        for (i in channel1.indices) {
+            if (channel1[i] !in (channel2[i] - 1)..(channel2[i] + 1)) {
+                return@async 0.0
+            }
+        }
+        return@async 1.0
     }
 
     val alphaThreshold = computeThresholdAsync(0)
