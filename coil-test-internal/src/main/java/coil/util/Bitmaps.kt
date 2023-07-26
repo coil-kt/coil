@@ -82,6 +82,7 @@ fun Bitmap.computeSimilarity(
  */
 fun Bitmap.isSimilarTo(
     expected: Bitmap,
+    ignoreAlpha: Boolean = false,
     @FloatRange(from = -1.0, to = 1.0) threshold: Double = 0.99
 ): Boolean {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
@@ -90,7 +91,7 @@ fun Bitmap.isSimilarTo(
             "expected image (${expected.width}, ${expected.height})."
     }
 
-    return computeSimilarity(expected) >= threshold
+    return computeSimilarity(expected, ignoreAlpha) >= threshold
 }
 
 /**
