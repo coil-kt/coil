@@ -105,7 +105,7 @@ val drawable = imageLoader.execute(request).drawable
 
 Coil は R8 と完全に互換性があり、追加のルールを追加する必要はありません。
 
-Proguardを使用している場合は、[Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro)、[OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/jvmMain/resources/META-INF/proguard/okhttp3.pro)、[Okio](https://github.com/square/okio/blob/master/okio/src/jvmMain/resources/META-INF/proguard/okio.pro)にルールを追加する必要があるかもしれません。
+Proguardを使用している場合は、[Coroutines](https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro)、[OkHttp](https://github.com/square/okhttp/blob/master/okhttp/src/jvmMain/resources/META-INF/proguard/okhttp3.pro)にルールを追加する必要があるかもしれません。
 
 ## ライセンス
 
