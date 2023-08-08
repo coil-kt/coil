@@ -377,7 +377,7 @@ class HttpUriFetcherTest {
         assertIs<SourceResult>(result)
         assertEquals(DataSource.NETWORK, result.dataSource)
         assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-        diskCache[url].use(::assertNotNull)
+        diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Don't set a response body as it should be read from the cache.
         val response = MockResponse()
