@@ -357,6 +357,53 @@ class HttpUriFetcherTest {
         assertEquals(expectedHeaders.toSet(), cacheResponse.responseHeaders.toSet())
     }
 
+    /** Regression test: https://github.com/coil-kt/coil/issues/1838 */
+    @Test
+    fun `cache control - HTTP_NOT_MODIFIED response combines headers with cached response with non-ASCII cached headers`() = runTestAsync {
+        val url = server.url(IMAGE).toString()
+        val headers = Headers.Builder()
+            .set("Cache-Control", "no-cache")
+            .set("Cache-Header", "none")
+            .set("ETag", "fake_etag")
+            .addUnsafeNonAscii(
+                "Content-Disposition",
+                "inline; filename=\"alimentación.webp\""
+            )
+            .build()
+        val expectedSize = server.enqueueImage(IMAGE, headers)
+        var result = newFetcher(url).fetch()
+
+        assertEquals(1, server.requestCount)
+        assertIs<SourceResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+        diskCache.openSnapshot(url).use(::assertNotNull)
+
+        // Don't set a response body as it should be read from the cache.
+        val response = MockResponse()
+            .setResponseCode(HTTP_NOT_MODIFIED)
+            .addHeader("Response-Header", "none")
+        server.enqueue(response)
+        result = newFetcher(url).fetch()
+
+        assertIs<SourceResult>(result)
+        assertEquals(DataSource.NETWORK, result.dataSource)
+        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
+
+        server.takeRequest() // Discard the first request.
+
+        assertEquals(2, server.requestCount)
+        val cacheResponse = diskCache.openSnapshot(url)!!.use { snapshot ->
+            CacheResponse(diskCache.fileSystem.source(snapshot.metadata).buffer())
+        }
+        val expectedHeaders = headers.newBuilder()
+            .addAll(response.headers)
+            // Content-Length is set later by OkHttp.
+            .set("Content-Length", expectedSize.toString())
+            .build()
+        assertEquals(expectedHeaders.toSet(), cacheResponse.responseHeaders.toSet())
+    }
+
     @Test
     fun `cache control - unexpired max-age is returned from cache`() = runTestAsync {
         val url = server.url(IMAGE).toString()

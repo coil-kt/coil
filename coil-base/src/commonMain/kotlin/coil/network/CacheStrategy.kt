@@ -242,14 +242,14 @@ internal class CacheStrategy private constructor(
                     continue
                 }
                 if (isContentSpecificHeader(name) || !isEndToEnd(name) || networkHeaders[name] == null) {
-                    result.add(name, value)
+                    result.addUnsafeNonAscii(name, value)
                 }
             }
 
             for (index in 0 until networkHeaders.size) {
                 val fieldName = networkHeaders.name(index)
                 if (!isContentSpecificHeader(fieldName) && isEndToEnd(fieldName)) {
-                    result.add(fieldName, networkHeaders.value(index))
+                    result.addUnsafeNonAscii(fieldName, networkHeaders.value(index))
                 }
             }
 
