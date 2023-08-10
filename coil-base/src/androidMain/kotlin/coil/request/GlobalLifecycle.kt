@@ -11,7 +11,7 @@ import coil.util.getLifecycle
  *
  * This is used as a fallback if [getLifecycle] cannot find a more tightly scoped [Lifecycle].
  */
-internal object GlobalLifecycle : Lifecycle() {
+internal data object GlobalLifecycle : Lifecycle() {
 
     private val owner = object : LifecycleOwner {
         override val lifecycle get() = this@GlobalLifecycle
@@ -31,6 +31,4 @@ internal object GlobalLifecycle : Lifecycle() {
     }
 
     override fun removeObserver(observer: LifecycleObserver) {}
-
-    override fun toString() = "coil.request.GlobalLifecycle"
 }
