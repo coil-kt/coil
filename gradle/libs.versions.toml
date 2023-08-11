@@ -7,7 +7,7 @@ coroutines = "1.7.3"
 ktlint = "0.50.0"
 okhttp = "4.11.0"
 okio = "3.5.0"
-roborazzi = "1.3.0"
+roborazzi = "1.4.0"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
