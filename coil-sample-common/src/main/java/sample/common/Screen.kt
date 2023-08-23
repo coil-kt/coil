@@ -4,7 +4,7 @@ import coil.memory.MemoryCache
 
 sealed class Screen {
 
-    object List : Screen()
+    data object List : Screen()
 
     data class Detail(
         val image: Image,
