@@ -97,7 +97,7 @@ allprojects {
     }
 
     // Uninstall test APKs after running instrumentation tests.
-    tasks.whenTaskAdded {
+    tasks.configureEach {
         if (name == "connectedDebugAndroidTest") {
             finalizedBy("uninstallDebugAndroidTest")
         }
