@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-/** Suspend until [Lifecycle.getCurrentState] is at least [STARTED] */
+/** Suspend until [Lifecycle.currentState] is at least [STARTED] */
 @MainThread
 internal suspend fun Lifecycle.awaitStarted() {
     // Fast path: we're already started.

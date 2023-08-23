@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -162,7 +163,7 @@ class AsyncImagePainter internal constructor(
     private val drawSize = MutableStateFlow(Size.Zero)
 
     private var painter: Painter? by mutableStateOf(null)
-    private var alpha: Float by mutableStateOf(DefaultAlpha)
+    private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     // These fields allow access to the current value
@@ -309,7 +310,7 @@ class AsyncImagePainter internal constructor(
 
         // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
         // a `CrossfadeTransformation`.
-        val transition = result.request.transitionFactory.create(FakeTransitionTarget, result)
+        val transition = result.request.transitionFactory.create(fakeTransitionTarget, result)
         if (transition is CrossfadeTransition) {
             return CrossfadePainter(
                 start = previous.painter.takeIf { previous is State.Loading },
@@ -344,7 +345,7 @@ class AsyncImagePainter internal constructor(
         abstract val painter: Painter?
 
         /** The request has not been started. */
-        object Empty : State() {
+        data object Empty : State() {
             override val painter: Painter? get() = null
         }
 
@@ -403,7 +404,7 @@ private fun Size.toSizeOrNull() = when {
     else -> null
 }
 
-private val FakeTransitionTarget = object : TransitionTarget {
+private val fakeTransitionTarget = object : TransitionTarget {
     override val view get() = throw UnsupportedOperationException()
     override val drawable: Drawable? get() = null
 }

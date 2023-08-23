@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -121,7 +120,6 @@ private fun AssetTypeButton(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun ScaffoldContent(
     screen: Screen,
     onScreenChange: (Screen) -> Unit,
@@ -163,7 +161,6 @@ private fun DetailScreen(screen: Screen.Detail) {
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun ListScreen(
     gridState: LazyStaggeredGridState,
     images: List<Image>,
