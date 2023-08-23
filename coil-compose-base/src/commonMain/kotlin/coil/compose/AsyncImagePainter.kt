@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -156,7 +157,7 @@ class AsyncImagePainter internal constructor(
     private val drawSize = MutableStateFlow(Size.Zero)
 
     private var painter: Painter? by mutableStateOf(null)
-    private var alpha: Float by mutableStateOf(DefaultAlpha)
+    private var alpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     // These fields allow access to the current value
@@ -306,7 +307,7 @@ class AsyncImagePainter internal constructor(
         val painter: Painter?
 
         /** The request has not been started. */
-        object Empty : State {
+        data object Empty : State {
             override val painter: Painter? get() = null
         }
 

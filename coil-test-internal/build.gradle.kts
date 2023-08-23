@@ -10,6 +10,7 @@ setupLibraryModule(name = "coil.test.internal")
 dependencies {
     api(projects.coilBase)
     api(libs.androidx.activity)
+    api(libs.androidx.appcompat.resources)
     api(libs.androidx.core)
     api(libs.androidx.test.core)
     api(libs.androidx.test.junit)

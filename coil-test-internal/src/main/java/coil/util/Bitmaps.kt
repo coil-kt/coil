@@ -2,6 +2,7 @@ package coil.util
 
 import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.alpha
 import androidx.core.graphics.blue
 import androidx.core.graphics.drawable.toBitmap
@@ -122,5 +123,5 @@ fun Bitmap.assertIsSimilarTo(
     threshold: Double = 0.99
 ) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    assertIsSimilarTo(context.getDrawable(expected)!!.toBitmap(), threshold)
+    assertIsSimilarTo(AppCompatResources.getDrawable(context, expected)!!.toBitmap(), threshold)
 }

@@ -27,7 +27,10 @@ public abstract class coil/compose/AsyncImagePainter$State {
 public final class coil/compose/AsyncImagePainter$State$Empty : coil/compose/AsyncImagePainter$State {
 	public static final field $stable I
 	public static final field INSTANCE Lcoil/compose/AsyncImagePainter$State$Empty;
+	public fun equals (Ljava/lang/Object;)Z
 	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/compose/AsyncImagePainter$State$Error : coil/compose/AsyncImagePainter$State {

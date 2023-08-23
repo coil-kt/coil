@@ -2,6 +2,8 @@ package coil.compose
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
@@ -31,11 +33,11 @@ internal class CrossfadePainter(
     private val preferExactIntrinsicSize: Boolean,
 ) : Painter() {
 
-    private var invalidateTick by mutableStateOf(0)
+    private var invalidateTick by mutableIntStateOf(0)
     private var startTimeMillis = -1L
     private var isDone = false
 
-    private var maxAlpha: Float by mutableStateOf(DefaultAlpha)
+    private var maxAlpha: Float by mutableFloatStateOf(DefaultAlpha)
     private var colorFilter: ColorFilter? by mutableStateOf(null)
 
     override val intrinsicSize get() = computeIntrinsicSize()
