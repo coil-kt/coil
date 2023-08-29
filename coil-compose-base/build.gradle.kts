@@ -29,7 +29,7 @@ kotlin {
         }
         named("androidMain") {
             dependencies {
-                implementation(libs.accompanist.drawablepainter)
+                implementation(libs.google.drawablepainter)
             }
         }
         named("androidUnitTest") {
