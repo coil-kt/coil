@@ -2,7 +2,7 @@
 androidx-activity = "1.7.2"
 androidx-lifecycle = "2.6.1"
 compose = "1.5.0"
-composeCompiler = "1.5.0"
+composeCompiler = "1.5.3"
 coroutines = "1.7.3"
 ktlint = "0.50.0"
 okhttp = "4.11.0"
