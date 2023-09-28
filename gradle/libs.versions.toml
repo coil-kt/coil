@@ -1,14 +1,14 @@
 [versions]
 androidx-activity = "1.7.2"
 androidx-lifecycle = "2.6.2"
-androidx-compose = "1.5.1"
+androidx-compose = "1.5.2"
 androidx-compose-compiler = "1.5.3"
 coroutines = "1.7.3"
 jetbrains-compose = "1.5.0"
 jetbrains-compose-compiler = "1.5.1"
 ktlint = "0.50.0"
 okio = "3.5.0"
-roborazzi = "1.4.0"
+roborazzi = "1.5.0"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
@@ -28,7 +28,7 @@ androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.6.1"
 androidx-annotation = "androidx.annotation:annotation:1.7.0"
-androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.2.0-beta05"
+androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.2.0-rc01"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-exifinterface = "androidx.exifinterface:exifinterface:1.3.6"
