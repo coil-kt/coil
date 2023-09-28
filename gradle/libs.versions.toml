@@ -4,8 +4,8 @@ androidx-lifecycle = "2.6.2"
 androidx-compose = "1.5.2"
 androidx-compose-compiler = "1.5.3"
 coroutines = "1.7.3"
-jetbrains-compose = "1.5.0"
-jetbrains-compose-compiler = "1.5.1"
+jetbrains-compose = "1.5.2"
+jetbrains-compose-compiler = "1.5.2"
 ktlint = "0.50.0"
 okio = "3.5.0"
 roborazzi = "1.5.0"
@@ -69,7 +69,7 @@ kotlinx-immutable-collections = "org.jetbrains.kotlinx:kotlinx-collections-immut
 
 ktlint = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
 
-ktor-core = "io.ktor:ktor-client-core:2.3.2"
+ktor-core = "io.ktor:ktor-client-core:2.3.4"
 
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
@@ -80,7 +80,7 @@ roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.r
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-skiko = "org.jetbrains.skiko:skiko:0.7.77"
+skiko = "org.jetbrains.skiko:skiko:0.7.81"
 
 svg = "com.caverock:androidsvg-aar:1.4"
 
