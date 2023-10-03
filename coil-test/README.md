@@ -20,7 +20,7 @@ val imageLoader = ImageLoader.Builder(context)
 Coil.setImageLoader(imageLoader)
 ```
 
-This strategy works great with [Papparazzi](https://github.com/cashapp/paparazzi) to screenshot test UIs without a physical device or emulator:
+This strategy works great with [Paparazzi](https://github.com/cashapp/paparazzi) to screenshot test UIs without a physical device or emulator:
 
 ```kotlin
 class PaparazziTest {
