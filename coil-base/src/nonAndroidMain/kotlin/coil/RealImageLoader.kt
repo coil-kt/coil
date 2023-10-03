@@ -1,5 +1,6 @@
 package coil
 
+import coil.decode.ImageDecoder
 import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -14,9 +15,7 @@ internal actual fun getDisposable(
 
 internal actual suspend fun awaitLifecycleStarted(
     request: ImageRequest,
-) {
-    // Do nothing.
-}
+) { /* Do nothing. */ }
 
 internal actual inline fun transition(
     result: ImageResult,
@@ -27,4 +26,7 @@ internal actual inline fun transition(
 
 internal actual fun ComponentRegistry.Builder.addPlatformComponents(
     options: RealImageLoader.Options,
-): ComponentRegistry.Builder = this
+): ComponentRegistry.Builder {
+    return this
+        .add(ImageDecoder.Factory())
+}
