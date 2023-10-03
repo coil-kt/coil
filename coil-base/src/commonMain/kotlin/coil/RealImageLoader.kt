@@ -162,7 +162,7 @@ internal class RealImageLoader(
     private fun onSuccess(
         result: SuccessResult,
         target: Target?,
-        eventListener: EventListener
+        eventListener: EventListener,
     ) {
         val request = result.request
         val dataSource = result.dataSource
@@ -179,7 +179,7 @@ internal class RealImageLoader(
     private fun onError(
         result: ErrorResult,
         target: Target?,
-        eventListener: EventListener
+        eventListener: EventListener,
     ) {
         val request = result.request
         options.logger?.log(TAG, Logger.Level.Info) {
