@@ -6,17 +6,17 @@ androidx-compose-compiler = "1.5.3"
 coroutines = "1.7.3"
 jetbrains-compose = "1.5.2"
 jetbrains-compose-compiler = "1.5.2"
-ktlint = "0.50.0"
-okio = "3.5.0"
+ktlint = "1.0.0"
+okio = "3.6.0"
 roborazzi = "1.5.0"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
 dokka = "org.jetbrains.dokka:1.9.0"
-spotless = "com.diffplug.spotless:6.21.0"
+spotless = "com.diffplug.spotless:6.22.0"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.1.1"
+gradlePlugin-android = "com.android.tools.build:gradle:8.1.2"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.22.0"
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10"
