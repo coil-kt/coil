@@ -9,10 +9,10 @@ import okio.FileSystem
  * This instance is used by default by [ImageLoader.Builder] and is necessary to avoid
  * having multiple [DiskCache] instances active in the same directory at the same time.
  */
-private val INSTANCE by lazy {
+private val instance by lazy {
     DiskCache.Builder()
         .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "coil_v3_image_cache")
         .build()
 }
 
-internal actual fun singletonDiskCache(): DiskCache? = INSTANCE
+internal actual fun singletonDiskCache(): DiskCache? = instance

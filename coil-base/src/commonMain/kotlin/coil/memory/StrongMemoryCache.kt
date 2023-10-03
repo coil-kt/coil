@@ -32,7 +32,7 @@ internal interface StrongMemoryCache {
 }
 
 internal class EmptyStrongMemoryCache(
-    private val weakMemoryCache: WeakMemoryCache
+    private val weakMemoryCache: WeakMemoryCache,
 ) : StrongMemoryCache {
 
     override val size get() = 0L
