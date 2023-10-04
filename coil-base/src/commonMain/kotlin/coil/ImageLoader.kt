@@ -86,7 +86,7 @@ interface ImageLoader {
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
         private var logger: Logger?
-        private val extras = Extras.Builder()
+        private val extras: Extras.Builder
 
         constructor(context: PlatformContext) {
             application = context.application
@@ -97,6 +97,7 @@ interface ImageLoader {
             eventListenerFactory = null
             componentRegistry = null
             logger = null
+            extras = Extras.Builder()
         }
 
         internal constructor(options: RealImageLoader.Options) {
@@ -108,6 +109,7 @@ interface ImageLoader {
             eventListenerFactory = options.eventListenerFactory
             componentRegistry = options.componentRegistry
             logger = options.logger
+            extras = options.extras.newBuilder()
         }
 
         /**
