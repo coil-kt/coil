@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.ImageView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import coil.Image
+import coil.asDrawable
 import coil.transition.TransitionTarget
 
 /**
@@ -24,11 +26,11 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
      */
     abstract override var drawable: Drawable?
 
-    override fun onStart(placeholder: Drawable?) = updateDrawable(placeholder)
+    override fun onStart(placeholder: Image?) = updateImage(placeholder)
 
-    override fun onError(error: Drawable?) = updateDrawable(error)
+    override fun onError(error: Image?) = updateImage(error)
 
-    override fun onSuccess(result: Drawable) = updateDrawable(result)
+    override fun onSuccess(result: Image) = updateImage(result)
 
     override fun onStart(owner: LifecycleOwner) {
         isStarted = true
@@ -40,8 +42,9 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
         updateAnimation()
     }
 
-    /** Replace the [ImageView]'s current drawable with [drawable]. */
-    protected fun updateDrawable(drawable: Drawable?) {
+    /** Replace the [ImageView]'s current image with [image]. */
+    protected fun updateImage(image: Image?) {
+        val drawable = image?.asDrawable()
         (this.drawable as? Animatable)?.stop()
         this.drawable = drawable
         updateAnimation()

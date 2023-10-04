@@ -1,11 +1,12 @@
 package coil.transition
 
+import coil.asCoilImage
+import coil.asDrawable
 import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.util.DEFAULT_CROSSFADE_MILLIS
-import kotlin.jvm.JvmOverloads
 
 /**
  * A [Transition] that crossfades from the current drawable to a new one.
@@ -27,15 +28,15 @@ class CrossfadeTransition @JvmOverloads constructor(
     override fun transition() {
         val drawable = CrossfadeDrawable(
             start = target.drawable,
-            end = result.image,
+            end = result.image?.asDrawable(),
             scale = result.request.scale,
             durationMillis = durationMillis,
             fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
             preferExactIntrinsicSize = preferExactIntrinsicSize,
         )
         when (result) {
-            is SuccessResult -> target.onSuccess(drawable)
-            is ErrorResult -> target.onError(drawable)
+            is SuccessResult -> target.onSuccess(drawable.asCoilImage())
+            is ErrorResult -> target.onError(drawable.asCoilImage())
         }
     }
 
