@@ -19,6 +19,7 @@ import coil.size.Size
 import coil.size.isOriginal
 import coil.size.pxOrElse
 import coil.util.safeConfig
+import dev.drewhamilton.poko.Poko
 import kotlin.math.roundToInt
 
 /**
@@ -33,6 +34,7 @@ import kotlin.math.roundToInt
  * @param bottomLeft The radius for the bottom left corner.
  * @param bottomRight The radius for the bottom right corner.
  */
+@Poko
 class RoundedCornersTransformation(
     @Px private val topLeft: Float = 0f,
     @Px private val topRight: Float = 0f,
@@ -110,22 +112,5 @@ class RoundedCornersTransformation(
         val outputWidth = (multiplier * input.width).roundToInt()
         val outputHeight = (multiplier * input.height).roundToInt()
         return outputWidth to outputHeight
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return other is RoundedCornersTransformation &&
-            topLeft == other.topLeft &&
-            topRight == other.topRight &&
-            bottomLeft == other.bottomLeft &&
-            bottomRight == other.bottomRight
-    }
-
-    override fun hashCode(): Int {
-        var result = topLeft.hashCode()
-        result = 31 * result + topRight.hashCode()
-        result = 31 * result + bottomLeft.hashCode()
-        result = 31 * result + bottomRight.hashCode()
-        return result
     }
 }

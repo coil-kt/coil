@@ -22,6 +22,7 @@ import coil.util.asPostProcessor
 import coil.util.heightPx
 import coil.util.isHardware
 import coil.util.widthPx
+import dev.drewhamilton.poko.Poko
 import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
@@ -164,8 +165,9 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         return ScaleDrawable(baseDrawable, options.scale)
     }
 
+    @Poko
     class Factory @JvmOverloads constructor(
-        private val enforceMinimumFrameDelay: Boolean = true
+        val enforceMinimumFrameDelay: Boolean = true,
     ) : Decoder.Factory {
 
         override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
@@ -178,9 +180,5 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 DecodeUtils.isAnimatedWebP(source) ||
                 (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
         }
-
-        override fun equals(other: Any?) = other is Factory
-
-        override fun hashCode() = this::class.hashCode()
     }
 }

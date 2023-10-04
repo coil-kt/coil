@@ -1,3 +1,4 @@
+
 import coil.addAllTargets
 import coil.createJvmCommon
 import coil.createNonAndroidMain
@@ -9,6 +10,7 @@ plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
     id("kotlinx-atomicfu")
+    id("dev.drewhamilton.poko")
 }
 
 addAllTargets(project)

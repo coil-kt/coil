@@ -14,6 +14,7 @@ import coil.request.animationStartCallback
 import coil.request.repeatCount
 import coil.util.animatable2CompatCallbackOf
 import coil.util.isHardware
+import dev.drewhamilton.poko.Poko
 import kotlinx.coroutines.runInterruptible
 import okio.buffer
 
@@ -69,18 +70,15 @@ class GifDecoder @JvmOverloads constructor(
         )
     }
 
+    @Poko
     class Factory @JvmOverloads constructor(
-        private val enforceMinimumFrameDelay: Boolean = true
+        val enforceMinimumFrameDelay: Boolean = true,
     ) : Decoder.Factory {
 
         override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
             if (!DecodeUtils.isGif(result.source.source())) return null
             return GifDecoder(result.source, options, enforceMinimumFrameDelay)
         }
-
-        override fun equals(other: Any?) = other is Factory
-
-        override fun hashCode() = this::class.hashCode()
     }
 
     companion object {

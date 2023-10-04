@@ -38,6 +38,7 @@ import coil.util.ioCoroutineDispatcher
 import coil.util.orEmpty
 import coil.util.scale
 import coil.util.toImmutableList
+import dev.drewhamilton.poko.Poko
 import io.ktor.http.Headers
 import io.ktor.http.HeadersBuilder
 import java.io.File
@@ -55,6 +56,7 @@ import okhttp3.HttpUrl
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
+@Poko
 class ImageRequest private constructor(
     val context: PlatformContext,
 

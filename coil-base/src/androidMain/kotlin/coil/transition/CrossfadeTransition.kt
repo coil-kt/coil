@@ -7,6 +7,7 @@ import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.util.DEFAULT_CROSSFADE_MILLIS
+import dev.drewhamilton.poko.Poko
 
 /**
  * A [Transition] that crossfades from the current drawable to a new one.
@@ -40,6 +41,7 @@ class CrossfadeTransition @JvmOverloads constructor(
         }
     }
 
+    @Poko
     class Factory @JvmOverloads constructor(
         val durationMillis: Int = DEFAULT_CROSSFADE_MILLIS,
         val preferExactIntrinsicSize: Boolean = false
@@ -61,19 +63,6 @@ class CrossfadeTransition @JvmOverloads constructor(
             }
 
             return CrossfadeTransition(target, result, durationMillis, preferExactIntrinsicSize)
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            return other is Factory &&
-                durationMillis == other.durationMillis &&
-                preferExactIntrinsicSize == other.preferExactIntrinsicSize
-        }
-
-        override fun hashCode(): Int {
-            var result = durationMillis
-            result = 31 * result + preferExactIntrinsicSize.hashCode()
-            return result
         }
     }
 }

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build.VERSION.SDK_INT
 import coil.ImageLoader
+import coil.annotation.Poko
 import coil.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
 import coil.fetch.SourceFetchResult
 import coil.request.Options
@@ -13,6 +14,7 @@ import coil.util.heightPx
 import coil.util.toDrawable
 import coil.util.toSoftware
 import coil.util.widthPx
+import dev.drewhamilton.poko.Poko
 import kotlin.math.roundToInt
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Semaphore
@@ -169,19 +171,20 @@ class BitmapFactoryDecoder(
         }
     }
 
+    @Poko
     class Factory @JvmOverloads constructor(
         maxParallelism: Int = DEFAULT_MAX_PARALLELISM,
         private val exifOrientationPolicy: ExifOrientationPolicy = RESPECT_PERFORMANCE,
     ) : Decoder.Factory {
         private val parallelismLock = Semaphore(maxParallelism)
 
-        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder {
+        override fun create(
+            result: SourceFetchResult,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Decoder {
             return BitmapFactoryDecoder(result.source, options, parallelismLock, exifOrientationPolicy)
         }
-
-        override fun equals(other: Any?) = other is Factory
-
-        override fun hashCode() = this::class.hashCode()
     }
 
     /** Prevent [BitmapFactory.decodeStream] from swallowing [Exception]s. */

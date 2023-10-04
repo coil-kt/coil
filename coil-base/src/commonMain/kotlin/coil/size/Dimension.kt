@@ -3,6 +3,7 @@
 package coil.size
 
 import coil.request.Options
+import dev.drewhamilton.poko.Poko
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmName
 
@@ -14,20 +15,12 @@ sealed interface Dimension {
     /**
      * Represents a fixed, positive number of pixels.
      */
+    @Poko
     class Pixels(@JvmField val px: Int) : Dimension {
 
         init {
             require(px > 0) { "px must be > 0." }
         }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            return other is Pixels && px == other.px
-        }
-
-        override fun hashCode() = px
-
-        override fun toString() = px.toString()
     }
 
     /**
@@ -41,9 +34,7 @@ sealed interface Dimension {
      *
      * NOTE: If either dimension is [Undefined], [Options.scale] is always [Scale.FIT].
      */
-    object Undefined : Dimension {
-        override fun toString() = "Dimension.Undefined"
-    }
+    data object Undefined : Dimension
 }
 
 /** Create a [Dimension.Pixels] value with [px] number of pixels. */

@@ -3,10 +3,12 @@ package coil.transition
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
+import dev.drewhamilton.poko.Poko
 
 /**
  * A transition that applies the [ImageResult] on the [TransitionTarget] without animating.
  */
+@Poko
 internal class NoneTransition(
     private val target: TransitionTarget,
     private val result: ImageResult
@@ -24,9 +26,5 @@ internal class NoneTransition(
         override fun create(target: TransitionTarget, result: ImageResult): Transition {
             return NoneTransition(target, result)
         }
-
-        override fun equals(other: Any?) = other is Factory
-
-        override fun hashCode() = this::class.hashCode()
     }
 }

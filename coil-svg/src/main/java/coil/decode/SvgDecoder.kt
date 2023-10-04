@@ -14,6 +14,7 @@ import coil.util.toPx
 import coil.util.toSoftware
 import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
+import dev.drewhamilton.poko.Poko
 import kotlin.math.roundToInt
 import kotlinx.coroutines.runInterruptible
 
@@ -91,6 +92,7 @@ class SvgDecoder @JvmOverloads constructor(
         }
     }
 
+    @Poko
     class Factory @JvmOverloads constructor(
         val useViewBoundsAsIntrinsicSize: Boolean = true
     ) : Decoder.Factory {
@@ -103,14 +105,6 @@ class SvgDecoder @JvmOverloads constructor(
         private fun isApplicable(result: SourceFetchResult): Boolean {
             return result.mimeType == MIME_TYPE_SVG || DecodeUtils.isSvg(result.source.source())
         }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            return other is Factory &&
-                useViewBoundsAsIntrinsicSize == other.useViewBoundsAsIntrinsicSize
-        }
-
-        override fun hashCode() = useViewBoundsAsIntrinsicSize.hashCode()
     }
 
     companion object {

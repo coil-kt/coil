@@ -3,6 +3,7 @@ import coil.setupLibraryModule
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("dev.drewhamilton.poko")
 }
 
 setupLibraryModule(name = "coil.gif")

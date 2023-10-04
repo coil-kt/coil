@@ -31,6 +31,7 @@ buildscript {
 plugins {
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.poko) apply false
     alias(libs.plugins.spotless)
 }
 
