@@ -1,6 +1,6 @@
 package coil.network
 
-import coil.util.Time
+import coil.util.Clock
 import coil.util.toNonNegativeInt
 import java.util.Date
 import java.util.concurrent.TimeUnit.SECONDS
@@ -18,7 +18,8 @@ internal class CacheStrategy private constructor(
 
     class Factory(
         private val request: Request,
-        private val cacheResponse: CacheResponse?
+        private val cacheResponse: CacheResponse?,
+        private val clock: Clock,
     ) {
 
         /** The server's time when the cached response was served, if known. */
@@ -198,7 +199,7 @@ internal class CacheStrategy private constructor(
             }
 
             val responseDuration = receivedResponseMillis - sentRequestMillis
-            val residentDuration = Time.currentMillis() - receivedResponseMillis
+            val residentDuration = clock.epochMillis() - receivedResponseMillis
             return receivedAge + responseDuration + residentDuration
         }
 

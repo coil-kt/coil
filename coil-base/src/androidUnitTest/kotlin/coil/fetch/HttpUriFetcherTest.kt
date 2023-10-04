@@ -13,9 +13,11 @@ import coil.disk.DiskCache
 import coil.network.CacheResponse
 import coil.request.CachePolicy
 import coil.request.Options
-import coil.util.Time
+import coil.util.Clock
+import coil.util.FakeClock
 import coil.util.createMockWebServer
 import coil.util.enqueueImage
+import coil.util.getTimeMillis
 import coil.util.runTestAsync
 import java.io.File
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
@@ -54,6 +56,7 @@ class HttpUriFetcherTest {
     private lateinit var server: MockWebServer
     private lateinit var fileSystem: FileSystem
     private lateinit var diskCache: DiskCache
+    private lateinit var clock: FakeClock
     private lateinit var callFactory: Call.Factory
     private lateinit var imageLoader: ImageLoader
 
@@ -66,6 +69,7 @@ class HttpUriFetcherTest {
             .directory(File("build/cache"))
             .maxSizeBytes(10L * 1024 * 1024) // 10MB
             .build()
+        clock = FakeClock()
         callFactory = OkHttpClient()
         imageLoader = ImageLoader.Builder(context)
             .callFactory(callFactory)
@@ -75,7 +79,6 @@ class HttpUriFetcherTest {
 
     @After
     fun after() {
-        Time.reset()
         server.shutdown()
         imageLoader.shutdown()
         diskCache.clear()
@@ -433,7 +436,6 @@ class HttpUriFetcherTest {
     fun `cache control - expired max-age is not returned from cache`() = runTestAsync {
         val url = server.url(IMAGE).toString()
 
-        val now = System.currentTimeMillis()
         val headers = Headers.Builder()
             .set("Cache-Control", "max-age=60")
             .build()
@@ -447,7 +449,7 @@ class HttpUriFetcherTest {
         diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Increase the current time.
-        Time.setCurrentMillis(now + 65_000)
+        clock.epochMillis += 65_000
 
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = newFetcher(url).fetch()
@@ -463,9 +465,10 @@ class HttpUriFetcherTest {
         options: Options = Options(context),
         callFactory: Call.Factory = this.callFactory,
         diskCache: DiskCache? = this.diskCache,
+        clock: Clock = this.clock,
         respectCacheHeaders: Boolean = true,
     ): Fetcher {
-        val factory = HttpUriFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), respectCacheHeaders)
+        val factory = HttpUriFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), clock, respectCacheHeaders)
         return checkNotNull(factory.create(url.toUri(), options, imageLoader)) { "fetcher == null" }
     }
 

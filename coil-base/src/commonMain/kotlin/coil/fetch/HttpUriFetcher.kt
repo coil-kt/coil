@@ -13,6 +13,7 @@ import coil.network.CacheStrategy
 import coil.network.CacheStrategy.Companion.combineHeaders
 import coil.network.HttpException
 import coil.request.Options
+import coil.util.Clock
 import coil.util.abortQuietly
 import coil.util.await
 import coil.util.closeQuietly
@@ -33,7 +34,8 @@ internal class HttpUriFetcher(
     private val options: Options,
     private val callFactory: Lazy<Call.Factory>,
     private val diskCache: Lazy<DiskCache?>,
-    private val respectCacheHeaders: Boolean
+    private val clock: Clock,
+    private val respectCacheHeaders: Boolean,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -53,7 +55,11 @@ internal class HttpUriFetcher(
 
                 // Return the candidate from the cache if it is eligible.
                 if (respectCacheHeaders) {
-                    cacheStrategy = CacheStrategy.Factory(newRequest(), snapshot.toCacheResponse()).compute()
+                    cacheStrategy = CacheStrategy.Factory(
+                        request = newRequest(),
+                        cacheResponse = snapshot.toCacheResponse(),
+                        clock = clock,
+                    ).compute()
                     if (cacheStrategy.networkRequest == null && cacheStrategy.cacheResponse != null) {
                         return SourceFetchResult(
                             source = snapshot.toImageSource(),
@@ -70,7 +76,11 @@ internal class HttpUriFetcher(
                     )
                 }
             } else {
-                cacheStrategy = CacheStrategy.Factory(newRequest(), null).compute()
+                cacheStrategy = CacheStrategy.Factory(
+                    request = newRequest(),
+                    cacheResponse = null,
+                    clock = clock,
+                ).compute()
             }
 
             // Slow path: fetch the image from the network.
@@ -280,12 +290,20 @@ internal class HttpUriFetcher(
     class Factory(
         private val callFactory: Lazy<Call.Factory>,
         private val diskCache: Lazy<DiskCache?>,
-        private val respectCacheHeaders: Boolean
+        private val clock: Clock,
+        private val respectCacheHeaders: Boolean,
     ) : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
             if (!isApplicable(data)) return null
-            return HttpUriFetcher(data.toString(), options, callFactory, diskCache, respectCacheHeaders)
+            return HttpUriFetcher(
+                url = data.toString(),
+                options = options,
+                callFactory = callFactory,
+                diskCache = diskCache,
+                clock = clock,
+                respectCacheHeaders = respectCacheHeaders,
+            )
         }
 
         private fun isApplicable(data: Uri): Boolean {

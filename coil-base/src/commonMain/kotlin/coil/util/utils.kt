@@ -2,9 +2,6 @@
 
 package coil.util
 
-import android.content.ContentResolver.SCHEME_FILE
-import android.net.Uri
-import android.os.Looper
 import coil.ComponentRegistry
 import coil.EventListener
 import coil.Image
@@ -15,10 +12,7 @@ import coil.fetch.Fetcher
 import coil.intercept.Interceptor
 import coil.intercept.RealInterceptorChain
 import coil.memory.MemoryCache
-import coil.request.DefaultRequestOptions
 import coil.request.ImageRequest
-import coil.request.Parameters
-import coil.request.Tags
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
@@ -26,9 +20,6 @@ import coil.size.isOriginal
 import coil.size.pxOrElse
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Headers
 import okhttp3.Response
 import okhttp3.ResponseBody
@@ -75,6 +66,14 @@ internal fun DiskCache.Editor.abortQuietly() {
         abort()
     } catch (_: Exception) {}
 }
+
+/** A simple interface for fetching the time. */
+internal fun interface Clock {
+    fun epochMillis(): Long
+}
+
+/** Return the current epoch timestamp. */
+internal expect fun getTimeMillis(): Long
 
 /**
  * Return 'true' if the request does not require the output image's size to match the

@@ -27,6 +27,7 @@ import coil.target.ViewTarget
 import coil.transition.NoneTransition
 import coil.transition.TransitionTarget
 import coil.util.awaitStarted
+import coil.util.getTimeMillis
 import kotlinx.coroutines.Deferred
 
 internal actual fun getDisposable(
@@ -90,6 +91,7 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents(
             HttpUriFetcher.Factory(
                 callFactory = options.httpClientLazy,
                 diskCache = options.diskCacheLazy,
+                clock = ::getTimeMillis,
                 respectCacheHeaders = options.respectCacheHeaders,
             ),
         )
