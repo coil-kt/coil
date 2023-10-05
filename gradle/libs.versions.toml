@@ -1,7 +1,7 @@
 [versions]
-androidx-activity = "1.7.2"
+androidx-activity = "1.8.0"
 androidx-lifecycle = "2.6.2"
-androidx-compose = "1.5.2"
+androidx-compose = "1.5.3"
 androidx-compose-compiler = "1.5.3"
 coroutines = "1.7.3"
 jetbrains-compose = "1.5.2"
