@@ -88,4 +88,6 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
+internal val Size.isPositive get() = width >= 0.5 && height >= 0.5
+
 internal val ZeroConstraints = Constraints.fixed(0, 0)

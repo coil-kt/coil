@@ -355,8 +355,6 @@ private fun unsupportedData(
     description: String = "If you wish to display this $name, use androidx.compose.foundation.Image."
 ): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
 
-private val Size.isPositive get() = width >= 0.5 && height >= 0.5
-
 private fun Size.toSizeOrNull() = when {
     isUnspecified -> CoilSize.ORIGINAL
     isPositive -> CoilSize(

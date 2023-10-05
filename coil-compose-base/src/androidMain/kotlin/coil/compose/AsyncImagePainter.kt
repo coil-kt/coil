@@ -1,3 +1,5 @@
+package coil.compose
+
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.ui.graphics.FilterQuality
@@ -7,8 +9,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil.Image
 import coil.asDrawable
-import coil.compose.AsyncImagePainter
-import coil.compose.CrossfadePainter
 import coil.request.SuccessResult
 import coil.transition.CrossfadeTransition
 import coil.transition.TransitionTarget
@@ -41,7 +41,7 @@ internal actual fun maybeNewCrossfadePainter(
 
     // Invoke the transition factory and wrap the painter in a `CrossfadePainter` if it returns
     // a `CrossfadeTransformation`.
-    val transition = result.request.transitionFactory.create(FakeTransitionTarget, result)
+    val transition = result.request.transitionFactory.create(fakeTransitionTarget, result)
     if (transition is CrossfadeTransition) {
         return CrossfadePainter(
             start = previous.painter.takeIf { previous is AsyncImagePainter.State.Loading },
@@ -56,7 +56,7 @@ internal actual fun maybeNewCrossfadePainter(
     }
 }
 
-private val FakeTransitionTarget = object : TransitionTarget {
+private val fakeTransitionTarget = object : TransitionTarget {
     override val view get() = throw UnsupportedOperationException()
     override val drawable: Drawable? get() = null
 }

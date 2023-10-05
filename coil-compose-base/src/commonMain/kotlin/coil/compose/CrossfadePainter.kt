@@ -16,11 +16,12 @@ import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.times
+import kotlin.time.TimeSource
 
 /**
  * A [Painter] that crossfades from [start] to [end].
  *
- * NOTE: The animation can only be executed once as the [start] drawable is dereferenced at
+ * NOTE: The animation can only be executed once as the [start] painter is dereferenced at
  * the end of the transition.
  */
 @Stable
@@ -34,7 +35,7 @@ internal class CrossfadePainter(
 ) : Painter() {
 
     private var invalidateTick by mutableIntStateOf(0)
-    private var startTimeMillis = -1L
+    private var startTime: TimeSource.Monotonic.ValueTimeMark? = null
     private var isDone = false
 
     private var maxAlpha: Float by mutableFloatStateOf(DefaultAlpha)
@@ -48,13 +49,9 @@ internal class CrossfadePainter(
             return
         }
 
-        // Initialize startTimeMillis the first time we're drawn.
-        val uptimeMillis = SystemClock.uptimeMillis()
-        if (startTimeMillis == -1L) {
-            startTimeMillis = uptimeMillis
-        }
-
-        val percent = (uptimeMillis - startTimeMillis) / durationMillis.toFloat()
+        // Initialize startTime the first time we're drawn.
+        val startTime = startTime ?: TimeSource.Monotonic.markNow().also { startTime = it }
+        val percent = startTime.elapsedNow().inWholeMilliseconds / durationMillis.toFloat()
         val endAlpha = percent.coerceIn(0f, 1f) * maxAlpha
         val startAlpha = if (fadeStart) maxAlpha - endAlpha else maxAlpha
         isDone = percent >= 1f

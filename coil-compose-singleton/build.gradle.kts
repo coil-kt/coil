@@ -13,13 +13,7 @@ plugins {
 addAllTargets(project)
 setupLibraryModule(name = "coil.compose.singleton")
 
-compose {
-    kotlinCompilerPlugin by libs.jetbrains.compose.compiler.get().toString()
-}
-
 kotlin {
-    createNonAndroidMain()
-
     sourceSets {
         commonMain {
             dependencies {
@@ -28,4 +22,8 @@ kotlin {
             }
         }
     }
+}
+
+compose {
+    kotlinCompilerPlugin by libs.jetbrains.compose.compiler.get().toString()
 }

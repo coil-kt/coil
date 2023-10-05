@@ -13,10 +13,6 @@ plugins {
 addAllTargets(project)
 setupLibraryModule(name = "coil.compose.base")
 
-compose {
-    kotlinCompilerPlugin by libs.jetbrains.compose.compiler.get().toString()
-}
-
 kotlin {
     createNonAndroidMain()
 
@@ -46,4 +42,8 @@ kotlin {
             }
         }
     }
+}
+
+compose {
+    kotlinCompilerPlugin by libs.jetbrains.compose.compiler.get().toString()
 }
