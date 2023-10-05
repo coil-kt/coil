@@ -7,6 +7,7 @@ coroutines = "1.7.3"
 jetbrains-compose = "1.5.2"
 jetbrains-compose-compiler = "1.5.2"
 ktlint = "1.0.0"
+ktor = "2.3.4"
 okio = "3.6.0"
 roborazzi = "1.5.0"
 
@@ -70,7 +71,8 @@ kotlinx-immutable-collections = "org.jetbrains.kotlinx:kotlinx-collections-immut
 
 ktlint = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
 
-ktor-core = "io.ktor:ktor-client-core:2.3.4"
+ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
