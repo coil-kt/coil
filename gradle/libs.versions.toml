@@ -5,7 +5,7 @@ compose = "1.5.3"
 composeCompiler = "1.5.3"
 coroutines = "1.7.3"
 ktlint = "1.0.0"
-okhttp = "4.11.0"
+okhttp = "4.12.0"
 okio = "3.6.0"
 roborazzi = "1.6.0"
 
