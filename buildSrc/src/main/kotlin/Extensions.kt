@@ -4,7 +4,6 @@ package coil
 
 import kotlin.math.pow
 import org.gradle.api.Project
-import org.gradle.api.provider.Property
 
 val Project.minSdk: Int
     get() = intProperty("minSdk")
@@ -68,5 +67,3 @@ private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
     }
     return sum
 }
-
-inline infix fun <T> Property<T>.by(value: T) = set(value)

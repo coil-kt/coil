@@ -1,4 +1,4 @@
-import coil.by
+
 import coil.groupId
 import coil.privateModules
 import coil.versionName
@@ -40,7 +40,7 @@ extensions.configure<ApiValidationExtension> {
 }
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
-    outputDirectory by layout.projectDirectory.dir("docs/api")
+    outputDirectory = layout.projectDirectory.dir("docs/api")
 }
 
 allprojects {
@@ -61,27 +61,27 @@ allprojects {
         options.compilerArgs = options.compilerArgs + "-Xlint:-options"
     }
     tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions.jvmTarget by JvmTarget.JVM_1_8
+        compilerOptions.jvmTarget = JvmTarget.JVM_1_8
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
         // https://github.com/Kotlin/dokka/issues/2993
         @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
         dokkaSourceSets.configureEach {
-            jdkVersion by 8
-            failOnWarning by true
-            skipDeprecated by true
-            suppressInheritedMembers by true
+            jdkVersion = 8
+            failOnWarning = true
+            skipDeprecated = true
+            suppressInheritedMembers = true
 
             externalDocumentationLink {
-                url by URL("https://developer.android.com/reference/")
+                url = URL("https://developer.android.com/reference/")
             }
             externalDocumentationLink {
-                url by URL("https://kotlinlang.org/api/kotlinx.coroutines/")
+                url = URL("https://kotlinlang.org/api/kotlinx.coroutines/")
             }
             externalDocumentationLink {
-                url by URL("https://square.github.io/okio/3.x/okio/")
-                packageListUrl by URL("https://square.github.io/okio/3.x/okio/okio/package-list")
+                url = URL("https://square.github.io/okio/3.x/okio/")
+                packageListUrl = URL("https://square.github.io/okio/3.x/okio/okio/package-list")
             }
         }
     }

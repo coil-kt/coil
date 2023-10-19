@@ -122,7 +122,7 @@ private fun <T : BaseExtension> Project.setupBaseModule(
     }
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions {
-            allWarningsAsErrors by System.getenv("CI").toBoolean()
+            allWarningsAsErrors.set(System.getenv("CI").toBoolean())
 
             val arguments = mutableListOf(
                 // https://kotlinlang.org/docs/compiler-reference.html#progressive

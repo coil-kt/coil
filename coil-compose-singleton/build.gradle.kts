@@ -1,6 +1,4 @@
 import coil.addAllTargets
-import coil.by
-import coil.createNonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
@@ -25,5 +23,5 @@ kotlin {
 }
 
 compose {
-    kotlinCompilerPlugin by libs.jetbrains.compose.compiler.get().toString()
+    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
 }
