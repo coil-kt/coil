@@ -1,7 +1,7 @@
 [versions]
 androidx-activity = "1.8.0"
 androidx-lifecycle = "2.6.2"
-compose = "1.5.3"
+compose = "1.5.4"
 composeCompiler = "1.5.3"
 coroutines = "1.7.3"
 ktlint = "1.0.0"
