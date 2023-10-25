@@ -17,7 +17,7 @@ internal class RealInterceptorChain(
 ) : Interceptor.Chain {
 
     override fun withRequest(request: ImageRequest): Interceptor.Chain {
-        checkRequest(request, null)
+        if (index > 0) checkRequest(request, interceptors[index - 1])
         return copy(request = request)
     }
 
@@ -34,30 +34,22 @@ internal class RealInterceptorChain(
         return result
     }
 
-    private fun checkRequest(request: ImageRequest, interceptor: Interceptor?) {
+    private fun checkRequest(request: ImageRequest, interceptor: Interceptor) {
         check(request.context === initialRequest.context) {
-            "${errorPrefix(interceptor)} cannot modify the request's context."
+            "Interceptor '$interceptor' cannot modify the request's context."
         }
         check(request.data !== NullRequestData) {
-            "${errorPrefix(interceptor)} cannot set the request's data to null."
+            "Interceptor '$interceptor' cannot set the request's data to null."
         }
         check(request.target === initialRequest.target) {
-            "${errorPrefix(interceptor)} cannot modify the request's target."
+            "Interceptor '$interceptor' cannot modify the request's target."
         }
         check(request.lifecycle === initialRequest.lifecycle) {
-            "${errorPrefix(interceptor)} cannot modify the request's lifecycle."
+            "Interceptor '$interceptor' cannot modify the request's lifecycle."
         }
         check(request.sizeResolver === initialRequest.sizeResolver) {
-            "${errorPrefix(interceptor)} cannot modify the request's size resolver. " +
+            "Interceptor '$interceptor' cannot modify the request's size resolver. " +
                 "Use `Interceptor.Chain.withSize` instead."
-        }
-    }
-
-    private fun errorPrefix(interceptor: Interceptor?): String {
-        if (interceptor != null) {
-            return "Interceptor '$interceptor'"
-        } else {
-            return "'withRequest'"
         }
     }
 
