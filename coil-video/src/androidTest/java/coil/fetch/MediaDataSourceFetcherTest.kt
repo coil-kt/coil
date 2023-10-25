@@ -10,7 +10,6 @@ import coil.util.assumeTrue
 import coil.util.copyAssetToFile
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
