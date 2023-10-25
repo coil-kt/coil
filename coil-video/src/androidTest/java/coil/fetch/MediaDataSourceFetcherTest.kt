@@ -1,7 +1,7 @@
 package coil.fetch
 
 import android.content.Context
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
 import coil.FileMediaDataSource
 import coil.ImageLoader
@@ -28,7 +28,8 @@ class MediaDataSourceFetcherTest {
 
     @Test
     fun basic() = runTest {
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        assumeTrue(SDK_INT >= 23)
+
         val file = context.copyAssetToFile("video.mp4")
 
         val dataSource = FileMediaDataSource(file)
@@ -38,7 +39,7 @@ class MediaDataSourceFetcherTest {
 
         val result = fetcher.fetch()
 
-        assertTrue(result is SourceResult)
+        assertIs<SourceResult>(result)
         assertEquals(null, result.mimeType)
         assertIs<MediaDataSourceFetcher.MediaSourceMetadata>(result.source.metadata)
     }
