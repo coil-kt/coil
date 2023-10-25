@@ -9,6 +9,7 @@ import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
+import coil.test.FakeImageLoaderEngine.RequestTransformer
 import coil.transition.Transition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -47,19 +48,21 @@ class FakeImageLoaderEngine private constructor(
     val results: Flow<ResultValue> get() = _results.asSharedFlow()
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
-        val request = RequestValue(requestTransformer.transform(chain.request), chain.size)
-        _requests.emit(request)
+        val request = requestTransformer.transform(chain.request)
+        val requestValue = RequestValue(request, chain.size)
+        _requests.emit(requestValue)
 
         var result: ImageResult? = null
         for (interceptor in interceptors) {
-            result = interceptor.intercept(chain)
+            val newChain = chain.withRequest(request)
+            result = interceptor.intercept(newChain)
             if (result != null) break
         }
         if (result == null) {
             result = defaultInterceptor.intercept(chain)
         }
 
-        _results.emit(ResultValue(request, result))
+        _results.emit(ResultValue(requestValue, result))
         return result
     }
 

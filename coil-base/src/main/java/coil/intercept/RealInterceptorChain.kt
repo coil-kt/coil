@@ -16,7 +16,14 @@ internal class RealInterceptorChain(
     val isPlaceholderCached: Boolean,
 ) : Interceptor.Chain {
 
-    override fun withSize(size: Size) = copy(size = size)
+    override fun withRequest(request: ImageRequest): Interceptor.Chain {
+        if (index > 0) checkRequest(request, interceptors[index - 1])
+        return copy(request = request)
+    }
+
+    override fun withSize(size: Size): Interceptor.Chain {
+        return copy(size = size)
+    }
 
     override suspend fun proceed(request: ImageRequest): ImageResult {
         if (index > 0) checkRequest(request, interceptors[index - 1])
