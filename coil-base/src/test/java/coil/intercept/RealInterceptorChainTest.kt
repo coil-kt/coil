@@ -134,6 +134,20 @@ class RealInterceptorChainTest {
         assertSame(request, result.request)
     }
 
+    @Test
+    fun `withRequest modifies the chain's request`() = runTest {
+        val initialRequest = createRequest(context)
+        val interceptor1 = Interceptor { chain ->
+            val request = chain.request.newBuilder()
+                .memoryCacheKey(MemoryCache.Key("test"))
+                .build()
+            assertEquals(chain.withRequest(request).request, request)
+            chain.proceed(request)
+        }
+
+        testChain(initialRequest, listOf(interceptor1))
+    }
+
     private suspend fun testChain(request: ImageRequest, interceptors: List<Interceptor>): ImageResult {
         val chain = RealInterceptorChain(
             initialRequest = request,

@@ -16,7 +16,14 @@ internal class RealInterceptorChain(
     val isPlaceholderCached: Boolean,
 ) : Interceptor.Chain {
 
-    override fun withSize(size: Size) = copy(size = size)
+    override fun withRequest(request: ImageRequest): Interceptor.Chain {
+        checkRequest(request, null)
+        return copy(request = request)
+    }
+
+    override fun withSize(size: Size): Interceptor.Chain {
+        return copy(size = size)
+    }
 
     override suspend fun proceed(request: ImageRequest): ImageResult {
         if (index > 0) checkRequest(request, interceptors[index - 1])
@@ -27,22 +34,30 @@ internal class RealInterceptorChain(
         return result
     }
 
-    private fun checkRequest(request: ImageRequest, interceptor: Interceptor) {
+    private fun checkRequest(request: ImageRequest, interceptor: Interceptor?) {
         check(request.context === initialRequest.context) {
-            "Interceptor '$interceptor' cannot modify the request's context."
+            "${errorPrefix(interceptor)} cannot modify the request's context."
         }
         check(request.data !== NullRequestData) {
-            "Interceptor '$interceptor' cannot set the request's data to null."
+            "${errorPrefix(interceptor)} cannot set the request's data to null."
         }
         check(request.target === initialRequest.target) {
-            "Interceptor '$interceptor' cannot modify the request's target."
+            "${errorPrefix(interceptor)} cannot modify the request's target."
         }
         check(request.lifecycle === initialRequest.lifecycle) {
-            "Interceptor '$interceptor' cannot modify the request's lifecycle."
+            "${errorPrefix(interceptor)} cannot modify the request's lifecycle."
         }
         check(request.sizeResolver === initialRequest.sizeResolver) {
-            "Interceptor '$interceptor' cannot modify the request's size resolver. " +
+            "${errorPrefix(interceptor)} cannot modify the request's size resolver. " +
                 "Use `Interceptor.Chain.withSize` instead."
+        }
+    }
+
+    private fun errorPrefix(interceptor: Interceptor?): String {
+        if (interceptor != null) {
+            return "Interceptor '$interceptor'"
+        } else {
+            return "'withRequest'"
         }
     }
 

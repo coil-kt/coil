@@ -1,6 +1,7 @@
 package coil.intercept
 
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
@@ -19,7 +20,20 @@ fun interface Interceptor {
         val size: Size
 
         /**
-         * Set the requested [Size] to load the image at.
+         * Copy the current [Chain] and replace [request].
+         *
+         * This method is similar to [proceed] except it doesn't advance the chain to the
+         * next interceptor.
+         *
+         * @param request The current image request.
+         */
+        @ExperimentalCoilApi
+        fun withRequest(request: ImageRequest): Chain
+
+        /**
+         * Copy the current [Chain] and replace [size].
+         *
+         * Use this method to replace the resolved size for this image request.
          *
          * @param size The requested size for the image.
          */

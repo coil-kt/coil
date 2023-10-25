@@ -9,6 +9,7 @@ import coil.decode.DataSource
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.test.FakeImageLoaderEngine.OptionalInterceptor
+import coil.transition.Transition
 import kotlin.test.assertIs
 import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest
@@ -123,5 +124,24 @@ class FakeImageLoaderEngineTest {
             assertIs<SuccessResult>(result)
             assertSame(drawable, result.drawable)
         }
+    }
+
+    @Test
+    fun `removes transition factory`() = runTest {
+        val url = "https://www.example.com/image.jpg"
+        val engine = FakeImageLoaderEngine.Builder()
+            .intercept(url, ColorDrawable(Color.RED))
+            .build()
+        val imageLoader = ImageLoader.Builder(context)
+            .components { add(engine) }
+            .build()
+        val request = ImageRequest.Builder(context)
+            .data(url)
+            .crossfade(true)
+            .build()
+
+        val result = imageLoader.execute(request)
+        assertIs<SuccessResult>(result)
+        assertSame(Transition.Factory.NONE, result.request.transitionFactory)
     }
 }
