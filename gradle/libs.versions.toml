@@ -6,7 +6,7 @@ androidx-compose-compiler = "1.5.3"
 coroutines = "1.7.3"
 jetbrains-compose = "1.5.3"
 jetbrains-compose-compiler = "1.5.2"
-ktlint = "1.0.0"
+ktlint = "1.0.1"
 ktor = "2.3.4"
 okio = "3.6.0"
 roborazzi = "1.6.0"
@@ -83,7 +83,7 @@ roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.r
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-skiko = "org.jetbrains.skiko:skiko:0.7.84"
+skiko = "org.jetbrains.skiko:skiko:0.7.85"
 
 svg = "com.caverock:androidsvg-aar:1.4"
 
