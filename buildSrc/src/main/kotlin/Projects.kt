@@ -7,13 +7,15 @@ import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun Project.setupLibraryModule(
     name: String,
@@ -23,11 +25,16 @@ fun Project.setupLibraryModule(
     buildFeatures {
         buildConfig = config
     }
-    if (false && project.name in publicModules) {
+    if (project.name in publicModules) {
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
         setupPublishing {
-            configure(AndroidSingleVariantLibrary())
+            val platform = if (project.name in multiplatformModules) {
+                KotlinMultiplatform(JavadocJar.Dokka("dokkaHtml"))
+            } else {
+                AndroidSingleVariantLibrary()
+            }
+            configure(platform)
         }
     }
     action()
@@ -120,7 +127,7 @@ private fun <T : BaseExtension> Project.setupBaseModule(
             }
         }
     }
-    tasks.withType<KotlinJvmCompile>().configureEach {
+    tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             allWarningsAsErrors.set(System.getenv("CI").toBoolean())
 
@@ -134,7 +141,7 @@ private fun <T : BaseExtension> Project.setupBaseModule(
                 "-Xno-param-assertions",
                 "-Xno-receiver-assertions",
             )
-            if (project.name != "coil-benchmark" && project.name != "coil-test-internal") {
+            if (project.name != "coil-benchmark") {
                 arguments += "-opt-in=coil.annotation.ExperimentalCoilApi"
             }
             freeCompilerArgs.addAll(arguments)

@@ -1,5 +1,3 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package coil
 
 import kotlin.math.pow
@@ -30,6 +28,14 @@ val Project.versionCode: Int
             // 1.2.3 -> 102030
             (unit * 10.0.pow(2 * index + 1)).toInt()
         }
+
+val multiplatformModules = listOf(
+    "coil-base",
+    "coil-singleton",
+    "coil-compose-base",
+    "coil-compose-singleton",
+    "coil-test",
+)
 
 val publicModules = listOf(
     "coil-base",
