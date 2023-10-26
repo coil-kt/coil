@@ -2,6 +2,7 @@ package coil.test
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -10,6 +11,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.util.ComposeTestActivity
 import com.github.takahirom.roborazzi.RoborazziRule
 import org.junit.Rule
@@ -29,14 +31,14 @@ class RoborazziComposeTest {
         composeRule = composeTestRule,
         captureRoot = composeTestRule.onRoot(),
         options = RoborazziRule.Options(
+            captureType = RoborazziRule.CaptureType.LastImage(),
             outputDirectoryPath = "src/test/snapshots/images",
         )
     )
 
     @Test
-    fun loadCompose() {
+    fun asyncImage() {
         val url = "https://www.example.com/image.jpg"
-        // Wrap the color drawable so it isn't automatically converted into a ColorPainter.
         val drawable = object : ColorDrawable(Color.RED) {
             override fun getIntrinsicWidth() = 100
             override fun getIntrinsicHeight() = 100
@@ -53,6 +55,33 @@ class RoborazziComposeTest {
                 model = url,
                 contentDescription = null,
                 imageLoader = imageLoader,
+                contentScale = ContentScale.None,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
+
+    @Test
+    fun rememberAsyncImagePainter() {
+        val url = "https://www.example.com/image.jpg"
+        val drawable = object : ColorDrawable(Color.RED) {
+            override fun getIntrinsicWidth() = 100
+            override fun getIntrinsicHeight() = 100
+        }
+        val engine = FakeImageLoaderEngine.Builder()
+            .intercept(url, drawable)
+            .build()
+        val imageLoader = ImageLoader.Builder(composeTestRule.activity)
+            .components { add(engine) }
+            .build()
+
+        composeTestRule.setContent {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = url,
+                    imageLoader = imageLoader,
+                ),
+                contentDescription = null,
                 contentScale = ContentScale.None,
                 modifier = Modifier.fillMaxSize(),
             )

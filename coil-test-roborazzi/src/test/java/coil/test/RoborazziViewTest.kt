@@ -11,7 +11,7 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.util.ViewTestActivity
 import coil.util.activity
-import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.RoborazziRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,8 +24,17 @@ class RoborazziViewTest {
     @get:Rule
     val activityRule = activityScenarioRule<ViewTestActivity>()
 
+    @get:Rule
+    val roborazziRule = RoborazziRule(
+        captureRoot = onView(isRoot()),
+        options = RoborazziRule.Options(
+            captureType = RoborazziRule.CaptureType.LastImage(),
+            outputDirectoryPath = "src/test/snapshots/images",
+        )
+    )
+
     @Test
-    fun loadView() {
+    fun imageView() {
         val url = "https://www.example.com/image.jpg"
         val drawable = object : ColorDrawable(Color.RED) {
             override fun getIntrinsicWidth() = 100
@@ -47,9 +56,5 @@ class RoborazziViewTest {
 
         // Don't suspend to test that the image view is updated synchronously.
         imageLoader.enqueue(request)
-
-        // https://github.com/takahirom/roborazzi/issues/9
-        onView(isRoot())
-            .captureRoboImage("src/test/snapshots/images/coil.test.RoborazziViewTest.loadView.png")
     }
 }
