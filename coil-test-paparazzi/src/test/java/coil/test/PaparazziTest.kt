@@ -14,6 +14,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.ImageSource
 import coil.request.ImageRequest
+import coil.size.Size
 import kotlin.test.assertTrue
 import okio.Buffer
 import org.junit.Rule
@@ -99,7 +100,11 @@ class PaparazziTest {
         paparazzi.snapshot {
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = url,
+                    // TODO: Figure out how to avoid having to specify an immediate size.
+                    model = ImageRequest.Builder(paparazzi.context)
+                        .data(url)
+                        .size(Size.ORIGINAL)
+                        .build(),
                     imageLoader = imageLoader,
                 ),
                 contentDescription = null,

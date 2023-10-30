@@ -12,6 +12,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import coil.util.ComposeTestActivity
 import com.github.takahirom.roborazzi.RoborazziRule
 import org.junit.Rule
@@ -77,8 +79,12 @@ class RoborazziComposeTest {
 
         composeTestRule.setContent {
             Image(
+                // TODO: Figure out how to avoid having to specify an immediate size.
                 painter = rememberAsyncImagePainter(
-                    model = url,
+                    model = ImageRequest.Builder(composeTestRule.activity)
+                        .data(url)
+                        .size(Size.ORIGINAL)
+                        .build(),
                     imageLoader = imageLoader,
                 ),
                 contentDescription = null,
