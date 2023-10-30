@@ -107,7 +107,7 @@ class HttpUriFetcherTest {
 
         // https://android.googlesource.com/platform/frameworks/base/+/61ae88e/core/java/android/webkit/MimeTypeMap.java#407
         Shadows.shadowOf(MimeTypeMap.getSingleton())
-            .addExtensionMimeTypMapping("svg", "image/svg+xml")
+            .addExtensionMimeTypeMapping("svg", "image/svg+xml")
 
         val url1 = "https://example.com/image.jpg"
         val type1 = "image/svg+xml".toMediaType()

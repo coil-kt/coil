@@ -22,9 +22,9 @@ setupTestModule(name = "coil.benchmark", config = true) {
     testOptions {
         managedDevices {
             devices {
-                create<ManagedVirtualDevice>("pixel6Api31") {
-                    device = "Pixel 6"
-                    apiLevel = 31
+                create<ManagedVirtualDevice>("pixel7Api33") {
+                    device = "Pixel 7"
+                    apiLevel = 33
                     systemImageSource = "aosp"
                 }
             }

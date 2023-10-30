@@ -2,6 +2,7 @@ package coil.test
 
 import coil.ImageLoader
 import coil.decode.DataSource
+import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.test.FakeImageLoaderEngine.OptionalInterceptor
@@ -114,5 +115,47 @@ class FakeImageLoaderEngineTest {
             assertIs<SuccessResult>(result)
             assertSame(drawable, result.image)
         }
+    }
+
+    @Test
+    fun `removes transition factory`() = runTest {
+        val url = "https://www.example.com/image.jpg"
+        val engine = FakeImageLoaderEngine.Builder()
+            .intercept(url, ColorDrawable(Color.RED))
+            .build()
+        val imageLoader = ImageLoader.Builder(context)
+            .components { add(engine) }
+            .build()
+        val request = ImageRequest.Builder(context)
+            .data(url)
+            .crossfade(true)
+            .build()
+
+        val result = imageLoader.execute(request)
+        assertIs<SuccessResult>(result)
+        assertSame(Transition.Factory.NONE, result.request.transitionFactory)
+    }
+
+    @Test
+    fun `request transformer enforces invariants`() = runTest {
+        val url = "https://www.example.com/image.jpg"
+        val engine = FakeImageLoaderEngine.Builder()
+            .intercept(url, ColorDrawable(Color.RED))
+            .requestTransformer { request ->
+                request.newBuilder()
+                    .data(null)
+                    .build()
+            }
+            .build()
+        val imageLoader = ImageLoader.Builder(context)
+            .components { add(engine) }
+            .build()
+        val request = ImageRequest.Builder(context)
+            .data(url)
+            .build()
+
+        val result = imageLoader.execute(request)
+        assertIs<ErrorResult>(result)
+        assertIs<IllegalStateException>(result.throwable)
     }
 }

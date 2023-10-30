@@ -150,7 +150,7 @@ fun rememberAsyncImagePainter(
 @Stable
 class AsyncImagePainter internal constructor(
     request: ImageRequest,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
 ) : Painter(), RememberObserver {
 
     private var rememberScope: CoroutineScope? = null
@@ -354,14 +354,14 @@ private fun validateRequest(request: ImageRequest) {
 
 private fun unsupportedData(
     name: String,
-    description: String = "If you wish to display this $name, use androidx.compose.foundation.Image."
+    description: String = "If you wish to display this $name, use androidx.compose.foundation.Image.",
 ): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
 
 private fun Size.toSizeOrNull() = when {
     isUnspecified -> CoilSize.ORIGINAL
     isPositive -> CoilSize(
         width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Undefined,
-        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined
+        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined,
     )
     else -> null
 }

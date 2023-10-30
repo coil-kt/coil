@@ -1,7 +1,6 @@
 package coil.fetch
 
 import android.media.MediaDataSource
-import android.os.Build
 import androidx.annotation.RequiresApi
 import coil.ImageLoader
 import coil.decode.DataSource
@@ -12,7 +11,7 @@ import okio.Source
 import okio.Timeout
 import okio.buffer
 
-@RequiresApi(Build.VERSION_CODES.M)
+@RequiresApi(23)
 class MediaDataSourceFetcher(
     private val data: MediaDataSource,
     private val options: Options,
@@ -28,7 +27,7 @@ class MediaDataSourceFetcher(
         return SourceResult(
             source = imageSource,
             mimeType = null,
-            dataSource = DataSource.DISK
+            dataSource = DataSource.DISK,
         )
     }
 
@@ -43,10 +42,12 @@ class MediaDataSourceFetcher(
         }
     }
 
-    internal class MediaDataSourceOkioSource(private val mediaDataSource: MediaDataSource) : Source {
+    internal class MediaDataSourceOkioSource(
+        private val mediaDataSource: MediaDataSource
+    ) : Source {
 
         private var size = mediaDataSource.size
-        private var position: Long = 0L
+        private var position = 0L
 
         override fun read(sink: Buffer, byteCount: Long): Long {
             if (position >= size) {
@@ -73,6 +74,6 @@ class MediaDataSourceFetcher(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(23)
     class MediaSourceMetadata(val mediaDataSource: MediaDataSource) : ImageSource.Metadata()
 }

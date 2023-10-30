@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.5.0] - October 30, 2023
+
+- **New**: Add `MediaDataSourceFetcher.Factory` to support decoding `MediaDataSource` implementations in `coil-video`. ([#1795](https://github.com/coil-kt/coil/pull/1795))
+- Add the `SHIFT6m` device to the hardware bitmap blocklist. ([#1812](https://github.com/coil-kt/coil/pull/1812))
+- Fix: Guard against painters that return a size with one unbounded dimension. ([#1826](https://github.com/coil-kt/coil/pull/1826))
+- Fix: Disk cache load fails after `304 Not Modified` when cached headers include non-ASCII characters. ([#1839](https://github.com/coil-kt/coil/pull/1839))
+- Fix: `FakeImageEngine` not updating the interceptor chain's request. ([#1905](https://github.com/coil-kt/coil/pull/1905))
+- Update compile SDK to 34.
+- Update Kotlin to 1.9.10.
+- Update Coroutines to 1.7.3.
+- Update `accompanist-drawablepainter` to 0.32.0.
+- Update `androidx.annotation` to 1.7.0.
+- Update `androidx.compose.foundation` to 1.5.4.
+- Update `androidx.core` to 1.12.0.
+- Update `androidx.exifinterface:exifinterface` to 1.3.6.
+- Update `androidx.lifecycle` to 2.6.2.
+- Update `com.squareup.okhttp3` to 4.12.0.
+- Update `com.squareup.okio` to 3.6.0.
+
 ## [2.4.0] - May 21, 2023
 
 - Rename `DiskCache` `get`/`edit` to `openSnapshot`/`openEditor`.
