@@ -257,6 +257,8 @@ PLcoil/decode/BitmapFactoryDecoder$Factory;->create(Lcoil/fetch/SourceResult;Lco
 Lcoil/decode/BitmapFactoryDecoder$decode$1;
 HSPLcoil/decode/BitmapFactoryDecoder$decode$1;-><init>(Lcoil/decode/BitmapFactoryDecoder;Lkotlin/coroutines/Continuation;)V
 PLcoil/decode/BitmapFactoryDecoder$decode$1;-><init>(Lcoil/decode/BitmapFactoryDecoder;Lkotlin/coroutines/Continuation;)V
+HSPLcoil/decode/BitmapFactoryDecoder$decode$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
+PLcoil/decode/BitmapFactoryDecoder$decode$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil/decode/BitmapFactoryDecoder$decode$2$1;
 HSPLcoil/decode/BitmapFactoryDecoder$decode$2$1;-><init>(Lcoil/decode/BitmapFactoryDecoder;)V
 PLcoil/decode/BitmapFactoryDecoder$decode$2$1;-><init>(Lcoil/decode/BitmapFactoryDecoder;)V
@@ -736,6 +738,8 @@ PLcoil/intercept/EngineInterceptor$ExecuteResult;->isSampled()Z
 Lcoil/intercept/EngineInterceptor$decode$1;
 HSPLcoil/intercept/EngineInterceptor$decode$1;-><init>(Lcoil/intercept/EngineInterceptor;Lkotlin/coroutines/Continuation;)V
 PLcoil/intercept/EngineInterceptor$decode$1;-><init>(Lcoil/intercept/EngineInterceptor;Lkotlin/coroutines/Continuation;)V
+HSPLcoil/intercept/EngineInterceptor$decode$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
+PLcoil/intercept/EngineInterceptor$decode$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcoil/intercept/EngineInterceptor$execute$1;
 HSPLcoil/intercept/EngineInterceptor$execute$1;-><init>(Lcoil/intercept/EngineInterceptor;Lkotlin/coroutines/Continuation;)V
 PLcoil/intercept/EngineInterceptor$execute$1;-><init>(Lcoil/intercept/EngineInterceptor;Lkotlin/coroutines/Continuation;)V
@@ -863,8 +867,8 @@ PLcoil/memory/MemoryCache$Key;->copy(Ljava/lang/String;Ljava/util/Map;)Lcoil/mem
 HPLcoil/memory/MemoryCache$Key;->equals(Ljava/lang/Object;)Z
 HSPLcoil/memory/MemoryCache$Key;->getExtras()Ljava/util/Map;
 PLcoil/memory/MemoryCache$Key;->getExtras()Ljava/util/Map;
-HPLcoil/memory/MemoryCache$Key;->hashCode()I
 HSPLcoil/memory/MemoryCache$Key;->hashCode()I
+PLcoil/memory/MemoryCache$Key;->hashCode()I
 Lcoil/memory/MemoryCache$Key$Companion;
 HSPLcoil/memory/MemoryCache$Key$Companion;-><init>()V
 PLcoil/memory/MemoryCache$Key$Companion;-><init>()V
@@ -1590,8 +1594,8 @@ HPLcoil/util/-Utils;->getScale(Landroid/widget/ImageView;)Lcoil/size/Scale;
 HSPLcoil/util/-Utils;->getScale(Landroid/widget/ImageView;)Lcoil/size/Scale;
 HSPLcoil/util/-Utils;->isAssetUri(Landroid/net/Uri;)Z
 PLcoil/util/-Utils;->isAssetUri(Landroid/net/Uri;)Z
+HPLcoil/util/-Utils;->isMainThread()Z
 HSPLcoil/util/-Utils;->isMainThread()Z
-PLcoil/util/-Utils;->isMainThread()Z
 HSPLcoil/util/-Utils;->isPlaceholderCached(Lcoil/intercept/Interceptor$Chain;)Z
 PLcoil/util/-Utils;->isPlaceholderCached(Lcoil/intercept/Interceptor$Chain;)Z
 HSPLcoil/util/-Utils;->orEmpty(Lcoil/request/Parameters;)Lcoil/request/Parameters;
