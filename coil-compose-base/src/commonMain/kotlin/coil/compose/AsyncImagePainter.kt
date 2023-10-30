@@ -257,9 +257,11 @@ class AsyncImagePainter internal constructor(
     /** Update the [request] to work with [AsyncImagePainter]. */
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
-            .target(onStart = { placeholder ->
-                updateState(State.Loading(placeholder?.toPainter(filterQuality)))
-            })
+            .target(
+                onStart = { placeholder ->
+                    updateState(State.Loading(placeholder?.toPainter(filterQuality)))
+                },
+            )
             .apply {
                 if (request.defined.sizeResolver == null) {
                     // If no other size resolver is set, suspend until the canvas size is positive.
