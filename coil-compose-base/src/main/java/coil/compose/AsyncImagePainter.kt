@@ -156,7 +156,7 @@ fun rememberAsyncImagePainter(
 @Stable
 class AsyncImagePainter internal constructor(
     request: ImageRequest,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
 ) : Painter(), RememberObserver {
 
     private var rememberScope: CoroutineScope? = null
@@ -263,9 +263,11 @@ class AsyncImagePainter internal constructor(
     /** Update the [request] to work with [AsyncImagePainter]. */
     private fun updateRequest(request: ImageRequest): ImageRequest {
         return request.newBuilder()
-            .target(onStart = { placeholder ->
-                updateState(State.Loading(placeholder?.toPainter()))
-            })
+            .target(
+                onStart = { placeholder ->
+                    updateState(State.Loading(placeholder?.toPainter()))
+                },
+            )
             .apply {
                 if (request.defined.sizeResolver == null) {
                     // If no other size resolver is set, suspend until the canvas size is positive.
@@ -318,7 +320,7 @@ class AsyncImagePainter internal constructor(
                 contentScale = contentScale,
                 durationMillis = transition.durationMillis,
                 fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
-                preferExactIntrinsicSize = transition.preferExactIntrinsicSize
+                preferExactIntrinsicSize = transition.preferExactIntrinsicSize,
             )
         } else {
             return null
@@ -379,7 +381,7 @@ private fun validateRequest(request: ImageRequest) {
     when (request.data) {
         is ImageRequest.Builder -> unsupportedData(
             name = "ImageRequest.Builder",
-            description = "Did you forget to call ImageRequest.Builder.build()?"
+            description = "Did you forget to call ImageRequest.Builder.build()?",
         )
         is ImageBitmap -> unsupportedData("ImageBitmap")
         is ImageVector -> unsupportedData("ImageVector")
@@ -390,7 +392,7 @@ private fun validateRequest(request: ImageRequest) {
 
 private fun unsupportedData(
     name: String,
-    description: String = "If you wish to display this $name, use androidx.compose.foundation.Image."
+    description: String = "If you wish to display this $name, use androidx.compose.foundation.Image.",
 ): Nothing = throw IllegalArgumentException("Unsupported type: $name. $description")
 
 private val Size.isPositive get() = width >= 0.5 && height >= 0.5
@@ -399,7 +401,7 @@ private fun Size.toSizeOrNull() = when {
     isUnspecified -> CoilSize.ORIGINAL
     isPositive -> CoilSize(
         width = if (width.isFinite()) Dimension(width.roundToInt()) else Dimension.Undefined,
-        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined
+        height = if (height.isFinite()) Dimension(height.roundToInt()) else Dimension.Undefined,
     )
     else -> null
 }

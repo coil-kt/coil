@@ -114,7 +114,9 @@ class FakeImageLoaderEngine private constructor(
                 error("No interceptors handled this request and no fallback is set: ${chain.request.data}")
             }
             requestTransformer = RequestTransformer { request ->
-                request.newBuilder().transitionFactory(Transition.Factory.NONE).build()
+                request.newBuilder()
+                    .transitionFactory(Transition.Factory.NONE)
+                    .build()
             }
         }
 
