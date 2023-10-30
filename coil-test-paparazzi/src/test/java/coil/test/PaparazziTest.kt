@@ -7,7 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_6
+import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import coil.ImageLoader
 import coil.compose.AsyncImage
@@ -23,7 +23,10 @@ class PaparazziTest {
 
     @get:Rule
     val paparazzi = Paparazzi(
-        deviceConfig = PIXEL_6,
+        deviceConfig = DeviceConfig(
+            screenWidth = 320,
+            screenHeight = 470,
+        ),
         theme = "android:Theme.Material.Light.NoActionBar.Fullscreen",
         showSystemUi = false,
     )
