@@ -9,8 +9,6 @@ import android.content.res.Configuration
 import androidx.annotation.VisibleForTesting
 import coil.RealImageLoader
 import coil.asAndroidContext
-import coil.network.EmptyNetworkObserver
-import coil.network.NetworkObserver
 import coil.networkObserverEnabled
 import java.lang.ref.WeakReference
 import kotlinx.atomicfu.atomic

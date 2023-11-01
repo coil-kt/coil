@@ -1,4 +1,4 @@
-package coil.network
+package coil.util
 
 import android.Manifest.permission.ACCESS_NETWORK_STATE
 import android.annotation.SuppressLint
@@ -8,9 +8,6 @@ import android.net.Network
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import androidx.core.content.getSystemService
-import coil.util.Logger
-import coil.util.isPermissionGranted
-import coil.util.log
 
 private const val TAG = "NetworkObserver"
 

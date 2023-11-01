@@ -1,7 +1,7 @@
-package coil.network
+package coil.util
 
 import coil.annotation.MainThread
-import coil.network.NetworkObserver.Listener
+import coil.util.NetworkObserver.Listener
 
 /**
  * Observes the device's network state and calls [Listener] if any state changes occur.
