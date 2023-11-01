@@ -132,7 +132,7 @@ interface DiskCache {
          * Set the maximum size of the disk cache as a percentage of the device's free disk space.
          */
         fun maxSizePercent(percent: Double) = apply {
-            require(percent in 0.0..1.0) { "size must be in the range [0.0, 1.0]." }
+            require(percent in 0.0..1.0) { "percent must be in the range [0.0, 1.0]." }
             this.maxSizeBytes = 0
             this.maxSizePercent = percent
         }
