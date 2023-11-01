@@ -4,7 +4,6 @@
 package coil.intercept
 
 import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
@@ -30,7 +29,6 @@ fun interface Interceptor {
          *
          * @param request The current image request.
          */
-        @ExperimentalCoilApi
         fun withRequest(request: ImageRequest): Chain
 
         /**
@@ -44,9 +42,14 @@ fun interface Interceptor {
 
         /**
          * Continue executing the chain.
-         *
-         * @param request The request to proceed with.
          */
-        suspend fun proceed(request: ImageRequest): ImageResult
+        suspend fun proceed(): ImageResult
+
+        @Deprecated(
+            message = "Use 'withRequest' to create a new chain with the updated request before " +
+                "calling 'proceed'.",
+            replaceWith = ReplaceWith("withRequest(request).proceed()"),
+        )
+        suspend fun proceed(request: ImageRequest): ImageResult = withRequest(request).proceed()
     }
 }

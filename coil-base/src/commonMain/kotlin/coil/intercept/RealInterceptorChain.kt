@@ -25,10 +25,9 @@ internal class RealInterceptorChain(
         return copy(size = size)
     }
 
-    override suspend fun proceed(request: ImageRequest): ImageResult {
-        if (index > 0) checkRequest(request, interceptors[index - 1])
+    override suspend fun proceed(): ImageResult {
         val interceptor = interceptors[index]
-        val next = copy(index = index + 1, request = request)
+        val next = copy(index = index + 1)
         val result = interceptor.intercept(next)
         checkRequest(result.request, interceptor)
         return result
@@ -54,5 +53,13 @@ internal class RealInterceptorChain(
         index: Int = this.index,
         request: ImageRequest = this.request,
         size: Size = this.size,
-    ) = RealInterceptorChain(initialRequest, interceptors, index, request, size, eventListener, isPlaceholderCached)
+    ) = RealInterceptorChain(
+        initialRequest = initialRequest,
+        interceptors = interceptors,
+        index = index,
+        request = request,
+        size = size,
+        eventListener = eventListener,
+        isPlaceholderCached = isPlaceholderCached,
+    )
 }
