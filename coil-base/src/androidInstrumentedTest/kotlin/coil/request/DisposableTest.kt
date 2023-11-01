@@ -29,7 +29,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class DisposableTest {
 
     private lateinit var context: Context

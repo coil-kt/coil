@@ -20,6 +20,7 @@ import coil.util.closeQuietly
 import coil.util.getMimeTypeFromUrl
 import coil.util.isMainThread
 import coil.util.requireBody
+import dev.drewhamilton.poko.Poko
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import okhttp3.CacheControl
 import okhttp3.Call
@@ -29,7 +30,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.IOException
 
-internal class HttpUriFetcher(
+class HttpUriFetcher(
     private val url: String,
     private val options: Options,
     private val callFactory: Lazy<Call.Factory>,
@@ -287,6 +288,7 @@ internal class HttpUriFetcher(
 
     private val fileSystem get() = diskCache.value!!.fileSystem
 
+    @Poko
     class Factory(
         private val callFactory: Lazy<Call.Factory>,
         private val diskCache: Lazy<DiskCache?>,

@@ -17,18 +17,19 @@ import coil.util.Clock
 import coil.util.FakeClock
 import coil.util.createMockWebServer
 import coil.util.enqueueImage
-import coil.util.getTimeMillis
 import coil.util.runTestAsync
 import java.io.File
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import java.util.UUID
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okhttp3.Call
 import okhttp3.Headers
@@ -41,16 +42,9 @@ import okio.FileSystem
 import okio.blackholeSink
 import okio.buffer
 import okio.source
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
-class HttpUriFetcherTest {
+class HttpUriFetcherTestTest {
 
     private lateinit var context: Context
     private lateinit var server: MockWebServer
@@ -60,7 +54,7 @@ class HttpUriFetcherTest {
     private lateinit var callFactory: Call.Factory
     private lateinit var imageLoader: ImageLoader
 
-    @Before
+    @BeforeTest
     fun before() {
         context = ApplicationProvider.getApplicationContext()
         server = createMockWebServer()
@@ -77,7 +71,7 @@ class HttpUriFetcherTest {
             .build()
     }
 
-    @After
+    @AfterTest
     fun after() {
         server.shutdown()
         imageLoader.shutdown()
