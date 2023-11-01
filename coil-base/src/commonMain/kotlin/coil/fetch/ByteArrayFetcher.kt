@@ -20,7 +20,11 @@ internal class ByteArrayFetcher(
     }
 
     class Factory : Fetcher.Factory<ByteArray> {
-        override fun create(data: ByteArray, options: Options, imageLoader: ImageLoader): Fetcher {
+        override fun create(
+            data: ByteArray,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Fetcher {
             return ByteArrayFetcher(data, options)
         }
     }

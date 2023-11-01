@@ -22,7 +22,11 @@ internal class PathFetcher(
     }
 
     class Factory : Fetcher.Factory<Path> {
-        override fun create(data: Path, options: Options, imageLoader: ImageLoader): Fetcher {
+        override fun create(
+            data: Path,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Fetcher {
             return PathFetcher(data, options)
         }
     }
