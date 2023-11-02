@@ -3,8 +3,10 @@ package coil
 import coil.annotation.MainThread
 import coil.disk.DiskCache
 import coil.fetch.ByteArrayFetcher
+import coil.fetch.PathFetcher
 import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
+import coil.key.PathKeyer
 import coil.memory.MemoryCache
 import coil.request.Disposable
 import coil.request.ErrorResult
@@ -46,7 +48,7 @@ internal class RealImageLoader(
     override val diskCache by options.diskCacheLazy
     override val components = options.componentRegistry.newBuilder()
         .addPlatformComponents(options)
-        .addCommonComponents()
+        .addCommonComponents(options)
         .add(EngineInterceptor(this, requestService, options.logger))
         .build()
     private val shutdown = atomic(false)
@@ -241,9 +243,19 @@ internal expect fun ComponentRegistry.Builder.addPlatformComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder
 
-internal fun ComponentRegistry.Builder.addCommonComponents(): ComponentRegistry.Builder {
+internal fun ComponentRegistry.Builder.addCommonComponents(
+    options: RealImageLoader.Options,
+): ComponentRegistry.Builder {
     return this
+        // Keyers
+        .add(
+            PathKeyer(
+                addLastModifiedToFileCacheKey = options.addLastModifiedToFileCacheKey,
+            ),
+        )
+        // Fetchers
         .add(ByteArrayFetcher.Factory())
+        .add(PathFetcher.Factory())
 }
 
 private const val TAG = "RealImageLoader"

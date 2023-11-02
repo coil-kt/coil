@@ -7,13 +7,13 @@ import coil.request.Options
 import okio.Buffer
 
 internal class ByteArrayFetcher(
-    private val data: ByteArray,
+    private val byteArray: ByteArray,
     private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
         return SourceFetchResult(
-            source = ImageSource(Buffer().apply { write(data) }),
+            source = ImageSource(Buffer().apply { write(byteArray) }),
             mimeType = null,
             dataSource = DataSource.MEMORY,
         )

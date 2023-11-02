@@ -28,5 +28,6 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder {
     return this
+        // Decoders
         .add(ImageDecoder.Factory())
 }

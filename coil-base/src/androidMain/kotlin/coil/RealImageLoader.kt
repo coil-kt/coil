@@ -74,27 +74,13 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents(
 ): ComponentRegistry.Builder {
     return this
         // Mappers
-        .add(HttpUrlMapper())
         .add(StringMapper())
         .add(FileUriMapper())
         .add(ResourceUriMapper())
         .add(ResourceIntMapper())
         // Keyers
         .add(UriKeyer())
-        .add(
-            PathKeyer(
-                addLastModifiedToFileCacheKey = options.addLastModifiedToFileCacheKey,
-            ),
-        )
         // Fetchers
-        .add(
-            HttpUriFetcher.Factory(
-                callFactory = options.httpClientLazy,
-                diskCache = options.diskCacheLazy,
-                clock = ::getTimeMillis,
-                respectCacheHeaders = options.respectCacheHeaders,
-            ),
-        )
         .add(PathFetcher.Factory())
         .add(AssetUriFetcher.Factory())
         .add(ContentUriFetcher.Factory())
