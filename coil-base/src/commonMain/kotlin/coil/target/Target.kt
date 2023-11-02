@@ -4,7 +4,7 @@ import coil.Image
 import coil.annotation.MainThread
 
 /**
- * A listener that accepts the result of an image request.
+ * A callback that accepts an image.
  */
 interface Target {
 

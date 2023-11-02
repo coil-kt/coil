@@ -14,7 +14,6 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
 import coil.util.Logger
-import io.ktor.client.HttpClient
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
 
@@ -82,7 +81,6 @@ interface ImageLoader {
         private var defaults: ImageRequest.Defaults
         private var memoryCacheLazy: Lazy<MemoryCache?>?
         private var diskCacheLazy: Lazy<DiskCache?>?
-        private var httpClientLazy: Lazy<HttpClient>?
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
         private var logger: Logger?
@@ -93,7 +91,6 @@ interface ImageLoader {
             defaults = ImageRequest.Defaults.DEFAULT
             memoryCacheLazy = null
             diskCacheLazy = null
-            httpClientLazy = null
             eventListenerFactory = null
             componentRegistry = null
             logger = null
@@ -105,30 +102,10 @@ interface ImageLoader {
             defaults = options.defaults
             memoryCacheLazy = options.memoryCacheLazy
             diskCacheLazy = options.diskCacheLazy
-            httpClientLazy = options.httpClientLazy
             eventListenerFactory = options.eventListenerFactory
             componentRegistry = options.componentRegistry
             logger = options.logger
             extras = options.extras.newBuilder()
-        }
-
-        /**
-         * Set the [HttpClient] used for network requests.
-         */
-        fun httpClient(httpClient: HttpClient) = apply {
-            this.httpClientLazy = lazyOf(httpClient)
-        }
-
-        /**
-         * Set a lazy callback to create the [HttpClient] used for network requests.
-         *
-         * This allows lazy creation of the [HttpClient] on a background thread.
-         * [initializer] is guaranteed to be called at most once.
-         *
-         * Prefer using this instead of `httpClient(HttpClient)`.
-         */
-        fun httpClient(initializer: () -> HttpClient) = apply {
-            this.httpClientLazy = lazy(initializer)
         }
 
         /**
@@ -321,7 +298,6 @@ interface ImageLoader {
                 defaults = defaults,
                 memoryCacheLazy = memoryCacheLazy ?: lazy { MemoryCache.Builder(application).build() },
                 diskCacheLazy = diskCacheLazy ?: lazy { singletonDiskCache() },
-                httpClientLazy = httpClientLazy ?: lazy { HttpClient() },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 logger = logger,

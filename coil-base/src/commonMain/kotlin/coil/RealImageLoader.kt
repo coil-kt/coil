@@ -20,7 +20,6 @@ import coil.util.SystemCallbacks
 import coil.util.emoji
 import coil.util.get
 import coil.util.log
-import io.ktor.client.HttpClient
 import kotlin.coroutines.coroutineContext
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
@@ -126,7 +125,7 @@ internal class RealImageLoader(
                     size = size,
                     eventListener = eventListener,
                     isPlaceholderCached = cachedPlaceholder != null,
-                ).proceed(request)
+                ).proceed()
             }
 
             // Set the result on the target.
@@ -208,7 +207,6 @@ internal class RealImageLoader(
         val defaults: ImageRequest.Defaults,
         val memoryCacheLazy: Lazy<MemoryCache?>,
         val diskCacheLazy: Lazy<DiskCache?>,
-        val httpClientLazy: Lazy<HttpClient>,
         val eventListenerFactory: EventListener.Factory,
         val componentRegistry: ComponentRegistry,
         val logger: Logger?,
