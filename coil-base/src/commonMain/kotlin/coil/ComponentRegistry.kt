@@ -71,7 +71,7 @@ class ComponentRegistry private constructor(
         data: Any,
         options: Options,
         imageLoader: ImageLoader,
-        startIndex: Int = 0
+        startIndex: Int = 0,
     ): Pair<Fetcher, Int>? {
         for (index in startIndex until fetcherFactories.size) {
             val (factory, type) = fetcherFactories[index]
@@ -95,7 +95,7 @@ class ComponentRegistry private constructor(
         result: SourceFetchResult,
         options: Options,
         imageLoader: ImageLoader,
-        startIndex: Int = 0
+        startIndex: Int = 0,
     ): Pair<Decoder, Int>? {
         for (index in startIndex until decoderFactories.size) {
             val factory = decoderFactories[index]
