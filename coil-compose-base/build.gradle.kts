@@ -1,5 +1,5 @@
 import coil.addAllTargets
-import coil.createNonAndroidMain
+import coil.nonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
@@ -13,7 +13,7 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.compose.base")
 
 kotlin {
-    createNonAndroidMain()
+    nonAndroidMain()
 
     sourceSets {
         commonMain {
@@ -22,7 +22,7 @@ kotlin {
                 api(libs.jetbrains.compose.foundation)
             }
         }
-        named("androidMain") {
+        androidMain {
             dependencies {
                 implementation(libs.google.drawablepainter)
             }

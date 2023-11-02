@@ -1,8 +1,8 @@
 import coil.addAllTargets
-import coil.createJvmCommon
-import coil.createNonAndroidMain
-import coil.createNonJsMain
-import coil.createNonJvmCommon
+import coil.jvmCommon
+import coil.nonAndroidMain
+import coil.nonJsMain
+import coil.nonJvmCommon
 import coil.setupLibraryModule
 
 plugins {
@@ -16,10 +16,10 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.base")
 
 kotlin {
-    createNonAndroidMain()
-    createNonJsMain()
-    createJvmCommon()
-    createNonJvmCommon()
+    nonAndroidMain()
+    nonJsMain()
+    jvmCommon()
+    nonJvmCommon()
 
     sourceSets {
         commonMain {
@@ -44,7 +44,7 @@ kotlin {
                 implementation(libs.skiko)
             }
         }
-        named("androidMain") {
+        androidMain {
             dependencies {
                 implementation(libs.androidx.annotation)
                 implementation(libs.androidx.appcompat.resources)

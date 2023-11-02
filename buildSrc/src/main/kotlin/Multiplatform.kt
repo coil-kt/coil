@@ -27,53 +27,18 @@ fun addAllTargets(project: Project) {
 
             jvm()
 
+            linuxX64()
+
             macosArm64()
             macosX64()
 
-            val commonMain = sourceSets.getByName("commonMain")
-            val commonTest = sourceSets.getByName("commonTest")
-
-            val nativeMain = sourceSets.create("nativeMain").apply {
-                dependsOn(commonMain)
-            }
-            val nativeTest = sourceSets.create("nativeTest").apply {
-                dependsOn(commonTest)
-            }
-
-            val iosMain = sourceSets.create("iosMain").apply {
-                dependsOn(nativeMain)
-            }
-            val iosTest = sourceSets.create("iosTest").apply {
-                dependsOn(nativeTest)
-            }
-
-            val macosMain = sourceSets.create("macosMain").apply {
-                dependsOn(nativeMain)
-            }
-            val macosTest = sourceSets.create("macosTest").apply {
-                dependsOn(nativeTest)
-            }
-
-            targets.forEach { target ->
-                // Some Kotlin targets do not have this property, but native ones always will.
-                if (target.platformType.name == "native") {
-                    if (target.name.startsWith("ios")) {
-                        target.compilations.getByName("main").defaultSourceSet.dependsOn(iosMain)
-                        target.compilations.getByName("test").defaultSourceSet.dependsOn(iosTest)
-                    } else if (target.name.startsWith("macos")) {
-                        target.compilations.getByName("main").defaultSourceSet.dependsOn(macosMain)
-                        target.compilations.getByName("test").defaultSourceSet.dependsOn(macosTest)
-                    } else {
-                        throw AssertionError("Unknown target ${target.name}")
-                    }
-                }
-            }
+            applyDefaultHierarchyTemplate()
         }
     }
 }
 
 // nonAndroidMain: jsMain, jvmMain, nativeMain
-fun KotlinSourceSetContainer.createNonAndroidMain(): KotlinSourceSet {
+fun KotlinSourceSetContainer.nonAndroidMain(): KotlinSourceSet {
     val nonAndroidMain = sourceSets.create("nonAndroidMain").apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }
@@ -84,7 +49,7 @@ fun KotlinSourceSetContainer.createNonAndroidMain(): KotlinSourceSet {
 }
 
 // nonJsMain: androidMain, jvmMain, nativeMain
-fun KotlinSourceSetContainer.createNonJsMain(): KotlinSourceSet {
+fun KotlinSourceSetContainer.nonJsMain(): KotlinSourceSet {
     val nonJsMain = sourceSets.create("nonJsMain").apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }
@@ -95,7 +60,7 @@ fun KotlinSourceSetContainer.createNonJsMain(): KotlinSourceSet {
 }
 
 // jvmCommon: androidMain, jvmMain
-fun KotlinSourceSetContainer.createJvmCommon(): KotlinSourceSet {
+fun KotlinSourceSetContainer.jvmCommon(): KotlinSourceSet {
     val jvmCommon = sourceSets.create("jvmCommon").apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }
@@ -106,7 +71,7 @@ fun KotlinSourceSetContainer.createJvmCommon(): KotlinSourceSet {
 }
 
 // nonJvmCommon: jsMain, nativeMain
-fun KotlinSourceSetContainer.createNonJvmCommon(): KotlinSourceSet {
+fun KotlinSourceSetContainer.nonJvmCommon(): KotlinSourceSet {
     val nonJvmCommon = sourceSets.create("nonJvmCommon").apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }

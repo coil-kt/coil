@@ -1,5 +1,5 @@
 import coil.addAllTargets
-import coil.createJvmCommon
+import coil.jvmCommon
 import coil.setupLibraryModule
 
 plugins {
@@ -13,7 +13,7 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.network")
 
 kotlin {
-    createJvmCommon()
+    jvmCommon()
 
     sourceSets {
         commonMain {

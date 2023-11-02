@@ -1,5 +1,5 @@
 import coil.addAllTargets
-import coil.createNonAndroidMain
+import coil.nonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
@@ -12,7 +12,7 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.singleton")
 
 kotlin {
-    createNonAndroidMain()
+    nonAndroidMain()
 
     sourceSets {
         commonMain {

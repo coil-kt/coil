@@ -23,7 +23,7 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
-        named("androidMain") {
+        androidMain {
             dependencies {
                 api(libs.androidx.activity)
                 api(libs.androidx.appcompat.resources)
