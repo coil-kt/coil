@@ -14,8 +14,9 @@ interface Image {
     /**
      * True if the image can be shared between multiple [Target]s at the same time.
      *
-     * For example, an Android bitmap can be shared between multiple targets if it's not mutated.
-     * Conversely, a crossfade drawable cannot be shared as its alpha is being mutated frequently.
+     * For example, a bitmap can be shared between multiple targets if it's not mutated.
+     * Conversely, an animated image cannot be shared as its internal state is being mutated while
+     * being played.
      */
     val shareable: Boolean
 }
