@@ -29,6 +29,5 @@ class ImageDecoder(
         ): Decoder {
             return ImageDecoder(result.source, options)
         }
-
     }
 }
