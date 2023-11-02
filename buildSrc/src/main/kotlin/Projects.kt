@@ -123,7 +123,10 @@ private fun <T : BaseExtension> Project.setupBaseModule(
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets.configureEach {
-                languageSettings.optIn("coil.annotation.ExperimentalCoilApi")
+                languageSettings {
+                    optIn("coil.annotation.ExperimentalCoilApi")
+                    optIn("coil.annotation.InternalCoilApi")
+                }
             }
         }
     }
@@ -143,6 +146,7 @@ private fun <T : BaseExtension> Project.setupBaseModule(
             )
             if (project.name != "coil-benchmark") {
                 arguments += "-opt-in=coil.annotation.ExperimentalCoilApi"
+                arguments += "-opt-in=coil.annotation.InternalCoilApi"
             }
             freeCompilerArgs.addAll(arguments)
         }

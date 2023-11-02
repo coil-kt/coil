@@ -20,9 +20,6 @@ import coil.size.isOriginal
 import coil.size.pxOrElse
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
-import okhttp3.Headers
-import okhttp3.Response
-import okhttp3.ResponseBody
 import okio.Closeable
 
 internal inline fun Logger.log(tag: String, level: Logger.Level, message: () -> String) {
@@ -66,14 +63,6 @@ internal fun DiskCache.Editor.abortQuietly() {
         abort()
     } catch (_: Exception) {}
 }
-
-/** A simple interface for fetching the time. */
-internal fun interface Clock {
-    fun epochMillis(): Long
-}
-
-/** Return the current epoch timestamp. */
-internal expect fun getTimeMillis(): Long
 
 /**
  * Return 'true' if the request does not require the output image's size to match the
@@ -131,16 +120,5 @@ internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
 }
 
 internal const val DEFAULT_CROSSFADE_MILLIS = 100
-
-/** Modified from [Headers.Builder.add] */
-internal fun Headers.Builder.addUnsafeNonAscii(line: String) = apply {
-    val index = line.indexOf(':')
-    require(index != -1) { "Unexpected header: $line" }
-    addUnsafeNonAscii(line.substring(0, index).trim(), line.substring(index + 1))
-}
-
-internal fun Response.requireBody(): ResponseBody {
-    return checkNotNull(body) { "response body == null" }
-}
 
 internal fun internalExtraKeyOf(name: String) = "coil_$name"

@@ -42,6 +42,7 @@ import okio.FileSystem
 import okio.blackholeSink
 import okio.buffer
 import okio.source
+import okio.use
 import org.robolectric.Shadows
 
 class HttpUriFetcherTestTest {
@@ -443,7 +444,7 @@ class HttpUriFetcherTestTest {
         diskCache.openSnapshot(url).use(::assertNotNull)
 
         // Increase the current time.
-        clock.epochMillis += 65_000
+        clock.currentTimeMillis += 65_000
 
         expectedSize = server.enqueueImage(IMAGE, headers)
         result = newFetcher(url).fetch()

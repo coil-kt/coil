@@ -14,6 +14,7 @@ import coil.network.CacheStrategy.Companion.combineHeaders
 import coil.network.HttpException
 import coil.request.Options
 import coil.util.Clock
+import coil.util.MimeTypeMap
 import coil.util.abortQuietly
 import coil.util.await
 import coil.util.closeQuietly
@@ -21,7 +22,10 @@ import coil.util.getMimeTypeFromUrl
 import coil.util.isMainThread
 import coil.util.requireBody
 import dev.drewhamilton.poko.Poko
+import io.ktor.client.HttpClient
+import io.ktor.util.date.getTimeMillis
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
+import kotlin.jvm.JvmOverloads
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.MediaType
@@ -33,9 +37,9 @@ import okio.IOException
 class HttpUriFetcher(
     private val url: String,
     private val options: Options,
-    private val callFactory: Lazy<Call.Factory>,
+    private val httpClient: Lazy<HttpClient>,
     private val diskCache: Lazy<DiskCache?>,
-    private val clock: Clock,
+    private val clock: Lazy<Clock>,
     private val respectCacheHeaders: Boolean,
 ) : Fetcher {
 
@@ -228,11 +232,11 @@ class HttpUriFetcher(
                 throw NetworkOnMainThreadException()
             } else {
                 // Work around: https://github.com/Kotlin/kotlinx.coroutines/issues/2448
-                callFactory.value.newCall(request).execute()
+                httpClient.value.newCall(request).execute()
             }
         } else {
             // Suspend and enqueue the request on one of OkHttp's dispatcher threads.
-            callFactory.value.newCall(request).await()
+            httpClient.value.newCall(request).await()
         }
         if (!response.isSuccessful && response.code != HTTP_NOT_MODIFIED) {
             response.body?.closeQuietly()
@@ -247,11 +251,10 @@ class HttpUriFetcher(
      * "text/plain" is often used as a default/fallback MIME type.
      * Attempt to guess a better MIME type from the file extension.
      */
-    @VisibleForTesting
     internal fun getMimeType(url: String, contentType: MediaType?): String? {
         val rawContentType = contentType?.toString()
         if (rawContentType == null || rawContentType.startsWith(MIME_TYPE_TEXT_PLAIN)) {
-            MimeTypeMap.getSingleton().getMimeTypeFromUrl(url)?.let { return it }
+            MimeTypeMap.getMimeTypeFromUrl(url)?.let { return it }
         }
         return rawContentType?.substringBefore(';')
     }
@@ -290,10 +293,9 @@ class HttpUriFetcher(
 
     @Poko
     class Factory(
-        private val callFactory: Lazy<Call.Factory>,
-        private val diskCache: Lazy<DiskCache?>,
-        private val clock: Clock,
-        private val respectCacheHeaders: Boolean,
+        private val httpClient: Lazy<HttpClient> = lazy { HttpClient() },
+        private val clock: Lazy<Clock> = lazy { Clock() },
+        private val respectCacheHeaders: Boolean = false,
     ) : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
@@ -301,8 +303,8 @@ class HttpUriFetcher(
             return HttpUriFetcher(
                 url = data.toString(),
                 options = options,
-                callFactory = callFactory,
-                diskCache = diskCache,
+                httpClient = httpClient,
+                diskCache = lazy { imageLoader.diskCache },
                 clock = clock,
                 respectCacheHeaders = respectCacheHeaders,
             )
