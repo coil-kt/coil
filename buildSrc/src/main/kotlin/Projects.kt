@@ -137,6 +137,8 @@ private fun <T : BaseExtension> Project.setupBaseModule(
             val arguments = mutableListOf(
                 // https://kotlinlang.org/docs/compiler-reference.html#progressive
                 "-progressive",
+                // Report native linkage warnings as errors.
+                "-Xpartial-linkage-loglevel=ERROR",
                 // Enable Java default method generation.
                 "-Xjvm-default=all",
                 // Generate smaller bytecode by not generating runtime not-null assertions.
