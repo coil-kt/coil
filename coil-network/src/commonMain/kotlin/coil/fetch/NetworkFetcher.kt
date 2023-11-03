@@ -8,7 +8,10 @@ import coil.network.CacheResponse
 import coil.network.CacheStrategy
 import coil.network.CacheStrategy.Companion.combineHeaders
 import coil.network.Clock
+import coil.network.HTTP_NOT_MODIFIED
 import coil.network.HttpException
+import coil.network.MIME_TYPE_TEXT_PLAIN
+import coil.network.assertNotOnMainThread
 import coil.network.closeQuietly
 import coil.request.Options
 import coil.util.MimeTypeMap
