@@ -7,7 +7,6 @@ import coil.EventListener
 import coil.Image
 import coil.decode.DataSource
 import coil.decode.Decoder
-import coil.disk.DiskCache
 import coil.fetch.Fetcher
 import coil.intercept.Interceptor
 import coil.intercept.RealInterceptorChain
@@ -58,12 +57,6 @@ internal fun Closeable.closeQuietly() {
     } catch (_: Exception) {}
 }
 
-internal fun DiskCache.Editor.abortQuietly() {
-    try {
-        abort()
-    } catch (_: Exception) {}
-}
-
 /**
  * Return 'true' if the request does not require the output image's size to match the
  * requested dimensions exactly.
@@ -81,15 +74,6 @@ internal inline fun ComponentRegistry.Builder.addFirst(
 internal inline fun ComponentRegistry.Builder.addFirst(
     factory: Decoder.Factory?
 ) = apply { if (factory != null) decoderFactories.add(0, factory) }
-
-internal fun String.toNonNegativeInt(defaultValue: Int): Int {
-    val value = toLongOrNull() ?: return defaultValue
-    return when {
-        value > Int.MAX_VALUE -> Int.MAX_VALUE
-        value < 0 -> 0
-        else -> value.toInt()
-    }
-}
 
 internal const val MIME_TYPE_JPEG = "image/jpeg"
 internal const val MIME_TYPE_WEBP = "image/webp"

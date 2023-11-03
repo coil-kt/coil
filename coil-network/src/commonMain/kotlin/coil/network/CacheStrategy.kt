@@ -1,7 +1,9 @@
 package coil.network
 
 import coil.util.Clock
-import coil.util.toNonNegativeInt
+import io.ktor.client.request.HttpRequest
+import io.ktor.client.statement.HttpResponse
+import io.ktor.util.date.GMTDate
 import java.util.Date
 import java.util.concurrent.TimeUnit.SECONDS
 import okhttp3.Headers
@@ -11,35 +13,35 @@ import okhttp3.Response
 /** Modified from OkHttp's `okhttp3.internal.cache.CacheStrategy`. */
 internal class CacheStrategy private constructor(
     /** The request to send on the network, or null if this call doesn't use the network. */
-    val networkRequest: Request?,
+    val networkRequest: HttpRequest?,
     /** The cached response to return or validate, or null if this call doesn't use a cache. */
     val cacheResponse: CacheResponse?
 ) {
 
     class Factory(
-        private val request: Request,
+        private val request: HttpRequest,
         private val cacheResponse: CacheResponse?,
         private val clock: Clock,
     ) {
 
         /** The server's time when the cached response was served, if known. */
-        private var servedDate: Date? = null
+        private var servedDate: GMTDate? = null
         private var servedDateString: String? = null
 
         /** The last modified date of the cached response, if known. */
-        private var lastModified: Date? = null
+        private var lastModified: GMTDate? = null
         private var lastModifiedString: String? = null
 
         /**
          * The expiration date of the cached response, if known.
          * If both this field and the max age are set, the max age is preferred.
          */
-        private var expires: Date? = null
+        private var expires: GMTDate? = null
 
-        /** @see [Response.sentRequestAtMillis] */
+        /** @see [HttpResponse.requestTime] */
         private var sentRequestMillis = 0L
 
-        /** @see [Response.receivedResponseAtMillis] */
+        /** @see [HttpResponse.responseTime] */
         private var receivedResponseMillis = 0L
 
         /** Etag of the cached response. */

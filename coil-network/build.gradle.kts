@@ -1,5 +1,6 @@
+
 import coil.addAllTargets
-import coil.jvmCommon
+import coil.nonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
@@ -13,7 +14,7 @@ addAllTargets(project)
 setupLibraryModule(name = "coil.network")
 
 kotlin {
-    jvmCommon()
+    nonAndroidMain()
 
     sourceSets {
         commonMain {

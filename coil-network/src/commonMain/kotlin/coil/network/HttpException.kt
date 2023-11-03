@@ -1,12 +1,11 @@
 package coil.network
 
-import coil.fetch.HttpUriFetcher
-import okhttp3.Response
+import coil.fetch.NetworkFetcher
+import io.ktor.client.statement.HttpResponse
 
 /**
  * Exception for an unexpected, non-2xx HTTP response.
  *
- * @see HttpUriFetcher
+ * @see NetworkFetcher
  */
-class HttpException(val response: Response) :
-    RuntimeException("HTTP ${response.code}: ${response.message}")
+class HttpException(val response: HttpResponse) : RuntimeException("HTTP ${response.status}")

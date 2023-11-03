@@ -19,7 +19,6 @@ import coil.util.createMockWebServer
 import coil.util.enqueueImage
 import coil.util.runTestAsync
 import java.io.File
-import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import java.util.UUID
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -92,7 +91,7 @@ class HttpUriFetcherTestTest {
 
     @Test
     fun `mime type is parsed correctly from content type`() {
-        val fetcher = HttpUriFetcher(
+        val fetcher = NetworkFetcher(
             url = "error",
             options = Options(context),
             callFactory = lazyOf(callFactory),
@@ -463,7 +462,7 @@ class HttpUriFetcherTestTest {
         clock: Clock = this.clock,
         respectCacheHeaders: Boolean = true,
     ): Fetcher {
-        val factory = HttpUriFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), clock, respectCacheHeaders)
+        val factory = NetworkFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), clock, respectCacheHeaders)
         return checkNotNull(factory.create(url.toUri(), options, imageLoader)) { "fetcher == null" }
     }
 
