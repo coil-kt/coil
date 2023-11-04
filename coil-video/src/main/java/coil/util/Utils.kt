@@ -1,5 +1,3 @@
-@file:JvmName("-VideoUtils")
-
 package coil.util
 
 import android.graphics.Bitmap

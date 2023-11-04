@@ -1,5 +1,3 @@
-@file:JvmName("Gifs")
-
 package coil.request
 
 import android.graphics.ImageDecoder

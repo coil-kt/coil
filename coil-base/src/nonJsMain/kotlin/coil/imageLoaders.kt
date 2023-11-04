@@ -1,11 +1,8 @@
-@file:JvmName("ImageLoaders")
-
 package coil
 
 import coil.annotation.WorkerThread
 import coil.request.ImageRequest
 import coil.request.ImageResult
-import kotlin.jvm.JvmName
 import kotlinx.coroutines.runBlocking
 
 /**

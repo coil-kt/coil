@@ -1,5 +1,3 @@
-@file:JvmName("ImageSources")
-
 package coil.decode
 
 import coil.decode.ImageSource.Metadata

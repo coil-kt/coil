@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmName("-fileSystems")
-
 package coil.util
 
-import kotlin.jvm.JvmName
 import kotlin.random.Random
 import kotlin.random.nextULong
 import okio.FileNotFoundException

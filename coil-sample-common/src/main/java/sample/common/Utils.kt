@@ -1,5 +1,3 @@
-@file:JvmName("-CommonUtils")
-
 package sample.common
 
 import android.content.Context

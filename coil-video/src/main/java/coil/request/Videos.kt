@@ -1,5 +1,3 @@
-@file:JvmName("Videos")
-
 package coil.request
 
 import android.media.MediaMetadataRetriever

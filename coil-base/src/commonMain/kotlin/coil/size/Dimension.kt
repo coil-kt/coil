@@ -1,11 +1,8 @@
-@file:JvmName("-Dimensions")
-
 package coil.size
 
 import coil.request.Options
 import dev.drewhamilton.poko.Poko
 import kotlin.jvm.JvmField
-import kotlin.jvm.JvmName
 
 /**
  * Represents either the width or height of a [Size].

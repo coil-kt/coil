@@ -1,5 +1,3 @@
-@file:JvmName("Svgs")
-
 package coil.request
 
 import coil.decode.SvgDecoder.Companion.CSS_KEY

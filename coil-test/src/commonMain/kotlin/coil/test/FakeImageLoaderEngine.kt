@@ -1,6 +1,5 @@
 // https://youtrack.jetbrains.com/issue/KTIJ-7642
 @file:Suppress("FUN_INTERFACE_WITH_SUSPEND_FUNCTION")
-@file:JvmName("FakeImageLoaderEngines")
 
 package coil.test
 
@@ -11,7 +10,6 @@ import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.size.Size
-import coil.test.FakeImageLoaderEngine.RequestTransformer
 import coil.test.FakeImageLoaderEngine.RequestTransformer
 import kotlin.jvm.JvmName
 import kotlinx.coroutines.flow.Flow

@@ -1,10 +1,7 @@
-@file:JvmName("-Sizes")
-
 package coil.size
 
 import coil.request.ImageRequest
 import kotlin.jvm.JvmField
-import kotlin.jvm.JvmName
 
 /**
  * Represents the target size of an image request.

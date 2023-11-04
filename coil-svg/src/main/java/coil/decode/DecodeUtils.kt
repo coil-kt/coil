@@ -1,5 +1,3 @@
-@file:JvmName("SvgDecodeUtils")
-
 package coil.decode
 
 import coil.util.indexOf

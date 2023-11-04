@@ -1,5 +1,3 @@
-@file:JvmName("GifDecodeUtils")
-
 package coil.decode
 
 import kotlin.experimental.and

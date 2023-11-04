@@ -1,5 +1,3 @@
-@file:JvmName("-SvgUtils")
-
 package coil.util
 
 import android.graphics.Bitmap

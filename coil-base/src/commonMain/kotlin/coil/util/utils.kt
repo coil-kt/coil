@@ -1,5 +1,3 @@
-@file:JvmName("-utils")
-
 package coil.util
 
 import coil.ComponentRegistry
@@ -17,7 +15,6 @@ import coil.size.Scale
 import coil.size.Size
 import coil.size.isOriginal
 import coil.size.pxOrElse
-import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
 import okio.Closeable
 

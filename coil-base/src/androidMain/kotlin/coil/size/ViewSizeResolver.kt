@@ -1,5 +1,3 @@
-@file:JvmName("ViewSizeResolvers")
-
 package coil.size
 
 import android.view.View

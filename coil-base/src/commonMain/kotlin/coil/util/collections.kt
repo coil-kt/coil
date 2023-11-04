@@ -1,8 +1,4 @@
-@file:JvmName("-collections")
-
 package coil.util
-
-import kotlin.jvm.JvmName
 
 /**
  * Create a [MutableMap] that orders its entries by most recently used to least recently used.

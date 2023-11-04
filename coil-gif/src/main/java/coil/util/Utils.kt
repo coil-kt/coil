@@ -1,5 +1,3 @@
-@file:JvmName("-GifUtils")
-
 package coil.util
 
 import android.graphics.Bitmap
