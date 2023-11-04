@@ -116,7 +116,7 @@ interface MemoryCache {
             }
             val strongMemoryCache = if (strongReferencesEnabled) {
                 val maxSize = if (maxSizePercent > 0) {
-                    (maxSizePercent * context.totalAvailableMemory).toLong()
+                    (maxSizePercent * context.totalAvailableMemoryBytes).toLong()
                 } else {
                     maxSizeBytes
                 }

@@ -2,7 +2,9 @@ package coil
 
 interface PlatformContext {
 
+    /** Return the global application context. */
     val application: PlatformContext
 
-    val totalAvailableMemory: Long
+    /** Return the total available memory for this application. */
+    val totalAvailableMemoryBytes: Long
 }

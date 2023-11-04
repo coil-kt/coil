@@ -11,7 +11,7 @@ private value class AndroidPlatformContext(
     override val application: PlatformContext
         get() = context.applicationContext.asPlatformContext()
 
-    override val totalAvailableMemory: Long
+    override val totalAvailableMemoryBytes: Long
         get() = totalAvailableMemoryBytes()
 }
 

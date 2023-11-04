@@ -17,16 +17,16 @@ import kotlinx.coroutines.launch
  */
 internal val View.requestManager: ViewTargetRequestManager
     get() {
-        var manager = getTag(R.id.coil_request_manager) as? ViewTargetRequestManager
+        var manager = getTag(R.id.coil_v3_request_manager) as? ViewTargetRequestManager
         if (manager == null) {
             manager = synchronized(this) {
-                // Check again in case coil_request_manager was just set.
-                (getTag(R.id.coil_request_manager) as? ViewTargetRequestManager)
+                // Check again in case the request manager was just set.
+                (getTag(R.id.coil_v3_request_manager) as? ViewTargetRequestManager)
                     ?.let { return@synchronized it }
 
                 ViewTargetRequestManager(this).apply {
                     addOnAttachStateChangeListener(this)
-                    setTag(R.id.coil_request_manager, this)
+                    setTag(R.id.coil_v3_request_manager, this)
                 }
             }
         }
