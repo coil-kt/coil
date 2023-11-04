@@ -62,30 +62,36 @@ interface MemoryCache {
         val extras: Map<String, Any> = emptyMap(),
     )
 
-    class Builder(private val context: PlatformContext) {
+    class Builder {
 
-        private var maxSizePercent = context.defaultMemoryCacheSizePercent()
-        private var maxSizeBytes = 0L
+        private var maxSizeBytesFactory: (() -> Long)? = null
         private var strongReferencesEnabled = true
         private var weakReferencesEnabled = true
-
-        /**
-         * Set the maximum size of the memory cache as a percentage of this application's
-         * available memory.
-         */
-        fun maxSizePercent(percent: Double) = apply {
-            require(percent in 0.0..1.0) { "percent must be in the range [0.0, 1.0]." }
-            this.maxSizeBytes = 0
-            this.maxSizePercent = percent
-        }
 
         /**
          * Set the maximum size of the memory cache in bytes.
          */
         fun maxSizeBytes(size: Long) = apply {
-            require(size >= 0) { "size must be >= 0." }
-            this.maxSizePercent = 0.0
-            this.maxSizeBytes = size
+            this.maxSizeBytesFactory = { size }
+        }
+
+        /**
+         * Set the maximum size of the memory cache in bytes.
+         */
+        fun maxSizeBytes(size: () -> Long) = apply {
+            this.maxSizeBytesFactory = size
+        }
+
+        /**
+         * Set the maximum size of the memory cache as a percentage of this application's
+         * available memory.
+         */
+        fun maxSizePercent(
+            context: PlatformContext,
+            percent: Double = context.defaultMemoryCacheSizePercent(),
+        ) = apply {
+            require(percent in 0.0..1.0) { "percent must be in the range [0.0, 1.0]." }
+            this.maxSizeBytesFactory = { (percent * context.totalAvailableMemoryBytes).toLong() }
         }
 
         /**
@@ -115,13 +121,12 @@ interface MemoryCache {
                 EmptyWeakMemoryCache()
             }
             val strongMemoryCache = if (strongReferencesEnabled) {
-                val maxSize = if (maxSizePercent > 0) {
-                    (maxSizePercent * context.totalAvailableMemoryBytes).toLong()
-                } else {
-                    maxSizeBytes
+                val maxSizeBytesFactory = checkNotNull(maxSizeBytesFactory) {
+                    "maxSizeBytesFactory == null"
                 }
-                if (maxSize > 0) {
-                    RealStrongMemoryCache(maxSize, weakMemoryCache)
+                val maxSizeBytes = maxSizeBytesFactory()
+                if (maxSizeBytes > 0) {
+                    RealStrongMemoryCache(maxSizeBytes, weakMemoryCache)
                 } else {
                     EmptyStrongMemoryCache(weakMemoryCache)
                 }

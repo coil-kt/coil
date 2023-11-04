@@ -37,7 +37,7 @@ internal class MemoryCacheService(
         request: ImageRequest,
         mappedData: Any,
         options: Options,
-        eventListener: EventListener
+        eventListener: EventListener,
     ): MemoryCache.Key? {
         // Fast path: an explicit memory cache key has been set.
         request.memoryCacheKey?.let { return it }
@@ -140,7 +140,7 @@ internal class MemoryCacheService(
             srcHeight = srcHeight,
             dstWidth = dstWidth,
             dstHeight = dstHeight,
-            scale = scale
+            scale = scale,
         )
 
         // Short circuit the size check if the size is at most 1 pixel off in either dimension.
@@ -150,12 +150,14 @@ internal class MemoryCacheService(
         if (allowInexactSize) {
             val downsampleMultiplier = multiplier.coerceAtMost(1.0)
             if (abs(dstWidth - (downsampleMultiplier * srcWidth)) <= 1 ||
-                abs(dstHeight - (downsampleMultiplier * srcHeight)) <= 1) {
+                abs(dstHeight - (downsampleMultiplier * srcHeight)) <= 1
+            ) {
                 return true
             }
         } else {
             if ((dstWidth.isMinOrMax() || abs(dstWidth - srcWidth) <= 1) &&
-                (dstHeight.isMinOrMax() || abs(dstHeight - srcHeight) <= 1)) {
+                (dstHeight.isMinOrMax() || abs(dstHeight - srcHeight) <= 1)
+            ) {
                 return true
             }
         }
@@ -187,7 +189,7 @@ internal class MemoryCacheService(
     fun setCacheValue(
         cacheKey: MemoryCache.Key?,
         request: ImageRequest,
-        result: ExecuteResult
+        result: ExecuteResult,
     ): Boolean {
         if (!request.memoryCachePolicy.writeEnabled) return false
         val memoryCache = imageLoader.memoryCache
@@ -207,7 +209,7 @@ internal class MemoryCacheService(
         chain: Interceptor.Chain,
         request: ImageRequest,
         cacheKey: MemoryCache.Key,
-        cacheValue: MemoryCache.Value
+        cacheValue: MemoryCache.Value,
     ) = SuccessResult(
         image = cacheValue.bitmap.toDrawable(request.context),
         request = request,
