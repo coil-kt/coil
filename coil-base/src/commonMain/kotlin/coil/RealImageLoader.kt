@@ -108,7 +108,8 @@ internal class RealImageLoader(
 
             // Set the placeholder on the target.
             val cachedPlaceholder = memoryCache?.get(request.placeholderMemoryCacheKey)?.image
-            request.target?.onStart(cachedPlaceholder ?: request.placeholderFactory())
+            val placeholder = cachedPlaceholder ?: request.placeholderFactory()
+            request.target?.onStart(placeholder)
             eventListener.onStart(request)
             request.listener?.onStart(request)
 
