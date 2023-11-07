@@ -3,7 +3,6 @@ package coil
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 
 fun addAllTargets(project: Project) {
@@ -37,46 +36,34 @@ fun addAllTargets(project: Project) {
     }
 }
 
-// nonAndroidMain: jsMain, jvmMain, nativeMain
-fun KotlinSourceSetContainer.nonAndroidMain(): KotlinSourceSet {
-    val nonAndroidMain = sourceSets.create("nonAndroidMain").apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    listOf("jsMain", "jvmMain", "nativeMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(nonAndroidMain)
-    }
-    return nonAndroidMain
-}
+fun KotlinSourceSetContainer.nonAndroidMain() = createSourceSet(
+    name = "nonAndroidMain",
+    children = listOf("jsMain", "jvmMain", "nativeMain"),
+)
 
-// nonJsMain: androidMain, jvmMain, nativeMain
-fun KotlinSourceSetContainer.nonJsMain(): KotlinSourceSet {
-    val nonJsMain = sourceSets.create("nonJsMain").apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    listOf("androidMain", "jvmMain", "nativeMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(nonJsMain)
-    }
-    return nonJsMain
-}
+fun KotlinSourceSetContainer.nonJsMain() = createSourceSet(
+    name = "nonJsMain",
+    children = listOf("androidMain", "jvmMain", "nativeMain"),
+)
 
-// jvmCommon: androidMain, jvmMain
-fun KotlinSourceSetContainer.jvmCommon(): KotlinSourceSet {
-    val jvmCommon = sourceSets.create("jvmCommon").apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    listOf("androidMain", "jvmMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(jvmCommon)
-    }
-    return jvmCommon
-}
+fun KotlinSourceSetContainer.jvmCommon() = createSourceSet(
+    name = "jvmCommon",
+    children = listOf("androidMain", "jvmMain"),
+)
 
-// nonJvmCommon: jsMain, nativeMain
-fun KotlinSourceSetContainer.nonJvmCommon(): KotlinSourceSet {
-    val nonJvmCommon = sourceSets.create("nonJvmCommon").apply {
+fun KotlinSourceSetContainer.nonJvmCommon() = createSourceSet(
+    name = "nonJvmCommon",
+    children = listOf("jsMain", "nativeMain"),
+)
+
+private fun KotlinSourceSetContainer.createSourceSet(
+    name: String,
+    children: List<String>,
+) {
+    val sourceSet = sourceSets.create(name).apply {
         dependsOn(sourceSets.getByName("commonMain"))
     }
-    listOf("jsMain", "nativeMain").forEach { name ->
-        sourceSets.getByName(name).dependsOn(nonJvmCommon)
+    for (child in children) {
+        sourceSets.getByName(child).dependsOn(sourceSet)
     }
-    return nonJvmCommon
 }
