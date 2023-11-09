@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build.VERSION.SDK_INT
 import coil.ImageLoader
-import coil.annotation.Poko
 import coil.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
 import coil.fetch.SourceFetchResult
 import coil.request.Options
