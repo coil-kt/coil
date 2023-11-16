@@ -39,7 +39,7 @@ interface Logger {
  * information.
  */
 class DebugLogger @JvmOverloads constructor(
-    override var minLevel: Logger.Level = Logger.Level.Debug
+    override var minLevel: Logger.Level = Logger.Level.Debug,
 ) : Logger {
 
     override fun log(tag: String, level: Logger.Level, message: String?, throwable: Throwable?) {
