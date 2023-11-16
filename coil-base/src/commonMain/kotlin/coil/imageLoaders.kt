@@ -54,23 +54,3 @@ internal val RealImageLoader.Options.networkObserverEnabled: Boolean
 
 private val networkObserverEnabledKey = internalExtraKeyOf("networkObserverEnabled")
 private const val networkObserverEnabledDefault = true
-
-// respectCacheHeaders
-
-/**
- * Enables support for network cache headers. If enabled, this image loader will respect the
- * cache headers returned by network responses when deciding if an image can be stored or
- * served from the disk cache. If disabled, images will always be served from the disk cache
- * (if present) and will only be evicted to stay under the maximum size.
- *
- * Default: [respectCacheHeadersDefault]
- */
-fun ImageLoader.Builder.respectCacheHeaders(enable: Boolean) = apply {
-    extra(respectCacheHeadersKey, enable)
-}
-
-internal val RealImageLoader.Options.respectCacheHeaders: Boolean
-    get() = extras.get(respectCacheHeadersKey) ?: respectCacheHeadersDefault
-
-private val respectCacheHeadersKey = internalExtraKeyOf("respectCacheHeaders")
-private const val respectCacheHeadersDefault = false
