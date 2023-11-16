@@ -13,7 +13,11 @@ import org.jetbrains.skia.Image
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.impl.use
 
-internal actual fun println(level: Logger.Level, tag: String, message: String) {
+internal actual fun println(
+    level: Logger.Level,
+    tag: String,
+    message: String,
+) {
     println(message)
 }
 
@@ -37,8 +41,8 @@ internal fun Bitmap.Companion.makeFromImage(
     val bitmap = Bitmap()
     val srcWidth = image.width
     val srcHeight = image.height
-    val targetWidth = size.widthPx(scale) { image.width }
-    val targetHeight = size.heightPx(scale) { image.height }
+    val targetWidth = size.widthPx(scale) { srcWidth }
+    val targetHeight = size.heightPx(scale) { srcHeight }
     val multiplier = DecodeUtils.computeSizeMultiplier(
         srcWidth = srcWidth,
         srcHeight = srcHeight,
@@ -50,12 +54,16 @@ internal fun Bitmap.Companion.makeFromImage(
     val dstHeight = (multiplier * targetHeight).roundToInt()
 
     bitmap.allocN32Pixels(dstWidth, dstHeight)
-    Canvas(bitmap).use { canvas ->
-        canvas.drawImageRect(
+    bitmap.applyCanvas {
+        drawImageRect(
             image,
             Rect.makeWH(srcWidth.toFloat(), srcHeight.toFloat()),
             Rect.makeWH(dstWidth.toFloat(), dstHeight.toFloat()),
         )
     }
     return bitmap
+}
+
+internal inline fun Bitmap.applyCanvas(block: Canvas.() -> Unit) {
+    Canvas(this).use(block)
 }
