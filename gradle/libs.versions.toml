@@ -20,7 +20,7 @@ poko = "dev.drewhamilton.poko:0.15.0"
 spotless = "com.diffplug.spotless:6.22.0"
 
 [libraries]
-gradlePlugin-android = "com.android.tools.build:gradle:8.1.3"
+gradlePlugin-android = "com.android.tools.build:gradle:8.1.4"
 gradlePlugin-atomicFu = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.22.0"
 gradlePlugin-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
