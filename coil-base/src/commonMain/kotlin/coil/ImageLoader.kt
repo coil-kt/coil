@@ -301,7 +301,7 @@ interface ImageLoader {
          * Set an extra for extension.
          */
         fun extra(key: String, value: Any?) = apply {
-            extras.put(key, value)
+            this.extras.put(key, value)
         }
 
         /**
