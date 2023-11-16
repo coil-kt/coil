@@ -77,6 +77,7 @@ interface ImageLoader {
     fun newBuilder(): Builder
 
     class Builder {
+
         private val application: Context
         private var defaults: ImageRequest.Defaults
         private var memoryCacheLazy: Lazy<MemoryCache?>?
