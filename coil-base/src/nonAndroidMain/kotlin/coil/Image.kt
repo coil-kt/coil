@@ -24,7 +24,7 @@ private class WrappedSkiaImage(
         get() = image.height
 }
 
-fun SkiaImage.toCoilImage(shareable: Boolean): Image {
+fun SkiaImage.asCoilImage(shareable: Boolean): Image {
     return WrappedSkiaImage(this, shareable)
 }
 

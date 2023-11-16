@@ -3,7 +3,7 @@ package coil.decode
 import coil.ImageLoader
 import coil.fetch.SourceFetchResult
 import coil.request.Options
-import coil.toCoilImage
+import coil.asCoilImage
 import coil.util.makeFromImage
 import coil.util.isStatic
 import okio.use
@@ -34,7 +34,7 @@ class SkiaImageDecoder(
             image = Image.makeFromBitmap(bitmap)
         }
         return DecodeResult(
-            image = image.toCoilImage(shareable = isStatic),
+            image = image.asCoilImage(shareable = isStatic),
             isSampled = isSampled,
         )
     }
