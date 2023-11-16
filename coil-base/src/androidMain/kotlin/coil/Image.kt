@@ -1,7 +1,36 @@
 package coil
 
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import coil.util.allocationByteCountCompat
+import coil.util.height
+import coil.util.width
 
-fun Drawable.asCoilImage(): Image = TODO()
+private class WrappedDrawableImage(
+    val drawable: Drawable,
+    override val shareable: Boolean,
+) : Image {
 
-fun Image.asDrawable(): Drawable = TODO()
+    override val size: Long
+        get() {
+            if (drawable is BitmapDrawable) {
+                return drawable.bitmap.allocationByteCountCompat.toLong()
+            } else {
+                // Estimate 4 bytes per pixel.
+                return 4L * width * height
+            }
+        }
+
+    override val width: Int
+        get() = drawable.width
+
+    override val height: Int
+        get() = drawable.height
+}
+
+fun Drawable.asCoilImage(shareable: Boolean = this is BitmapDrawable): Image {
+    return WrappedDrawableImage(this, shareable)
+}
+
+val Image.drawable: Drawable
+    get() = (this as WrappedDrawableImage).drawable

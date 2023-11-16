@@ -18,7 +18,6 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import coil.asAndroidContext
 import coil.request.ImageRequest
 import coil.size.DisplaySizeResolver
 import coil.size.Precision
@@ -72,9 +71,6 @@ internal val DEFAULT_BITMAP_CONFIG = if (SDK_INT >= 26) {
     Bitmap.Config.ARGB_8888
 }
 
-/**
- * Used to resolve [ImageRequest.placeholder], [ImageRequest.error], and [ImageRequest.fallback].
- */
 internal fun ImageRequest.getDrawableCompat(
     drawable: Drawable?,
     @DrawableRes resId: Int?,
@@ -82,7 +78,7 @@ internal fun ImageRequest.getDrawableCompat(
 ): Drawable? = when {
     drawable != null -> drawable
     resId != null -> if (resId != 0) {
-        context.asAndroidContext().getDrawableCompat(resId)
+        context.getDrawableCompat(resId)
     } else {
         null
     }
