@@ -12,7 +12,7 @@ import coil.ComponentRegistry
 import coil.Extras
 import coil.Image
 import coil.ImageLoader
-import coil.PlatformContext
+import coil.Context
 import coil.annotation.MainThread
 import coil.decode.Decoder
 import coil.drawable.CrossfadeDrawable
@@ -58,7 +58,7 @@ import okhttp3.HttpUrl
  */
 @Poko
 class ImageRequest private constructor(
-    val context: PlatformContext,
+    val context: Context,
 
     /** @see Builder.data */
     val data: Any,
@@ -80,9 +80,6 @@ class ImageRequest private constructor(
 
     /** @see Builder.decoderFactory */
     val decoderFactory: Decoder.Factory?,
-
-    /** @see Builder.headers */
-    val headers: Headers,
 
     /** @see Builder.interceptorDispatcher */
     val interceptorDispatcher: CoroutineDispatcher,
@@ -135,7 +132,7 @@ class ImageRequest private constructor(
 
     @JvmOverloads
     fun newBuilder(
-        context: PlatformContext = this.context,
+        context: Context = this.context,
     ) = Builder(this, context)
 
     /**
@@ -210,7 +207,7 @@ class ImageRequest private constructor(
 
     class Builder {
 
-        private val context: PlatformContext
+        private val context: Context
         private var defaults: Defaults
         private var data: Any?
         private var target: Target?
@@ -237,7 +234,7 @@ class ImageRequest private constructor(
         private var resolvedSizeResolver: SizeResolver?
         private var resolvedScale: Scale?
 
-        constructor(context: PlatformContext) {
+        constructor(context: Context) {
             this.context = context
             defaults = Defaults.DEFAULT
             data = null
@@ -266,7 +263,7 @@ class ImageRequest private constructor(
         }
 
         @JvmOverloads
-        constructor(request: ImageRequest, context: PlatformContext = request.context) {
+        constructor(request: ImageRequest, context: Context = request.context) {
             this.context = context
             defaults = request.defaults
             data = request.data

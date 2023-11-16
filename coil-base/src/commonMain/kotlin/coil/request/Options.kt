@@ -1,13 +1,12 @@
 package coil.request
 
+import coil.Context
 import coil.Extras
-import coil.PlatformContext
 import coil.decode.Decoder
 import coil.fetch.Fetcher
 import coil.size.Scale
 import coil.size.Size
 import coil.util.defaultFileSystem
-import io.ktor.http.Headers
 import okio.FileSystem
 
 /**
@@ -17,9 +16,9 @@ import okio.FileSystem
  */
 data class Options(
     /**
-     * The [PlatformContext] used to execute this request.
+     * The [Context] used to execute this request.
      */
-    val context: PlatformContext,
+    val context: Context,
 
     /**
      * The requested output size for the image request.
@@ -49,11 +48,6 @@ data class Options(
      * TODO
      */
     val fileSystem: FileSystem = defaultFileSystem(),
-
-    /**
-     * The header fields to use for any network requests.
-     */
-    val headers: Headers = Headers.Empty,
 
     /**
      * Determines if this request is allowed to read/write from/to memory.

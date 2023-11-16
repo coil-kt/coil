@@ -16,7 +16,7 @@ object SingletonImageLoader {
      * Get the singleton [ImageLoader].
      */
     @JvmStatic
-    fun get(context: PlatformContext): ImageLoader {
+    fun get(context: Context): ImageLoader {
         return imageLoader ?: newImageLoader(context)
     }
 
@@ -52,7 +52,7 @@ object SingletonImageLoader {
     }
 
     /** Create and set the new singleton [ImageLoader]. */
-    private fun newImageLoader(context: PlatformContext): ImageLoader = synchronized(lock) {
+    private fun newImageLoader(context: Context): ImageLoader = synchronized(lock) {
         // Check again in case imageLoader was just set.
         imageLoader?.let { return it }
 
@@ -79,4 +79,4 @@ object SingletonImageLoader {
     }
 }
 
-internal expect fun PlatformContext.applicationImageLoaderFactory(): SingletonImageLoader.Factory?
+internal expect fun Context.applicationImageLoaderFactory(): SingletonImageLoader.Factory?

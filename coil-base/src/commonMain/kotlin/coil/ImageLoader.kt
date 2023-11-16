@@ -14,6 +14,7 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Precision
 import coil.util.Logger
+import coil.util.application
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
 
@@ -76,8 +77,7 @@ interface ImageLoader {
     fun newBuilder(): Builder
 
     class Builder {
-
-        private val application: PlatformContext
+        private val application: Context
         private var defaults: ImageRequest.Defaults
         private var memoryCacheLazy: Lazy<MemoryCache?>?
         private var diskCacheLazy: Lazy<DiskCache?>?
@@ -86,7 +86,7 @@ interface ImageLoader {
         private var logger: Logger?
         private val extras: Extras.Builder
 
-        constructor(context: PlatformContext) {
+        constructor(context: Context) {
             application = context.application
             defaults = ImageRequest.Defaults.DEFAULT
             memoryCacheLazy = null
@@ -296,8 +296,14 @@ interface ImageLoader {
             val options = RealImageLoader.Options(
                 application = application,
                 defaults = defaults,
-                memoryCacheLazy = memoryCacheLazy ?: lazy { MemoryCache.Builder(application).build() },
-                diskCacheLazy = diskCacheLazy ?: lazy { singletonDiskCache() },
+                memoryCacheLazy = memoryCacheLazy ?: lazy {
+                    MemoryCache.Builder()
+                        .maxSizePercent(application)
+                        .build()
+                },
+                diskCacheLazy = diskCacheLazy ?: lazy {
+                    singletonDiskCache()
+                },
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 logger = logger,

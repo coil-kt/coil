@@ -206,7 +206,7 @@ internal class RealImageLoader(
     }
 
     data class Options(
-        val application: PlatformContext,
+        val application: Context,
         val defaults: ImageRequest.Defaults,
         val memoryCacheLazy: Lazy<MemoryCache?>,
         val diskCacheLazy: Lazy<DiskCache?>,

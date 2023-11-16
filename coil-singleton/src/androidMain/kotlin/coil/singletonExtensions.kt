@@ -11,6 +11,7 @@ import androidx.annotation.DrawableRes
 import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.request.ImageResult
+import coil.request.target
 import coil.util.CoilUtils
 import java.io.File
 import java.nio.ByteBuffer
@@ -20,13 +21,6 @@ import java.nio.ByteBuffer
  */
 inline val Context.imageLoader: ImageLoader
     get() = SingletonImageLoader.get(this)
-
-/**
- * Get the singleton [ImageLoader].
- */
-inline fun SingletonImageLoader.get(context: Context): ImageLoader {
-    return get(context.asPlatformContext())
-}
 
 /**
  * Load the image referenced by [data] and set it on this [ImageView].

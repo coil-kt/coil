@@ -1,5 +1,5 @@
 package coil
 
-internal actual fun PlatformContext.applicationImageLoaderFactory(): SingletonImageLoader.Factory? {
+internal actual fun Context.applicationImageLoaderFactory(): SingletonImageLoader.Factory? {
     return null
 }
