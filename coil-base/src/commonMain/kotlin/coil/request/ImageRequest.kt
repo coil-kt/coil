@@ -1,13 +1,5 @@
 package coil.request
 
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.net.Uri
-import android.widget.ImageView
-import android.widget.ImageView.ScaleType.CENTER
-import android.widget.ImageView.ScaleType.MATRIX
-import androidx.annotation.DrawableRes
-import androidx.lifecycle.Lifecycle
 import coil.ComponentRegistry
 import coil.Extras
 import coil.Image
@@ -15,40 +7,24 @@ import coil.ImageLoader
 import coil.Context
 import coil.annotation.MainThread
 import coil.decode.Decoder
-import coil.drawable.CrossfadeDrawable
 import coil.fetch.Fetcher
 import coil.memory.MemoryCache
 import coil.request.ImageRequest.Builder
 import coil.size.Dimension
-import coil.size.DisplaySizeResolver
 import coil.size.Precision
 import coil.size.Scale
 import coil.size.Size
 import coil.size.SizeResolver
-import coil.size.ViewSizeResolver
 import coil.target.Target
-import coil.target.ViewTarget
-import coil.transform.Transformation
-import coil.transition.CrossfadeTransition
-import coil.transition.Transition
 import coil.util.EMPTY_IMAGE_FACTORY
 import coil.util.allowInexactSize
-import coil.util.getLifecycle
 import coil.util.ioCoroutineDispatcher
-import coil.util.orEmpty
-import coil.util.scale
-import coil.util.toImmutableList
 import dev.drewhamilton.poko.Poko
-import io.ktor.http.Headers
-import io.ktor.http.HeadersBuilder
-import java.io.File
-import java.nio.ByteBuffer
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import okhttp3.HttpUrl
 
 /**
  * An immutable value object that represents a request for an image.
@@ -99,15 +75,6 @@ class ImageRequest private constructor(
     /** @see Builder.networkCachePolicy */
     val networkCachePolicy: CachePolicy,
 
-    /** @see Builder.size */
-    val sizeResolver: SizeResolver,
-
-    /** @see Builder.scale */
-    val scale: Scale,
-
-    /** @see Builder.precision */
-    val precision: Precision,
-
     /** @see Builder.placeholderMemoryCacheKey */
     val placeholderMemoryCacheKey: MemoryCache.Key?,
 
@@ -119,6 +86,15 @@ class ImageRequest private constructor(
 
     /** @see Builder.fallback */
     val fallbackFactory: () -> Image?,
+
+    /** @see Builder.size */
+    val sizeResolver: SizeResolver,
+
+    /** @see Builder.scale */
+    val scale: Scale,
+
+    /** @see Builder.precision */
+    val precision: Precision,
 
     /** @see Builder.extra */
     val extras: Extras,
@@ -173,15 +149,16 @@ class ImageRequest private constructor(
         val interceptorDispatcher: CoroutineDispatcher?,
         val fetcherDispatcher: CoroutineDispatcher?,
         val decoderDispatcher: CoroutineDispatcher?,
-        val placeholderFactory: () -> Image?,
-        val errorFactory: () -> Image?,
-        val fallbackFactory: () -> Image?,
         val memoryCachePolicy: CachePolicy?,
         val diskCachePolicy: CachePolicy?,
         val networkCachePolicy: CachePolicy?,
+        val placeholderFactory: () -> Image?,
+        val errorFactory: () -> Image?,
+        val fallbackFactory: () -> Image?,
         val sizeResolver: SizeResolver?,
         val scale: Scale?,
         val precision: Precision?,
+        val extras: Extras,
     )
 
     /**
@@ -191,14 +168,14 @@ class ImageRequest private constructor(
         val interceptorDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         val fetcherDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
         val decoderDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
-        val placeholderFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
-        val errorFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
-        val fallbackFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
         val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
         val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
         val networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
-        val extras: Extras = Extras.EMPTY,
+        val placeholderFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
+        val errorFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
+        val fallbackFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
         val precision: Precision = Precision.AUTOMATIC,
+        val extras: Extras = Extras.EMPTY,
     ) {
         companion object {
             @JvmField val DEFAULT = Defaults()
@@ -214,18 +191,21 @@ class ImageRequest private constructor(
         private var listener: Listener?
         private var memoryCacheKey: MemoryCache.Key?
         private var diskCacheKey: String?
-        private var precision: Precision?
         private var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
         private var decoderFactory: Decoder.Factory?
-        private var headers: HeadersBuilder?
-        private var memoryCachePolicy: CachePolicy?
-        private var diskCachePolicy: CachePolicy?
-        private var networkCachePolicy: CachePolicy?
         private var interceptorDispatcher: CoroutineDispatcher?
         private var fetcherDispatcher: CoroutineDispatcher?
         private var decoderDispatcher: CoroutineDispatcher?
+        private var memoryCachePolicy: CachePolicy?
+        private var diskCachePolicy: CachePolicy?
+        private var networkCachePolicy: CachePolicy?
         private var placeholderMemoryCacheKey: MemoryCache.Key?
-        private val extras: Extras.Builder
+        private var placeholderFactory: () -> Image?
+        private var errorFactory: () -> Image?
+        private var fallbackFactory: () -> Image?
+        private var precision: Precision?
+        internal val extras: Extras.Builder
+        internal val resolvedExtras: Extras.Builder
 
         private var lifecycle: Lifecycle?
         private var sizeResolver: SizeResolver?
@@ -242,18 +222,22 @@ class ImageRequest private constructor(
             listener = null
             memoryCacheKey = null
             diskCacheKey = null
-            precision = null
             fetcherFactory = null
             decoderFactory = null
-            headers = null
-            memoryCachePolicy = null
-            diskCachePolicy = null
-            networkCachePolicy = null
             interceptorDispatcher = null
             fetcherDispatcher = null
             decoderDispatcher = null
+            memoryCachePolicy = null
+            diskCachePolicy = null
+            networkCachePolicy = null
             placeholderMemoryCacheKey = null
+            placeholderFactory = EMPTY_IMAGE_FACTORY
+            errorFactory = EMPTY_IMAGE_FACTORY
+            fallbackFactory = EMPTY_IMAGE_FACTORY
+            precision = null
             extras = Extras.Builder()
+            resolvedExtras = Extras.Builder()
+
             lifecycle = null
             sizeResolver = null
             scale = null
@@ -271,18 +255,21 @@ class ImageRequest private constructor(
             listener = request.listener
             memoryCacheKey = request.memoryCacheKey
             diskCacheKey = request.diskCacheKey
-            precision = request.defined.precision
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory
-            headers = request.headers.newBuilder()
-            memoryCachePolicy = request.defined.memoryCachePolicy
-            diskCachePolicy = request.defined.diskCachePolicy
-            networkCachePolicy = request.defined.networkCachePolicy
             interceptorDispatcher = request.defined.interceptorDispatcher
             fetcherDispatcher = request.defined.fetcherDispatcher
             decoderDispatcher = request.defined.decoderDispatcher
+            memoryCachePolicy = request.defined.memoryCachePolicy
+            diskCachePolicy = request.defined.diskCachePolicy
+            networkCachePolicy = request.defined.networkCachePolicy
             placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
+            placeholderFactory = EMPTY_IMAGE_FACTORY
+            errorFactory = EMPTY_IMAGE_FACTORY
+            fallbackFactory = EMPTY_IMAGE_FACTORY
+            precision = request.defined.precision
             extras = request.extras.newBuilder()
+
             lifecycle = request.defined.lifecycle
             sizeResolver = request.defined.sizeResolver
             scale = request.defined.scale
@@ -301,17 +288,6 @@ class ImageRequest private constructor(
 
         /**
          * Set the data to load.
-         *
-         * The default supported data types are:
-         * - [String] (mapped to a [Uri])
-         * - [Uri] ("android.resource", "content", "file", "http", and "https" schemes only)
-         * - [HttpUrl]
-         * - [File]
-         * - [DrawableRes]
-         * - [Drawable]
-         * - [Bitmap]
-         * - [ByteArray]
-         * - [ByteBuffer]
          */
         fun data(data: Any?) = apply {
             this.data = data
@@ -391,19 +367,6 @@ class ImageRequest private constructor(
          */
         fun decoderDispatcher(dispatcher: CoroutineDispatcher) = apply {
             this.decoderDispatcher = dispatcher
-        }
-
-        /**
-         * Set the list of [Transformation]s to be applied to this request.
-         */
-        fun transformations(vararg transformations: Transformation) =
-            transformations(transformations.toList())
-
-        /**
-         * Set the list of [Transformation]s to be applied to this request.
-         */
-        fun transformations(transformations: List<Transformation>) = apply {
-            this.transformations = transformations.toImmutableList()
         }
 
         /**
@@ -512,38 +475,6 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the [Headers] for any network operations performed by this request.
-         */
-        fun headers(headers: Headers) = apply {
-            this.headers = headers.newBuilder()
-        }
-
-        /**
-         * Add a header for any network operations performed by this request.
-         *
-         * @see Headers.Builder.add
-         */
-        fun addHeader(name: String, value: String) = apply {
-            (this.headers ?: Headers.Builder().also { this.headers = it }).add(name, value)
-        }
-
-        /**
-         * Set a header for any network operations performed by this request.
-         *
-         * @see Headers.Builder.set
-         */
-        fun setHeader(name: String, value: String) = apply {
-            (this.headers ?: Headers.Builder().also { this.headers = it })[name] = value
-        }
-
-        /**
-         * Remove all network headers with the key [name].
-         */
-        fun removeHeader(name: String) = apply {
-            this.headers?.removeAll(name)
-        }
-
-        /**
          * Set the memory cache [key] whose value will be used as the placeholder drawable.
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
@@ -552,7 +483,7 @@ class ImageRequest private constructor(
             placeholderMemoryCacheKey(key?.let { MemoryCache.Key(it) })
 
         /**
-         * Set the memory cache [key] whose value will be used as the placeholder drawable.
+         * Set the memory cache [key] whose value will be used as the placeholder image.
          *
          * If there is no value in the memory cache for [key], fall back to [placeholder].
          */
@@ -561,51 +492,39 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Set the placeholder drawable to use when the request starts.
+         * Set the placeholder image to use when the request starts.
          */
-        fun placeholder(@DrawableRes drawableResId: Int) = apply {
-            this.placeholderResId = drawableResId
-            this.placeholderDrawable = null
+        fun placeholder(image: Image) = placeholder { image }
+
+        /**
+         * Set the placeholder image to use when the request starts.
+         */
+        fun placeholder(factory: () -> Image?) = apply {
+            this.placeholderFactory = factory
         }
 
         /**
-         * Set the placeholder drawable to use when the request starts.
+         * Set the error image to use if the request fails.
          */
-        fun placeholder(drawable: Drawable?) = apply {
-            this.placeholderDrawable = drawable
-            this.placeholderResId = 0
+        fun error(image: Image) = error { image }
+
+        /**
+         * Set the error image to use if the request fails.
+         */
+        fun error(factory: () -> Image?) = apply {
+            this.errorFactory = factory
         }
 
         /**
-         * Set the error drawable to use if the request fails.
+         * Set the fallback image to use if [data] is null.
          */
-        fun error(@DrawableRes drawableResId: Int) = apply {
-            this.errorResId = drawableResId
-            this.errorDrawable = null
-        }
+        fun fallback(image: Image) = fallback { image }
 
         /**
-         * Set the error drawable to use if the request fails.
+         * Set the fallback image to use if [data] is null.
          */
-        fun error(drawable: Drawable?) = apply {
-            this.errorDrawable = drawable
-            this.errorResId = 0
-        }
-
-        /**
-         * Set the fallback drawable to use if [data] is null.
-         */
-        fun fallback(@DrawableRes drawableResId: Int) = apply {
-            this.fallbackResId = drawableResId
-            this.fallbackDrawable = null
-        }
-
-        /**
-         * Set the fallback drawable to use if [data] is null.
-         */
-        fun fallback(drawable: Drawable?) = apply {
-            this.fallbackDrawable = drawable
-            this.fallbackResId = 0
+        fun fallback(factory: () -> Image?) = apply {
+            this.fallbackFactory = factory
         }
 
         /**
@@ -680,7 +599,6 @@ class ImageRequest private constructor(
                 precision = precision ?: defaults.precision,
                 fetcherFactory = fetcherFactory,
                 decoderFactory = decoderFactory,
-                headers = headers?.build().orEmpty(),
                 memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,
                 diskCachePolicy = diskCachePolicy ?: defaults.diskCachePolicy,
                 networkCachePolicy = networkCachePolicy ?: defaults.networkCachePolicy,
