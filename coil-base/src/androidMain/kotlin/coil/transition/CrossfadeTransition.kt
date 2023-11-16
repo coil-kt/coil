@@ -1,8 +1,8 @@
 package coil.transition
 
 import coil.asCoilImage
-import coil.asDrawable
 import coil.decode.DataSource
+import coil.drawable
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
@@ -29,7 +29,7 @@ class CrossfadeTransition @JvmOverloads constructor(
     override fun transition() {
         val drawable = CrossfadeDrawable(
             start = target.drawable,
-            end = result.image?.asDrawable(),
+            end = result.image?.drawable,
             scale = result.request.scale,
             durationMillis = durationMillis,
             fadeStart = result !is SuccessResult || !result.isPlaceholderCached,

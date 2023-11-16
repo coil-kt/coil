@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil.Image
-import coil.asDrawable
+import coil.drawable
 import coil.request.SuccessResult
 import coil.transition.CrossfadeTransition
 import coil.transition.TransitionTarget
@@ -17,7 +17,7 @@ import com.google.accompanist.drawablepainter.DrawablePainter
 internal actual fun Image.toPainter(
     filterQuality: FilterQuality,
 ): Painter {
-    return when (val drawable = asDrawable()) {
+    return when (val drawable = drawable) {
         is BitmapDrawable -> BitmapPainter(
             image = drawable.bitmap.asImageBitmap(),
             filterQuality = filterQuality,
