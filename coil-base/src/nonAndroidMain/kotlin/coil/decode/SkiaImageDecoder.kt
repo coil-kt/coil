@@ -5,7 +5,7 @@ import coil.fetch.SourceFetchResult
 import coil.request.Options
 import coil.toCoilImage
 import coil.util.makeFromImage
-import coil.util.static
+import coil.util.isStatic
 import okio.use
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Codec
@@ -21,12 +21,12 @@ class SkiaImageDecoder(
     override suspend fun decode(): DecodeResult {
         // https://github.com/JetBrains/skiko/issues/741
         val bytes = source.source().use { it.readByteArray() }
-        val static = Data.makeFromBytes(bytes).use { data ->
-            Codec.makeFromData(data).use { codec -> codec.static }
+        val isStatic = Data.makeFromBytes(bytes).use { data ->
+            Codec.makeFromData(data).use { codec -> codec.isStatic }
         }
         var isSampled = false
         var image = Image.makeFromEncoded(bytes)
-        if (static) {
+        if (isStatic) {
             val bitmap = Bitmap.makeFromImage(image, options.size, options.scale)
             bitmap.setImmutable()
 
@@ -34,7 +34,7 @@ class SkiaImageDecoder(
             image = Image.makeFromBitmap(bitmap)
         }
         return DecodeResult(
-            image = image.toCoilImage(shareable = static),
+            image = image.toCoilImage(shareable = isStatic),
             isSampled = isSampled,
         )
     }

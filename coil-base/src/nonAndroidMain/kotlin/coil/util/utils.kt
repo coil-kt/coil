@@ -29,7 +29,7 @@ internal actual val ImageRequest.allowInexactSize: Boolean
     }
 
 /** Returns true if the image is not animated. */
-internal val Codec.static: Boolean
+internal val Codec.isStatic: Boolean
     get() = frameCount <= 1
 
 /** Create a [Bitmap] from [image] that fits the given [size] and [scale]. */
