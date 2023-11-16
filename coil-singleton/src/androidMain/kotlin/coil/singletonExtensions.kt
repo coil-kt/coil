@@ -3,18 +3,12 @@
 package coil
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.widget.ImageView
-import androidx.annotation.DrawableRes
 import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.target
 import coil.util.CoilUtils
-import java.io.File
-import java.nio.ByteBuffer
 
 /**
  * Get the singleton [ImageLoader].
@@ -32,17 +26,6 @@ inline val Context.imageLoader: ImageLoader
  *     transformations(CircleCropTransformation())
  * }
  * ```
- *
- * The default supported [data] types  are:
- *
- * - [String] (treated as a [Uri])
- * - [Uri] (`android.resource`, `content`, `file`, `http`, and `https` schemes)
- * - [File]
- * - [DrawableRes] [Int]
- * - [Drawable]
- * - [Bitmap]
- * - [ByteArray]
- * - [ByteBuffer]
  *
  * @param data The data to load.
  * @param imageLoader The [ImageLoader] that will be used to enqueue the [ImageRequest].
