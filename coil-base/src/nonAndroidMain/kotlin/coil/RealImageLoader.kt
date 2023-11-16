@@ -1,6 +1,6 @@
 package coil
 
-import coil.decode.ImageDecoder
+import coil.decode.SkiaImageDecoder
 import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -29,5 +29,5 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents(
 ): ComponentRegistry.Builder {
     return this
         // Decoders
-        .add(ImageDecoder.Factory())
+        .add(SkiaImageDecoder.Factory())
 }

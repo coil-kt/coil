@@ -2,8 +2,9 @@ package coil
 
 import org.jetbrains.skia.Image as SkiaImage
 
-private class RealImage(
+private class WrappedSkiaImage(
     val image: SkiaImage,
+    override val shareable: Boolean,
 ) : Image {
 
     override val size: Long
@@ -21,12 +22,11 @@ private class RealImage(
 
     override val height: Int
         get() = image.height
-
-    // TODO: Return false if this is an animated image type.
-    override val shareable: Boolean
-        get() = true
 }
 
-fun SkiaImage.asCoilImage(): Image = RealImage(this)
+fun SkiaImage.toCoilImage(shareable: Boolean): Image {
+    return WrappedSkiaImage(this, shareable)
+}
 
-fun Image.asSkiaImage(): SkiaImage = (this as RealImage).image
+val Image.image: SkiaImage
+    get() = (this as WrappedSkiaImage).image
