@@ -1,4 +1,4 @@
-import coil.addAllTargets
+import coil.addAllMultiplatformTargets
 import coil.jvmCommon
 import coil.nonAndroidMain
 import coil.nonJsMain
@@ -12,7 +12,7 @@ plugins {
     id("dev.drewhamilton.poko")
 }
 
-addAllTargets(project)
+addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.base")
 
 kotlin {

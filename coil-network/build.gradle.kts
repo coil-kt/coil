@@ -1,5 +1,5 @@
 
-import coil.addAllTargets
+import coil.addAllMultiplatformTargets
 import coil.nonAndroidMain
 import coil.setupLibraryModule
 
@@ -10,7 +10,7 @@ plugins {
     id("dev.drewhamilton.poko")
 }
 
-addAllTargets(project)
+addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.network")
 
 kotlin {

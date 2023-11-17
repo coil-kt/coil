@@ -1,4 +1,4 @@
-import coil.addAllTargets
+import coil.addAllMultiplatformTargets
 import coil.nonAndroidMain
 import coil.setupLibraryModule
 
@@ -8,7 +8,7 @@ plugins {
     id("kotlinx-atomicfu")
 }
 
-addAllTargets(project)
+addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.singleton")
 
 kotlin {

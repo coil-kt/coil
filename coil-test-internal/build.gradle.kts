@@ -1,4 +1,4 @@
-import coil.addAllTargets
+import coil.addAllMultiplatformTargets
 import coil.setupLibraryModule
 
 plugins {
@@ -7,7 +7,7 @@ plugins {
     id("kotlinx-atomicfu")
 }
 
-addAllTargets(project)
+addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.test.internal")
 
 kotlin {

@@ -1,4 +1,4 @@
-import coil.addAllTargets
+import coil.addAllMultiplatformTargets
 import coil.setupLibraryModule
 
 plugins {
@@ -6,7 +6,7 @@ plugins {
     id("kotlin-multiplatform")
 }
 
-addAllTargets(project)
+addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.test")
 
 kotlin {

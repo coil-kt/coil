@@ -1,4 +1,4 @@
-import coil.addAllTargets
+import coil.addAllMultiplatformTargets
 import coil.setupLibraryModule
 
 plugins {
@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.compose")
 }
 
-addAllTargets(project)
+addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.compose.singleton")
 
 kotlin {

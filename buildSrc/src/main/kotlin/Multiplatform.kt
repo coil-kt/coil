@@ -5,10 +5,10 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 
-fun addAllTargets(project: Project) {
-    project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        project.extensions.getByType<KotlinMultiplatformExtension>().apply {
-            val hasAndroidPlugin = project.plugins.hasPlugin("com.android.library")
+fun Project.addAllMultiplatformTargets() {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        extensions.getByType<KotlinMultiplatformExtension>().apply {
+            val hasAndroidPlugin = plugins.hasPlugin("com.android.library")
             if (hasAndroidPlugin) {
                 androidTarget {
                     publishLibraryVariants("release")

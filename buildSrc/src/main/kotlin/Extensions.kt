@@ -29,19 +29,12 @@ val Project.versionCode: Int
             (unit * 10.0.pow(2 * index + 1)).toInt()
         }
 
-val multiplatformModules = listOf(
-    "coil-base",
-    "coil-singleton",
-    "coil-compose-base",
-    "coil-compose-singleton",
-    "coil-test",
-)
-
 val publicModules = listOf(
     "coil-base",
     "coil-singleton",
     "coil-compose-base",
     "coil-compose-singleton",
+    "coil-network",
     "coil-gif",
     "coil-svg",
     "coil-video",

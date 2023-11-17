@@ -1,4 +1,4 @@
-import coil.addAllTargets
+import coil.addAllMultiplatformTargets
 import coil.nonAndroidMain
 import coil.setupLibraryModule
 
@@ -9,7 +9,7 @@ plugins {
     id("org.jetbrains.compose")
 }
 
-addAllTargets(project)
+addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.compose.base")
 
 kotlin {

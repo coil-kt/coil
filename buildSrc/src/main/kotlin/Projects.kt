@@ -29,7 +29,7 @@ fun Project.setupLibraryModule(
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")
         setupPublishing {
-            val platform = if (project.name in multiplatformModules) {
+            val platform = if (project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
                 KotlinMultiplatform(JavadocJar.Dokka("dokkaHtml"))
             } else {
                 AndroidSingleVariantLibrary()
