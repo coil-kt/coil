@@ -1,7 +1,7 @@
 package coil.memory
 
-import coil.Context
 import coil.Image
+import coil.PlatformContext
 import coil.key.Keyer
 import coil.util.defaultMemoryCacheSizePercent
 import coil.util.totalAvailableMemoryBytes
@@ -89,7 +89,7 @@ interface MemoryCache {
          * available memory.
          */
         fun maxSizePercent(
-            context: Context,
+            context: PlatformContext,
             percent: Double = context.defaultMemoryCacheSizePercent(),
         ) = apply {
             require(percent in 0.0..1.0) { "percent must be in the range [0.0, 1.0]." }

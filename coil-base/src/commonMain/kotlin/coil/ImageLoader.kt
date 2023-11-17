@@ -78,7 +78,7 @@ interface ImageLoader {
 
     class Builder {
 
-        private val application: Context
+        private val application: PlatformContext
         private var defaults: ImageRequest.Defaults
         private var memoryCacheLazy: Lazy<MemoryCache?>?
         private var diskCacheLazy: Lazy<DiskCache?>?
@@ -87,7 +87,7 @@ interface ImageLoader {
         private var logger: Logger?
         private val extras: Extras.Builder
 
-        constructor(context: Context) {
+        constructor(context: PlatformContext) {
             application = context.application
             defaults = ImageRequest.Defaults.DEFAULT
             memoryCacheLazy = null

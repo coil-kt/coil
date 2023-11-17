@@ -1,6 +1,6 @@
 package coil.request
 
-import coil.Context
+import coil.PlatformContext
 import coil.Extras
 import coil.decode.Decoder
 import coil.fetch.Fetcher
@@ -16,9 +16,9 @@ import okio.FileSystem
  */
 data class Options(
     /**
-     * The [Context] used to execute this request.
+     * The [PlatformContext] used to execute this request.
      */
-    val context: Context,
+    val context: PlatformContext,
 
     /**
      * The requested output size for the image request.

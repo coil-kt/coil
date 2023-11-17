@@ -1,15 +1,15 @@
 package coil.util
 
-import coil.Context
+import coil.PlatformContext
 
-internal actual val Context.application: Context
+internal actual val PlatformContext.application: PlatformContext
     get() = this
 
-internal actual fun Context.defaultMemoryCacheSizePercent(): Double {
+internal actual fun PlatformContext.defaultMemoryCacheSizePercent(): Double {
     return 0.15
 }
 
 // TODO: Compute the total available memory on non-Android platforms.
-internal actual fun Context.totalAvailableMemoryBytes(): Long {
+internal actual fun PlatformContext.totalAvailableMemoryBytes(): Long {
     return 512L * 1024L * 1024L // 512 MB
 }

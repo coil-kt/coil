@@ -5,7 +5,7 @@ import coil.util.internalExtraKeyOf
 /**
  * Create a new [ImageLoader] without configuration.
  */
-fun ImageLoader(context: Context): ImageLoader {
+fun ImageLoader(context: PlatformContext): ImageLoader {
     return ImageLoader.Builder(context).build()
 }
 
