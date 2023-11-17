@@ -11,7 +11,7 @@ import okio.FileSystem
  */
 private val instance by lazy {
     DiskCache.Builder()
-        .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "coil_v3_image_cache")
+        .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "coil_v3_disk_cache")
         .build()
 }
 
