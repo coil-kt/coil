@@ -3,33 +3,28 @@ package coil.util
 import coil.annotation.InternalCoilApi
 
 @InternalCoilApi
-interface MimeTypeMap {
-    fun getMimeTypeFromUrl(url: String?): String?
-    fun getMimeTypeFromExtension(extension: String?): String?
-
-    companion object : MimeTypeMap {
-        override fun getMimeTypeFromUrl(url: String?): String? {
-            if (url.isNullOrBlank()) {
-                return null
-            }
-
-            val extension = url
-                .substringBeforeLast('#') // Strip the fragment.
-                .substringBeforeLast('?') // Strip the query.
-                .substringAfterLast('/') // Get the last path segment.
-                .substringAfterLast('.', missingDelimiterValue = "") // Get the file extension.
-
-            return getMimeTypeFromExtension(extension)
+object MimeTypeMap {
+    fun getMimeTypeFromUrl(url: String): String? {
+        if (url.isBlank()) {
+            return null
         }
 
-        override fun getMimeTypeFromExtension(extension: String?): String? {
-            if (extension.isNullOrBlank()) {
-                return null
-            }
+        val extension = url
+            .substringBeforeLast('#') // Strip the fragment.
+            .substringBeforeLast('?') // Strip the query.
+            .substringAfterLast('/') // Get the last path segment.
+            .substringAfterLast('.', missingDelimiterValue = "") // Get the file extension.
 
-            val lowerExtension = extension.lowercase()
-            return extensionFromMimeTypeMap(lowerExtension) ?: mimeTypeData[lowerExtension]
+        return getMimeTypeFromExtension(extension)
+    }
+
+    fun getMimeTypeFromExtension(extension: String): String? {
+        if (extension.isBlank()) {
+            return null
         }
+
+        val lowerExtension = extension.lowercase()
+        return extensionFromMimeTypeMap(lowerExtension) ?: mimeTypeData[lowerExtension]
     }
 }
 
