@@ -1,7 +1,7 @@
 package coil.request
 
 import coil.Extras
-import coil.getOrDefault
+import coil.getExtra
 import io.ktor.http.Headers
 import io.ktor.http.HttpMethod
 
@@ -13,10 +13,10 @@ fun ImageRequest.Builder.httpMethod(method: HttpMethod) = apply {
 }
 
 val ImageRequest.httpMethod: HttpMethod
-    get() = extras.getOrDefault(httpMethodKey, defaults.extras)
+    get() = getExtra(httpMethodKey)
 
 val Options.httpMethod: HttpMethod
-    get() = extras.getOrDefault(httpMethodKey)
+    get() = getExtra(httpMethodKey)
 
 private val httpMethodKey = Extras.Key(default = HttpMethod.Get)
 
@@ -28,9 +28,9 @@ fun ImageRequest.Builder.httpHeaders(headers: Headers) = apply {
 }
 
 val ImageRequest.httpHeaders: Headers
-    get() = extras.getOrDefault(httpHeadersKey, defaults.extras)
+    get() = getExtra(httpHeadersKey)
 
 val Options.httpHeaders: Headers
-    get() = extras.getOrDefault(httpHeadersKey)
+    get() = getExtra(httpHeadersKey)
 
 private val httpHeadersKey = Extras.Key(default = Headers.Empty)

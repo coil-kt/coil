@@ -2,44 +2,35 @@ package coil
 
 import android.graphics.BitmapFactory
 import coil.decode.BitmapFactoryDecoder
+import coil.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil.decode.ExifOrientationPolicy
-import coil.util.internalExtraKeyOf
-
-// bitmapFactoryMaxParallelism
+import coil.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
 
 /**
  * Sets the maximum number of parallel [BitmapFactory] decode operations at once.
  *
  * Increasing this number will allow more parallel [BitmapFactory] decode operations,
  * however it can result in worse UI performance.
- *
- * Default: [bitmapFactoryMaxParallelismDefault]
  */
 fun ImageLoader.Builder.bitmapFactoryMaxParallelism(maxParallelism: Int) = apply {
     require(maxParallelism > 0) { "maxParallelism must be > 0." }
-    extra(bitmapFactoryMaxParallelismKey, maxParallelism)
+    extras[bitmapFactoryMaxParallelismKey] = maxParallelism
 }
 
-internal val RealImageLoader.Options.bitmapFactoryMaxParallelism
-    get() = extras.get(bitmapFactoryMaxParallelismKey) ?: bitmapFactoryMaxParallelismDefault
+internal val RealImageLoader.Options.bitmapFactoryMaxParallelism: Int
+    get() = extras.getOrDefault(bitmapFactoryMaxParallelismKey)
 
-private val bitmapFactoryMaxParallelismKey = internalExtraKeyOf("bitmapFactoryMaxParallelism")
-private const val bitmapFactoryMaxParallelismDefault = BitmapFactoryDecoder.DEFAULT_MAX_PARALLELISM
-
-// bitmapFactoryExifOrientationPolicy
+private val bitmapFactoryMaxParallelismKey = Extras.Key(default = DEFAULT_MAX_PARALLELISM)
 
 /**
  * Sets the policy for handling the EXIF orientation flag for images decoded by
  * [BitmapFactoryDecoder].
- *
- * Default: [bitmapFactoryExifOrientationPolicyDefault]
  */
 fun ImageLoader.Builder.bitmapFactoryExifOrientationPolicy(policy: ExifOrientationPolicy) = apply {
-    extra(bitmapFactoryExifOrientationPolicyKey, policy)
+    extras[bitmapFactoryExifOrientationPolicyKey] = policy
 }
 
-internal val RealImageLoader.Options.bitmapFactoryExifOrientationPolicy
-    get() = extras.get(bitmapFactoryExifOrientationPolicyKey) ?: bitmapFactoryExifOrientationPolicyDefault
+internal val RealImageLoader.Options.bitmapFactoryExifOrientationPolicy: ExifOrientationPolicy
+    get() = extras.getOrDefault(bitmapFactoryExifOrientationPolicyKey)
 
-private val bitmapFactoryExifOrientationPolicyKey = internalExtraKeyOf("bitmapFactoryExifOrientationPolicy")
-private val bitmapFactoryExifOrientationPolicyDefault = ExifOrientationPolicy.RESPECT_PERFORMANCE
+private val bitmapFactoryExifOrientationPolicyKey = Extras.Key(default = RESPECT_PERFORMANCE)

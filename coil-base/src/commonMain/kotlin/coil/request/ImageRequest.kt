@@ -158,7 +158,6 @@ class ImageRequest private constructor(
         val sizeResolver: SizeResolver?,
         val scale: Scale?,
         val precision: Precision?,
-        val extras: Extras,
     )
 
     /**
@@ -184,32 +183,32 @@ class ImageRequest private constructor(
 
     class Builder {
 
-        private val context: PlatformContext
-        private var defaults: Defaults
-        private var data: Any?
-        private var target: Target?
-        private var listener: Listener?
-        private var memoryCacheKey: MemoryCache.Key?
-        private var diskCacheKey: String?
-        private var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
-        private var decoderFactory: Decoder.Factory?
-        private var interceptorDispatcher: CoroutineDispatcher?
-        private var fetcherDispatcher: CoroutineDispatcher?
-        private var decoderDispatcher: CoroutineDispatcher?
-        private var memoryCachePolicy: CachePolicy?
-        private var diskCachePolicy: CachePolicy?
-        private var networkCachePolicy: CachePolicy?
-        private var placeholderMemoryCacheKey: MemoryCache.Key?
-        private var placeholderFactory: () -> Image?
-        private var errorFactory: () -> Image?
-        private var fallbackFactory: () -> Image?
-        private var precision: Precision?
+        internal val context: PlatformContext
+        internal var defaults: Defaults
+        internal var data: Any?
+        internal var target: Target?
+        internal var listener: Listener?
+        internal var memoryCacheKey: MemoryCache.Key?
+        internal var diskCacheKey: String?
+        internal var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
+        internal var decoderFactory: Decoder.Factory?
+        internal var interceptorDispatcher: CoroutineDispatcher?
+        internal var fetcherDispatcher: CoroutineDispatcher?
+        internal var decoderDispatcher: CoroutineDispatcher?
+        internal var memoryCachePolicy: CachePolicy?
+        internal var diskCachePolicy: CachePolicy?
+        internal var networkCachePolicy: CachePolicy?
+        internal var placeholderMemoryCacheKey: MemoryCache.Key?
+        internal var placeholderFactory: () -> Image?
+        internal var errorFactory: () -> Image?
+        internal var fallbackFactory: () -> Image?
+        internal var precision: Precision?
         val extras: Extras.Builder
 
-        private var sizeResolver: SizeResolver?
-        private var scale: Scale?
-        private var resolvedSizeResolver: SizeResolver?
-        private var resolvedScale: Scale?
+        internal var sizeResolver: SizeResolver?
+        internal var scale: Scale?
+        internal var resolvedSizeResolver: SizeResolver?
+        internal var resolvedScale: Scale?
 
         constructor(context: PlatformContext) {
             this.context = context
@@ -485,7 +484,7 @@ class ImageRequest private constructor(
         /**
          * Set the placeholder image to use when the request starts.
          */
-        fun placeholder(image: Image) = placeholder { image }
+        fun placeholder(image: Image?) = placeholder { image }
 
         /**
          * Set the placeholder image to use when the request starts.
@@ -497,7 +496,7 @@ class ImageRequest private constructor(
         /**
          * Set the error image to use if the request fails.
          */
-        fun error(image: Image) = error { image }
+        fun error(image: Image?) = error { image }
 
         /**
          * Set the error image to use if the request fails.
@@ -509,7 +508,7 @@ class ImageRequest private constructor(
         /**
          * Set the fallback image to use if [data] is null.
          */
-        fun fallback(image: Image) = fallback { image }
+        fun fallback(image: Image?) = fallback { image }
 
         /**
          * Set the fallback image to use if [data] is null.
@@ -540,31 +539,6 @@ class ImageRequest private constructor(
         }
 
         /**
-         * @see ImageLoader.Builder.crossfade
-         */
-        fun crossfade(enable: Boolean) =
-            crossfade(if (enable) CrossfadeDrawable.DEFAULT_DURATION else 0)
-
-        /**
-         * @see ImageLoader.Builder.crossfade
-         */
-        fun crossfade(durationMillis: Int) = apply {
-            val factory = if (durationMillis > 0) {
-                CrossfadeTransition.Factory(durationMillis)
-            } else {
-                Transition.Factory.NONE
-            }
-            transitionFactory(factory)
-        }
-
-        /**
-         * @see ImageLoader.Builder.transitionFactory
-         */
-        fun transitionFactory(transition: Transition.Factory) = apply {
-            this.transitionFactory = transition
-        }
-
-        /**
          * Set the defaults for any unset request values.
          */
         fun defaults(defaults: Defaults) = apply {
@@ -592,10 +566,12 @@ class ImageRequest private constructor(
                 interceptorDispatcher = interceptorDispatcher ?: defaults.interceptorDispatcher,
                 fetcherDispatcher = fetcherDispatcher ?: defaults.fetcherDispatcher,
                 decoderDispatcher = decoderDispatcher ?: defaults.decoderDispatcher,
-                lifecycle = lifecycle ?: resolvedLifecycle ?: resolveLifecycle(),
                 sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
                 scale = scale ?: resolvedScale ?: resolveScale(),
                 placeholderMemoryCacheKey = placeholderMemoryCacheKey,
+                placeholderFactory = placeholderFactory,
+                errorFactory = errorFactory,
+                fallbackFactory = fallbackFactory,
                 defined = Defined(
                     interceptorDispatcher = interceptorDispatcher,
                     fetcherDispatcher = fetcherDispatcher,
@@ -611,12 +587,12 @@ class ImageRequest private constructor(
                     precision = precision,
                 ),
                 defaults = defaults,
+                extras = extras.build(),
             )
         }
 
-        /** Ensure these values will be recomputed when [build] is called. */
+        /** Ensure the size resolver and scale will be recomputed when [build] is called. */
         private fun resetResolvedValues() {
-            resolvedLifecycle = null
             resolvedSizeResolver = null
             resolvedScale = null
         }
@@ -624,12 +600,6 @@ class ImageRequest private constructor(
         /** Ensure the scale will be recomputed when [build] is called. */
         private fun resetResolvedScale() {
             resolvedScale = null
-        }
-
-        private fun resolveLifecycle(): Lifecycle {
-            val target = target
-            val context = if (target is ViewTarget<*>) target.view.context else context
-            return context.getLifecycle() ?: GlobalLifecycle
         }
 
         private fun resolveSizeResolver(): SizeResolver {

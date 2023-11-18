@@ -2,25 +2,108 @@ package coil.request
 
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import coil.Extras
 import coil.ImageLoader
-import coil.getOrDefault
+import coil.asCoilImage
+import coil.getExtra
 import coil.target.ImageViewTarget
-import coil.target.Target
+import coil.transform.Transformation
+import coil.transition.CrossfadeTransition
+import coil.transition.Transition
 import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.NULL_COLOR_SPACE
+import coil.util.getDrawableCompat
+import coil.util.toImmutableList
+
+fun ImageRequest.Builder.target(imageView: ImageView) =
+    target(ImageViewTarget(imageView))
+
+fun ImageRequest.Builder.placeholder(@DrawableRes drawableResId: Int) =
+    placeholder(context.getDrawableCompat(drawableResId))
+
+fun ImageRequest.Builder.placeholder(drawable: Drawable?) =
+    placeholder(drawable?.asCoilImage())
+
+fun ImageRequest.Builder.error(@DrawableRes drawableResId: Int) =
+    error(context.getDrawableCompat(drawableResId))
+
+fun ImageRequest.Builder.error(drawable: Drawable?) =
+    error(drawable?.asCoilImage())
+
+fun ImageRequest.Builder.fallback(@DrawableRes drawableResId: Int) =
+    fallback(context.getDrawableCompat(drawableResId))
+
+fun ImageRequest.Builder.fallback(drawable: Drawable?) =
+    fallback(drawable?.asCoilImage())
 
 /**
- * Convenience function to set [imageView] as the [Target].
+ * Set [Transformation]s to be applied to the output image.
  */
-fun ImageRequest.Builder.target(imageView: ImageView) = target(ImageViewTarget(imageView))
+fun ImageRequest.Builder.transformations(vararg transformations: Transformation) =
+    transformations(transformations.toList())
 
-// bitmapConfig
+fun ImageRequest.Builder.transformations(transformations: List<Transformation>) = apply {
+    extras[transformationsKey] = transformations.toImmutableList()
+}
 
+val ImageRequest.transformations: List<Transformation>
+    get() = getExtra(transformationsKey)
+
+val Options.transformations: List<Transformation>
+    get() = getExtra(transformationsKey)
+
+private val transformationsKey = Extras.Key<List<Transformation>>(default = emptyList())
+
+/**
+ * Enable a crossfade animation when a request completes successfully.
+ */
+actual fun ImageRequest.Builder.crossfade(durationMillis: Int): ImageRequest.Builder {
+    return transitionFactory(newCrossfadeTransitionFactory(durationMillis))
+}
+
+actual fun ImageLoader.Builder.crossfade(durationMillis: Int): ImageLoader.Builder {
+    return transitionFactory(newCrossfadeTransitionFactory(durationMillis))
+}
+
+private fun newCrossfadeTransitionFactory(durationMillis: Int): Transition.Factory {
+    return if (durationMillis > 0) {
+        CrossfadeTransition.Factory(durationMillis)
+    } else {
+        Transition.Factory.NONE
+    }
+}
+
+actual val ImageRequest.crossfade: Boolean
+    get() = transitionFactory is CrossfadeTransition.Factory
+
+/**
+ * Set the [Transition.Factory] that's started when an image result is applied to a target.
+ */
+fun ImageRequest.Builder.transitionFactory(factory: Transition.Factory) = apply {
+    extras[transitionFactoryKey] = factory
+}
+
+fun ImageLoader.Builder.transitionFactory(factory: Transition.Factory) = apply {
+    extras[transitionFactoryKey] = factory
+}
+
+val ImageRequest.transitionFactory: Transition.Factory?
+    get() = getExtra(transitionFactoryKey)
+
+private val transitionFactoryKey = Extras.Key<Transition.Factory?>(default = null)
+
+/**
+ * Set the preferred [Bitmap.Config].
+ *
+ * This is not guaranteed and a different bitmap config may be used in some situations.
+ */
 fun ImageRequest.Builder.bitmapConfig(config: Bitmap.Config) = apply {
     extras[bitmapConfigKey] = config
 }
@@ -30,14 +113,12 @@ fun ImageLoader.Builder.bitmapConfig(config: Bitmap.Config) = apply {
 }
 
 val ImageRequest.bitmapConfig: Bitmap.Config
-    get() = extras.getOrDefault(bitmapConfigKey, defaults.extras)
+    get() = getExtra(bitmapConfigKey)
 
 val Options.bitmapConfig: Bitmap.Config
-    get() = extras.getOrDefault(bitmapConfigKey)
+    get() = getExtra(bitmapConfigKey)
 
 private val bitmapConfigKey = Extras.Key(default = DEFAULT_BITMAP_CONFIG)
-
-// colorSpace
 
 /**
  * Set the preferred [ColorSpace].
@@ -55,14 +136,12 @@ fun ImageLoader.Builder.colorSpace(colorSpace: ColorSpace) = apply {
 }
 
 val ImageRequest.colorSpace: ColorSpace?
-    @RequiresApi(26) get() = extras.getOrDefault(colorSpaceKey, defaults.extras)
+    @RequiresApi(26) get() = getExtra(colorSpaceKey)
 
 val Options.colorSpace: ColorSpace?
-    @RequiresApi(26) get() = extras.getOrDefault(colorSpaceKey)
+    @RequiresApi(26) get() = getExtra(colorSpaceKey)
 
 private val colorSpaceKey = Extras.Key(default = NULL_COLOR_SPACE)
-
-// premultipliedAlpha
 
 /**
  * Enable/disable pre-multiplication of the color (RGB) channels of the decoded image by
@@ -80,15 +159,22 @@ fun ImageLoader.Builder.premultipliedAlpha(enable: Boolean) = apply {
 }
 
 val ImageRequest.premultipliedAlpha: Boolean
-    get() = extras.getOrDefault(premultipliedAlphaKey, defaults.extras)
+    get() = getExtra(premultipliedAlphaKey)
 
 val Options.premultipliedAlpha: Boolean
-    get() = extras.getOrDefault(premultipliedAlphaKey)
+    get() = getExtra(premultipliedAlphaKey)
 
 private val premultipliedAlphaKey = Extras.Key(default = true)
 
-// lifecycle
-
+/**
+ * Set the [Lifecycle] for this request.
+ *
+ * Requests are queued while the lifecycle is not at least [Lifecycle.State.STARTED].
+ * Requests are cancelled when the lifecycle reaches [Lifecycle.State.DESTROYED].
+ *
+ * If this is null or is not set the [ImageLoader] will attempt to find the lifecycle
+ * for this request through [ImageRequest.context].
+ */
 fun ImageRequest.Builder.lifecycle(owner: LifecycleOwner?) = lifecycle(owner?.lifecycle)
 
 fun ImageRequest.Builder.lifecycle(lifecycle: Lifecycle?) = apply {
@@ -96,15 +182,19 @@ fun ImageRequest.Builder.lifecycle(lifecycle: Lifecycle?) = apply {
 }
 
 val ImageRequest.lifecycle: Lifecycle?
-    get() = extras.getOrDefault(lifecycleKey, defaults.extras)
+    get() = getExtra(lifecycleKey)
 
 val Options.lifecycle: Lifecycle?
-    get() = extras.getOrDefault(lifecycleKey)
+    get() = getExtra(lifecycleKey)
 
 private val lifecycleKey = Extras.Key<Lifecycle?>(default = null)
 
-// allowConversionToBitmap
-
+/**
+ * Allow converting the result drawable to a bitmap to apply any [transformations].
+ *
+ * If false and the result drawable is not a [BitmapDrawable] any [transformations] will
+ * be ignored.
+ */
 fun ImageRequest.Builder.allowConversionToBitmap(enable: Boolean) = apply {
     extras[allowConversionToBitmapKey] = enable
 }
@@ -114,15 +204,22 @@ fun ImageLoader.Builder.allowConversionToBitmap(enable: Boolean) = apply {
 }
 
 val ImageRequest.allowConversionToBitmap: Boolean
-    get() = extras.getOrDefault(allowConversionToBitmapKey, defaults.extras)
+    get() = getExtra(allowConversionToBitmapKey)
 
 val Options.allowConversionToBitmap: Boolean
-    get() = extras.getOrDefault(allowConversionToBitmapKey)
+    get() = getExtra(allowConversionToBitmapKey)
 
 private val allowConversionToBitmapKey = Extras.Key(default = true)
 
-// allowHardware
-
+/**
+ * Allow the use of [Bitmap.Config.HARDWARE].
+ *
+ * If false, any use of [Bitmap.Config.HARDWARE] will be treated as
+ * [Bitmap.Config.ARGB_8888].
+ *
+ * NOTE: Setting this to false this will reduce performance on API 26 and above. Only
+ * disable this if necessary.
+ */
 fun ImageRequest.Builder.allowHardware(enable: Boolean) = apply {
     extras[allowHardwareKey] = enable
 }
@@ -132,15 +229,21 @@ fun ImageLoader.Builder.allowHardware(enable: Boolean) = apply {
 }
 
 val ImageRequest.allowHardware: Boolean
-    get() = extras.getOrDefault(allowHardwareKey, defaults.extras)
+    get() = getExtra(allowHardwareKey)
 
 val Options.allowHardware: Boolean
-    get() = extras.getOrDefault(allowHardwareKey)
+    get() = getExtra(allowHardwareKey)
 
 private val allowHardwareKey = Extras.Key(default = true)
 
-// allowRgb565
-
+/**
+ * Allow automatically using [Bitmap.Config.RGB_565] when an image is guaranteed to not
+ * have alpha.
+ *
+ * This will reduce the visual quality of the image, but will also reduce memory usage.
+ *
+ * Prefer only enabling this for low memory and resource constrained devices.
+ */
 fun ImageRequest.Builder.allowRgb565(enable: Boolean) = apply {
     extras[allowRgb565Key] = enable
 }
@@ -150,9 +253,9 @@ fun ImageLoader.Builder.allowRgb565(enable: Boolean) = apply {
 }
 
 val ImageRequest.allowRgb565: Boolean
-    get() = extras.getOrDefault(allowRgb565Key, defaults.extras)
+    get() = getExtra(allowRgb565Key)
 
 val Options.allowRgb565: Boolean
-    get() = extras.getOrDefault(allowRgb565Key)
+    get() = getExtra(allowRgb565Key)
 
 private val allowRgb565Key = Extras.Key(default = false)

@@ -1,8 +1,12 @@
 package coil
 
+import coil.request.ImageRequest
+import coil.request.Options
 import coil.util.toImmutableMap
+import dev.drewhamilton.poko.Poko
 import kotlin.jvm.JvmField
 
+@Poko
 class Extras private constructor(
     private val data: Map<Key<*>, Any>,
 ) {
@@ -53,15 +57,10 @@ fun <T> Extras.getOrDefault(key: Extras.Key<T>): T {
     return this[key] ?: key.default
 }
 
-fun <T> Extras.getOrDefault(key: Extras.Key<T>, other: Extras): T {
-    return this[key] ?: other[key] ?: key.default
+fun <T> ImageRequest.getExtra(key: Extras.Key<T>): T {
+    return extras[key] ?: defaults.extras[key] ?: key.default
 }
 
-fun <T> Extras.getOrDefault(key: Extras.Key<T>, vararg others: Extras): T {
-    var value = get(key)
-    var index = 0
-    while (value == null && index < others.size) {
-        value = others[index++][key]
-    }
-    return value ?: key.default
+fun <T> Options.getExtra(key: Extras.Key<T>): T {
+    return extras[key] ?: key.default
 }
