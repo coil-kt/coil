@@ -84,12 +84,20 @@ internal class AndroidRequestService(
             scale = scale,
             allowInexactSize = request.allowInexactSize,
             diskCacheKey = request.diskCacheKey,
-            headers = request.headers,
             memoryCachePolicy = request.memoryCachePolicy,
             diskCachePolicy = request.diskCachePolicy,
             networkCachePolicy = networkCachePolicy,
             extras = request.extras,
         )
+    }
+
+    override fun updateOptionsOnWorkerThread(options: Options): Options {
+        if (allowHardwareWorkerThread(options)) {
+            return options
+        } else {
+            // TODO: Use ARGB_8888 instead of HARDWARE.
+            return options.copy(extras = options.extras)
+        }
     }
 
     /**
@@ -117,7 +125,7 @@ internal class AndroidRequestService(
     }
 
     /** Return 'true' if we can allocate a hardware bitmap. */
-    override fun allowHardwareWorkerThread(options: Options): Boolean {
+    fun allowHardwareWorkerThread(options: Options): Boolean {
         return !options.bitmapConfig.isHardware || hardwareBitmapService.allowHardwareWorkerThread()
     }
 

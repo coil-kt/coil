@@ -1,40 +1,28 @@
 package coil.intercept
 
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import coil.ComponentRegistry
 import coil.EventListener
+import coil.Image
 import coil.ImageLoader
-import coil.annotation.VisibleForTesting
 import coil.decode.DataSource
 import coil.decode.DecodeResult
 import coil.decode.FileImageSource
 import coil.fetch.FetchResult
-import coil.fetch.Fetcher
 import coil.fetch.ImageFetchResult
 import coil.fetch.SourceFetchResult
+import coil.intercept.EngineInterceptor.ExecuteResult
 import coil.memory.MemoryCacheService
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import coil.request.Options
 import coil.request.RequestService
 import coil.request.SuccessResult
-import coil.transform.Transformation
-import coil.util.DrawableUtils
 import coil.util.Logger
-import coil.util.VALID_TRANSFORMATION_CONFIGS
 import coil.util.addFirst
 import coil.util.closeQuietly
 import coil.util.eventListener
-import coil.util.foldIndices
 import coil.util.isPlaceholderCached
-import coil.util.log
-import coil.util.safeConfig
-import coil.util.toDrawable
-import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 /** The last interceptor in the chain which executes the [ImageRequest]. */
@@ -61,8 +49,10 @@ internal class EngineInterceptor(
             eventListener.mapEnd(request, mappedData)
 
             // Check the memory cache.
-            val cacheKey = memoryCacheService.newCacheKey(request, mappedData, options, eventListener)
-            val cacheValue = cacheKey?.let { memoryCacheService.getCacheValue(request, it, size, scale) }
+            val cacheKey =
+                memoryCacheService.newCacheKey(request, mappedData, options, eventListener)
+            val cacheValue =
+                cacheKey?.let { memoryCacheService.getCacheValue(request, it, size, scale) }
 
             // Fast path: return the value from the memory cache.
             if (cacheValue != null) {
@@ -79,7 +69,7 @@ internal class EngineInterceptor(
 
                 // Return the result.
                 SuccessResult(
-                    image = result.drawable,
+                    image = result.image,
                     request = request,
                     dataSource = result.dataSource,
                     memoryCacheKey = cacheKey.takeIf { isCached },
@@ -97,20 +87,19 @@ internal class EngineInterceptor(
         }
     }
 
-    /** Execute the [Fetcher], decode any data into a [Drawable], and apply any [Transformation]s. */
     private suspend fun execute(
         request: ImageRequest,
         mappedData: Any,
-        _options: Options,
-        eventListener: EventListener
+        options: Options,
+        eventListener: EventListener,
     ): ExecuteResult {
-        var options = _options
+        @Suppress("NAME_SHADOWING")
+        var options = options
         var components = imageLoader.components
         var fetchResult: FetchResult? = null
         val executeResult = try {
-            if (!requestService.allowHardwareWorkerThread(options)) {
-                options = options.copy(config = Bitmap.Config.ARGB_8888)
-            }
+            options = requestService.updateOptionsOnWorkerThread(options)
+
             if (request.fetcherFactory != null || request.decoderFactory != null) {
                 components = components.newBuilder()
                     .addFirst(request.fetcherFactory)
@@ -128,10 +117,10 @@ internal class EngineInterceptor(
                 }
                 is ImageFetchResult -> {
                     ExecuteResult(
-                        drawable = fetchResult.image,
+                        image = fetchResult.image,
                         isSampled = fetchResult.isSampled,
                         dataSource = fetchResult.dataSource,
-                        diskCacheKey = null // This result has no file source.
+                        diskCacheKey = null, // This result has no file source.
                     )
                 }
             }
@@ -140,10 +129,8 @@ internal class EngineInterceptor(
             (fetchResult as? SourceFetchResult)?.source?.closeQuietly()
         }
 
-        // Apply any transformations and prepare to draw.
-        val finalResult = transform(executeResult, request, options, eventListener)
-        (finalResult.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
-        return finalResult
+        // Apply any transformations.
+        return transform(executeResult, request, options, eventListener, logger)
     }
 
     private suspend fun fetch(
@@ -151,7 +138,7 @@ internal class EngineInterceptor(
         request: ImageRequest,
         mappedData: Any,
         options: Options,
-        eventListener: EventListener
+        eventListener: EventListener,
     ): FetchResult {
         val fetchResult: FetchResult
         var searchIndex = 0
@@ -185,7 +172,7 @@ internal class EngineInterceptor(
         request: ImageRequest,
         mappedData: Any,
         options: Options,
-        eventListener: EventListener
+        eventListener: EventListener,
     ): ExecuteResult {
         val decodeResult: DecodeResult
         var searchIndex = 0
@@ -207,86 +194,33 @@ internal class EngineInterceptor(
 
         // Combine the fetch and decode operations' results.
         return ExecuteResult(
-            drawable = decodeResult.image,
+            image = decodeResult.image,
             isSampled = decodeResult.isSampled,
             dataSource = fetchResult.dataSource,
-            diskCacheKey = (fetchResult.source as? FileImageSource)?.diskCacheKey
-        )
-    }
-
-    /** Apply any [Transformation]s and return an updated [ExecuteResult]. */
-    @VisibleForTesting
-    internal suspend fun transform(
-        result: ExecuteResult,
-        request: ImageRequest,
-        options: Options,
-        eventListener: EventListener
-    ): ExecuteResult {
-        val transformations = request.transformations
-        if (transformations.isEmpty()) return result
-
-        // Skip the transformations as converting to a bitmap is disabled.
-        if (result.drawable !is BitmapDrawable && !request.allowConversionToBitmap) {
-            logger?.log(TAG, Logger.Level.Info) {
-                val type = result.drawable::class.java.canonicalName
-                "allowConversionToBitmap=false, skipping transformations for type $type."
-            }
-            return result
-        }
-
-        // Apply the transformations.
-        val input = convertDrawableToBitmap(result.drawable, options, transformations)
-        eventListener.transformStart(request, input)
-        val output = transformations.foldIndices(input) { bitmap, transformation ->
-            transformation.transform(bitmap, options.size).also { coroutineContext.ensureActive() }
-        }
-        eventListener.transformEnd(request, output)
-        return result.copy(drawable = output.toDrawable(request.context))
-    }
-
-    /** Convert [drawable] to a [Bitmap]. */
-    private fun convertDrawableToBitmap(
-        drawable: Drawable,
-        options: Options,
-        transformations: List<Transformation>
-    ): Bitmap {
-        // Fast path: return the existing bitmap.
-        if (drawable is BitmapDrawable) {
-            val bitmap = drawable.bitmap
-            val config = bitmap.safeConfig
-            if (config in VALID_TRANSFORMATION_CONFIGS) {
-                return bitmap
-            } else {
-                logger?.log(TAG, Logger.Level.Info) {
-                    "Converting bitmap with config $config " +
-                        "to apply transformations: $transformations."
-                }
-            }
-        } else {
-            logger?.log(TAG, Logger.Level.Info) {
-                "Converting drawable of type ${drawable::class.java.canonicalName} " +
-                    "to apply transformations: $transformations."
-            }
-        }
-
-        // Slow path: draw the drawable on a canvas.
-        return DrawableUtils.convertToBitmap(
-            drawable = drawable,
-            config = options.config,
-            size = options.size,
-            scale = options.scale,
-            allowInexactSize = options.allowInexactSize,
+            diskCacheKey = (fetchResult.source as? FileImageSource)?.diskCacheKey,
         )
     }
 
     data class ExecuteResult(
-        val drawable: Drawable,
+        val image: Image,
         val isSampled: Boolean,
         val dataSource: DataSource,
-        val diskCacheKey: String?
+        val diskCacheKey: String?,
     )
 
     companion object {
-        private const val TAG = "EngineInterceptor"
+        internal const val TAG = "EngineInterceptor"
     }
 }
+
+internal expect suspend fun transform(
+    result: ExecuteResult,
+    request: ImageRequest,
+    options: Options,
+    eventListener: EventListener,
+    logger: Logger?,
+): ExecuteResult
+
+internal expect fun prepareToDraw(
+    image: Image,
+)

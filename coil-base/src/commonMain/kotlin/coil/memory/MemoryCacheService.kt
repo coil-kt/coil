@@ -194,7 +194,7 @@ internal class MemoryCacheService(
         if (!request.memoryCachePolicy.writeEnabled) return false
         val memoryCache = imageLoader.memoryCache
         if (memoryCache == null || cacheKey == null) return false
-        val bitmap = (result.drawable as? BitmapDrawable)?.bitmap ?: return false
+        val bitmap = (result.image as? BitmapDrawable)?.bitmap ?: return false
 
         // Create and set the memory cache value.
         val extras = mutableMapOf<String, Any>()

@@ -27,7 +27,7 @@ internal class NonAndroidRequestService : RequestService {
         TODO()
     }
 
-    override fun allowHardwareWorkerThread(options: Options): Boolean {
-        return true
+    override fun updateOptionsOnWorkerThread(options: Options): Options {
+        return options
     }
 }

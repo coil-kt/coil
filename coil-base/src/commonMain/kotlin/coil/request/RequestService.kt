@@ -27,7 +27,7 @@ internal interface RequestService {
     fun options(request: ImageRequest, size: Size): Options
 
     @WorkerThread
-    fun allowHardwareWorkerThread(options: Options): Boolean
+    fun updateOptionsOnWorkerThread(options: Options): Options
 }
 
 internal fun commonErrorResult(

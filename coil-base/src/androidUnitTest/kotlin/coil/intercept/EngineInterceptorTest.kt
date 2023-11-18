@@ -44,7 +44,7 @@ class EngineInterceptorTest {
         val size = Size(100, 100)
         val result = interceptor.transform(
             result = ExecuteResult(
-                drawable = drawable,
+                image = drawable,
                 isSampled = false,
                 dataSource = DataSource.MEMORY,
                 diskCacheKey = null
@@ -56,7 +56,7 @@ class EngineInterceptorTest {
             eventListener = EventListener.NONE
         )
 
-        val resultDrawable = result.drawable
+        val resultDrawable = result.image
         assertTrue(resultDrawable is BitmapDrawable)
         assertEquals(resultDrawable.bitmap.size, size)
     }
@@ -67,7 +67,7 @@ class EngineInterceptorTest {
         val drawable = ColorDrawable(Color.BLACK)
         val result = interceptor.transform(
             result = ExecuteResult(
-                drawable = drawable,
+                image = drawable,
                 isSampled = false,
                 dataSource = DataSource.MEMORY,
                 diskCacheKey = null
@@ -79,7 +79,7 @@ class EngineInterceptorTest {
             eventListener = EventListener.NONE
         )
 
-        assertSame(drawable, result.drawable)
+        assertSame(drawable, result.image)
     }
 
     private fun newInterceptor(key: String? = TEST_KEY): EngineInterceptor {
