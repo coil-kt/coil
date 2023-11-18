@@ -96,7 +96,7 @@ class ImageRequest private constructor(
     /** @see Builder.precision */
     val precision: Precision,
 
-    /** @see Builder.extra */
+    /** @see Builder.extras */
     val extras: Extras,
 
     /** The raw values set on [Builder]. */
@@ -284,6 +284,27 @@ class ImageRequest private constructor(
         }
 
         /**
+         * Convenience function to create and set the [Target].
+         */
+        inline fun target(
+            crossinline onStart: (placeholder: Image?) -> Unit = {},
+            crossinline onError: (error: Image?) -> Unit = {},
+            crossinline onSuccess: (result: Image) -> Unit = {}
+        ) = target(object : Target {
+            override fun onStart(placeholder: Image?) = onStart(placeholder)
+            override fun onError(error: Image?) = onError(error)
+            override fun onSuccess(result: Image) = onSuccess(result)
+        })
+
+        /**
+         * Set the [Target].
+         */
+        fun target(target: Target?) = apply {
+            this.target = target
+            resetResolvedValues()
+        }
+
+        /**
          * Set the memory cache key for this request.
          *
          * If this is null or is not set, the [ImageLoader] will compute a memory cache key.
@@ -390,8 +411,6 @@ class ImageRequest private constructor(
         /**
          * Set the scaling algorithm that will be used to fit/fill the image into the size provided
          * by [sizeResolver].
-         *
-         * NOTE: If [scale] is not set, it is automatically computed for [ImageView] targets.
          */
         fun scale(scale: Scale) = apply {
             this.scale = scale
@@ -518,27 +537,6 @@ class ImageRequest private constructor(
         }
 
         /**
-         * Convenience function to create and set the [Target].
-         */
-        inline fun target(
-            crossinline onStart: (placeholder: Image?) -> Unit = {},
-            crossinline onError: (error: Image?) -> Unit = {},
-            crossinline onSuccess: (result: Image) -> Unit = {}
-        ) = target(object : Target {
-            override fun onStart(placeholder: Image?) = onStart(placeholder)
-            override fun onError(error: Image?) = onError(error)
-            override fun onSuccess(result: Image) = onSuccess(result)
-        })
-
-        /**
-         * Set the [Target].
-         */
-        fun target(target: Target?) = apply {
-            this.target = target
-            resetResolvedValues()
-        }
-
-        /**
          * Set the defaults for any unset request values.
          */
         fun defaults(defaults: Defaults) = apply {
@@ -601,30 +599,9 @@ class ImageRequest private constructor(
         private fun resetResolvedScale() {
             resolvedScale = null
         }
-
-        private fun resolveSizeResolver(): SizeResolver {
-            val target = target
-            if (target is ViewTarget<*>) {
-                // CENTER and MATRIX scale types should be decoded at the image's original size.
-                val view = target.view
-                if (view is ImageView && view.scaleType.let { it == CENTER || it == MATRIX }) {
-                    return SizeResolver(Size.ORIGINAL)
-                } else {
-                    return ViewSizeResolver(view)
-                }
-            } else {
-                // Fall back to the size of the display.
-                return DisplaySizeResolver(context)
-            }
-        }
-
-        private fun resolveScale(): Scale {
-            val view = (sizeResolver as? ViewSizeResolver<*>)?.view ?: (target as? ViewTarget<*>)?.view
-            if (view is ImageView) {
-                return view.scale
-            } else {
-                return Scale.FIT
-            }
-        }
     }
 }
+
+internal expect fun Builder.resolveSizeResolver(): SizeResolver
+
+internal expect fun Builder.resolveScale(): Scale
