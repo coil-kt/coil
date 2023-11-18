@@ -85,7 +85,7 @@ interface ImageLoader {
         private var eventListenerFactory: EventListener.Factory?
         private var componentRegistry: ComponentRegistry?
         private var logger: Logger?
-        private val extras: Extras.Builder
+        val extras: Extras.Builder
 
         constructor(context: PlatformContext) {
             application = context.application
@@ -296,13 +296,6 @@ interface ImageLoader {
          */
         fun logger(logger: Logger?) = apply {
             this.logger = logger
-        }
-
-        /**
-         * Set an extra for extension.
-         */
-        fun extra(key: String, value: Any?) = apply {
-            this.extras.put(key, value)
         }
 
         /**

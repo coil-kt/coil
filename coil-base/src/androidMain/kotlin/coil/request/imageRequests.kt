@@ -6,12 +6,13 @@ import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import coil.Extras
 import coil.ImageLoader
+import coil.getOrDefault
 import coil.target.ImageViewTarget
 import coil.target.Target
 import coil.util.DEFAULT_BITMAP_CONFIG
 import coil.util.NULL_COLOR_SPACE
-import coil.util.internalExtraKeyOf
 
 /**
  * Convenience function to set [imageView] as the [Target].
@@ -21,20 +22,20 @@ fun ImageRequest.Builder.target(imageView: ImageView) = target(ImageViewTarget(i
 // bitmapConfig
 
 fun ImageRequest.Builder.bitmapConfig(config: Bitmap.Config) = apply {
-    extra(bitmapConfigKey, config)
+    extras[bitmapConfigKey] = config
 }
 
 fun ImageLoader.Builder.bitmapConfig(config: Bitmap.Config) = apply {
-    extra(bitmapConfigKey, config)
+    extras[bitmapConfigKey] = config
 }
 
 val ImageRequest.bitmapConfig: Bitmap.Config
-    get() = extras.get(bitmapConfigKey)
-        ?: defaults.extras.get(bitmapConfigKey)
-        ?: bitmapConfigDefault
+    get() = extras.getOrDefault(bitmapConfigKey, defaults.extras)
 
-private val bitmapConfigKey = internalExtraKeyOf("bitmapConfig")
-private val bitmapConfigDefault = DEFAULT_BITMAP_CONFIG
+val Options.bitmapConfig: Bitmap.Config
+    get() = extras.getOrDefault(bitmapConfigKey)
+
+private val bitmapConfigKey = Extras.Key(default = DEFAULT_BITMAP_CONFIG)
 
 // colorSpace
 
@@ -45,21 +46,21 @@ private val bitmapConfigDefault = DEFAULT_BITMAP_CONFIG
  */
 @RequiresApi(26)
 fun ImageRequest.Builder.colorSpace(colorSpace: ColorSpace) = apply {
-    extra(colorSpaceKey, colorSpace)
+    extras[colorSpaceKey] = colorSpace
 }
 
 @RequiresApi(26)
 fun ImageLoader.Builder.colorSpace(colorSpace: ColorSpace) = apply {
-    extra(colorSpaceKey, colorSpace)
+    extras[colorSpaceKey] = colorSpace
 }
 
 val ImageRequest.colorSpace: ColorSpace?
-    @RequiresApi(26) get() = extras.get(colorSpaceKey)
-        ?: defaults.extras.get(colorSpaceKey)
-        ?: colorSpaceDefault
+    @RequiresApi(26) get() = extras.getOrDefault(colorSpaceKey, defaults.extras)
 
-private val colorSpaceKey = internalExtraKeyOf("colorSpace")
-private val colorSpaceDefault = NULL_COLOR_SPACE
+val Options.colorSpace: ColorSpace?
+    @RequiresApi(26) get() = extras.getOrDefault(colorSpaceKey)
+
+private val colorSpaceKey = Extras.Key(default = NULL_COLOR_SPACE)
 
 // premultipliedAlpha
 
@@ -71,84 +72,87 @@ private val colorSpaceDefault = NULL_COLOR_SPACE
  * necessary to disable this feature to leave the source pixels unmodified.
  */
 fun ImageRequest.Builder.premultipliedAlpha(enable: Boolean) = apply {
-    extra(premultipliedAlphaKey, enable)
+    extras[premultipliedAlphaKey] = enable
 }
 
 fun ImageLoader.Builder.premultipliedAlpha(enable: Boolean) = apply {
-    extra(premultipliedAlphaKey, enable)
+    extras[premultipliedAlphaKey] = enable
 }
 
 val ImageRequest.premultipliedAlpha: Boolean
-    get() = extras.get(premultipliedAlphaKey)
-        ?: defaults.extras.get(premultipliedAlphaKey)
-        ?: premultipliedAlphaDefault
+    get() = extras.getOrDefault(premultipliedAlphaKey, defaults.extras)
 
-private val premultipliedAlphaKey = internalExtraKeyOf("premultipliedAlpha")
-private const val premultipliedAlphaDefault = true
+val Options.premultipliedAlpha: Boolean
+    get() = extras.getOrDefault(premultipliedAlphaKey)
+
+private val premultipliedAlphaKey = Extras.Key(default = true)
 
 // lifecycle
 
 fun ImageRequest.Builder.lifecycle(owner: LifecycleOwner?) = lifecycle(owner?.lifecycle)
 
 fun ImageRequest.Builder.lifecycle(lifecycle: Lifecycle?) = apply {
-    extra(lifecycleKey, lifecycle)
+    extras[lifecycleKey] = lifecycle
 }
 
 val ImageRequest.lifecycle: Lifecycle?
-    get() = extras.get(lifecycleKey)
+    get() = extras.getOrDefault(lifecycleKey, defaults.extras)
 
-private val lifecycleKey = internalExtraKeyOf("lifecycle")
+val Options.lifecycle: Lifecycle?
+    get() = extras.getOrDefault(lifecycleKey)
+
+private val lifecycleKey = Extras.Key<Lifecycle?>(default = null)
 
 // allowConversionToBitmap
 
 fun ImageRequest.Builder.allowConversionToBitmap(enable: Boolean) = apply {
-    extra(allowConversionToBitmapKey, enable)
+    extras[allowConversionToBitmapKey] = enable
 }
 
 fun ImageLoader.Builder.allowConversionToBitmap(enable: Boolean) = apply {
-    extra(allowConversionToBitmapKey, enable)
+    extras[allowConversionToBitmapKey] = enable
 }
 
 val ImageRequest.allowConversionToBitmap: Boolean
-    get() = extras.get(allowConversionToBitmapKey)
-        ?: defaults.extras.get(allowConversionToBitmapKey)
-        ?: allowConversionToBitmapDefault
+    get() = extras.getOrDefault(allowConversionToBitmapKey, defaults.extras)
 
-private val allowConversionToBitmapKey = internalExtraKeyOf("allowConversionToBitmap")
-private const val allowConversionToBitmapDefault = true
+val Options.allowConversionToBitmap: Boolean
+    get() = extras.getOrDefault(allowConversionToBitmapKey)
+
+private val allowConversionToBitmapKey = Extras.Key(default = true)
 
 // allowHardware
 
 fun ImageRequest.Builder.allowHardware(enable: Boolean) = apply {
-    extra(allowHardwareKey, enable)
+    extras[allowHardwareKey] = enable
 }
 
 fun ImageLoader.Builder.allowHardware(enable: Boolean) = apply {
-    extra(allowHardwareKey, enable)
+    extras[allowHardwareKey] = enable
 }
 
 val ImageRequest.allowHardware: Boolean
-    get() = extras.get(allowHardwareKey)
-        ?: defaults.extras.get(allowHardwareKey)
-        ?: allowHardwareDefault
+    get() = extras.getOrDefault(allowHardwareKey, defaults.extras)
 
-private val allowHardwareKey = internalExtraKeyOf("allowHardware")
-private const val allowHardwareDefault = true
+val Options.allowHardware: Boolean
+    get() = extras.getOrDefault(allowHardwareKey)
+
+private val allowHardwareKey = Extras.Key(default = true)
 
 // allowRgb565
 
 fun ImageRequest.Builder.allowRgb565(enable: Boolean) = apply {
-    extra(allowRgb565Key, enable)
+    extras[allowRgb565Key] = enable
 }
 
 fun ImageLoader.Builder.allowRgb565(enable: Boolean) = apply {
-    extra(allowRgb565Key, enable)
+    extras[allowRgb565Key] = enable
 }
 
 val ImageRequest.allowRgb565: Boolean
-    get() = extras.get(allowRgb565Key)
-        ?: defaults.extras.get(allowRgb565Key)
-        ?: allowRgb565Default
+    get() = extras.getOrDefault(allowRgb565Key, defaults.extras)
 
-private val allowRgb565Key = internalExtraKeyOf("allowRgb565")
-private const val allowRgb565Default = false
+val Options.allowRgb565: Boolean
+    get() = extras.getOrDefault(allowRgb565Key)
+
+private val allowRgb565Key = Extras.Key(default = false)

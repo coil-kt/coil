@@ -28,9 +28,10 @@ private class WrappedDrawableImage(
         get() = drawable.height
 }
 
-fun Drawable.asCoilImage(shareable: Boolean = this is BitmapDrawable): Image {
-    return WrappedDrawableImage(this, shareable)
-}
+@JvmOverloads
+fun Drawable.asCoilImage(
+    shareable: Boolean = this is BitmapDrawable
+): Image = WrappedDrawableImage(this, shareable)
 
 val Image.drawable: Drawable
     get() = (this as WrappedDrawableImage).drawable

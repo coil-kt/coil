@@ -204,13 +204,10 @@ class ImageRequest private constructor(
         private var errorFactory: () -> Image?
         private var fallbackFactory: () -> Image?
         private var precision: Precision?
-        internal val extras: Extras.Builder
-        internal val resolvedExtras: Extras.Builder
+        val extras: Extras.Builder
 
-        private var lifecycle: Lifecycle?
         private var sizeResolver: SizeResolver?
         private var scale: Scale?
-        private var resolvedLifecycle: Lifecycle?
         private var resolvedSizeResolver: SizeResolver?
         private var resolvedScale: Scale?
 
@@ -236,12 +233,9 @@ class ImageRequest private constructor(
             fallbackFactory = EMPTY_IMAGE_FACTORY
             precision = null
             extras = Extras.Builder()
-            resolvedExtras = Extras.Builder()
 
-            lifecycle = null
             sizeResolver = null
             scale = null
-            resolvedLifecycle = null
             resolvedSizeResolver = null
             resolvedScale = null
         }
@@ -270,17 +264,14 @@ class ImageRequest private constructor(
             precision = request.defined.precision
             extras = request.extras.newBuilder()
 
-            lifecycle = request.defined.lifecycle
             sizeResolver = request.defined.sizeResolver
             scale = request.defined.scale
 
             // If the context changes, recompute the resolved values.
             if (request.context === context) {
-                resolvedLifecycle = request.lifecycle
                 resolvedSizeResolver = request.sizeResolver
                 resolvedScale = request.scale
             } else {
-                resolvedLifecycle = null
                 resolvedSizeResolver = null
                 resolvedScale = null
             }
@@ -571,10 +562,6 @@ class ImageRequest private constructor(
          */
         fun transitionFactory(transition: Transition.Factory) = apply {
             this.transitionFactory = transition
-        }
-
-        fun extra(key: String, value: Any?) = apply {
-            extras.put(key, value)
         }
 
         /**

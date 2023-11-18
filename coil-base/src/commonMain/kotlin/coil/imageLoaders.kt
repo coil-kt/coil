@@ -1,7 +1,5 @@
 package coil
 
-import coil.util.internalExtraKeyOf
-
 /**
  * Create a new [ImageLoader] without configuration.
  */
@@ -19,18 +17,15 @@ fun ImageLoader(context: PlatformContext): ImageLoader {
  * file has been updated. However, if the memory cache check occurs on the main thread
  * (see [ImageLoader.Builder.interceptorDispatcher]) calling this will cause a strict mode
  * violation.
- *
- * Default: [addLastModifiedToFileCacheKeyDefault]
  */
 fun ImageLoader.Builder.addLastModifiedToFileCacheKey(enable: Boolean) = apply {
-    extra(addLastModifiedToFileCacheKeyKey, enable)
+    extras[addLastModifiedToFileCacheKeyKey] = enable
 }
 
 internal val RealImageLoader.Options.addLastModifiedToFileCacheKey: Boolean
-    get() = extras.get(addLastModifiedToFileCacheKeyKey) ?: addLastModifiedToFileCacheKeyDefault
+    get() = extras.getOrDefault(addLastModifiedToFileCacheKeyKey)
 
-private val addLastModifiedToFileCacheKeyKey = internalExtraKeyOf("addLastModifiedToFileCacheKey")
-private const val addLastModifiedToFileCacheKeyDefault = true
+private val addLastModifiedToFileCacheKeyKey = Extras.Key(default = true)
 
 // networkObserverEnabled
 
@@ -42,15 +37,12 @@ private const val addLastModifiedToFileCacheKeyDefault = true
  * '504 Unsatisfiable Request' response.
  *
  * If false, the image loader will attempt a network request even if the device is offline.
- *
- * Default: [networkObserverEnabledDefault]
  */
 fun ImageLoader.Builder.networkObserverEnabled(enable: Boolean) = apply {
-    extra(networkObserverEnabledKey, enable)
+    extras[networkObserverEnabledKey] = enable
 }
 
 internal val RealImageLoader.Options.networkObserverEnabled: Boolean
-    get() = extras.get(networkObserverEnabledKey) ?: networkObserverEnabledDefault
+    get() = extras.getOrDefault(networkObserverEnabledKey)
 
-private val networkObserverEnabledKey = internalExtraKeyOf("networkObserverEnabled")
-private const val networkObserverEnabledDefault = true
+private val networkObserverEnabledKey = Extras.Key(default = true)

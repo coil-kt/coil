@@ -4,9 +4,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build.VERSION.SDK_INT
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
 import coil.fetch.SourceFetchResult
 import coil.request.Options
+import coil.request.allowRgb565
+import coil.request.bitmapConfig
+import coil.request.colorSpace
+import coil.request.premultipliedAlpha
 import coil.size.isOriginal
 import coil.util.MIME_TYPE_JPEG
 import coil.util.heightPx
@@ -78,14 +83,14 @@ class BitmapFactoryDecoder(
         val bitmap = ExifUtils.reverseTransformations(outBitmap, exifData)
 
         return DecodeResult(
-            image = bitmap.toDrawable(options.context),
-            isSampled = inSampleSize > 1 || inScaled
+            image = bitmap.toDrawable(options.context).asCoilImage(),
+            isSampled = inSampleSize > 1 || inScaled,
         )
     }
 
     /** Compute and set [BitmapFactory.Options.inPreferredConfig]. */
     private fun BitmapFactory.Options.configureConfig(exifData: ExifData) {
-        var config = options.config
+        var config = options.bitmapConfig
 
         // Disable hardware bitmaps if we need to perform EXIF transformations.
         if (exifData.isFlipped || exifData.isRotated) {
@@ -139,7 +144,7 @@ class BitmapFactoryDecoder(
             srcHeight = srcHeight,
             dstWidth = dstWidth,
             dstHeight = dstHeight,
-            scale = options.scale
+            scale = options.scale,
         )
 
         // Calculate the image's density scaling multiple.
@@ -148,7 +153,7 @@ class BitmapFactoryDecoder(
             srcHeight = srcHeight / inSampleSize.toDouble(),
             dstWidth = dstWidth.toDouble(),
             dstHeight = dstHeight.toDouble(),
-            scale = options.scale
+            scale = options.scale,
         )
 
         // Only upscale the image if the options require an exact size.

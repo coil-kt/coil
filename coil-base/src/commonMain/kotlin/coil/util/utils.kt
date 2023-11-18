@@ -101,5 +101,3 @@ internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
 }
 
 internal const val DEFAULT_CROSSFADE_MILLIS = 100
-
-internal fun internalExtraKeyOf(name: String) = "coil_$name"
