@@ -9,6 +9,7 @@ import coil.annotation.MainThread
 import coil.decode.Decoder
 import coil.fetch.Fetcher
 import coil.memory.MemoryCache
+import coil.orEmpty
 import coil.request.ImageRequest.Builder
 import coil.size.Dimension
 import coil.size.Precision
@@ -46,7 +47,10 @@ class ImageRequest private constructor(
     val listener: Listener?,
 
     /** @see Builder.memoryCacheKey */
-    val memoryCacheKey: MemoryCache.Key?,
+    val memoryCacheKey: String?,
+
+    /** @see Builder.memoryCacheKeyExtra */
+    val memoryCacheKeyExtras: Map<String, String>,
 
     /** @see Builder.diskCacheKey */
     val diskCacheKey: String?,
@@ -188,7 +192,11 @@ class ImageRequest private constructor(
         internal var data: Any?
         internal var target: Target?
         internal var listener: Listener?
-        internal var memoryCacheKey: MemoryCache.Key?
+        internal var memoryCacheKey: String?
+        internal var lazyMemoryCacheKeyExtras: MutableMap<String, String>?
+        internal val memoryCacheKeyExtras: MutableMap<String, String>
+            get() = lazyMemoryCacheKeyExtras ?: mutableMapOf<String, String>()
+                .also { lazyMemoryCacheKeyExtras = it }
         internal var diskCacheKey: String?
         internal var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
         internal var decoderFactory: Decoder.Factory?
@@ -203,7 +211,9 @@ class ImageRequest private constructor(
         internal var errorFactory: () -> Image?
         internal var fallbackFactory: () -> Image?
         internal var precision: Precision?
+        internal var lazyExtras: Extras.Builder?
         val extras: Extras.Builder
+            get() = lazyExtras ?: Extras.Builder().also { lazyExtras = it }
 
         internal var sizeResolver: SizeResolver?
         internal var scale: Scale?
@@ -217,6 +227,7 @@ class ImageRequest private constructor(
             target = null
             listener = null
             memoryCacheKey = null
+            lazyMemoryCacheKeyExtras = null
             diskCacheKey = null
             fetcherFactory = null
             decoderFactory = null
@@ -231,7 +242,7 @@ class ImageRequest private constructor(
             errorFactory = EMPTY_IMAGE_FACTORY
             fallbackFactory = EMPTY_IMAGE_FACTORY
             precision = null
-            extras = Extras.Builder()
+            lazyExtras = null
 
             sizeResolver = null
             scale = null
@@ -247,6 +258,11 @@ class ImageRequest private constructor(
             target = request.target
             listener = request.listener
             memoryCacheKey = request.memoryCacheKey
+            lazyMemoryCacheKeyExtras = if (request.memoryCacheKeyExtras.isEmpty()) {
+                null
+            } else {
+                request.memoryCacheKeyExtras.toMutableMap()
+            }
             diskCacheKey = request.diskCacheKey
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory
@@ -261,7 +277,11 @@ class ImageRequest private constructor(
             errorFactory = EMPTY_IMAGE_FACTORY
             fallbackFactory = EMPTY_IMAGE_FACTORY
             precision = request.defined.precision
-            extras = request.extras.newBuilder()
+            lazyExtras = if (request.extras.asMap().isEmpty()) {
+                null
+            } else {
+                request.extras.newBuilder()
+            }
 
             sizeResolver = request.defined.sizeResolver
             scale = request.defined.scale
@@ -309,15 +329,40 @@ class ImageRequest private constructor(
          *
          * If this is null or is not set, the [ImageLoader] will compute a memory cache key.
          */
-        fun memoryCacheKey(key: String?) = memoryCacheKey(key?.let { MemoryCache.Key(it) })
+        fun memoryCacheKey(key: MemoryCache.Key?) = apply {
+            memoryCacheKey(key?.key)
+            memoryCacheKeyExtras(key?.extras.orEmpty())
+        }
 
         /**
          * Set the memory cache key for this request.
          *
          * If this is null or is not set, the [ImageLoader] will compute a memory cache key.
          */
-        fun memoryCacheKey(key: MemoryCache.Key?) = apply {
+        fun memoryCacheKey(key: String?) = apply {
             this.memoryCacheKey = key
+        }
+
+        /**
+         * TODO
+         */
+        fun memoryCacheKeyExtras(extras: Map<String, String>) = apply {
+            this.lazyMemoryCacheKeyExtras = if (extras.isEmpty()) {
+                null
+            } else {
+                extras.toMutableMap()
+            }
+        }
+
+        /**
+         * TODO
+         */
+        fun memoryCacheKeyExtra(key: String, value: String?) = apply {
+            if (value != null) {
+                this.memoryCacheKeyExtras[key] = value
+            } else {
+                this.lazyMemoryCacheKeyExtras?.remove(key)
+            }
         }
 
         /**
@@ -554,6 +599,7 @@ class ImageRequest private constructor(
                 target = target,
                 listener = listener,
                 memoryCacheKey = memoryCacheKey,
+                memoryCacheKeyExtras = lazyMemoryCacheKeyExtras.orEmpty(),
                 diskCacheKey = diskCacheKey,
                 precision = precision ?: defaults.precision,
                 fetcherFactory = fetcherFactory,
@@ -585,7 +631,7 @@ class ImageRequest private constructor(
                     precision = precision,
                 ),
                 defaults = defaults,
-                extras = extras.build(),
+                extras = lazyExtras?.build().orEmpty(),
             )
         }
 

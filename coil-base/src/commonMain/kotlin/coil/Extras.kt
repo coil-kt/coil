@@ -16,6 +16,10 @@ class Extras private constructor(
         return data[key] as T?
     }
 
+    fun asMap(): Map<Key<*>, Any> {
+        return data
+    }
+
     fun newBuilder(): Builder {
         return Builder(this)
     }
@@ -58,6 +62,10 @@ class Extras private constructor(
 
 fun <T> Extras.getOrDefault(key: Extras.Key<T>): T {
     return this[key] ?: key.default
+}
+
+fun Extras?.orEmpty(): Extras {
+    return this ?: Extras.EMPTY
 }
 
 fun <T> ImageRequest.getExtra(key: Extras.Key<T>): T {

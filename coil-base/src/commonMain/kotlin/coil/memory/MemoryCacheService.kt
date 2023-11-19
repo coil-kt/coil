@@ -17,7 +17,6 @@ import coil.size.isOriginal
 import coil.size.pxOrElse
 import coil.util.Logger
 import coil.util.allowInexactSize
-import coil.util.forEachIndexedIndices
 import coil.util.isMinOrMax
 import coil.util.isPlaceholderCached
 import coil.util.log
@@ -37,30 +36,21 @@ internal class MemoryCacheService(
         eventListener: EventListener,
     ): MemoryCache.Key? {
         // Fast path: an explicit memory cache key has been set.
-        request.memoryCacheKey?.let { return it }
+        if (request.memoryCacheKey != null) {
+            return MemoryCache.Key(request.memoryCacheKey, request.memoryCacheKeyExtras)
+        }
 
         // Slow path: create a new memory cache key.
         eventListener.keyStart(request, mappedData)
-        val base = imageLoader.components.key(mappedData, options)
-        eventListener.keyEnd(request, base)
-        if (base == null) return null
-
-        // Optimize for the typical case where there are no transformations or parameters.
-        val transformations = request.transformations
-        val parameterKeys = request.parameters.memoryCacheKeys()
-        if (transformations.isEmpty() && parameterKeys.isEmpty()) {
-            return MemoryCache.Key(base)
+        val key = imageLoader.components.key(mappedData, options)
+        eventListener.keyEnd(request, key)
+        if (key == null) {
+            return null
         }
 
-        // Else, create a memory cache key with extras.
-        val extras = parameterKeys.toMutableMap()
-        if (transformations.isNotEmpty()) {
-            request.transformations.forEachIndexedIndices { index, transformation ->
-                extras[EXTRA_TRANSFORMATION_INDEX + index] = transformation.cacheKey
-            }
-            extras[EXTRA_TRANSFORMATION_SIZE] = options.size.toString()
-        }
-        return MemoryCache.Key(base, extras)
+        // Else, create a memory cache key with all extras.
+        val extras = createComplexMemoryCacheKeyExtras(request, options)
+        return MemoryCache.Key(key, extras)
     }
 
     /** Get the [MemoryCache.Value] for this request. */
@@ -230,3 +220,8 @@ internal class MemoryCacheService(
         @VisibleForTesting internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
     }
 }
+
+internal expect fun createComplexMemoryCacheKeyExtras(
+    request: ImageRequest,
+    options: Options,
+): Map<String, String>
