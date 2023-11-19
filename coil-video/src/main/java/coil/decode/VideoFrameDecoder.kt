@@ -13,15 +13,19 @@ import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.fetch.MediaDataSourceFetcher.MediaSourceMetadata
 import coil.fetch.SourceFetchResult
 import coil.request.Options
+import coil.request.bitmapConfig
 import coil.request.videoFrameMicros
 import coil.request.videoFrameOption
 import coil.request.videoFramePercent
 import coil.size.Dimension.Pixels
 import coil.size.Size
 import coil.size.pxOrElse
+import coil.util.getFrameAtTime
+import coil.util.getScaledFrameAtTime
 import coil.util.heightPx
 import coil.util.use
 import coil.util.widthPx
@@ -33,7 +37,7 @@ import kotlin.math.roundToLong
  */
 class VideoFrameDecoder(
     private val source: ImageSource,
-    private val options: Options
+    private val options: Options,
 ) : Decoder {
 
     override suspend fun decode() = MediaMetadataRetriever().use { retriever ->
@@ -62,7 +66,7 @@ class VideoFrameDecoder(
                 srcHeight = srcHeight,
                 dstWidth = dstWidth,
                 dstHeight = dstHeight,
-                scale = options.scale
+                scale = options.scale,
             )
             val scale = if (options.allowInexactSize) {
                 rawScale.coerceAtMost(1.0)
@@ -81,9 +85,9 @@ class VideoFrameDecoder(
 
         val (dstWidth, dstHeight) = dstSize
         val rawBitmap: Bitmap? = if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
-            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.px, dstHeight.px, options.config)
+            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.px, dstHeight.px, options.bitmapConfig)
         } else {
-            retriever.getFrameAtTime(frameMicros, option, options.config)?.also {
+            retriever.getFrameAtTime(frameMicros, option, options.bitmapConfig)?.also {
                 srcWidth = it.width
                 srcHeight = it.height
             }
@@ -101,7 +105,7 @@ class VideoFrameDecoder(
                 srcHeight = srcHeight,
                 dstWidth = bitmap.width,
                 dstHeight = bitmap.height,
-                scale = options.scale
+                scale = options.scale,
             ) < 1.0
         } else {
             // We were unable to determine the original size of the video. Assume it is sampled.
@@ -109,8 +113,8 @@ class VideoFrameDecoder(
         }
 
         DecodeResult(
-            image = bitmap.toDrawable(options.context.resources),
-            isSampled = isSampled
+            image = bitmap.toDrawable(options.context.resources).asCoilImage(),
+            isSampled = isSampled,
         )
     }
 
@@ -142,13 +146,13 @@ class VideoFrameDecoder(
             srcHeight = inBitmap.height,
             dstWidth = size.width.pxOrElse { inBitmap.width },
             dstHeight = size.height.pxOrElse { inBitmap.height },
-            scale = options.scale
+            scale = options.scale,
         ).toFloat()
         val dstWidth = (scale * inBitmap.width).roundToInt()
         val dstHeight = (scale * inBitmap.height).roundToInt()
         val safeConfig = when {
-            SDK_INT >= 26 && options.config == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
-            else -> options.config
+            SDK_INT >= 26 && options.bitmapConfig == Bitmap.Config.HARDWARE -> Bitmap.Config.ARGB_8888
+            else -> options.bitmapConfig
         }
 
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -165,7 +169,7 @@ class VideoFrameDecoder(
     private fun isConfigValid(bitmap: Bitmap, options: Options): Boolean {
         return SDK_INT < 26 ||
             bitmap.config != Bitmap.Config.HARDWARE ||
-            options.config == Bitmap.Config.HARDWARE
+            options.bitmapConfig == Bitmap.Config.HARDWARE
     }
 
     private fun isSizeValid(bitmap: Bitmap, options: Options, size: Size): Boolean {
@@ -175,7 +179,7 @@ class VideoFrameDecoder(
             srcHeight = bitmap.height,
             dstWidth = size.width.pxOrElse { bitmap.width },
             dstHeight = size.height.pxOrElse { bitmap.height },
-            scale = options.scale
+            scale = options.scale,
         )
         return multiplier == 1.0
     }
@@ -192,12 +196,15 @@ class VideoFrameDecoder(
                     setDataSource(it.fileDescriptor, it.startOffset, it.length)
                 }
             }
+
             is ContentMetadata -> {
                 setDataSource(options.context, metadata.uri)
             }
+
             is ResourceMetadata -> {
                 setDataSource("android.resource://${metadata.packageName}/${metadata.resId}")
             }
+
             else -> {
                 setDataSource(source.file().toFile().path)
             }
@@ -206,7 +213,11 @@ class VideoFrameDecoder(
 
     class Factory : Decoder.Factory {
 
-        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(
+            result: SourceFetchResult,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Decoder? {
             if (!isApplicable(result.mimeType)) return null
             return VideoFrameDecoder(result.source, options)
         }
