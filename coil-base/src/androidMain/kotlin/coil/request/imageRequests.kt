@@ -43,6 +43,8 @@ fun ImageRequest.Builder.fallback(@DrawableRes drawableResId: Int) =
 fun ImageRequest.Builder.fallback(drawable: Drawable?) =
     fallback(drawable?.asCoilImage())
 
+// region transformations
+
 /**
  * Set [Transformation]s to be applied to the output image.
  */
@@ -59,7 +61,13 @@ val ImageRequest.transformations: List<Transformation>
 val Options.transformations: List<Transformation>
     get() = getExtra(transformationsKey)
 
+val Extras.Key.Companion.transformations: Extras.Key<List<Transformation>>
+    get() = transformationsKey
+
 private val transformationsKey = Extras.Key<List<Transformation>>(default = emptyList())
+
+// endregion
+// region crossfade
 
 /**
  * Enable a crossfade animation when a request completes successfully.
@@ -83,6 +91,9 @@ private fun newCrossfadeTransitionFactory(durationMillis: Int): Transition.Facto
 actual val ImageRequest.crossfade: Boolean
     get() = transitionFactory is CrossfadeTransition.Factory
 
+// endregion
+// region transitionFactory
+
 /**
  * Set the [Transition.Factory] that's started when an image result is applied to a target.
  */
@@ -97,7 +108,13 @@ fun ImageLoader.Builder.transitionFactory(factory: Transition.Factory) = apply {
 val ImageRequest.transitionFactory: Transition.Factory?
     get() = getExtra(transitionFactoryKey)
 
+val Extras.Key.Companion.transitionFactory: Extras.Key<Transition.Factory?>
+    get() = transitionFactoryKey
+
 private val transitionFactoryKey = Extras.Key<Transition.Factory?>(default = null)
+
+// endregion
+// region bitmapConfig
 
 /**
  * Set the preferred [Bitmap.Config].
@@ -118,7 +135,13 @@ val ImageRequest.bitmapConfig: Bitmap.Config
 val Options.bitmapConfig: Bitmap.Config
     get() = getExtra(bitmapConfigKey)
 
+val Extras.Key.Companion.bitmapConfig: Extras.Key<Bitmap.Config>
+    get() = bitmapConfigKey
+
 private val bitmapConfigKey = Extras.Key(default = DEFAULT_BITMAP_CONFIG)
+
+// endregion
+// region colorSpace
 
 /**
  * Set the preferred [ColorSpace].
@@ -141,7 +164,13 @@ val ImageRequest.colorSpace: ColorSpace?
 val Options.colorSpace: ColorSpace?
     @RequiresApi(26) get() = getExtra(colorSpaceKey)
 
+val Extras.Key.Companion.colorSpace: Extras.Key<ColorSpace?>
+    @RequiresApi(26) get() = colorSpaceKey
+
 private val colorSpaceKey = Extras.Key(default = NULL_COLOR_SPACE)
+
+// endregion
+// region premultipliedAlpha
 
 /**
  * Enable/disable pre-multiplication of the color (RGB) channels of the decoded image by
@@ -164,7 +193,13 @@ val ImageRequest.premultipliedAlpha: Boolean
 val Options.premultipliedAlpha: Boolean
     get() = getExtra(premultipliedAlphaKey)
 
+val Extras.Key.Companion.premultipliedAlpha: Extras.Key<Boolean>
+    get() = premultipliedAlphaKey
+
 private val premultipliedAlphaKey = Extras.Key(default = true)
+
+// endregion
+// region lifecycle
 
 /**
  * Set the [Lifecycle] for this request.
@@ -187,7 +222,13 @@ val ImageRequest.lifecycle: Lifecycle?
 val Options.lifecycle: Lifecycle?
     get() = getExtra(lifecycleKey)
 
+val Extras.Key.Companion.lifecycle: Extras.Key<Lifecycle?>
+    get() = lifecycleKey
+
 private val lifecycleKey = Extras.Key<Lifecycle?>(default = null)
+
+// endregion
+// region allowConversionToBitmap
 
 /**
  * Allow converting the result drawable to a bitmap to apply any [transformations].
@@ -209,7 +250,13 @@ val ImageRequest.allowConversionToBitmap: Boolean
 val Options.allowConversionToBitmap: Boolean
     get() = getExtra(allowConversionToBitmapKey)
 
+val Extras.Key.Companion.allowConversionToBitmap: Extras.Key<Boolean>
+    get() = allowConversionToBitmapKey
+
 private val allowConversionToBitmapKey = Extras.Key(default = true)
+
+// endregion
+// region allowHardware
 
 /**
  * Allow the use of [Bitmap.Config.HARDWARE].
@@ -234,7 +281,13 @@ val ImageRequest.allowHardware: Boolean
 val Options.allowHardware: Boolean
     get() = getExtra(allowHardwareKey)
 
+val Extras.Key.Companion.allowHardware: Extras.Key<Boolean>
+    get() = allowHardwareKey
+
 private val allowHardwareKey = Extras.Key(default = true)
+
+// endregion
+// region allowRgb565
 
 /**
  * Allow automatically using [Bitmap.Config.RGB_565] when an image is guaranteed to not
@@ -258,4 +311,9 @@ val ImageRequest.allowRgb565: Boolean
 val Options.allowRgb565: Boolean
     get() = getExtra(allowRgb565Key)
 
+val Extras.Key.Companion.allowRgb565: Extras.Key<Boolean>
+    get() = allowRgb565Key
+
 private val allowRgb565Key = Extras.Key(default = false)
+
+// endregion

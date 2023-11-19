@@ -1,6 +1,7 @@
 package coil.request
 
 import android.graphics.Bitmap
+import coil.Extras
 import coil.ImageLoader
 import coil.size.Dimension
 import coil.size.Scale
@@ -52,10 +53,16 @@ internal class AndroidRequestService(
      * Return the request options. The function is called from the main thread and must be fast.
      */
     override fun options(request: ImageRequest, size: Size): Options {
+        var extras = request.extras
+
         // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
         val isValidConfig = isConfigValidForTransformations(request) &&
             isConfigValidForHardwareAllocation(request, size)
-        val config = if (isValidConfig) request.bitmapConfig else Bitmap.Config.ARGB_8888
+        val config = if (isValidConfig) {
+            request.bitmapConfig
+        } else {
+            Bitmap.Config.ARGB_8888
+        }
 
         // Disable fetching from the network if we know we're offline.
         val networkCachePolicy = if (systemCallbacks.isOnline) {
@@ -77,6 +84,11 @@ internal class AndroidRequestService(
         val allowRgb565 = request.allowRgb565 &&
             request.transformations.isEmpty() &&
             config != Bitmap.Config.ALPHA_8
+        if (allowRgb565 != request.allowRgb565) {
+            extras = request.extras.newBuilder()
+                .set(Extras.Key.allowRgb565, allowRgb565)
+                .build()
+        }
 
         return Options(
             context = request.context,
@@ -87,7 +99,7 @@ internal class AndroidRequestService(
             memoryCachePolicy = request.memoryCachePolicy,
             diskCachePolicy = request.diskCachePolicy,
             networkCachePolicy = networkCachePolicy,
-            extras = request.extras,
+            extras = extras,
         )
     }
 
@@ -95,8 +107,11 @@ internal class AndroidRequestService(
         if (allowHardwareWorkerThread(options)) {
             return options
         } else {
-            // TODO: Use ARGB_8888 instead of HARDWARE.
-            return options.copy(extras = options.extras)
+            return options.copy(
+                extras = options.extras.newBuilder()
+                    .set(Extras.Key.bitmapConfig, Bitmap.Config.ARGB_8888)
+                    .build(),
+            )
         }
     }
 

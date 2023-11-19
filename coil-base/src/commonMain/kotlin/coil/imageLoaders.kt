@@ -7,6 +7,8 @@ fun ImageLoader(context: PlatformContext): ImageLoader {
     return ImageLoader.Builder(context).build()
 }
 
+// region addLastModifiedToFileCacheKey
+
 /**
  * Enables adding a file's last modified timestamp to the memory cache key when loading an image
  * from a file.
@@ -25,6 +27,9 @@ internal val RealImageLoader.Options.addLastModifiedToFileCacheKey: Boolean
 
 private val addLastModifiedToFileCacheKeyKey = Extras.Key(default = true)
 
+// endregion
+// region networkObserverEnabled
+
 /**
  * Enables short circuiting network requests if the device is offline.
  *
@@ -42,3 +47,5 @@ internal val RealImageLoader.Options.networkObserverEnabled: Boolean
     get() = extras.getOrDefault(networkObserverEnabledKey)
 
 private val networkObserverEnabledKey = Extras.Key(default = true)
+
+// endregion

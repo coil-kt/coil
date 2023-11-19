@@ -22,7 +22,10 @@ class Extras private constructor(
 
     class Key<T>(
         val default: T,
-    )
+    ) {
+        /** Public to support static extensions. */
+        companion object
+    }
 
     class Builder {
         private val data: MutableMap<Key<*>, Any>

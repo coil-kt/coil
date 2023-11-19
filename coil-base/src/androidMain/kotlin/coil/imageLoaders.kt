@@ -6,6 +6,8 @@ import coil.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil.decode.ExifOrientationPolicy
 import coil.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
 
+// region bitmapFactoryMaxParallelism
+
 /**
  * Sets the maximum number of parallel [BitmapFactory] decode operations at once.
  *
@@ -22,6 +24,9 @@ internal val RealImageLoader.Options.bitmapFactoryMaxParallelism: Int
 
 private val bitmapFactoryMaxParallelismKey = Extras.Key(default = DEFAULT_MAX_PARALLELISM)
 
+// endregion
+// region bitmapFactoryExifOrientationPolicy
+
 /**
  * Sets the policy for handling the EXIF orientation flag for images decoded by
  * [BitmapFactoryDecoder].
@@ -34,3 +39,5 @@ internal val RealImageLoader.Options.bitmapFactoryExifOrientationPolicy: ExifOri
     get() = extras.getOrDefault(bitmapFactoryExifOrientationPolicyKey)
 
 private val bitmapFactoryExifOrientationPolicyKey = Extras.Key(default = RESPECT_PERFORMANCE)
+
+// endregion
