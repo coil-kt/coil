@@ -1,6 +1,7 @@
 package coil.request
 
 import android.graphics.Bitmap
+import androidx.lifecycle.Lifecycle
 import coil.Extras
 import coil.ImageLoader
 import coil.size.Dimension
@@ -14,6 +15,7 @@ import coil.util.Logger
 import coil.util.SystemCallbacks
 import coil.util.VALID_TRANSFORMATION_CONFIGS
 import coil.util.allowInexactSize
+import coil.util.getLifecycle
 import coil.util.isHardware
 import kotlinx.coroutines.Job
 
@@ -36,13 +38,19 @@ internal class AndroidRequestService(
      * based on its lifecycle.
      */
     override fun requestDelegate(request: ImageRequest, job: Job): RequestDelegate {
-        val lifecycle = request.lifecycle
+        val lifecycle = request.resolveLifecycle()
         val target = request.target
         if (target is ViewTarget<*>) {
             return ViewTargetRequestDelegate(imageLoader, request, target, lifecycle, job)
         } else {
             return BaseRequestDelegate(lifecycle, job)
         }
+    }
+
+    private fun ImageRequest.resolveLifecycle(): Lifecycle {
+        val target = target
+        val context = if (target is ViewTarget<*>) target.view.context else context
+        return context.getLifecycle() ?: GlobalLifecycle
     }
 
     override fun errorResult(request: ImageRequest, throwable: Throwable): ErrorResult {
