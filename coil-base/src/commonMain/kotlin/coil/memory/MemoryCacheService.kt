@@ -1,6 +1,5 @@
 package coil.memory
 
-import android.graphics.drawable.BitmapDrawable
 import coil.EventListener
 import coil.ImageLoader
 import coil.annotation.VisibleForTesting
@@ -22,8 +21,6 @@ import coil.util.forEachIndexedIndices
 import coil.util.isMinOrMax
 import coil.util.isPlaceholderCached
 import coil.util.log
-import coil.util.safeConfig
-import coil.util.toDrawable
 import kotlin.math.abs
 
 internal class MemoryCacheService(
@@ -88,7 +85,7 @@ internal class MemoryCacheService(
         scale: Scale,
     ): Boolean {
         // Ensure we don't return a hardware bitmap if the request doesn't allow it.
-        if (!requestService.isConfigValidForHardware(request, cacheValue.bitmap.safeConfig)) {
+        if (!requestService.isCacheValueValidForHardware(request, cacheValue)) {
             logger?.log(TAG, Logger.Level.Debug) {
                 "${request.data}: Cached bitmap is hardware-backed, " +
                     "which is incompatible with the request."
@@ -131,8 +128,8 @@ internal class MemoryCacheService(
         }
 
         // Compute the scaling factor between the source dimensions and the requested dimensions.
-        val srcWidth = cacheValue.bitmap.width
-        val srcHeight = cacheValue.bitmap.height
+        val srcWidth = cacheValue.image.width
+        val srcHeight = cacheValue.image.height
         val dstWidth = size.width.pxOrElse { Int.MAX_VALUE }
         val dstHeight = size.height.pxOrElse { Int.MAX_VALUE }
         val multiplier = DecodeUtils.computeSizeMultiplier(
@@ -185,7 +182,7 @@ internal class MemoryCacheService(
         return true
     }
 
-    /** Write [drawable] to the memory cache. Return 'true' if it was added to the cache. */
+    /** Write [result] to the memory cache. Return 'true' if it was added to the cache. */
     fun setCacheValue(
         cacheKey: MemoryCache.Key?,
         request: ImageRequest,
@@ -194,13 +191,12 @@ internal class MemoryCacheService(
         if (!request.memoryCachePolicy.writeEnabled) return false
         val memoryCache = imageLoader.memoryCache
         if (memoryCache == null || cacheKey == null) return false
-        val bitmap = (result.image as? BitmapDrawable)?.bitmap ?: return false
 
         // Create and set the memory cache value.
         val extras = mutableMapOf<String, Any>()
         extras[EXTRA_IS_SAMPLED] = result.isSampled
         result.diskCacheKey?.let { extras[EXTRA_DISK_CACHE_KEY] = it }
-        memoryCache[cacheKey] = MemoryCache.Value(bitmap, extras)
+        memoryCache[cacheKey] = MemoryCache.Value(result.image, extras)
         return true
     }
 
@@ -211,7 +207,7 @@ internal class MemoryCacheService(
         cacheKey: MemoryCache.Key,
         cacheValue: MemoryCache.Value,
     ) = SuccessResult(
-        image = cacheValue.bitmap.toDrawable(request.context),
+        image = cacheValue.image,
         request = request,
         dataSource = DataSource.MEMORY_CACHE,
         memoryCacheKey = cacheKey,

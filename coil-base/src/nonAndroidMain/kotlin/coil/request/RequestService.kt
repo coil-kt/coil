@@ -1,6 +1,7 @@
 package coil.request
 
 import coil.ImageLoader
+import coil.memory.MemoryCache
 import coil.size.Size
 import coil.util.Logger
 import coil.util.SystemCallbacks
@@ -30,4 +31,9 @@ internal class NonAndroidRequestService : RequestService {
     override fun updateOptionsOnWorkerThread(options: Options): Options {
         return options
     }
+
+    override fun isConfigValidForHardware(
+        request: ImageRequest,
+        cacheValue: MemoryCache.Value,
+    ) = true
 }

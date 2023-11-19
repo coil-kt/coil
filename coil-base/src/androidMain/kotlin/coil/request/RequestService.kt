@@ -1,9 +1,12 @@
 package coil.request
 
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import androidx.lifecycle.Lifecycle
 import coil.Extras
 import coil.ImageLoader
+import coil.drawable
+import coil.memory.MemoryCache
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
@@ -17,6 +20,7 @@ import coil.util.VALID_TRANSFORMATION_CONFIGS
 import coil.util.allowInexactSize
 import coil.util.getLifecycle
 import coil.util.isHardware
+import coil.util.safeConfig
 import kotlinx.coroutines.Job
 
 internal actual fun RequestService(
@@ -124,10 +128,26 @@ internal class AndroidRequestService(
     }
 
     /**
+     * Return 'true' if [cacheValue] is a valid (i.e. can be returned to its [Target])
+     * config for [request].
+     */
+    override fun isCacheValueValidForHardware(
+        request: ImageRequest,
+        cacheValue: MemoryCache.Value,
+    ): Boolean {
+        val drawable = cacheValue.image.drawable as? BitmapDrawable ?: return true
+        val requestedConfig = drawable.bitmap.safeConfig
+        return isConfigValidForHardware(request, requestedConfig)
+    }
+
+    /**
      * Return 'true' if [requestedConfig] is a valid (i.e. can be returned to its [Target])
      * config for [request].
      */
-    fun isConfigValidForHardware(request: ImageRequest, requestedConfig: Bitmap.Config): Boolean {
+    fun isConfigValidForHardware(
+        request: ImageRequest,
+        requestedConfig: Bitmap.Config,
+    ): Boolean {
         // Short circuit if the requested bitmap config is software.
         if (!requestedConfig.isHardware) {
             return true
@@ -140,7 +160,8 @@ internal class AndroidRequestService(
 
         // Prevent hardware bitmaps for non-hardware accelerated targets.
         val target = request.target
-        if (target is ViewTarget<*> && target.view.run { isAttachedToWindow && !isHardwareAccelerated }) {
+        if (target is ViewTarget<*> &&
+            target.view.run { isAttachedToWindow && !isHardwareAccelerated }) {
             return false
         }
 
@@ -156,7 +177,7 @@ internal class AndroidRequestService(
      * Return 'true' if [request]'s requested bitmap config is valid (i.e. can be returned
      * to its [Target]).
      *
-     * This check is similar to [isConfigValidForHardware] except this method also checks
+     * This check is similar to [isCacheValueValidForHardware] except this method also checks
      * that we are able to allocate a new hardware bitmap.
      */
     private fun isConfigValidForHardwareAllocation(request: ImageRequest, size: Size): Boolean {

@@ -3,6 +3,7 @@ package coil.request
 import coil.ImageLoader
 import coil.annotation.MainThread
 import coil.annotation.WorkerThread
+import coil.memory.MemoryCache
 import coil.size.Size
 import coil.util.Logger
 import coil.util.SystemCallbacks
@@ -28,6 +29,9 @@ internal interface RequestService {
 
     @WorkerThread
     fun updateOptionsOnWorkerThread(options: Options): Options
+
+    @WorkerThread
+    fun isCacheValueValidForHardware(request: ImageRequest, cacheValue: MemoryCache.Value): Boolean
 }
 
 internal fun commonErrorResult(
