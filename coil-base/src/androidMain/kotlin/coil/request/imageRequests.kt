@@ -105,13 +105,13 @@ fun ImageLoader.Builder.transitionFactory(factory: Transition.Factory) = apply {
     extras[transitionFactoryKey] = factory
 }
 
-val ImageRequest.transitionFactory: Transition.Factory?
+val ImageRequest.transitionFactory: Transition.Factory
     get() = getExtra(transitionFactoryKey)
 
-val Extras.Key.Companion.transitionFactory: Extras.Key<Transition.Factory?>
+val Extras.Key.Companion.transitionFactory: Extras.Key<Transition.Factory>
     get() = transitionFactoryKey
 
-private val transitionFactoryKey = Extras.Key<Transition.Factory?>(default = null)
+private val transitionFactoryKey = Extras.Key(default = Transition.Factory.NONE)
 
 // endregion
 // region bitmapConfig

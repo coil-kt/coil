@@ -2,6 +2,7 @@ package coil.fetch
 
 import android.graphics.Bitmap
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.decode.DataSource
 import coil.request.Options
 import coil.util.toDrawable
@@ -13,9 +14,9 @@ internal class BitmapFetcher(
 
     override suspend fun fetch(): FetchResult {
         return ImageFetchResult(
-            image = data.toDrawable(options.context),
+            image = data.toDrawable(options.context).asCoilImage(),
             isSampled = false,
-            dataSource = DataSource.MEMORY
+            dataSource = DataSource.MEMORY,
         )
     }
 

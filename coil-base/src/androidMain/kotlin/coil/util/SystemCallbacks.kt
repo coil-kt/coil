@@ -8,7 +8,6 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.content.res.Configuration
 import androidx.annotation.VisibleForTesting
 import coil.RealImageLoader
-import coil.asAndroidContext
 import coil.networkObserverEnabled
 import java.lang.ref.WeakReference
 import kotlinx.atomicfu.atomic
@@ -29,7 +28,7 @@ internal class AndroidSystemCallbacks(
     options: RealImageLoader.Options,
 ) : SystemCallbacks, ComponentCallbacks2, NetworkObserver.Listener {
 
-    private val applicationContext = options.application.asAndroidContext()
+    private val applicationContext = options.application
     private val networkObserver = if (options.networkObserverEnabled) {
         NetworkObserver(applicationContext, this, options.logger)
     } else {

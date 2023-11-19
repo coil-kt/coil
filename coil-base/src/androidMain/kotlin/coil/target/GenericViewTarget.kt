@@ -7,7 +7,6 @@ import android.widget.ImageView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.Image
-import coil.asDrawable
 import coil.drawable
 import coil.transition.TransitionTarget
 

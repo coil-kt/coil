@@ -4,10 +4,12 @@ import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.net.Uri
 import android.util.TypedValue
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.decode.ResourceMetadata
 import coil.request.Options
+import coil.request.bitmapConfig
 import coil.util.DrawableUtils
 import coil.util.MimeTypeMap
 import coil.util.getDrawableCompat
@@ -24,7 +26,8 @@ internal class ResourceUriFetcher(
 
     override suspend fun fetch(): FetchResult {
         // Expected format: android.resource://example.package.name/12345678
-        val packageName = data.authority?.takeIf { it.isNotBlank() } ?: throwInvalidUriException(data)
+        val packageName =
+            data.authority?.takeIf { it.isNotBlank() } ?: throwInvalidUriException(data)
         val resId = data.pathSegments.lastOrNull()?.toIntOrNull() ?: throwInvalidUriException(data)
 
         val context = options.context
@@ -50,14 +53,14 @@ internal class ResourceUriFetcher(
                 image = if (isVector) {
                     DrawableUtils.convertToBitmap(
                         drawable = drawable,
-                        config = options.config,
+                        config = options.bitmapConfig,
                         size = options.size,
                         scale = options.scale,
                         allowInexactSize = options.allowInexactSize,
                     ).toDrawable(context)
                 } else {
                     drawable
-                },
+                }.asCoilImage(),
                 isSampled = isVector,
                 dataSource = DataSource.DISK,
             )

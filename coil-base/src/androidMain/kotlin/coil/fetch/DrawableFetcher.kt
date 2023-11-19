@@ -2,8 +2,10 @@ package coil.fetch
 
 import android.graphics.drawable.Drawable
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.decode.DataSource
 import coil.request.Options
+import coil.request.bitmapConfig
 import coil.util.DrawableUtils
 import coil.util.isVector
 import coil.util.toDrawable
@@ -19,16 +21,16 @@ internal class DrawableFetcher(
             image = if (isVector) {
                 DrawableUtils.convertToBitmap(
                     drawable = data,
-                    config = options.config,
+                    config = options.bitmapConfig,
                     size = options.size,
                     scale = options.scale,
-                    allowInexactSize = options.allowInexactSize
+                    allowInexactSize = options.allowInexactSize,
                 ).toDrawable(options.context)
             } else {
                 data
-            },
+            }.asCoilImage(),
             isSampled = isVector,
-            dataSource = DataSource.MEMORY
+            dataSource = DataSource.MEMORY,
         )
     }
 

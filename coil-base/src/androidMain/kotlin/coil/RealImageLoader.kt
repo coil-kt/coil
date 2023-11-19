@@ -6,13 +6,10 @@ import coil.fetch.BitmapFetcher
 import coil.fetch.ByteBufferFetcher
 import coil.fetch.ContentUriFetcher
 import coil.fetch.DrawableFetcher
-import coil.fetch.HttpUriFetcher
 import coil.fetch.PathFetcher
 import coil.fetch.ResourceUriFetcher
-import coil.key.PathKeyer
 import coil.key.UriKeyer
 import coil.map.FileUriMapper
-import coil.map.HttpUrlMapper
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.map.StringMapper
@@ -22,12 +19,12 @@ import coil.request.ImageResult
 import coil.request.OneShotDisposable
 import coil.request.lifecycle
 import coil.request.requestManager
+import coil.request.transitionFactory
 import coil.target.Target
 import coil.target.ViewTarget
 import coil.transition.NoneTransition
 import coil.transition.TransitionTarget
 import coil.util.awaitStarted
-import coil.util.getTimeMillis
 import kotlinx.coroutines.Deferred
 
 internal actual fun getDisposable(
