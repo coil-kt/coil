@@ -7,7 +7,6 @@ import android.media.MediaMetadataRetriever.METADATA_KEY_DURATION
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
 import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
-import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
@@ -42,8 +41,6 @@ class VideoFrameDecoder(
 
     override suspend fun decode() = MediaMetadataRetriever().use { retriever ->
         retriever.setDataSource(source)
-        val option = options.parameters.videoFrameOption() ?: OPTION_CLOSEST_SYNC
-        val frameMicros = computeFrameMicros(retriever)
 
         // Resolve the dimensions to decode the video frame at accounting
         // for the source's aspect ratio and the target's size.
@@ -83,11 +80,22 @@ class VideoFrameDecoder(
             Size.ORIGINAL
         }
 
+        val frameMicros = computeFrameMicros(retriever)
         val (dstWidth, dstHeight) = dstSize
         val rawBitmap: Bitmap? = if (SDK_INT >= 27 && dstWidth is Pixels && dstHeight is Pixels) {
-            retriever.getScaledFrameAtTime(frameMicros, option, dstWidth.px, dstHeight.px, options.bitmapConfig)
+            retriever.getScaledFrameAtTime(
+                timeUs = frameMicros,
+                option = options.videoFrameOption,
+                dstWidth = dstWidth.px,
+                dstHeight = dstHeight.px,
+                config = options.bitmapConfig,
+            )
         } else {
-            retriever.getFrameAtTime(frameMicros, option, options.bitmapConfig)?.also {
+            retriever.getFrameAtTime(
+                timeUs = frameMicros,
+                option = options.videoFrameOption,
+                config = options.bitmapConfig,
+            )?.also {
                 srcWidth = it.width
                 srcHeight = it.height
             }
@@ -119,13 +127,13 @@ class VideoFrameDecoder(
     }
 
     private fun computeFrameMicros(retriever: MediaMetadataRetriever): Long {
-        val frameMicros = options.parameters.videoFrameMicros()
-        if (frameMicros != null) {
+        val frameMicros = options.videoFrameMicros
+        if (frameMicros >= 0) {
             return frameMicros
         }
 
-        val framePercent = options.parameters.videoFramePercent()
-        if (framePercent != null) {
+        val framePercent = options.videoFramePercent
+        if (framePercent >= 0) {
             val durationMillis = retriever.extractMetadata(METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
             return 1000 * (framePercent * durationMillis).roundToLong()
         }
@@ -229,11 +237,5 @@ class VideoFrameDecoder(
         override fun equals(other: Any?) = other is Factory
 
         override fun hashCode() = this::class.hashCode()
-    }
-
-    companion object {
-        const val VIDEO_FRAME_MICROS_KEY = "coil#video_frame_micros"
-        const val VIDEO_FRAME_PERCENT_KEY = "coil#video_frame_percent"
-        const val VIDEO_FRAME_OPTION_KEY = "coil#video_frame_option"
     }
 }

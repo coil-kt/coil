@@ -20,11 +20,11 @@ class MediaDataSourceFetcher(
     override suspend fun fetch(): FetchResult {
         val imageSource = ImageSource(
             source = MediaDataSourceOkioSource(data).buffer(),
-            context = options.context,
+            fileSystem = options.fileSystem,
             metadata = MediaSourceMetadata(data),
         )
 
-        return SourceResult(
+        return SourceFetchResult(
             source = imageSource,
             mimeType = null,
             dataSource = DataSource.DISK,
