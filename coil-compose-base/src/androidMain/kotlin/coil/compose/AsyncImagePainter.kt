@@ -10,6 +10,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.Image
 import coil.drawable
 import coil.request.SuccessResult
+import coil.request.transitionFactory
 import coil.transition.CrossfadeTransition
 import coil.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
