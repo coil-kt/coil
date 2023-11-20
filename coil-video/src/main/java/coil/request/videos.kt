@@ -1,6 +1,5 @@
 package coil.request
 
-import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST
 import android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC
