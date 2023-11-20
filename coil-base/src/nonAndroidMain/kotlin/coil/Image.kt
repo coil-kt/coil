@@ -1,7 +1,9 @@
 package coil
 
 import org.jetbrains.skia.Image as SkiaImage
+import dev.drewhamilton.poko.Poko
 
+@Poko
 private class WrappedSkiaImage(
     val image: SkiaImage,
     override val shareable: Boolean,

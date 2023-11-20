@@ -225,7 +225,7 @@ class FakeImageLoaderEngine private constructor(
 internal expect fun defaultRequestTransformer(): RequestTransformer
 
 /**
- * Create a new [FakeImageLoaderEngine] that returns [Image] for all requests.
+ * Create a new [FakeImageLoaderEngine] that returns [image] for all requests.
  */
 @JvmName("create")
 fun FakeImageLoaderEngine(image: Image): FakeImageLoaderEngine {

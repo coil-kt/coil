@@ -52,7 +52,7 @@ class FakeImageLoaderEngineTest {
         val url = "https://www.example.com/image.jpg"
         val image = ColorDrawable(Color.RED).asCoilImage()
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("different_string", ColorDrawable(Color.GREEN).asCoilImage())
+            .intercept("different_string", ColorDrawable(Color.GREEN))
             .intercept({ it is String && it == url }, image)
             .build()
         val imageLoader = ImageLoader.Builder(context)
@@ -74,7 +74,7 @@ class FakeImageLoaderEngineTest {
         val url = "https://www.example.com/image.jpg"
         val image = ColorDrawable(Color.RED).asCoilImage()
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("different_string", ColorDrawable(Color.GREEN).asCoilImage())
+            .intercept("different_string", ColorDrawable(Color.GREEN))
             .default(image)
             .build()
         val imageLoader = ImageLoader.Builder(context)
@@ -134,7 +134,7 @@ class FakeImageLoaderEngineTest {
     fun `removes transition factory`() = runTest {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, ColorDrawable(Color.RED).asCoilImage())
+            .intercept(url, ColorDrawable(Color.RED))
             .build()
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }

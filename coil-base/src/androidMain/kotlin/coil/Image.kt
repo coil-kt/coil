@@ -5,7 +5,9 @@ import android.graphics.drawable.Drawable
 import coil.util.allocationByteCountCompat
 import coil.util.height
 import coil.util.width
+import dev.drewhamilton.poko.Poko
 
+@Poko
 private class WrappedDrawableImage(
     val drawable: Drawable,
     override val shareable: Boolean,
