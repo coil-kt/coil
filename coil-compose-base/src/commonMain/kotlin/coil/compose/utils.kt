@@ -6,7 +6,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
@@ -23,7 +22,9 @@ internal fun requestOf(model: Any?): ImageRequest {
     if (model is ImageRequest) {
         return model
     } else {
-        return ImageRequest.Builder(LocalContext.current).data(model).build()
+        return ImageRequest.Builder(LocalPlatformContext.current)
+            .data(model)
+            .build()
     }
 }
 
