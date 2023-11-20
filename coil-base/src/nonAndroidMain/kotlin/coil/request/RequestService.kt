@@ -32,7 +32,7 @@ internal class NonAndroidRequestService : RequestService {
         return options
     }
 
-    override fun isConfigValidForHardware(
+    override fun isCacheValueValidForHardware(
         request: ImageRequest,
         cacheValue: MemoryCache.Value,
     ) = true
