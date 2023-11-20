@@ -28,7 +28,7 @@ fun ImageRequest.Builder.videoFrameMillis(frameMillis: Long) =
  */
 fun ImageRequest.Builder.videoFrameMicros(frameMicros: Long) = apply {
     require(frameMicros >= 0) { "frameMicros must be >= 0." }
-    memoryCacheKeyExtra("coil_videoFrameMicros", frameMicros.toString())
+    memoryCacheKeyExtra("coil#videoFrameMicros", frameMicros.toString())
     extras[videoFrameMicrosKey] = frameMicros
 }
 
@@ -54,7 +54,7 @@ private val videoFrameMicrosKey = Extras.Key(default = -1L)
  */
 fun ImageRequest.Builder.videoFramePercent(framePercent: Double) = apply {
     require(framePercent in 0.0..1.0) { "framePercent must be in the range [0.0, 1.0]." }
-    memoryCacheKeyExtra("coil_videoFramePercent", framePercent.toString())
+    memoryCacheKeyExtra("coil#videoFramePercent", framePercent.toString())
     extras[videoFramePercentKey] = framePercent
 }
 
@@ -84,7 +84,7 @@ fun ImageRequest.Builder.videoFrameOption(option: Int) = apply {
         option == OPTION_NEXT_SYNC ||
         option == OPTION_CLOSEST_SYNC ||
         option == OPTION_CLOSEST) { "Invalid video frame option: $option." }
-    memoryCacheKeyExtra("coil_videoFrameOption", option.toString())
+    memoryCacheKeyExtra("coil#videoFrameOption", option.toString())
     extras[videoFrameOptionKey] = option
 }
 

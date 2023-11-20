@@ -1,16 +1,24 @@
 package coil.request
 
-import coil.decode.SvgDecoder.Companion.CSS_KEY
+import coil.Extras
+import coil.getExtra
 
 /**
  * Specifies additional CSS rules that will be applied when rendering an SVG in addition to any
  * rules specified in the SVG itself.
  */
-fun ImageRequest.Builder.css(css: String): ImageRequest.Builder {
-    return setParameter(CSS_KEY, css)
+fun ImageRequest.Builder.css(css: String?) = apply {
+    memoryCacheKeyExtra("coil#css", css)
+    extras[cssKey] = css
 }
 
-/**
- * Get the additional CSS rules.
- */
-fun Parameters.css(): String? = value(CSS_KEY)
+val ImageRequest.css: String?
+    get() = getExtra(cssKey)
+
+val Options.css: String?
+    get() = getExtra(cssKey)
+
+val Extras.Key.Companion.css: Extras.Key<String?>
+    get() = cssKey
+
+private val cssKey = Extras.Key<String?>(default = null)

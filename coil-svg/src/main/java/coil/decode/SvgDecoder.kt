@@ -5,8 +5,10 @@ import android.graphics.RectF
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.fetch.SourceFetchResult
 import coil.request.Options
+import coil.request.bitmapConfig
 import coil.request.css
 import coil.size.Scale
 import coil.size.isOriginal
@@ -54,7 +56,7 @@ class SvgDecoder @JvmOverloads constructor(
                 srcHeight = svgHeight,
                 dstWidth = dstWidth,
                 dstHeight = dstHeight,
-                scale = options.scale
+                scale = options.scale,
             )
             bitmapWidth = (multiplier * svgWidth).toInt()
             bitmapHeight = (multiplier * svgHeight).toInt()
@@ -71,13 +73,13 @@ class SvgDecoder @JvmOverloads constructor(
         svg.setDocumentWidth("100%")
         svg.setDocumentHeight("100%")
 
-        val bitmap = createBitmap(bitmapWidth, bitmapHeight, options.config.toSoftware())
-        val renderOptions = options.parameters.css()?.let { RenderOptions().css(it) }
+        val bitmap = createBitmap(bitmapWidth, bitmapHeight, options.bitmapConfig.toSoftware())
+        val renderOptions = options.css?.let { RenderOptions().css(it) }
         svg.renderToCanvas(Canvas(bitmap), renderOptions)
 
         DecodeResult(
-            image = bitmap.toDrawable(options.context.resources),
-            isSampled = true // SVGs can always be re-decoded at a higher resolution.
+            image = bitmap.toDrawable(options.context.resources).asCoilImage(),
+            isSampled = true, // SVGs can always be re-decoded at a higher resolution.
         )
     }
 
@@ -94,10 +96,14 @@ class SvgDecoder @JvmOverloads constructor(
 
     @Poko
     class Factory @JvmOverloads constructor(
-        val useViewBoundsAsIntrinsicSize: Boolean = true
+        val useViewBoundsAsIntrinsicSize: Boolean = true,
     ) : Decoder.Factory {
 
-        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(
+            result: SourceFetchResult,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Decoder? {
             if (!isApplicable(result)) return null
             return SvgDecoder(result.source, options, useViewBoundsAsIntrinsicSize)
         }
@@ -110,6 +116,5 @@ class SvgDecoder @JvmOverloads constructor(
     companion object {
         private const val MIME_TYPE_SVG = "image/svg+xml"
         private const val DEFAULT_SIZE = 512f
-        const val CSS_KEY = "coil#css"
     }
 }
