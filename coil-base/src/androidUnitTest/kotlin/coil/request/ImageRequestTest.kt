@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER
 import android.widget.ImageView.ScaleType.MATRIX
 import androidx.test.core.app.ApplicationProvider
+import coil.Extras
 import coil.ImageLoader
 import coil.lifecycle.FakeLifecycle
 import coil.size.Precision
@@ -74,7 +75,10 @@ class ImageRequestTest {
         val sizeResolver = request.sizeResolver
         assertTrue(sizeResolver is ViewSizeResolver<*> && sizeResolver.view === imageView)
         assertSame(sizeResolver, request.newBuilder().build().sizeResolver)
-        assertNotSame(sizeResolver, request.newBuilder().target(ImageView(context)).build().sizeResolver)
+        assertNotSame(
+            sizeResolver,
+            request.newBuilder().target(ImageView(context)).build().sizeResolver,
+        )
     }
 
     @Test
@@ -107,7 +111,7 @@ class ImageRequestTest {
 
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
 
-        val newRequest = request.newBuilder().defaults(DefaultRequestOptions()).build()
+        val newRequest = request.newBuilder().defaults(ImageRequest.Defaults.DEFAULT).build()
         assertSame(request.lifecycle, newRequest.lifecycle)
         assertSame(request.sizeResolver, newRequest.sizeResolver)
         assertEquals(Scale.FILL, newRequest.scale)
@@ -133,10 +137,12 @@ class ImageRequestTest {
 
     @Test
     fun `defaults fill unset values`() {
-        val defaults = DefaultRequestOptions(
+        val defaults = ImageRequest.Defaults(
             decoderDispatcher = Dispatchers.Unconfined,
-            transitionFactory = CrossfadeTransition.Factory(),
-            precision = Precision.EXACT
+            precision = Precision.EXACT,
+            extras = Extras.Builder()
+                .set(Extras.Key.transitionFactory, CrossfadeTransition.Factory())
+                .build()
         )
         val imageView = ImageView(context)
         val request = ImageRequest.Builder(context)
@@ -146,7 +152,7 @@ class ImageRequestTest {
             .build()
 
         assertSame(defaults.decoderDispatcher, request.decoderDispatcher)
-        assertSame(defaults.transitionFactory, request.transitionFactory)
+        assertSame(defaults.extras[Extras.Key.transitionFactory], request.transitionFactory)
         assertSame(defaults.precision, request.precision)
     }
 

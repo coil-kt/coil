@@ -6,14 +6,16 @@ import androidx.test.core.app.ApplicationProvider
 import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
+import coil.asCoilImage
 import coil.key.Keyer
 import coil.memory.MemoryCacheService.Companion.EXTRA_IS_SAMPLED
 import coil.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_INDEX
 import coil.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_SIZE
 import coil.request.ImageRequest
 import coil.request.Options
-import coil.request.Parameters
 import coil.request.RequestService
+import coil.request.allowHardware
+import coil.request.transformations
 import coil.size.Dimension
 import coil.size.Precision
 import coil.size.Scale
@@ -24,6 +26,7 @@ import coil.util.SystemCallbacks
 import coil.util.createBitmap
 import coil.util.createRequest
 import coil.util.forEachIndexedIndices
+import coil.util.toDrawable
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -67,14 +70,14 @@ class MemoryCacheServiceTest {
     @Test
     fun `newCacheKey - params only`() {
         val service = newService()
-        val parameters = createFakeParameters()
+        val memoryCacheKeyExtras = createFakeMemoryCacheKeyExtras()
         val request = createRequest(context) {
-            parameters(parameters)
+            memoryCacheKeyExtras(memoryCacheKeyExtras)
         }
         val options = Options(context, size = Size.ORIGINAL)
         val actual = service.newCacheKey(request, Unit, options, EventListener.NONE)
 
-        assertEquals(newMemoryCacheKey(parameters = parameters), actual)
+        assertEquals(newMemoryCacheKey(memoryCacheKeyExtras = memoryCacheKeyExtras), actual)
     }
 
     @Test
@@ -88,22 +91,30 @@ class MemoryCacheServiceTest {
         val options = Options(context, size = size)
         val actual = service.newCacheKey(request, Unit, options, EventListener.NONE)
 
-        assertEquals(newMemoryCacheKey(transformations = transformations, size = size), actual)
+        val expected = newMemoryCacheKey(
+            transformations = transformations,
+            size = size,
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
     fun `newCacheKey - complex key`() {
         val service = newService(key = TEST_KEY)
-        val parameters = createFakeParameters()
+        val memoryCacheKeyExtras = createFakeMemoryCacheKeyExtras()
         val transformations = createFakeTransformations()
         val request = createRequest(context) {
-            parameters(parameters)
+            memoryCacheKeyExtras(memoryCacheKeyExtras)
             transformations(transformations)
         }
         val options = Options(context, size = Size.ORIGINAL)
         val actual = service.newCacheKey(request, Unit, options, EventListener.NONE)
 
-        assertEquals(newMemoryCacheKey(transformations = transformations, parameters = parameters), actual)
+        val expected = newMemoryCacheKey(
+            transformations = transformations,
+            memoryCacheKeyExtras = memoryCacheKeyExtras,
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -375,7 +386,8 @@ class MemoryCacheServiceTest {
             size = Size(1000, 500) // The size of the previous request.
         )
         val value = MemoryCache.Value(
-            bitmap = createBitmap(width = 200, height = 200), // The small cached bitmap.
+            image = createBitmap(width = 200, height = 200)
+                .toDrawable(context).asCoilImage(), // The small cached bitmap.
             extras = mapOf(EXTRA_IS_SAMPLED to true)
         )
         val request = createRequest(context)
@@ -484,7 +496,10 @@ class MemoryCacheServiceTest {
     ) = isCacheValueValid(
         request = request,
         cacheKey = MemoryCache.Key("key"),
-        cacheValue = MemoryCache.Value(cached, mapOf(EXTRA_IS_SAMPLED to isSampled)),
+        cacheValue = MemoryCache.Value(
+            image = cached.toDrawable(context).asCoilImage(),
+            extras = mapOf(EXTRA_IS_SAMPLED to isSampled),
+        ),
         size = size,
         scale = request.scale
     )
@@ -502,12 +517,11 @@ class MemoryCacheServiceTest {
         )
     }
 
-    private fun createFakeParameters(): Parameters {
-        return Parameters.Builder()
-            .set("key1", "no_cache", memoryCacheKey = null)
-            .set("key2", "cached2")
-            .set("key3", "cached3")
-            .build()
+    private fun createFakeMemoryCacheKeyExtras(): Map<String, String> {
+        return buildMap {
+            put("key1", "cached1")
+            put("key2", "cached2")
+        }
     }
 
     private fun newService(key: String? = TEST_KEY): MemoryCacheService {
@@ -516,7 +530,8 @@ class MemoryCacheServiceTest {
                 add(Keyer { _: Any, _ -> key })
             }
             .build()
-        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader, context, true)
+        val options = (imageLoader as RealImageLoader).options
+        val systemCallbacks = SystemCallbacks(options)
         return MemoryCacheService(
             imageLoader = imageLoader,
             requestService = RequestService(imageLoader, systemCallbacks, null),
@@ -528,9 +543,9 @@ class MemoryCacheServiceTest {
         key: String = TEST_KEY,
         transformations: List<Transformation> = emptyList(),
         size: Size = Size.ORIGINAL,
-        parameters: Parameters = Parameters.EMPTY
+        memoryCacheKeyExtras: Map<String, String> = emptyMap(),
     ): MemoryCache.Key {
-        val extras = parameters.memoryCacheKeys().toMutableMap()
+        val extras = memoryCacheKeyExtras.toMutableMap()
         if (transformations.isNotEmpty()) {
             transformations.forEachIndexedIndices { index, transformation ->
                 extras[EXTRA_TRANSFORMATION_INDEX + index] = transformation.cacheKey

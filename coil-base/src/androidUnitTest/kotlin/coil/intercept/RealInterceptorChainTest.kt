@@ -9,6 +9,10 @@ import coil.lifecycle.FakeLifecycle
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import coil.request.ImageResult
+import coil.request.bitmapConfig
+import coil.request.lifecycle
+import coil.request.target
+import coil.request.transformations
 import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.util.createRequest

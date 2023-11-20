@@ -36,7 +36,7 @@ class RealImageLoaderTest {
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
+        context = ApplicationProvider.getApplicationContext() as Context
         mainDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(mainDispatcher)
         imageLoader = ImageLoader.Builder(context)

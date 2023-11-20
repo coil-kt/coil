@@ -5,12 +5,17 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.test.core.app.ApplicationProvider
+import coil.Image
+import coil.asCoilImage
 import coil.decode.DataSource
+import coil.drawable
 import coil.request.ErrorResult
 import coil.request.SuccessResult
 import coil.util.createRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertIsNot
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
@@ -40,11 +45,11 @@ class CrossfadeTransitionTest {
             onSuccess = { result ->
                 assertFalse(onSuccessCalled)
                 onSuccessCalled = true
-                assertEquals(drawable, result)
+                assertEquals(drawable, result.drawable)
             }
         )
         val result = SuccessResult(
-            image = drawable,
+            image = drawable.asCoilImage(),
             request = createRequest(context),
             dataSource = DataSource.MEMORY_CACHE
         )
@@ -63,14 +68,14 @@ class CrossfadeTransitionTest {
                 assertFalse(onSuccessCalled)
                 onSuccessCalled = true
 
-                assertTrue(result is CrossfadeDrawable)
+                val crossfadeDrawable = assertIs<CrossfadeDrawable>(result.drawable)
 
                 // Stop the transition early to simulate the end of the animation.
-                result.stop()
+                crossfadeDrawable.stop()
             }
         )
         val result = SuccessResult(
-            image = drawable,
+            image = drawable.asCoilImage(),
             request = createRequest(context),
             dataSource = DataSource.DISK
         )
@@ -88,12 +93,12 @@ class CrossfadeTransitionTest {
             target = createTransitionTarget(
                 onError = { error ->
                     assertFalse(onSuccessCalled)
-                    assertTrue(error !is CrossfadeDrawable)
+                    assertIsNot<CrossfadeDrawable>(error?.drawable)
                     onSuccessCalled = true
                 }
             ),
             result = ErrorResult(
-                image = drawable,
+                image = drawable.asCoilImage(),
                 request = createRequest(context),
                 throwable = Throwable()
             )
@@ -104,14 +109,14 @@ class CrossfadeTransitionTest {
 
     private inline fun createTransitionTarget(
         imageView: ImageView = ImageView(context),
-        crossinline onStart: (placeholder: Drawable?) -> Unit = { fail() },
-        crossinline onError: (error: Drawable?) -> Unit = { fail() },
-        crossinline onSuccess: (result: Drawable) -> Unit = { fail() }
+        crossinline onStart: (placeholder: Image?) -> Unit = { fail() },
+        crossinline onError: (error: Image?) -> Unit = { fail() },
+        crossinline onSuccess: (result: Image) -> Unit = { fail() }
     ) = object : TransitionTarget {
         override val view = imageView
         override val drawable: Drawable? get() = imageView.drawable
-        override fun onStart(placeholder: Drawable?) = onStart(placeholder)
-        override fun onError(error: Drawable?) = onError(error)
-        override fun onSuccess(result: Drawable) = onSuccess(result)
+        override fun onStart(placeholder: Image?) = onStart(placeholder)
+        override fun onError(error: Image?) = onError(error)
+        override fun onSuccess(result: Image) = onSuccess(result)
     }
 }

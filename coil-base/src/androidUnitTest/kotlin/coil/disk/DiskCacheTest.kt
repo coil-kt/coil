@@ -18,7 +18,9 @@ class DiskCacheTest {
 
     @Before
     fun before() {
-        diskCache = DiskCache.Builder().directory(File("build/cache")).build()
+        diskCache = DiskCache.Builder()
+            .directory(File("build/cache"))
+            .build()
     }
 
     @After

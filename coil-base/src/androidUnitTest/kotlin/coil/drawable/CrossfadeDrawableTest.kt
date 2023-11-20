@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
 import coil.size.Scale
+import coil.transition.CrossfadeDrawable
 import coil.util.toDrawable
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

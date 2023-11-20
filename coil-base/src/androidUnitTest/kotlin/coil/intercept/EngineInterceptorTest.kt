@@ -8,19 +8,22 @@ import androidx.test.core.app.ApplicationProvider
 import coil.EventListener
 import coil.ImageLoader
 import coil.RealImageLoader
+import coil.asCoilImage
 import coil.decode.DataSource
+import coil.drawable
 import coil.intercept.EngineInterceptor.ExecuteResult
 import coil.key.Keyer
 import coil.request.Options
 import coil.request.RequestService
+import coil.request.transformations
 import coil.size.Size
 import coil.transform.CircleCropTransformation
 import coil.util.SystemCallbacks
 import coil.util.createRequest
 import coil.util.size
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertSame
-import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -39,12 +42,11 @@ class EngineInterceptorTest {
 
     @Test
     fun `applyTransformations - transformations convert drawable to bitmap`() = runTest {
-        val interceptor = newInterceptor()
-        val drawable = ColorDrawable(Color.BLACK)
+        val image = ColorDrawable(Color.BLACK).asCoilImage()
         val size = Size(100, 100)
-        val result = interceptor.transform(
+        val result = transform(
             result = ExecuteResult(
-                image = drawable,
+                image = image,
                 isSampled = false,
                 dataSource = DataSource.MEMORY,
                 diskCacheKey = null
@@ -53,33 +55,34 @@ class EngineInterceptorTest {
                 transformations(CircleCropTransformation())
             },
             options = Options(context, size = size),
-            eventListener = EventListener.NONE
+            eventListener = EventListener.NONE,
+            logger = null,
         )
 
-        val resultDrawable = result.image
-        assertTrue(resultDrawable is BitmapDrawable)
+        val resultDrawable = result.image.drawable
+        assertIs<BitmapDrawable>(resultDrawable)
         assertEquals(resultDrawable.bitmap.size, size)
     }
 
     @Test
     fun `applyTransformations - empty transformations does not convert drawable to bitmap`() = runTest {
-        val interceptor = newInterceptor()
-        val drawable = ColorDrawable(Color.BLACK)
-        val result = interceptor.transform(
+        val image = ColorDrawable(Color.BLACK).asCoilImage()
+        val result = transform(
             result = ExecuteResult(
-                image = drawable,
+                image = image,
                 isSampled = false,
                 dataSource = DataSource.MEMORY,
-                diskCacheKey = null
+                diskCacheKey = null,
             ),
             request = createRequest(context) {
                 transformations(emptyList())
             },
             options = Options(context, size = Size(100, 100)),
-            eventListener = EventListener.NONE
+            eventListener = EventListener.NONE,
+            logger = null,
         )
 
-        assertSame(drawable, result.image)
+        assertSame(image, result.image)
     }
 
     private fun newInterceptor(key: String? = TEST_KEY): EngineInterceptor {
@@ -88,11 +91,12 @@ class EngineInterceptorTest {
                 add(Keyer { _: Any, _ -> key })
             }
             .build()
-        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader, context, true)
+        val options = (imageLoader as RealImageLoader).options
+        val systemCallbacks = SystemCallbacks(options)
         return EngineInterceptor(
             imageLoader = imageLoader,
             requestService = RequestService(imageLoader, systemCallbacks, null),
-            logger = null
+            logger = null,
         )
     }
 
