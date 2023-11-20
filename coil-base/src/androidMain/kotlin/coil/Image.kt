@@ -17,7 +17,7 @@ private class WrappedDrawableImage(
                 return drawable.bitmap.allocationByteCountCompat.toLong()
             } else {
                 // Estimate 4 bytes per pixel.
-                return 4L * width * height
+                return 4L * drawable.width * drawable.height
             }
         }
 
