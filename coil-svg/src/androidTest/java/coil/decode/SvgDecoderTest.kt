@@ -20,6 +20,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import okio.Buffer
 import okio.BufferedSource
+import okio.FileSystem
 import okio.buffer
 import okio.source
 import org.junit.Before
@@ -163,9 +164,9 @@ class SvgDecoderTest {
 
     private fun BufferedSource.asSourceResult(
         mimeType: String? = null,
-        dataSource: DataSource = DataSource.DISK
+        dataSource: DataSource = DataSource.DISK,
     ) = SourceFetchResult(
-        source = ImageSource(this, context),
+        source = ImageSource(this, FileSystem.SYSTEM),
         mimeType = mimeType,
         dataSource = dataSource
     )

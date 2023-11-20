@@ -9,6 +9,7 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil.ImageLoader
 import coil.request.ImageRequest
+import coil.request.target
 import coil.util.ViewTestActivity
 import coil.util.activity
 import com.github.takahirom.roborazzi.RoborazziRule

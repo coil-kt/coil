@@ -4,8 +4,8 @@ import android.app.Application
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
-import coil.request.Parameters
+import coil.Extras
+import coil.request.videoFrameMicros
 import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,8 +46,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun loadVideoFrames(): List<Image> {
         return List(200) {
             val videoFrameMicros = Random.nextLong(62_000_000L)
-            val parameters = Parameters.Builder()
-                .set(VIDEO_FRAME_MICROS_KEY, videoFrameMicros)
+            val extras = Extras.Builder()
+                .set(Extras.Key.videoFrameMicros, videoFrameMicros)
                 .build()
 
             Image(
@@ -55,13 +55,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 color = randomColor(),
                 width = 1280,
                 height = 720,
-                parameters = parameters
+                extras = extras,
             )
         }
     }
 
     private fun loadImages(assetType: AssetType): List<Image> {
-        val json = JSONArray(context.assets.open(assetType.fileName).source().buffer().readUtf8())
+        val json = context.assets.open(assetType.fileName).source().buffer().use {
+            JSONArray(it.readUtf8())
+        }
         return List(json.length()) { index ->
             val image = json.getJSONObject(index)
 

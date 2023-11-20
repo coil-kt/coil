@@ -18,10 +18,15 @@ import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import coil.drawable
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.request.allowConversionToBitmap
 import coil.request.animatedTransformation
+import coil.request.bitmapConfig
+import coil.request.crossfade
+import coil.request.transformations
 import coil.util.assertIsSimilarTo
 import coil.util.decodeBitmapAsset
 import kotlin.test.assertFalse
@@ -38,7 +43,7 @@ class AnimatedAndNormalTransformationTest {
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
+        context = ApplicationProvider.getApplicationContext() as Context
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .components {
@@ -80,7 +85,7 @@ class AnimatedAndNormalTransformationTest {
         assertTrue(actual is SuccessResult)
         // Make sure this is not an animated result.
         assertFalse(actual.image is Animatable)
-        actual.image.toBitmap().assertIsSimilarTo(expected)
+        actual.image.drawable.toBitmap().assertIsSimilarTo(expected)
     }
 
     class AnimatedCircleTransformation : AnimatedTransformation {

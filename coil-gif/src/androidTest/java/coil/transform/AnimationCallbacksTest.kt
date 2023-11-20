@@ -12,9 +12,11 @@ import coil.decode.ImageDecoderDecoder
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
+import coil.request.crossfade
 import coil.request.onAnimationEnd
 import coil.request.onAnimationStart
 import coil.request.repeatCount
+import coil.request.target
 import coil.util.ViewTestActivity
 import coil.util.activity
 import kotlin.time.Duration.Companion.seconds
@@ -36,7 +38,7 @@ class AnimationCallbacksTest {
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
+        context = ApplicationProvider.getApplicationContext() as Context
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .memoryCachePolicy(CachePolicy.DISABLED)

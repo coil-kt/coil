@@ -152,8 +152,8 @@ private fun DetailScreen(screen: Screen.Detail) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(screen.image.uri)
-            .parameters(screen.image.parameters)
             .placeholderMemoryCacheKey(screen.placeholder)
+            .apply { extras.setAll(screen.image.extras) }
             .build(),
         contentDescription = null,
         modifier = Modifier.fillMaxSize()
@@ -188,7 +188,7 @@ private fun ListScreen(
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(image.uri)
-                    .parameters(image.parameters)
+                    .apply { extras.setAll(image.extras) }
                     .build(),
                 placeholder = ColorPainter(Color(image.color)),
                 error = ColorPainter(Color.Red),

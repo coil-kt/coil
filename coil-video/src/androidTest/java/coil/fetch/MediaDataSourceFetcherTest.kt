@@ -38,7 +38,7 @@ class MediaDataSourceFetcherTest {
 
         val result = fetcher.fetch()
 
-        assertIs<SourceResult>(result)
+        assertIs<SourceFetchResult>(result)
         assertEquals(null, result.mimeType)
         assertIs<MediaDataSourceFetcher.MediaSourceMetadata>(result.source.metadata)
     }

@@ -14,9 +14,11 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.ImageSource
 import coil.request.ImageRequest
+import coil.request.target
 import coil.size.Size
 import kotlin.test.assertTrue
 import okio.Buffer
+import okio.FileSystem
 import org.junit.Rule
 import org.junit.Test
 
@@ -117,7 +119,7 @@ class PaparazziTest {
     /** Regression test: https://github.com/coil-kt/coil/issues/1754 */
     @Test
     fun createSourceImageSource() {
-        val source = ImageSource(Buffer(), paparazzi.context)
+        val source = ImageSource(Buffer(), FileSystem.SYSTEM)
         assertTrue(source.source().exhausted())
     }
 }

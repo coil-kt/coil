@@ -4,12 +4,13 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
+import coil.Extras
 import coil.FileMediaDataSource
-import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_MICROS_KEY
-import coil.decode.VideoFrameDecoder.Companion.VIDEO_FRAME_PERCENT_KEY
+import coil.drawable
 import coil.fetch.MediaDataSourceFetcher
 import coil.request.Options
-import coil.request.Parameters
+import coil.request.videoFrameMicros
+import coil.request.videoFramePercent
 import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
@@ -20,6 +21,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
 import okio.buffer
 import okio.source
 import org.junit.Before
@@ -42,7 +44,7 @@ class VideoFrameDecoderTest {
         val result = VideoFrameDecoder(
             source = ImageSource(
                 source = context.assets.open("video.mp4").source().buffer(),
-                context = context
+                fileSystem = FileSystem.SYSTEM,
             ),
             options = Options(context)
         ).decode()
@@ -63,12 +65,12 @@ class VideoFrameDecoderTest {
         val result = VideoFrameDecoder(
             source = ImageSource(
                 source = context.assets.open("video.mp4").source().buffer(),
-                context = context
+                fileSystem = FileSystem.SYSTEM,
             ),
             options = Options(
                 context = context,
-                parameters = Parameters.Builder()
-                    .set(VIDEO_FRAME_MICROS_KEY, 32600000L)
+                extras = Extras.Builder()
+                    .set(Extras.Key.videoFrameMicros, 32600000L)
                     .build()
             )
         ).decode()
@@ -89,13 +91,13 @@ class VideoFrameDecoderTest {
         val result = VideoFrameDecoder(
             source = ImageSource(
                 source = context.assets.open("video.mp4").source().buffer(),
-                context = context
+                fileSystem = FileSystem.SYSTEM,
             ),
             options = Options(
                 context = context,
-                parameters = Parameters.Builder()
-                    .set(VIDEO_FRAME_PERCENT_KEY, 0.525)
-                    .build()
+                extras = Extras.Builder()
+                    .set(Extras.Key.videoFramePercent, 0.525)
+                    .build(),
             )
         ).decode()
 
@@ -115,7 +117,7 @@ class VideoFrameDecoderTest {
         val result = VideoFrameDecoder(
             source = ImageSource(
                 source = context.assets.open("video_rotated.mp4").source().buffer(),
-                context = context
+                fileSystem = FileSystem.SYSTEM,
             ),
             options = Options(context, size = Size(150, 150))
         ).decode()
@@ -138,8 +140,8 @@ class VideoFrameDecoderTest {
         val result = VideoFrameDecoder(
             source = ImageSource(
                 source = context.assets.open(path).source().buffer(),
-                context = context,
-                metadata = AssetMetadata(path)
+                fileSystem = FileSystem.SYSTEM,
+                metadata = AssetMetadata(path),
             ),
             options = Options(context)
         ).decode()
@@ -162,13 +164,13 @@ class VideoFrameDecoderTest {
         val result = VideoFrameDecoder(
             source = ImageSource(
                 source = MediaDataSourceFetcher.MediaDataSourceOkioSource(dataSource).buffer(),
-                context = context,
+                fileSystem = FileSystem.SYSTEM,
                 metadata = MediaDataSourceFetcher.MediaSourceMetadata(dataSource),
             ),
             options = Options(context),
         ).decode()
 
-        val actual = (result.drawable as? BitmapDrawable)?.bitmap
+        val actual = (result.image.drawable as? BitmapDrawable)?.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 

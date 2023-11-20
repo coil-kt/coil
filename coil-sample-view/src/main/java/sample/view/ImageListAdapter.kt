@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.memory.MemoryCache
+import coil.request.placeholder
+import coil.request.error
 import sample.common.Image
 import sample.common.Screen
 import sample.common.calculateScaledSize
@@ -40,7 +42,7 @@ class ImageListAdapter(
             load(item.uri) {
                 placeholder(ColorDrawable(item.color))
                 error(ColorDrawable(Color.RED))
-                parameters(item.parameters)
+                extras.setAll(item.extras)
                 listener { _, result -> placeholder = result.memoryCacheKey }
             }
 

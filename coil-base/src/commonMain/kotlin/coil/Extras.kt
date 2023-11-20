@@ -42,11 +42,17 @@ class Extras private constructor(
             data = extras.data.toMutableMap()
         }
 
-        operator fun <T> set(key: Key<T>, value: T?) = apply {
+        operator fun <T> set(key: Key<out T>, value: T?) = apply {
             if (value != null) {
                 data[key] = value
             } else {
                 data -= key
+            }
+        }
+
+        fun setAll(extras: Extras) = apply {
+            for ((key, value) in extras.data) {
+                set(key, value)
             }
         }
 

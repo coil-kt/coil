@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 binding.detail.isVisible = true
                 binding.detail.load(screen.image.uri) {
                     placeholderMemoryCacheKey(screen.placeholder)
-                    parameters(screen.image.parameters)
+                    extras.setAll(screen.image.extras)
                 }
             }
         }
