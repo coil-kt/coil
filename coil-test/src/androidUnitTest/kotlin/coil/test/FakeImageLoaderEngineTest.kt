@@ -1,24 +1,37 @@
 package coil.test
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.decode.DataSource
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.request.crossfade
+import coil.request.transitionFactory
 import coil.test.FakeImageLoaderEngine.OptionalInterceptor
+import coil.transition.Transition
 import kotlin.test.Test
 import kotlin.test.assertIs
 import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class FakeImageLoaderEngineTest {
+
+    private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Test
     fun extraData() = runTest {
         val url = "https://www.example.com/image.jpg"
-        val drawable = ColorDrawable(Color.RED)
+        val image = ColorDrawable(Color.RED).asCoilImage()
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, drawable)
+            .intercept(url, image)
             .build()
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }
@@ -30,17 +43,17 @@ class FakeImageLoaderEngineTest {
         repeat(3) {
             val result = imageLoader.execute(request)
             assertIs<SuccessResult>(result)
-            assertSame(drawable, result.image)
+            assertSame(image, result.image)
         }
     }
 
     @Test
     fun predicateData() = runTest {
         val url = "https://www.example.com/image.jpg"
-        val drawable = ColorDrawable(Color.RED)
+        val image = ColorDrawable(Color.RED).asCoilImage()
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("different_string", ColorDrawable(Color.GREEN))
-            .intercept({ it is String && it == url }, drawable)
+            .intercept("different_string", ColorDrawable(Color.GREEN).asCoilImage())
+            .intercept({ it is String && it == url }, image)
             .build()
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }
@@ -52,17 +65,17 @@ class FakeImageLoaderEngineTest {
         repeat(3) {
             val result = imageLoader.execute(request)
             assertIs<SuccessResult>(result)
-            assertSame(drawable, result.image)
+            assertSame(image, result.image)
         }
     }
 
     @Test
     fun defaultDrawable() = runTest {
         val url = "https://www.example.com/image.jpg"
-        val drawable = ColorDrawable(Color.RED)
+        val image = ColorDrawable(Color.RED).asCoilImage()
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept("different_string", ColorDrawable(Color.GREEN))
-            .default(drawable)
+            .intercept("different_string", ColorDrawable(Color.GREEN).asCoilImage())
+            .default(image)
             .build()
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }
@@ -74,7 +87,7 @@ class FakeImageLoaderEngineTest {
         repeat(3) {
             val result = imageLoader.execute(request)
             assertIs<SuccessResult>(result)
-            assertSame(drawable, result.image)
+            assertSame(image, result.image)
         }
     }
 
@@ -82,14 +95,14 @@ class FakeImageLoaderEngineTest {
     fun optionalInterceptor() = runTest {
         var currentIndex = -1
         val url = "https://www.example.com/image.jpg"
-        val drawables = listOf(
-            ColorDrawable(Color.RED),
-            ColorDrawable(Color.GREEN),
-            ColorDrawable(Color.BLUE),
+        val images = listOf(
+            ColorDrawable(Color.RED).asCoilImage(),
+            ColorDrawable(Color.GREEN).asCoilImage(),
+            ColorDrawable(Color.BLUE).asCoilImage(),
         )
         fun testInterceptor(index: Int) = OptionalInterceptor { chain ->
             if (currentIndex == index) {
-                SuccessResult(drawables[index], chain.request, DataSource.MEMORY)
+                SuccessResult(images[index], chain.request, DataSource.MEMORY)
             } else {
                 null
             }
@@ -110,7 +123,7 @@ class FakeImageLoaderEngineTest {
             .data(url)
             .build()
 
-        for (drawable in drawables) {
+        for (drawable in images) {
             val result = imageLoader.execute(request)
             assertIs<SuccessResult>(result)
             assertSame(drawable, result.image)
@@ -121,7 +134,7 @@ class FakeImageLoaderEngineTest {
     fun `removes transition factory`() = runTest {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, ColorDrawable(Color.RED))
+            .intercept(url, ColorDrawable(Color.RED).asCoilImage())
             .build()
         val imageLoader = ImageLoader.Builder(context)
             .components { add(engine) }
@@ -140,7 +153,7 @@ class FakeImageLoaderEngineTest {
     fun `request transformer enforces invariants`() = runTest {
         val url = "https://www.example.com/image.jpg"
         val engine = FakeImageLoaderEngine.Builder()
-            .intercept(url, ColorDrawable(Color.RED))
+            .intercept(url, ColorDrawable(Color.RED).asCoilImage())
             .requestTransformer { request ->
                 request.newBuilder()
                     .data(null)

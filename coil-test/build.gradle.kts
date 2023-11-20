@@ -1,4 +1,5 @@
 import coil.addAllMultiplatformTargets
+import coil.nonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
@@ -10,15 +11,18 @@ addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.test")
 
 kotlin {
+    nonAndroidMain()
+
     sourceSets {
         commonMain {
             dependencies {
                 api(projects.coilBase)
             }
         }
-        commonTest {
+        named("androidUnitTest") {
             dependencies {
-                implementation(libs.bundles.test.common)
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.jvm)
             }
         }
     }

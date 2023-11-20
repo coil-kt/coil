@@ -112,13 +112,12 @@ class FakeImageLoaderEngine private constructor(
         constructor() {
             interceptors = mutableListOf()
             defaultInterceptor = Interceptor { chain ->
-                error("No interceptors handled this request and no fallback is set: ${chain.request.data}")
+                error(
+                    "No interceptors handled this request and no fallback is " +
+                        "set: ${chain.request.data}",
+                )
             }
-            requestTransformer = RequestTransformer { request ->
-                request.newBuilder()
-                    .transitionFactory(Transition.Factory.NONE)
-                    .build()
-            }
+            requestTransformer = defaultRequestTransformer()
         }
 
         constructor(engine: FakeImageLoaderEngine) {
@@ -222,6 +221,8 @@ class FakeImageLoaderEngine private constructor(
         }
     }
 }
+
+internal expect fun defaultRequestTransformer(): RequestTransformer
 
 /**
  * Create a new [FakeImageLoaderEngine] that returns [Image] for all requests.
