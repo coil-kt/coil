@@ -5,12 +5,15 @@ package coil.decode
 import android.graphics.Bitmap
 import android.graphics.Movie
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.drawable.MovieDrawable
 import coil.fetch.SourceFetchResult
 import coil.request.Options
+import coil.request.allowRgb565
 import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
+import coil.request.bitmapConfig
 import coil.request.repeatCount
 import coil.util.animatable2CompatCallbackOf
 import coil.util.isHardware
@@ -46,26 +49,26 @@ class GifDecoder @JvmOverloads constructor(
             movie = movie,
             config = when {
                 movie.isOpaque && options.allowRgb565 -> Bitmap.Config.RGB_565
-                options.config.isHardware -> Bitmap.Config.ARGB_8888
-                else -> options.config
+                options.bitmapConfig.isHardware -> Bitmap.Config.ARGB_8888
+                else -> options.bitmapConfig
             },
             scale = options.scale
         )
 
-        drawable.setRepeatCount(options.parameters.repeatCount() ?: MovieDrawable.REPEAT_INFINITE)
+        drawable.setRepeatCount(options.repeatCount)
 
         // Set the start and end animation callbacks if any one is supplied through the request.
-        val onStart = options.parameters.animationStartCallback()
-        val onEnd = options.parameters.animationEndCallback()
+        val onStart = options.animationStartCallback
+        val onEnd = options.animationEndCallback
         if (onStart != null || onEnd != null) {
             drawable.registerAnimationCallback(animatable2CompatCallbackOf(onStart, onEnd))
         }
 
         // Set the animated transformation to be applied on each frame.
-        drawable.setAnimatedTransformation(options.parameters.animatedTransformation())
+        drawable.setAnimatedTransformation(options.animatedTransformation)
 
         DecodeResult(
-            image = drawable,
+            image = drawable.asCoilImage(),
             isSampled = false
         )
     }
@@ -75,7 +78,11 @@ class GifDecoder @JvmOverloads constructor(
         val enforceMinimumFrameDelay: Boolean = true,
     ) : Decoder.Factory {
 
-        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(
+            result: SourceFetchResult,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Decoder? {
             if (!DecodeUtils.isGif(result.source.source())) return null
             return GifDecoder(result.source, options, enforceMinimumFrameDelay)
         }

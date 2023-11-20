@@ -3,71 +3,91 @@ package coil.request
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
+import coil.Extras
 import coil.annotation.ExperimentalCoilApi
-import coil.decode.GifDecoder.Companion.ANIMATED_TRANSFORMATION_KEY
-import coil.decode.GifDecoder.Companion.ANIMATION_END_CALLBACK_KEY
-import coil.decode.GifDecoder.Companion.ANIMATION_START_CALLBACK_KEY
-import coil.decode.GifDecoder.Companion.REPEAT_COUNT_KEY
 import coil.drawable.MovieDrawable
+import coil.drawable.MovieDrawable.Companion.REPEAT_INFINITE
+import coil.getExtra
 import coil.transform.AnimatedTransformation
 
 /**
  * Set the number of times to repeat the animation if the result is an animated [Drawable].
  *
- * Default: [MovieDrawable.REPEAT_INFINITE]
- *
  * @see MovieDrawable.setRepeatCount
  * @see AnimatedImageDrawable.setRepeatCount
  */
-fun ImageRequest.Builder.repeatCount(repeatCount: Int): ImageRequest.Builder {
-    require(repeatCount >= MovieDrawable.REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
-    return setParameter(REPEAT_COUNT_KEY, repeatCount)
+fun ImageRequest.Builder.repeatCount(repeatCount: Int) = apply {
+    require(repeatCount >= REPEAT_INFINITE) { "Invalid repeatCount: $repeatCount" }
+    extras[repeatCountKey] = repeatCount
 }
 
-/**
- * Get the number of times to repeat the animation if the result is an animated [Drawable].
- */
-fun Parameters.repeatCount(): Int? = value(REPEAT_COUNT_KEY)
+val ImageRequest.repeatCount: Int
+    get() = getExtra(repeatCountKey)
+
+val Options.repeatCount: Int
+    get() = getExtra(repeatCountKey)
+
+val Extras.Key.Companion.repeatCount: Extras.Key<Int>
+    get() = repeatCountKey
+
+private val repeatCountKey = Extras.Key(default = REPEAT_INFINITE)
 
 /**
  * Set the [AnimatedTransformation] that will be applied to the result if it is an animated [Drawable].
- *
- * Default: `null`
  *
  * @see MovieDrawable.setAnimatedTransformation
  * @see ImageDecoder.setPostProcessor
  */
 @ExperimentalCoilApi
-fun ImageRequest.Builder.animatedTransformation(animatedTransformation: AnimatedTransformation): ImageRequest.Builder {
-    return setParameter(ANIMATED_TRANSFORMATION_KEY, animatedTransformation)
+fun ImageRequest.Builder.animatedTransformation(
+    animatedTransformation: AnimatedTransformation?,
+) = apply {
+    extras[animatedTransformationKey] = animatedTransformation
 }
 
-/**
- * Get the [AnimatedTransformation] that will be applied to the result if it is an animated [Drawable].
- */
-@ExperimentalCoilApi
-fun Parameters.animatedTransformation(): AnimatedTransformation? = value(ANIMATED_TRANSFORMATION_KEY)
+val ImageRequest.animatedTransformation: AnimatedTransformation?
+    get() = getExtra(animatedTransformationKey)
+
+val Options.animatedTransformation: AnimatedTransformation?
+    get() = getExtra(animatedTransformationKey)
+
+val Extras.Key.Companion.animatedTransformation: Extras.Key<AnimatedTransformation?>
+    get() = animatedTransformationKey
+
+private val animatedTransformationKey = Extras.Key<AnimatedTransformation?>(default = null)
 
 /**
  * Set the callback to be invoked at the start of the animation if the result is an animated [Drawable].
  */
-fun ImageRequest.Builder.onAnimationStart(callback: (() -> Unit)?): ImageRequest.Builder {
-    return setParameter(ANIMATION_START_CALLBACK_KEY, callback)
+fun ImageRequest.Builder.onAnimationStart(callback: (() -> Unit)?) = apply {
+    extras[animationStartCallbackKey] = callback
 }
 
-/**
- * Get the callback to be invoked at the start of the animation if the result is an animated [Drawable].
- */
-fun Parameters.animationStartCallback(): (() -> Unit)? = value(ANIMATION_START_CALLBACK_KEY)
+val ImageRequest.animationStartCallback: (() -> Unit)?
+    get() = getExtra(animationStartCallbackKey)
+
+val Options.animationStartCallback: (() -> Unit)?
+    get() = getExtra(animationStartCallbackKey)
+
+val Extras.Key.Companion.animationStartCallback: Extras.Key<(() -> Unit)?>
+    get() = animationStartCallbackKey
+
+private val animationStartCallbackKey = Extras.Key<(() -> Unit)?>(default = null)
 
 /**
  * Set the callback to be invoked at the end of the animation if the result is an animated [Drawable].
  */
-fun ImageRequest.Builder.onAnimationEnd(callback: (() -> Unit)?): ImageRequest.Builder {
-    return setParameter(ANIMATION_END_CALLBACK_KEY, callback)
+fun ImageRequest.Builder.onAnimationEnd(callback: (() -> Unit)?) = apply {
+    extras[animationEndCallbackKey] = callback
 }
 
-/**
- * Get the callback to be invoked at the end of the animation if the result is an animated [Drawable].
- */
-fun Parameters.animationEndCallback(): (() -> Unit)? = value(ANIMATION_END_CALLBACK_KEY)
+val ImageRequest.animationEndCallback: (() -> Unit)?
+    get() = getExtra(animationEndCallbackKey)
+
+val Options.animationEndCallback: (() -> Unit)?
+    get() = getExtra(animationEndCallbackKey)
+
+val Extras.Key.Companion.animationEndCallback: Extras.Key<(() -> Unit)?>
+    get() = animationEndCallbackKey
+
+private val animationEndCallbackKey = Extras.Key<(() -> Unit)?>(default = null)

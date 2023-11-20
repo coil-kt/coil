@@ -10,12 +10,17 @@ import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
 import androidx.core.util.component2
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.drawable.ScaleDrawable
 import coil.fetch.SourceFetchResult
 import coil.request.Options
+import coil.request.allowRgb565
 import coil.request.animatedTransformation
 import coil.request.animationEndCallback
 import coil.request.animationStartCallback
+import coil.request.bitmapConfig
+import coil.request.colorSpace
+import coil.request.premultipliedAlpha
 import coil.request.repeatCount
 import coil.util.animatable2CallbackOf
 import coil.util.asPostProcessor
@@ -88,14 +93,17 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                 wrappedSource.close()
             }
         }
-        return DecodeResult(wrapDrawable(drawable), isSampled)
+        return DecodeResult(
+            image = wrapDrawable(drawable).asCoilImage(),
+            isSampled = isSampled,
+        )
     }
 
     private fun wrapImageSource(source: ImageSource): ImageSource {
         return if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
             // Wrap the source to rewrite its frame delay as it's read.
             val rewritingSource = FrameDelayRewritingSource(source.source())
-            ImageSource(rewritingSource.buffer(), options.context)
+            ImageSource(rewritingSource.buffer(), options.fileSystem)
         } else {
             source
         }
@@ -127,7 +135,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
-        allocator = if (options.config.isHardware) {
+        allocator = if (options.bitmapConfig.isHardware) {
             ImageDecoder.ALLOCATOR_HARDWARE
         } else {
             ImageDecoder.ALLOCATOR_SOFTWARE
@@ -141,7 +149,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
             setTargetColorSpace(options.colorSpace)
         }
         isUnpremultipliedRequired = !options.premultipliedAlpha
-        postProcessor = options.parameters.animatedTransformation()?.asPostProcessor()
+        postProcessor = options.animatedTransformation?.asPostProcessor()
     }
 
     private suspend fun wrapDrawable(baseDrawable: Drawable): Drawable {
@@ -149,11 +157,11 @@ class ImageDecoderDecoder @JvmOverloads constructor(
             return baseDrawable
         }
 
-        baseDrawable.repeatCount = options.parameters.repeatCount() ?: REPEAT_INFINITE
+        baseDrawable.repeatCount = options.repeatCount
 
         // Set the start and end animation callbacks if any one is supplied through the request.
-        val onStart = options.parameters.animationStartCallback()
-        val onEnd = options.parameters.animationEndCallback()
+        val onStart = options.animationStartCallback
+        val onEnd = options.animationEndCallback
         if (onStart != null || onEnd != null) {
             // Animation callbacks must be set on the main thread.
             withContext(Dispatchers.Main.immediate) {
@@ -170,7 +178,11 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         val enforceMinimumFrameDelay: Boolean = true,
     ) : Decoder.Factory {
 
-        override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
+        override fun create(
+            result: SourceFetchResult,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Decoder? {
             if (!isApplicable(result.source.source())) return null
             return ImageDecoderDecoder(result.source, options, enforceMinimumFrameDelay)
         }
