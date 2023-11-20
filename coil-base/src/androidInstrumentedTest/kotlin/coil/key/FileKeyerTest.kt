@@ -6,6 +6,7 @@ import coil.request.Options
 import coil.util.copyAssetToFile
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import okio.Path.Companion.toOkioPath
 import org.junit.Before
 import org.junit.Test
 
@@ -24,10 +25,10 @@ class FileKeyerTest {
         val keyer = PathKeyer(addLastModifiedToFileCacheKey = true)
 
         file.setLastModified(1234L)
-        val firstKey = keyer.key(file, Options(context))
+        val firstKey = keyer.key(file.toOkioPath(), Options(context))
 
         file.setLastModified(4321L)
-        val secondKey = keyer.key(file, Options(context))
+        val secondKey = keyer.key(file.toOkioPath(), Options(context))
 
         assertNotEquals(secondKey, firstKey)
     }
@@ -38,10 +39,10 @@ class FileKeyerTest {
         val keyer = PathKeyer(addLastModifiedToFileCacheKey = false)
 
         file.setLastModified(1234L)
-        val firstKey = keyer.key(file, Options(context))
+        val firstKey = keyer.key(file.toOkioPath(), Options(context))
 
         file.setLastModified(4321L)
-        val secondKey = keyer.key(file, Options(context))
+        val secondKey = keyer.key(file.toOkioPath(), Options(context))
 
         assertEquals(secondKey, firstKey)
     }

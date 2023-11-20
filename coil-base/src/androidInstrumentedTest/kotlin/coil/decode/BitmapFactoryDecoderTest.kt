@@ -6,9 +6,12 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
+import coil.Extras
 import coil.ImageLoader
 import coil.fetch.SourceFetchResult
 import coil.request.Options
+import coil.request.allowRgb565
+import coil.request.premultipliedAlpha
 import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size
@@ -24,6 +27,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
 import okio.buffer
 import okio.source
 import org.junit.Before
@@ -44,7 +48,7 @@ class BitmapFactoryDecoderTest {
     fun basic() = runTest {
         val result = decode(
             assetName = "normal.jpg",
-            size = Size(100, 100)
+            size = Size(100, 100),
         )
 
         assertTrue(result.isSampled)
@@ -58,7 +62,7 @@ class BitmapFactoryDecoderTest {
         val result = decode(
             assetName = "normal.jpg",
             size = Size(Dimension.Undefined, 100),
-            scale = Scale.FIT
+            scale = Scale.FIT,
         )
 
         assertTrue(result.isSampled)
@@ -72,7 +76,7 @@ class BitmapFactoryDecoderTest {
         val result = decode(
             assetName = "normal.jpg",
             size = Size(100, Dimension.Undefined),
-            scale = Scale.FIT
+            scale = Scale.FIT,
         )
 
         assertTrue(result.isSampled)
@@ -86,7 +90,7 @@ class BitmapFactoryDecoderTest {
         assertFailsWith<IllegalStateException> {
             decode(
                 assetName = "malformed.jpg",
-                size = Size(100, 100)
+                size = Size(100, 100),
             )
         }
     }
@@ -95,7 +99,7 @@ class BitmapFactoryDecoderTest {
     fun resultIsSampledIfGreaterThanHalfSize() = runTest {
         val result = decode(
             assetName = "normal.jpg",
-            size = Size(600, 600)
+            size = Size(600, 600),
         )
 
         assertTrue(result.isSampled)
@@ -149,8 +153,8 @@ class BitmapFactoryDecoderTest {
                 context = context,
                 size = Size(1500, 1500),
                 scale = Scale.FIT,
-                allowInexactSize = true
-            )
+                allowInexactSize = true,
+            ),
         )
         assertEquals(Size(1080, 1350), result.size)
     }
@@ -163,8 +167,8 @@ class BitmapFactoryDecoderTest {
                 context = context,
                 size = Size(1500, 1500),
                 scale = Scale.FIT,
-                allowInexactSize = false
-            )
+                allowInexactSize = false,
+            ),
         )
         assertEquals(Size(1200, 1500), result.size)
     }
@@ -177,8 +181,10 @@ class BitmapFactoryDecoderTest {
                 context = context,
                 size = Size(500, 500),
                 scale = Scale.FILL,
-                allowRgb565 = true
-            )
+                extras = Extras.Builder()
+                    .set(Extras.Key.allowRgb565, true)
+                    .build(),
+            ),
         )
         assertEquals(Size(500, 625), result.size)
         assertEquals(Bitmap.Config.RGB_565, result.config)
@@ -192,8 +198,10 @@ class BitmapFactoryDecoderTest {
                 context = context,
                 size = Size(500, 500),
                 scale = Scale.FILL,
-                allowRgb565 = false
-            )
+                extras = Extras.Builder()
+                    .set(Extras.Key.allowRgb565, false)
+                    .build(),
+            ),
         )
         assertEquals(Size(500, 625), result.size)
         assertEquals(Bitmap.Config.ARGB_8888, result.config)
@@ -207,8 +215,10 @@ class BitmapFactoryDecoderTest {
                 context = context,
                 size = Size(400, 200),
                 scale = Scale.FILL,
-                premultipliedAlpha = true
-            )
+                extras = Extras.Builder()
+                    .set(Extras.Key.premultipliedAlpha, true)
+                    .build(),
+            ),
         )
         assertEquals(Size(400, 200), result.size)
         assertTrue(result.isPremultiplied)
@@ -222,8 +232,10 @@ class BitmapFactoryDecoderTest {
                 context = context,
                 size = Size(400, 200),
                 scale = Scale.FILL,
-                premultipliedAlpha = false
-            )
+                extras = Extras.Builder()
+                    .set(Extras.Key.premultipliedAlpha, false)
+                    .build(),
+            ),
         )
         assertEquals(Size(400, 200), result.size)
         assertFalse(result.isPremultiplied)
@@ -232,7 +244,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun exifOrientationPolicy_ignore() = runTest(timeout = 1.minutes) {
         val factory = BitmapFactoryDecoder.Factory(
-            exifOrientationPolicy = ExifOrientationPolicy.IGNORE
+            exifOrientationPolicy = ExifOrientationPolicy.IGNORE,
         )
 
         // Test JPG
@@ -255,7 +267,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun exifOrientationPolicy_respectPerformance() = runTest(timeout = 1.minutes) {
         val factory = BitmapFactoryDecoder.Factory(
-            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE
+            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE,
         )
 
         // Test JPG
@@ -277,7 +289,7 @@ class BitmapFactoryDecoderTest {
     @Test
     fun exifOrientationPolicy_respectAll() = runTest(timeout = 1.minutes) {
         val factory = BitmapFactoryDecoder.Factory(
-            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL
+            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL,
         )
 
         // Test JPG
@@ -345,36 +357,36 @@ class BitmapFactoryDecoderTest {
         assetName: String,
         size: Size,
         scale: Scale = Scale.FILL,
-        factory: BitmapFactoryDecoder.Factory = decoderFactory
+        factory: BitmapFactoryDecoder.Factory = decoderFactory,
     ): Bitmap = assertIs<BitmapDrawable>(decode(assetName, size, scale, factory).image).bitmap
 
     private suspend fun decodeBitmap(
         assetName: String,
         options: Options,
-        factory: BitmapFactoryDecoder.Factory = decoderFactory
+        factory: BitmapFactoryDecoder.Factory = decoderFactory,
     ): Bitmap = assertIs<BitmapDrawable>(decode(assetName, options, factory).image).bitmap
 
     private suspend fun decode(
         assetName: String,
         size: Size,
         scale: Scale = Scale.FILL,
-        factory: BitmapFactoryDecoder.Factory = decoderFactory
+        factory: BitmapFactoryDecoder.Factory = decoderFactory,
     ): DecodeResult = decode(assetName, Options(context, size = size, scale = scale), factory)
 
     private suspend fun decode(
         assetName: String,
         options: Options,
-        factory: BitmapFactoryDecoder.Factory
+        factory: BitmapFactoryDecoder.Factory,
     ): DecodeResult {
         val source = context.assets.open(assetName).source().buffer()
         val decoder = factory.create(
             result = SourceFetchResult(
-                source = ImageSource(source, context),
+                source = ImageSource(source, FileSystem.SYSTEM),
                 mimeType = null,
-                dataSource = DataSource.DISK
+                dataSource = DataSource.DISK,
             ),
             options = options,
-            imageLoader = ImageLoader(context)
+            imageLoader = ImageLoader(context),
         )
         val result = checkNotNull(decoder.decode())
 

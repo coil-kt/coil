@@ -3,11 +3,11 @@ package coil.request
 import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
+import coil.Image
 import coil.ImageLoader
 import coil.size.Size
 import coil.transform.Transformation
@@ -15,13 +15,11 @@ import coil.util.ASSET_FILE_PATH_ROOT
 import coil.util.CoilUtils
 import coil.util.ViewTestActivity
 import coil.util.activity
-import coil.util.requestManager
 import coil.util.runTestMain
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import org.junit.After
@@ -39,7 +37,7 @@ class DisposableTest {
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
+        context = ApplicationProvider.getApplicationContext() as Context
         imageLoader = ImageLoader.Builder(context)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .build()
@@ -70,7 +68,7 @@ class DisposableTest {
     @Test
     fun baseTargetDisposable_await() = runTestMain {
         val transformation = GateTransformation()
-        var result: Drawable? = null
+        var result: Image? = null
         val request = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///$ASSET_FILE_PATH_ROOT/normal.jpg")
             .size(100, 100)

@@ -8,9 +8,8 @@ import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.RealImageLoader
+import coil.asCoilImage
 import coil.memory.MemoryCache
-import coil.memory.MemoryCache.Key
-import coil.memory.MemoryCache.Value
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.Before
@@ -27,10 +26,11 @@ class SystemCallbacksTest {
 
     @Test
     fun imageLoaderIsFreedWithoutShutdown() {
-        val systemCallbacks = SystemCallbacks(ImageLoader(context) as RealImageLoader, context, true)
+        val options = (ImageLoader(context) as RealImageLoader).options
+        val systemCallbacks = SystemCallbacks(options) as AndroidSystemCallbacks
 
         val bitmaps = mutableListOf<Bitmap>()
-        while (systemCallbacks.imageLoader.get() != null) {
+        while (systemCallbacks.imageLoader?.get() != null) {
             // Request that garbage collection occur.
             Runtime.getRuntime().gc()
 
@@ -47,15 +47,20 @@ class SystemCallbacksTest {
 
     @Test
     fun trimMemoryCallsArePassedThrough() {
-        val memoryCache = MemoryCache.Builder(context).build()
-        val imageLoader = ImageLoader.Builder(context)
-            .memoryCache(memoryCache)
-            .diskCache(null)
+        val memoryCache = MemoryCache.Builder()
+            .maxSizePercent(context)
             .build()
-        val systemCallbacks = SystemCallbacks(imageLoader as RealImageLoader, context, true)
+        val options = (ImageLoader(context) as RealImageLoader).options
+        val systemCallbacks = SystemCallbacks(options) as AndroidSystemCallbacks
 
-        memoryCache[Key("1")] = Value(createBitmap(1000, 1000, Bitmap.Config.ARGB_8888))
-        memoryCache[Key("2")] = Value(createBitmap(1000, 1000, Bitmap.Config.ARGB_8888))
+        memoryCache[MemoryCache.Key("1")] = MemoryCache.Value(
+            image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+                .toDrawable(context).asCoilImage()
+        )
+        memoryCache[MemoryCache.Key("2")] = MemoryCache.Value(
+            image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+                .toDrawable(context).asCoilImage()
+        )
 
         assertEquals(8_000_000, memoryCache.size)
 

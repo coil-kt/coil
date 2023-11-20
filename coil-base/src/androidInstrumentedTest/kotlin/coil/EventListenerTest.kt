@@ -15,6 +15,9 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.SuccessResult
+import coil.request.target
+import coil.request.transformations
+import coil.request.transitionFactory
 import coil.size.Size
 import coil.transform.Transformation
 import coil.transition.Transition
@@ -247,7 +250,7 @@ class EventListenerTest {
         val onSuccess: MethodChecker = MethodChecker(true),
         val onCancel: MethodChecker = MethodChecker(true),
         val onError: MethodChecker = MethodChecker(true)
-    ) : EventListener {
+    ) : EventListener() {
 
         override fun onStart(request: ImageRequest) = onStart.call()
         override fun resolveSizeStart(request: ImageRequest) = resolveSizeStart.call()

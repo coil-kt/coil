@@ -34,7 +34,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      * Called before [SizeResolver.size].
      */
     @MainThread
-    fun resolveSizeStart(request: ImageRequest)
+    open fun resolveSizeStart(request: ImageRequest)
 
     /**
      * Called after [SizeResolver.size].
@@ -42,7 +42,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param size The resolved [Size] for this request.
      */
     @MainThread
-    fun resolveSizeEnd(request: ImageRequest, size: Size)
+    open fun resolveSizeEnd(request: ImageRequest, size: Size)
 
     /**
      * Called before [Mapper.map].
@@ -50,7 +50,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param input The data that will be converted.
      */
     @MainThread
-    fun mapStart(request: ImageRequest, input: Any)
+    open fun mapStart(request: ImageRequest, input: Any)
 
     /**
      * Called after [Mapper.map].
@@ -59,7 +59,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      *  applicable mappers, [output] will be the same as [ImageRequest.data].
      */
     @MainThread
-    fun mapEnd(request: ImageRequest, output: Any)
+    open fun mapEnd(request: ImageRequest, output: Any)
 
     /**
      * Called before [Keyer.key].
@@ -67,7 +67,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param input The data that will be converted.
      */
     @MainThread
-    fun keyStart(request: ImageRequest, input: Any)
+    open fun keyStart(request: ImageRequest, input: Any)
 
     /**
      * Called after [Keyer.key].
@@ -76,7 +76,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      *  If [output] is 'null' it will not be cached in the memory cache.
      */
     @MainThread
-    fun keyEnd(request: ImageRequest, output: String?)
+    open fun keyEnd(request: ImageRequest, output: String?)
 
     /**
      * Called before [Fetcher.fetch].
@@ -85,7 +85,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param options The [Options] that will be passed to [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchStart(request: ImageRequest, fetcher: Fetcher, options: Options)
+    open fun fetchStart(request: ImageRequest, fetcher: Fetcher, options: Options)
 
     /**
      * Called after [Fetcher.fetch].
@@ -95,7 +95,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param result The result of [Fetcher.fetch].
      */
     @WorkerThread
-    fun fetchEnd(request: ImageRequest, fetcher: Fetcher, options: Options, result: FetchResult?)
+    open fun fetchEnd(request: ImageRequest, fetcher: Fetcher, options: Options, result: FetchResult?)
 
     /**
      * Called before [Decoder.decode].
@@ -106,7 +106,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param options The [Options] that will be passed to [Decoder.decode].
      */
     @WorkerThread
-    fun decodeStart(request: ImageRequest, decoder: Decoder, options: Options)
+    open fun decodeStart(request: ImageRequest, decoder: Decoder, options: Options)
 
     /**
      * Called after [Decoder.decode].
@@ -118,7 +118,7 @@ expect abstract class EventListener : ImageRequest.Listener {
      * @param result The result of [Decoder.decode].
      */
     @WorkerThread
-    fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult?)
+    open fun decodeEnd(request: ImageRequest, decoder: Decoder, options: Options, result: DecodeResult?)
 
     /**
      * @see ImageRequest.Listener.onCancel

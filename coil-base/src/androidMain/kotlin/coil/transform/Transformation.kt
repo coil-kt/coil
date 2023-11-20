@@ -8,6 +8,7 @@ import coil.decode.DecodeResult
 import coil.fetch.ImageFetchResult
 import coil.request.ImageRequest
 import coil.size.Size
+import coil.request.transformations
 
 /**
  * An interface for making transformations to an image's pixel data.

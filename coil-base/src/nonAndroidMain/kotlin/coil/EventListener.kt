@@ -19,32 +19,32 @@ actual abstract class EventListener : ImageRequest.Listener {
     actual override fun onStart(request: ImageRequest) {}
 
     @MainThread
-    actual fun resolveSizeStart(request: ImageRequest) {}
+    actual open fun resolveSizeStart(request: ImageRequest) {}
 
     @MainThread
-    actual fun resolveSizeEnd(request: ImageRequest, size: Size) {}
+    actual open fun resolveSizeEnd(request: ImageRequest, size: Size) {}
 
     @MainThread
-    actual fun mapStart(request: ImageRequest, input: Any) {}
+    actual open fun mapStart(request: ImageRequest, input: Any) {}
 
     @MainThread
-    actual fun mapEnd(request: ImageRequest, output: Any) {}
+    actual open fun mapEnd(request: ImageRequest, output: Any) {}
 
     @MainThread
-    actual fun keyStart(request: ImageRequest, input: Any) {}
+    actual open fun keyStart(request: ImageRequest, input: Any) {}
 
     @MainThread
-    actual fun keyEnd(request: ImageRequest, output: String?) {}
+    actual open fun keyEnd(request: ImageRequest, output: String?) {}
 
     @WorkerThread
-    actual fun fetchStart(
+    actual open fun fetchStart(
         request: ImageRequest,
         fetcher: Fetcher,
         options: Options,
     ) {}
 
     @WorkerThread
-    actual fun fetchEnd(
+    actual open fun fetchEnd(
         request: ImageRequest,
         fetcher: Fetcher,
         options: Options,
@@ -52,14 +52,14 @@ actual abstract class EventListener : ImageRequest.Listener {
     ) {}
 
     @WorkerThread
-    actual fun decodeStart(
+    actual open fun decodeStart(
         request: ImageRequest,
         decoder: Decoder,
         options: Options,
     ) {}
 
     @WorkerThread
-    actual fun decodeEnd(
+    actual open fun decodeEnd(
         request: ImageRequest,
         decoder: Decoder,
         options: Options,
