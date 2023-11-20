@@ -9,12 +9,12 @@ private class WrappedSkiaImage(
 
     override val size: Long
         get() {
-            var bytesPerPixel = image.bytesPerPixel.toLong()
-            if (bytesPerPixel <= 0L) {
+            var size = image.imageInfo.computeMinByteSize().toLong()
+            if (size <= 0L) {
                 // Estimate 4 bytes per pixel.
-                bytesPerPixel = 4L
+                size = 4L * image.width * image.height
             }
-            return bytesPerPixel * image.width * image.height
+            return size
         }
 
     override val width: Int
