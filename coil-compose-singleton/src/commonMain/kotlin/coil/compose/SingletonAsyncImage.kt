@@ -10,10 +10,9 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import coil.SingletonImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
-import coil.imageLoader
 import coil.request.ImageRequest
 
 /**
@@ -61,7 +60,7 @@ fun AsyncImage(
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
-    imageLoader = LocalContext.current.imageLoader,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
     modifier = modifier,
     placeholder = placeholder,
     error = error,
@@ -73,7 +72,7 @@ fun AsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )
 
 /**
@@ -114,7 +113,7 @@ fun AsyncImage(
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
-    imageLoader = LocalContext.current.imageLoader,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
     modifier = modifier,
     transform = transform,
     onState = onState,
@@ -122,5 +121,5 @@ fun AsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )

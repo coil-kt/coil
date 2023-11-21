@@ -26,8 +26,6 @@ fun Project.addAllMultiplatformTargets() {
 
             jvm()
 
-            linuxX64()
-
             macosArm64()
             macosX64()
 

@@ -1,7 +1,6 @@
 package coil.util
 
 import coil.RealImageLoader
-import kotlinx.atomicfu.atomic
 
 internal actual fun SystemCallbacks(
     options: RealImageLoader.Options,
@@ -11,12 +10,13 @@ internal actual fun SystemCallbacks(
 private class NoopSystemCallbacks : SystemCallbacks {
     override val isOnline get() = true
 
-    private var _isShutdown = atomic(false)
-    override val isShutdown by _isShutdown
+    // TODO: Convert to atomic once https://github.com/Kotlin/kotlinx-atomicfu/issues/365 is fixed.
+    private var _isShutdown = false
+    override val isShutdown get() = _isShutdown
 
     override fun register(imageLoader: RealImageLoader) {}
 
     override fun shutdown() {
-        _isShutdown.value = true
+        _isShutdown = true
     }
 }

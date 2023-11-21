@@ -4,15 +4,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
+import coil.SingletonImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
-import coil.imageLoader
 import coil.request.ImageRequest
 
 /**
@@ -54,7 +54,7 @@ fun rememberAsyncImagePainter(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) = rememberAsyncImagePainter(
     model = model,
-    imageLoader = LocalContext.current.imageLoader,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
     placeholder = placeholder,
     error = error,
     fallback = fallback,
@@ -62,7 +62,7 @@ fun rememberAsyncImagePainter(
     onSuccess = onSuccess,
     onError = onError,
     contentScale = contentScale,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )
 
 /**
@@ -89,6 +89,7 @@ fun rememberAsyncImagePainter(
  *  destination.
  */
 @Composable
+@NonRestartableComposable
 fun rememberAsyncImagePainter(
     model: Any?,
     transform: (State) -> State = DefaultTransform,
@@ -97,9 +98,9 @@ fun rememberAsyncImagePainter(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) = rememberAsyncImagePainter(
     model = model,
-    imageLoader = LocalContext.current.imageLoader,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
     transform = transform,
     onState = onState,
     contentScale = contentScale,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )

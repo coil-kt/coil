@@ -1,6 +1,7 @@
 package coil.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -9,10 +10,9 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import coil.SingletonImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
-import coil.imageLoader
 import coil.request.ImageRequest
 
 /**
@@ -41,6 +41,7 @@ import coil.request.ImageRequest
  *  destination.
  */
 @Composable
+@NonRestartableComposable
 fun SubcomposeAsyncImage(
     model: Any?,
     contentDescription: String?,
@@ -59,7 +60,7 @@ fun SubcomposeAsyncImage(
 ) = SubcomposeAsyncImage(
     model = model,
     contentDescription = contentDescription,
-    imageLoader = LocalContext.current.imageLoader,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
     modifier = modifier,
     loading = loading,
     success = success,
@@ -71,7 +72,7 @@ fun SubcomposeAsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )
 
 /**
@@ -98,6 +99,7 @@ fun SubcomposeAsyncImage(
  * @param content A callback to draw the content inside an [SubcomposeAsyncImageScope].
  */
 @Composable
+@NonRestartableComposable
 fun SubcomposeAsyncImage(
     model: Any?,
     contentDescription: String?,
@@ -113,7 +115,7 @@ fun SubcomposeAsyncImage(
 ) = SubcomposeAsyncImage(
     model = model,
     contentDescription = contentDescription,
-    imageLoader = LocalContext.current.imageLoader,
+    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
     modifier = modifier,
     transform = transform,
     onState = onState,
@@ -122,5 +124,5 @@ fun SubcomposeAsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
-    content = content
+    content = content,
 )
