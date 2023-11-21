@@ -10,7 +10,7 @@ class FileMediaDataSource(private val file: File) : MediaDataSource() {
 
     private var randomAccessFile: RandomAccessFile? = null
 
-    override fun readAt(position: Long, buffer: ByteArray?, offset: Int, size: Int): Int {
+    override fun readAt(position: Long, buffer: ByteArray, offset: Int, size: Int): Int {
         synchronized(file) {
             if (randomAccessFile == null) {
                 randomAccessFile = RandomAccessFile(file, "r")

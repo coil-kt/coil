@@ -1,12 +1,10 @@
 package coil.decode
 
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
 import coil.Extras
 import coil.FileMediaDataSource
-import coil.drawable
 import coil.fetch.MediaDataSourceFetcher
 import coil.request.Options
 import coil.request.videoFrameMicros
@@ -14,6 +12,7 @@ import coil.request.videoFramePercent
 import coil.size.Size
 import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
+import coil.util.bitmap
 import coil.util.copyAssetToFile
 import coil.util.decodeBitmapAsset
 import kotlin.test.assertFalse
@@ -49,7 +48,7 @@ class VideoFrameDecoderTest {
             options = Options(context)
         ).decode()
 
-        val actual = (result.image as? BitmapDrawable)?.bitmap
+        val actual = result.image.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 
@@ -75,7 +74,7 @@ class VideoFrameDecoderTest {
             )
         ).decode()
 
-        val actual = (result.image as? BitmapDrawable)?.bitmap
+        val actual = result.image.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 
@@ -101,7 +100,7 @@ class VideoFrameDecoderTest {
             )
         ).decode()
 
-        val actual = (result.image as? BitmapDrawable)?.bitmap
+        val actual = result.image.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 
@@ -122,7 +121,7 @@ class VideoFrameDecoderTest {
             options = Options(context, size = Size(150, 150))
         ).decode()
 
-        val actual = (result.image as? BitmapDrawable)?.bitmap
+        val actual = result.image.bitmap
         assertNotNull(actual)
         assertTrue(result.isSampled)
 
@@ -146,7 +145,7 @@ class VideoFrameDecoderTest {
             options = Options(context)
         ).decode()
 
-        val actual = (result.image as? BitmapDrawable)?.bitmap
+        val actual = result.image.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 
@@ -170,7 +169,7 @@ class VideoFrameDecoderTest {
             options = Options(context),
         ).decode()
 
-        val actual = (result.image.drawable as? BitmapDrawable)?.bitmap
+        val actual = result.image.bitmap
         assertNotNull(actual)
         assertFalse(result.isSampled)
 

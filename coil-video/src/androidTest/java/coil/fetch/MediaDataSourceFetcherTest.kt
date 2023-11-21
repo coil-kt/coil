@@ -10,6 +10,7 @@ import coil.util.assumeTrue
 import coil.util.copyAssetToFile
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -39,7 +40,7 @@ class MediaDataSourceFetcherTest {
         val result = fetcher.fetch()
 
         assertIs<SourceFetchResult>(result)
-        assertEquals(null, result.mimeType)
+        assertNull(result.mimeType)
         assertIs<MediaDataSourceFetcher.MediaSourceMetadata>(result.source.metadata)
     }
 }

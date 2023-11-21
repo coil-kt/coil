@@ -4,11 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.ActivityAction
 import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import coil.Image
+import coil.drawable
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -76,16 +79,5 @@ fun Context.copyAssetToFile(fileName: String): File {
     return file
 }
 
-fun createMockWebServer(vararg images: String): MockWebServer {
-    val server = MockWebServer()
-    images.forEach { server.enqueueImage(it) }
-    return server.apply { start() }
-}
-
-fun MockWebServer.enqueueImage(image: String, headers: Headers = headersOf()): Long {
-    val buffer = Buffer()
-    val context = ApplicationProvider.getApplicationContext<Context>()
-    context.assets.open(image).source().buffer().readAll(buffer)
-    enqueue(MockResponse().setHeaders(headers).setBody(buffer))
-    return buffer.size
-}
+val Image.bitmap: Bitmap
+    get() = (drawable as BitmapDrawable).bitmap
