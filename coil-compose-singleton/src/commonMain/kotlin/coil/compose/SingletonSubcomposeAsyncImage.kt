@@ -40,40 +40,42 @@ import coil.request.ImageRequest
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
  */
-@Composable
-@NonRestartableComposable
-fun SubcomposeAsyncImage(
-    model: Any?,
-    contentDescription: String?,
-    modifier: Modifier = Modifier,
-    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
-    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
-    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
-    onLoading: ((State.Loading) -> Unit)? = null,
-    onSuccess: ((State.Success) -> Unit)? = null,
-    onError: ((State.Error) -> Unit)? = null,
-    alignment: Alignment = Alignment.Center,
-    contentScale: ContentScale = ContentScale.Fit,
-    alpha: Float = DefaultAlpha,
-    colorFilter: ColorFilter? = null,
-    filterQuality: FilterQuality = DefaultFilterQuality,
-) = SubcomposeAsyncImage(
-    model = model,
-    contentDescription = contentDescription,
-    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
-    modifier = modifier,
-    loading = loading,
-    success = success,
-    error = error,
-    onLoading = onLoading,
-    onSuccess = onSuccess,
-    onError = onError,
-    alignment = alignment,
-    contentScale = contentScale,
-    alpha = alpha,
-    colorFilter = colorFilter,
-    filterQuality = filterQuality,
-)
+// TODO: Figure out why the Compose JS compiler fails to compile this:
+//  e: kotlin.NotImplementedError: Generation of stubs for class org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl is not supported yet
+//@Composable
+//@NonRestartableComposable
+//fun SubcomposeAsyncImage(
+//    model: Any?,
+//    contentDescription: String?,
+//    modifier: Modifier = Modifier,
+//    loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
+//    success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
+//    error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
+//    onLoading: ((State.Loading) -> Unit)? = null,
+//    onSuccess: ((State.Success) -> Unit)? = null,
+//    onError: ((State.Error) -> Unit)? = null,
+//    alignment: Alignment = Alignment.Center,
+//    contentScale: ContentScale = ContentScale.Fit,
+//    alpha: Float = DefaultAlpha,
+//    colorFilter: ColorFilter? = null,
+//    filterQuality: FilterQuality = DefaultFilterQuality,
+//) = SubcomposeAsyncImage(
+//    model = model,
+//    contentDescription = contentDescription,
+//    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
+//    modifier = modifier,
+//    loading = loading,
+//    success = success,
+//    error = error,
+//    onLoading = onLoading,
+//    onSuccess = onSuccess,
+//    onError = onError,
+//    alignment = alignment,
+//    contentScale = contentScale,
+//    alpha = alpha,
+//    colorFilter = colorFilter,
+//    filterQuality = filterQuality,
+//)
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
