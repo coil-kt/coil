@@ -59,7 +59,7 @@ internal abstract class LruCache<K : Any, V : Any>(
     fun trimToSize(size: Long) {
         while (true) {
             if (this.size < 0 || map.isEmpty()) {
-                error("${this::class.qualifiedName}.sizeOf() is returning inconsistent values.")
+                error("sizeOf() is returning inconsistent values.")
             }
 
             if (this.size > size) {

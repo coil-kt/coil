@@ -12,7 +12,6 @@ import coil.key.UriKeyer
 import coil.map.FileUriMapper
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
-import coil.map.StringMapper
 import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -71,7 +70,6 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents(
 ): ComponentRegistry.Builder {
     return this
         // Mappers
-        .add(StringMapper())
         .add(FileUriMapper())
         .add(ResourceUriMapper())
         .add(ResourceIntMapper())

@@ -62,13 +62,13 @@ internal expect val ImageRequest.allowInexactSize: Boolean
 
 internal val EMPTY_IMAGE_FACTORY: () -> Image? = { null }
 
-internal inline operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
+internal operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 
-internal inline fun ComponentRegistry.Builder.addFirst(
+internal fun ComponentRegistry.Builder.addFirst(
     pair: Pair<Fetcher.Factory<*>, KClass<*>>?
 ) = apply { if (pair != null) fetcherFactories.add(0, pair) }
 
-internal inline fun ComponentRegistry.Builder.addFirst(
+internal fun ComponentRegistry.Builder.addFirst(
     factory: Decoder.Factory?
 ) = apply { if (factory != null) decoderFactories.add(0, factory) }
 
