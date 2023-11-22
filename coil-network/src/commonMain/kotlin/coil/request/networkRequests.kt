@@ -8,7 +8,7 @@ import io.ktor.http.HttpMethod
 // region httpMethod
 
 /**
- * Set the [HttpMethod] for any network operations performed by this request.
+ * Set the [HttpMethod] for any network operations performed by this image request.
  */
 fun ImageRequest.Builder.httpMethod(method: HttpMethod) = apply {
     extras[httpMethodKey] = method
@@ -29,7 +29,7 @@ private val httpMethodKey = Extras.Key(default = HttpMethod.Get)
 // region httpHeaders
 
 /**
- * Set the [Headers] for any network operations performed by this request.
+ * Set the [Headers] for any network operations performed by this image request.
  */
 fun ImageRequest.Builder.httpHeaders(headers: Headers) = apply {
     extras[httpHeadersKey] = headers
