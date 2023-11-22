@@ -1,7 +1,5 @@
 package coil
 
-fun String.toUri(): Uri = parseUri(this)
-
 /**
  * A uniform resource locator.
  */
@@ -26,6 +24,8 @@ class Uri internal constructor(
         return data
     }
 }
+
+fun String.toUri(): Uri = parseUri(this)
 
 private fun parseUri(data: String): Uri {
     var authorityStartIndex = -1
