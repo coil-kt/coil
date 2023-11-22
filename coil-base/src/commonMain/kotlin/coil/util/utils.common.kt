@@ -40,12 +40,6 @@ internal val DataSource.emoji: String
         DataSource.NETWORK -> "☁️"
     }
 
-internal val String.scheme: String?
-    get() {
-        val index = indexOf("://")
-        return if (index == -1) null else substring(0, index)
-    }
-
 internal fun Closeable.closeQuietly() {
     try {
         close()
