@@ -7,6 +7,7 @@ import coil.fetch.PathFetcher
 import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
 import coil.key.PathKeyer
+import coil.map.StringMapper
 import coil.memory.MemoryCache
 import coil.request.Disposable
 import coil.request.ErrorResult
@@ -248,12 +249,10 @@ internal fun ComponentRegistry.Builder.addCommonComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder {
     return this
+        // Mappers
+        .add(StringMapper())
         // Keyers
-        .add(
-            PathKeyer(
-                addLastModifiedToFileCacheKey = options.addLastModifiedToFileCacheKey,
-            ),
-        )
+        .add(PathKeyer(options.addLastModifiedToFileCacheKey))
         // Fetchers
         .add(ByteArrayFetcher.Factory())
         .add(PathFetcher.Factory())
