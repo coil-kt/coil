@@ -9,6 +9,7 @@ setupLibraryModule(name = "sample.common", config = true)
 
 dependencies {
     api(projects.coilSingleton)
+    api(projects.coilNetwork)
     api(projects.coilGif)
     api(projects.coilSvg)
     api(projects.coilVideo)

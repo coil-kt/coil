@@ -10,6 +10,7 @@ import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
 import coil.disk.DiskCache
 import coil.disk.directory
+import coil.fetch.NetworkFetcher
 import coil.memory.MemoryCache
 import coil.request.crossfade
 import coil.util.DebugLogger
@@ -19,6 +20,8 @@ class Application : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .components {
+                // Ktor
+                add(NetworkFetcher.Factory())
                 // GIFs
                 if (SDK_INT >= 28) {
                     add(ImageDecoderDecoder.Factory())
