@@ -35,7 +35,12 @@ internal class WeakReferenceMemoryCache : WeakMemoryCache {
         return value
     }
 
-    override fun set(key: Key, image: Image, extras: Map<String, Any>, size: Long) = synchronized(lock) {
+    override fun set(
+        key: Key,
+        image: Image,
+        extras: Map<String, Any>,
+        size: Long,
+    ) = synchronized(lock) {
         val values = cache.getOrPut(key) { arrayListOf() }
 
         // Insert the value into the list sorted descending by size.
