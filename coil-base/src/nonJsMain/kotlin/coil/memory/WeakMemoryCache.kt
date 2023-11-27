@@ -26,7 +26,7 @@ internal class WeakReferenceMemoryCache : WeakMemoryCache {
     override fun get(key: Key): MemoryCache.Value? = synchronized(lock) {
         val values = cache[key] ?: return null
 
-        // Find the first bitmap that hasn't been collected.
+        // Find the first image that hasn't been collected.
         val value = values.firstNotNullOfOrNullIndices { value ->
             value.image.get()?.let { MemoryCache.Value(it, value.extras) }
         }
