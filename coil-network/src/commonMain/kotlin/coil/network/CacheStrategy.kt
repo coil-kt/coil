@@ -37,5 +37,13 @@ fun interface CacheStrategy {
             this.cacheResponse = null
             this.networkRequest = networkRequest
         }
+
+        constructor(
+            diskCacheResponse: CacheResponse,
+            networkRequest: HttpRequestBuilder,
+        ) {
+            this.cacheResponse = diskCacheResponse
+            this.networkRequest = networkRequest
+        }
     }
 }
