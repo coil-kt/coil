@@ -17,7 +17,7 @@ internal fun HeadersBuilder.append(line: String) = apply {
 }
 
 internal fun HeadersBuilder.appendAllIfNameAbsent(stringValues: StringValues) = apply {
-    stringValues.forEach { name, values ->
+    stringValues.entries().forEach { (name, values) ->
         if (!contains(name)) {
             appendAll(name, values)
         }
