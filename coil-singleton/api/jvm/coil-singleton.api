@@ -1,0 +1,12 @@
+public final class coil/SingletonImageLoader {
+	public static final field INSTANCE Lcoil/SingletonImageLoader;
+	public static final fun get (Lcoil/PlatformContext;)Lcoil/ImageLoader;
+	public static final fun reset ()V
+	public static final fun set (Lcoil/ImageLoader;)V
+	public static final fun set (Lcoil/SingletonImageLoader$Factory;)V
+}
+
+public abstract interface class coil/SingletonImageLoader$Factory {
+	public abstract fun newImageLoader ()Lcoil/ImageLoader;
+}
+

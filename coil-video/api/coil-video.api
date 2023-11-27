@@ -1,18 +1,11 @@
 public final class coil/decode/VideoFrameDecoder : coil/decode/Decoder {
-	public static final field Companion Lcoil/decode/VideoFrameDecoder$Companion;
-	public static final field VIDEO_FRAME_MICROS_KEY Ljava/lang/String;
-	public static final field VIDEO_FRAME_OPTION_KEY Ljava/lang/String;
-	public static final field VIDEO_FRAME_PERCENT_KEY Ljava/lang/String;
 	public fun <init> (Lcoil/decode/ImageSource;Lcoil/request/Options;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil/decode/VideoFrameDecoder$Companion {
-}
-
 public final class coil/decode/VideoFrameDecoder$Factory : coil/decode/Decoder$Factory {
 	public fun <init> ()V
-	public fun create (Lcoil/fetch/SourceResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
+	public fun create (Lcoil/fetch/SourceFetchResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 }
@@ -33,13 +26,19 @@ public final class coil/fetch/MediaDataSourceFetcher$MediaSourceMetadata : coil/
 	public final fun getMediaDataSource ()Landroid/media/MediaDataSource;
 }
 
-public final class coil/request/Videos {
+public final class coil/request/VideosKt {
+	public static final fun getVideoFrameMicros (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
+	public static final fun getVideoFrameMicros (Lcoil/request/ImageRequest;)J
+	public static final fun getVideoFrameMicros (Lcoil/request/Options;)J
+	public static final fun getVideoFrameOption (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
+	public static final fun getVideoFrameOption (Lcoil/request/ImageRequest;)I
+	public static final fun getVideoFrameOption (Lcoil/request/Options;)I
+	public static final fun getVideoFramePercent (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
+	public static final fun getVideoFramePercent (Lcoil/request/ImageRequest;)D
+	public static final fun getVideoFramePercent (Lcoil/request/Options;)D
 	public static final fun videoFrameMicros (Lcoil/request/ImageRequest$Builder;J)Lcoil/request/ImageRequest$Builder;
-	public static final fun videoFrameMicros (Lcoil/request/Parameters;)Ljava/lang/Long;
 	public static final fun videoFrameMillis (Lcoil/request/ImageRequest$Builder;J)Lcoil/request/ImageRequest$Builder;
 	public static final fun videoFrameOption (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
-	public static final fun videoFrameOption (Lcoil/request/Parameters;)Ljava/lang/Integer;
 	public static final fun videoFramePercent (Lcoil/request/ImageRequest$Builder;D)Lcoil/request/ImageRequest$Builder;
-	public static final fun videoFramePercent (Lcoil/request/Parameters;)Ljava/lang/Double;
 }
 

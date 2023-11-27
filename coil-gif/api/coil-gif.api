@@ -1,4 +1,4 @@
-public final class coil/decode/GifDecodeUtils {
+public final class coil/decode/GifDecodeUtilsKt {
 	public static final fun isAnimatedHeif (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
 	public static final fun isAnimatedWebP (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
 	public static final fun isGif (Lcoil/decode/DecodeUtils;Lokio/BufferedSource;)Z
@@ -25,9 +25,11 @@ public final class coil/decode/GifDecoder$Factory : coil/decode/Decoder$Factory 
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun create (Lcoil/fetch/SourceResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
+	public fun create (Lcoil/fetch/SourceFetchResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnforceMinimumFrameDelay ()Z
 	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/decode/ImageDecoderDecoder : coil/decode/Decoder {
@@ -41,9 +43,11 @@ public final class coil/decode/ImageDecoderDecoder$Factory : coil/decode/Decoder
 	public fun <init> ()V
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun create (Lcoil/fetch/SourceResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
+	public fun create (Lcoil/fetch/SourceFetchResult;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/decode/Decoder;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnforceMinimumFrameDelay ()Z
 	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil/drawable/MovieDrawable : android/graphics/drawable/Drawable, androidx/vectordrawable/graphics/drawable/Animatable2Compat {
@@ -102,15 +106,23 @@ public final class coil/drawable/ScaleDrawable : android/graphics/drawable/Drawa
 	public fun unscheduleDrawable (Landroid/graphics/drawable/Drawable;Ljava/lang/Runnable;)V
 }
 
-public final class coil/request/Gifs {
+public final class coil/request/GifsKt {
 	public static final fun animatedTransformation (Lcoil/request/ImageRequest$Builder;Lcoil/transform/AnimatedTransformation;)Lcoil/request/ImageRequest$Builder;
-	public static final fun animatedTransformation (Lcoil/request/Parameters;)Lcoil/transform/AnimatedTransformation;
-	public static final fun animationEndCallback (Lcoil/request/Parameters;)Lkotlin/jvm/functions/Function0;
-	public static final fun animationStartCallback (Lcoil/request/Parameters;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimatedTransformation (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
+	public static final fun getAnimatedTransformation (Lcoil/request/ImageRequest;)Lcoil/transform/AnimatedTransformation;
+	public static final fun getAnimatedTransformation (Lcoil/request/Options;)Lcoil/transform/AnimatedTransformation;
+	public static final fun getAnimationEndCallback (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
+	public static final fun getAnimationEndCallback (Lcoil/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationEndCallback (Lcoil/request/Options;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationStartCallback (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
+	public static final fun getAnimationStartCallback (Lcoil/request/ImageRequest;)Lkotlin/jvm/functions/Function0;
+	public static final fun getAnimationStartCallback (Lcoil/request/Options;)Lkotlin/jvm/functions/Function0;
+	public static final fun getRepeatCount (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
+	public static final fun getRepeatCount (Lcoil/request/ImageRequest;)I
+	public static final fun getRepeatCount (Lcoil/request/Options;)I
 	public static final fun onAnimationEnd (Lcoil/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil/request/ImageRequest$Builder;
 	public static final fun onAnimationStart (Lcoil/request/ImageRequest$Builder;Lkotlin/jvm/functions/Function0;)Lcoil/request/ImageRequest$Builder;
 	public static final fun repeatCount (Lcoil/request/ImageRequest$Builder;I)Lcoil/request/ImageRequest$Builder;
-	public static final fun repeatCount (Lcoil/request/Parameters;)Ljava/lang/Integer;
 }
 
 public abstract interface class coil/transform/AnimatedTransformation {
