@@ -64,6 +64,12 @@ class NetworkFetcher(
                 }
             }
 
+            // Prevent executing requests on the main thread that could block due to a
+            // networking operation.
+            if (options.networkCachePolicy.readEnabled) {
+                assertNotOnMainThread()
+            }
+
             // Slow path: fetch the image from the network.
             val networkRequest = output?.networkRequest ?: newRequest()
             var result = executeNetworkRequest(networkRequest) { response ->
@@ -179,12 +185,6 @@ class NetworkFetcher(
         request: HttpRequestBuilder,
         block: suspend (HttpResponse) -> T,
     ): T {
-        // Prevent executing requests on the main thread that could block due to a
-        // networking operation.
-        if (options.networkCachePolicy.readEnabled) {
-            assertNotOnMainThread()
-        }
-
         return httpClient.value.prepareRequest(request).execute { response ->
             if (!response.status.isSuccess() && response.status.value != HTTP_NOT_MODIFIED) {
                 throw HttpException(response)
