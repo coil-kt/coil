@@ -15,7 +15,7 @@ import coil.network.abortQuietly
 import coil.network.appendAllIfNameAbsent
 import coil.network.assertNotOnMainThread
 import coil.network.closeQuietly
-import coil.network.readFully
+import coil.network.writeTo
 import coil.request.Options
 import coil.request.httpHeaders
 import coil.request.httpMethod
@@ -155,7 +155,7 @@ class NetworkFetcher(
                     CacheResponse(networkResponse).writeTo(this)
                 }
                 fileSystem.write(editor.data) {
-                    networkResponseBody.readFully(this)
+                    networkResponseBody.writeTo(this)
                 }
             }
             return editor.commitAndOpenSnapshot()
@@ -240,7 +240,7 @@ class NetworkFetcher(
     }
 
     private suspend fun ByteReadChannel.toImageSource(): ImageSource {
-        return ImageSource(Buffer().apply { readFully(this) }, options.fileSystem)
+        return ImageSource(Buffer().apply { writeTo(this) }, options.fileSystem)
     }
 
     private val diskCacheKey: String

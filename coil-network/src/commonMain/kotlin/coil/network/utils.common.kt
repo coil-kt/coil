@@ -39,7 +39,7 @@ internal fun DiskCache.Editor.abortQuietly() {
 }
 
 /** Write a [ByteReadChannel] to [sink] using streaming. */
-internal suspend fun ByteReadChannel.readFully(sink: BufferedSink) {
+internal suspend fun ByteReadChannel.writeTo(sink: BufferedSink) {
     val buffer = ByteArray(OKIO_BUFFER_SIZE)
 
     while (!isClosedForRead) {
