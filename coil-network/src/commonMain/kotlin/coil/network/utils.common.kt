@@ -17,6 +17,8 @@ internal fun HeadersBuilder.append(line: String) = apply {
 
 internal const val HTTP_NOT_MODIFIED = 304
 internal const val MIME_TYPE_TEXT_PLAIN = "text/plain"
+internal const val CACHE_CONTROL = "Cache-Control"
+internal const val CONTENT_TYPE = "Content-Type"
 
 internal fun Closeable.closeQuietly() {
     try {

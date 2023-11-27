@@ -11,6 +11,10 @@ plugins {
 addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.compose.singleton")
 
+compose {
+    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+}
+
 kotlin {
     sourceSets {
         commonMain {
@@ -20,8 +24,4 @@ kotlin {
             }
         }
     }
-}
-
-compose {
-    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
 }

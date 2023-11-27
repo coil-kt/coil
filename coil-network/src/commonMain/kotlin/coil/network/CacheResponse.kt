@@ -1,5 +1,6 @@
 package coil.network
 
+import coil.annotation.ExperimentalCoilApi
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers
 import io.ktor.http.headers
@@ -8,9 +9,10 @@ import okio.BufferedSink
 import okio.BufferedSource
 
 /** Holds the response metadata for an image in the disk cache. */
-internal class CacheResponse {
-    val cacheControl: String? by lazy(NONE) { responseHeaders["Cache-Control"] }
-    val contentType: String? by lazy(NONE) { responseHeaders["Content-Type"] }
+@ExperimentalCoilApi
+class CacheResponse {
+    val cacheControl: String? by lazy(NONE) { responseHeaders[CACHE_CONTROL] }
+    val contentType: String? by lazy(NONE) { responseHeaders[CONTENT_TYPE] }
     val sentRequestAtMillis: Long
     val receivedResponseAtMillis: Long
     val responseHeaders: Headers

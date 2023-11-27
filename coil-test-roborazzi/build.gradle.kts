@@ -4,15 +4,13 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("io.github.takahirom.roborazzi")
+    id("org.jetbrains.compose")
 }
 
-setupLibraryModule(name = "coil.test.roborazzi") {
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-    }
+setupLibraryModule(name = "coil.test.roborazzi")
+
+compose {
+    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
 }
 
 dependencies {

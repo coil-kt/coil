@@ -12,6 +12,10 @@ plugins {
 addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.compose.base")
 
+compose {
+    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+}
+
 kotlin {
     nonAndroidMain()
 
@@ -41,8 +45,4 @@ kotlin {
             }
         }
     }
-}
-
-compose {
-    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
 }

@@ -1,31 +1,37 @@
 package coil.fetch
 
 import coil.ImageLoader
+import coil.Uri
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.disk.DiskCache
+import coil.network.CACHE_CONTROL
+import coil.network.CONTENT_TYPE
 import coil.network.CacheResponse
 import coil.network.CacheStrategy
-import coil.network.CacheStrategy.Companion.combineHeaders
-import coil.network.Clock
 import coil.network.HTTP_NOT_MODIFIED
 import coil.network.HttpException
 import coil.network.MIME_TYPE_TEXT_PLAIN
+import coil.network.abortQuietly
 import coil.network.assertNotOnMainThread
 import coil.network.closeQuietly
+import coil.network.readFully
 import coil.request.Options
+import coil.request.httpHeaders
+import coil.request.httpMethod
 import coil.util.MimeTypeMap
 import dev.drewhamilton.poko.Poko
 import io.ktor.client.HttpClient
-import io.ktor.client.request.HttpRequest
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.prepareRequest
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.HttpMethod
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import io.ktor.http.takeFrom
+import io.ktor.utils.io.ByteReadChannel
+import okio.Buffer
 import okio.FileSystem
 import okio.IOException
 
@@ -34,94 +40,69 @@ class NetworkFetcher(
     private val options: Options,
     private val httpClient: Lazy<HttpClient>,
     private val diskCache: Lazy<DiskCache?>,
-    private val clock: Lazy<Clock>,
-    private val respectCacheHeaders: Boolean,
+    private val cacheStrategy: Lazy<CacheStrategy>,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
         var snapshot = readFromDiskCache()
         try {
             // Fast path: fetch the image from the disk cache without performing a network request.
-            val cacheStrategy: CacheStrategy
+            var output: CacheStrategy.Output? = null
             if (snapshot != null) {
-                // Always return cached images with empty metadata as they were likely added manually.
-                if (fileSystem.metadata(snapshot.metadata).size == 0L) {
+                var cacheResponse = snapshot.toCacheResponse()
+                if (cacheResponse != null) {
+                    val input = CacheStrategy.Input(url, options, cacheResponse)
+                    output = cacheStrategy.value.compute(input)
+                    cacheResponse = output.cacheResponse
+                }
+                if (cacheResponse != null) {
                     return SourceFetchResult(
                         source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, null),
+                        mimeType = getMimeType(url, cacheResponse.contentType),
                         dataSource = DataSource.DISK,
                     )
                 }
-
-                // Return the candidate from the cache if it is eligible.
-                if (respectCacheHeaders) {
-                    cacheStrategy = CacheStrategy.Factory(
-                        request = newRequest(),
-                        cacheResponse = snapshot.toCacheResponse(),
-                        clock = clock.value,
-                    ).compute()
-                    if (cacheStrategy.networkRequest == null && cacheStrategy.cacheResponse != null) {
-                        return SourceFetchResult(
-                            source = snapshot.toImageSource(),
-                            mimeType = getMimeType(url, cacheStrategy.cacheResponse.contentType),
-                            dataSource = DataSource.DISK,
-                        )
-                    }
-                } else {
-                    // Skip checking the cache headers if the option is disabled.
-                    return SourceFetchResult(
-                        source = snapshot.toImageSource(),
-                        mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType),
-                        dataSource = DataSource.DISK,
-                    )
-                }
-            } else {
-                cacheStrategy = CacheStrategy.Factory(
-                    request = newRequest(),
-                    cacheResponse = null,
-                    clock = clock.value,
-                ).compute()
             }
 
             // Slow path: fetch the image from the network.
-            var response = executeNetworkRequest(cacheStrategy.networkRequest!!)
-            var responseBody = response.requireBody()
+            val networkRequest = output?.networkRequest ?: newRequest()
+            var result = executeNetworkRequest(networkRequest) { response ->
+                // Write the response to the disk cache then open a new snapshot.
+                val responseBody = response.bodyAsChannel()
+                snapshot = writeToDiskCache(snapshot, response, responseBody)
+                if (snapshot != null) {
+                    return@executeNetworkRequest SourceFetchResult(
+                        source = snapshot!!.toImageSource(),
+                        mimeType = getMimeType(url, snapshot!!.toCacheResponse()?.contentType),
+                        dataSource = DataSource.NETWORK,
+                    )
+                }
 
-            // Write the response to the disk cache then open a new snapshot.
-            snapshot = writeToDiskCache(
-                snapshot = snapshot,
-                request = cacheStrategy.networkRequest,
-                response = response,
-                cacheResponse = cacheStrategy.cacheResponse,
-            )
-            if (snapshot != null) {
-                return SourceFetchResult(
-                    source = snapshot.toImageSource(),
-                    mimeType = getMimeType(url, snapshot.toCacheResponse()?.contentType),
-                    dataSource = DataSource.NETWORK,
-                )
+                // If we failed to read a new snapshot then read the response body if it's not empty.
+                if (responseBody.availableForRead > 0) {
+                    return@executeNetworkRequest SourceFetchResult(
+                        source = responseBody.toImageSource(),
+                        mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
+                        dataSource = DataSource.NETWORK,
+                    )
+                }
+
+                return@executeNetworkRequest null
             }
 
-            // If we failed to read a new snapshot then read the response body if it's not empty.
-            if (responseBody.contentLength() > 0) {
-                return SourceFetchResult(
-                    source = responseBody.toImageSource(),
-                    mimeType = getMimeType(url, responseBody.contentType()),
-                    dataSource = response.toDataSource(),
-                )
-            } else {
-                // If the response body is empty, execute a new network request without the
-                // cache headers.
-                response.closeQuietly()
-                response = executeNetworkRequest(newRequest())
-                responseBody = response.requireBody()
-
-                return SourceFetchResult(
-                    source = responseBody.toImageSource(),
-                    mimeType = getMimeType(url, responseBody.contentType()),
-                    dataSource = response.toDataSource(),
-                )
+            // Fallback: if the response body is empty, execute a new network request without the
+            // cache headers.
+            if (result == null) {
+                result = executeNetworkRequest(newRequest()) { response ->
+                    SourceFetchResult(
+                        source = response.bodyAsChannel().toImageSource(),
+                        mimeType = getMimeType(url, response.headers[CONTENT_TYPE]),
+                        dataSource = DataSource.NETWORK,
+                    )
+                }
             }
+
+            return result
         } catch (e: Exception) {
             snapshot?.closeQuietly()
             throw e
@@ -136,97 +117,79 @@ class NetworkFetcher(
         }
     }
 
-    private fun writeToDiskCache(
+    private suspend fun writeToDiskCache(
         snapshot: DiskCache.Snapshot?,
-        request: HttpRequest,
         response: HttpResponse,
-        cacheResponse: CacheResponse?,
+        responseBody: ByteReadChannel,
     ): DiskCache.Snapshot? {
         // Short circuit if we're not allowed to cache this response.
-        if (!isCacheable(request, response)) {
+        if (!options.diskCachePolicy.writeEnabled) {
             snapshot?.closeQuietly()
             return null
         }
 
         // Open a new editor.
-        val editor = if (snapshot != null) {
-            snapshot.closeAndOpenEditor()
-        } else {
-            diskCache.value?.openEditor(diskCacheKey)
-        }
-
         // Return `null` if we're unable to write to this entry.
-        if (editor == null) return null
+        val editor = diskCache.value?.openEditor(diskCacheKey) ?: return null
 
         try {
             // Write the response to the disk cache.
-            if (response.status.value == HTTP_NOT_MODIFIED && cacheResponse != null) {
-                // Only update the metadata.
-                val combinedResponse = response.newBuilder()
-                    .headers(combineHeaders(cacheResponse.responseHeaders, response.headers))
-                    .build()
-                fileSystem.write(editor.metadata) {
-                    CacheResponse(combinedResponse).writeTo(this)
-                }
-            } else {
-                // Update the metadata and the image data.
-                fileSystem.write(editor.metadata) {
-                    CacheResponse(response).writeTo(this)
-                }
-                fileSystem.write(editor.data) {
-                    response.body!!.source().readAll(this)
-                }
+            fileSystem.write(editor.metadata) {
+                CacheResponse(response).writeTo(this)
+            }
+            fileSystem.write(editor.data) {
+                responseBody.readFully(this)
             }
             return editor.commitAndOpenSnapshot()
         } catch (e: Exception) {
             editor.abortQuietly()
             throw e
-        } finally {
-            response.closeQuietly()
         }
     }
 
     private fun newRequest(): HttpRequestBuilder {
         val request = HttpRequestBuilder()
-        request.method = HttpMethod.Get
+        request.method = options.httpMethod
         request.url.takeFrom(Url(url))
+        request.headers.appendAll(options.httpHeaders)
 
         val diskRead = options.diskCachePolicy.readEnabled
         val networkRead = options.networkCachePolicy.readEnabled
         when {
             !networkRead && diskRead -> {
-                request.header("Cache-Control", "only-if-cached, max-stale=2147483647")
+                request.header(CACHE_CONTROL, "only-if-cached, max-stale=2147483647")
             }
 
             networkRead && !diskRead -> if (options.diskCachePolicy.writeEnabled) {
-                request.header("Cache-Control", "no-cache")
+                request.header(CACHE_CONTROL, "no-cache")
             } else {
-                request.header("Cache-Control", "no-cache, no-store")
+                request.header(CACHE_CONTROL, "no-cache, no-store")
             }
 
             !networkRead && !diskRead -> {
                 // This causes the request to fail with a 504 Unsatisfiable Request.
-                request.header("Cache-Control", "no-cache, only-if-cached")
+                request.header(CACHE_CONTROL, "no-cache, only-if-cached")
             }
         }
 
         return request
     }
 
-    private suspend fun executeNetworkRequest(
+    private suspend fun <T> executeNetworkRequest(
         request: HttpRequestBuilder,
-        block: suspend (HttpResponse) -> Unit,
-    ) {
+        block: suspend (HttpResponse) -> T,
+    ): T {
         // Prevent executing requests on the main thread that could block due to a
         // networking operation.
         if (options.networkCachePolicy.readEnabled) {
             assertNotOnMainThread()
         }
 
-        httpClient.value.prepareRequest(request).execute { response ->
+        return httpClient.value.prepareRequest(request).execute { response ->
             if (!response.status.isSuccess() && response.status.value != HTTP_NOT_MODIFIED) {
                 throw HttpException(response)
             }
+            block(response)
         }
     }
 
@@ -241,11 +204,6 @@ class NetworkFetcher(
             MimeTypeMap.getMimeTypeFromUrl(url)?.let { return it }
         }
         return contentType?.substringBefore(';')
-    }
-
-    private fun isCacheable(request: HttpRequest, response: HttpResponse): Boolean {
-        return options.diskCachePolicy.writeEnabled &&
-            (!respectCacheHeaders || CacheStrategy.isCacheable(request, response))
     }
 
     private fun DiskCache.Snapshot.toCacheResponse(): CacheResponse? {
@@ -263,12 +221,8 @@ class NetworkFetcher(
         return ImageSource(data, fileSystem, diskCacheKey, this)
     }
 
-    private fun ResponseBody.toImageSource(): ImageSource {
-        return ImageSource(source(), options.fileSystem)
-    }
-
-    private fun Response.toDataSource(): DataSource {
-        return if (networkResponse != null) DataSource.NETWORK else DataSource.DISK
+    private suspend fun ByteReadChannel.toImageSource(): ImageSource {
+        return ImageSource(Buffer().apply { readFully(this) }, options.fileSystem)
     }
 
     private val diskCacheKey: String
@@ -280,8 +234,7 @@ class NetworkFetcher(
     @Poko
     class Factory(
         private val httpClient: Lazy<HttpClient> = lazy { HttpClient() },
-        private val clock: Lazy<Clock> = lazy { Clock() },
-        private val respectCacheHeaders: Boolean = false,
+        private val cacheStrategy: Lazy<CacheStrategy> = lazy { CacheStrategy() },
     ) : Fetcher.Factory<Uri> {
 
         override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
@@ -291,8 +244,7 @@ class NetworkFetcher(
                 options = options,
                 httpClient = httpClient,
                 diskCache = lazy { imageLoader.diskCache },
-                clock = clock,
-                respectCacheHeaders = respectCacheHeaders,
+                cacheStrategy = cacheStrategy,
             )
         }
 

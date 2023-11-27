@@ -3,6 +3,7 @@ import coil.setupAppModule
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("org.jetbrains.compose")
 }
 
 setupAppModule(name = "sample.compose") {
@@ -24,12 +25,10 @@ setupAppModule(name = "sample.compose") {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-    }
+}
+
+compose {
+    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
 }
 
 dependencies {

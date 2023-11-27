@@ -4,15 +4,13 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("app.cash.paparazzi")
+    id("org.jetbrains.compose")
 }
 
-setupLibraryModule(name = "coil.test.paparazzi") {
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-    }
+setupLibraryModule(name = "coil.test.paparazzi")
+
+compose {
+    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
 }
 
 dependencies {
