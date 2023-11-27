@@ -28,10 +28,10 @@ class CacheResponse {
         }
     }
 
-    constructor(response: HttpResponse) {
+    constructor(response: HttpResponse, headers: Headers = response.headers) {
         this.sentRequestAtMillis = response.requestTime.timestamp
         this.receivedResponseAtMillis = response.responseTime.timestamp
-        this.responseHeaders = response.headers
+        this.responseHeaders = headers
     }
 
     fun writeTo(sink: BufferedSink) {

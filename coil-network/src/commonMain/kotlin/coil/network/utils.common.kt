@@ -2,6 +2,7 @@ package coil.network
 
 import coil.disk.DiskCache
 import io.ktor.http.HeadersBuilder
+import io.ktor.util.StringValues
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.isEmpty
 import io.ktor.utils.io.core.readFully
@@ -13,6 +14,14 @@ internal fun HeadersBuilder.append(line: String) = apply {
     val index = line.indexOf(':')
     require(index != -1) { "Unexpected header: $line" }
     append(line.substring(0, index).trim(), line.substring(index + 1))
+}
+
+internal fun HeadersBuilder.appendAllIfNameAbsent(stringValues: StringValues) = apply {
+    stringValues.forEach { name, values ->
+        if (!contains(name)) {
+            appendAll(name, values)
+        }
+    }
 }
 
 internal fun Closeable.closeQuietly() {
@@ -57,7 +66,6 @@ internal fun String.toNonNegativeInt(defaultValue: Int): Int {
 
 internal expect fun assertNotOnMainThread()
 
-internal const val HTTP_NOT_MODIFIED = 304
 internal const val MIME_TYPE_TEXT_PLAIN = "text/plain"
 internal const val CACHE_CONTROL = "Cache-Control"
 internal const val CONTENT_TYPE = "Content-Type"

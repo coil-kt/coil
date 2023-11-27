@@ -9,10 +9,10 @@ import coil.network.CACHE_CONTROL
 import coil.network.CONTENT_TYPE
 import coil.network.CacheResponse
 import coil.network.CacheStrategy
-import coil.network.HTTP_NOT_MODIFIED
 import coil.network.HttpException
 import coil.network.MIME_TYPE_TEXT_PLAIN
 import coil.network.abortQuietly
+import coil.network.appendAllIfNameAbsent
 import coil.network.assertNotOnMainThread
 import coil.network.closeQuietly
 import coil.network.readFully
@@ -27,7 +27,9 @@ import io.ktor.client.request.header
 import io.ktor.client.request.prepareRequest
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
-import io.ktor.http.Url
+import io.ktor.client.statement.discardRemaining
+import io.ktor.http.Headers
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.http.takeFrom
 import io.ktor.utils.io.ByteReadChannel
@@ -69,7 +71,7 @@ class NetworkFetcher(
             var result = executeNetworkRequest(networkRequest) { response ->
                 // Write the response to the disk cache then open a new snapshot.
                 val responseBody = response.bodyAsChannel()
-                snapshot = writeToDiskCache(snapshot, response, responseBody)
+                snapshot = writeToDiskCache(snapshot, output?.cacheResponse, response, responseBody)
                 if (snapshot != null) {
                     return@executeNetworkRequest SourceFetchResult(
                         source = snapshot!!.toImageSource(),
@@ -119,8 +121,9 @@ class NetworkFetcher(
 
     private suspend fun writeToDiskCache(
         snapshot: DiskCache.Snapshot?,
-        response: HttpResponse,
-        responseBody: ByteReadChannel,
+        cacheResponse: CacheResponse?,
+        networkResponse: HttpResponse,
+        networkResponseBody: ByteReadChannel,
     ): DiskCache.Snapshot? {
         // Short circuit if we're not allowed to cache this response.
         if (!options.diskCachePolicy.writeEnabled) {
@@ -134,11 +137,26 @@ class NetworkFetcher(
 
         try {
             // Write the response to the disk cache.
-            fileSystem.write(editor.metadata) {
-                CacheResponse(response).writeTo(this)
-            }
-            fileSystem.write(editor.data) {
-                responseBody.readFully(this)
+            if (networkResponse.status == HttpStatusCode.NotModified && cacheResponse != null) {
+                // Combine and write the updated cache headers and discard the body.
+                fileSystem.write(editor.metadata) {
+                    CacheResponse(
+                        response = networkResponse,
+                        headers = Headers.build {
+                            appendAll(networkResponse.headers)
+                            appendAllIfNameAbsent(cacheResponse.responseHeaders)
+                        },
+                    ).writeTo(this)
+                }
+                networkResponse.discardRemaining()
+            } else {
+                // Write the response's cache headers and body.
+                fileSystem.write(editor.metadata) {
+                    CacheResponse(networkResponse).writeTo(this)
+                }
+                fileSystem.write(editor.data) {
+                    networkResponseBody.readFully(this)
+                }
             }
             return editor.commitAndOpenSnapshot()
         } catch (e: Exception) {
@@ -150,7 +168,7 @@ class NetworkFetcher(
     private fun newRequest(): HttpRequestBuilder {
         val request = HttpRequestBuilder()
         request.method = options.httpMethod
-        request.url.takeFrom(Url(url))
+        request.url.takeFrom(url)
         request.headers.appendAll(options.httpHeaders)
 
         val diskRead = options.diskCachePolicy.readEnabled
@@ -186,7 +204,7 @@ class NetworkFetcher(
         }
 
         return httpClient.value.prepareRequest(request).execute { response ->
-            if (!response.status.isSuccess() && response.status.value != HTTP_NOT_MODIFIED) {
+            if (!response.status.isSuccess() && response.status != HttpStatusCode.NotModified) {
                 throw HttpException(response)
             }
             block(response)
