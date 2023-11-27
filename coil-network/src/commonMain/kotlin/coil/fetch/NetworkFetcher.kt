@@ -237,7 +237,11 @@ class NetworkFetcher(
         private val cacheStrategy: Lazy<CacheStrategy> = lazy { CacheStrategy() },
     ) : Fetcher.Factory<Uri> {
 
-        override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
+        override fun create(
+            data: Uri,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Fetcher? {
             if (!isApplicable(data)) return null
             return NetworkFetcher(
                 url = data.toString(),
