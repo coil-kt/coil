@@ -18,10 +18,11 @@ internal actual fun RealWeakMemoryCache(): WeakMemoryCache = WeakReferenceMemory
 internal class WeakReferenceMemoryCache : WeakMemoryCache {
 
     private val lock = SynchronizedObject()
-    @VisibleForTesting internal val cache = LinkedHashMap<Key, ArrayList<InternalValue>>()
+    internal val cache = LinkedHashMap<Key, ArrayList<InternalValue>>()
     private var operationsSinceCleanUp = 0
 
-    override val keys get() = synchronized(lock) { cache.keys.toSet() }
+    override val keys: Set<Key>
+        get() = synchronized(lock) { cache.keys.toSet() }
 
     override fun get(key: Key): MemoryCache.Value? = synchronized(lock) {
         val values = cache[key] ?: return null

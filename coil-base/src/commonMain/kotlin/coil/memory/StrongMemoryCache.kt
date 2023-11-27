@@ -73,11 +73,14 @@ internal class RealStrongMemoryCache(
         ) = weakMemoryCache.set(key, oldValue.image, oldValue.extras, oldValue.size)
     }
 
-    override val size get() = synchronized(lock) { cache.size }
+    override val size: Long
+        get() = synchronized(lock) { cache.size }
 
-    override val maxSize get() = synchronized(lock) { cache.maxSize }
+    override val maxSize: Long
+        get() = synchronized(lock) { cache.maxSize }
 
-    override val keys get() = synchronized(lock) { cache.keys }
+    override val keys: Set<Key>
+        get() = synchronized(lock) { cache.keys }
 
     override fun get(key: Key): Value? = synchronized(lock) {
         return cache.get(key)?.let { Value(it.image, it.extras) }
