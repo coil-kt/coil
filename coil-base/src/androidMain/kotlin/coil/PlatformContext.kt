@@ -1,3 +1,5 @@
 package coil
 
-actual typealias PlatformContext = android.content.Context
+import android.content.Context
+
+actual typealias PlatformContext = Context

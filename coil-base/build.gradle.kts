@@ -16,9 +16,9 @@ addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.base")
 
 kotlin {
+    jvmCommon()
     nonAndroidMain()
     nonJsMain()
-    jvmCommon()
     nonJvmCommon()
 
     sourceSets {

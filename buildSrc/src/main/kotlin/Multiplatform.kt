@@ -34,6 +34,11 @@ fun Project.addAllMultiplatformTargets() {
     }
 }
 
+fun KotlinSourceSetContainer.jvmCommon() = createSourceSet(
+    name = "jvmCommon",
+    children = listOf("androidMain", "jvmMain"),
+)
+
 fun KotlinSourceSetContainer.nonAndroidMain() = createSourceSet(
     name = "nonAndroidMain",
     children = listOf("jsMain", "jvmMain", "nativeMain"),
@@ -41,12 +46,7 @@ fun KotlinSourceSetContainer.nonAndroidMain() = createSourceSet(
 
 fun KotlinSourceSetContainer.nonJsMain() = createSourceSet(
     name = "nonJsMain",
-    children = listOf("androidMain", "jvmMain", "nativeMain"),
-)
-
-fun KotlinSourceSetContainer.jvmCommon() = createSourceSet(
-    name = "jvmCommon",
-    children = listOf("androidMain", "jvmMain"),
+    children = listOf("jvmCommon", "nativeMain"),
 )
 
 fun KotlinSourceSetContainer.nonJvmCommon() = createSourceSet(
