@@ -1,4 +1,3 @@
-
 import coil.addAllMultiplatformTargets
 import coil.nonAndroidMain
 import coil.setupLibraryModule
