@@ -9,7 +9,6 @@ import io.ktor.utils.io.core.readFully
 import okio.BufferedSink
 import okio.Closeable
 
-/** Parse a header string into name and value and append it. */
 internal fun HeadersBuilder.append(line: String) = apply {
     val index = line.indexOf(':')
     require(index != -1) { "Unexpected header: $line" }
