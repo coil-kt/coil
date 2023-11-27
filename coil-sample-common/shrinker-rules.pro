@@ -5,6 +5,7 @@
 -flattenpackagehierarchy
 -mergeinterfacesaggressively
 -dontnote *
+-dontwarn org.slf4j.impl.StaticLoggerBinder
 
 # Remove intrinsic assertions.
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
