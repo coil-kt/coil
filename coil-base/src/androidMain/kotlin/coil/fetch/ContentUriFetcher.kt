@@ -49,6 +49,7 @@ internal class ContentUriFetcher(
         return SourceFetchResult(
             source = ImageSource(
                 source = inputStream.source().buffer(),
+                fileSystem = options.fileSystem,
                 metadata = ContentMetadata(data),
             ),
             mimeType = contentResolver.getType(data),

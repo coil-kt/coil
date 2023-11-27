@@ -20,7 +20,7 @@ internal class ByteBufferFetcher(
             data.position(0)
         }
         return SourceFetchResult(
-            source = ImageSource(source),
+            source = ImageSource(source, options.fileSystem),
             mimeType = null,
             dataSource = DataSource.MEMORY,
         )

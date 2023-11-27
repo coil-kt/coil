@@ -168,6 +168,6 @@ class SvgDecoderTest {
     ) = SourceFetchResult(
         source = ImageSource(this, FileSystem.SYSTEM),
         mimeType = mimeType,
-        dataSource = dataSource
+        dataSource = dataSource,
     )
 }

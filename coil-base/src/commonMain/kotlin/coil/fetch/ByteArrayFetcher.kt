@@ -13,7 +13,10 @@ internal class ByteArrayFetcher(
 
     override suspend fun fetch(): FetchResult {
         return SourceFetchResult(
-            source = ImageSource(Buffer().apply { write(byteArray) }),
+            source = ImageSource(
+                source = Buffer().apply { write(byteArray) },
+                fileSystem = options.fileSystem,
+            ),
             mimeType = null,
             dataSource = DataSource.MEMORY,
         )

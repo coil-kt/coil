@@ -72,6 +72,7 @@ internal class ResourceUriFetcher(
             SourceFetchResult(
                 source = ImageSource(
                     source = inputStream.source().buffer(),
+                    fileSystem = options.fileSystem,
                     metadata = ResourceMetadata(packageName, resId, typedValue.density),
                 ),
                 mimeType = mimeType,

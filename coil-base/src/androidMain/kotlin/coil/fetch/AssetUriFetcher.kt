@@ -23,6 +23,7 @@ internal class AssetUriFetcher(
         return SourceFetchResult(
             source = ImageSource(
                 source = options.context.assets.open(path).source().buffer(),
+                fileSystem = options.fileSystem,
                 metadata = AssetMetadata(path),
             ),
             mimeType = MimeTypeMap.getMimeTypeFromUrl(path),

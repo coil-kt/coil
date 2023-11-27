@@ -2,7 +2,6 @@ package coil.decode
 
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
-import android.graphics.drawable.AnimatedImageDrawable.REPEAT_INFINITE
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.RequiresApi
@@ -102,8 +101,10 @@ class ImageDecoderDecoder @JvmOverloads constructor(
     private fun wrapImageSource(source: ImageSource): ImageSource {
         return if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
             // Wrap the source to rewrite its frame delay as it's read.
-            val rewritingSource = FrameDelayRewritingSource(source.source())
-            ImageSource(rewritingSource.buffer(), options.fileSystem)
+            ImageSource(
+                source = FrameDelayRewritingSource(source.source()).buffer(),
+                fileSystem = options.fileSystem,
+            )
         } else {
             source
         }
