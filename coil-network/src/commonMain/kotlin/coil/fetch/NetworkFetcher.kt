@@ -132,8 +132,14 @@ class NetworkFetcher(
         }
 
         // Open a new editor.
-        // Return `null` if we're unable to write to this entry.
-        val editor = diskCache.value?.openEditor(diskCacheKey) ?: return null
+        val editor = if (snapshot != null) {
+            snapshot.closeAndOpenEditor()
+        } else {
+            diskCache.value?.openEditor(diskCacheKey)
+        }
+
+        // Return null if we're unable to write to this entry.
+        if (editor == null) return null
 
         try {
             // Write the response to the disk cache.
@@ -236,18 +242,26 @@ class NetworkFetcher(
     }
 
     private fun DiskCache.Snapshot.toImageSource(): ImageSource {
-        return ImageSource(data, fileSystem, diskCacheKey, this)
+        return ImageSource(
+            file = data,
+            fileSystem = fileSystem,
+            diskCacheKey = diskCacheKey,
+            closeable = this,
+        )
     }
 
     private suspend fun ByteReadChannel.toImageSource(): ImageSource {
-        return ImageSource(Buffer().apply { writeTo(this) }, options.fileSystem)
+        return ImageSource(
+            source = Buffer().apply { writeTo(this) },
+            fileSystem = fileSystem,
+        )
     }
 
     private val diskCacheKey: String
         get() = options.diskCacheKey ?: url
 
     private val fileSystem: FileSystem
-        get() = diskCache.value!!.fileSystem
+        get() = diskCache.value?.fileSystem ?: options.fileSystem
 
     @Poko
     class Factory(
