@@ -1,10 +1,11 @@
 package coil.fetch
 
-import android.net.Uri
 import coil.ImageLoader
+import coil.Uri
 import coil.decode.AssetMetadata
 import coil.decode.DataSource
 import coil.decode.ImageSource
+import coil.pathSegments
 import coil.request.Options
 import coil.util.MimeTypeMap
 import coil.util.isAssetUri

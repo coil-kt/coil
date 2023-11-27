@@ -24,7 +24,7 @@ internal actual inline fun transition(
     setDrawable: () -> Unit,
 ) = setDrawable()
 
-internal actual fun ComponentRegistry.Builder.addPlatformComponents(
+internal actual fun ComponentRegistry.Builder.addAndroidComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder {
     return this

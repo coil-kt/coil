@@ -6,7 +6,9 @@ import coil.fetch.ByteArrayFetcher
 import coil.fetch.PathFetcher
 import coil.intercept.EngineInterceptor
 import coil.intercept.RealInterceptorChain
-import coil.key.PathKeyer
+import coil.key.FileUriKeyer
+import coil.key.GenericUriKeyer
+import coil.map.PathMapper
 import coil.map.StringMapper
 import coil.memory.MemoryCache
 import coil.request.Disposable
@@ -48,7 +50,7 @@ internal class RealImageLoader(
     override val memoryCache by options.memoryCacheLazy
     override val diskCache by options.diskCacheLazy
     override val components = options.componentRegistry.newBuilder()
-        .addPlatformComponents(options)
+        .addAndroidComponents(options)
         .addCommonComponents(options)
         .add(EngineInterceptor(this, requestService, options.logger))
         .build()
@@ -241,7 +243,11 @@ internal expect inline fun transition(
     setDrawable: () -> Unit,
 )
 
-internal expect fun ComponentRegistry.Builder.addPlatformComponents(
+internal expect fun ComponentRegistry.Builder.addAndroidComponents(
+    options: RealImageLoader.Options,
+): ComponentRegistry.Builder
+
+internal expect fun ComponentRegistry.Builder.addJvmComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder
 
@@ -251,8 +257,10 @@ internal fun ComponentRegistry.Builder.addCommonComponents(
     return this
         // Mappers
         .add(StringMapper())
+        .add(PathMapper())
         // Keyers
-        .add(PathKeyer(options.addLastModifiedToFileCacheKey))
+        .add(FileUriKeyer(options.addLastModifiedToFileCacheKey))
+        .add(GenericUriKeyer())
         // Fetchers
         .add(ByteArrayFetcher.Factory())
         .add(PathFetcher.Factory())

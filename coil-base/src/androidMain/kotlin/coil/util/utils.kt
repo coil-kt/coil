@@ -8,7 +8,6 @@ import android.graphics.ColorSpace
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
-import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
 import android.widget.ImageView
@@ -18,6 +17,8 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import androidx.annotation.DrawableRes
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import coil.Uri
+import coil.pathSegments
 import coil.request.ImageRequest
 import coil.size.DisplaySizeResolver
 import coil.size.Precision

@@ -1,16 +1,18 @@
 package coil.fetch
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
-import android.net.Uri
 import android.util.TypedValue
 import coil.ImageLoader
+import coil.Uri
 import coil.asCoilImage
 import coil.decode.DataSource
 import coil.decode.ImageSource
 import coil.decode.ResourceMetadata
+import coil.pathSegments
 import coil.request.Options
 import coil.request.bitmapConfig
 import coil.util.DrawableUtils
+import coil.util.MIME_TYPE_XML
 import coil.util.MimeTypeMap
 import coil.util.getDrawableCompat
 import coil.util.getXmlDrawableCompat
@@ -92,9 +94,5 @@ internal class ResourceUriFetcher(
         private fun isApplicable(data: Uri): Boolean {
             return data.scheme == SCHEME_ANDROID_RESOURCE
         }
-    }
-
-    companion object {
-        private const val MIME_TYPE_XML = "text/xml"
     }
 }

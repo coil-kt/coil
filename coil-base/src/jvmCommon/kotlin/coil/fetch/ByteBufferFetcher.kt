@@ -9,7 +9,7 @@ import okio.Buffer
 
 internal class ByteBufferFetcher(
     private val data: ByteBuffer,
-    private val options: Options
+    private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
@@ -28,7 +28,11 @@ internal class ByteBufferFetcher(
 
     class Factory : Fetcher.Factory<ByteBuffer> {
 
-        override fun create(data: ByteBuffer, options: Options, imageLoader: ImageLoader): Fetcher {
+        override fun create(
+            data: ByteBuffer,
+            options: Options,
+            imageLoader: ImageLoader,
+        ): Fetcher {
             return ByteBufferFetcher(data, options)
         }
     }

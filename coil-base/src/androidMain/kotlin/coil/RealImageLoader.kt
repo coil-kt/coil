@@ -3,13 +3,11 @@ package coil
 import coil.decode.BitmapFactoryDecoder
 import coil.fetch.AssetUriFetcher
 import coil.fetch.BitmapFetcher
-import coil.fetch.ByteBufferFetcher
 import coil.fetch.ContentUriFetcher
 import coil.fetch.DrawableFetcher
-import coil.fetch.PathFetcher
 import coil.fetch.ResourceUriFetcher
-import coil.key.UriKeyer
-import coil.map.FileUriMapper
+import coil.key.AndroidResourceUriKeyer
+import coil.map.AndroidUriMapper
 import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.request.Disposable
@@ -65,24 +63,22 @@ internal actual inline fun transition(
     eventListener.transitionEnd(result.request, transition)
 }
 
-internal actual fun ComponentRegistry.Builder.addPlatformComponents(
+internal actual fun ComponentRegistry.Builder.addAndroidComponents(
     options: RealImageLoader.Options,
 ): ComponentRegistry.Builder {
     return this
         // Mappers
-        .add(FileUriMapper())
+        .add(AndroidUriMapper())
         .add(ResourceUriMapper())
         .add(ResourceIntMapper())
         // Keyers
-        .add(UriKeyer())
+        .add(AndroidResourceUriKeyer())
         // Fetchers
-        .add(PathFetcher.Factory())
         .add(AssetUriFetcher.Factory())
         .add(ContentUriFetcher.Factory())
         .add(ResourceUriFetcher.Factory())
         .add(DrawableFetcher.Factory())
         .add(BitmapFetcher.Factory())
-        .add(ByteBufferFetcher.Factory())
         // Decoders
         .add(
             BitmapFactoryDecoder.Factory(

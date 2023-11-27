@@ -25,6 +25,9 @@ class Uri internal constructor(
     }
 }
 
+val Uri.pathSegments: List<String>
+    get() = path?.substring(1)?.split('/').orEmpty()
+
 fun String.toUri(): Uri = parseUri(this)
 
 private fun parseUri(data: String): Uri {

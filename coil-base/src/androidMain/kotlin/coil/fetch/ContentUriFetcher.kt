@@ -93,6 +93,8 @@ internal class ContentUriFetcher(
             return ContentUriFetcher(data, options)
         }
 
-        private fun isApplicable(data: Uri) = data.scheme == SCHEME_CONTENT
+        private fun isApplicable(data: Uri): Boolean {
+            return data.scheme == SCHEME_CONTENT
+        }
     }
 }
