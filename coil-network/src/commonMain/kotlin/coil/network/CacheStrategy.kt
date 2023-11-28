@@ -24,26 +24,8 @@ fun interface CacheStrategy {
         val cacheResponse: CacheResponse,
     )
 
-    class Output {
-        val cacheResponse: CacheResponse?
-        val networkRequest: HttpRequestBuilder?
-
-        constructor(diskCacheResponse: CacheResponse) {
-            this.cacheResponse = diskCacheResponse
-            this.networkRequest = null
-        }
-
-        constructor(networkRequest: HttpRequestBuilder) {
-            this.cacheResponse = null
-            this.networkRequest = networkRequest
-        }
-
-        constructor(
-            diskCacheResponse: CacheResponse,
-            networkRequest: HttpRequestBuilder,
-        ) {
-            this.cacheResponse = diskCacheResponse
-            this.networkRequest = networkRequest
-        }
-    }
+    class Output(
+        val cacheResponse: CacheResponse? = null,
+        val networkRequest: HttpRequestBuilder? = null,
+    )
 }
