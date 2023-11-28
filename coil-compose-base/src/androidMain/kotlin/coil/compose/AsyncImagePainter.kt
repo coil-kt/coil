@@ -27,7 +27,6 @@ internal actual fun Image.toPainter(
     }
 }
 
-/** Create and return a [CrossfadePainter] if requested. */
 internal actual fun maybeNewCrossfadePainter(
     previous: AsyncImagePainter.State,
     current: AsyncImagePainter.State,

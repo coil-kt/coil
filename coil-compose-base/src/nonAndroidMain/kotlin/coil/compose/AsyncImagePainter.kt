@@ -17,7 +17,6 @@ internal actual fun Image.toPainter(
     filterQuality = filterQuality,
 )
 
-/** Create and return a [CrossfadePainter] if requested. */
 internal actual fun maybeNewCrossfadePainter(
     previous: AsyncImagePainter.State,
     current: AsyncImagePainter.State,
