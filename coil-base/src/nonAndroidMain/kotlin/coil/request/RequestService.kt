@@ -5,6 +5,7 @@ import coil.memory.MemoryCache
 import coil.size.Size
 import coil.util.Logger
 import coil.util.SystemCallbacks
+import coil.util.allowInexactSize
 import kotlinx.coroutines.Job
 
 internal actual fun RequestService(
@@ -25,7 +26,17 @@ internal class NonAndroidRequestService : RequestService {
     }
 
     override fun options(request: ImageRequest, size: Size): Options {
-        TODO()
+        return Options(
+            context = request.context,
+            size = size,
+            scale = request.scale,
+            allowInexactSize = request.allowInexactSize,
+            diskCacheKey = request.diskCacheKey,
+            memoryCachePolicy = request.memoryCachePolicy,
+            diskCachePolicy = request.diskCachePolicy,
+            networkCachePolicy = request.networkCachePolicy,
+            extras = request.extras,
+        )
     }
 
     override fun updateOptionsOnWorkerThread(options: Options): Options {

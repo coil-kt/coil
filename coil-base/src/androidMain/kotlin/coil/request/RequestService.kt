@@ -12,7 +12,6 @@ import coil.size.Scale
 import coil.size.Size
 import coil.target.Target
 import coil.target.ViewTarget
-import coil.transform.Transformation
 import coil.util.HardwareBitmapService
 import coil.util.Logger
 import coil.util.SystemCallbacks
@@ -61,69 +60,73 @@ internal class AndroidRequestService(
         return commonErrorResult(request, throwable)
     }
 
-    /**
-     * Return the request options. The function is called from the main thread and must be fast.
-     */
     override fun options(request: ImageRequest, size: Size): Options {
-        var extras = request.extras
+        return Options(
+            context = request.context,
+            size = size,
+            scale = request.resolveScale(size),
+            allowInexactSize = request.allowInexactSize,
+            diskCacheKey = request.diskCacheKey,
+            memoryCachePolicy = request.memoryCachePolicy,
+            diskCachePolicy = request.diskCachePolicy,
+            networkCachePolicy = request.resolveNetworkCachePolicy(),
+            extras = request.resolveExtras(size),
+        )
+    }
+
+    private fun ImageRequest.resolveScale(size: Size): Scale {
+        // Use `Scale.FIT` if either dimension is undefined.
+        if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
+            return Scale.FIT
+        } else {
+            return scale
+        }
+    }
+
+    private fun ImageRequest.resolveNetworkCachePolicy(): CachePolicy {
+        // Disable fetching from the network if we know we're offline.
+        if (systemCallbacks.isOnline) {
+            return networkCachePolicy
+        } else {
+            return CachePolicy.DISABLED
+        }
+    }
+
+    private fun ImageRequest.resolveExtras(size: Size): Extras {
+        var bitmapConfig = bitmapConfig
+        var allowRgb565 = allowRgb565
 
         // Fall back to ARGB_8888 if the requested bitmap config does not pass the checks.
-        val isValidConfig = isConfigValidForTransformations(request) &&
-            isConfigValidForHardwareAllocation(request, size)
-        val config = if (isValidConfig) {
-            request.bitmapConfig
-        } else {
-            Bitmap.Config.ARGB_8888
-        }
-
-        // Disable fetching from the network if we know we're offline.
-        val networkCachePolicy = if (systemCallbacks.isOnline) {
-            request.networkCachePolicy
-        } else {
-            CachePolicy.DISABLED
-        }
-
-        // Use `Scale.FIT` if either dimension is undefined.
-        val scale = if (size.width == Dimension.Undefined || size.height == Dimension.Undefined) {
-            Scale.FIT
-        } else {
-            request.scale
+        if (!isBitmapConfigValidMainThread(this, size)) {
+            bitmapConfig = Bitmap.Config.ARGB_8888
         }
 
         // Disable allowRgb565 if there are transformations or the requested config is ALPHA_8.
         // ALPHA_8 is a mask config where each pixel is 1 byte so it wouldn't make sense to use
         // RGB_565 as an optimization in that case.
-        val allowRgb565 = request.allowRgb565 &&
-            request.transformations.isEmpty() &&
-            config != Bitmap.Config.ALPHA_8
-        if (allowRgb565 != request.allowRgb565) {
-            extras = request.extras.newBuilder()
-                .set(Extras.Key.allowRgb565, allowRgb565)
-                .build()
-        }
+        allowRgb565 = allowRgb565 &&
+            transformations.isEmpty() &&
+            bitmapConfig != Bitmap.Config.ALPHA_8
 
-        return Options(
-            context = request.context,
-            size = size,
-            scale = scale,
-            allowInexactSize = request.allowInexactSize,
-            diskCacheKey = request.diskCacheKey,
-            memoryCachePolicy = request.memoryCachePolicy,
-            diskCachePolicy = request.diskCachePolicy,
-            networkCachePolicy = networkCachePolicy,
-            extras = extras,
-        )
+        var builder: Extras.Builder? = null
+        if (bitmapConfig != this.bitmapConfig) {
+            builder = extras.newBuilder().set(Extras.Key.bitmapConfig, bitmapConfig)
+        }
+        if (allowRgb565 != this.allowRgb565) {
+            builder = (builder ?: extras.newBuilder()).set(Extras.Key.allowRgb565, allowRgb565)
+        }
+        return builder?.build() ?: extras
     }
 
     override fun updateOptionsOnWorkerThread(options: Options): Options {
-        if (allowHardwareWorkerThread(options)) {
-            return options
-        } else {
+        if (!isBitmapConfigValidWorkerThread(options)) {
             return options.copy(
                 extras = options.extras.newBuilder()
                     .set(Extras.Key.bitmapConfig, Bitmap.Config.ARGB_8888)
                     .build(),
             )
+        } else {
+            return options
         }
     }
 
@@ -144,7 +147,7 @@ internal class AndroidRequestService(
      * Return 'true' if [requestedConfig] is a valid (i.e. can be returned to its [Target])
      * config for [request].
      */
-    fun isConfigValidForHardware(
+    private fun isConfigValidForHardware(
         request: ImageRequest,
         requestedConfig: Bitmap.Config,
     ): Boolean {
@@ -168,31 +171,23 @@ internal class AndroidRequestService(
         return true
     }
 
-    /** Return 'true' if we can allocate a hardware bitmap. */
-    fun allowHardwareWorkerThread(options: Options): Boolean {
-        return !options.bitmapConfig.isHardware || hardwareBitmapService.allowHardwareWorkerThread()
-    }
-
-    /**
-     * Return 'true' if [request]'s requested bitmap config is valid (i.e. can be returned
-     * to its [Target]).
-     *
-     * This check is similar to [isCacheValueValidForHardware] except this method also checks
-     * that we are able to allocate a new hardware bitmap.
-     */
-    private fun isConfigValidForHardwareAllocation(request: ImageRequest, size: Size): Boolean {
-        // Short circuit if the requested bitmap config is software.
-        if (!request.bitmapConfig.isHardware) {
-            return true
-        }
-
-        return isConfigValidForHardware(request, request.bitmapConfig) &&
-            hardwareBitmapService.allowHardwareMainThread(size)
-    }
-
-    /** Return 'true' if [ImageRequest.bitmapConfig] is valid given its [Transformation]s. */
-    private fun isConfigValidForTransformations(request: ImageRequest): Boolean {
-        return request.transformations.isEmpty() ||
+    /** Return 'true' if the current bitmap config is valid, else use [Bitmap.Config.ARGB_8888]. */
+    fun isBitmapConfigValidMainThread(
+        request: ImageRequest,
+        size: Size,
+    ): Boolean {
+        val validForTransformations = request.transformations.isEmpty() ||
             request.bitmapConfig in VALID_TRANSFORMATION_CONFIGS
+        val validForHardware = !request.bitmapConfig.isHardware ||
+            (isConfigValidForHardware(request, request.bitmapConfig) &&
+                hardwareBitmapService.allowHardwareMainThread(size))
+        return validForTransformations && validForHardware
+    }
+
+    /** Return 'true' if the current bitmap config is valid, else use [Bitmap.Config.ARGB_8888]. */
+    fun isBitmapConfigValidWorkerThread(
+        options: Options,
+    ): Boolean {
+        return !options.bitmapConfig.isHardware || hardwareBitmapService.allowHardwareWorkerThread()
     }
 }
