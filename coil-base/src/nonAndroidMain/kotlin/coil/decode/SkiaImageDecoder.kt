@@ -1,17 +1,13 @@
 package coil.decode
 
 import coil.ImageLoader
+import coil.asCoilImage
 import coil.fetch.SourceFetchResult
 import coil.request.Options
-import coil.asCoilImage
 import coil.util.makeFromImage
-import coil.util.isStatic
 import okio.use
 import org.jetbrains.skia.Bitmap
-import org.jetbrains.skia.Codec
-import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image
-import org.jetbrains.skia.impl.use
 
 class SkiaImageDecoder(
     private val source: ImageSource,
@@ -21,20 +17,20 @@ class SkiaImageDecoder(
     override suspend fun decode(): DecodeResult {
         // https://github.com/JetBrains/skiko/issues/741
         val bytes = source.source().use { it.readByteArray() }
-        val isStatic = Data.makeFromBytes(bytes).use { data ->
-            Codec.makeFromData(data).use { codec -> codec.isStatic }
-        }
-        var isSampled = false
-        var image = Image.makeFromEncoded(bytes)
-        if (isStatic) {
-            val bitmap = Bitmap.makeFromImage(image, options.size, options.scale)
-            bitmap.setImmutable()
+        val image = Image.makeFromEncoded(bytes)
 
+        val isSampled: Boolean
+        val bitmap: Bitmap
+        try {
+            bitmap = Bitmap.makeFromImage(image, options.size, options.scale)
             isSampled = bitmap.width < image.width || bitmap.height < image.height
-            image = Image.makeFromBitmap(bitmap)
+        } finally {
+            image.close()
         }
+        bitmap.setImmutable()
+
         return DecodeResult(
-            image = image.asCoilImage(shareable = isStatic),
+            image = bitmap.asCoilImage(),
             isSampled = isSampled,
         )
     }

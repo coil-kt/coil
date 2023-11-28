@@ -8,7 +8,7 @@ import coil.util.width
 import dev.drewhamilton.poko.Poko
 
 @Poko
-private class WrappedDrawableImage(
+private class DrawableImage(
     val drawable: Drawable,
     override val shareable: Boolean,
 ) : Image {
@@ -32,8 +32,8 @@ private class WrappedDrawableImage(
 
 @JvmOverloads
 fun Drawable.asCoilImage(
-    shareable: Boolean = this is BitmapDrawable
-): Image = WrappedDrawableImage(this, shareable)
+    shareable: Boolean = this is BitmapDrawable,
+): Image = DrawableImage(this, shareable)
 
 val Image.drawable: Drawable
-    get() = (this as WrappedDrawableImage).drawable
+    get() = (this as DrawableImage).drawable
