@@ -19,13 +19,31 @@ fun interface CacheStrategy {
     fun compute(input: Input): Output
 
     class Input(
-        val url: String,
-        val options: Options,
         val cacheResponse: CacheResponse,
+        val networkRequest: HttpRequestBuilder,
+        val options: Options,
     )
 
-    class Output(
-        val cacheResponse: CacheResponse? = null,
-        val networkRequest: HttpRequestBuilder? = null,
-    )
+    class Output {
+        val cacheResponse: CacheResponse?
+        val networkRequest: HttpRequestBuilder?
+
+        constructor(cacheResponse: CacheResponse) {
+            this.cacheResponse = cacheResponse
+            this.networkRequest = null
+        }
+
+        constructor(networkRequest: HttpRequestBuilder) {
+            this.cacheResponse = null
+            this.networkRequest = networkRequest
+        }
+
+        constructor(
+            cacheResponse: CacheResponse,
+            networkRequest: HttpRequestBuilder,
+        ) {
+            this.cacheResponse = cacheResponse
+            this.networkRequest = networkRequest
+        }
+    }
 }

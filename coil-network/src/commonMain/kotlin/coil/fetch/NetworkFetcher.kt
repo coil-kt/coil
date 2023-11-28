@@ -53,7 +53,7 @@ class NetworkFetcher(
             if (snapshot != null) {
                 var cacheResponse = snapshot.toCacheResponse()
                 if (cacheResponse != null) {
-                    val input = CacheStrategy.Input(url, options, cacheResponse)
+                    val input = CacheStrategy.Input(cacheResponse, newRequest(), options)
                     output = cacheStrategy.value.compute(input)
                     cacheResponse = output.cacheResponse
                 }
