@@ -179,8 +179,11 @@ internal class MemoryCacheService(
         result: ExecuteResult,
     ): Boolean {
         if (!request.memoryCachePolicy.writeEnabled) return false
-        val memoryCache = imageLoader.memoryCache
-        if (memoryCache == null || cacheKey == null) return false
+        if (cacheKey == null) return false
+        val memoryCache = imageLoader.memoryCache ?: return false
+        
+        // TODO: Support adding shareable image to the memory cache.
+        if (!result.image.shareable) return false
 
         // Create and set the memory cache value.
         val extras = mutableMapOf<String, Any>()
