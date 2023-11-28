@@ -16,4 +16,6 @@ dependencies {
 
     api(libs.androidx.core)
     api(libs.androidx.lifecycle.viewmodel)
+
+    api(libs.ktor.engine.okhttp)
 }

@@ -73,6 +73,7 @@ kotlinx-immutable-collections = "org.jetbrains.kotlinx:kotlinx-collections-immut
 ktlint = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
 
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-engine-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
