@@ -2,10 +2,11 @@ package coil.map
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
-import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.base.test.R
+import coil.pathSegments
 import coil.request.Options
+import coil.toUri
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
