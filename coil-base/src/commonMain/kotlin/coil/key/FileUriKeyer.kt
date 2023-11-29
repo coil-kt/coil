@@ -2,7 +2,7 @@ package coil.key
 
 import coil.Uri
 import coil.request.Options
-import coil.util.FILE_SCHEME
+import coil.util.isFileUri
 import okio.Path.Companion.toPath
 
 class FileUriKeyer(
@@ -10,7 +10,7 @@ class FileUriKeyer(
 ) : Keyer<Uri> {
 
     override fun key(data: Uri, options: Options): String? {
-        if (data.scheme == FILE_SCHEME && addLastModifiedToFileCacheKey) {
+        if (addLastModifiedToFileCacheKey && isFileUri(data)) {
             val path = data.path
             if (path != null) {
                 val timestamp = options.fileSystem.metadata(path.toPath()).lastModifiedAtMillis

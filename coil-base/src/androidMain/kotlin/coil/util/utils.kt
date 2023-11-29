@@ -1,6 +1,5 @@
 package coil.util
 
-import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -107,13 +106,14 @@ internal actual val ImageRequest.allowInexactSize: Boolean
         }
     }
 
-internal val Uri.firstPathSegment: String?
-    get() = pathSegments.firstOrNull()
-
 internal const val ASSET_FILE_PATH_ROOT = "android_asset"
 
 internal fun isAssetUri(uri: Uri): Boolean {
-    return uri.scheme == SCHEME_FILE && uri.firstPathSegment == ASSET_FILE_PATH_ROOT
+    return uri.scheme == SCHEME_FILE && uri.pathSegments.firstOrNull() == ASSET_FILE_PATH_ROOT
+}
+
+internal actual fun isFileUri(uri: Uri): Boolean {
+    return uri.scheme == SCHEME_FILE && !isAssetUri(uri)
 }
 
 internal val ImageView.scale: Scale

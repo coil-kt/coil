@@ -3,11 +3,11 @@ package coil.map
 import coil.Uri
 import coil.request.Options
 import coil.toUri
-import coil.util.FILE_SCHEME
+import coil.util.SCHEME_FILE
 import java.io.File
 
 class FileMapper : Mapper<File, Uri> {
     override fun map(data: File, options: Options): Uri {
-        return "$FILE_SCHEME://$data".toUri()
+        return "$SCHEME_FILE://$data".toUri()
     }
 }

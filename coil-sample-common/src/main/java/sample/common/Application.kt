@@ -2,6 +2,7 @@ package sample.common
 
 import android.app.Application
 import android.os.Build.VERSION.SDK_INT
+import coil.EventListener
 import coil.ImageLoader
 import coil.SingletonImageLoader
 import coil.decode.GifDecoder
@@ -12,6 +13,8 @@ import coil.disk.DiskCache
 import coil.disk.directory
 import coil.fetch.NetworkFetcher
 import coil.memory.MemoryCache
+import coil.request.ErrorResult
+import coil.request.ImageRequest
 import coil.request.crossfade
 import coil.util.DebugLogger
 
@@ -45,6 +48,11 @@ class Application : Application(), SingletonImageLoader.Factory {
                     .maxSizeBytes(512L * 1024 * 1024) // 512MB
                     .build()
             }
+            .eventListener(object : EventListener() {
+                override fun onError(request: ImageRequest, result: ErrorResult) {
+                    super.onError(request, result)
+                }
+            })
             // Show a short crossfade when loading images asynchronously.
             .crossfade(true)
             // Enable logging to the standard Android log if this is a debug build.

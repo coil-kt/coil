@@ -31,7 +31,7 @@ enum class DataSource {
     DISK,
 
     /**
-     * Represents a network-based data source (e.g. `HttpUrl`).
+     * Represents a network-based data source (e.g. `Url`).
      */
     NETWORK,
 }

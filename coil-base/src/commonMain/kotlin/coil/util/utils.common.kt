@@ -3,6 +3,7 @@ package coil.util
 import coil.ComponentRegistry
 import coil.EventListener
 import coil.Image
+import coil.Uri
 import coil.decode.DataSource
 import coil.decode.Decoder
 import coil.fetch.Fetcher
@@ -95,4 +96,7 @@ internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
     }
 }
 
-internal const val FILE_SCHEME = "file"
+internal const val SCHEME_FILE = "file"
+
+internal expect fun isFileUri(uri: Uri): Boolean
+

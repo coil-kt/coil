@@ -1,5 +1,6 @@
 package coil.util
 
+import coil.Uri
 import coil.decode.DecodeUtils
 import coil.request.ImageRequest
 import coil.size.Precision
@@ -66,4 +67,8 @@ internal fun Bitmap.Companion.makeFromImage(
 
 internal inline fun Bitmap.applyCanvas(block: Canvas.() -> Unit) {
     Canvas(this).use(block)
+}
+
+internal actual fun isFileUri(uri: Uri): Boolean {
+    return uri.scheme == SCHEME_FILE
 }
