@@ -15,11 +15,10 @@
  */
 package coil.disk
 
-import java.io.IOException
 import okio.Buffer
 import okio.FileSystem
 import okio.ForwardingFileSystem
-import okio.ForwardingSink
+import okio.IOException
 import okio.Path
 import okio.Sink
 
@@ -54,17 +53,23 @@ class FaultyFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
     }
 
     override fun atomicMove(source: Path, target: Path) {
-        if (source in renameFaults || target in renameFaults) throw IOException("boom!")
+        if (source in renameFaults || target in renameFaults) {
+            throw IOException("boom!")
+        }
         super.atomicMove(source, target)
     }
 
     override fun delete(path: Path, mustExist: Boolean) {
-        if (path in deleteFaults) throw IOException("boom!")
+        if (path in deleteFaults) {
+            throw IOException("boom!")
+        }
         super.delete(path, mustExist)
     }
 
     override fun deleteRecursively(fileOrDirectory: Path, mustExist: Boolean) {
-        if (fileOrDirectory in deleteFaults) throw IOException("boom!")
+        if (fileOrDirectory in deleteFaults) {
+            throw IOException("boom!")
+        }
         super.deleteRecursively(fileOrDirectory, mustExist)
     }
 
@@ -74,10 +79,15 @@ class FaultyFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
     override fun sink(file: Path, mustCreate: Boolean): Sink =
         FaultySink(super.sink(file, mustCreate), file)
 
-    inner class FaultySink(sink: Sink, private val file: Path) : ForwardingSink(sink) {
+    inner class FaultySink(
+        private val delegate: Sink,
+        private val file: Path,
+    ) : Sink by delegate {
         override fun write(source: Buffer, byteCount: Long) {
-            if (file in writeFaults) throw IOException("boom!")
-            super.write(source, byteCount)
+            if (file in writeFaults) {
+                throw IOException("boom!")
+            }
+            delegate.write(source, byteCount)
         }
     }
 }

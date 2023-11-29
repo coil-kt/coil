@@ -17,6 +17,9 @@ package coil.disk
 
 import coil.disk.DiskLruCache.Editor
 import coil.disk.DiskLruCache.Snapshot
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -31,19 +34,15 @@ import okio.Path.Companion.toPath
 import okio.Source
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import okio.use
 
 /**
  * Derived from OkHttp's DiskLruCache tests:
  * https://github.com/square/okhttp/blob/master/okhttp/src/jvmTest/java/okhttp3/internal/cache/DiskLruCacheTest.kt
  */
-@RunWith(RobolectricTestRunner::class)
 class DiskLruCacheTest {
 
+    private lateinit var fakeFileSystem: FakeFileSystem
     private lateinit var fileSystem: FaultyFileSystem
     private lateinit var dispatcher: SimpleTestDispatcher
     private lateinit var caches: MutableSet<DiskLruCache>
@@ -53,9 +52,10 @@ class DiskLruCacheTest {
     private val journalFile = cacheDir / DiskLruCache.JOURNAL_FILE
     private val journalFileBackup = cacheDir / DiskLruCache.JOURNAL_FILE_BACKUP
 
-    @Before
+    @BeforeTest
     fun before() {
-        fileSystem = FaultyFileSystem(FakeFileSystem().apply { emulateUnix() })
+        fakeFileSystem = FakeFileSystem().apply { emulateUnix() }
+        fileSystem = FaultyFileSystem(fakeFileSystem)
         if (fileSystem.exists(cacheDir)) {
             fileSystem.deleteRecursively(cacheDir)
         }
@@ -64,10 +64,10 @@ class DiskLruCacheTest {
         createNewCache()
     }
 
-    @After
+    @AfterTest
     fun after() {
-        caches.forEach { it.close() }
-        (fileSystem.delegate as FakeFileSystem).checkNoOpenFiles()
+        for (cache in caches) cache.close()
+        fakeFileSystem.checkNoOpenFiles()
     }
 
     private fun createNewCache(maxSize: Long = Long.MAX_VALUE) {
@@ -237,7 +237,7 @@ class DiskLruCacheTest {
 
     /** We have to wait until the edit is committed before we can delete its files. */
     @Test
-    fun `unterminated edit is reverted on cache close`() {
+    fun unterminatedEditIsRevertedOnCacheClose() {
         val editor = cache.edit("k1")!!
         editor.setString(0, "AB")
         editor.setString(1, "C")
@@ -1427,7 +1427,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `edit discarded after editor detached`() {
+    fun editDiscardedAfterEditorDetached() {
         set("k1", "a", "a")
 
         // Create an editor, then detach it.
@@ -1464,7 +1464,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `cannot read while writing`() {
+    fun cannotReadWhileWriting() {
         set("k1", "a", "a")
         val editor = cache.edit("k1")!!
         assertNull(cache["k1"])
@@ -1472,7 +1472,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `cannot write while reading`() {
+    fun cannotWriteWhileReading() {
         set("k1", "a", "a")
         val snapshot = cache["k1"]!!
         assertNull(cache.edit("k1"))
@@ -1480,7 +1480,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `can read while reading`() {
+    fun canReadWhileReading() {
         set("k1", "a", "a")
         cache["k1"]!!.use { snapshot1 ->
             snapshot1.assertValue(0, "a")
@@ -1493,7 +1493,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `remove while reading creates zombie that is removed when read finishes`() {
+    fun removeWhileReadingCreatesZombieThatIsRemovedWhenReadFinishes() {
         val afterRemoveFileContents = "a"
 
         set("k1", "a", "a")
@@ -1518,7 +1518,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `remove while writing creates zombie that is removed when write finishes`() {
+    fun removeWhileWritingCreatesZombieThatIsRemovedWhenWriteFinishes() {
         val afterRemoveFileContents = "a"
 
         set("k1", "a", "a")
@@ -1537,7 +1537,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `cannot read zombie entry`() {
+    fun cannotReadZombieEntry() {
         set("k1", "a", "a")
         cache["k1"]!!.use {
             cache.remove("k1")
@@ -1546,7 +1546,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `cannot write zombie entry`() {
+    fun cannotWriteZombieEntry() {
         set("k1", "a", "a")
         cache["k1"]!!.use {
             cache.remove("k1")
@@ -1555,7 +1555,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `close with zombie read`() {
+    fun closeWithZombieRead() {
         val afterRemoveFileContents = "a"
 
         set("k1", "a", "a")
@@ -1577,7 +1577,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `close with zombie write`() {
+    fun closeWithZombieWrite() {
         val afterRemoveCleanFileContents = "a"
         val afterRemoveDirtyFileContents = ""
 
@@ -1599,7 +1599,7 @@ class DiskLruCacheTest {
     }
 
     @Test
-    fun `close with completed zombie write`() {
+    fun closeWithCompletedZombieWrite() {
         val afterRemoveCleanFileContents = "a"
         val afterRemoveDirtyFileContents = "b"
 

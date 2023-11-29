@@ -1,8 +1,9 @@
 package coil.disk
 
-import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
+import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Runnable
 
@@ -11,22 +12,26 @@ import kotlinx.coroutines.Runnable
  */
 class SimpleTestDispatcher : CoroutineDispatcher() {
 
-    private val tasks = ConcurrentLinkedQueue<Runnable>()
-    private val inProgressTasks = AtomicInteger()
+    private val lock = SynchronizedObject()
+    private val tasks = ArrayDeque<Runnable>()
+    private val inProgressTasks = atomic(0)
 
-    fun isIdle() = tasks.isEmpty() && inProgressTasks.get() == 0
+    fun isIdle(): Boolean {
+        val isEmpty = synchronized(lock) { tasks.isEmpty() }
+        return isEmpty && inProgressTasks.value == 0
+    }
 
     fun runNextTask() {
-        val block = tasks.remove()
+        val task = synchronized(lock) { tasks.removeFirst() }
         try {
             inProgressTasks.getAndIncrement()
-            block.run()
+            task.run()
         } finally {
             inProgressTasks.getAndDecrement()
         }
     }
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
-        tasks += block
+        synchronized(lock) { tasks += block }
     }
 }

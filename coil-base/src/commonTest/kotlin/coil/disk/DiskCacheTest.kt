@@ -1,43 +1,43 @@
 package coil.disk
 
-import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import okio.fakefilesystem.FakeFileSystem
+import okio.use
 
-@RunWith(RobolectricTestRunner::class)
 class DiskCacheTest {
 
+    private lateinit var fileSystem: FakeFileSystem
     private lateinit var diskCache: DiskCache
 
-    @Before
+    @BeforeTest
     fun before() {
+        fileSystem = FakeFileSystem()
         diskCache = DiskCache.Builder()
-            .directory(File("build/cache"))
+            .directory(fileSystem.workingDirectory)
+            .fileSystem(fileSystem)
             .build()
     }
 
-    @After
+    @AfterTest
     fun after() {
-        diskCache.clear()
-        diskCache.fileSystem.deleteRecursively(diskCache.directory) // Ensure we start fresh.
+        diskCache.shutdown()
     }
 
     @Test
-    fun `can read and write empty`() {
+    fun canReadAndWriteEmpty() {
         diskCache.openSnapshot("test").use { assertNull(it) }
         diskCache.openEditor("test")?.use { /* Empty edit to create the file on disk. */ }
         diskCache.openSnapshot("test").use { assertNotNull(it) }
     }
 
     @Test
-    fun `can read and write data`() {
+    fun canReadAndWriteData() {
         assertEquals(0, diskCache.size)
         diskCache.openSnapshot("test").use { assertNull(it) }
 
@@ -65,7 +65,7 @@ class DiskCacheTest {
     }
 
     @Test
-    fun `can remove singular entries`() {
+    fun canRemoveSingularEntries() {
         diskCache.openEditor("test1")!!.use { /* Empty edit to create the file on disk. */ }
         diskCache.openEditor("test2")!!.use { /* Empty edit to create the file on disk. */ }
         assertTrue(diskCache.remove("test1"))
@@ -74,7 +74,7 @@ class DiskCacheTest {
     }
 
     @Test
-    fun `can clear all entries`() {
+    fun canClearAllEntries() {
         diskCache.openEditor("test1")!!.use { /* Empty edit to create the file on disk. */ }
         diskCache.openEditor("test2")!!.use { /* Empty edit to create the file on disk. */ }
         diskCache.clear()

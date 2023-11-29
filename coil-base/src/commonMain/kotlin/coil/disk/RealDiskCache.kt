@@ -2,6 +2,7 @@ package coil.disk
 
 import coil.disk.DiskCache.Editor
 import coil.disk.DiskCache.Snapshot
+import coil.util.closeQuietly
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.ByteString.Companion.encodeUtf8
 import okio.FileSystem
@@ -39,6 +40,10 @@ internal class RealDiskCache(
 
     override fun clear() {
         cache.evictAll()
+    }
+
+    override fun shutdown() {
+        cache.closeQuietly()
     }
 
     private fun String.hash() = encodeUtf8().sha256().hex()

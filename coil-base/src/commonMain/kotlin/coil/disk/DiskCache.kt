@@ -50,8 +50,15 @@ interface DiskCache {
      */
     fun remove(key: String): Boolean
 
-    /** Delete all entries in the disk cache. */
+    /**
+     * Delete all entries in the disk cache.
+     */
     fun clear()
+
+    /**
+     * Close any open snapshots, abort all in-progress edits, and close any open system resources.
+     */
+    fun shutdown()
 
     /**
      * A snapshot of the values for an entry.
