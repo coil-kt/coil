@@ -168,10 +168,10 @@ private fun ListScreen(
                     .data(image.uri)
                     .apply { extras.setAll(image.extras) }
                     .build(),
+                contentDescription = null,
                 placeholder = ColorPainter(Color(image.color)),
                 error = ColorPainter(Color.Red),
                 onSuccess = { placeholder = it.result.memoryCacheKey },
-                contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(size)
