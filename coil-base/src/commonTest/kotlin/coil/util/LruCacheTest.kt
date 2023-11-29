@@ -2,7 +2,9 @@ package coil.util
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class LruCacheTest {
 
@@ -74,5 +76,40 @@ class LruCacheTest {
 
         assertNull(cache["one"])
         assertNull(cache["two"])
+    }
+
+    @Test
+    fun customSizeOf() {
+        val cache = object : LruCache<String, Int>(maxSize = 4) {
+            override fun sizeOf(key: String, value: Int) = value.toLong()
+        }
+        cache.put("one", 1)
+        cache.put("two", 2)
+        cache.put("three", 3)
+
+        assertNull(cache["one"])
+        assertNull(cache["two"])
+        assertEquals(3, cache["three"])
+    }
+
+    @Test
+    fun entryRemovedIsInvoked() {
+        var isInvoked = false
+        val cache = object : LruCache<String, Int>(maxSize = 2) {
+            override fun entryRemoved(key: String, oldValue: Int, newValue: Int?) {
+                assertFalse(isInvoked)
+                assertEquals("one", key)
+                assertNull(newValue)
+                isInvoked = true
+            }
+        }
+        cache.put("one", 1)
+        cache.put("two", 2)
+        cache.put("three", 3)
+
+        assertTrue(isInvoked)
+        assertNull(cache["one"])
+        assertEquals(2, cache["two"])
+        assertEquals(3, cache["three"])
     }
 }
