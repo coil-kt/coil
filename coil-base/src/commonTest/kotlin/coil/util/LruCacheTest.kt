@@ -8,71 +8,71 @@ class LruCacheTest {
 
     @Test
     fun putAndGet() {
-        val lruCache = LruCache<String, Int>(maxSize = 3)
-        lruCache.put("one", 1)
-        lruCache.put("two", 2)
-        lruCache.put("three", 3)
+        val cache = LruCache<String, Int>(maxSize = 3)
+        cache.put("one", 1)
+        cache.put("two", 2)
+        cache.put("three", 3)
 
-        assertEquals(1, lruCache["one"])
-        assertEquals(2, lruCache["two"])
-        assertEquals(3, lruCache["three"])
+        assertEquals(1, cache["one"])
+        assertEquals(2, cache["two"])
+        assertEquals(3, cache["three"])
     }
 
     @Test
     fun putUpdatesValue() {
-        val lruCache = LruCache<String, Int>(maxSize = 3)
-        lruCache.put("one", 1)
-        lruCache.put("one", 10)
+        val cache = LruCache<String, Int>(maxSize = 3)
+        cache.put("one", 1)
+        cache.put("one", 10)
 
-        assertEquals(10, lruCache["one"])
+        assertEquals(10, cache["one"])
     }
 
     @Test
     fun getNonexistentKey() {
-        val lruCache = LruCache<String, Int>(maxSize = 3)
+        val cache = LruCache<String, Int>(maxSize = 3)
 
-        assertNull(lruCache["nonexistent"])
+        assertNull(cache["nonexistent"])
     }
 
     @Test
     fun evictionOnExceedingMaxSize() {
-        val lruCache = LruCache<String, Int>(maxSize = 2)
-        lruCache.put("one", 1)
-        lruCache.put("two", 2)
-        lruCache.put("three", 3)
+        val cache = LruCache<String, Int>(maxSize = 2)
+        cache.put("one", 1)
+        cache.put("two", 2)
+        cache.put("three", 3)
 
-        assertNull(lruCache["one"])
-        assertEquals(2, lruCache["two"])
-        assertEquals(3, lruCache["three"])
+        assertNull(cache["one"])
+        assertEquals(2, cache["two"])
+        assertEquals(3, cache["three"])
     }
 
     @Test
     fun lruOrderMaintained() {
-        val lruCache = LruCache<String, Int>(maxSize = 3)
-        lruCache.put("one", 1)
-        lruCache.put("two", 2)
-        lruCache.put("three", 3)
+        val cache = LruCache<String, Int>(maxSize = 3)
+        cache.put("one", 1)
+        cache.put("two", 2)
+        cache.put("three", 3)
 
         // Access "one" to make it the most recently accessed.
-        lruCache["one"]
+        cache["one"]
 
-        lruCache.put("four", 4)
+        cache.put("four", 4)
 
-        assertNull(lruCache["two"])
-        assertEquals(1, lruCache["one"])
-        assertEquals(3, lruCache["three"])
-        assertEquals(4, lruCache["four"])
+        assertNull(cache["two"])
+        assertEquals(1, cache["one"])
+        assertEquals(3, cache["three"])
+        assertEquals(4, cache["four"])
     }
 
     @Test
     fun clearCache() {
-        val lruCache = LruCache<String, Int>(maxSize = 3)
-        lruCache.put("one", 1)
-        lruCache.put("two", 2)
+        val cache = LruCache<String, Int>(maxSize = 3)
+        cache.put("one", 1)
+        cache.put("two", 2)
 
-        lruCache.clear()
+        cache.clear()
 
-        assertNull(lruCache["one"])
-        assertNull(lruCache["two"])
+        assertNull(cache["one"])
+        assertNull(cache["two"])
     }
 }
