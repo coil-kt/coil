@@ -20,7 +20,7 @@ fun ImageLoader.Builder.bitmapFactoryMaxParallelism(maxParallelism: Int) = apply
 }
 
 internal val RealImageLoader.Options.bitmapFactoryMaxParallelism: Int
-    get() = extras.getOrDefault(bitmapFactoryMaxParallelismKey)
+    get() = defaults.extras.getOrDefault(bitmapFactoryMaxParallelismKey)
 
 private val bitmapFactoryMaxParallelismKey = Extras.Key(default = DEFAULT_MAX_PARALLELISM)
 
@@ -36,7 +36,7 @@ fun ImageLoader.Builder.bitmapFactoryExifOrientationPolicy(policy: ExifOrientati
 }
 
 internal val RealImageLoader.Options.bitmapFactoryExifOrientationPolicy: ExifOrientationPolicy
-    get() = extras.getOrDefault(bitmapFactoryExifOrientationPolicyKey)
+    get() = defaults.extras.getOrDefault(bitmapFactoryExifOrientationPolicyKey)
 
 private val bitmapFactoryExifOrientationPolicyKey = Extras.Key(default = RESPECT_PERFORMANCE)
 

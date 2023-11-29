@@ -15,8 +15,6 @@ import coil.asCoilImage
 import coil.getExtra
 import coil.target.ImageViewTarget
 import coil.transform.Transformation
-import coil.transition.CrossfadeDrawable
-import coil.transition.CrossfadeDrawable.Companion.DEFAULT_DURATION
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.util.DEFAULT_BITMAP_CONFIG
@@ -74,13 +72,15 @@ private val transformationsKey = Extras.Key<List<Transformation>>(default = empt
 /**
  * Enable a crossfade animation when a request completes successfully.
  */
-actual fun ImageRequest.Builder.crossfade(enable: Boolean) = crossfade(DEFAULT_DURATION)
+actual fun ImageRequest.Builder.crossfade(enable: Boolean) =
+    crossfade(DEFAULT_CROSSFADE_MILLIS)
 
 actual fun ImageRequest.Builder.crossfade(durationMillis: Int): ImageRequest.Builder {
     return transitionFactory(newCrossfadeTransitionFactory(durationMillis))
 }
 
-actual fun ImageLoader.Builder.crossfade(enable: Boolean) = crossfade(DEFAULT_DURATION)
+actual fun ImageLoader.Builder.crossfade(enable: Boolean) =
+    crossfade(DEFAULT_CROSSFADE_MILLIS)
 
 actual fun ImageLoader.Builder.crossfade(durationMillis: Int): ImageLoader.Builder {
     return transitionFactory(newCrossfadeTransitionFactory(durationMillis))

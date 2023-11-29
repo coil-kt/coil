@@ -15,8 +15,8 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import coil.decode.DecodeUtils
+import coil.request.DEFAULT_CROSSFADE_MILLIS
 import coil.size.Scale
-import coil.util.DEFAULT_CROSSFADE_MILLIS
 import coil.util.forEachIndices
 import kotlin.math.roundToInt
 

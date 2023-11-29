@@ -3,10 +3,10 @@ package coil.transition
 import coil.asCoilImage
 import coil.decode.DataSource
 import coil.drawable
+import coil.request.DEFAULT_CROSSFADE_MILLIS
 import coil.request.ErrorResult
 import coil.request.ImageResult
 import coil.request.SuccessResult
-import coil.util.DEFAULT_CROSSFADE_MILLIS
 import dev.drewhamilton.poko.Poko
 
 /**
@@ -19,7 +19,7 @@ class CrossfadeTransition @JvmOverloads constructor(
     private val target: TransitionTarget,
     private val result: ImageResult,
     val durationMillis: Int = DEFAULT_CROSSFADE_MILLIS,
-    val preferExactIntrinsicSize: Boolean = false
+    val preferExactIntrinsicSize: Boolean = false,
 ) : Transition {
 
     init {
@@ -44,7 +44,7 @@ class CrossfadeTransition @JvmOverloads constructor(
     @Poko
     class Factory @JvmOverloads constructor(
         val durationMillis: Int = DEFAULT_CROSSFADE_MILLIS,
-        val preferExactIntrinsicSize: Boolean = false
+        val preferExactIntrinsicSize: Boolean = false,
     ) : Transition.Factory {
 
         init {

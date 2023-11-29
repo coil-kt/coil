@@ -15,4 +15,4 @@ expect fun ImageLoader.Builder.crossfade(durationMillis: Int): ImageLoader.Build
 
 expect val ImageRequest.crossfadeMillis: Int
 
-internal const val DEFAULT_CROSSFADE_DURATION_MILLIS = 100
+internal const val DEFAULT_CROSSFADE_MILLIS = 200

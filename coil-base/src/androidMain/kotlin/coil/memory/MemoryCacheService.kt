@@ -1,5 +1,7 @@
 package coil.memory
 
+import coil.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_INDEX
+import coil.memory.MemoryCacheService.Companion.EXTRA_TRANSFORMATION_SIZE
 import coil.request.ImageRequest
 import coil.request.Options
 import coil.request.transformations
@@ -13,9 +15,9 @@ internal actual fun createComplexMemoryCacheKeyExtras(
     if (request.transformations.isNotEmpty()) {
         val mutableMemoryCacheKeyExtras = memoryCacheKeyExtras.toMutableMap()
         request.transformations.forEachIndexedIndices { index, transformation ->
-            mutableMemoryCacheKeyExtras[MemoryCacheService.EXTRA_TRANSFORMATION_INDEX + index] = transformation.cacheKey
+            mutableMemoryCacheKeyExtras[EXTRA_TRANSFORMATION_INDEX + index] = transformation.cacheKey
         }
-        mutableMemoryCacheKeyExtras[MemoryCacheService.EXTRA_TRANSFORMATION_SIZE] = options.size.toString()
+        mutableMemoryCacheKeyExtras[EXTRA_TRANSFORMATION_SIZE] = options.size.toString()
         memoryCacheKeyExtras = mutableMemoryCacheKeyExtras
     }
     return memoryCacheKeyExtras

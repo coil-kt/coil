@@ -6,6 +6,9 @@ import coil.util.toImmutableMap
 import dev.drewhamilton.poko.Poko
 import kotlin.jvm.JvmField
 
+/**
+ * A map of key/value pairs to support extensions.
+ */
 @Poko
 class Extras private constructor(
     private val data: Map<Key<*>, Any>,

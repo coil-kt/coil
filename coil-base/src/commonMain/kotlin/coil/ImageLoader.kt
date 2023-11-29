@@ -106,7 +106,7 @@ interface ImageLoader {
             eventListenerFactory = options.eventListenerFactory
             componentRegistry = options.componentRegistry
             logger = options.logger
-            extras = options.extras.newBuilder()
+            extras = options.defaults.extras.newBuilder()
         }
 
         /**
@@ -304,7 +304,7 @@ interface ImageLoader {
         fun build(): ImageLoader {
             val options = RealImageLoader.Options(
                 application = application,
-                defaults = defaults,
+                defaults = defaults.copy(extras = extras.build()),
                 memoryCacheLazy = memoryCacheLazy ?: lazy {
                     MemoryCache.Builder()
                         .maxSizePercent(application)
@@ -316,7 +316,6 @@ interface ImageLoader {
                 eventListenerFactory = eventListenerFactory ?: EventListener.Factory.NONE,
                 componentRegistry = componentRegistry ?: ComponentRegistry(),
                 logger = logger,
-                extras = extras.build(),
             )
             return RealImageLoader(options)
         }

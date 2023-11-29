@@ -95,6 +95,4 @@ internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
     }
 }
 
-internal const val DEFAULT_CROSSFADE_MILLIS = 100
-
 internal const val FILE_SCHEME = "file"

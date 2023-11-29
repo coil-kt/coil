@@ -181,7 +181,7 @@ internal class MemoryCacheService(
         if (!request.memoryCachePolicy.writeEnabled) return false
         if (cacheKey == null) return false
         val memoryCache = imageLoader.memoryCache ?: return false
-        
+
         // TODO: Support adding shareable image to the memory cache.
         if (!result.image.shareable) return false
 
@@ -217,10 +217,10 @@ internal class MemoryCacheService(
 
     companion object {
         private const val TAG = "MemoryCacheService"
-        @VisibleForTesting internal const val EXTRA_TRANSFORMATION_INDEX = "coil#transformation_"
-        @VisibleForTesting internal const val EXTRA_TRANSFORMATION_SIZE = "coil#transformation_size"
-        @VisibleForTesting internal const val EXTRA_IS_SAMPLED = "coil#is_sampled"
-        @VisibleForTesting internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
+        internal const val EXTRA_TRANSFORMATION_INDEX = "coil#transformation_"
+        internal const val EXTRA_TRANSFORMATION_SIZE = "coil#transformation_size"
+        internal const val EXTRA_IS_SAMPLED = "coil#is_sampled"
+        internal const val EXTRA_DISK_CACHE_KEY = "coil#disk_cache_key"
     }
 }
 

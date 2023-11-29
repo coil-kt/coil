@@ -91,7 +91,9 @@ internal class RealImageLoader(
         requestDelegate.assertActive()
 
         // Apply this image loader's defaults to this request.
-        val request = initialRequest.newBuilder().defaults(defaults).build()
+        val request = initialRequest.newBuilder()
+            .defaults(defaults)
+            .build()
 
         // Create a new event listener.
         val eventListener = options.eventListenerFactory.create(request)
@@ -217,7 +219,6 @@ internal class RealImageLoader(
         val eventListenerFactory: EventListener.Factory,
         val componentRegistry: ComponentRegistry,
         val logger: Logger?,
-        val extras: Extras,
     )
 }
 

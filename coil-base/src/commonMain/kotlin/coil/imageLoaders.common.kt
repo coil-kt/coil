@@ -23,7 +23,7 @@ fun ImageLoader.Builder.addLastModifiedToFileCacheKey(enable: Boolean) = apply {
 }
 
 internal val RealImageLoader.Options.addLastModifiedToFileCacheKey: Boolean
-    get() = extras.getOrDefault(addLastModifiedToFileCacheKeyKey)
+    get() = defaults.extras.getOrDefault(addLastModifiedToFileCacheKeyKey)
 
 private val addLastModifiedToFileCacheKeyKey = Extras.Key(default = true)
 
@@ -44,7 +44,7 @@ fun ImageLoader.Builder.networkObserverEnabled(enable: Boolean) = apply {
 }
 
 internal val RealImageLoader.Options.networkObserverEnabled: Boolean
-    get() = extras.getOrDefault(networkObserverEnabledKey)
+    get() = defaults.extras.getOrDefault(networkObserverEnabledKey)
 
 private val networkObserverEnabledKey = Extras.Key(default = true)
 
