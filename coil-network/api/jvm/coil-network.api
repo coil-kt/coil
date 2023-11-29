@@ -31,14 +31,15 @@ public abstract interface class coil/network/CacheStrategy {
 }
 
 public final class coil/network/CacheStrategy$Input {
-	public fun <init> (Ljava/lang/String;Lcoil/request/Options;Lcoil/network/CacheResponse;)V
+	public fun <init> (Lcoil/network/CacheResponse;Lio/ktor/client/request/HttpRequestBuilder;Lcoil/request/Options;)V
 	public final fun getCacheResponse ()Lcoil/network/CacheResponse;
+	public final fun getNetworkRequest ()Lio/ktor/client/request/HttpRequestBuilder;
 	public final fun getOptions ()Lcoil/request/Options;
-	public final fun getUrl ()Ljava/lang/String;
 }
 
 public final class coil/network/CacheStrategy$Output {
 	public fun <init> (Lcoil/network/CacheResponse;)V
+	public fun <init> (Lcoil/network/CacheResponse;Lio/ktor/client/request/HttpRequestBuilder;)V
 	public fun <init> (Lio/ktor/client/request/HttpRequestBuilder;)V
 	public final fun getCacheResponse ()Lcoil/network/CacheResponse;
 	public final fun getNetworkRequest ()Lio/ktor/client/request/HttpRequestBuilder;

@@ -305,6 +305,7 @@ public abstract interface class coil/disk/DiskCache {
 	public abstract fun openEditor (Ljava/lang/String;)Lcoil/disk/DiskCache$Editor;
 	public abstract fun openSnapshot (Ljava/lang/String;)Lcoil/disk/DiskCache$Snapshot;
 	public abstract fun remove (Ljava/lang/String;)Z
+	public abstract fun shutdown ()V
 }
 
 public final class coil/disk/DiskCache$Builder {
