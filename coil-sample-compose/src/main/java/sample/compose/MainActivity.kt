@@ -44,7 +44,7 @@ import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import sample.common.AssetType
 import sample.common.Image
-import sample.common.AndroidMainViewModel
+import sample.common.MainViewModel
 import sample.common.R
 import sample.common.Screen
 import sample.common.calculateScaledSize
@@ -56,13 +56,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContent { Content() }
+        setContent { Content(viewModel()) }
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun Content(viewModel: AndroidMainViewModel = viewModel()) {
+private fun Content(viewModel: MainViewModel) {
     MaterialTheme(
         colors = lightColors(
             primary = Color.White,
