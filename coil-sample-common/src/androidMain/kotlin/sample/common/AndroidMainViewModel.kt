@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 class AndroidMainViewModel(
     application: Application,
-) : AndroidViewModel(application), MainViewModel by MainViewModel(application) {
+) : AndroidViewModel(application), MainViewModel by MainViewModel(AndroidResources(application)) {
     init {
         viewModelScope.launch { start() }
     }

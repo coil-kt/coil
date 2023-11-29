@@ -1,9 +1,7 @@
 package sample.common
 
 import coil.Extras
-import coil.PlatformContext
 import kotlin.random.Random
-import okio.Source
 
 fun AssetType.next(): AssetType {
     val entries = AssetType.entries
@@ -19,15 +17,13 @@ fun randomColor(): Int {
 }
 
 fun String.toColorInt(): Int {
-    // Use a long to avoid rollovers on #ffXXXXXX.
+    // Use a long to avoid rollovers on #FFXXXXXX.
     var color = substring(1).toLong(16)
     if (length == 7) {
         // Set the alpha value.
-        color = color or 0x00000000ff000000L
+        color = color or 0x00000000FF000000L
     }
     return color.toInt()
 }
 
 expect val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
-
-expect fun PlatformContext.openResource(name: String): Source

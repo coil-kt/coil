@@ -1,7 +1,6 @@
 package sample.common
 
 import coil.Extras
-import coil.PlatformContext
 import kotlin.js.JsName
 import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
@@ -11,12 +10,13 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okio.buffer
 import okio.use
 
 @JsName("newMainViewModel")
-fun MainViewModel(context: PlatformContext): MainViewModel {
-    return RealMainViewModel(context)
+fun MainViewModel(resources: Resources): MainViewModel {
+    return RealMainViewModel(resources)
 }
 
 interface MainViewModel {
@@ -29,7 +29,7 @@ interface MainViewModel {
 }
 
 private class RealMainViewModel(
-    private val context: PlatformContext,
+    private val resources: Resources,
 ) : MainViewModel {
 
     private val _images: MutableStateFlow<List<Image>> = MutableStateFlow(emptyList())
@@ -72,7 +72,7 @@ private class RealMainViewModel(
     }
 
     private fun loadImages(assetType: AssetType): List<Image> {
-        val json = context.openResource(assetType.fileName).buffer().use {
+        val json = resources.open(assetType.fileName).buffer().use {
             Json.parseToJsonElement(it.readUtf8()).jsonArray
         }
         return List(json.size) { index ->
@@ -81,18 +81,18 @@ private class RealMainViewModel(
             val url: String
             val color: Int
             if (assetType == AssetType.JPG) {
-                url = image.getValue("urls").jsonObject.getValue("regular").toString()
-                color = image.getValue("color").toString().toColorInt()
+                url = image.getValue("urls").jsonObject.getValue("regular").jsonPrimitive.content
+                color = image.getValue("color").jsonPrimitive.content.toColorInt()
             } else {
-                url = image.getValue("url").toString()
+                url = image.getValue("url").jsonPrimitive.content
                 color = randomColor()
             }
 
             Image(
                 uri = url,
                 color = color,
-                width = image.getValue("width").toString().toInt(),
-                height = image.getValue("height").toString().toInt()
+                width = image.getValue("width").jsonPrimitive.content.toInt(),
+                height = image.getValue("height").jsonPrimitive.content.toInt()
             )
         }
     }

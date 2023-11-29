@@ -3,11 +3,9 @@ package sample.common
 import android.content.Context
 import android.util.Size
 import coil.Extras
-import coil.PlatformContext
 import coil.request.videoFrameMicros
 import kotlin.math.ceil
 import kotlin.math.roundToInt
-import okio.Source
 
 fun numberOfColumns(context: Context): Int {
     val displayWidth = context.resources.displayMetrics.widthPixels
@@ -24,7 +22,3 @@ fun Image.calculateScaledSize(context: Context, numColumns: Int): Size {
 
 actual val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
     get() = videoFrameMicros
-
-actual fun PlatformContext.openResource(name: String): Source {
-    TODO()
-}

@@ -1,8 +1,5 @@
-
 import coil.addAllMultiplatformTargets
-import coil.jvmCommon
 import coil.nonAndroidMain
-import coil.nonJvmCommon
 import coil.setupLibraryModule
 
 plugins {
@@ -14,9 +11,7 @@ addAllMultiplatformTargets()
 setupLibraryModule(name = "sample.common", config = true)
 
 kotlin {
-    jvmCommon()
     nonAndroidMain()
-    nonJvmCommon()
 
     sourceSets {
         commonMain {
@@ -39,17 +34,17 @@ kotlin {
                 api(libs.ktor.engine.okhttp)
             }
         }
-        named("appleMain") {
+        appleMain {
             dependencies {
                 api(libs.ktor.engine.darwin)
             }
         }
-        named("jsMain") {
+        jsMain {
             dependencies {
                 api(libs.ktor.engine.js)
             }
         }
-        named("jvmMain") {
+        jvmMain {
             dependencies {
                 api(libs.ktor.engine.java)
             }
@@ -58,10 +53,11 @@ kotlin {
 }
 
 android {
-    sourceSets["main"].apply {
-        res.srcDirs(
-            "src/androidMain/resources",
-            "src/commonMain/resources",
-        )
+    sourceSets {
+        getByName("main") {
+            assets {
+                srcDirs("src/commonMain/resources")
+            }
+        }
     }
 }
