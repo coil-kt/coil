@@ -22,6 +22,7 @@ include(
     "coil-benchmark",
     "coil-sample-common",
     "coil-sample-compose",
+    "coil-sample-compose-common",
     "coil-sample-view",
     "coil-test-internal",
     "coil-test-paparazzi",

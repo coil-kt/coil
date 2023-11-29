@@ -32,13 +32,8 @@ compose {
 }
 
 dependencies {
-    implementation(projects.coilSampleCommon)
-    implementation(projects.coilComposeSingleton)
-    implementation(projects.coilGif)
-    implementation(projects.coilSvg)
-    implementation(projects.coilVideo)
+    implementation(projects.coilSampleComposeCommon)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.compose.material)
 }

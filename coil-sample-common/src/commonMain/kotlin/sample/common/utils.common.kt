@@ -1,6 +1,7 @@
 package sample.common
 
 import coil.Extras
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 fun AssetType.next(): AssetType {
@@ -26,4 +27,12 @@ fun String.toColorInt(): Int {
     return color.toInt()
 }
 
+fun Image.calculateScaledSize(displayWidth: Int): Pair<Int, Int> {
+    val columnWidth = (displayWidth / NUM_COLUMNS.toDouble()).roundToInt()
+    val scale = columnWidth / width.toDouble()
+    return columnWidth to (scale * height).roundToInt()
+}
+
 expect val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
+
+const val NUM_COLUMNS = 4
