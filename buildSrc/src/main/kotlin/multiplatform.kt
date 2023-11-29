@@ -8,8 +8,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 fun Project.addAllMultiplatformTargets() {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.getByType<KotlinMultiplatformExtension>().apply {
-            val hasAndroidPlugin = plugins.hasPlugin("com.android.library")
-            if (hasAndroidPlugin) {
+            if (plugins.hasPlugin("com.android.library")) {
                 androidTarget {
                     publishLibraryVariants("release")
                 }
@@ -33,6 +32,17 @@ fun Project.addAllMultiplatformTargets() {
         }
     }
 }
+
+fun KotlinSourceSetContainer.darwinMain() = createSourceSet(
+    name = "darwinMain",
+    children = listOf(
+        "iosArm64Main",
+        "iosX64Main",
+        "iosSimulatorArm64Main",
+        "macosArm64Main",
+        "macosX64Main",
+    ),
+)
 
 fun KotlinSourceSetContainer.jvmCommon() = createSourceSet(
     name = "jvmCommon",
@@ -58,9 +68,8 @@ private fun KotlinSourceSetContainer.createSourceSet(
     name: String,
     children: List<String>,
 ) {
-    val sourceSet = sourceSets.create(name).apply {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
+    val sourceSet = sourceSets.create(name)
+    sourceSet.dependsOn(sourceSets.getByName("commonMain"))
     for (child in children) {
         sourceSets.getByName(child).dependsOn(sourceSet)
     }

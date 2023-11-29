@@ -44,7 +44,7 @@ import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import sample.common.AssetType
 import sample.common.Image
-import sample.common.MainViewModel
+import sample.common.AndroidMainViewModel
 import sample.common.R
 import sample.common.Screen
 import sample.common.calculateScaledSize
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun Content(viewModel: MainViewModel = viewModel()) {
+private fun Content(viewModel: AndroidMainViewModel = viewModel()) {
     MaterialTheme(
         colors = lightColors(
             primary = Color.White,

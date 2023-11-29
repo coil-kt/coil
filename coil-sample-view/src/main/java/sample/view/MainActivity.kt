@@ -19,7 +19,7 @@ import coil.load
 import kotlinx.coroutines.launch
 import sample.common.AssetType
 import sample.common.Image
-import sample.common.MainViewModel
+import sample.common.AndroidMainViewModel
 import sample.common.Screen
 import sample.common.next
 import sample.common.numberOfColumns
@@ -27,7 +27,7 @@ import sample.view.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: AndroidMainViewModel by viewModels()
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var listAdapter: ImageListAdapter

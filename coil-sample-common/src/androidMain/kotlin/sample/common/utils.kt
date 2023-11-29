@@ -1,26 +1,13 @@
 package sample.common
 
 import android.content.Context
-import android.graphics.Color
 import android.util.Size
-import androidx.annotation.ColorInt
-import androidx.lifecycle.AndroidViewModel
+import coil.Extras
+import coil.PlatformContext
+import coil.request.videoFrameMicros
 import kotlin.math.ceil
 import kotlin.math.roundToInt
-import kotlin.random.Random
-
-val AndroidViewModel.context: Context
-    get() = getApplication()
-
-@ColorInt
-fun randomColor(): Int {
-    return Color.argb(128, Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
-}
-
-fun AssetType.next(): AssetType {
-    val values = AssetType.values()
-    return values[(values.indexOf(this) + 1) % values.size]
-}
+import okio.Source
 
 fun numberOfColumns(context: Context): Int {
     val displayWidth = context.resources.displayMetrics.widthPixels
@@ -33,4 +20,11 @@ fun Image.calculateScaledSize(context: Context, numColumns: Int): Size {
     val columnWidth = (displayWidth / numColumns.toDouble()).roundToInt()
     val scale = columnWidth / width.toDouble()
     return Size(columnWidth, (scale * height).roundToInt())
+}
+
+actual val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
+    get() = videoFrameMicros
+
+actual fun PlatformContext.openResource(name: String): Source {
+    TODO()
 }
