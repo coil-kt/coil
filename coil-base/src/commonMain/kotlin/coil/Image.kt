@@ -1,5 +1,12 @@
 package coil
 
+/**
+ * A platform-agnostic image class that exposes basic metadata about the underlying native
+ * image representation.
+ *
+ * To draw the image it must be converted into its platform-specific graphics system representation.
+ * Use `image.drawable` on Android and `image.bitmap` on non-Android platforms.
+ */
 interface Image {
 
     /** The size of the image in memory in bytes. */
