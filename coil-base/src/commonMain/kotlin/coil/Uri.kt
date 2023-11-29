@@ -69,7 +69,7 @@ private fun parseUri(data: String): Uri {
     }
 
     // The query must come before the fragment.
-    if (fragmentStartIndex < queryStartIndex) {
+    if (fragmentStartIndex != -1 && fragmentStartIndex < queryStartIndex) {
         queryStartIndex = -1
         fragmentStartIndex = -1
     }
