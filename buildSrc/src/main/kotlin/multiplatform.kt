@@ -33,17 +33,6 @@ fun Project.addAllMultiplatformTargets() {
     }
 }
 
-fun KotlinSourceSetContainer.darwinMain() = createSourceSet(
-    name = "darwinMain",
-    children = listOf(
-        "iosArm64Main",
-        "iosX64Main",
-        "iosSimulatorArm64Main",
-        "macosArm64Main",
-        "macosX64Main",
-    ),
-)
-
 fun KotlinSourceSetContainer.jvmCommon() = createSourceSet(
     name = "jvmCommon",
     children = listOf("androidMain", "jvmMain"),

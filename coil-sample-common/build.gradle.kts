@@ -1,6 +1,5 @@
 
 import coil.addAllMultiplatformTargets
-import coil.darwinMain
 import coil.jvmCommon
 import coil.nonAndroidMain
 import coil.nonJvmCommon
@@ -15,7 +14,6 @@ addAllMultiplatformTargets()
 setupLibraryModule(name = "sample.common", config = true)
 
 kotlin {
-    darwinMain()
     jvmCommon()
     nonAndroidMain()
     nonJvmCommon()
@@ -41,7 +39,7 @@ kotlin {
                 api(libs.ktor.engine.okhttp)
             }
         }
-        named("darwinMain") {
+        named("appleMain") {
             dependencies {
                 api(libs.ktor.engine.darwin)
             }
