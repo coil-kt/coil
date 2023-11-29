@@ -12,7 +12,7 @@ roborazzi = "1.6.0"
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
 dokka = "org.jetbrains.dokka:1.9.10"
-spotless = "com.diffplug.spotless:6.23.0"
+spotless = "com.diffplug.spotless:6.23.1"
 
 [libraries]
 gradlePlugin-android = "com.android.tools.build:gradle:8.1.4"
