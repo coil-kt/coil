@@ -51,6 +51,7 @@ internal class RealImageLoader(
     override val diskCache by options.diskCacheLazy
     override val components = options.componentRegistry.newBuilder()
         .addAndroidComponents(options)
+        .addJvmComponents(options)
         .addCommonComponents(options)
         .add(EngineInterceptor(this, requestService, options.logger))
         .build()
