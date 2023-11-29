@@ -42,12 +42,12 @@ internal data class ContentPainterModifier(
         properties["contentScale"] = contentScale
         properties["alpha"] = alpha
         properties["colorFilter"] = colorFilter
-    }
+    },
 ) {
 
     override fun MeasureScope.measure(
         measurable: Measurable,
-        constraints: Constraints
+        constraints: Constraints,
     ): MeasureResult {
         val placeable = measurable.measure(modifyConstraints(constraints))
         return layout(placeable.width, placeable.height) {
@@ -57,7 +57,7 @@ internal data class ContentPainterModifier(
 
     override fun IntrinsicMeasureScope.minIntrinsicWidth(
         measurable: IntrinsicMeasurable,
-        height: Int
+        height: Int,
     ): Int {
         return if (painter.intrinsicSize.isSpecified) {
             val constraints = Constraints(maxHeight = height)
@@ -71,7 +71,7 @@ internal data class ContentPainterModifier(
 
     override fun IntrinsicMeasureScope.maxIntrinsicWidth(
         measurable: IntrinsicMeasurable,
-        height: Int
+        height: Int,
     ): Int {
         return if (painter.intrinsicSize.isSpecified) {
             val constraints = Constraints(maxHeight = height)
@@ -85,11 +85,12 @@ internal data class ContentPainterModifier(
 
     override fun IntrinsicMeasureScope.minIntrinsicHeight(
         measurable: IntrinsicMeasurable,
-        width: Int
+        width: Int,
     ): Int {
         return if (painter.intrinsicSize.isSpecified) {
             val constraints = Constraints(maxWidth = width)
-            val layoutHeight = measurable.minIntrinsicHeight(modifyConstraints(constraints).maxWidth)
+            val layoutHeight =
+                measurable.minIntrinsicHeight(modifyConstraints(constraints).maxWidth)
             val scaledSize = calculateScaledSize(Size(width.toFloat(), layoutHeight.toFloat()))
             maxOf(scaledSize.height.roundToInt(), layoutHeight)
         } else {
@@ -99,11 +100,12 @@ internal data class ContentPainterModifier(
 
     override fun IntrinsicMeasureScope.maxIntrinsicHeight(
         measurable: IntrinsicMeasurable,
-        width: Int
+        width: Int,
     ): Int {
         return if (painter.intrinsicSize.isSpecified) {
             val constraints = Constraints(maxWidth = width)
-            val layoutHeight = measurable.maxIntrinsicHeight(modifyConstraints(constraints).maxWidth)
+            val layoutHeight =
+                measurable.maxIntrinsicHeight(modifyConstraints(constraints).maxWidth)
             val scaledSize = calculateScaledSize(Size(width.toFloat(), layoutHeight.toFloat()))
             maxOf(scaledSize.height.roundToInt(), layoutHeight)
         } else {
@@ -123,7 +125,7 @@ internal data class ContentPainterModifier(
 
         val srcSize = Size(
             width = intrinsicSize.width.takeOrElse { dstSize.width },
-            height = intrinsicSize.height.takeOrElse { dstSize.height }
+            height = intrinsicSize.height.takeOrElse { dstSize.height },
         )
         val scaleFactor = contentScale.computeScaleFactor(srcSize, dstSize)
         if (!scaleFactor.scaleX.isFinite() || !scaleFactor.scaleY.isFinite()) {
@@ -148,7 +150,7 @@ internal data class ContentPainterModifier(
             if (hasBoundedSize) {
                 return constraints.copy(
                     minWidth = constraints.maxWidth,
-                    minHeight = constraints.maxHeight
+                    minHeight = constraints.maxHeight,
                 )
             } else {
                 return constraints
@@ -179,7 +181,7 @@ internal data class ContentPainterModifier(
         val (scaledWidth, scaledHeight) = calculateScaledSize(Size(dstWidth, dstHeight))
         return constraints.copy(
             minWidth = constraints.constrainWidth(scaledWidth.roundToInt()),
-            minHeight = constraints.constrainHeight(scaledHeight.roundToInt())
+            minHeight = constraints.constrainHeight(scaledHeight.roundToInt()),
         )
     }
 
@@ -188,7 +190,7 @@ internal data class ContentPainterModifier(
         val (dx, dy) = alignment.align(
             size = scaledSize.toIntSize(),
             space = size.toIntSize(),
-            layoutDirection = layoutDirection
+            layoutDirection = layoutDirection,
         )
 
         // Draw the painter.
