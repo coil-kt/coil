@@ -31,9 +31,9 @@ class RequestServiceTest {
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
+        context = ApplicationProvider.getApplicationContext() as Context
         val imageLoader = ImageLoader(context) as RealImageLoader
-        val systemCallbacks = SystemCallbacks(imageLoader, context, true)
+        val systemCallbacks = SystemCallbacks(imageLoader.options)
         service = RequestService(imageLoader, systemCallbacks, null)
     }
 
@@ -132,6 +132,6 @@ class RequestServiceTest {
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build()
         val options = service.options(request, Size(100, 100))
-        assertEquals(Bitmap.Config.RGB_565, options.config)
+        assertEquals(Bitmap.Config.RGB_565, options.bitmapConfig)
     }
 }

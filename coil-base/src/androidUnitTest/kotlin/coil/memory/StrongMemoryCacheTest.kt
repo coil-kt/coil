@@ -2,7 +2,7 @@ package coil.memory
 
 import coil.memory.MemoryCache.Key
 import coil.util.DEFAULT_BITMAP_SIZE
-import coil.util.createBitmap
+import coil.util.FakeImage
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -16,27 +16,27 @@ class StrongMemoryCacheTest {
     @Test
     fun `can retrieve cached value`() {
         val weakCache = EmptyWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2 * DEFAULT_BITMAP_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2L * DEFAULT_BITMAP_SIZE, weakCache)
 
-        val bitmap = createBitmap()
-        strongCache.set(Key("1"), bitmap, emptyMap())
+        val image = FakeImage()
+        strongCache.set(Key("1"), image, emptyMap(), image.size)
 
-        assertEquals(bitmap, strongCache.get(Key("1"))?.bitmap)
+        assertEquals(image, strongCache.get(Key("1"))?.image)
     }
 
     @Test
     fun `least recently used value is evicted`() {
         val weakCache = RealWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2 * DEFAULT_BITMAP_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2L * DEFAULT_BITMAP_SIZE, weakCache)
 
-        val first = createBitmap()
-        strongCache.set(Key("1"), first, emptyMap())
+        val first = FakeImage()
+        strongCache.set(Key("1"), first, emptyMap(), first.size)
 
-        val second = createBitmap()
-        strongCache.set(Key("2"), second, emptyMap())
+        val second = FakeImage()
+        strongCache.set(Key("2"), second, emptyMap(), second.size)
 
-        val third = createBitmap()
-        strongCache.set(Key("3"), third, emptyMap())
+        val third = FakeImage()
+        strongCache.set(Key("3"), third, emptyMap(), third.size)
 
         assertNull(strongCache.get(Key("1")))
         assertNotNull(weakCache.get(Key("1")))
@@ -45,10 +45,10 @@ class StrongMemoryCacheTest {
     @Test
     fun `value can be removed`() {
         val weakCache = RealWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2 * DEFAULT_BITMAP_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2L * DEFAULT_BITMAP_SIZE, weakCache)
 
-        val bitmap = createBitmap()
-        strongCache.set(Key("1"), bitmap, emptyMap())
+        val image = FakeImage()
+        strongCache.set(Key("1"), image, emptyMap(), image.size)
         strongCache.remove(Key("1"))
 
         assertNull(strongCache.get(Key("1")))
