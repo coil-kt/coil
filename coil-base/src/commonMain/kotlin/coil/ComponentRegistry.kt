@@ -52,7 +52,7 @@ class ComponentRegistry private constructor(
      */
     fun key(data: Any, options: Options): String? {
         keyers.forEachIndices { (keyer, type) ->
-            if (type.isInstance(data::class)) {
+            if (type.isInstance(data)) {
                 (keyer as Keyer<Any>).key(data, options)?.let { return it }
             }
         }
