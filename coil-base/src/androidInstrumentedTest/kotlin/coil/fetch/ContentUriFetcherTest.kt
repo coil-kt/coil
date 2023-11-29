@@ -88,7 +88,7 @@ class ContentUriFetcherTest {
     private suspend fun assertUriFetchesCorrectly(fetcher: ContentUriFetcher) {
         val result = fetcher.fetch()
 
-        assertTrue(result is SourceFetchResult)
+        assertIs<SourceFetchResult>(result)
         assertEquals("image/jpeg", result.mimeType)
         assertFalse(result.source.source().exhausted())
     }

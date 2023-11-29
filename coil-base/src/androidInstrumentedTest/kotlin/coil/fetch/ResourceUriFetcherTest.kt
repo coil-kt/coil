@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
 import coil.base.test.R
@@ -13,6 +12,7 @@ import coil.map.ResourceIntMapper
 import coil.map.ResourceUriMapper
 import coil.request.Options
 import coil.size.Size
+import coil.toUri
 import coil.util.ViewTestActivity
 import coil.util.assertIsSimilarTo
 import coil.util.assumeTrue
@@ -20,6 +20,7 @@ import coil.util.getDrawableCompat
 import coil.util.launchActivity
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
@@ -44,7 +45,7 @@ class ResourceUriFetcherTest {
         val options = Options(context, size = Size(100, 100))
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
-        assertTrue(result is SourceFetchResult)
+        assertIs<SourceFetchResult>(result)
         assertEquals("image/jpeg", result.mimeType)
         assertFalse(result.source.source().exhausted())
     }
@@ -69,7 +70,7 @@ class ResourceUriFetcherTest {
         val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
-        assertTrue(result is SourceFetchResult)
+        assertIs<SourceFetchResult>(result)
         assertEquals("image/png", result.mimeType)
         assertFalse(result.source.source().exhausted())
     }

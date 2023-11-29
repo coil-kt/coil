@@ -3,10 +3,10 @@ package coil.map
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.Context
 import android.content.res.Resources
-import android.net.Uri
 import androidx.annotation.DrawableRes
-import androidx.core.net.toUri
+import coil.Uri
 import coil.request.Options
+import coil.toUri
 
 internal class ResourceIntMapper : Mapper<Int, Uri> {
 

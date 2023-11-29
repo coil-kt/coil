@@ -1,4 +1,5 @@
 import coil.addAllMultiplatformTargets
+import coil.nonAndroidMain
 import coil.setupLibraryModule
 
 plugins {
@@ -11,11 +12,14 @@ addAllMultiplatformTargets()
 setupLibraryModule(name = "coil.test.internal")
 
 kotlin {
+    nonAndroidMain()
+
     sourceSets {
         commonMain {
             dependencies {
                 api(projects.coilBase)
                 api(libs.coroutines.test)
+                api(libs.okio.fakefilesystem)
             }
         }
         commonTest {
@@ -31,6 +35,7 @@ kotlin {
                 api(libs.androidx.test.core)
                 api(libs.androidx.test.junit)
                 api(libs.junit)
+                api(libs.robolectric)
             }
         }
     }

@@ -7,9 +7,10 @@ import coil.request.Options
 import coil.size.Size
 import coil.util.copyAssetToFile
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
+import okio.Path.Companion.toOkioPath
 import org.junit.Before
 import org.junit.Test
 
@@ -24,7 +25,7 @@ class FileFetcherTest {
 
     @Test
     fun basic() = runTest {
-        val file = context.copyAssetToFile("normal.jpg")
+        val file = context.copyAssetToFile("normal.jpg").toOkioPath()
         val options = Options(context, size = Size(100, 100))
         val fetcher = PathFetcher.Factory().create(file, options, ImageLoader(context))
 
@@ -32,7 +33,7 @@ class FileFetcherTest {
 
         val result = fetcher.fetch()
 
-        assertTrue(result is SourceFetchResult)
+        assertIs<SourceFetchResult>(result)
         assertEquals("image/jpeg", result.mimeType)
         assertNotNull(result.source.file())
     }

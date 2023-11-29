@@ -1,12 +1,17 @@
 package coil.util
 
 import coil.Image
+import coil.PlatformContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
+
+expect fun PlatformContext(): PlatformContext
+
+expect abstract class PlatformContextTest()
 
 fun FakeImage(
     width: Int = 100,

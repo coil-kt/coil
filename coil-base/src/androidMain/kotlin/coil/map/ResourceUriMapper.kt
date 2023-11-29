@@ -1,9 +1,10 @@
 package coil.map
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
-import android.net.Uri
-import androidx.core.net.toUri
+import coil.Uri
+import coil.pathSegments
 import coil.request.Options
+import coil.toUri
 
 /**
  * Maps android.resource uris with resource names to uris containing their resources ID. i.e.:

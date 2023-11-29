@@ -31,6 +31,7 @@ kotlin {
         }
         commonTest {
             dependencies {
+                implementation(projects.coilTestInternal)
                 implementation(libs.bundles.test.common)
             }
         }

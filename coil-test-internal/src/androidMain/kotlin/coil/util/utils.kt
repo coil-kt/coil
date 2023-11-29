@@ -8,9 +8,11 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.ActivityAction
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import coil.Image
+import coil.PlatformContext
 import coil.drawable
 import java.io.File
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +21,15 @@ import okio.buffer
 import okio.sink
 import okio.source
 import org.junit.Assume
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+
+actual fun PlatformContext(): PlatformContext {
+    return ApplicationProvider.getApplicationContext()
+}
+
+@RunWith(RobolectricTestRunner::class)
+actual abstract class PlatformContextTest
 
 /** Alias for [Assume.assumeTrue]. */
 fun assumeTrue(actual: Boolean, message: String = "") {

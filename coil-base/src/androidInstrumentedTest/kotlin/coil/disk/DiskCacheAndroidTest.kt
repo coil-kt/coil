@@ -30,7 +30,8 @@ class DiskCacheAndroidTest {
         val maximumMaxSizeBytes = 200L
         val maxSizePercent = 0.5
 
-        val diskCache = DiskCache.Builder().directory(directory)
+        val diskCache = DiskCache.Builder()
+            .directory(directory)
             .maxSizePercent(maxSizePercent)
             .minimumMaxSizeBytes(minimumMaxSizeBytes)
             .maximumMaxSizeBytes(maximumMaxSizeBytes)

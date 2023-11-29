@@ -2,16 +2,16 @@ package coil.fetch
 
 import android.content.ContentResolver.SCHEME_FILE
 import android.content.Context
-import android.net.Uri
-import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import coil.ImageLoader
+import coil.Uri
 import coil.request.Options
+import coil.toUri
 import coil.util.ASSET_FILE_PATH_ROOT
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -48,7 +48,7 @@ class AssetUriFetcherTest {
             )
         ).fetch()
 
-        assertTrue(result is SourceFetchResult)
+        assertIs<SourceFetchResult>(result)
         assertEquals("image/jpeg", result.mimeType)
         assertFalse(result.source.source().exhausted())
     }

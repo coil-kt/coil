@@ -14,7 +14,7 @@ class FileUriKeyer(
             val path = data.path
             if (path != null) {
                 val timestamp = options.fileSystem.metadata(path.toPath()).lastModifiedAtMillis
-                return "$data:$timestamp"
+                return "$data-$timestamp"
             }
         }
         return null
