@@ -4,7 +4,7 @@ package coil.util
  * A least recently used cache that evicts the eldest entry when the cache's current size
  * exceeds its max size.
  */
-internal abstract class LruCache<K : Any, V : Any>(
+internal open class LruCache<K : Any, V : Any>(
     val maxSize: Long,
 ) {
     private val map = LruMutableMap<K, V>()
@@ -24,8 +24,8 @@ internal abstract class LruCache<K : Any, V : Any>(
         require(maxSize > 0) { "maxSize <= 0" }
     }
 
-    /** Implementations **must** return a consistent value for the same [value]. */
-    abstract fun sizeOf(key: K, value: V): Long
+    /** Implementations **must** return a consistent, non-negative value for the same entry. */
+    open fun sizeOf(key: K, value: V): Long = 1L
 
     open fun entryRemoved(key: K, oldValue: V, newValue: V?) {}
 
@@ -43,7 +43,7 @@ internal abstract class LruCache<K : Any, V : Any>(
         return oldValue
     }
 
-    fun get(key: K): V? {
+    operator fun get(key: K): V? {
         return map[key]
     }
 
@@ -57,12 +57,11 @@ internal abstract class LruCache<K : Any, V : Any>(
     }
 
     fun trimToSize(size: Long) {
-        while (true) {
-            if (this.size < 0 || map.isEmpty()) {
-                error("sizeOf() is returning inconsistent values.")
-            }
-
-            if (this.size > size) {
+        while (this.size > size) {
+            if (map.isEmpty()) {
+                if (this.size != 0L) {
+                    error("sizeOf() is returning inconsistent values")
+                }
                 break
             }
 

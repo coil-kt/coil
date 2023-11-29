@@ -83,7 +83,7 @@ internal class RealStrongMemoryCache(
         get() = synchronized(lock) { cache.keys }
 
     override fun get(key: Key): Value? = synchronized(lock) {
-        return cache.get(key)?.let { Value(it.image, it.extras) }
+        return cache[key]?.let { Value(it.image, it.extras) }
     }
 
     override fun set(
