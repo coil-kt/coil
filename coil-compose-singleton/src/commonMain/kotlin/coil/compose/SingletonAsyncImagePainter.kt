@@ -42,6 +42,7 @@ import coil.request.ImageRequest
  *  destination.
  */
 @Composable
+@NonRestartableComposable
 fun rememberAsyncImagePainter(
     model: Any?,
     placeholder: Painter? = null,

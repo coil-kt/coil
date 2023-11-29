@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -76,6 +77,7 @@ import kotlinx.coroutines.launch
  *  destination.
  */
 @Composable
+@NonRestartableComposable
 fun rememberAsyncImagePainter(
     model: Any?,
     imageLoader: ImageLoader,
