@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package coil
 
 import coil.decode.Decoder
@@ -35,6 +33,7 @@ class ComponentRegistry private constructor(
      *
      * @return The mapped data.
      */
+    @Suppress("UNCHECKED_CAST")
     fun map(data: Any, options: Options): Any {
         var mappedData = data
         mappers.forEachIndices { (mapper, type) ->
@@ -50,6 +49,7 @@ class ComponentRegistry private constructor(
      *
      * @return The cache key, or 'null' if [data] should not be cached.
      */
+    @Suppress("UNCHECKED_CAST")
     fun key(data: Any, options: Options): String? {
         keyers.forEachIndices { (keyer, type) ->
             if (type.isInstance(data)) {
@@ -67,6 +67,7 @@ class ComponentRegistry private constructor(
      *  Returns 'null' if a [Fetcher] cannot be created for [data].
      */
     @JvmOverloads
+    @Suppress("UNCHECKED_CAST")
     fun newFetcher(
         data: Any,
         options: Options,
