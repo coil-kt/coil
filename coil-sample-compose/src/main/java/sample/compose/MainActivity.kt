@@ -66,15 +66,15 @@ private fun Content(viewModel: MainViewModel) {
     MaterialTheme(
         colors = lightColors(
             primary = Color.White,
-            onPrimary = Color.Black
-        )
+            onPrimary = Color.Black,
+        ),
     ) {
         val screen by viewModel.screen.collectAsState()
         Scaffold(
             topBar = {
                 Toolbar(
                     assetType = viewModel.assetType.collectAsState().value,
-                    onAssetTypeChange = { viewModel.assetType.value = it }
+                    onAssetTypeChange = { viewModel.assetType.value = it },
                 )
             },
             content = { padding ->
@@ -82,13 +82,13 @@ private fun Content(viewModel: MainViewModel) {
                     ScaffoldContent(
                         screen = screen,
                         onScreenChange = { viewModel.screen.value = it },
-                        images = viewModel.images.collectAsState().value
+                        images = viewModel.images.collectAsState().value,
                     )
                 }
             },
             modifier = Modifier.semantics {
                 testTagsAsResourceId = true
-            }
+            },
         )
         BackHandler(enabled = screen is Screen.Detail) {
             viewModel.onBackPressed()
@@ -104,7 +104,7 @@ private fun Toolbar(
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
         actions = { AssetTypeButton(assetType, onAssetTypeChange) },
-        modifier = Modifier.statusBarsPadding()
+        modifier = Modifier.statusBarsPadding(),
     )
 }
 
@@ -115,7 +115,7 @@ private fun AssetTypeButton(
 ) {
     IconButton(
         onClick = { onAssetTypeChange(assetType.next()) },
-        content = { Text(assetType.name) }
+        content = { Text(assetType.name) },
     )
 }
 
@@ -141,7 +141,7 @@ private fun ScaffoldContent(
                 images = images,
                 onImageClick = { image, placeholder ->
                     onScreenChange(Screen.Detail(image, placeholder))
-                }
+                },
             )
         }
     }
@@ -156,7 +156,7 @@ private fun DetailScreen(screen: Screen.Detail) {
             .apply { extras.setAll(screen.image.extras) }
             .build(),
         contentDescription = null,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     )
 }
 
@@ -197,7 +197,7 @@ private fun ListScreen(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(size)
-                    .clickable { onImageClick(image, placeholder) }
+                    .clickable { onImageClick(image, placeholder) },
             )
         }
     }
