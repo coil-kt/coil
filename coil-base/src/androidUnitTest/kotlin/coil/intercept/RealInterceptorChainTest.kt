@@ -38,51 +38,67 @@ class RealInterceptorChainTest {
 
     @Test
     fun `interceptor cannot set data to null`() = runTest {
-        val request = createRequest(context) {
+        val initialRequest = createRequest(context) {
             data("https://example.com/image.jpg")
         }
+        var request: ImageRequest
         val interceptor = Interceptor { chain ->
-            chain.proceed(chain.request.newBuilder().data(null).build())
+            request = chain.request.newBuilder()
+                .data(null)
+                .build()
+            chain.withRequest(request).proceed()
         }
         assertFailsWith<IllegalStateException> {
-            testChain(request, listOf(interceptor))
+            testChain(initialRequest, listOf(interceptor))
         }
     }
 
     @Test
     fun `interceptor cannot modify target`() = runTest {
-        val request = createRequest(context) {
+        val initialRequest = createRequest(context) {
             target(ImageView(context))
         }
+        var request: ImageRequest
         val interceptor = Interceptor { chain ->
-            chain.proceed(chain.request.newBuilder().target(ImageView(context)).build())
+            request = chain.request.newBuilder()
+                .target(ImageView(context))
+                .build()
+            chain.withRequest(request).proceed()
         }
         assertFailsWith<IllegalStateException> {
-            testChain(request, listOf(interceptor))
+            testChain(initialRequest, listOf(interceptor))
         }
     }
 
     @Test
     fun `interceptor cannot modify lifecycle`() = runTest {
-        val request = createRequest(context) {
+        val initialRequest = createRequest(context) {
             lifecycle(FakeLifecycle())
         }
+        var request: ImageRequest
         val interceptor = Interceptor { chain ->
-            chain.proceed(chain.request.newBuilder().lifecycle(FakeLifecycle()).build())
+            request = chain.request.newBuilder()
+                .lifecycle(FakeLifecycle())
+                .build()
+            chain.withRequest(request).proceed()
         }
         assertFailsWith<IllegalStateException> {
-            testChain(request, listOf(interceptor))
+            testChain(initialRequest, listOf(interceptor))
         }
     }
 
     @Test
     fun `interceptor cannot modify sizeResolver`() = runTest {
-        val request = createRequest(context)
+        val initialRequest = createRequest(context)
+        var request: ImageRequest
         val interceptor = Interceptor { chain ->
-            chain.proceed(chain.request.newBuilder().size(Size(100, 100)).build())
+            request = chain.request.newBuilder()
+                .size(Size(100, 100))
+                .build()
+            chain.withRequest(request).proceed()
         }
         assertFailsWith<IllegalStateException> {
-            testChain(request, listOf(interceptor))
+            testChain(initialRequest, listOf(interceptor))
         }
     }
 
@@ -92,18 +108,24 @@ class RealInterceptorChainTest {
         var request = initialRequest
         val interceptor1 = Interceptor { chain ->
             assertSame(request, chain.request)
-            request = chain.request.newBuilder().memoryCacheKey(MemoryCache.Key("test")).build()
-            chain.proceed(request)
+            request = chain.request.newBuilder()
+                .memoryCacheKey(MemoryCache.Key("test"))
+                .build()
+            chain.withRequest(request).proceed()
         }
         val interceptor2 = Interceptor { chain ->
             assertSame(request, chain.request)
-            request = chain.request.newBuilder().bitmapConfig(Bitmap.Config.RGB_565).build()
-            chain.proceed(request)
+            request = chain.request.newBuilder()
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .build()
+            chain.withRequest(request).proceed()
         }
         val interceptor3 = Interceptor { chain ->
             assertSame(request, chain.request)
-            request = chain.request.newBuilder().transformations(CircleCropTransformation()).build()
-            chain.proceed(request)
+            request = chain.request.newBuilder()
+                .transformations(CircleCropTransformation())
+                .build()
+            chain.withRequest(request).proceed()
         }
         val result = testChain(request, listOf(interceptor1, interceptor2, interceptor3))
 
@@ -120,17 +142,17 @@ class RealInterceptorChainTest {
         val interceptor1 = Interceptor { chain ->
             assertEquals(size, chain.size)
             size = Size(123, 456)
-            chain.withSize(size).proceed(chain.request)
+            chain.withSize(size).withRequest(chain.request).proceed()
         }
         val interceptor2 = Interceptor { chain ->
             assertEquals(size, chain.size)
             size = Size(1728, 400)
-            chain.withSize(size).proceed(chain.request)
+            chain.withSize(size).withRequest(chain.request).proceed()
         }
         val interceptor3 = Interceptor { chain ->
             assertEquals(size, chain.size)
             size = Size.ORIGINAL
-            chain.withSize(size).proceed(chain.request)
+            chain.withSize(size).withRequest(chain.request).proceed()
         }
         val result = testChain(request, listOf(interceptor1, interceptor2, interceptor3))
 
@@ -146,13 +168,16 @@ class RealInterceptorChainTest {
                 .memoryCacheKey(MemoryCache.Key("test"))
                 .build()
             assertEquals(chain.withRequest(request).request, request)
-            chain.proceed(request)
+            chain.withRequest(request).proceed()
         }
 
         testChain(initialRequest, listOf(interceptor1))
     }
 
-    private suspend fun testChain(request: ImageRequest, interceptors: List<Interceptor>): ImageResult {
+    private suspend fun testChain(
+        request: ImageRequest,
+        interceptors: List<Interceptor>
+    ): ImageResult {
         val chain = RealInterceptorChain(
             initialRequest = request,
             interceptors = interceptors + FakeInterceptor(),
@@ -162,6 +187,6 @@ class RealInterceptorChainTest {
             eventListener = EventListener.NONE,
             isPlaceholderCached = false
         )
-        return chain.proceed(request)
+        return chain.withRequest(request).proceed()
     }
 }
