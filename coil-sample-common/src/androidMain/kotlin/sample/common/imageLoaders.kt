@@ -1,7 +1,6 @@
 package sample.common
 
 import android.os.Build.VERSION.SDK_INT
-import androidx.core.graphics.toColorInt
 import coil.ComponentRegistry
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -15,7 +14,6 @@ internal actual fun ComponentRegistry.Builder.addPlatformComponents() {
     } else {
         add(GifDecoder.Factory())
     }
-    "".toColorInt()
     // SVGs
     add(SvgDecoder.Factory())
     // Video frames
