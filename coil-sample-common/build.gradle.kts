@@ -46,6 +46,7 @@ kotlin {
         }
         jvmMain {
             dependencies {
+                api(libs.coroutines.swing)
                 api(libs.ktor.engine.java)
             }
         }
