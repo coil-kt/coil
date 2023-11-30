@@ -23,11 +23,11 @@ class SkiaImageDecoder(
         val bitmap: Bitmap
         try {
             bitmap = Bitmap.makeFromImage(image, options)
+            bitmap.setImmutable()
             isSampled = bitmap.width < image.width || bitmap.height < image.height
         } finally {
             image.close()
         }
-        bitmap.setImmutable()
 
         return DecodeResult(
             image = bitmap.asCoilImage(),
