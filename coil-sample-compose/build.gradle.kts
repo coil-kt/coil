@@ -1,4 +1,3 @@
-
 import coil.setupAppModule
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
