@@ -13,7 +13,7 @@ fun main() = application {
     val viewModel = MainViewModel(JvmResources())
     LaunchedEffect(Unit) {
         SingletonImageLoader.set {
-            newImageLoader(PlatformContext.INSTANCE, false)
+            newImageLoader(PlatformContext.INSTANCE)
         }
         viewModel.start()
     }

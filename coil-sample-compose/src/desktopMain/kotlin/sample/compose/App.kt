@@ -15,6 +15,4 @@ actual fun containerSize(): IntSize {
 actual fun BackHandler(
     enabled: Boolean,
     onBack: () -> Unit,
-) {
-    // TODO: Support this on non-Android.
-}
+) { /* Do nothing. */ }

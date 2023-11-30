@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil.Image
 import coil.bitmap
+import coil.decode.DataSource
 import coil.request.SuccessResult
 import coil.request.crossfadeMillis
 
@@ -29,6 +30,16 @@ internal actual fun maybeNewCrossfadePainter(
         else -> return null
     }
 
+    // Only animate successful requests.
+    if (result !is SuccessResult) {
+        return null
+    }
+
+    // Don't animate if the request was fulfilled by the memory cache.
+    if (result.dataSource == DataSource.MEMORY_CACHE) {
+        return null
+    }
+
     // Wrap the painter in a CrossfadePainter if it has crossfadeMillis set.
     val crossfadeMillis = result.request.crossfadeMillis
     if (crossfadeMillis > 0) {
@@ -37,7 +48,7 @@ internal actual fun maybeNewCrossfadePainter(
             end = current.painter,
             contentScale = contentScale,
             durationMillis = crossfadeMillis,
-            fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
+            fadeStart = !result.isPlaceholderCached,
             preferExactIntrinsicSize = false,
         )
     } else {
