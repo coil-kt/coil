@@ -1,4 +1,5 @@
 import coil.setupAppModule
+import coil.sourceSet
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -33,9 +34,12 @@ compose {
     desktop {
         application {
             mainClass = "sample.compose.MainKt"
-
             nativeDistributions {
-                targetFormats(TargetFormat.Dmg, TargetFormat.Deb)
+                targetFormats(
+                    TargetFormat.Deb,
+                    TargetFormat.Dmg,
+                    TargetFormat.Msi,
+                )
                 packageName = "sample.compose"
                 packageVersion = "1.0.0"
             }
@@ -45,7 +49,26 @@ compose {
 
 kotlin {
     androidTarget()
+
     jvm("desktop")
+
+    arrayOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { target ->
+        target.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
+
+    applyDefaultHierarchyTemplate()
+
+    sourceSet(
+        name = "nonAndroidMain",
+        children = listOf("desktopMain", "iosMain"),
+    )
 
     sourceSets {
         commonMain {

@@ -18,8 +18,8 @@ fun Project.addAllMultiplatformTargets() {
                 }
             }
 
-            iosArm64()
             iosX64()
+            iosArm64()
             iosSimulatorArm64()
 
             js {
@@ -29,8 +29,8 @@ fun Project.addAllMultiplatformTargets() {
 
             jvm()
 
-            macosArm64()
             macosX64()
+            macosArm64()
 
             applyDefaultHierarchyTemplate()
         }

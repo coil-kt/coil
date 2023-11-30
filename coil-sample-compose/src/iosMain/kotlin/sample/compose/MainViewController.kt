@@ -2,30 +2,24 @@ package sample.compose
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
+import androidx.compose.ui.window.ComposeUIViewController
 import coil.PlatformContext
 import coil.SingletonImageLoader
-import sample.common.JvmResources
+import sample.common.AppleResources
 import sample.common.MainViewModel
 import sample.common.newImageLoader
 
-fun main() = application {
+fun MainViewController() = ComposeUIViewController {
     LaunchedEffect(Unit) {
         SingletonImageLoader.set {
             newImageLoader(PlatformContext.INSTANCE)
         }
     }
 
-    val viewModel = remember { MainViewModel(JvmResources()) }
+    val viewModel = remember { MainViewModel(AppleResources()) }
     LaunchedEffect(viewModel) {
         viewModel.start()
     }
 
-    Window(
-        title = "Coil",
-        onCloseRequest = ::exitApplication,
-    ) {
-        App(viewModel)
-    }
+    App(viewModel)
 }

@@ -5,6 +5,6 @@ import okio.source
 
 class JvmResources : Resources {
     override fun open(path: String): Source {
-        return javaClass.classLoader.getResourceAsStream(path)!!.source()
+        return javaClass.classLoader!!.getResourceAsStream(path)!!.source()
     }
 }
