@@ -16,3 +16,6 @@ build
 # Docs
 docs/api
 site
+
+# Xcode
+*.xcuserstate
