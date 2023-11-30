@@ -156,9 +156,9 @@ class ImageRequest private constructor(
         val memoryCachePolicy: CachePolicy?,
         val diskCachePolicy: CachePolicy?,
         val networkCachePolicy: CachePolicy?,
-        val placeholderFactory: () -> Image?,
-        val errorFactory: () -> Image?,
-        val fallbackFactory: () -> Image?,
+        val placeholderFactory: (() -> Image?)?,
+        val errorFactory: (() -> Image?)?,
+        val fallbackFactory: (() -> Image?)?,
         val sizeResolver: SizeResolver?,
         val scale: Scale?,
         val precision: Precision?,
@@ -207,9 +207,9 @@ class ImageRequest private constructor(
         internal var diskCachePolicy: CachePolicy?
         internal var networkCachePolicy: CachePolicy?
         internal var placeholderMemoryCacheKey: MemoryCache.Key?
-        internal var placeholderFactory: () -> Image?
-        internal var errorFactory: () -> Image?
-        internal var fallbackFactory: () -> Image?
+        internal var placeholderFactory: (() -> Image?)?
+        internal var errorFactory: (() -> Image?)?
+        internal var fallbackFactory: (() -> Image?)?
         internal var precision: Precision?
         internal var lazyExtras: Extras.Builder?
         val extras: Extras.Builder
@@ -273,9 +273,9 @@ class ImageRequest private constructor(
             diskCachePolicy = request.defined.diskCachePolicy
             networkCachePolicy = request.defined.networkCachePolicy
             placeholderMemoryCacheKey = request.placeholderMemoryCacheKey
-            placeholderFactory = EMPTY_IMAGE_FACTORY
-            errorFactory = EMPTY_IMAGE_FACTORY
-            fallbackFactory = EMPTY_IMAGE_FACTORY
+            placeholderFactory = request.defined.placeholderFactory
+            errorFactory = request.defined.errorFactory
+            fallbackFactory = request.defined.fallbackFactory
             precision = request.defined.precision
             lazyExtras = if (request.extras.asMap().isEmpty()) {
                 null
@@ -601,7 +601,6 @@ class ImageRequest private constructor(
                 memoryCacheKey = memoryCacheKey,
                 memoryCacheKeyExtras = lazyMemoryCacheKeyExtras.orEmpty(),
                 diskCacheKey = diskCacheKey,
-                precision = precision ?: defaults.precision,
                 fetcherFactory = fetcherFactory,
                 decoderFactory = decoderFactory,
                 memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,
@@ -610,12 +609,13 @@ class ImageRequest private constructor(
                 interceptorDispatcher = interceptorDispatcher ?: defaults.interceptorDispatcher,
                 fetcherDispatcher = fetcherDispatcher ?: defaults.fetcherDispatcher,
                 decoderDispatcher = decoderDispatcher ?: defaults.decoderDispatcher,
+                placeholderMemoryCacheKey = placeholderMemoryCacheKey,
+                placeholderFactory = placeholderFactory ?: defaults.placeholderFactory,
+                errorFactory = errorFactory ?: defaults.errorFactory,
+                fallbackFactory = fallbackFactory ?: defaults.fallbackFactory,
                 sizeResolver = sizeResolver ?: resolvedSizeResolver ?: resolveSizeResolver(),
                 scale = scale ?: resolvedScale ?: resolveScale(),
-                placeholderMemoryCacheKey = placeholderMemoryCacheKey,
-                placeholderFactory = placeholderFactory,
-                errorFactory = errorFactory,
-                fallbackFactory = fallbackFactory,
+                precision = precision ?: defaults.precision,
                 defined = Defined(
                     interceptorDispatcher = interceptorDispatcher,
                     fetcherDispatcher = fetcherDispatcher,
