@@ -1,4 +1,4 @@
-package sample.compose.common
+package sample.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,9 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
 import coil.compose.AsyncImage
 import coil.compose.LocalPlatformContext
 import coil.memory.MemoryCache
@@ -42,7 +42,7 @@ import sample.common.calculateScaledSize
 import sample.common.next
 
 @Composable
-fun Content(viewModel: MainViewModel) {
+fun App(viewModel: MainViewModel) {
     MaterialTheme(
         colors = lightColors(
             primary = Color.White,
@@ -154,9 +154,8 @@ private fun ListScreen(
         items(images) { image ->
             // Scale the image to fit the width of a column.
             val size = with(LocalDensity.current) {
-                val displayWidth = LocalWindowInfo.current.containerSize.width
                 image
-                    .calculateScaledSize(displayWidth)
+                    .calculateScaledSize(containerSize().width)
                     .run { DpSize(first.toDp(), second.toDp()) }
             }
 
@@ -180,6 +179,9 @@ private fun ListScreen(
         }
     }
 }
+
+@Composable
+expect fun containerSize(): IntSize
 
 @Composable
 expect fun BackHandler(

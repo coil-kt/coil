@@ -15,7 +15,7 @@ import kotlinx.coroutines.asExecutor
 
 inline fun <reified V : View> ViewGroup.inflate(
     @LayoutRes layoutRes: Int,
-    attachToRoot: Boolean = false
+    attachToRoot: Boolean = false,
 ): V = LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot) as V
 
 inline fun WindowInsets.toCompat(): WindowInsetsCompat {

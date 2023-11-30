@@ -1,5 +1,6 @@
 package sample.view
 
+import android.content.res.Resources as AndroidResources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
@@ -11,17 +12,19 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.memory.MemoryCache
-import coil.request.placeholder
 import coil.request.error
+import coil.request.placeholder
 import sample.common.Image
 import sample.common.Screen
 import sample.common.calculateScaledSize
 import sample.view.ImageListAdapter.ViewHolder
 
 class ImageListAdapter(
-    private val numColumns: Int,
+    private val resources: AndroidResources,
     private val setScreen: (Screen) -> Unit
 ) : ListAdapter<Image, ViewHolder>(Callback.asConfig()) {
+
+    private val displayWidth = resources.displayMetrics.widthPixels
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(parent.inflate(R.layout.list_item))
@@ -32,9 +35,9 @@ class ImageListAdapter(
             val item = getItem(position)
 
             updateLayoutParams {
-                val size = item.calculateScaledSize(context, numColumns)
-                width = size.width
-                height = size.height
+                val (width, height) = item.calculateScaledSize(displayWidth)
+                this.width = width
+                this.height = height
             }
 
             var placeholder: MemoryCache.Key? = null

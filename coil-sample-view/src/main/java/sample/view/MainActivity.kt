@@ -17,12 +17,12 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
 import coil.load
 import kotlinx.coroutines.launch
+import sample.common.AndroidMainViewModel
 import sample.common.AssetType
 import sample.common.Image
-import sample.common.AndroidMainViewModel
+import sample.common.NUM_COLUMNS
 import sample.common.Screen
 import sample.common.next
-import sample.common.numberOfColumns
 import sample.view.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -49,11 +49,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val numColumns = numberOfColumns(this)
-        listAdapter = ImageListAdapter(numColumns) { viewModel.screen.value = it }
+        listAdapter = ImageListAdapter(
+            resources = resources,
+            setScreen = { viewModel.screen.value = it },
+        )
         binding.list.apply {
             setHasFixedSize(true)
-            layoutManager = StaggeredGridLayoutManager(numColumns, VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(NUM_COLUMNS, VERTICAL)
             adapter = listAdapter
         }
 
