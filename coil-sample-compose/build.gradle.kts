@@ -1,5 +1,4 @@
-import coil.addAllMultiplatformTargets
-import coil.nonAndroidMain
+
 import coil.setupAppModule
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
@@ -9,7 +8,6 @@ plugins {
     id("org.jetbrains.compose")
 }
 
-addAllMultiplatformTargets()
 setupAppModule(name = "sample.compose") {
     buildTypes {
         release {
@@ -35,11 +33,11 @@ compose {
     kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
     desktop {
         application {
-            mainClass = "MainKt"
+            mainClass = "sample.compose.MainKt"
 
             nativeDistributions {
                 targetFormats(TargetFormat.Dmg, TargetFormat.Deb)
-                packageName = "sample.common"
+                packageName = "sample.compose"
                 packageVersion = "1.0.0"
             }
         }
@@ -47,7 +45,8 @@ compose {
 }
 
 kotlin {
-    nonAndroidMain()
+    androidTarget()
+    jvm("desktop")
 
     sourceSets {
         commonMain {
@@ -55,13 +54,19 @@ kotlin {
                 implementation(projects.coilSampleCommon)
                 implementation(projects.coilComposeSingleton)
 
-                implementation(libs.jetbrains.compose.material)
+                implementation(compose.material)
             }
         }
         androidMain {
             dependencies {
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
+            }
+        }
+        named("desktopMain") {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(libs.coroutines.swing)
             }
         }
     }

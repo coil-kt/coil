@@ -1,11 +1,14 @@
 package sample.common
 
 import coil.ComponentRegistry
+import coil.EventListener
 import coil.ImageLoader
 import coil.PlatformContext
 import coil.disk.DiskCache
 import coil.fetch.NetworkFetcher
 import coil.memory.MemoryCache
+import coil.request.ErrorResult
+import coil.request.ImageRequest
 import coil.request.crossfade
 import coil.util.DebugLogger
 import okio.FileSystem
@@ -39,6 +42,11 @@ fun newImageLoader(
                 logger(DebugLogger())
             }
         }
+        .eventListener(object : EventListener() {
+            override fun onError(request: ImageRequest, result: ErrorResult) {
+                super.onError(request, result)
+            }
+        })
         .build()
 }
 

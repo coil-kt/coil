@@ -1,26 +1,18 @@
 package sample.compose
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.lightColors
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -33,13 +25,7 @@ import coil.compose.AsyncImage
 import coil.compose.LocalPlatformContext
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
-import sample.common.AssetType
-import sample.common.Image
-import sample.common.MainViewModel
-import sample.common.NUM_COLUMNS
-import sample.common.Screen
-import sample.common.calculateScaledSize
-import sample.common.next
+import sample.common.*
 
 @Composable
 fun App(viewModel: MainViewModel) {
@@ -50,11 +36,14 @@ fun App(viewModel: MainViewModel) {
         ),
     ) {
         val screen by viewModel.screen.collectAsState()
+        val isDetail = screen is Screen.Detail
         Scaffold(
             topBar = {
                 Toolbar(
                     assetType = viewModel.assetType.collectAsState().value,
+                    backEnabled = isDetail,
                     onAssetTypeChange = { viewModel.assetType.value = it },
+                    onBackPressed = { viewModel.onBackPressed() },
                 )
             },
             content = { padding ->
@@ -69,7 +58,7 @@ fun App(viewModel: MainViewModel) {
                 }
             },
         )
-        BackHandler(enabled = screen is Screen.Detail) {
+        BackHandler(enabled = isDetail) {
             viewModel.onBackPressed()
         }
     }
@@ -78,12 +67,39 @@ fun App(viewModel: MainViewModel) {
 @Composable
 private fun Toolbar(
     assetType: AssetType,
+    backEnabled: Boolean,
     onAssetTypeChange: (AssetType) -> Unit,
+    onBackPressed: () -> Unit,
 ) {
     TopAppBar(
         title = { Text("Coil") },
-        actions = { AssetTypeButton(assetType, onAssetTypeChange) },
+        navigationIcon = if (backEnabled) {
+            { BackIconButton(onBackPressed) }
+        } else {
+            null
+        },
+        actions = {
+            AssetTypeButton(
+                assetType = assetType,
+                onAssetTypeChange = onAssetTypeChange,
+            )
+        },
         modifier = Modifier.statusBarsPadding(),
+    )
+}
+
+@Composable
+private fun BackIconButton(
+    onBackPressed: () -> Unit,
+) {
+    IconButton(
+        onClick = onBackPressed,
+        content = {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+            )
+        },
     )
 }
 
@@ -139,7 +155,6 @@ private fun DetailScreen(screen: Screen.Detail) {
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ListScreen(
     gridState: LazyStaggeredGridState,
@@ -154,9 +169,8 @@ private fun ListScreen(
         items(images) { image ->
             // Scale the image to fit the width of a column.
             val size = with(LocalDensity.current) {
-                image
-                    .calculateScaledSize(containerSize().width)
-                    .run { DpSize(first.toDp(), second.toDp()) }
+                val (width, height) = image.calculateScaledSize(containerSize().width)
+                DpSize(width.toDp(), height.toDp())
             }
 
             // Intentionally not a state object to avoid recomposition.
