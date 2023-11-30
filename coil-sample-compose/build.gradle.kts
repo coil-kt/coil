@@ -1,5 +1,6 @@
 import coil.setupAppModule
 import coil.sourceSet
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -48,6 +49,8 @@ compose {
 }
 
 kotlin {
+    applyDefaultHierarchyTemplate()
+
     androidTarget()
 
     jvm("desktop")
@@ -63,8 +66,6 @@ kotlin {
         }
     }
 
-    applyDefaultHierarchyTemplate()
-
     sourceSet(
         name = "nonAndroidMain",
         children = listOf("desktopMain", "iosMain"),
@@ -76,6 +77,8 @@ kotlin {
                 implementation(projects.coilSampleCommon)
                 implementation(projects.coilComposeSingleton)
                 implementation(compose.material)
+                @OptIn(ExperimentalComposeLibrary::class)
+                implementation(compose.components.resources)
             }
         }
         androidMain {

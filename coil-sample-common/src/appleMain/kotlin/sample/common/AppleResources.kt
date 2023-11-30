@@ -7,7 +7,7 @@ import platform.Foundation.NSBundle
 
 class AppleResources : Resources {
     override fun open(path: String): Source {
-        val file = NSBundle.mainBundle.resourcePath!!.toPath() / path
+        val file = NSBundle.mainBundle.resourcePath!!.toPath() / "compose-resources" / path
         return FileSystem.SYSTEM.openReadOnly(file).source()
     }
 }
