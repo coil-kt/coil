@@ -3,7 +3,7 @@ package coil.network
 import coil.annotation.ExperimentalCoilApi
 import coil.network.CacheStrategy.Output
 import coil.request.Options
-import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.*
 import kotlin.js.JsName
 
 /**
@@ -13,6 +13,9 @@ import kotlin.js.JsName
 @JsName("newCacheStrategy")
 fun CacheStrategy() = CacheStrategy { Output(it.cacheResponse) }
 
+/**
+ * Determines whether to use a cached response from the disk cache or perform a new network request.
+ */
 @ExperimentalCoilApi
 fun interface CacheStrategy {
 
