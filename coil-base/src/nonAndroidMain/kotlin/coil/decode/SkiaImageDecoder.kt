@@ -22,7 +22,7 @@ class SkiaImageDecoder(
         val isSampled: Boolean
         val bitmap: Bitmap
         try {
-            bitmap = Bitmap.makeFromImage(image, options.size, options.scale)
+            bitmap = Bitmap.makeFromImage(image, options)
             isSampled = bitmap.width < image.width || bitmap.height < image.height
         } finally {
             image.close()

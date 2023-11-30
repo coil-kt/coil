@@ -23,7 +23,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coilBase)
-                api(libs.jetbrains.compose.foundation)
+                api(compose.foundation)
             }
         }
         androidMain {

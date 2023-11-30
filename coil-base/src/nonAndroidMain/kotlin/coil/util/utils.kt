@@ -3,9 +3,8 @@ package coil.util
 import coil.Uri
 import coil.decode.DecodeUtils
 import coil.request.ImageRequest
+import coil.request.Options
 import coil.size.Precision
-import coil.size.Scale
-import coil.size.Size
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.Image
@@ -27,21 +26,26 @@ internal actual val ImageRequest.allowInexactSize: Boolean
         Precision.AUTOMATIC -> true
     }
 
-/** Create a [Bitmap] from [image] that fits the given [size] and [scale]. */
+/** Create a [Bitmap] from [image] for the given [options]. */
 internal fun Bitmap.Companion.makeFromImage(
     image: Image,
-    size: Size,
-    scale: Scale,
+    options: Options,
 ): Bitmap {
     val srcWidth = image.width
     val srcHeight = image.height
-    val multiplier = DecodeUtils.computeSizeMultiplier(
+    var multiplier = DecodeUtils.computeSizeMultiplier(
         srcWidth = srcWidth,
         srcHeight = srcHeight,
-        dstWidth = size.widthPx(scale) { srcWidth },
-        dstHeight = size.heightPx(scale) { srcHeight },
-        scale = scale,
+        dstWidth = options.size.widthPx(options.scale) { srcWidth },
+        dstHeight = options.size.heightPx(options.scale) { srcHeight },
+        scale = options.scale,
     )
+
+    // Only upscale the image if the options require an exact size.
+    if (options.allowInexactSize) {
+        multiplier = multiplier.coerceAtMost(1.0)
+    }
+
     val dstWidth = (multiplier * srcWidth).toInt()
     val dstHeight = (multiplier * srcHeight).toInt()
 

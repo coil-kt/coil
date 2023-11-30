@@ -52,7 +52,6 @@ kotlin {
             dependencies {
                 implementation(projects.coilSampleCommon)
                 implementation(projects.coilComposeSingleton)
-
                 implementation(compose.material)
             }
         }
