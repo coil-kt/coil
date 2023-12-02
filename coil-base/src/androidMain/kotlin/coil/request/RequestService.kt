@@ -17,10 +17,12 @@ import coil.util.Logger
 import coil.util.SystemCallbacks
 import coil.util.VALID_TRANSFORMATION_CONFIGS
 import coil.util.allowInexactSize
+import coil.util.defaultFileSystem
 import coil.util.getLifecycle
 import coil.util.isHardware
 import coil.util.safeConfig
 import kotlinx.coroutines.Job
+import okio.FileSystem
 
 internal actual fun RequestService(
     imageLoader: ImageLoader,
@@ -62,15 +64,16 @@ internal class AndroidRequestService(
 
     override fun options(request: ImageRequest, size: Size): Options {
         return Options(
-            context = request.context,
-            size = size,
-            scale = request.resolveScale(size),
-            allowInexactSize = request.allowInexactSize,
-            diskCacheKey = request.diskCacheKey,
-            memoryCachePolicy = request.memoryCachePolicy,
-            diskCachePolicy = request.diskCachePolicy,
-            networkCachePolicy = request.resolveNetworkCachePolicy(),
-            extras = request.resolveExtras(size),
+            request.context,
+            size,
+            request.resolveScale(size),
+            request.allowInexactSize,
+            request.diskCacheKey,
+            request.resolveFileSystem(),
+            request.memoryCachePolicy,
+            request.diskCachePolicy,
+            request.resolveNetworkCachePolicy(),
+            request.resolveExtras(size),
         )
     }
 
@@ -81,6 +84,10 @@ internal class AndroidRequestService(
         } else {
             return scale
         }
+    }
+
+    private fun ImageRequest.resolveFileSystem(): FileSystem {
+        return fileSystem ?: defaultFileSystem()
     }
 
     private fun ImageRequest.resolveNetworkCachePolicy(): CachePolicy {

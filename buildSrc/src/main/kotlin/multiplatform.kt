@@ -20,16 +20,17 @@ fun Project.addAllMultiplatformTargets() {
                 }
             }
 
-            iosX64()
-            iosArm64()
-            iosSimulatorArm64()
+            jvm()
 
             js {
                 browser()
+                nodejs()
                 binaries.executable()
             }
 
-            jvm()
+            iosX64()
+            iosArm64()
+            iosSimulatorArm64()
 
             macosX64()
             macosArm64()

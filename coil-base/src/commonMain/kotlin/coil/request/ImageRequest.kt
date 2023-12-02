@@ -19,6 +19,7 @@ import coil.size.SizeResolver
 import coil.target.Target
 import coil.util.EMPTY_IMAGE_FACTORY
 import coil.util.allowInexactSize
+import coil.util.defaultFileSystem
 import coil.util.ioCoroutineDispatcher
 import dev.drewhamilton.poko.Poko
 import kotlin.jvm.JvmField
@@ -26,6 +27,7 @@ import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import okio.FileSystem
 
 /**
  * An immutable value object that represents a request for an image.
@@ -54,6 +56,9 @@ class ImageRequest private constructor(
 
     /** @see Builder.diskCacheKey */
     val diskCacheKey: String?,
+
+    /** @see Builder.fileSystem */
+    val fileSystem: FileSystem?,
 
     /** @see Builder.fetcherFactory */
     val fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?,
@@ -168,6 +173,7 @@ class ImageRequest private constructor(
      * A set of default options that are used to fill in unset [ImageRequest] values.
      */
     data class Defaults(
+        val fileSystem: FileSystem = defaultFileSystem(),
         val interceptorDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         val fetcherDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
         val decoderDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
@@ -198,6 +204,7 @@ class ImageRequest private constructor(
             get() = lazyMemoryCacheKeyExtras ?: mutableMapOf<String, String>()
                 .also { lazyMemoryCacheKeyExtras = it }
         internal var diskCacheKey: String?
+        internal var fileSystem: FileSystem?
         internal var fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?
         internal var decoderFactory: Decoder.Factory?
         internal var interceptorDispatcher: CoroutineDispatcher?
@@ -229,6 +236,7 @@ class ImageRequest private constructor(
             memoryCacheKey = null
             lazyMemoryCacheKeyExtras = null
             diskCacheKey = null
+            fileSystem = null
             fetcherFactory = null
             decoderFactory = null
             interceptorDispatcher = null
@@ -264,6 +272,7 @@ class ImageRequest private constructor(
                 request.memoryCacheKeyExtras.toMutableMap()
             }
             diskCacheKey = request.diskCacheKey
+            fileSystem = request.fileSystem
             fetcherFactory = request.fetcherFactory
             decoderFactory = request.decoderFactory
             interceptorDispatcher = request.defined.interceptorDispatcher
@@ -372,6 +381,13 @@ class ImageRequest private constructor(
          */
         fun diskCacheKey(key: String?) = apply {
             this.diskCacheKey = key
+        }
+
+        /**
+         * TODO
+         */
+        fun fileSystem(fileSystem: FileSystem) = apply {
+            this.fileSystem = fileSystem
         }
 
         /**
@@ -601,6 +617,7 @@ class ImageRequest private constructor(
                 memoryCacheKey = memoryCacheKey,
                 memoryCacheKeyExtras = lazyMemoryCacheKeyExtras.orEmpty(),
                 diskCacheKey = diskCacheKey,
+                fileSystem = fileSystem ?: defaults.fileSystem,
                 fetcherFactory = fetcherFactory,
                 decoderFactory = decoderFactory,
                 memoryCachePolicy = memoryCachePolicy ?: defaults.memoryCachePolicy,

@@ -17,6 +17,7 @@ import coil.util.Logger
 import coil.util.application
 import kotlin.jvm.JvmSynthetic
 import kotlinx.coroutines.CoroutineDispatcher
+import okio.FileSystem
 
 /**
  * A service class that loads images by executing [ImageRequest]s. Image loaders handle
@@ -166,6 +167,13 @@ interface ImageLoader {
          */
         fun diskCache(initializer: () -> DiskCache?) = apply {
             this.diskCacheLazy = lazy(initializer)
+        }
+
+        /**
+         * Set the default [FileSystem] for any image requests.
+         */
+        fun fileSystem(fileSystem: FileSystem) = apply {
+            this.defaults = this.defaults.copy(fileSystem = fileSystem)
         }
 
         /**
