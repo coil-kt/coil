@@ -1,64 +1,64 @@
-public final class coil/test/FakeImageLoaderEngine : coil/intercept/Interceptor {
-	public synthetic fun <init> (Ljava/util/List;Lcoil/intercept/Interceptor;Lcoil/test/FakeImageLoaderEngine$RequestTransformer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getDefaultInterceptor ()Lcoil/intercept/Interceptor;
+public final class coil3/test/FakeImageLoaderEngine : coil3/intercept/Interceptor {
+	public synthetic fun <init> (Ljava/util/List;Lcoil3/intercept/Interceptor;Lcoil3/test/FakeImageLoaderEngine$RequestTransformer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDefaultInterceptor ()Lcoil3/intercept/Interceptor;
 	public final fun getInterceptors ()Ljava/util/List;
-	public final fun getRequestTransformer ()Lcoil/test/FakeImageLoaderEngine$RequestTransformer;
+	public final fun getRequestTransformer ()Lcoil3/test/FakeImageLoaderEngine$RequestTransformer;
 	public final fun getRequests ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getResults ()Lkotlinx/coroutines/flow/Flow;
-	public fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun newBuilder ()Lcoil/test/FakeImageLoaderEngine$Builder;
+	public fun intercept (Lcoil3/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun newBuilder ()Lcoil3/test/FakeImageLoaderEngine$Builder;
 }
 
-public final class coil/test/FakeImageLoaderEngine$Builder {
+public final class coil3/test/FakeImageLoaderEngine$Builder {
 	public fun <init> ()V
-	public fun <init> (Lcoil/test/FakeImageLoaderEngine;)V
-	public final fun addInterceptor (Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun build ()Lcoil/test/FakeImageLoaderEngine;
-	public final fun clearInterceptors ()Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun default (Lcoil/Image;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun default (Lcoil/intercept/Interceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun intercept (Ljava/lang/Object;Lcoil/Image;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun intercept (Lkotlin/jvm/functions/Function1;Lcoil/Image;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun intercept (Lkotlin/jvm/functions/Function1;Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun removeInterceptor (Lcoil/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil/test/FakeImageLoaderEngine$Builder;
-	public final fun requestTransformer (Lcoil/test/FakeImageLoaderEngine$RequestTransformer;)Lcoil/test/FakeImageLoaderEngine$Builder;
+	public fun <init> (Lcoil3/test/FakeImageLoaderEngine;)V
+	public final fun addInterceptor (Lcoil3/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil3/test/FakeImageLoaderEngine$Builder;
+	public final fun build ()Lcoil3/test/FakeImageLoaderEngine;
+	public final fun clearInterceptors ()Lcoil3/test/FakeImageLoaderEngine$Builder;
+	public final fun default (Lcoil3/Image;)Lcoil3/test/FakeImageLoaderEngine$Builder;
+	public final fun default (Lcoil3/intercept/Interceptor;)Lcoil3/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Ljava/lang/Object;Lcoil3/Image;)Lcoil3/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Lkotlin/jvm/functions/Function1;Lcoil3/Image;)Lcoil3/test/FakeImageLoaderEngine$Builder;
+	public final fun intercept (Lkotlin/jvm/functions/Function1;Lcoil3/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil3/test/FakeImageLoaderEngine$Builder;
+	public final fun removeInterceptor (Lcoil3/test/FakeImageLoaderEngine$OptionalInterceptor;)Lcoil3/test/FakeImageLoaderEngine$Builder;
+	public final fun requestTransformer (Lcoil3/test/FakeImageLoaderEngine$RequestTransformer;)Lcoil3/test/FakeImageLoaderEngine$Builder;
 }
 
-public abstract interface class coil/test/FakeImageLoaderEngine$OptionalInterceptor {
-	public abstract fun intercept (Lcoil/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public abstract interface class coil3/test/FakeImageLoaderEngine$OptionalInterceptor {
+	public abstract fun intercept (Lcoil3/intercept/Interceptor$Chain;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class coil/test/FakeImageLoaderEngine$RequestTransformer {
-	public abstract fun transform (Lcoil/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public abstract interface class coil3/test/FakeImageLoaderEngine$RequestTransformer {
+	public abstract fun transform (Lcoil3/request/ImageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil/test/FakeImageLoaderEngine$RequestValue {
-	public fun <init> (Lcoil/request/ImageRequest;Lcoil/size/Size;)V
-	public final fun component1 ()Lcoil/request/ImageRequest;
-	public final fun component2 ()Lcoil/size/Size;
-	public final fun copy (Lcoil/request/ImageRequest;Lcoil/size/Size;)Lcoil/test/FakeImageLoaderEngine$RequestValue;
-	public static synthetic fun copy$default (Lcoil/test/FakeImageLoaderEngine$RequestValue;Lcoil/request/ImageRequest;Lcoil/size/Size;ILjava/lang/Object;)Lcoil/test/FakeImageLoaderEngine$RequestValue;
+public final class coil3/test/FakeImageLoaderEngine$RequestValue {
+	public fun <init> (Lcoil3/request/ImageRequest;Lcoil3/size/Size;)V
+	public final fun component1 ()Lcoil3/request/ImageRequest;
+	public final fun component2 ()Lcoil3/size/Size;
+	public final fun copy (Lcoil3/request/ImageRequest;Lcoil3/size/Size;)Lcoil3/test/FakeImageLoaderEngine$RequestValue;
+	public static synthetic fun copy$default (Lcoil3/test/FakeImageLoaderEngine$RequestValue;Lcoil3/request/ImageRequest;Lcoil3/size/Size;ILjava/lang/Object;)Lcoil3/test/FakeImageLoaderEngine$RequestValue;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getRequest ()Lcoil/request/ImageRequest;
-	public final fun getSize ()Lcoil/size/Size;
+	public final fun getRequest ()Lcoil3/request/ImageRequest;
+	public final fun getSize ()Lcoil3/size/Size;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class coil/test/FakeImageLoaderEngine$ResultValue {
-	public fun <init> (Lcoil/test/FakeImageLoaderEngine$RequestValue;Lcoil/request/ImageResult;)V
-	public final fun component1 ()Lcoil/test/FakeImageLoaderEngine$RequestValue;
-	public final fun component2 ()Lcoil/request/ImageResult;
-	public final fun copy (Lcoil/test/FakeImageLoaderEngine$RequestValue;Lcoil/request/ImageResult;)Lcoil/test/FakeImageLoaderEngine$ResultValue;
-	public static synthetic fun copy$default (Lcoil/test/FakeImageLoaderEngine$ResultValue;Lcoil/test/FakeImageLoaderEngine$RequestValue;Lcoil/request/ImageResult;ILjava/lang/Object;)Lcoil/test/FakeImageLoaderEngine$ResultValue;
+public final class coil3/test/FakeImageLoaderEngine$ResultValue {
+	public fun <init> (Lcoil3/test/FakeImageLoaderEngine$RequestValue;Lcoil3/request/ImageResult;)V
+	public final fun component1 ()Lcoil3/test/FakeImageLoaderEngine$RequestValue;
+	public final fun component2 ()Lcoil3/request/ImageResult;
+	public final fun copy (Lcoil3/test/FakeImageLoaderEngine$RequestValue;Lcoil3/request/ImageResult;)Lcoil3/test/FakeImageLoaderEngine$ResultValue;
+	public static synthetic fun copy$default (Lcoil3/test/FakeImageLoaderEngine$ResultValue;Lcoil3/test/FakeImageLoaderEngine$RequestValue;Lcoil3/request/ImageResult;ILjava/lang/Object;)Lcoil3/test/FakeImageLoaderEngine$ResultValue;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getRequest ()Lcoil/test/FakeImageLoaderEngine$RequestValue;
-	public final fun getResult ()Lcoil/request/ImageResult;
+	public final fun getRequest ()Lcoil3/test/FakeImageLoaderEngine$RequestValue;
+	public final fun getResult ()Lcoil3/request/ImageResult;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class coil/test/FakeImageLoaderEngine_commonKt {
-	public static final fun create (Lcoil/Image;)Lcoil/test/FakeImageLoaderEngine;
+public final class coil3/test/FakeImageLoaderEngine_commonKt {
+	public static final fun create (Lcoil3/Image;)Lcoil3/test/FakeImageLoaderEngine;
 }
 

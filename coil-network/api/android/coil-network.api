@@ -1,20 +1,20 @@
-public final class coil/fetch/NetworkFetcher : coil/fetch/Fetcher {
-	public fun <init> (Ljava/lang/String;Lcoil/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;)V
+public final class coil3/fetch/NetworkFetcher : coil3/fetch/Fetcher {
+	public fun <init> (Ljava/lang/String;Lcoil3/request/Options;Lkotlin/Lazy;Lkotlin/Lazy;Lkotlin/Lazy;)V
 	public fun fetch (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class coil/fetch/NetworkFetcher$Factory : coil/fetch/Fetcher$Factory {
+public final class coil3/fetch/NetworkFetcher$Factory : coil3/fetch/Fetcher$Factory {
 	public fun <init> ()V
 	public fun <init> (Lkotlin/Lazy;Lkotlin/Lazy;)V
 	public synthetic fun <init> (Lkotlin/Lazy;Lkotlin/Lazy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun create (Lcoil/Uri;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/fetch/Fetcher;
-	public synthetic fun create (Ljava/lang/Object;Lcoil/request/Options;Lcoil/ImageLoader;)Lcoil/fetch/Fetcher;
+	public fun create (Lcoil3/Uri;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
+	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class coil/network/CacheResponse {
+public final class coil3/network/CacheResponse {
 	public fun <init> (Lio/ktor/client/statement/HttpResponse;Lio/ktor/http/Headers;)V
 	public synthetic fun <init> (Lio/ktor/client/statement/HttpResponse;Lio/ktor/http/Headers;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lokio/BufferedSource;)V
@@ -26,42 +26,42 @@ public final class coil/network/CacheResponse {
 	public final fun writeTo (Lokio/BufferedSink;)V
 }
 
-public abstract interface class coil/network/CacheStrategy {
-	public abstract fun compute (Lcoil/network/CacheStrategy$Input;)Lcoil/network/CacheStrategy$Output;
+public abstract interface class coil3/network/CacheStrategy {
+	public abstract fun compute (Lcoil3/network/CacheStrategy$Input;)Lcoil3/network/CacheStrategy$Output;
 }
 
-public final class coil/network/CacheStrategy$Input {
-	public fun <init> (Lcoil/network/CacheResponse;Lio/ktor/client/request/HttpRequestBuilder;Lcoil/request/Options;)V
-	public final fun getCacheResponse ()Lcoil/network/CacheResponse;
+public final class coil3/network/CacheStrategy$Input {
+	public fun <init> (Lcoil3/network/CacheResponse;Lio/ktor/client/request/HttpRequestBuilder;Lcoil3/request/Options;)V
+	public final fun getCacheResponse ()Lcoil3/network/CacheResponse;
 	public final fun getNetworkRequest ()Lio/ktor/client/request/HttpRequestBuilder;
-	public final fun getOptions ()Lcoil/request/Options;
+	public final fun getOptions ()Lcoil3/request/Options;
 }
 
-public final class coil/network/CacheStrategy$Output {
-	public fun <init> (Lcoil/network/CacheResponse;)V
-	public fun <init> (Lcoil/network/CacheResponse;Lio/ktor/client/request/HttpRequestBuilder;)V
+public final class coil3/network/CacheStrategy$Output {
+	public fun <init> (Lcoil3/network/CacheResponse;)V
+	public fun <init> (Lcoil3/network/CacheResponse;Lio/ktor/client/request/HttpRequestBuilder;)V
 	public fun <init> (Lio/ktor/client/request/HttpRequestBuilder;)V
-	public final fun getCacheResponse ()Lcoil/network/CacheResponse;
+	public final fun getCacheResponse ()Lcoil3/network/CacheResponse;
 	public final fun getNetworkRequest ()Lio/ktor/client/request/HttpRequestBuilder;
 }
 
-public final class coil/network/CacheStrategyKt {
-	public static final fun CacheStrategy ()Lcoil/network/CacheStrategy;
+public final class coil3/network/CacheStrategyKt {
+	public static final fun CacheStrategy ()Lcoil3/network/CacheStrategy;
 }
 
-public final class coil/network/HttpException : java/lang/RuntimeException {
+public final class coil3/network/HttpException : java/lang/RuntimeException {
 	public fun <init> (Lio/ktor/client/statement/HttpResponse;)V
 	public final fun getResponse ()Lio/ktor/client/statement/HttpResponse;
 }
 
-public final class coil/request/NetworkRequestsKt {
-	public static final fun getHttpHeaders (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
-	public static final fun getHttpHeaders (Lcoil/request/ImageRequest;)Lio/ktor/http/Headers;
-	public static final fun getHttpHeaders (Lcoil/request/Options;)Lio/ktor/http/Headers;
-	public static final fun getHttpMethod (Lcoil/Extras$Key$Companion;)Lcoil/Extras$Key;
-	public static final fun getHttpMethod (Lcoil/request/ImageRequest;)Lio/ktor/http/HttpMethod;
-	public static final fun getHttpMethod (Lcoil/request/Options;)Lio/ktor/http/HttpMethod;
-	public static final fun httpHeaders (Lcoil/request/ImageRequest$Builder;Lio/ktor/http/Headers;)Lcoil/request/ImageRequest$Builder;
-	public static final fun httpMethod (Lcoil/request/ImageRequest$Builder;Lio/ktor/http/HttpMethod;)Lcoil/request/ImageRequest$Builder;
+public final class coil3/request/NetworkRequestsKt {
+	public static final fun getHttpHeaders (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getHttpHeaders (Lcoil3/request/ImageRequest;)Lio/ktor/http/Headers;
+	public static final fun getHttpHeaders (Lcoil3/request/Options;)Lio/ktor/http/Headers;
+	public static final fun getHttpMethod (Lcoil3/Extras$Key$Companion;)Lcoil3/Extras$Key;
+	public static final fun getHttpMethod (Lcoil3/request/ImageRequest;)Lio/ktor/http/HttpMethod;
+	public static final fun getHttpMethod (Lcoil3/request/Options;)Lio/ktor/http/HttpMethod;
+	public static final fun httpHeaders (Lcoil3/request/ImageRequest$Builder;Lio/ktor/http/Headers;)Lcoil3/request/ImageRequest$Builder;
+	public static final fun httpMethod (Lcoil3/request/ImageRequest$Builder;Lio/ktor/http/HttpMethod;)Lcoil3/request/ImageRequest$Builder;
 }
 
