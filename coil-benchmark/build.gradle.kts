@@ -9,7 +9,7 @@ plugins {
 setupTestModule(name = "coil3.benchmark", config = true) {
     val targetProject = System.getProperty("project", "view")
     defaultConfig {
-        minSdk = 23
+        minSdk = 24
         buildConfigField("String", "PROJECT", "\"$targetProject\"")
     }
     buildTypes {
