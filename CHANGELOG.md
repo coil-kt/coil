@@ -627,7 +627,7 @@ Changes since `1.0.0-rc3`:
 - **Important**: `Mappers` are now executed on a background dispatcher. As a side effect, automatic bitmap sampling is no longer **automatically** supported. To achieve the same effect, use the `MemoryCache.Key` of a previous request as the `placeholderMemoryCacheKey` of the subsequent request. [See here for an example](https://coil-kt.github.io/coil/recipes/#using-a-memory-cache-key-as-a-placeholder).
     - The `placeholderMemoryCacheKey` API offers more freedom as you can "link" two image requests with different data (e.g. different URLs for small/large images).
 - **Important**: Coil's `ImageView` extension functions have been moved from the `coil.api` package to the `coil` package.
-    - Use find + replace to refactor `import coil.api.load` -> `import coil.load`. Unfortunately, it's not possible to use Kotlin's `ReplaceWith` functionality to replace imports.
+    - Use find + replace to refactor `import coil3.api.load` -> `import coil3.load`. Unfortunately, it's not possible to use Kotlin's `ReplaceWith` functionality to replace imports.
 - **Important**: Use standard crossfade if drawables are not the same image.
 - **Important**: Prefer immutable bitmaps on API 24+.
 - **Important**: `MeasuredMapper` has been deprecated in favour of the new `Interceptor` interface. See [here](https://gist.github.com/colinrtwhite/90267704091467451e46b21b95154299) for an example of how to convert a `MeasuredMapper` into an `Interceptor`.

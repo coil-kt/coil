@@ -1,4 +1,4 @@
-package coil
+package coil3
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType

@@ -1,6 +1,6 @@
 package sample.common
 
-import coil.Extras
+import coil3.Extras
 
 actual val Extras.Key.Companion.videoFrameMicros: Extras.Key<Long>
     get() = videoFrameMicrosKey

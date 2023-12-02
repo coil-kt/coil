@@ -1,6 +1,6 @@
-import coil.groupId
-import coil.privateModules
-import coil.versionName
+import coil3.groupId
+import coil3.privateModules
+import coil3.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import java.net.URL

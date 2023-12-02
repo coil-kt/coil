@@ -1,6 +1,6 @@
 package sample.common
 
-import coil.Extras
+import coil3.Extras
 import kotlin.js.JsName
 import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers

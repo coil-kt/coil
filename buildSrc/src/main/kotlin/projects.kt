@@ -1,4 +1,4 @@
-package coil
+package coil3
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.Lint
@@ -124,8 +124,8 @@ private fun <T : BaseExtension> Project.setupBaseModule(
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets.configureEach {
                 languageSettings {
-                    optIn("coil.annotation.ExperimentalCoilApi")
-                    optIn("coil.annotation.InternalCoilApi")
+                    optIn("coil3.annotation.ExperimentalCoilApi")
+                    optIn("coil3.annotation.InternalCoilApi")
                 }
             }
             targets.configureEach {
@@ -158,8 +158,8 @@ private fun <T : BaseExtension> Project.setupBaseModule(
                 "-Xno-receiver-assertions",
             )
             if (project.name != "coil-benchmark") {
-                arguments += "-opt-in=coil.annotation.ExperimentalCoilApi"
-                arguments += "-opt-in=coil.annotation.InternalCoilApi"
+                arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
+                arguments += "-opt-in=coil3.annotation.InternalCoilApi"
             }
             freeCompilerArgs.addAll(arguments)
         }

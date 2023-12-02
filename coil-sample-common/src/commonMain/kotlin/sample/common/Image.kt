@@ -1,6 +1,6 @@
 package sample.common
 
-import coil.Extras
+import coil3.Extras
 
 data class Image(
     val uri: String,

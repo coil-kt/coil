@@ -10,10 +10,10 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import coil.memory.MemoryCache
-import coil.request.error
-import coil.request.placeholder
+import coil3.load
+import coil3.memory.MemoryCache
+import coil3.request.error
+import coil3.request.placeholder
 import sample.common.Image
 import sample.common.Screen
 import sample.common.calculateScaledSize

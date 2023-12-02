@@ -4,8 +4,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import coil.PlatformContext
-import coil.SingletonImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
 import sample.common.JvmResources
 import sample.common.MainViewModel
 import sample.common.newImageLoader

@@ -1,5 +1,5 @@
-import coil.setupAppModule
-import coil.sourceSet
+import coil3.setupAppModule
+import coil3.sourceSet
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 

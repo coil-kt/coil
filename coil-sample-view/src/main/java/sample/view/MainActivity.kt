@@ -15,7 +15,7 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-import coil.load
+import coil3.load
 import kotlinx.coroutines.launch
 import sample.common.AndroidMainViewModel
 import sample.common.AssetType

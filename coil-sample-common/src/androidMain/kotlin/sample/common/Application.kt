@@ -1,8 +1,8 @@
 package sample.common
 
 import android.app.Application
-import coil.ImageLoader
-import coil.SingletonImageLoader
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
 
 class Application : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(): ImageLoader {

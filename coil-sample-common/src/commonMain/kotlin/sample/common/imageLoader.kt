@@ -1,13 +1,13 @@
 package sample.common
 
-import coil.ComponentRegistry
-import coil.ImageLoader
-import coil.PlatformContext
-import coil.disk.DiskCache
-import coil.fetch.NetworkFetcher
-import coil.memory.MemoryCache
-import coil.request.crossfade
-import coil.util.DebugLogger
+import coil3.ComponentRegistry
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.disk.DiskCache
+import coil3.fetch.NetworkFetcher
+import coil3.memory.MemoryCache
+import coil3.request.crossfade
+import coil3.util.DebugLogger
 import okio.FileSystem
 
 fun newImageLoader(

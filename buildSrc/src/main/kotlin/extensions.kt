@@ -1,4 +1,4 @@
-package coil
+package coil3
 
 import kotlin.math.pow
 import org.gradle.api.Project

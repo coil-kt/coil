@@ -1,5 +1,5 @@
 package sample.common
 
-import coil.ComponentRegistry
+import coil3.ComponentRegistry
 
 internal actual fun ComponentRegistry.Builder.addPlatformComponents() {}

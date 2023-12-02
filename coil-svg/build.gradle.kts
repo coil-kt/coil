@@ -1,4 +1,4 @@
-import coil.setupLibraryModule
+import coil3.setupLibraryModule
 
 plugins {
     id("com.android.library")
@@ -6,7 +6,7 @@ plugins {
     id("dev.drewhamilton.poko")
 }
 
-setupLibraryModule(name = "coil.svg")
+setupLibraryModule(name = "coil3.svg")
 
 dependencies {
     api(projects.coilBase)

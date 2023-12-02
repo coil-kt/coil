@@ -31,10 +31,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
-import coil.compose.AsyncImage
-import coil.compose.LocalPlatformContext
-import coil.memory.MemoryCache
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.memory.MemoryCache
+import coil3.request.ImageRequest
 import sample.common.AssetType
 import sample.common.Image
 import sample.common.MainViewModel

@@ -1,6 +1,6 @@
 package sample.common
 
-import coil.memory.MemoryCache
+import coil3.memory.MemoryCache
 
 sealed interface Screen {
 

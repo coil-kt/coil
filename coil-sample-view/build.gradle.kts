@@ -1,4 +1,4 @@
-import coil.setupAppModule
+import coil3.setupAppModule
 
 plugins {
     id("com.android.application")

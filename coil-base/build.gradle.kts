@@ -1,9 +1,9 @@
-import coil.addAllMultiplatformTargets
-import coil.jvmCommon
-import coil.nonAndroidMain
-import coil.nonJsMain
-import coil.nonJvmCommon
-import coil.setupLibraryModule
+import coil3.addAllMultiplatformTargets
+import coil3.jvmCommon
+import coil3.nonAndroidMain
+import coil3.nonJsMain
+import coil3.nonJvmCommon
+import coil3.setupLibraryModule
 
 plugins {
     id("com.android.library")
@@ -13,7 +13,7 @@ plugins {
 }
 
 addAllMultiplatformTargets()
-setupLibraryModule(name = "coil.base")
+setupLibraryModule(name = "coil3.base")
 
 kotlin {
     jvmCommon()
