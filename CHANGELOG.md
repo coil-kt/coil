@@ -38,7 +38,7 @@
 
 - **New**: Introduce a new `coil-test` artifact, which includes `FakeImageLoaderEngine`. This class is useful for hardcoding image loader responses to ensure consistent and synchronous (from the main thread) responses in tests. See [here](https://coil-kt.github.io/coil/testing) for more info.
 - **New**: Add [baseline profiles](https://developer.android.com/topic/performance/baselineprofiles/overview) to `coil-base` (child module of `coil`) and `coil-compose-base` (child module of `coil-compose`).
-  - This improves Coil's runtime performance and should offer [better frame timings](https://github.com/coil-kt/coil/tree/main/coil-benchmark/benchmark_output.md) depending on how Coil is used in your app.
+    - This improves Coil's runtime performance and should offer [better frame timings](https://github.com/coil-kt/coil/tree/main/coil-benchmark/benchmark_output.md) depending on how Coil is used in your app.
 - Fix: Fix parsing `file://` URIs with encoded data. [#1601](https://github.com/coil-kt/coil/pull/1601)
 - Fix: `DiskCache` now properly computes its maximum size if passed a directory that does not exist. [#1620](https://github.com/coil-kt/coil/pull/1620)
 - Make `Coil.reset` public API. [#1506](https://github.com/coil-kt/coil/pull/1506)
@@ -157,7 +157,7 @@ AsyncImage(
 
 Changes from `2.0.0-rc03`:
 - Convert `Dimension.Original` to be `Dimension.Undefined`.
-  - This changes the semantics of the non-pixel dimension slightly to fix some edge cases ([example](https://github.com/coil-kt/coil/issues/1246)) in the size system.
+    - This changes the semantics of the non-pixel dimension slightly to fix some edge cases ([example](https://github.com/coil-kt/coil/issues/1246)) in the size system.
 - Load images with `Size.ORIGINAL` if ContentScale is None.
 - Fix applying `ImageView.load` builder argument first instead of last.
 - Fix not combining HTTP headers if response is not modified.
@@ -483,12 +483,12 @@ Coil 2.0.0 is the next major iteration of the library and has new features, perf
 ## [1.2.0] - April 12, 2021
 
 - **Important**: Use an SVG's view bounds to calculate its aspect ratio in `SvgDecoder`. ([#688](https://github.com/coil-kt/coil/pull/688))
-  - Previously, `SvgDecoder` used an SVG's `width`/`height` elements to determine its aspect ratio, however this doesn't correctly follow the SVG specification.
-  - To revert to the old behaviour set `useViewBoundsAsIntrinsicSize = false` when constructing your `SvgDecoder`.
+    - Previously, `SvgDecoder` used an SVG's `width`/`height` elements to determine its aspect ratio, however this doesn't correctly follow the SVG specification.
+    - To revert to the old behaviour set `useViewBoundsAsIntrinsicSize = false` when constructing your `SvgDecoder`.
 - **New**: Add `VideoFrameDecoder` to support decoding video frames from any source. ([#689](https://github.com/coil-kt/coil/pull/689))
 - **New**: Support automatic SVG detection using the source's contents instead of just the MIME type. ([#654](https://github.com/coil-kt/coil/pull/654))
 - **New**: Support sharing resources using `ImageLoader.newBuilder()`. ([#653](https://github.com/coil-kt/coil/pull/653))
-  - Importantly, this enables sharing memory caches between `ImageLoader` instances.
+    - Importantly, this enables sharing memory caches between `ImageLoader` instances.
 - **New**: Add support for animated image transformations using `AnimatedTransformation`. ([#659](https://github.com/coil-kt/coil/pull/659))
 - **New**: Add support for start/end callbacks for animated drawables. ([#676](https://github.com/coil-kt/coil/pull/676))
 
@@ -496,7 +496,7 @@ Coil 2.0.0 is the next major iteration of the library and has new features, perf
 
 - Fix parsing EXIF data for HEIF/HEIC files. ([#664](https://github.com/coil-kt/coil/pull/664))
 - Fix not using the `EmptyBitmapPool` implementation if bitmap pooling is disabled. ([#638](https://github.com/coil-kt/coil/pull/638))
-  - Without this fix bitmap pooling was still disabled properly, however it used a more heavyweight `BitmapPool` implementation.
+    - Without this fix bitmap pooling was still disabled properly, however it used a more heavyweight `BitmapPool` implementation.
 - Fix case where `MovieDrawable.getOpacity` would incorrectly return transparent. ([#682](https://github.com/coil-kt/coil/pull/682))
 - Guard against the default temporary directory not existing. ([#683](https://github.com/coil-kt/coil/pull/683))
 
@@ -627,7 +627,7 @@ Changes since `1.0.0-rc3`:
 - **Important**: `Mappers` are now executed on a background dispatcher. As a side effect, automatic bitmap sampling is no longer **automatically** supported. To achieve the same effect, use the `MemoryCache.Key` of a previous request as the `placeholderMemoryCacheKey` of the subsequent request. [See here for an example](https://coil-kt.github.io/coil/recipes/#using-a-memory-cache-key-as-a-placeholder).
     - The `placeholderMemoryCacheKey` API offers more freedom as you can "link" two image requests with different data (e.g. different URLs for small/large images).
 - **Important**: Coil's `ImageView` extension functions have been moved from the `coil.api` package to the `coil` package.
-    - Use find + replace to refactor `import coil3.api.load` -> `import coil3.load`. Unfortunately, it's not possible to use Kotlin's `ReplaceWith` functionality to replace imports.
+    - Use find + replace to refactor `import coil.api.load` -> `import coil.load`. Unfortunately, it's not possible to use Kotlin's `ReplaceWith` functionality to replace imports.
 - **Important**: Use standard crossfade if drawables are not the same image.
 - **Important**: Prefer immutable bitmaps on API 24+.
 - **Important**: `MeasuredMapper` has been deprecated in favour of the new `Interceptor` interface. See [here](https://gist.github.com/colinrtwhite/90267704091467451e46b21b95154299) for an example of how to convert a `MeasuredMapper` into an `Interceptor`.
