@@ -108,7 +108,7 @@ allprojects {
     val configureSpotless: SpotlessExtension.() -> Unit = {
         kotlin {
             target("**/*.kt", "**/*.kts")
-            ktlint(libs.ktlint.get().version)
+            ktlint(libs.versions.ktlint.get())
             endWithNewline()
             indentWithSpaces()
             trimTrailingWhitespace()

@@ -68,8 +68,6 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 kotlinx-immutable-collections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6"
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1"
 
-ktlint = { module = "com.pinterest.ktlint:ktlint-core", version.ref = "ktlint" }
-
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-engine-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-engine-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
