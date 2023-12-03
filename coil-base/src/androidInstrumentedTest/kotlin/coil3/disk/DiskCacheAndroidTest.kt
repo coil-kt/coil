@@ -1,28 +1,10 @@
 package coil3.disk
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import java.io.File
 import kotlin.test.assertEquals
-import org.junit.After
-import org.junit.Before
+import okio.fakefilesystem.FakeFileSystem
 import org.junit.Test
 
 class DiskCacheAndroidTest {
-
-    private lateinit var context: Context
-    private lateinit var directory: File
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        directory = context.filesDir.resolve("test_dir")
-    }
-
-    @After
-    fun after() {
-        directory.delete() // Ensure we start fresh.
-    }
 
     @Test
     fun checkMaxSize() {
@@ -31,7 +13,7 @@ class DiskCacheAndroidTest {
         val maxSizePercent = 0.5
 
         val diskCache = DiskCache.Builder()
-            .directory(directory)
+            .directory(FakeFileSystem().workingDirectory)
             .maxSizePercent(maxSizePercent)
             .minimumMaxSizeBytes(minimumMaxSizeBytes)
             .maximumMaxSizeBytes(maximumMaxSizeBytes)

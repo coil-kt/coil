@@ -14,10 +14,10 @@ import coil3.network.CacheResponse
 import coil3.request.CachePolicy
 import coil3.request.Options
 import coil3.util.Clock
-import coil3.util.FakeClock
+import coil3.test.FakeClock
 import coil3.util.createMockWebServer
 import coil3.util.enqueueImage
-import coil3.util.runTestAsync
+import coil3.test.runTestAsync
 import java.io.File
 import java.util.UUID
 import kotlin.test.AfterTest

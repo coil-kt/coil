@@ -6,8 +6,8 @@ import androidx.test.core.app.ApplicationProvider
 import coil3.FileMediaDataSource
 import coil3.ImageLoader
 import coil3.request.Options
-import coil3.util.assumeTrue
-import coil3.util.copyAssetToFile
+import coil3.test.assumeTrue
+import coil3.test.copyAssetToFile
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull

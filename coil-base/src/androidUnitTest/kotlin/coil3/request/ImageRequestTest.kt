@@ -13,7 +13,7 @@ import coil3.size.Size
 import coil3.size.ViewSizeResolver
 import coil3.transition.CrossfadeTransition
 import coil3.transition.Transition
-import coil3.util.WithPlatformContext
+import coil3.test.WithPlatformContext
 import coil3.util.scale
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals

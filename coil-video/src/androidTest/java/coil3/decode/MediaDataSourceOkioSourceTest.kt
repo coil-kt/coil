@@ -5,8 +5,8 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.test.core.app.ApplicationProvider
 import coil3.FileMediaDataSource
 import coil3.fetch.MediaDataSourceFetcher
-import coil3.util.assumeTrue
-import coil3.util.copyAssetToFile
+import coil3.test.assumeTrue
+import coil3.test.copyAssetToFile
 import kotlinx.coroutines.test.runTest
 import okio.buffer
 import org.junit.Assert.assertArrayEquals

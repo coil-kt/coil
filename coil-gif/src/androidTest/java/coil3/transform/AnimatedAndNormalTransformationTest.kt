@@ -27,8 +27,8 @@ import coil3.request.animatedTransformation
 import coil3.request.bitmapConfig
 import coil3.request.crossfade
 import coil3.request.transformations
-import coil3.util.assertIsSimilarTo
-import coil3.util.decodeBitmapAsset
+import coil3.test.assertIsSimilarTo
+import coil3.test.decodeBitmapAsset
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest

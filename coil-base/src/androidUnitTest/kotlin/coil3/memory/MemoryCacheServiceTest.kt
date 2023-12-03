@@ -21,7 +21,7 @@ import coil3.size.Size
 import coil3.transform.CircleCropTransformation
 import coil3.transform.Transformation
 import coil3.util.SystemCallbacks
-import coil3.util.WithPlatformContext
+import coil3.test.WithPlatformContext
 import coil3.util.createBitmap
 import coil3.util.createRequest
 import coil3.util.forEachIndexedIndices

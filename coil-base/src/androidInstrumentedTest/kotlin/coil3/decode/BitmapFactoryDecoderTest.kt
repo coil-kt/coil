@@ -15,11 +15,11 @@ import coil3.request.premultipliedAlpha
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
-import coil3.util.assertIsSimilarTo
-import coil3.util.assumeTrue
-import coil3.util.decodeBitmapAsset
-import coil3.util.isSimilarTo
-import coil3.util.size
+import coil3.test.assertIsSimilarTo
+import coil3.test.assumeTrue
+import coil3.test.decodeBitmapAsset
+import coil3.test.isSimilarTo
+import coil3.test.size
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse

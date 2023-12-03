@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.test
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

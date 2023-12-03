@@ -9,7 +9,7 @@ import coil3.decode.DataSource
 import coil3.drawable
 import coil3.request.ErrorResult
 import coil3.request.SuccessResult
-import coil3.util.WithPlatformContext
+import coil3.test.WithPlatformContext
 import coil3.util.createRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

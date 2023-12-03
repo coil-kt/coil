@@ -13,11 +13,11 @@ import coil3.map.ResourceUriMapper
 import coil3.request.Options
 import coil3.size.Size
 import coil3.toUri
-import coil3.util.ViewTestActivity
-import coil3.util.assertIsSimilarTo
-import coil3.util.assumeTrue
+import coil3.test.ViewTestActivity
+import coil3.test.assertIsSimilarTo
+import coil3.test.assumeTrue
 import coil3.util.getDrawableCompat
-import coil3.util.launchActivity
+import coil3.test.launchActivity
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs

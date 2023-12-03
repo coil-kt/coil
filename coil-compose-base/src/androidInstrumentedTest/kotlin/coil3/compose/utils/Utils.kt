@@ -24,8 +24,8 @@ import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
 import coil3.decode.DecodeUtils
 import coil3.size.Scale
-import coil3.util.assertIsSimilarTo
-import coil3.util.assumeTrue
+import coil3.test.assertIsSimilarTo
+import coil3.test.assumeTrue
 import kotlin.math.abs
 
 fun assumeSupportsCaptureToImage() {

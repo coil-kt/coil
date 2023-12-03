@@ -10,7 +10,10 @@ import androidx.core.graphics.component3
 import androidx.core.graphics.component4
 import coil3.size.Scale
 import coil3.size.Size
+import coil3.test.WithPlatformContext
+import coil3.test.assertIsSimilarTo
 import coil3.test.internal.R
+import coil3.test.size
 import kotlin.test.assertEquals
 import org.junit.Test
 

@@ -10,11 +10,11 @@ import coil3.request.Options
 import coil3.request.videoFrameMicros
 import coil3.request.videoFramePercent
 import coil3.size.Size
-import coil3.util.assertIsSimilarTo
-import coil3.util.assumeTrue
-import coil3.util.bitmap
-import coil3.util.copyAssetToFile
-import coil3.util.decodeBitmapAsset
+import coil3.test.assertIsSimilarTo
+import coil3.test.assumeTrue
+import coil3.test.bitmap
+import coil3.test.copyAssetToFile
+import coil3.test.decodeBitmapAsset
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue

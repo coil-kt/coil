@@ -21,8 +21,8 @@ import coil3.request.transitionFactory
 import coil3.size.Size
 import coil3.transform.Transformation
 import coil3.transition.Transition
-import coil3.util.ViewTestActivity
-import coil3.util.activity
+import coil3.test.ViewTestActivity
+import coil3.test.activity
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

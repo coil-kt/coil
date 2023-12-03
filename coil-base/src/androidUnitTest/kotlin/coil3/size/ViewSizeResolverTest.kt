@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.setPadding
 import androidx.test.core.app.ApplicationProvider
-import coil3.util.WithPlatformContext
+import coil3.test.WithPlatformContext
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope

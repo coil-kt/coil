@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.test
 
 import android.app.Activity
 import android.content.Context

@@ -3,8 +3,8 @@ package coil3.transform
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import coil3.size.Size
-import coil3.util.assertIsSimilarTo
-import coil3.util.decodeBitmapAsset
+import coil3.test.assertIsSimilarTo
+import coil3.test.decodeBitmapAsset
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test

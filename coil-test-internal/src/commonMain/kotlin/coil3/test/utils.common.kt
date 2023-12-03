@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.test
 
 import coil3.Image
 import coil3.PlatformContext

@@ -53,7 +53,7 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.size.Scale
-import coil3.util.ComposeTestActivity
+import coil3.test.ComposeTestActivity
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

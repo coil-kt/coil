@@ -2,7 +2,7 @@ package coil3.memory
 
 import coil3.memory.MemoryCache.Key
 import coil3.memory.MemoryCache.Value
-import coil3.util.FakeImage
+import coil3.test.FakeImage
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

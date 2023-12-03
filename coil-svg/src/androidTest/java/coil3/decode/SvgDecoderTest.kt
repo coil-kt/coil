@@ -9,8 +9,8 @@ import coil3.request.Options
 import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
-import coil3.util.assertIsSimilarTo
-import coil3.util.decodeBitmapAsset
+import coil3.test.assertIsSimilarTo
+import coil3.test.decodeBitmapAsset
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs

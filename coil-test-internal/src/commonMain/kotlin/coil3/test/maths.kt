@@ -1,4 +1,4 @@
-package coil3.util
+package coil3.test
 
 import kotlin.math.pow
 import kotlin.math.roundToInt

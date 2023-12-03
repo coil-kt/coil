@@ -1,5 +1,8 @@
-package coil3.util
+package coil3.test
 
+import coil3.test.crossCorrelation
+import coil3.test.round
+import coil3.test.variance
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

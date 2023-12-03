@@ -13,9 +13,9 @@ import coil3.size.Size
 import coil3.transform.Transformation
 import coil3.util.ASSET_FILE_PATH_ROOT
 import coil3.util.CoilUtils
-import coil3.util.ViewTestActivity
-import coil3.util.activity
-import coil3.util.runTestMain
+import coil3.test.ViewTestActivity
+import coil3.test.activity
+import coil3.test.runTestMain
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull

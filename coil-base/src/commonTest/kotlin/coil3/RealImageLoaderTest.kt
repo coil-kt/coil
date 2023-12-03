@@ -2,7 +2,7 @@ package coil3
 
 import coil3.fetch.Fetcher
 import coil3.request.ImageRequest
-import coil3.util.WithPlatformContext
+import coil3.test.WithPlatformContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
