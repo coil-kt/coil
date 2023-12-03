@@ -5,6 +5,7 @@ import coil3.setupLibraryModule
 plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
+    id("kotlinx-atomicfu")
 }
 
 addAllMultiplatformTargets()
