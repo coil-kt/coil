@@ -13,6 +13,8 @@ expect fun PlatformContext(): PlatformContext
 
 expect abstract class PlatformContextTest()
 
+const val DEFAULT_FAKE_IMAGE_SIZE = 4 * 100 * 100
+
 fun FakeImage(
     width: Int = 100,
     height: Int = 100,

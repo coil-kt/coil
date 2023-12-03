@@ -1,22 +1,19 @@
 package coil3.memory
 
 import coil3.memory.MemoryCache.Key
-import coil3.util.DEFAULT_BITMAP_SIZE
+import coil3.util.DEFAULT_FAKE_IMAGE_SIZE
 import coil3.util.FakeImage
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class StrongMemoryCacheTest {
 
     @Test
-    fun `can retrieve cached value`() {
+    fun canRetrieveCachedValue() {
         val weakCache = EmptyWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2L * DEFAULT_BITMAP_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2L * DEFAULT_FAKE_IMAGE_SIZE, weakCache)
 
         val image = FakeImage()
         strongCache.set(Key("1"), image, emptyMap(), image.size)
@@ -25,9 +22,9 @@ class StrongMemoryCacheTest {
     }
 
     @Test
-    fun `least recently used value is evicted`() {
+    fun leastRecentlyUsedValueIsEvicted() {
         val weakCache = RealWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2L * DEFAULT_BITMAP_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2L * DEFAULT_FAKE_IMAGE_SIZE, weakCache)
 
         val first = FakeImage()
         strongCache.set(Key("1"), first, emptyMap(), first.size)
@@ -43,9 +40,9 @@ class StrongMemoryCacheTest {
     }
 
     @Test
-    fun `value can be removed`() {
+    fun valueCanBeRemoved() {
         val weakCache = RealWeakMemoryCache()
-        val strongCache = RealStrongMemoryCache(2L * DEFAULT_BITMAP_SIZE, weakCache)
+        val strongCache = RealStrongMemoryCache(2L * DEFAULT_FAKE_IMAGE_SIZE, weakCache)
 
         val image = FakeImage()
         strongCache.set(Key("1"), image, emptyMap(), image.size)

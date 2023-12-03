@@ -2,6 +2,7 @@ import coil3.addAllMultiplatformTargets
 import coil3.jvmCommon
 import coil3.nonAndroidMain
 import coil3.nonJsMain
+import coil3.nonJsTest
 import coil3.nonJvmCommon
 import coil3.setupLibraryModule
 
@@ -19,6 +20,7 @@ kotlin {
     jvmCommon()
     nonAndroidMain()
     nonJsMain()
+    nonJsTest()
     nonJvmCommon()
 
     sourceSets {

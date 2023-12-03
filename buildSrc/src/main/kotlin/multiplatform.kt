@@ -53,6 +53,12 @@ fun KotlinSourceSetContainer.nonJsMain() = sourceSet(
     children = listOf("jvmCommon", "nativeMain"),
 )
 
+fun KotlinSourceSetContainer.nonJsTest() = sourceSet(
+    name = "nonJsTest",
+    children = listOf("androidUnitTest", "jvmTest", "nativeTest"),
+    isTest = true,
+)
+
 fun KotlinSourceSetContainer.nonJvmCommon() = sourceSet(
     name = "nonJvmCommon",
     children = listOf("jsMain", "nativeMain"),
@@ -61,9 +67,11 @@ fun KotlinSourceSetContainer.nonJvmCommon() = sourceSet(
 fun KotlinSourceSetContainer.sourceSet(
     name: String,
     children: List<String>,
+    isTest: Boolean = false,
 ) {
     val sourceSet = sourceSets.create(name)
-    sourceSet.dependsOn(sourceSets.getByName("commonMain"))
+    val commonName = if (isTest) "commonTest" else "commonMain"
+    sourceSet.dependsOn(sourceSets.getByName(commonName))
     for (child in children) {
         sourceSets.getByName(child).dependsOn(sourceSet)
     }

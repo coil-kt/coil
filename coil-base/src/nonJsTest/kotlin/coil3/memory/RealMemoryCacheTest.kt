@@ -2,25 +2,21 @@ package coil3.memory
 
 import coil3.memory.MemoryCache.Key
 import coil3.memory.MemoryCache.Value
-import coil3.util.DEFAULT_BITMAP_SIZE
 import coil3.util.FakeImage
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class RealMemoryCacheTest {
 
     private lateinit var weakCache: WeakMemoryCache
     private lateinit var strongCache: RealStrongMemoryCache
     private lateinit var cache: MemoryCache
 
-    @Before
+    @BeforeTest
     fun before() {
         weakCache = RealWeakMemoryCache()
         strongCache = RealStrongMemoryCache(Long.MAX_VALUE, weakCache)
@@ -75,7 +71,7 @@ class RealMemoryCacheTest {
         weakCache.set(Key("c"), FakeImage(), emptyMap(), 100)
         weakCache.set(Key("d"), FakeImage(), emptyMap(), 100)
 
-        assertEquals(2L * DEFAULT_BITMAP_SIZE, cache.size)
+        assertEquals(2L * 100, cache.size)
 
         cache.clear()
 

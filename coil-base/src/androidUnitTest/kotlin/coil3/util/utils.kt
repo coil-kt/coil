@@ -6,8 +6,6 @@ import androidx.core.graphics.createBitmap
 import coil3.request.ImageRequest
 import org.robolectric.Shadows
 
-const val DEFAULT_BITMAP_SIZE = 40000 // 4 * 100 * 100
-
 fun createBitmap(
     width: Int = 100,
     height: Int = 100,

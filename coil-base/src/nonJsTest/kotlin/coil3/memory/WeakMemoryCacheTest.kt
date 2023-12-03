@@ -1,40 +1,25 @@
 package coil3.memory
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import coil3.Image
-import coil3.asCoilImage
 import coil3.memory.MemoryCache.Key
-import coil3.util.createBitmap
+import coil3.util.FakeImage
 import coil3.util.forEachIndices
-import coil3.util.toDrawable
 import kotlin.experimental.ExperimentalNativeApi
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalNativeApi::class)
 class WeakMemoryCacheTest {
 
-    private lateinit var context: Context
-    private lateinit var weakMemoryCache: WeakReferenceMemoryCache
-    private lateinit var references: MutableSet<Image>
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        weakMemoryCache = WeakReferenceMemoryCache()
-        references = mutableSetOf()
-    }
+    private val weakMemoryCache = WeakReferenceMemoryCache()
+    private val references = mutableSetOf<Image>()
 
     @Test
     fun `can retrieve cached value`() {
         val key = Key("key")
-        val image = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image = reference(FakeImage())
         val extras = mapOf("test" to 4)
         val size = image.size
 
@@ -48,20 +33,20 @@ class WeakMemoryCacheTest {
 
     @Test
     fun `can hold multiple values`() {
-        val image1 = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image1 = reference(FakeImage())
         weakMemoryCache.set(Key("key1"), image1, emptyMap(), 100)
 
-        val image2 = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image2 = reference(FakeImage())
         weakMemoryCache.set(Key("key2"), image2, emptyMap(), 100)
 
-        val image3 = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image3 = reference(FakeImage())
         weakMemoryCache.set(Key("key3"), image3, emptyMap(), 100)
 
         assertEquals(image1, weakMemoryCache.get(Key("key1"))?.image)
         assertEquals(image2, weakMemoryCache.get(Key("key2"))?.image)
         assertEquals(image3, weakMemoryCache.get(Key("key3"))?.image)
 
-        weakMemoryCache.clear(image2)
+        weakMemoryCache.garbageCollect(image2)
 
         assertEquals(image1, weakMemoryCache.get(Key("key1"))?.image)
         assertNull(weakMemoryCache.get(Key("key2")))
@@ -71,24 +56,24 @@ class WeakMemoryCacheTest {
     @Test
     fun `empty references are removed from cache`() {
         val key = Key("key")
-        val image = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image = reference(FakeImage())
 
         weakMemoryCache.set(key, image, emptyMap(), 100)
-        weakMemoryCache.clear(image)
+        weakMemoryCache.garbageCollect(image)
 
         assertNull(weakMemoryCache.get(key))
     }
 
     @Test
     fun `bitmaps with same key are retrieved by size descending`() {
-        val image1 = reference(createBitmap().toDrawable(context).asCoilImage())
-        val image2 = reference(createBitmap().toDrawable(context).asCoilImage())
-        val image3 = reference(createBitmap().toDrawable(context).asCoilImage())
-        val image4 = reference(createBitmap().toDrawable(context).asCoilImage())
-        val image5 = reference(createBitmap().toDrawable(context).asCoilImage())
-        val image6 = reference(createBitmap().toDrawable(context).asCoilImage())
-        val image7 = reference(createBitmap().toDrawable(context).asCoilImage())
-        val image8 = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image1 = reference(FakeImage())
+        val image2 = reference(FakeImage())
+        val image3 = reference(FakeImage())
+        val image4 = reference(FakeImage())
+        val image5 = reference(FakeImage())
+        val image6 = reference(FakeImage())
+        val image7 = reference(FakeImage())
+        val image8 = reference(FakeImage())
 
         weakMemoryCache.set(Key("key"), image1, emptyMap(), 1)
         weakMemoryCache.set(Key("key"), image3, emptyMap(), 3)
@@ -100,28 +85,28 @@ class WeakMemoryCacheTest {
         weakMemoryCache.set(Key("key"), image2, emptyMap(), 2)
 
         assertEquals(image8, weakMemoryCache.get(Key("key"))?.image)
-        weakMemoryCache.clear(image8)
+        weakMemoryCache.garbageCollect(image8)
 
         assertEquals(image7, weakMemoryCache.get(Key("key"))?.image)
-        weakMemoryCache.clear(image7)
+        weakMemoryCache.garbageCollect(image7)
 
         assertEquals(image6, weakMemoryCache.get(Key("key"))?.image)
-        weakMemoryCache.clear(image6)
+        weakMemoryCache.garbageCollect(image6)
 
         assertEquals(image5, weakMemoryCache.get(Key("key"))?.image)
-        weakMemoryCache.clear(image5)
+        weakMemoryCache.garbageCollect(image5)
 
         assertEquals(image4, weakMemoryCache.get(Key("key"))?.image)
-        weakMemoryCache.clear(image4)
+        weakMemoryCache.garbageCollect(image4)
 
         assertEquals(image3, weakMemoryCache.get(Key("key"))?.image)
-        weakMemoryCache.clear(image3)
+        weakMemoryCache.garbageCollect(image3)
 
         assertEquals(image2, weakMemoryCache.get(Key("key"))?.image)
-        weakMemoryCache.clear(image2)
+        weakMemoryCache.garbageCollect(image2)
 
         assertEquals(image1, weakMemoryCache.get(Key("key"))?.image)
-        weakMemoryCache.clear(image1)
+        weakMemoryCache.garbageCollect(image1)
 
         // All the values are invalidated.
         assertNull(weakMemoryCache.get(Key("key")))
@@ -129,19 +114,19 @@ class WeakMemoryCacheTest {
 
     @Test
     fun `cleanUp clears all collected values`() {
-        val image1 = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image1 = reference(FakeImage())
         weakMemoryCache.set(Key("key1"), image1, emptyMap(), 100)
 
-        val image2 = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image2 = reference(FakeImage())
         weakMemoryCache.set(Key("key2"), image2, emptyMap(), 100)
 
-        val image3 = reference(createBitmap().toDrawable(context).asCoilImage())
+        val image3 = reference(FakeImage())
         weakMemoryCache.set(Key("key3"), image3, emptyMap(), 100)
 
-        weakMemoryCache.clear(image1)
+        weakMemoryCache.garbageCollect(image1)
         assertNull(weakMemoryCache.get(Key("key1")))
 
-        weakMemoryCache.clear(image3)
+        weakMemoryCache.garbageCollect(image3)
         assertNull(weakMemoryCache.get(Key("key3")))
 
         assertEquals(3, weakMemoryCache.keys.size)
@@ -158,7 +143,7 @@ class WeakMemoryCacheTest {
     @Test
     fun `value is removed after invalidate is called`() {
         val key = Key("1")
-        val image = createBitmap().toDrawable(context).asCoilImage()
+        val image = FakeImage()
         weakMemoryCache.set(key, image, emptyMap(), image.size)
         weakMemoryCache.remove(key)
 
@@ -166,11 +151,9 @@ class WeakMemoryCacheTest {
     }
 
     /**
-     * Clears [image]'s weak reference without removing its entry from
-     * [WeakReferenceMemoryCache.clear]. This simulates garbage collection.
+     * Clears [image]'s weak reference without removing its entry from the cache.
      */
-    @OptIn(ExperimentalNativeApi::class)
-    private fun WeakReferenceMemoryCache.clear(image: Image) {
+    private fun WeakReferenceMemoryCache.garbageCollect(image: Image) {
         cache.values.forEach { values ->
             values.forEachIndices { value ->
                 if (value.image.get() === image) {

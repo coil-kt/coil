@@ -5,7 +5,6 @@ import coil3.toUri
 import coil3.util.FakeClock
 import coil3.util.PlatformContext
 import coil3.util.PlatformContextTest
-import coil3.util.SCHEME_FILE
 import coil3.util.createFile
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -36,10 +35,10 @@ class FileUriKeyerTest : PlatformContextTest() {
         val keyer = FileUriKeyer(addLastModifiedToFileCacheKey = true)
 
         file.setLastModified(1234L)
-        val firstKey = keyer.key("$SCHEME_FILE://$file".toUri(), options)
+        val firstKey = keyer.key("file://$file".toUri(), options)
 
         file.setLastModified(4321L)
-        val secondKey = keyer.key("$SCHEME_FILE://$file".toUri(), options)
+        val secondKey = keyer.key("file://$file".toUri(), options)
 
         assertNotEquals(secondKey, firstKey)
     }
@@ -52,7 +51,7 @@ class FileUriKeyerTest : PlatformContextTest() {
         val keyer = FileUriKeyer(addLastModifiedToFileCacheKey = false)
 
         file.setLastModified(1234L)
-        val actual = keyer.key("$SCHEME_FILE://$file".toUri(), options)
+        val actual = keyer.key("file://$file".toUri(), options)
 
         assertNull(actual)
     }

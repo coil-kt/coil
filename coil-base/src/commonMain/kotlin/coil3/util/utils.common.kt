@@ -99,4 +99,3 @@ internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
 internal const val SCHEME_FILE = "file"
 
 internal expect fun isFileUri(uri: Uri): Boolean
-
