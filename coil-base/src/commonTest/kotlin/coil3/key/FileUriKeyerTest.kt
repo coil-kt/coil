@@ -3,8 +3,7 @@ package coil3.key
 import coil3.request.Options
 import coil3.toUri
 import coil3.util.FakeClock
-import coil3.util.PlatformContext
-import coil3.util.PlatformContextTest
+import coil3.util.WithPlatformContext
 import coil3.util.createFile
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -14,7 +13,7 @@ import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
 
-class FileUriKeyerTest : PlatformContextTest() {
+class FileUriKeyerTest : WithPlatformContext() {
 
     private lateinit var clock: FakeClock
     private lateinit var fileSystem: FakeFileSystem
@@ -24,7 +23,7 @@ class FileUriKeyerTest : PlatformContextTest() {
     fun before() {
         clock = FakeClock()
         fileSystem = FakeFileSystem(clock)
-        options = Options(PlatformContext(), fileSystem = fileSystem)
+        options = Options(context, fileSystem = fileSystem)
     }
 
     @Test

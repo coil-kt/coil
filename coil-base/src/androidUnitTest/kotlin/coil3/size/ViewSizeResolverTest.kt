@@ -1,10 +1,10 @@
 package coil3.size
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.setPadding
 import androidx.test.core.app.ApplicationProvider
+import coil3.util.WithPlatformContext
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
@@ -15,20 +15,15 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class ViewSizeResolverTest {
+class ViewSizeResolverTest : WithPlatformContext() {
 
-    private lateinit var context: Context
     private lateinit var view: View
     private lateinit var resolver: ViewSizeResolver<View>
     private lateinit var scope: CoroutineScope
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
         view = View(context)
         resolver = ViewSizeResolver(view)
         scope = CoroutineScope(Dispatchers.Main.immediate)

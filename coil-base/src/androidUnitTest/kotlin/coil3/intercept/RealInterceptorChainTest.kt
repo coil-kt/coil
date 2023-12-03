@@ -1,9 +1,7 @@
 package coil3.intercept
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.widget.ImageView
-import androidx.test.core.app.ApplicationProvider
 import coil3.EventListener
 import coil3.lifecycle.FakeLifecycle
 import coil3.memory.MemoryCache
@@ -15,26 +13,16 @@ import coil3.request.target
 import coil3.request.transformations
 import coil3.size.Size
 import coil3.transform.CircleCropTransformation
+import coil3.util.WithPlatformContext
 import coil3.util.createRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class RealInterceptorChainTest {
-
-    private lateinit var context: Context
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-    }
+class RealInterceptorChainTest : WithPlatformContext() {
 
     @Test
     fun `interceptor cannot set data to null`() = runTest {

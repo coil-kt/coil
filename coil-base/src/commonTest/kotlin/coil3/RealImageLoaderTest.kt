@@ -1,9 +1,11 @@
 package coil3
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import coil3.fetch.Fetcher
 import coil3.request.ImageRequest
+import coil3.util.WithPlatformContext
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
@@ -20,23 +22,15 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
-class RealImageLoaderTest {
+class RealImageLoaderTest : WithPlatformContext() {
 
-    private lateinit var context: Context
     private lateinit var mainDispatcher: TestDispatcher
     private lateinit var imageLoader: ImageLoader
 
-    @Before
+    @BeforeTest
     fun before() {
-        context = ApplicationProvider.getApplicationContext() as Context
         mainDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(mainDispatcher)
         imageLoader = ImageLoader.Builder(context)
@@ -44,7 +38,7 @@ class RealImageLoaderTest {
             .build()
     }
 
-    @After
+    @AfterTest
     fun after() {
         Dispatchers.resetMain()
     }
@@ -63,9 +57,11 @@ class RealImageLoaderTest {
                     // Use a custom fetcher that suspends until cancellation.
                     Fetcher { awaitCancellation() }
                 }
-                .listener(onCancel = {
-                    isCancelled.value = true
-                })
+                .listener(
+                    onCancel = {
+                        isCancelled.value = true
+                    },
+                )
                 .build()
             imageLoader.execute(request)
         }

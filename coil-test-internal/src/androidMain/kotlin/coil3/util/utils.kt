@@ -24,12 +24,11 @@ import org.junit.Assume
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-actual fun PlatformContext(): PlatformContext {
-    return ApplicationProvider.getApplicationContext()
-}
-
 @RunWith(RobolectricTestRunner::class)
-actual abstract class PlatformContextTest
+actual abstract class WithPlatformContext {
+    actual val context: PlatformContext
+        get() = ApplicationProvider.getApplicationContext()
+}
 
 /** Alias for [Assume.assumeTrue]. */
 fun assumeTrue(actual: Boolean, message: String = "") {

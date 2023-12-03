@@ -1,10 +1,8 @@
 package coil3.request
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import android.widget.ImageView
-import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.RealImageLoader
 import coil3.size.Precision
@@ -12,6 +10,7 @@ import coil3.size.Size
 import coil3.size.ViewSizeResolver
 import coil3.target.ViewTarget
 import coil3.util.SystemCallbacks
+import coil3.util.WithPlatformContext
 import coil3.util.allowInexactSize
 import coil3.util.createRequest
 import kotlin.test.assertEquals
@@ -24,14 +23,12 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-class RequestServiceTest {
+class RequestServiceTest : WithPlatformContext() {
 
-    private lateinit var context: Context
     private lateinit var service: RequestService
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext() as Context
         val imageLoader = ImageLoader(context) as RealImageLoader
         val systemCallbacks = SystemCallbacks(imageLoader.options)
         service = RequestService(imageLoader, systemCallbacks, null)

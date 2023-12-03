@@ -9,9 +9,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 
-expect fun PlatformContext(): PlatformContext
-
-expect abstract class PlatformContextTest()
+/** Extend this in unit tests that require a [PlatformContext]. */
+expect abstract class WithPlatformContext() {
+    val context: PlatformContext
+}
 
 const val DEFAULT_FAKE_IMAGE_SIZE = 4 * 100 * 100
 

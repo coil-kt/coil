@@ -1,6 +1,5 @@
 package coil3.util
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.VectorDrawable
 import androidx.appcompat.content.res.AppCompatResources
@@ -9,17 +8,13 @@ import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import androidx.core.graphics.component3
 import androidx.core.graphics.component4
-import androidx.test.core.app.ApplicationProvider
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.test.internal.R
 import kotlin.test.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class DrawableUtilsTest {
+class DrawableUtilsTest : WithPlatformContext() {
 
     @Test
     fun `vector with hardware config is converted correctly`() {
@@ -44,7 +39,6 @@ class DrawableUtilsTest {
     @Test
     fun `rectangular vector is converted correctly`() {
         val size = Size(200, 200)
-        val context: Context = ApplicationProvider.getApplicationContext()
         val vector = AppCompatResources.getDrawable(context, R.drawable.ic_100tb)!!
 
         val expected = createBitmap(200, 74).applyCanvas {

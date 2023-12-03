@@ -1,8 +1,6 @@
 package coil3.memory
 
-import android.content.Context
 import android.graphics.Bitmap
-import androidx.test.core.app.ApplicationProvider
 import coil3.EventListener
 import coil3.ImageLoader
 import coil3.RealImageLoader
@@ -23,6 +21,7 @@ import coil3.size.Size
 import coil3.transform.CircleCropTransformation
 import coil3.transform.Transformation
 import coil3.util.SystemCallbacks
+import coil3.util.WithPlatformContext
 import coil3.util.createBitmap
 import coil3.util.createRequest
 import coil3.util.forEachIndexedIndices
@@ -32,20 +31,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class MemoryCacheServiceTest {
-
-    private lateinit var context: Context
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-    }
+class MemoryCacheServiceTest : WithPlatformContext() {
 
     @Test
     fun `newCacheKey - null key`() {

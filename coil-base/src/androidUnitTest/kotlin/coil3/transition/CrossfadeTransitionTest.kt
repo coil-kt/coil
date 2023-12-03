@@ -1,16 +1,15 @@
 package coil3.transition
 
-import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import androidx.test.core.app.ApplicationProvider
 import coil3.Image
 import coil3.asCoilImage
 import coil3.decode.DataSource
 import coil3.drawable
 import coil3.request.ErrorResult
 import coil3.request.SuccessResult
+import coil3.util.WithPlatformContext
 import coil3.util.createRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -21,18 +20,13 @@ import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class CrossfadeTransitionTest {
+class CrossfadeTransitionTest : WithPlatformContext() {
 
-    private lateinit var context: Context
     private lateinit var transitionFactory: CrossfadeTransition.Factory
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
         transitionFactory = CrossfadeTransition.Factory()
     }
 

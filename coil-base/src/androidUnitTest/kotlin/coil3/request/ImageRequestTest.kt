@@ -1,11 +1,9 @@
 package coil3.request
 
 import android.app.Activity
-import android.content.Context
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType.CENTER
 import android.widget.ImageView.ScaleType.MATRIX
-import androidx.test.core.app.ApplicationProvider
 import coil3.Extras
 import coil3.ImageLoader
 import coil3.lifecycle.FakeLifecycle
@@ -15,6 +13,7 @@ import coil3.size.Size
 import coil3.size.ViewSizeResolver
 import coil3.transition.CrossfadeTransition
 import coil3.transition.Transition
+import coil3.util.WithPlatformContext
 import coil3.util.scale
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -23,20 +22,12 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class ImageRequestTest {
-
-    private lateinit var context: Context
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-    }
+class ImageRequestTest : WithPlatformContext() {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/221 */
     @Test
