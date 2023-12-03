@@ -72,7 +72,7 @@ ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-engine-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-engine-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-engine-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
-ktor-engine-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-engine-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }

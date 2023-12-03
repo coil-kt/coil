@@ -1,6 +1,5 @@
 package sample.view
 
-import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -8,10 +7,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
@@ -38,16 +34,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-
-        if (SDK_INT >= 29) {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-            binding.toolbar.setOnApplyWindowInsetsListener { view, insets ->
-                view.updatePadding(
-                    top = insets.toCompat().getInsets(WindowInsetsCompat.Type.systemBars()).top
-                )
-                insets
-            }
-        }
 
         listAdapter = ImageListAdapter(
             resources = resources,
