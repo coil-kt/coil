@@ -38,8 +38,36 @@ class BaselineProfileGenerator {
     }
 
     private fun newFilterPredicate(): (String) -> Boolean {
-        // Only include Compose-specific rules in the coil-compose module.
-        val packageName = if (PROJECT == "compose") "coil/compose/" else "coil/"
-        return { line -> "sample/" !in line && packageName in line }
+        val packageNames = if (PROJECT == "compose") {
+            composePackageNames
+        } else {
+            basePackageNames
+        }
+        return filter@{ line ->
+            val endIndex = line.indexOf(';')
+            if (endIndex == -1) {
+                return@filter false
+            }
+
+            if (line.indexOf("sample/") != -1) {
+                return@filter false
+            }
+
+            packageNames.any { packageName ->
+                val index = line.indexOf(packageName)
+                index != -1 && index < endIndex
+            }
+        }
     }
 }
+
+// Only include Compose-specific rules in the coil-compose module.
+private val composePackageNames = listOf(
+    "coil3/compose/",
+)
+
+private val basePackageNames = listOf(
+    "coil3/",
+    "kotlinx/coroutines/",
+    "okio/",
+)
