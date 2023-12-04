@@ -1,5 +1,3 @@
-@file:Suppress("ktlint")
-
 package coil3.compose
 
 import androidx.compose.runtime.Composable
@@ -17,36 +15,35 @@ import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.request.ImageRequest
 
-/**
- * A composable that executes an [ImageRequest] asynchronously and renders the result.
- *
- * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
- * @param contentDescription Text used by accessibility services to describe what this image
- *  represents. This should always be provided unless this image is used for decorative purposes,
- *  and does not represent a meaningful action that a user can take.
- * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
- * @param loading An optional callback to overwrite what's drawn while the image request is loading.
- * @param success An optional callback to overwrite what's drawn when the image request succeeds.
- * @param error An optional callback to overwrite what's drawn when the image request fails.
- * @param onLoading Called when the image request begins loading.
- * @param onSuccess Called when the image request completes successfully.
- * @param onError Called when the image request completes unsuccessfully.
- * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
- *  bounds defined by the width and height.
- * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
- *  used if the bounds are a different size from the intrinsic size of the [AsyncImagePainter].
- * @param alpha Optional opacity to be applied to the [AsyncImagePainter] when it is rendered
- *  onscreen.
- * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
- *  rendered onscreen.
- * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
- *  destination.
- */
-// TODO: Figure out why the Compose JS compiler fails to compile this:
-//  e: kotlin.NotImplementedError: Generation of stubs for class org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl is not supported yet
-//@Composable
-//@NonRestartableComposable
-//fun SubcomposeAsyncImage(
+// https://github.com/JetBrains/compose-multiplatform/issues/4003
+// /**
+// * A composable that executes an [ImageRequest] asynchronously and renders the result.
+// *
+// * @param model Either an [ImageRequest] or the [ImageRequest.data] value.
+// * @param contentDescription Text used by accessibility services to describe what this image
+// *  represents. This should always be provided unless this image is used for decorative purposes,
+// *  and does not represent a meaningful action that a user can take.
+// * @param modifier Modifier used to adjust the layout algorithm or draw decoration content.
+// * @param loading An optional callback to overwrite what's drawn while the image request is loading.
+// * @param success An optional callback to overwrite what's drawn when the image request succeeds.
+// * @param error An optional callback to overwrite what's drawn when the image request fails.
+// * @param onLoading Called when the image request begins loading.
+// * @param onSuccess Called when the image request completes successfully.
+// * @param onError Called when the image request completes unsuccessfully.
+// * @param alignment Optional alignment parameter used to place the [AsyncImagePainter] in the given
+// *  bounds defined by the width and height.
+// * @param contentScale Optional scale parameter used to determine the aspect ratio scaling to be
+// *  used if the bounds are a different size from the intrinsic size of the [AsyncImagePainter].
+// * @param alpha Optional opacity to be applied to the [AsyncImagePainter] when it is rendered
+// *  onscreen.
+// * @param colorFilter Optional [ColorFilter] to apply for the [AsyncImagePainter] when it is
+// *  rendered onscreen.
+// * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
+// *  destination.
+// */
+// @Composable
+// @NonRestartableComposable
+// fun SubcomposeAsyncImage(
 //    model: Any?,
 //    contentDescription: String?,
 //    modifier: Modifier = Modifier,
@@ -61,7 +58,7 @@ import coil3.request.ImageRequest
 //    alpha: Float = DefaultAlpha,
 //    colorFilter: ColorFilter? = null,
 //    filterQuality: FilterQuality = DefaultFilterQuality,
-//) = SubcomposeAsyncImage(
+// ) = SubcomposeAsyncImage(
 //    model = model,
 //    contentDescription = contentDescription,
 //    imageLoader = SingletonImageLoader.get(LocalPlatformContext.current),
@@ -77,7 +74,7 @@ import coil3.request.ImageRequest
 //    alpha = alpha,
 //    colorFilter = colorFilter,
 //    filterQuality = filterQuality,
-//)
+// )
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
