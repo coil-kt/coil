@@ -11,6 +11,7 @@ setupTestModule(name = "coil3.benchmark", config = true) {
     defaultConfig {
         minSdk = 28
         buildConfigField("String", "PROJECT", "\"$targetProject\"")
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
     }
     buildTypes {
         create("benchmark") {
