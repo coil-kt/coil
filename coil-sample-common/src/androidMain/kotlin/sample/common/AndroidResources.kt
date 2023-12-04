@@ -7,8 +7,7 @@ import okio.source
 class AndroidResources(
     private val context: Context,
 ) : Resources {
-
-    override fun open(path: String): Source {
+    override suspend fun open(path: String): Source {
         return context.assets.open(path).source()
     }
 }
