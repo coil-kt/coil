@@ -1,11 +1,9 @@
 package coil3.decode
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
-import androidx.test.core.app.ApplicationProvider
 import coil3.Extras
 import coil3.ImageLoader
 import coil3.drawable
@@ -18,6 +16,7 @@ import coil3.size.Scale
 import coil3.size.Size
 import coil3.test.assertIsSimilarTo
 import coil3.test.assumeTrue
+import coil3.test.context
 import coil3.test.decodeBitmapAsset
 import coil3.test.isSimilarTo
 import coil3.test.size
@@ -31,19 +30,11 @@ import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.buffer
 import okio.source
-import org.junit.Before
 import org.junit.Test
 
 class BitmapFactoryDecoderTest {
 
-    private lateinit var context: Context
-    private lateinit var decoderFactory: BitmapFactoryDecoder.Factory
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        decoderFactory = BitmapFactoryDecoder.Factory()
-    }
+    private val decoderFactory = BitmapFactoryDecoder.Factory()
 
     @Test
     fun basic() = runTest {

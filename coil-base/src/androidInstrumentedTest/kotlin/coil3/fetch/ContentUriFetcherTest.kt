@@ -5,7 +5,6 @@ import android.Manifest.permission.WRITE_CONTACTS
 import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.Context
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.provider.ContactsContract
@@ -17,11 +16,11 @@ import android.provider.ContactsContract.Contacts.Photo.DISPLAY_PHOTO
 import android.provider.ContactsContract.RawContacts
 import android.provider.MediaStore
 import androidx.core.net.toUri
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import coil3.ImageLoader
 import coil3.request.Options
 import coil3.test.assumeTrue
+import coil3.test.context
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -30,26 +29,18 @@ import kotlinx.coroutines.test.runTest
 import okio.buffer
 import okio.sink
 import okio.source
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class ContentUriFetcherTest {
 
-    private lateinit var context: Context
-    private lateinit var fetcherFactory: ContentUriFetcher.Factory
+    private val fetcherFactory = ContentUriFetcher.Factory()
 
     @get:Rule
     val grantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_CONTACTS, WRITE_CONTACTS)
 
     // Re-use the same contact across all tests. Must be created lazily.
     private val contactId by lazy(::createFakeContact)
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        fetcherFactory = ContentUriFetcher.Factory()
-    }
 
     @Test
     fun contactsThumbnail() = runTest {

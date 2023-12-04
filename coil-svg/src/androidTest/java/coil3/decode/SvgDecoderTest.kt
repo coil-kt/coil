@@ -1,8 +1,6 @@
 package coil3.decode
 
-import android.content.Context
 import android.graphics.drawable.BitmapDrawable
-import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
@@ -10,6 +8,7 @@ import coil3.size.Dimension
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.test.assertIsSimilarTo
+import coil3.test.context
 import coil3.test.decodeBitmapAsset
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -23,19 +22,11 @@ import okio.BufferedSource
 import okio.FileSystem
 import okio.buffer
 import okio.source
-import org.junit.Before
 import org.junit.Test
 
 class SvgDecoderTest {
 
-    private lateinit var context: Context
-    private lateinit var decoderFactory: SvgDecoder.Factory
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        decoderFactory = SvgDecoder.Factory()
-    }
+    private val decoderFactory = SvgDecoder.Factory()
 
     @Test
     fun handlesSvgMimeType() {

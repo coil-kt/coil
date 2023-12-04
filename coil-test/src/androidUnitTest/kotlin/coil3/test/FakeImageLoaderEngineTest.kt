@@ -1,9 +1,7 @@
 package coil3.test
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.asCoilImage
 import coil3.decode.DataSource
@@ -20,8 +18,6 @@ import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest
 
 class FakeImageLoaderEngineTest : RobolectricTest() {
-
-    private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Test
     fun extraData() = runTest {

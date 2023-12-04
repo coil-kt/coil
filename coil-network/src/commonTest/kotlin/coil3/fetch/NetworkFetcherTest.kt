@@ -2,7 +2,6 @@ package coil3.fetch
 
 class NetworkFetcherTest {
 //
-//    private lateinit var context: Context
 //    private lateinit var server: MockWebServer
 //    private lateinit var fileSystem: FileSystem
 //    private lateinit var diskCache: DiskCache
@@ -12,7 +11,6 @@ class NetworkFetcherTest {
 //
 //    @BeforeTest
 //    fun before() {
-//        context = ApplicationProvider.getApplicationContext()
 //        server = createMockWebServer()
 //        fileSystem = FileSystem.SYSTEM
 //        diskCache = DiskCache.Builder()

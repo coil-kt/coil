@@ -1,11 +1,9 @@
 package coil3.fetch
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
-import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
-import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.base.test.R
 import coil3.drawable
@@ -16,6 +14,7 @@ import coil3.size.Size
 import coil3.test.ViewTestActivity
 import coil3.test.assertIsSimilarTo
 import coil3.test.assumeTrue
+import coil3.test.context
 import coil3.test.launchActivity
 import coil3.toUri
 import coil3.util.getDrawableCompat
@@ -26,19 +25,11 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 
 class ResourceUriFetcherTest {
 
-    private lateinit var context: Context
-    private lateinit var fetcherFactory: ResourceUriFetcher.Factory
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        fetcherFactory = ResourceUriFetcher.Factory()
-    }
+    private val fetcherFactory = ResourceUriFetcher.Factory()
 
     @Test
     fun rasterDrawable() = runTest {

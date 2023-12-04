@@ -1,8 +1,6 @@
 package coil3.decode
 
-import android.content.Context
 import android.os.Build.VERSION.SDK_INT
-import androidx.test.core.app.ApplicationProvider
 import coil3.Extras
 import coil3.FileMediaDataSource
 import coil3.fetch.MediaDataSourceFetcher
@@ -13,6 +11,7 @@ import coil3.size.Size
 import coil3.test.assertIsSimilarTo
 import coil3.test.assumeTrue
 import coil3.test.bitmap
+import coil3.test.context
 import coil3.test.copyAssetToFile
 import coil3.test.decodeBitmapAsset
 import kotlin.test.assertFalse
@@ -23,17 +22,9 @@ import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.buffer
 import okio.source
-import org.junit.Before
 import org.junit.Test
 
 class VideoFrameDecoderTest {
-
-    private lateinit var context: Context
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-    }
 
     @Test
     fun noSetFrameTime() = runTest(timeout = 1.minutes) {

@@ -1,17 +1,16 @@
 package coil3.request
 
 import android.content.ContentResolver.SCHEME_FILE
-import android.content.Context
 import android.graphics.Bitmap
 import android.widget.ImageView
 import androidx.lifecycle.Lifecycle
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.Image
 import coil3.ImageLoader
 import coil3.size.Size
 import coil3.test.ViewTestActivity
 import coil3.test.activity
+import coil3.test.context
 import coil3.test.runTestMain
 import coil3.transform.Transformation
 import coil3.util.ASSET_FILE_PATH_ROOT
@@ -29,7 +28,6 @@ import org.junit.Test
 
 class DisposableTest {
 
-    private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader
 
     @get:Rule
@@ -37,7 +35,6 @@ class DisposableTest {
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext() as Context
         imageLoader = ImageLoader.Builder(context)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .build()

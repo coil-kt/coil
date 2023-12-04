@@ -1,11 +1,10 @@
 package coil3.fetch
 
 import android.content.ContentResolver.SCHEME_FILE
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.Uri
 import coil3.request.Options
+import coil3.test.context
 import coil3.toUri
 import coil3.util.ASSET_FILE_PATH_ROOT
 import kotlin.test.assertEquals
@@ -13,19 +12,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 
 class AssetUriFetcherTest {
 
-    private lateinit var context: Context
-    private lateinit var fetcherFactory: AssetUriFetcher.Factory
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        fetcherFactory = AssetUriFetcher.Factory()
-    }
+    private val fetcherFactory = AssetUriFetcher.Factory()
 
     @Test
     fun basic() = runTest {

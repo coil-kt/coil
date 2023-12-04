@@ -1,24 +1,15 @@
 package coil3.transform
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import coil3.size.Size
 import coil3.test.assertIsSimilarTo
+import coil3.test.context
 import coil3.test.decodeBitmapAsset
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 
 class CircleCropTransformationTest {
 
-    private lateinit var context: Context
-    private lateinit var transformation: CircleCropTransformation
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        transformation = CircleCropTransformation()
-    }
+    private val transformation = CircleCropTransformation()
 
     @Test
     fun basic() = runTest {

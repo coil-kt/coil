@@ -1,28 +1,19 @@
 package coil3.transform
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import coil3.base.test.R
 import coil3.size.Dimension
 import coil3.size.Size
 import coil3.test.assertIsSimilarTo
+import coil3.test.context
 import coil3.test.decodeBitmapAsset
 import coil3.test.size
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 
 class RoundedCornerTransformationTest {
 
-    private lateinit var context: Context
-    private lateinit var transformation: RoundedCornersTransformation
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        transformation = RoundedCornersTransformation(20f)
-    }
+    private val transformation = RoundedCornersTransformation(20f)
 
     @Test
     fun defined_size() = runTest {

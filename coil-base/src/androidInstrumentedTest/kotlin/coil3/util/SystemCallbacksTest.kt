@@ -2,27 +2,18 @@ package coil3.util
 
 import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE
-import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.createBitmap
-import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.RealImageLoader
 import coil3.asCoilImage
 import coil3.memory.MemoryCache
+import coil3.test.context
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import org.junit.Before
 import org.junit.Test
 
 class SystemCallbacksTest {
-
-    private lateinit var context: Context
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-    }
 
     @Test
     fun imageLoaderIsFreedWithoutShutdown() {

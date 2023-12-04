@@ -1,11 +1,9 @@
 package coil3.transform
 
 import android.content.ContentResolver.SCHEME_FILE
-import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
-import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.decode.GifDecoder
 import coil3.decode.ImageDecoderDecoder
@@ -16,6 +14,7 @@ import coil3.request.animatedTransformation
 import coil3.request.bitmapConfig
 import coil3.test.assertIsSimilarTo
 import coil3.test.assumeTrue
+import coil3.test.context
 import coil3.test.decodeBitmapAsset
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
@@ -24,12 +23,10 @@ import org.junit.Test
 
 class AnimatedTransformationTest {
 
-    private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext() as Context
         imageLoader = ImageLoader(context)
     }
 

@@ -1,10 +1,8 @@
 package coil3
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
-import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.Lifecycle
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.base.test.R
 import coil3.decode.DecodeResult
@@ -21,6 +19,7 @@ import coil3.request.transitionFactory
 import coil3.size.Size
 import coil3.test.ViewTestActivity
 import coil3.test.activity
+import coil3.test.context
 import coil3.transform.Transformation
 import coil3.transition.Transition
 import java.util.concurrent.atomic.AtomicInteger
@@ -36,14 +35,11 @@ import org.junit.Test
 
 class EventListenerTest {
 
-    private lateinit var context: Context
-
     @get:Rule
     val activityRule = activityScenarioRule<ViewTestActivity>()
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
         activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
     }
 

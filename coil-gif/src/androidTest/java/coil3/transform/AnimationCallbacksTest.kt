@@ -1,10 +1,8 @@
 package coil3.transform
 
 import android.content.ContentResolver.SCHEME_FILE
-import android.content.Context
 import android.os.Build.VERSION.SDK_INT
 import androidx.lifecycle.Lifecycle
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.ImageLoader
 import coil3.decode.GifDecoder
@@ -19,6 +17,7 @@ import coil3.request.repeatCount
 import coil3.request.target
 import coil3.test.ViewTestActivity
 import coil3.test.activity
+import coil3.test.context
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -30,7 +29,6 @@ import org.junit.Test
 
 class AnimationCallbacksTest {
 
-    private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader
 
     @get:Rule
@@ -38,7 +36,6 @@ class AnimationCallbacksTest {
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext() as Context
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .memoryCachePolicy(CachePolicy.DISABLED)

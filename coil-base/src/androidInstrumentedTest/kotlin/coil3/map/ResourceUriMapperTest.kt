@@ -1,29 +1,20 @@
 package coil3.map
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import coil3.base.test.R
 import coil3.pathSegments
 import coil3.request.Options
+import coil3.test.context
 import coil3.toUri
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import org.junit.Before
 import org.junit.Test
 
 class ResourceUriMapperTest {
 
-    private lateinit var context: Context
-    private lateinit var mapper: ResourceUriMapper
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        mapper = ResourceUriMapper()
-    }
+    private val mapper = ResourceUriMapper()
 
     @Test
     fun resourceNameUri() {

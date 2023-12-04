@@ -1,29 +1,20 @@
 package coil3.fetch
 
-import android.content.Context
 import android.os.Build.VERSION.SDK_INT
-import androidx.test.core.app.ApplicationProvider
 import coil3.FileMediaDataSource
 import coil3.ImageLoader
 import coil3.request.Options
 import coil3.test.assumeTrue
+import coil3.test.context
 import coil3.test.copyAssetToFile
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 
 class MediaDataSourceFetcherTest {
 
-    private lateinit var context: Context
-    private lateinit var fetcherFactory: MediaDataSourceFetcher.Factory
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-        fetcherFactory = MediaDataSourceFetcher.Factory()
-    }
+    private val fetcherFactory = MediaDataSourceFetcher.Factory()
 
     @Test
     fun basic() = runTest {

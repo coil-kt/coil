@@ -1,7 +1,6 @@
 package coil3.transform
 
 import android.content.ContentResolver.SCHEME_FILE
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -14,7 +13,6 @@ import android.graphics.RectF
 import android.graphics.drawable.Animatable
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
-import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.decode.GifDecoder
 import coil3.decode.ImageDecoderDecoder
@@ -28,6 +26,7 @@ import coil3.request.bitmapConfig
 import coil3.request.crossfade
 import coil3.request.transformations
 import coil3.test.assertIsSimilarTo
+import coil3.test.context
 import coil3.test.decodeBitmapAsset
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -37,13 +36,11 @@ import org.junit.Test
 
 class AnimatedAndNormalTransformationTest {
 
-    private lateinit var context: Context
     private lateinit var imageLoader: ImageLoader
     private lateinit var imageRequestBuilder: ImageRequest.Builder
 
     @Before
     fun before() {
-        context = ApplicationProvider.getApplicationContext() as Context
         imageLoader = ImageLoader.Builder(context)
             .crossfade(false)
             .components {

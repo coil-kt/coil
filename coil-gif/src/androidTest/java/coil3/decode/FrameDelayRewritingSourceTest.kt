@@ -1,24 +1,15 @@
 package coil3.decode
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
+import coil3.test.context
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import okio.Buffer
 import okio.Source
 import okio.buffer
 import okio.source
-import org.junit.Before
 import org.junit.Test
 
 class FrameDelayRewritingSourceTest {
-
-    private lateinit var context: Context
-
-    @Before
-    fun before() {
-        context = ApplicationProvider.getApplicationContext()
-    }
 
     @Test
     fun doesNotRewriteGifWithValidFrameDelay() {
