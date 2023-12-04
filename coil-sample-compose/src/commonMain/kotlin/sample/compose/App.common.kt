@@ -74,8 +74,7 @@ fun App(viewModel: MainViewModel) {
                     )
                 }
             },
-            modifier = Modifier
-                .testTagsAsResourceId(true),
+            modifier = Modifier.testTagsAsResourceId(true),
         )
         BackHandler(enabled = isDetail) {
             viewModel.onBackPressed()

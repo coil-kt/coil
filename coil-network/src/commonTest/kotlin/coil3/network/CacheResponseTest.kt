@@ -19,20 +19,19 @@ class CacheResponseTest {
 
     @Test
     fun canSerializeAndDeserializeCacheResponse() = runTestAsync {
+        val response = HttpResponseData(
+            statusCode = HttpStatusCode.OK,
+            requestTime = GMTDate(1701673257L),
+            headers = headers {
+                append("name1", "value1")
+                appendAll("name2", listOf("value2", "value3"))
+            },
+            version = HttpProtocolVersion.HTTP_2_0,
+            body = "",
+            callContext = Job(),
+        )
         val config = MockEngineConfig()
-        config.addHandler { _ ->
-            HttpResponseData(
-                statusCode = HttpStatusCode.OK,
-                requestTime = GMTDate(1701673257L),
-                headers = headers {
-                    append("name1", "value1")
-                    appendAll("name2", listOf("value2", "value3"))
-                },
-                version = HttpProtocolVersion.HTTP_2_0,
-                body = "",
-                callContext = Job(),
-            )
-        }
+        config.addHandler { response }
         val httpClient = HttpClient(MockEngine(config))
         val expected = CacheResponse(httpClient.request())
 
@@ -40,6 +39,9 @@ class CacheResponseTest {
         expected.writeTo(buffer)
         val actual = CacheResponse(buffer)
 
+        assertEquals(response.requestTime.timestamp, expected.sentRequestAtMillis)
+        assertEquals(response.responseTime.timestamp, expected.receivedResponseAtMillis)
+        assertEquals(response.headers, expected.responseHeaders)
         assertEquals(expected.sentRequestAtMillis, actual.sentRequestAtMillis)
         assertEquals(expected.receivedResponseAtMillis, actual.receivedResponseAtMillis)
         assertEquals(expected.responseHeaders, actual.responseHeaders)
