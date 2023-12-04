@@ -71,7 +71,7 @@ private class RealMainViewModel(
         }
     }
 
-    private fun loadImages(assetType: AssetType): List<Image> {
+    private suspend fun loadImages(assetType: AssetType): List<Image> {
         val json = resources.open(assetType.fileName).buffer().use {
             Json.parseToJsonElement(it.readUtf8()).jsonArray
         }

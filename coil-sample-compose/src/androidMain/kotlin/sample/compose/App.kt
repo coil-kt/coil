@@ -2,6 +2,7 @@ package sample.compose
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalComposeUiApi::class)
+@Stable
 actual fun Modifier.testTagsAsResourceId(enable: Boolean): Modifier {
     return semantics {
         testTagsAsResourceId = enable
