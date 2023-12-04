@@ -1,7 +1,7 @@
 package coil3.request
 
-import coil3.PlatformContext
 import coil3.Extras
+import coil3.PlatformContext
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.size.Scale

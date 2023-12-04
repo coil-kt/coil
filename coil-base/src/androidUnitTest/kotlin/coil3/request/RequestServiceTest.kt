@@ -9,8 +9,8 @@ import coil3.size.Precision
 import coil3.size.Size
 import coil3.size.ViewSizeResolver
 import coil3.target.ViewTarget
-import coil3.util.SystemCallbacks
 import coil3.test.WithPlatformContext
+import coil3.util.SystemCallbacks
 import coil3.util.allowInexactSize
 import coil3.util.createRequest
 import kotlin.test.assertEquals

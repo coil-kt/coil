@@ -130,5 +130,4 @@ actual abstract class EventListener : ImageRequest.Listener {
     actual companion object {
         @JvmField actual val NONE = object : EventListener() {}
     }
-
 }

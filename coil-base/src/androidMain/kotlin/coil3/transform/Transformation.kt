@@ -7,8 +7,8 @@ import android.graphics.drawable.BitmapDrawable
 import coil3.decode.DecodeResult
 import coil3.fetch.ImageFetchResult
 import coil3.request.ImageRequest
-import coil3.size.Size
 import coil3.request.transformations
+import coil3.size.Size
 
 /**
  * An interface for making transformations to an image's pixel data.

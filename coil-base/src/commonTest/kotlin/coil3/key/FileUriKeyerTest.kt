@@ -1,9 +1,9 @@
 package coil3.key
 
 import coil3.request.Options
-import coil3.toUri
 import coil3.test.FakeClock
 import coil3.test.WithPlatformContext
+import coil3.toUri
 import coil3.util.createFile
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -57,6 +57,6 @@ class FileUriKeyerTest : WithPlatformContext() {
 
     private fun Path.setLastModified(epochMillis: Long) {
         clock.epochMillis = epochMillis
-        fileSystem.openReadWrite(this).use { /* Do nothing. */}
+        fileSystem.openReadWrite(this).use { /* Do nothing. */ }
     }
 }

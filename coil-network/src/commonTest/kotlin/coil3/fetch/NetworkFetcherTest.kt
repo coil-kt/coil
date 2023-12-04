@@ -1,6 +1,6 @@
 package coil3.fetch
 
-//class HttpUriFetcherTestTest {
+class NetworkFetcherTest {
 //
 //    private lateinit var context: Context
 //    private lateinit var server: MockWebServer
@@ -425,4 +425,4 @@ package coil3.fetch
 //    companion object {
 //        private const val IMAGE = "normal.jpg"
 //    }
-//}
+}

@@ -10,12 +10,12 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.Image
 import coil3.ImageLoader
 import coil3.size.Size
-import coil3.transform.Transformation
-import coil3.util.ASSET_FILE_PATH_ROOT
-import coil3.util.CoilUtils
 import coil3.test.ViewTestActivity
 import coil3.test.activity
 import coil3.test.runTestMain
+import coil3.transform.Transformation
+import coil3.util.ASSET_FILE_PATH_ROOT
+import coil3.util.CoilUtils
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull

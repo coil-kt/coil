@@ -1,3 +1,5 @@
+@file:Suppress("ktlint")
+
 package coil3.compose
 
 import androidx.compose.runtime.Composable

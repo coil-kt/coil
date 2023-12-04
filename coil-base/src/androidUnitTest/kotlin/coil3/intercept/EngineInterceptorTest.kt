@@ -15,11 +15,11 @@ import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.transformations
 import coil3.size.Size
+import coil3.test.WithPlatformContext
+import coil3.test.size
 import coil3.transform.CircleCropTransformation
 import coil3.util.SystemCallbacks
-import coil3.test.WithPlatformContext
 import coil3.util.createRequest
-import coil3.test.size
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertSame

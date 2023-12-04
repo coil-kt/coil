@@ -1,6 +1,5 @@
 package coil3.compose
 
-import coil3.size.Size as CoilSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,6 +36,7 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.size.Precision
+import coil3.size.Size as CoilSize
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

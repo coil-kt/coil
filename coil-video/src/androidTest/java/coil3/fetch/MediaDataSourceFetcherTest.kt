@@ -8,7 +8,6 @@ import coil3.ImageLoader
 import coil3.request.Options
 import coil3.test.assumeTrue
 import coil3.test.copyAssetToFile
-import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest

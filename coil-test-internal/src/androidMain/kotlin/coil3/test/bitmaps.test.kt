@@ -10,7 +10,6 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.test.platform.app.InstrumentationRegistry
 import coil3.size.Size
-import coil3.test.crossCorrelation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking

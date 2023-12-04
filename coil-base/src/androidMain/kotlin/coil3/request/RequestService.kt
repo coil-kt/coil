@@ -35,7 +35,7 @@ internal class AndroidRequestService(
     private val imageLoader: ImageLoader,
     private val systemCallbacks: SystemCallbacks,
     logger: Logger?,
-): RequestService {
+) : RequestService {
     private val hardwareBitmapService = HardwareBitmapService(logger)
 
     /**

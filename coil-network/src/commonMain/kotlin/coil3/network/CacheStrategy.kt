@@ -3,7 +3,7 @@ package coil3.network
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.CacheStrategy.Output
 import coil3.request.Options
-import io.ktor.client.request.*
+import io.ktor.client.request.HttpRequestBuilder
 import kotlin.js.JsName
 
 /**
