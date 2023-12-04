@@ -32,11 +32,11 @@ class SingletonImageLoaderFactoryTest {
     @Test
     @Config(application = TestApplication::class)
     fun `application factory is invoked exactly once`() {
-        assertFalse((context.applicationContext as TestApplication).isInitialized.value)
+        assertFalse((context.applicationContext as TestApplication).isInitialized)
 
         val imageLoader1 = context.imageLoader
 
-        assertTrue((context.applicationContext as TestApplication).isInitialized.value)
+        assertTrue((context.applicationContext as TestApplication).isInitialized)
 
         val imageLoader2 = context.imageLoader
 
@@ -47,21 +47,16 @@ class SingletonImageLoaderFactoryTest {
     fun `setImageLoader factory is invoked exactly once`() {
         val imageLoader1 = ImageLoader(context)
 
-        val isInitialized = atomic(false)
-        SingletonImageLoader.set {
-            check(!isInitialized.getAndSet(true)) {
-                "newImageLoader was invoked more than once."
-            }
-            imageLoader1
-        }
+        val factory = TestSingletonImageLoaderFactory(lazyOf(imageLoader1))
+        SingletonImageLoader.set(factory)
 
-        assertFalse(isInitialized.value)
+        assertFalse(factory.isInitialized)
 
         val imageLoader2 = context.imageLoader
 
         assertSame(imageLoader1, imageLoader2)
 
-        assertTrue(isInitialized.value)
+        assertTrue(factory.isInitialized)
 
         val imageLoader3 = context.imageLoader
 
@@ -71,29 +66,42 @@ class SingletonImageLoaderFactoryTest {
     @Test
     @Config(application = TestApplication::class)
     fun `setImageLoader preempts application factory`() {
-        val isInitialized = atomic(false)
+        val factory = TestSingletonImageLoaderFactory(context)
 
-        assertFalse(isInitialized.value)
-        assertFalse((context.applicationContext as TestApplication).isInitialized.value)
+        assertFalse(factory.isInitialized)
+        assertFalse((context.applicationContext as TestApplication).isInitialized)
 
-        SingletonImageLoader.set {
-            check(!isInitialized.getAndSet(true)) {
-                "newImageLoader was invoked more than once."
-            }
-            ImageLoader(context)
-        }
+        SingletonImageLoader.set(factory)
 
         context.imageLoader
 
-        assertTrue(isInitialized.value)
-        assertFalse((context.applicationContext as TestApplication).isInitialized.value)
+        assertTrue(factory.isInitialized)
+        assertFalse((context.applicationContext as TestApplication).isInitialized)
+    }
+
+    class TestSingletonImageLoaderFactory(
+        private val imageLoaderLazy: Lazy<ImageLoader>,
+    ) : SingletonImageLoader.Factory {
+
+        constructor(context: Context) : this(lazy { ImageLoader(context) })
+
+        private val _isInitialized = atomic(false)
+        val isInitialized: Boolean by _isInitialized
+
+        override fun newImageLoader(): ImageLoader {
+            check(!_isInitialized.getAndSet(true)) {
+                "newImageLoader was invoked more than once."
+            }
+            return imageLoaderLazy.value
+        }
     }
 
     class TestApplication : Application(), SingletonImageLoader.Factory {
-        val isInitialized = atomic(false)
+        private val _isInitialized = atomic(false)
+        val isInitialized: Boolean by _isInitialized
 
         override fun newImageLoader(): ImageLoader {
-            check(!isInitialized.getAndSet(true)) {
+            check(!_isInitialized.getAndSet(true)) {
                 "newImageLoader was invoked more than once."
             }
             return ImageLoader(this)

@@ -43,7 +43,7 @@ class CacheResponse {
         for (header in responseHeaders) {
             for (value in header.value) {
                 sink.writeUtf8(header.key)
-                    .writeUtf8(": ")
+                    .writeUtf8(":")
                     .writeUtf8(value)
                     .writeByte('\n'.code)
             }

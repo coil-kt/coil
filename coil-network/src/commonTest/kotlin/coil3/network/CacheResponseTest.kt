@@ -1,23 +1,40 @@
 package coil3.network
 
-import coil3.util.createMockWebServer
+import coil3.test.runTestAsync
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockEngineConfig
+import io.ktor.client.request.HttpResponseData
+import io.ktor.client.request.request
+import io.ktor.http.HttpProtocolVersion
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headers
+import io.ktor.util.date.GMTDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import okhttp3.Headers
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.mockwebserver.MockResponse
+import kotlinx.coroutines.Job
 import okio.Buffer
 
 class CacheResponseTest {
 
     @Test
-    fun `can serialize and deserialize cache response`() {
-        val server = createMockWebServer(IMAGE)
-        val url = server.url(IMAGE)
-        val request = Request.Builder().url(url).build()
-        val response = OkHttpClient().newCall(request).execute()
-        val expected = CacheResponse(response)
+    fun canSerializeAndDeserializeCacheResponse() = runTestAsync {
+        val config = MockEngineConfig()
+        config.addHandler { _ ->
+            HttpResponseData(
+                statusCode = HttpStatusCode.OK,
+                requestTime = GMTDate(1701673257L),
+                headers = headers {
+                    append("name1", "value1")
+                    appendAll("name2", listOf("value2", "value3"))
+                },
+                version = HttpProtocolVersion.HTTP_2_0,
+                body = "",
+                callContext = Job(),
+            )
+        }
+        val httpClient = HttpClient(MockEngine(config))
+        val expected = CacheResponse(httpClient.request())
 
         val buffer = Buffer()
         expected.writeTo(buffer)
@@ -25,24 +42,29 @@ class CacheResponseTest {
 
         assertEquals(expected.sentRequestAtMillis, actual.sentRequestAtMillis)
         assertEquals(expected.receivedResponseAtMillis, actual.receivedResponseAtMillis)
-        assertEquals(expected.isTls, actual.isTls)
         assertEquals(expected.responseHeaders, actual.responseHeaders)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1467 */
     @Test
-    fun `can deserialize cache response with non ascii characters in headers`() {
+    fun canDeserializeCacheResponseWithNonAsciiCharactersInHeaders() = runTestAsync {
         val headerName = "name"
         val headerValue = "微信图片"
-        val server = createMockWebServer()
-        val responseHeaders = Headers.Builder()
-            .addUnsafeNonAscii(headerName, headerValue)
-            .build()
-        server.enqueue(MockResponse().setHeaders(responseHeaders).setBody(Buffer()))
-        val url = server.url("微信图片.jpg")
-        val request = Request.Builder().url(url).build()
-        val response = OkHttpClient().newCall(request).execute()
-        val expected = CacheResponse(response)
+        val config = MockEngineConfig()
+        config.addHandler { _ ->
+            HttpResponseData(
+                statusCode = HttpStatusCode.OK,
+                requestTime = GMTDate(1701673257L),
+                headers = headers {
+                    set(headerName, headerValue)
+                },
+                version = HttpProtocolVersion.HTTP_2_0,
+                body = "",
+                callContext = Job(),
+            )
+        }
+        val httpClient = HttpClient(MockEngine(config))
+        val expected = CacheResponse(httpClient.request())
 
         val buffer = Buffer()
         expected.writeTo(buffer)
