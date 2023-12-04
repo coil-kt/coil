@@ -89,7 +89,7 @@ fun AsyncImage(
     contentScale = contentScale,
     alpha = alpha,
     colorFilter = colorFilter,
-    filterQuality = filterQuality
+    filterQuality = filterQuality,
 )
 
 /**
@@ -153,7 +153,7 @@ fun AsyncImage(
         alignment = alignment,
         contentScale = contentScale,
         alpha = alpha,
-        colorFilter = colorFilter
+        colorFilter = colorFilter,
     )
 }
 
@@ -177,12 +177,12 @@ internal fun Content(
                 alignment = alignment,
                 contentScale = contentScale,
                 alpha = alpha,
-                colorFilter = colorFilter
-            )
+                colorFilter = colorFilter,
+            ),
         ),
     measurePolicy = { _, constraints ->
         layout(constraints.minWidth, constraints.minHeight) {}
-    }
+    },
 )
 
 @Composable
@@ -208,7 +208,7 @@ internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     override fun MeasureScope.measure(
         measurable: Measurable,
-        constraints: Constraints
+        constraints: Constraints,
     ): MeasureResult {
         // Cache the current constraints.
         _constraints.value = constraints
@@ -242,6 +242,6 @@ private fun Constraints.toSizeOrNull() = when {
     isZero -> null
     else -> CoilSize(
         width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
-        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
+        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined,
     )
 }

@@ -108,7 +108,7 @@ internal class CrossfadePainter(
             } else {
                 inset(
                     horizontal = (size.width - drawSize.width) / 2,
-                    vertical = (size.height - drawSize.height) / 2
+                    vertical = (size.height - drawSize.height) / 2,
                 ) {
                     draw(drawSize, alpha, colorFilter)
                 }

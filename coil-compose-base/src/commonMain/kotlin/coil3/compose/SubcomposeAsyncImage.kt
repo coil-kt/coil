@@ -76,7 +76,7 @@ fun SubcomposeAsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
-    content = contentOf(loading, success, error)
+    content = contentOf(loading, success, error),
 )
 
 /**
@@ -136,7 +136,7 @@ fun SubcomposeAsyncImage(
         Box(
             modifier = modifier,
             contentAlignment = alignment,
-            propagateMinConstraints = true
+            propagateMinConstraints = true,
         ) {
             RealSubcomposeAsyncImageScope(
                 parentScope = this,
@@ -145,7 +145,7 @@ fun SubcomposeAsyncImage(
                 alignment = alignment,
                 contentScale = contentScale,
                 alpha = alpha,
-                colorFilter = colorFilter
+                colorFilter = colorFilter,
             ).content()
         }
     } else {
@@ -154,7 +154,7 @@ fun SubcomposeAsyncImage(
         BoxWithConstraints(
             modifier = modifier,
             contentAlignment = alignment,
-            propagateMinConstraints = true
+            propagateMinConstraints = true,
         ) {
             // Ensure `painter.state` is up to date immediately. Resolving the constraints
             // synchronously is necessary to ensure that images from the memory cache are resolved
@@ -168,7 +168,7 @@ fun SubcomposeAsyncImage(
                 alignment = alignment,
                 contentScale = contentScale,
                 alpha = alpha,
-                colorFilter = colorFilter
+                colorFilter = colorFilter,
             ).content()
         }
     }
@@ -222,7 +222,7 @@ fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
     alignment = alignment,
     contentScale = contentScale,
     alpha = alpha,
-    colorFilter = colorFilter
+    colorFilter = colorFilter,
 )
 
 @Stable
