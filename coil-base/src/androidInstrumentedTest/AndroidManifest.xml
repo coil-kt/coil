@@ -8,7 +8,7 @@
 
     <application>
         <provider
-            android:name="coil.util.AssetContentProvider"
+            android:name="coil3.util.AssetContentProvider"
             android:authorities="coil"
             android:exported="false"/>
     </application>
