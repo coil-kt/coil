@@ -20,6 +20,12 @@ kotlin {
                 api(projects.coilBase)
             }
         }
+        commonTest {
+            dependencies {
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.common)
+            }
+        }
         named("androidUnitTest") {
             dependencies {
                 implementation(projects.coilTestInternal)
