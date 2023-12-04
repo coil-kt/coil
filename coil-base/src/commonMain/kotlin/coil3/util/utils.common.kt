@@ -98,4 +98,10 @@ internal fun Dimension.toPx(scale: Scale): Int = pxOrElse {
 
 internal const val SCHEME_FILE = "file"
 
-internal expect fun isFileUri(uri: Uri): Boolean
+internal fun isFileUri(uri: Uri): Boolean {
+    return (uri.scheme == null || uri.scheme == SCHEME_FILE)
+        && uri.path != null
+        && !isAssetUri(uri)
+}
+
+internal expect fun isAssetUri(uri: Uri): Boolean

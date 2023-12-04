@@ -23,10 +23,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ImageRequestTest : WithPlatformContext() {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/221 */

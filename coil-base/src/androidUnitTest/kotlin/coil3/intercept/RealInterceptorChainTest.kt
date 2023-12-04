@@ -3,17 +3,15 @@ package coil3.intercept
 import android.graphics.Bitmap
 import android.widget.ImageView
 import coil3.EventListener
-import coil3.lifecycle.FakeLifecycle
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.bitmapConfig
-import coil3.request.lifecycle
 import coil3.request.target
 import coil3.request.transformations
 import coil3.size.Size
-import coil3.transform.CircleCropTransformation
 import coil3.test.WithPlatformContext
+import coil3.transform.CircleCropTransformation
 import coil3.util.createRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -50,23 +48,6 @@ class RealInterceptorChainTest : WithPlatformContext() {
         val interceptor = Interceptor { chain ->
             request = chain.request.newBuilder()
                 .target(ImageView(context))
-                .build()
-            chain.withRequest(request).proceed()
-        }
-        assertFailsWith<IllegalStateException> {
-            testChain(initialRequest, listOf(interceptor))
-        }
-    }
-
-    @Test
-    fun `interceptor cannot modify lifecycle`() = runTest {
-        val initialRequest = createRequest(context) {
-            lifecycle(FakeLifecycle())
-        }
-        var request: ImageRequest
-        val interceptor = Interceptor { chain ->
-            request = chain.request.newBuilder()
-                .lifecycle(FakeLifecycle())
                 .build()
             chain.withRequest(request).proceed()
         }

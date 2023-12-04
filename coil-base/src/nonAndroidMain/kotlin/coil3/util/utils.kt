@@ -65,6 +65,7 @@ internal inline fun Bitmap.applyCanvas(block: Canvas.() -> Unit) {
     Canvas(this).use(block)
 }
 
-internal actual fun isFileUri(uri: Uri): Boolean {
-    return uri.scheme == SCHEME_FILE
+internal actual fun isAssetUri(uri: Uri): Boolean {
+    // Asset URIs are only supported on Android.
+    return false
 }

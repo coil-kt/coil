@@ -49,16 +49,16 @@ class EventListenerTest {
 
     @Test
     fun basic() = runTest {
-        val eventListener = coil3.EventListenerTest.TestEventListener(
-            transformStart = coil3.EventListenerTest.MethodChecker(false),
-            transformEnd = coil3.EventListenerTest.MethodChecker(false),
-            transitionStart = coil3.EventListenerTest.MethodChecker(false),
-            transitionEnd = coil3.EventListenerTest.MethodChecker(false),
-            onCancel = coil3.EventListenerTest.MethodChecker(false),
-            onError = coil3.EventListenerTest.MethodChecker(false)
+        val eventListener = TestEventListener(
+            transformStart = MethodChecker(false),
+            transformEnd = MethodChecker(false),
+            transitionStart = MethodChecker(false),
+            transitionEnd = MethodChecker(false),
+            onCancel = MethodChecker(false),
+            onError = MethodChecker(false)
         )
 
-        val imageLoader = coil3.ImageLoader.Builder(context)
+        val imageLoader = ImageLoader.Builder(context)
             .eventListener(eventListener)
             .build()
 
@@ -71,14 +71,14 @@ class EventListenerTest {
 
     @Test
     fun transformations() = runTest {
-        val eventListener = coil3.EventListenerTest.TestEventListener(
-            transitionStart = coil3.EventListenerTest.MethodChecker(false),
-            transitionEnd = coil3.EventListenerTest.MethodChecker(false),
-            onCancel = coil3.EventListenerTest.MethodChecker(false),
-            onError = coil3.EventListenerTest.MethodChecker(false)
+        val eventListener = TestEventListener(
+            transitionStart = MethodChecker(false),
+            transitionEnd = MethodChecker(false),
+            onCancel = MethodChecker(false),
+            onError = MethodChecker(false)
         )
 
-        val imageLoader = coil3.ImageLoader.Builder(context)
+        val imageLoader = ImageLoader.Builder(context)
             .eventListener(eventListener)
             .build()
 
@@ -102,14 +102,14 @@ class EventListenerTest {
 
     @Test
     fun transitions() = runTest {
-        val eventListener = coil3.EventListenerTest.TestEventListener(
-            transformStart = coil3.EventListenerTest.MethodChecker(false),
-            transformEnd = coil3.EventListenerTest.MethodChecker(false),
-            onCancel = coil3.EventListenerTest.MethodChecker(false),
-            onError = coil3.EventListenerTest.MethodChecker(false)
+        val eventListener = TestEventListener(
+            transformStart = MethodChecker(false),
+            transformEnd = MethodChecker(false),
+            onCancel = MethodChecker(false),
+            onError = MethodChecker(false)
         )
 
-        val imageLoader = coil3.ImageLoader.Builder(context)
+        val imageLoader = ImageLoader.Builder(context)
             .eventListener(eventListener)
             .build()
 
@@ -134,20 +134,20 @@ class EventListenerTest {
 
     @Test
     fun error() = runTest {
-        val eventListener = coil3.EventListenerTest.TestEventListener(
-            fetchStart = coil3.EventListenerTest.MethodChecker(false),
-            fetchEnd = coil3.EventListenerTest.MethodChecker(false),
-            decodeStart = coil3.EventListenerTest.MethodChecker(false),
-            decodeEnd = coil3.EventListenerTest.MethodChecker(false),
-            transformStart = coil3.EventListenerTest.MethodChecker(false),
-            transformEnd = coil3.EventListenerTest.MethodChecker(false),
-            transitionStart = coil3.EventListenerTest.MethodChecker(false),
-            transitionEnd = coil3.EventListenerTest.MethodChecker(false),
-            onSuccess = coil3.EventListenerTest.MethodChecker(false),
-            onCancel = coil3.EventListenerTest.MethodChecker(false)
+        val eventListener = TestEventListener(
+            fetchStart = MethodChecker(false),
+            fetchEnd = MethodChecker(false),
+            decodeStart = MethodChecker(false),
+            decodeEnd = MethodChecker(false),
+            transformStart = MethodChecker(false),
+            transformEnd = MethodChecker(false),
+            transitionStart = MethodChecker(false),
+            transitionEnd = MethodChecker(false),
+            onSuccess = MethodChecker(false),
+            onCancel = MethodChecker(false)
         )
 
-        val imageLoader = coil3.ImageLoader.Builder(context)
+        val imageLoader = ImageLoader.Builder(context)
             .eventListener(eventListener)
             .build()
 
@@ -162,27 +162,27 @@ class EventListenerTest {
 
     @Test
     fun nullData() = runTest {
-        val eventListener = coil3.EventListenerTest.TestEventListener(
-            onStart = coil3.EventListenerTest.MethodChecker(false),
-            resolveSizeStart = coil3.EventListenerTest.MethodChecker(false),
-            resolveSizeEnd = coil3.EventListenerTest.MethodChecker(false),
-            mapStart = coil3.EventListenerTest.MethodChecker(false),
-            mapEnd = coil3.EventListenerTest.MethodChecker(false),
-            keyStart = coil3.EventListenerTest.MethodChecker(false),
-            keyEnd = coil3.EventListenerTest.MethodChecker(false),
-            fetchStart = coil3.EventListenerTest.MethodChecker(false),
-            fetchEnd = coil3.EventListenerTest.MethodChecker(false),
-            decodeStart = coil3.EventListenerTest.MethodChecker(false),
-            decodeEnd = coil3.EventListenerTest.MethodChecker(false),
-            transformStart = coil3.EventListenerTest.MethodChecker(false),
-            transformEnd = coil3.EventListenerTest.MethodChecker(false),
-            transitionStart = coil3.EventListenerTest.MethodChecker(false),
-            transitionEnd = coil3.EventListenerTest.MethodChecker(false),
-            onSuccess = coil3.EventListenerTest.MethodChecker(false),
-            onCancel = coil3.EventListenerTest.MethodChecker(false)
+        val eventListener = TestEventListener(
+            onStart = MethodChecker(false),
+            resolveSizeStart = MethodChecker(false),
+            resolveSizeEnd = MethodChecker(false),
+            mapStart = MethodChecker(false),
+            mapEnd = MethodChecker(false),
+            keyStart = MethodChecker(false),
+            keyEnd = MethodChecker(false),
+            fetchStart = MethodChecker(false),
+            fetchEnd = MethodChecker(false),
+            decodeStart = MethodChecker(false),
+            decodeEnd = MethodChecker(false),
+            transformStart = MethodChecker(false),
+            transformEnd = MethodChecker(false),
+            transitionStart = MethodChecker(false),
+            transitionEnd = MethodChecker(false),
+            onSuccess = MethodChecker(false),
+            onCancel = MethodChecker(false)
         )
 
-        val imageLoader = coil3.ImageLoader.Builder(context)
+        val imageLoader = ImageLoader.Builder(context)
             .eventListener(eventListener)
             .build()
 
@@ -195,7 +195,7 @@ class EventListenerTest {
         eventListener.complete()
     }
 
-    private suspend fun coil3.ImageLoader.testEnqueue(
+    private suspend fun ImageLoader.testEnqueue(
         builder: ImageRequest.Builder.() -> Unit
     ) = suspendCancellableCoroutine { continuation ->
         val request = ImageRequest.Builder(context)
@@ -232,61 +232,61 @@ class EventListenerTest {
     }
 
     private class TestEventListener(
-        val onStart: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val onStart: MethodChecker = MethodChecker(
             true
         ),
-        val resolveSizeStart: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val resolveSizeStart: MethodChecker = MethodChecker(
             true
         ),
-        val resolveSizeEnd: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val resolveSizeEnd: MethodChecker = MethodChecker(
             true
         ),
-        val mapStart: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val mapStart: MethodChecker = MethodChecker(
             true
         ),
-        val mapEnd: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val mapEnd: MethodChecker = MethodChecker(
             true
         ),
-        val keyStart: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val keyStart: MethodChecker = MethodChecker(
             true
         ),
-        val keyEnd: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val keyEnd: MethodChecker = MethodChecker(
             true
         ),
-        val fetchStart: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val fetchStart: MethodChecker = MethodChecker(
             true
         ),
-        val fetchEnd: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val fetchEnd: MethodChecker = MethodChecker(
             true
         ),
-        val decodeStart: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val decodeStart: MethodChecker = MethodChecker(
             true
         ),
-        val decodeEnd: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val decodeEnd: MethodChecker = MethodChecker(
             true
         ),
-        val transformStart: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val transformStart: MethodChecker = MethodChecker(
             true
         ),
-        val transformEnd: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val transformEnd: MethodChecker = MethodChecker(
             true
         ),
-        val transitionStart: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val transitionStart: MethodChecker = MethodChecker(
             true
         ),
-        val transitionEnd: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val transitionEnd: MethodChecker = MethodChecker(
             true
         ),
-        val onSuccess: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val onSuccess: MethodChecker = MethodChecker(
             true
         ),
-        val onCancel: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val onCancel: MethodChecker = MethodChecker(
             true
         ),
-        val onError: coil3.EventListenerTest.MethodChecker = coil3.EventListenerTest.MethodChecker(
+        val onError: MethodChecker = MethodChecker(
             true
         )
-    ) : coil3.EventListener() {
+    ) : EventListener() {
 
         override fun onStart(request: ImageRequest) = onStart.call()
         override fun resolveSizeStart(request: ImageRequest) = resolveSizeStart.call()

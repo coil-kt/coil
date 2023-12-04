@@ -8,6 +8,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.test.core.app.ApplicationProvider
 import coil3.ImageLoader
 import coil3.base.test.R
+import coil3.drawable
 import coil3.map.ResourceIntMapper
 import coil3.map.ResourceUriMapper
 import coil3.request.Options
@@ -102,7 +103,7 @@ class ResourceUriFetcherTest {
             fetcherFactory.create(uri, options, imageLoader)?.fetch()
         }
         val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
-        val actual = (result as ImageFetchResult).image.toBitmap()
+        val actual = (result as ImageFetchResult).image.drawable.toBitmap()
         actual.assertIsSimilarTo(expected)
     }
 }

@@ -3,11 +3,11 @@ package coil3
 import coil3.annotation.MainThread
 import coil3.disk.DiskCache
 import coil3.fetch.ByteArrayFetcher
-import coil3.fetch.PathFetcher
+import coil3.fetch.FileUriFetcher
 import coil3.intercept.EngineInterceptor
 import coil3.intercept.RealInterceptorChain
 import coil3.key.FileUriKeyer
-import coil3.key.GenericUriKeyer
+import coil3.key.UriKeyer
 import coil3.map.PathMapper
 import coil3.map.StringMapper
 import coil3.memory.MemoryCache
@@ -262,10 +262,10 @@ internal fun ComponentRegistry.Builder.addCommonComponents(
         .add(PathMapper())
         // Keyers
         .add(FileUriKeyer(options.addLastModifiedToFileCacheKey))
-        .add(GenericUriKeyer())
+        .add(UriKeyer())
         // Fetchers
+        .add(FileUriFetcher.Factory())
         .add(ByteArrayFetcher.Factory())
-        .add(PathFetcher.Factory())
 }
 
 private const val TAG = "RealImageLoader"

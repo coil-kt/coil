@@ -27,7 +27,7 @@ class FileFetcherTest {
     fun basic() = runTest {
         val file = context.copyAssetToFile("normal.jpg").toOkioPath()
         val options = Options(context, size = Size(100, 100))
-        val fetcher = PathFetcher.Factory().create(file, options, ImageLoader(context))
+        val fetcher = FileUriFetcher.Factory().create(file, options, ImageLoader(context))
 
         assertNotNull(fetcher)
 

@@ -79,7 +79,7 @@ private fun parseUri(data: String): Uri {
 
     var scheme: String? = null
     var authority: String? = null
-    val path: String?
+    var path: String? = null
     var query: String? = null
     var fragment: String? = null
 
@@ -99,12 +99,13 @@ private fun parseUri(data: String): Uri {
         if (queryStartIndex == -1) Int.MAX_VALUE else queryStartIndex - 1,
         queryEndIndex,
     )
-    path = data.substring(maxOf(0, pathStartIndex), pathEndIndex)
 
+    if (pathStartIndex != -1) {
+        path = data.substring(pathStartIndex, pathEndIndex)
+    }
     if (queryStartIndex != -1) {
         query = data.substring(queryStartIndex, queryEndIndex)
     }
-
     if (fragmentStartIndex != -1) {
         fragment = data.substring(fragmentStartIndex, data.length)
     }
