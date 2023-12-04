@@ -1,4 +1,4 @@
-package coil3.compose.utils
+package coil3.compose
 
 import androidx.compose.ui.test.IdlingResource
 import coil3.EventListener
@@ -8,7 +8,7 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import java.util.Collections
 
-class ImageLoaderIdlingResource : EventListener, IdlingResource {
+class ImageLoaderIdlingResource : EventListener(), IdlingResource {
 
     private val ongoingRequests = Collections.synchronizedSet(mutableSetOf<ImageRequest>())
     private val _results = Collections.synchronizedList(mutableListOf<ImageResult>())

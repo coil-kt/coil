@@ -2,6 +2,7 @@ package coil3.test
 
 import coil3.PlatformContext
 
-actual abstract class WithPlatformContext {
-    actual val context get() = PlatformContext.INSTANCE
-}
+actual abstract class RobolectricTest
+
+actual val context: PlatformContext
+    get() = PlatformContext.INSTANCE

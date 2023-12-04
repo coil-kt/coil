@@ -10,7 +10,8 @@ import coil3.request.bitmapConfig
 import coil3.request.target
 import coil3.request.transformations
 import coil3.size.Size
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import coil3.transform.CircleCropTransformation
 import coil3.util.createRequest
 import kotlin.test.assertEquals
@@ -20,7 +21,7 @@ import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-class RealInterceptorChainTest : WithPlatformContext() {
+class RealInterceptorChainTest : RobolectricTest() {
 
     @Test
     fun `interceptor cannot set data to null`() = runTest {

@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import androidx.core.graphics.createBitmap
 import androidx.test.core.app.ApplicationProvider
 import coil3.size.Scale
+import coil3.test.RobolectricTest
 import coil3.transition.CrossfadeDrawable
 import coil3.util.toDrawable
 import kotlin.test.assertEquals
@@ -14,11 +15,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class CrossfadeDrawableTest {
+class CrossfadeDrawableTest : RobolectricTest() {
 
     private lateinit var context: Context
 

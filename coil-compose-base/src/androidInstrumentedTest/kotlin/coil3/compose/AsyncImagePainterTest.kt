@@ -42,15 +42,15 @@ import coil3.EventListener
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.base.test.R
-import coil3.compose.utils.ImageLoaderIdlingResource
-import coil3.compose.utils.ImageMockWebServer
-import coil3.compose.utils.assertIsSimilarTo
-import coil3.compose.utils.assumeSupportsCaptureToImage
-import coil3.compose.utils.resourceUri
+import coil3.drawable
+import coil3.networkObserverEnabled
 import coil3.request.CachePolicy
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
+import coil3.request.crossfade
+import coil3.request.error
+import coil3.request.placeholder
 import coil3.test.ComposeTestActivity
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
@@ -61,7 +61,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -72,28 +71,28 @@ class AsyncImagePainterTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeTestActivity>()
 
-    private lateinit var server: MockWebServer
+    private lateinit var fetcher: FakeNetworkFetcher.Factory
     private lateinit var requestTracker: ImageLoaderIdlingResource
     private lateinit var imageLoader: ImageLoader
 
     @Before
     fun before() {
-        server = ImageMockWebServer()
         requestTracker = ImageLoaderIdlingResource()
         imageLoader = ImageLoader.Builder(composeTestRule.activity)
             .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .networkObserverEnabled(false)
             .eventListener(requestTracker)
+            .components {
+                add(FakeNetworkFetcher.Factory())
+            }
             .build()
         composeTestRule.registerIdlingResource(requestTracker)
-        server.start()
     }
 
     @After
     fun after() {
         composeTestRule.unregisterIdlingResource(requestTracker)
-        server.shutdown()
     }
 
     @Test
@@ -103,7 +102,7 @@ class AsyncImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = server.url("/image"),
+                    model = "https://example.com/image",
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -189,7 +188,7 @@ class AsyncImagePainterTest {
         var requestThrowable: Throwable? = null
 
         // Build a custom ImageLoader with an EventListener.
-        val eventListener = object : EventListener {
+        val eventListener = object : EventListener() {
             override fun onSuccess(request: ImageRequest, result: SuccessResult) {
                 requestCompleted = true
             }
@@ -204,7 +203,7 @@ class AsyncImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = server.url("/image"),
+                    model = "https://example.com/image",
                     imageLoader = imageLoader,
                 ),
                 contentDescription = null,
@@ -224,7 +223,7 @@ class AsyncImagePainterTest {
     fun basicLoad_switchData() {
         assumeSupportsCaptureToImage()
 
-        var data by mutableStateOf(server.url("/image"))
+        var data by mutableStateOf("https://example.com/image")
 
         composeTestRule.setContent {
             Image(
@@ -250,7 +249,7 @@ class AsyncImagePainterTest {
             .assertIsSimilarTo(R.drawable.sample, threshold = 0.8)
 
         // Now switch the data URI to the blue drawable.
-        data = server.url("/blue")
+        data = "https://example.com/blue"
 
         waitForRequestComplete(finishedRequests = 2)
 
@@ -270,7 +269,7 @@ class AsyncImagePainterTest {
 
         composeTestRule.setContent {
             val painter = rememberAsyncImagePainter(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 imageLoader = imageLoader
             )
 
@@ -310,7 +309,7 @@ class AsyncImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = server.url("/image"),
+                    model = "https://example.com/image",
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -336,7 +335,7 @@ class AsyncImagePainterTest {
                 item {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = server.url("/image"),
+                            model = "https://example.com/image",
                             imageLoader = imageLoader
                         ),
                         contentDescription = null,
@@ -364,7 +363,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(server.url("/noimage"))
+                        .data("https://example.com/noimage")
                         .error(R.drawable.red_rectangle)
                         .build(),
                     imageLoader = imageLoader
@@ -396,7 +395,7 @@ class AsyncImagePainterTest {
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(server.url("/image"))
+                            .data("https://example.com/image")
                             .placeholder(R.drawable.red_rectangle)
                             .build(),
                         imageLoader = imageLoader
@@ -427,7 +426,7 @@ class AsyncImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = server.url("/noimage"),
+                    model = "https://example.com/noimage",
                     imageLoader = imageLoader
                 ),
                 contentDescription = null,
@@ -496,7 +495,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(server.url("/image"))
+                        .data("https://example.com/image")
                         .placeholder(R.drawable.red_rectangle)
                         .crossfade(true)
                         .build(),
@@ -526,7 +525,7 @@ class AsyncImagePainterTest {
         composeTestRule.setContent {
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = server.url("/image"),
+                    model = "https://example.com/image",
                     imageLoader = imageLoader,
                     contentScale = ContentScale.FillWidth,
                 ),
@@ -563,7 +562,7 @@ class AsyncImagePainterTest {
                 ) {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = server.url("/image"),
+                            model = "https://example.com/image",
                             imageLoader = imageLoader
                         ),
                         contentDescription = null,
@@ -592,7 +591,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(server.url("/image"))
+                        .data("https://example.com/image")
                         .size(100, 100)
                         .build(),
                     imageLoader = imageLoader,
@@ -621,7 +620,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(server.url("/image"))
+                        .data("https://example.com/image")
                         .size(100, 100)
                         .build(),
                     imageLoader = imageLoader,
@@ -650,7 +649,7 @@ class AsyncImagePainterTest {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(server.url("/incorrect_path"))
+                        .data("https://example.com/incorrect_path")
                         .size(100, 100)
                         .build(),
                     imageLoader = imageLoader,
@@ -677,7 +676,7 @@ class AsyncImagePainterTest {
             compositionCount.getAndIncrement()
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = server.url("/image"),
+                    model = "https://example.com/image",
                     imageLoader = imageLoader
                 ),
                 contentDescription = null
@@ -698,7 +697,7 @@ class AsyncImagePainterTest {
     }
 
     private fun assertLoadedBitmapSize(width: Dp, height: Dp, requestNumber: Int = 0) {
-        val bitmap = (requestTracker.results[requestNumber] as SuccessResult).image.toBitmap()
+        val bitmap = (requestTracker.results[requestNumber] as SuccessResult).image.drawable.toBitmap()
         assertEquals(bitmap.width, width.toPx())
         assertEquals(bitmap.height, height.toPx())
     }

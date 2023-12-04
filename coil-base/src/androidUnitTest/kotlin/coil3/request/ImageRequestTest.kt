@@ -11,7 +11,8 @@ import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.size.ViewSizeResolver
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import coil3.transition.CrossfadeTransition
 import coil3.transition.Transition
 import coil3.util.scale
@@ -24,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-class ImageRequestTest : WithPlatformContext() {
+class ImageRequestTest : RobolectricTest() {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/221 */
     @Test

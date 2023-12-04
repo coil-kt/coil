@@ -2,6 +2,7 @@ package coil3.lifecycle
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import coil3.test.RobolectricTest
 import coil3.util.awaitStarted
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -14,12 +15,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
-class LifecyclesTest {
+class LifecyclesTest : RobolectricTest() {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var lifecycle: FakeLifecycleRegistry

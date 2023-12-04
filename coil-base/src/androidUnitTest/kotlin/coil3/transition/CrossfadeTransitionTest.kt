@@ -9,7 +9,8 @@ import coil3.decode.DataSource
 import coil3.drawable
 import coil3.request.ErrorResult
 import coil3.request.SuccessResult
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import coil3.util.createRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -21,7 +22,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
-class CrossfadeTransitionTest : WithPlatformContext() {
+class CrossfadeTransitionTest : RobolectricTest() {
 
     private lateinit var transitionFactory: CrossfadeTransition.Factory
 

@@ -1,14 +1,15 @@
 package coil3.map
 
 import coil3.request.Options
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import coil3.toUri
 import coil3.util.SCHEME_FILE
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import okio.Path.Companion.toPath
 
-class PathMapperTest : WithPlatformContext() {
+class PathMapperTest : RobolectricTest() {
 
     private val mapper = PathMapper()
 

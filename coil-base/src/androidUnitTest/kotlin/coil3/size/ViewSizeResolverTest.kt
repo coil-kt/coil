@@ -3,7 +3,8 @@ package coil3.size
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.setPadding
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +16,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class ViewSizeResolverTest : WithPlatformContext() {
+class ViewSizeResolverTest : RobolectricTest() {
 
     private lateinit var view: View
     private lateinit var resolver: ViewSizeResolver<View>

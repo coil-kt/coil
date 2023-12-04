@@ -18,11 +18,8 @@ import kotlin.test.Test
 import kotlin.test.assertIs
 import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-class FakeImageLoaderEngineTest {
+class FakeImageLoaderEngineTest : RobolectricTest() {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 

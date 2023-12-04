@@ -3,6 +3,7 @@ package coil3
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.ContentResolver.SCHEME_FILE
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -12,6 +13,7 @@ import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.base.test.R
 import coil3.decode.DecodeUtils
@@ -26,7 +28,6 @@ import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
 import coil3.test.ViewTestActivity
-import coil3.test.WithPlatformContext
 import coil3.test.activity
 import coil3.test.decodeBitmapAsset
 import coil3.test.runTestMain
@@ -59,8 +60,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class RealImageLoaderAndroidTest : WithPlatformContext() {
+class RealImageLoaderAndroidTest {
 
+    private lateinit var context: Context
     private lateinit var memoryCache: MemoryCache
     private lateinit var imageLoader: ImageLoader
 
@@ -69,6 +71,7 @@ class RealImageLoaderAndroidTest : WithPlatformContext() {
 
     @Before
     fun before() {
+        context = ApplicationProvider.getApplicationContext() as Context
         memoryCache = MemoryCache.Builder()
             .maxSizeBytes(Long.MAX_VALUE)
             .build()

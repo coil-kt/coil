@@ -2,7 +2,8 @@ package coil3.key
 
 import coil3.request.Options
 import coil3.test.FakeClock
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import coil3.toUri
 import coil3.util.createFile
 import kotlin.test.BeforeTest
@@ -13,7 +14,7 @@ import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import okio.use
 
-class FileUriKeyerTest : WithPlatformContext() {
+class FileUriKeyerTest : RobolectricTest() {
 
     private lateinit var clock: FakeClock
     private lateinit var fileSystem: FakeFileSystem

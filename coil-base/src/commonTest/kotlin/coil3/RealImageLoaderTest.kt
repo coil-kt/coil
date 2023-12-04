@@ -2,7 +2,8 @@ package coil3
 
 import coil3.fetch.Fetcher
 import coil3.request.ImageRequest
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,7 +25,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class RealImageLoaderTest : WithPlatformContext() {
+class RealImageLoaderTest : RobolectricTest() {
 
     private lateinit var mainDispatcher: TestDispatcher
     private lateinit var imageLoader: ImageLoader

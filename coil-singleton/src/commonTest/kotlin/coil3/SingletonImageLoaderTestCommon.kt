@@ -1,13 +1,14 @@
 package coil3
 
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.atomicfu.atomic
 
-class SingletonImageLoaderTestCommon : WithPlatformContext() {
+class SingletonImageLoaderTestCommon : RobolectricTest() {
 
     @Test
     fun setImageLoaderFactoryIsInvokedExactlyOnce() {

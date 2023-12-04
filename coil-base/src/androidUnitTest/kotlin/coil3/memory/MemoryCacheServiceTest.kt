@@ -18,7 +18,8 @@ import coil3.size.Dimension
 import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import coil3.transform.CircleCropTransformation
 import coil3.transform.Transformation
 import coil3.util.SystemCallbacks
@@ -33,7 +34,7 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.junit.Test
 
-class MemoryCacheServiceTest : WithPlatformContext() {
+class MemoryCacheServiceTest : RobolectricTest() {
 
     @Test
     fun `newCacheKey - null key`() {

@@ -25,10 +25,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-actual abstract class WithPlatformContext {
-    actual val context: PlatformContext
-        get() = ApplicationProvider.getApplicationContext()
-}
+actual abstract class RobolectricTest
+
+actual val context: PlatformContext
+    get() = ApplicationProvider.getApplicationContext()
 
 /** Alias for [Assume.assumeTrue]. */
 fun assumeTrue(actual: Boolean, message: String = "") {

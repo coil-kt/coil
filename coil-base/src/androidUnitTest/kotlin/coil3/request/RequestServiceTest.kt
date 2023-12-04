@@ -9,7 +9,8 @@ import coil3.size.Precision
 import coil3.size.Size
 import coil3.size.ViewSizeResolver
 import coil3.target.ViewTarget
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import coil3.util.SystemCallbacks
 import coil3.util.allowInexactSize
 import coil3.util.createRequest
@@ -18,12 +19,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
-class RequestServiceTest : WithPlatformContext() {
+class RequestServiceTest : RobolectricTest() {
 
     private lateinit var service: RequestService
 

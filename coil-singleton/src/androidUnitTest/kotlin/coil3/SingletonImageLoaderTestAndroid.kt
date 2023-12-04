@@ -2,7 +2,8 @@ package coil3
 
 import android.app.Application
 import coil3.SingletonImageLoaderTestCommon.TestSingletonImageLoaderFactory
-import coil3.test.WithPlatformContext
+import coil3.test.RobolectricTest
+import coil3.test.context
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -11,7 +12,7 @@ import org.junit.After
 import org.junit.Test
 import org.robolectric.annotation.Config
 
-class SingletonImageLoaderTestAndroid : WithPlatformContext() {
+class SingletonImageLoaderTestAndroid : RobolectricTest() {
 
     @After
     fun after() {

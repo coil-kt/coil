@@ -35,19 +35,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toDrawable
 import coil3.ImageLoader
+import coil3.asCoilImage
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.base.test.R
-import coil3.compose.utils.ImageLoaderIdlingResource
-import coil3.compose.utils.ImageMockWebServer
-import coil3.compose.utils.assertHeightIsEqualTo
-import coil3.compose.utils.assertIsSimilarTo
-import coil3.compose.utils.assertWidthIsEqualTo
-import coil3.compose.utils.assumeSupportsCaptureToImage
 import coil3.decode.DecodeUtils
+import coil3.drawable
 import coil3.fetch.FetchResult
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache
+import coil3.networkObserverEnabled
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.Options
@@ -61,7 +59,6 @@ import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.fail
 import kotlinx.coroutines.delay
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -72,28 +69,27 @@ class AsyncImageTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeTestActivity>()
 
-    private lateinit var server: MockWebServer
     private lateinit var requestTracker: ImageLoaderIdlingResource
     private lateinit var imageLoader: ImageLoader
 
     @Before
     fun before() {
-        server = ImageMockWebServer()
         requestTracker = ImageLoaderIdlingResource()
         imageLoader = ImageLoader.Builder(composeTestRule.activity)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
             .networkObserverEnabled(false)
             .eventListener(requestTracker)
+            .components {
+                add(FakeNetworkFetcher.Factory())
+            }
             .build()
         composeTestRule.registerIdlingResource(requestTracker)
-        server.start()
     }
 
     @After
     fun after() {
         composeTestRule.unregisterIdlingResource(requestTracker)
-        server.shutdown()
     }
 
     @Test
@@ -102,7 +98,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -129,7 +125,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -160,7 +156,7 @@ class AsyncImageTest {
         composeTestRule.setContent {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 AsyncImage(
-                    model = server.url("/image"),
+                    model = "https://example.com/image",
                     contentDescription = null,
                     imageLoader = imageLoader,
                     contentScale = ContentScale.Crop,
@@ -192,7 +188,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -223,7 +219,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -255,7 +251,7 @@ class AsyncImageTest {
                 content = {
                     item {
                         AsyncImage(
-                            model = server.url("/image"),
+                            model = "https://example.com/image",
                             contentDescription = null,
                             imageLoader = imageLoader,
                             contentScale = ContentScale.Crop,
@@ -293,7 +289,7 @@ class AsyncImageTest {
         composeTestRule.setContent {
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(server.url("/image"))
+                    .data("https://example.com/image")
                     .fetcherFactory(LoadingFetcher.Factory())
                     .build(),
                 contentDescription = null,
@@ -339,7 +335,7 @@ class AsyncImageTest {
         composeTestRule.setContent {
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(server.url("/image"))
+                    .data("https://example.com/image")
                     .fetcherFactory(ErrorFetcher.Factory())
                     .build(),
                 contentDescription = null,
@@ -382,7 +378,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             SubcomposeAsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -425,7 +421,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             SubcomposeAsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -489,7 +485,7 @@ class AsyncImageTest {
             val value = "" // Use a fake value inside the listener to make it stateful.
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(server.url("/image"))
+                    .data("https://example.com/image")
                     // Ensure this doesn't constantly recompose or restart image requests.
                     .listener { _, _ -> value + "" }
                     .build(),
@@ -521,7 +517,7 @@ class AsyncImageTest {
 
         composeTestRule.setContent {
             AsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier
@@ -553,7 +549,7 @@ class AsyncImageTest {
         composeTestRule.setContent {
             compositionCount.getAndIncrement()
             AsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader
             )
@@ -573,7 +569,7 @@ class AsyncImageTest {
             outerCompositionCount.getAndIncrement()
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(server.url("/image"))
+                    .data("https://example.com/image")
                     .memoryCachePolicy(CachePolicy.ENABLED)
                     .build(),
                 contentDescription = null,
@@ -595,9 +591,10 @@ class AsyncImageTest {
 
     @Test
     fun painterState_memoryCached() {
-        val url = server.url("/image")
+        val url = "https://example.com/image"
         val bitmap = BitmapFactory.decodeResource(composeTestRule.activity.resources, R.drawable.sample)
-        imageLoader.memoryCache!![MemoryCache.Key(url.toString())] = MemoryCache.Value(bitmap)
+            .toDrawable(composeTestRule.activity.resources).asCoilImage()
+        imageLoader.memoryCache!![MemoryCache.Key(url)] = MemoryCache.Value(bitmap)
 
         val outerCompositionCount = AtomicInteger()
         val innerCompositionCount = AtomicInteger()
@@ -634,7 +631,7 @@ class AsyncImageTest {
         composeTestRule.setContent {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 AsyncImage(
-                    model = server.url("/image"),
+                    model = "https://example.com/image",
                     contentDescription = null,
                     imageLoader = imageLoader,
                     modifier = Modifier
@@ -665,7 +662,7 @@ class AsyncImageTest {
     fun noneContentScaleShouldLoadAtOriginalSize() {
         composeTestRule.setContent {
             AsyncImage(
-                model = server.url("/image"),
+                model = "https://example.com/image",
                 contentDescription = null,
                 imageLoader = imageLoader,
                 modifier = Modifier.width(30.dp),
@@ -725,7 +722,7 @@ class AsyncImageTest {
     private fun assertLoadedBitmapSize(width: Int, height: Int, requestNumber: Int = 0) {
         val result = requestTracker.results[requestNumber]
         assertIs<SuccessResult>(result)
-        val bitmap = result.image.toBitmap()
+        val bitmap = result.image.drawable.toBitmap()
         assertContains((width - 1)..(width + 1), bitmap.width)
         assertContains((height - 1)..(height + 1), bitmap.height)
     }
