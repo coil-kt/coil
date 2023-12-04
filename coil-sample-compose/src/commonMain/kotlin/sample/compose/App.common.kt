@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -73,6 +74,8 @@ fun App(viewModel: MainViewModel) {
                     )
                 }
             },
+            modifier = Modifier
+                .testTagsAsResourceId(true),
         )
         BackHandler(enabled = isDetail) {
             viewModel.onBackPressed()
@@ -209,6 +212,9 @@ private fun ListScreen(
         }
     }
 }
+
+@Stable
+expect fun Modifier.testTagsAsResourceId(enable: Boolean): Modifier
 
 @Composable
 expect fun containerSize(): IntSize

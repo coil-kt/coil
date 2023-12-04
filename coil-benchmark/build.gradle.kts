@@ -9,7 +9,7 @@ plugins {
 setupTestModule(name = "coil3.benchmark", config = true) {
     val targetProject = System.getProperty("project", "view")
     defaultConfig {
-        minSdk = 24
+        minSdk = 28
         buildConfigField("String", "PROJECT", "\"$targetProject\"")
     }
     buildTypes {
@@ -22,9 +22,9 @@ setupTestModule(name = "coil3.benchmark", config = true) {
     testOptions {
         managedDevices {
             devices {
-                create<ManagedVirtualDevice>("pixel7Api33") {
+                create<ManagedVirtualDevice>("pixel7Api34") {
                     device = "Pixel 7"
-                    apiLevel = 33
+                    apiLevel = 34
                     systemImageSource = "aosp"
                 }
             }

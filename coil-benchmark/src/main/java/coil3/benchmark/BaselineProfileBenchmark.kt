@@ -40,7 +40,7 @@ class BaselineProfileBenchmark {
                 FrameTimingMetric(),
                 StartupTimingMetric(),
             ),
-            iterations = 10,
+            iterations = 3,
             startupMode = StartupMode.COLD,
             compilationMode = compilationMode,
             setupBlock = { pressHome() },

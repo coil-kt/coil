@@ -30,7 +30,8 @@ fun Project.setupLibraryModule(
         apply(plugin = "com.vanniktech.maven.publish.base")
         setupPublishing {
             val platform = if (project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
-                KotlinMultiplatform(JavadocJar.Dokka("dokkaHtml"))
+                // TODO: Re-enable Dokka when the StackOverflowError is fixed.
+                KotlinMultiplatform()
             } else {
                 AndroidSingleVariantLibrary()
             }
