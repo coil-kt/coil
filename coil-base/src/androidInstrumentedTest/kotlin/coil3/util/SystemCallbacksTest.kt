@@ -41,8 +41,12 @@ class SystemCallbacksTest {
         val memoryCache = MemoryCache.Builder()
             .maxSizePercent(context)
             .build()
-        val options = (ImageLoader(context) as RealImageLoader).options
+        val imageLoader = ImageLoader.Builder(context)
+            .memoryCache(memoryCache)
+            .build()
+        val options = (imageLoader as RealImageLoader).options
         val systemCallbacks = SystemCallbacks(options) as AndroidSystemCallbacks
+        systemCallbacks.register(imageLoader)
 
         memoryCache[MemoryCache.Key("1")] = MemoryCache.Value(
             image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
