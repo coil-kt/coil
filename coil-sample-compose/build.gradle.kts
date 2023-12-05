@@ -2,6 +2,7 @@ import coil3.setupAppModule
 import coil3.sourceSet
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     id("com.android.application")
@@ -46,6 +47,9 @@ compose {
             }
         }
     }
+    experimental {
+        web.application {}
+    }
 }
 
 kotlin {
@@ -54,6 +58,15 @@ kotlin {
     androidTarget()
 
     jvm("desktop")
+
+    js {
+        browser {
+            commonWebpackConfig {
+                devServer = KotlinWebpackConfig.DevServer()
+            }
+        }
+        binaries.executable()
+    }
 
     arrayOf(
         iosX64(),
@@ -68,7 +81,7 @@ kotlin {
 
     sourceSet(
         name = "nonAndroidMain",
-        children = listOf("desktopMain", "iosMain"),
+        children = listOf("desktopMain", "iosMain", "jsMain"),
     )
 
     sourceSets {
