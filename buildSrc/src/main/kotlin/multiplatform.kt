@@ -24,7 +24,13 @@ fun Project.addAllMultiplatformTargets() {
 
             js {
                 browser()
-                nodejs()
+                nodejs {
+                    testTask {
+                        useMocha {
+                            timeout = "60s"
+                        }
+                    }
+                }
                 binaries.executable()
             }
 

@@ -23,25 +23,30 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import okio.fakefilesystem.FakeFileSystem
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RealImageLoaderTest : RobolectricTest() {
 
     private lateinit var mainDispatcher: TestDispatcher
+    private lateinit var fileSystem: FakeFileSystem
     private lateinit var imageLoader: ImageLoader
 
     @BeforeTest
     fun before() {
         mainDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(mainDispatcher)
+        fileSystem = FakeFileSystem()
         imageLoader = ImageLoader.Builder(context)
             .diskCache(null)
+            .fileSystem(fileSystem)
             .build()
     }
 
     @AfterTest
     fun after() {
         Dispatchers.resetMain()
+        fileSystem.checkNoOpenFiles()
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/933 */

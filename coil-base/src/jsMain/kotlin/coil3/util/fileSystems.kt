@@ -77,7 +77,7 @@ private object EmptyReadOnlyFileSystem : FileSystem() {
 
     private object EmptyFileHandle : FileHandle(readWrite = false) {
 
-        override fun protectedSize(): Long = 0
+        override fun protectedSize() = 0L
 
         override fun protectedResize(size: Long) {}
 
@@ -86,7 +86,7 @@ private object EmptyReadOnlyFileSystem : FileSystem() {
             array: ByteArray,
             arrayOffset: Int,
             byteCount: Int,
-        ): Int = -1
+        ) = -1
 
         override fun protectedWrite(
             fileOffset: Long,
