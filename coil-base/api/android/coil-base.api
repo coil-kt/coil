@@ -185,6 +185,11 @@ public final class coil3/Uri {
 }
 
 public final class coil3/UriKt {
+	public static final fun toAndroidUri (Lcoil3/Uri;)Landroid/net/Uri;
+	public static final fun toCoilUri (Landroid/net/Uri;)Lcoil3/Uri;
+}
+
+public final class coil3/Uri_commonKt {
 	public static final fun getPathSegments (Lcoil3/Uri;)Ljava/util/List;
 	public static final fun toUri (Ljava/lang/String;)Lcoil3/Uri;
 }
@@ -218,8 +223,8 @@ public final class coil3/decode/BitmapFactoryDecoder$Factory : coil3/decode/Deco
 }
 
 public final class coil3/decode/ContentMetadata : coil3/decode/ImageSource$Metadata {
-	public fun <init> (Landroid/net/Uri;)V
-	public final fun getUri ()Landroid/net/Uri;
+	public fun <init> (Lcoil3/Uri;)V
+	public final fun getUri ()Lcoil3/Uri;
 }
 
 public final class coil3/decode/DataSource : java/lang/Enum {

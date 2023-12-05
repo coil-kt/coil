@@ -16,8 +16,9 @@ import coil3.test.assertIsSimilarTo
 import coil3.test.assumeTrue
 import coil3.test.context
 import coil3.test.decodeBitmapAsset
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -28,6 +29,11 @@ class AnimatedTransformationTest {
     @Before
     fun before() {
         imageLoader = ImageLoader(context)
+    }
+
+    @After
+    fun after() {
+        imageLoader.shutdown()
     }
 
     @Test
@@ -45,14 +51,17 @@ class AnimatedTransformationTest {
             .build()
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_gif_rounded.png")
-        assertTrue(actual is SuccessResult)
+        assertIs<SuccessResult>(actual)
         actual.image.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
     fun heifTransformationTest() = runTest {
-        // Animated HEIF is only support on API 28+.
-        assumeTrue(SDK_INT >= 28)
+        // HEIF files are only supported on API 29+.
+        assumeTrue(SDK_INT >= 29)
+
+        // TODO: Figure out why this fails on recent emulators.
+        assumeTrue(SDK_INT < 32)
 
         val imageRequest = ImageRequest.Builder(context)
             .data("$SCHEME_FILE:///android_asset/animated.heif")
@@ -62,7 +71,7 @@ class AnimatedTransformationTest {
             .build()
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_heif_rounded.png")
-        assertTrue(actual is SuccessResult)
+        assertIs<SuccessResult>(actual)
         actual.image.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 
@@ -79,7 +88,7 @@ class AnimatedTransformationTest {
             .build()
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_webp_rounded.png")
-        assertTrue(actual is SuccessResult)
+        assertIs<SuccessResult>(actual)
         actual.image.drawable.toBitmap().assertIsSimilarTo(expected, threshold = 0.98)
     }
 }

@@ -340,8 +340,8 @@ class BitmapFactoryDecoderTest {
 
     @Test
     fun largeHeif() = runTest {
-        // HEIF files are not supported before API 30.
-        assumeTrue(SDK_INT >= 30)
+        // HEIF files are only supported on API 29+.
+        assumeTrue(SDK_INT >= 29)
 
         // TODO: Figure out why this fails on recent emulators.
         assumeTrue(SDK_INT < 32)

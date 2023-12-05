@@ -21,6 +21,7 @@ import coil3.request.bitmapConfig
 import coil3.request.colorSpace
 import coil3.request.premultipliedAlpha
 import coil3.request.repeatCount
+import coil3.toAndroidUri
 import coil3.util.animatable2CallbackOf
 import coil3.util.asPostProcessor
 import coil3.util.heightPx
@@ -121,7 +122,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
             return ImageDecoder.createSource(options.context.assets, metadata.filePath)
         }
         if (metadata is ContentMetadata) {
-            return ImageDecoder.createSource(options.context.contentResolver, metadata.uri)
+            return ImageDecoder.createSource(options.context.contentResolver, metadata.uri.toAndroidUri())
         }
         if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
             return ImageDecoder.createSource(options.context.resources, metadata.resId)

@@ -28,8 +28,8 @@ import coil3.request.transformations
 import coil3.test.assertIsSimilarTo
 import coil3.test.context
 import coil3.test.decodeBitmapAsset
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
+import kotlin.test.assertIsNot
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -66,10 +66,10 @@ class AnimatedAndNormalTransformationTest {
             .data("$SCHEME_FILE:///android_asset/animated.gif")
             .build()
         val actual = imageLoader.execute(imageRequest)
-        assertTrue(actual is SuccessResult)
+        assertIs<SuccessResult>(actual)
         // Make sure this is still an animated result (has not been flattened to
         // apply CircleCropTransformation).
-        assertTrue(actual.image is Animatable)
+        assertIs<Animatable>(actual.image.drawable)
     }
 
     @Test
@@ -79,9 +79,9 @@ class AnimatedAndNormalTransformationTest {
             .data("$SCHEME_FILE:///android_asset/normal_small.jpg")
             .build()
         val actual = imageLoader.execute(imageRequest)
-        assertTrue(actual is SuccessResult)
+        assertIs<SuccessResult>(actual)
         // Make sure this is not an animated result.
-        assertFalse(actual.image is Animatable)
+        assertIsNot<Animatable>(actual.image.drawable)
         actual.image.drawable.toBitmap().assertIsSimilarTo(expected)
     }
 

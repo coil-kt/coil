@@ -36,16 +36,17 @@ internal actual suspend fun transform(
     if (transformations.isEmpty()) return result
 
     // Skip the transformations as converting to a bitmap is disabled.
-    if (result.image !is BitmapDrawable && !request.allowConversionToBitmap) {
+    val drawable = result.image.drawable
+    if (drawable !is BitmapDrawable && !request.allowConversionToBitmap) {
         logger?.log(TAG, Logger.Level.Info) {
-            val type = result.image::class.java.canonicalName
+            val type = result.image::class.qualifiedName
             "allowConversionToBitmap=false, skipping transformations for type $type."
         }
         return result
     }
 
     // Apply the transformations.
-    val input = convertDrawableToBitmap(result.image.drawable, options, transformations, logger)
+    val input = convertDrawableToBitmap(drawable, options, transformations, logger)
     eventListener.transformStart(request, input)
     val output = transformations.foldIndices(input) { bitmap, transformation ->
         transformation.transform(bitmap, options.size).also { coroutineContext.ensureActive() }
@@ -75,7 +76,7 @@ private fun convertDrawableToBitmap(
         }
     } else {
         logger?.log(TAG, Logger.Level.Info) {
-            "Converting drawable of type ${drawable::class.java.canonicalName} " +
+            "Converting drawable of type ${drawable::class.qualifiedName} " +
                 "to apply transformations: $transformations."
         }
     }

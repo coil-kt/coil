@@ -23,6 +23,7 @@ import coil3.request.videoFramePercent
 import coil3.size.Dimension.Pixels
 import coil3.size.Size
 import coil3.size.pxOrElse
+import coil3.toAndroidUri
 import coil3.util.getFrameAtTime
 import coil3.util.getScaledFrameAtTime
 import coil3.util.heightPx
@@ -206,7 +207,7 @@ class VideoFrameDecoder(
             }
 
             is ContentMetadata -> {
-                setDataSource(options.context, metadata.uri)
+                setDataSource(options.context, metadata.uri.toAndroidUri())
             }
 
             is ResourceMetadata -> {

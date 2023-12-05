@@ -2,6 +2,7 @@ package coil3.decode
 
 import android.graphics.drawable.BitmapDrawable
 import coil3.ImageLoader
+import coil3.drawable
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.size.Dimension
@@ -100,7 +101,7 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val drawable = assertIs<BitmapDrawable>(result.image)
+        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
 
         val expected = context.decodeBitmapAsset("coil_logo.png")
         drawable.bitmap.assertIsSimilarTo(expected)
@@ -123,7 +124,7 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val drawable = assertIs<BitmapDrawable>(result.image)
+        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
 
         val expected = context.decodeBitmapAsset("instacart_logo.png")
         drawable.bitmap.assertIsSimilarTo(expected)
@@ -135,7 +136,8 @@ class SvgDecoderTest {
         val source = context.assets.open("coil_logo.svg").source().buffer()
         val options = Options(
             context = context,
-            size = Size(Dimension.Undefined, 250), // coil_logo.svg's intrinsic dimensions are 200x200.
+            // coil_logo.svg's intrinsic dimensions are 200x200.
+            size = Size(Dimension.Undefined, 250),
             scale = Scale.FIT
         )
         val result = assertNotNull(
@@ -147,7 +149,7 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val drawable = assertIs<BitmapDrawable>(result.image)
+        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
 
         val expected = context.decodeBitmapAsset("coil_logo.png")
         drawable.bitmap.assertIsSimilarTo(expected)
