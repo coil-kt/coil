@@ -72,7 +72,7 @@ class BitmapFactoryDecoder(
         safeSource.exception?.let { throw it }
         checkNotNull(outBitmap) {
             "BitmapFactory returned a null bitmap. Often this means BitmapFactory could not " +
-                "decode the image data read from the input source (e.g. network, disk, or " +
+                "decode the image data read from the image source (e.g. network, disk, or " +
                 "memory) as it's not encoded as a valid image format."
         }
 
