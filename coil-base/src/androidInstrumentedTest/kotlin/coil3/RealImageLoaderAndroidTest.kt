@@ -290,11 +290,11 @@ class RealImageLoaderAndroidTest {
                 .target(
                     onStart = {
                         // The drawable in the memory cache should be returned here.
-                        assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                        assertEquals(bitmap, (it!!.drawable as BitmapDrawable).bitmap)
                     },
                     onSuccess = {
                         // The same drawable should be returned since the drawable is valid for this request.
-                        assertEquals(bitmap, (it as BitmapDrawable).bitmap)
+                        assertEquals(bitmap, (it.drawable as BitmapDrawable).bitmap)
                     }
                 )
                 .listener(
@@ -332,10 +332,10 @@ class RealImageLoaderAndroidTest {
         val imageLoader1 = ImageLoader(context)
         val imageLoader2 = imageLoader1.newBuilder().build()
 
-        assertSame(imageLoader1.defaults, imageLoader2.defaults)
-        assertSame(
-            (imageLoader1 as RealImageLoader).components,
-            (imageLoader2 as RealImageLoader).components,
+        assertEquals(imageLoader1.defaults, imageLoader2.defaults)
+        assertEquals(
+            (imageLoader1 as RealImageLoader).options.componentRegistry,
+            (imageLoader2 as RealImageLoader).options.componentRegistry,
         )
         assertSame(imageLoader1.memoryCache, imageLoader2.memoryCache)
         assertSame(imageLoader1.diskCache, imageLoader2.diskCache)
@@ -488,7 +488,7 @@ class RealImageLoaderAndroidTest {
         if (result is ErrorResult) throw result.throwable
 
         assertIs<SuccessResult>(result)
-        val drawable = assertIs<BitmapDrawable>(result.image)
+        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
         val maxDimension = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
@@ -524,7 +524,7 @@ class RealImageLoaderAndroidTest {
         if (result is ErrorResult) throw result.throwable
 
         assertIs<SuccessResult>(result)
-        val drawable = assertIs<BitmapDrawable>(result.image)
+        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
             srcHeight = 4965,
@@ -559,7 +559,7 @@ class RealImageLoaderAndroidTest {
         if (result is ErrorResult) throw result.throwable
 
         assertIs<SuccessResult>(result)
-        val drawable = assertIs<BitmapDrawable>(result.image)
+        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
             srcHeight = 4965,
@@ -609,7 +609,7 @@ class RealImageLoaderAndroidTest {
         }
 
         assertIs<SuccessResult>(result)
-        val drawable = assertIs<BitmapDrawable>(result.image)
+        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
         assertEquals(expectedSize, drawable.bitmap.size)
     }
 

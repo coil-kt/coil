@@ -1,7 +1,7 @@
 package coil3.key
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
-import android.net.Uri
+import coil3.Uri
 import coil3.request.Options
 import coil3.util.nightMode
 

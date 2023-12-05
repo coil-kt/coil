@@ -2,9 +2,7 @@ package coil3.util
 
 import coil3.RealImageLoader
 
-internal expect fun SystemCallbacks(
-    options: RealImageLoader.Options,
-): SystemCallbacks
+internal expect fun SystemCallbacks(): SystemCallbacks
 
 internal interface SystemCallbacks {
     val isOnline: Boolean

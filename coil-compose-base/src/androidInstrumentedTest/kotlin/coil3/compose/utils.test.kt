@@ -3,7 +3,6 @@ package coil3.compose
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.IdRes
 import androidx.compose.ui.geometry.Rect
@@ -20,12 +19,13 @@ import androidx.compose.ui.unit.width
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
+import coil3.Uri
 import coil3.decode.DecodeUtils
 import coil3.size.Scale
 import coil3.test.assertIsSimilarTo
 import coil3.test.assumeTrue
+import coil3.toUri
 import kotlin.math.abs
 
 fun assumeSupportsCaptureToImage() {

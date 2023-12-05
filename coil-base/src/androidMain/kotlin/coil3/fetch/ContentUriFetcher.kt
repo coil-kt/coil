@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.content.ContentResolver.EXTRA_SIZE
 import android.content.ContentResolver.SCHEME_CONTENT
 import android.graphics.Point
-import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -12,11 +11,14 @@ import android.provider.ContactsContract.Contacts
 import android.provider.MediaStore
 import androidx.annotation.VisibleForTesting
 import coil3.ImageLoader
+import coil3.Uri
 import coil3.decode.ContentMetadata
 import coil3.decode.DataSource
 import coil3.decode.ImageSource
+import coil3.pathSegments
 import coil3.request.Options
 import coil3.size.Dimension
+import coil3.toAndroidUri
 import okio.buffer
 import okio.source
 
@@ -26,24 +28,25 @@ internal class ContentUriFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
+        val androidUri = data.toAndroidUri()
         val contentResolver = options.context.contentResolver
         val inputStream = if (isContactPhotoUri(data)) {
             // Modified from ContactsContract.Contacts.openContactPhotoInputStream.
             val stream = contentResolver
                 //noinspection Recycle: Automatically recycled after being decoded.
-                .openAssetFileDescriptor(data, "r")
+                .openAssetFileDescriptor(androidUri, "r")
                 ?.createInputStream()
-            checkNotNull(stream) { "Unable to find a contact photo associated with '$data'." }
+            checkNotNull(stream) { "Unable to find a contact photo associated with '$androidUri'." }
         } else if (SDK_INT >= 29 && isMusicThumbnailUri(data)) {
             val bundle = newMusicThumbnailSizeOptions()
             val stream = contentResolver
                 //noinspection Recycle: Automatically recycled after being decoded.
-                .openTypedAssetFile(data, "image/*", bundle, null)
+                .openTypedAssetFile(androidUri, "image/*", bundle, null)
                 ?.createInputStream()
-            checkNotNull(stream) { "Unable to find a music thumbnail associated with '$data'." }
+            checkNotNull(stream) { "Unable to find a music thumbnail associated with '$androidUri'." }
         } else {
-            val stream = contentResolver.openInputStream(data)
-            checkNotNull(stream) { "Unable to open '$data'." }
+            val stream = contentResolver.openInputStream(androidUri)
+            checkNotNull(stream) { "Unable to open '$androidUri'." }
         }
 
         return SourceFetchResult(
@@ -52,7 +55,7 @@ internal class ContentUriFetcher(
                 fileSystem = options.fileSystem,
                 metadata = ContentMetadata(data),
             ),
-            mimeType = contentResolver.getType(data),
+            mimeType = contentResolver.getType(androidUri),
             dataSource = DataSource.DISK,
         )
     }
@@ -64,7 +67,7 @@ internal class ContentUriFetcher(
     @VisibleForTesting
     internal fun isContactPhotoUri(data: Uri): Boolean {
         return data.authority == ContactsContract.AUTHORITY &&
-            data.lastPathSegment == Contacts.Photo.DISPLAY_PHOTO
+            data.pathSegments.lastOrNull() == Contacts.Photo.DISPLAY_PHOTO
     }
 
     /**

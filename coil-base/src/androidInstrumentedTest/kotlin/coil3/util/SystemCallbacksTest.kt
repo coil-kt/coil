@@ -17,8 +17,8 @@ class SystemCallbacksTest {
 
     @Test
     fun imageLoaderIsFreedWithoutShutdown() {
-        val options = (ImageLoader(context) as RealImageLoader).options
-        val systemCallbacks = SystemCallbacks(options) as AndroidSystemCallbacks
+        val systemCallbacks = SystemCallbacks() as AndroidSystemCallbacks
+        systemCallbacks.register(ImageLoader(context) as RealImageLoader)
 
         val bitmaps = mutableListOf<Bitmap>()
         while (systemCallbacks.imageLoader?.get() != null) {
@@ -44,9 +44,8 @@ class SystemCallbacksTest {
         val imageLoader = ImageLoader.Builder(context)
             .memoryCache(memoryCache)
             .build()
-        val options = (imageLoader as RealImageLoader).options
-        val systemCallbacks = SystemCallbacks(options) as AndroidSystemCallbacks
-        systemCallbacks.register(imageLoader)
+        val systemCallbacks = SystemCallbacks() as AndroidSystemCallbacks
+        systemCallbacks.register(imageLoader as RealImageLoader)
 
         memoryCache[MemoryCache.Key("1")] = MemoryCache.Value(
             image = createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)

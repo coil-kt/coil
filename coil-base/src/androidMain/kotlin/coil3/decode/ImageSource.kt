@@ -1,7 +1,7 @@
 package coil3.decode
 
-import android.net.Uri
 import androidx.annotation.DrawableRes
+import coil3.Uri
 
 /**
  * Metadata containing the [filePath] of an Android asset.

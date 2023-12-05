@@ -5,16 +5,14 @@ import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
 import android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
+import android.content.Context
 import android.content.res.Configuration
 import androidx.annotation.VisibleForTesting
 import coil3.RealImageLoader
 import coil3.networkObserverEnabled
 import java.lang.ref.WeakReference
-import kotlinx.atomicfu.atomic
 
-internal actual fun SystemCallbacks(
-    options: RealImageLoader.Options,
-): SystemCallbacks = AndroidSystemCallbacks(options)
+internal actual fun SystemCallbacks(): SystemCallbacks = AndroidSystemCallbacks()
 
 /**
  * Proxies [ComponentCallbacks2] and [NetworkObserver.Listener] calls to a weakly referenced
@@ -24,38 +22,46 @@ internal actual fun SystemCallbacks(
  * it be freed automatically by the garbage collector. If the [imageLoader] is freed, it unregisters
  * its callbacks.
  */
-internal class AndroidSystemCallbacks(
-    options: RealImageLoader.Options,
-) : SystemCallbacks, ComponentCallbacks2, NetworkObserver.Listener {
+internal class AndroidSystemCallbacks : SystemCallbacks, ComponentCallbacks2, NetworkObserver.Listener {
 
-    private val applicationContext = options.application
-    private val networkObserver = if (options.networkObserverEnabled) {
-        NetworkObserver(applicationContext, this, options.logger)
-    } else {
-        EmptyNetworkObserver()
-    }
+    private var application: Context? = null
+    private var networkObserver: NetworkObserver? = null
     @VisibleForTesting var imageLoader: WeakReference<RealImageLoader>? = null
 
-    private val _isOnline = atomic(networkObserver.isOnline)
-    override val isOnline by _isOnline
+    @Volatile override var isOnline = true
+    @Volatile override var isShutdown = false
 
-    private val _isShutdown = atomic(false)
-    override val isShutdown by _isShutdown
-
+    @Synchronized
     override fun register(imageLoader: RealImageLoader) {
+        val application = imageLoader.options.application
+        this.application = application
         this.imageLoader = WeakReference(imageLoader)
-        applicationContext.registerComponentCallbacks(this)
+        application.registerComponentCallbacks(this)
+
+        val networkObserver = if (imageLoader.options.networkObserverEnabled) {
+            NetworkObserver(application, this, imageLoader.options.logger)
+        } else {
+            EmptyNetworkObserver()
+        }
+        this.networkObserver = networkObserver
+        this.isOnline = networkObserver.isOnline
     }
 
+    @Synchronized
     override fun shutdown() {
-        if (_isShutdown.getAndSet(true)) return
-        applicationContext.unregisterComponentCallbacks(this)
-        networkObserver.shutdown()
+        if (isShutdown) return
+        isShutdown = true
+
+        application?.unregisterComponentCallbacks(this)
+        networkObserver?.shutdown()
+        imageLoader?.clear()
         imageLoader = null
     }
 
+    @Synchronized
     override fun onConfigurationChanged(newConfig: Configuration) = withImageLoader {}
 
+    @Synchronized
     override fun onTrimMemory(level: Int) = withImageLoader { imageLoader ->
         imageLoader.options.logger?.log(TAG, Logger.Level.Verbose) {
             "trimMemory, level=$level"
@@ -67,8 +73,10 @@ internal class AndroidSystemCallbacks(
         }
     }
 
+    @Synchronized
     override fun onLowMemory() = onTrimMemory(TRIM_MEMORY_COMPLETE)
 
+    @Synchronized
     override fun onConnectivityChange(isOnline: Boolean) = withImageLoader { imageLoader ->
         imageLoader.options.logger?.log(TAG, Logger.Level.Info) {
             if (isOnline) {
@@ -77,7 +85,7 @@ internal class AndroidSystemCallbacks(
                 "onConnectivityChange: The device is offline."
             }
         }
-        _isOnline.value = isOnline
+        this.isOnline = isOnline
     }
 
     private inline fun withImageLoader(block: (RealImageLoader) -> Unit) {

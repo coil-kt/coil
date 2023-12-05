@@ -44,7 +44,7 @@ internal class RealImageLoader(
 ) : ImageLoader {
 
     private val scope = CoroutineScope(options.logger)
-    private val systemCallbacks = SystemCallbacks(options)
+    private val systemCallbacks = SystemCallbacks()
     private val requestService = RequestService(this, systemCallbacks, options.logger)
     override val defaults get() = options.defaults
     override val memoryCache by options.memoryCacheLazy

@@ -35,7 +35,7 @@ kotlin {
                 api(libs.androidx.test.core)
                 api(libs.androidx.test.junit)
                 api(libs.junit)
-                api(libs.robolectric)
+                compileOnly(libs.robolectric)
             }
         }
     }

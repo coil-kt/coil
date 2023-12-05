@@ -48,8 +48,8 @@ class ResourceUriFetcherTest {
         val options = Options(context, size = Size(100, 100))
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
-        assertTrue(result is ImageFetchResult)
-        assertTrue(result.image is BitmapDrawable)
+        assertIs<ImageFetchResult>(result)
+        assertIs<BitmapDrawable>(result.image.drawable)
         assertTrue(result.isSampled)
     }
 
@@ -78,8 +78,8 @@ class ResourceUriFetcherTest {
         val uri = assertNotNull(ResourceUriMapper().map(rawUri, options))
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
-        assertTrue(result is ImageFetchResult)
-        assertTrue(result.image is BitmapDrawable)
+        assertIs<ImageFetchResult>(result)
+        assertIs<BitmapDrawable>(result.image.drawable)
         assertTrue(result.isSampled)
     }
 

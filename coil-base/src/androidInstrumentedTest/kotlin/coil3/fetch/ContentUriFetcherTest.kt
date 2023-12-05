@@ -5,7 +5,7 @@ import android.Manifest.permission.WRITE_CONTACTS
 import android.content.ContentResolver.SCHEME_CONTENT
 import android.content.ContentUris
 import android.content.ContentValues
-import android.net.Uri
+import android.net.Uri as AndroidUri
 import android.os.Build.VERSION.SDK_INT
 import android.provider.ContactsContract
 import android.provider.ContactsContract.AUTHORITY
@@ -15,12 +15,14 @@ import android.provider.ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
 import android.provider.ContactsContract.Contacts.Photo.DISPLAY_PHOTO
 import android.provider.ContactsContract.RawContacts
 import android.provider.MediaStore
-import androidx.core.net.toUri
+import androidx.core.net.toUri as toAndroidUri
 import androidx.test.rule.GrantPermissionRule
 import coil3.ImageLoader
 import coil3.request.Options
 import coil3.test.assumeTrue
 import coil3.test.context
+import coil3.toCoilUri
+import coil3.toUri
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -70,7 +72,7 @@ class ContentUriFetcherTest {
     fun musicThumbnail() {
         assumeTrue(SDK_INT >= 29)
 
-        val uri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, 1)
+        val uri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, 1).toCoilUri()
         val fetcher = assertIs<ContentUriFetcher>(fetcherFactory.create(uri, Options(context), ImageLoader(context)))
 
         assertTrue(fetcher.isMusicThumbnailUri(uri))
@@ -106,7 +108,7 @@ class ContentUriFetcherTest {
         context.contentResolver.insert(ContactsContract.Data.CONTENT_URI, values)
 
         val contentUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, id)
-        val photoUri = Uri.withAppendedPath(contentUri, RawContacts.DisplayPhoto.CONTENT_DIRECTORY)
+        val photoUri = AndroidUri.withAppendedPath(contentUri, RawContacts.DisplayPhoto.CONTENT_DIRECTORY)
         val fd = checkNotNull(context.contentResolver.openAssetFileDescriptor(photoUri, "rw"))
 
         fd.use {
@@ -131,7 +133,7 @@ class ContentUriFetcherTest {
         return try {
             fun directoryExists(directory: String): Boolean {
                 return context.contentResolver
-                    .openAssetFileDescriptor("$SCHEME_CONTENT://$AUTHORITY/contacts/$id/$directory".toUri(), "r")
+                    .openAssetFileDescriptor("$SCHEME_CONTENT://$AUTHORITY/contacts/$id/$directory".toAndroidUri(), "r")
                     ?.createInputStream() != null
             }
             directoryExists(CONTENT_DIRECTORY) && directoryExists(DISPLAY_PHOTO)
