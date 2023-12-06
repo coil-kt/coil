@@ -16,7 +16,6 @@ import coil3.util.toPx
 import coil3.util.toSoftware
 import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
-import dev.drewhamilton.poko.Poko
 import kotlin.math.roundToInt
 import kotlinx.coroutines.runInterruptible
 
@@ -94,7 +93,6 @@ class SvgDecoder @JvmOverloads constructor(
         }
     }
 
-    @Poko
     class Factory @JvmOverloads constructor(
         val useViewBoundsAsIntrinsicSize: Boolean = true,
     ) : Decoder.Factory {

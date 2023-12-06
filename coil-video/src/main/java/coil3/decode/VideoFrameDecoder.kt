@@ -234,9 +234,5 @@ class VideoFrameDecoder(
         private fun isApplicable(mimeType: String?): Boolean {
             return mimeType != null && mimeType.startsWith("video/")
         }
-
-        override fun equals(other: Any?) = other is Factory
-
-        override fun hashCode() = this::class.hashCode()
     }
 }

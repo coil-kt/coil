@@ -18,7 +18,6 @@ import coil3.util.heightPx
 import coil3.util.toDrawable
 import coil3.util.toSoftware
 import coil3.util.widthPx
-import dev.drewhamilton.poko.Poko
 import kotlin.math.roundToInt
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Semaphore
@@ -175,7 +174,6 @@ class BitmapFactoryDecoder(
         }
     }
 
-    @Poko
     class Factory @JvmOverloads constructor(
         maxParallelism: Int = DEFAULT_MAX_PARALLELISM,
         private val exifOrientationPolicy: ExifOrientationPolicy = RESPECT_PERFORMANCE,

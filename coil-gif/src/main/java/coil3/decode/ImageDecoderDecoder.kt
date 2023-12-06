@@ -27,7 +27,6 @@ import coil3.util.asPostProcessor
 import coil3.util.heightPx
 import coil3.util.isHardware
 import coil3.util.widthPx
-import dev.drewhamilton.poko.Poko
 import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
@@ -175,7 +174,6 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         return ScaleDrawable(baseDrawable, options.scale)
     }
 
-    @Poko
     class Factory @JvmOverloads constructor(
         val enforceMinimumFrameDelay: Boolean = true,
     ) : Decoder.Factory {

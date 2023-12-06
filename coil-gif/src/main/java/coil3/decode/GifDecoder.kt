@@ -17,7 +17,6 @@ import coil3.request.bitmapConfig
 import coil3.request.repeatCount
 import coil3.util.animatable2CompatCallbackOf
 import coil3.util.isHardware
-import dev.drewhamilton.poko.Poko
 import kotlinx.coroutines.runInterruptible
 import okio.buffer
 
@@ -73,7 +72,6 @@ class GifDecoder @JvmOverloads constructor(
         )
     }
 
-    @Poko
     class Factory @JvmOverloads constructor(
         val enforceMinimumFrameDelay: Boolean = true,
     ) : Decoder.Factory {

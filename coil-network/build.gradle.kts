@@ -7,7 +7,6 @@ plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
     id("kotlinx-atomicfu")
-    id("dev.drewhamilton.poko")
 }
 
 addAllMultiplatformTargets()

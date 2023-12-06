@@ -44,9 +44,5 @@ class SkiaImageDecoder(
         ): Decoder {
             return SkiaImageDecoder(result.source, options)
         }
-
-        override fun equals(other: Any?) = other is Factory
-
-        override fun hashCode() = this::class.hashCode()
     }
 }

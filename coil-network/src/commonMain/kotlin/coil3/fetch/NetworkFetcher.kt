@@ -20,7 +20,6 @@ import coil3.request.Options
 import coil3.request.httpHeaders
 import coil3.request.httpMethod
 import coil3.util.MimeTypeMap
-import dev.drewhamilton.poko.Poko
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
@@ -263,7 +262,6 @@ class NetworkFetcher(
     private val fileSystem: FileSystem
         get() = diskCache.value?.fileSystem ?: options.fileSystem
 
-    @Poko
     class Factory(
         private val httpClient: Lazy<HttpClient> = lazy { HttpClient() },
         private val cacheStrategy: Lazy<CacheStrategy> = lazy { CacheStrategy() },
