@@ -15,11 +15,13 @@ import org.junit.Test
 
 class FileFetcherTest {
 
+    private val fetcherFactory = FileUriFetcher.Factory()
+
     @Test
     fun basic() = runTest {
         val file = "$SCHEME_FILE://${context.copyAssetToFile("normal.jpg")}".toUri()
         val options = Options(context, size = Size(100, 100))
-        val fetcher = FileUriFetcher.Factory().create(file, options, ImageLoader(context))
+        val fetcher = fetcherFactory.create(file, options, ImageLoader(context))
 
         assertNotNull(fetcher)
 
