@@ -4,7 +4,6 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -12,7 +11,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 
 fun Project.addAllMultiplatformTargets() {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        extensions.getByType<KotlinMultiplatformExtension>().apply {
+        extensions.configure<KotlinMultiplatformExtension> {
             applyDefaultHierarchyTemplate()
 
             val isAndroidApp = plugins.hasPlugin("com.android.application")
@@ -108,11 +107,9 @@ fun Project.applyOkioJsTestWorkaround() {
     )
     extensions.configure<KotlinMultiplatformExtension> {
         sourceSets {
-            configureEach {
-                if (name == "jsTest") {
-                    dependencies {
-                        implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
-                    }
+            jsTest {
+                dependencies {
+                    implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
                 }
             }
         }

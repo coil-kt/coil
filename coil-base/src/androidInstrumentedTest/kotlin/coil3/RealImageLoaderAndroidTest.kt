@@ -79,6 +79,8 @@ class RealImageLoaderAndroidTest {
             .build()
         diskCache = DiskCache.Builder()
             .directory(fileSystem.workingDirectory)
+            .fileSystem(fileSystem)
+            .maxSizeBytes(Long.MAX_VALUE)
             .build()
         imageLoader = ImageLoader.Builder(context)
             .memoryCache(memoryCache)

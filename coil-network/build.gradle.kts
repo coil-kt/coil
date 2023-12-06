@@ -1,4 +1,5 @@
 import coil3.addAllMultiplatformTargets
+import coil3.androidUnitTest
 import coil3.nonAndroidMain
 import coil3.setupLibraryModule
 
@@ -27,6 +28,12 @@ kotlin {
                 implementation(projects.coilTestInternal)
                 implementation(libs.bundles.test.common)
                 implementation(libs.ktor.mock)
+            }
+        }
+        androidUnitTest {
+            dependencies {
+                implementation(projects.coilTestInternal)
+                implementation(libs.bundles.test.jvm)
             }
         }
     }

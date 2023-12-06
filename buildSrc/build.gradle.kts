@@ -16,7 +16,7 @@ dependencies {
     implementation(libs.gradlePlugin.mavenPublish)
 }
 
-// Target JVM 11.
+// Target JVM 17.
 tasks.withType<JavaCompile>().configureEach {
     sourceCompatibility = JavaVersion.VERSION_17.toString()
     targetCompatibility = JavaVersion.VERSION_17.toString()

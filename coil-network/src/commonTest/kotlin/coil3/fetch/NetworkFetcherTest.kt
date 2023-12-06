@@ -1,83 +1,86 @@
 package coil3.fetch
 
-class NetworkFetcherTest {
-//
-//    private lateinit var server: MockWebServer
-//    private lateinit var fileSystem: FileSystem
-//    private lateinit var diskCache: DiskCache
-//    private lateinit var clock: FakeClock
-//    private lateinit var callFactory: Call.Factory
-//    private lateinit var imageLoader: ImageLoader
-//
-//    @BeforeTest
-//    fun before() {
-//        server = createMockWebServer()
-//        fileSystem = FileSystem.SYSTEM
-//        diskCache = DiskCache.Builder()
-//            .directory(File("build/cache"))
-//            .maxSizeBytes(10L * 1024 * 1024) // 10MB
-//            .build()
-//        clock = FakeClock()
-//        callFactory = OkHttpClient()
-//        imageLoader = ImageLoader.Builder(context)
-//            .callFactory(callFactory)
-//            .diskCache(diskCache)
-//            .build()
-//    }
-//
-//    @AfterTest
-//    fun after() {
-//        server.shutdown()
-//        imageLoader.shutdown()
-//        diskCache.clear()
-//        fileSystem.deleteRecursively(diskCache.directory) // Ensure we start fresh.
-//    }
-//
-//    @Test
-//    fun `basic network fetch`() = runTestAsync {
-//        val expectedSize = server.enqueueImage(IMAGE)
-//        val url = server.url(IMAGE).toString()
-//        val result = newFetcher(url).fetch()
-//
-//        assertIs<SourceFetchResult>(result)
-//        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-//    }
-//
-//    @Test
-//    fun `mime type is parsed correctly from content type`() {
-//        val fetcher = NetworkFetcher(
-//            url = "error",
-//            options = Options(context),
-//            callFactory = lazyOf(callFactory),
-//            diskCache = lazyOf(diskCache),
-//            respectCacheHeaders = true
-//        )
-//
-//        // https://android.googlesource.com/platform/frameworks/base/+/61ae88e/core/java/android/webkit/MimeTypeMap.java#407
-//        Shadows.shadowOf(MimeTypeMap.getSingleton())
-//            .addExtensionMimeTypeMapping("svg", "image/svg+xml")
-//
-//        val url1 = "https://example.com/image.jpg"
-//        val type1 = "image/svg+xml".toMediaType()
-//        assertEquals("image/svg+xml", fetcher.getMimeType(url1, type1))
-//
-//        val url2 = "https://www.example.com/image.svg"
-//        val type2: MediaType? = null
-//        assertEquals("image/svg+xml", fetcher.getMimeType(url2, type2))
-//
-//        val url3 = "https://www.example.com/image"
-//        val type3 = "image/svg+xml;charset=utf-8".toMediaType()
-//        assertEquals("image/svg+xml", fetcher.getMimeType(url3, type3))
-//
-//        val url4 = "https://www.example.com/image.svg"
-//        val type4 = "text/plain".toMediaType()
-//        assertEquals("image/svg+xml", fetcher.getMimeType(url4, type4))
-//
-//        val url5 = "https://www.example.com/image"
-//        val type5: MediaType? = null
-//        assertNull(fetcher.getMimeType(url5, type5))
-//    }
-//
+import coil3.ImageLoader
+import coil3.disk.DiskCache
+import coil3.network.CacheStrategy
+import coil3.request.Options
+import coil3.test.RobolectricTest
+import coil3.test.context
+import coil3.test.runTestAsync
+import coil3.toUri
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondOk
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import okio.blackholeSink
+import okio.fakefilesystem.FakeFileSystem
+import okio.use
+
+class NetworkFetcherTest : RobolectricTest() {
+
+    private lateinit var fileSystem: FakeFileSystem
+    private lateinit var diskCache: DiskCache
+
+    @BeforeTest
+    fun before() {
+        fileSystem = FakeFileSystem()
+        diskCache = DiskCache.Builder()
+            .directory(fileSystem.workingDirectory)
+            .fileSystem(fileSystem)
+            .maxSizeBytes(Long.MAX_VALUE)
+            .build()
+    }
+
+    @AfterTest
+    fun after() {
+        diskCache.shutdown()
+        fileSystem.checkNoOpenFiles()
+    }
+
+    @Test
+    fun basicNetworkFetch() = runTestAsync {
+        val expectedSize = 1_000
+        val engine = MockEngine {
+            respond(ByteArray(expectedSize))
+        }
+        val result = newFetcher(engine = engine).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+    }
+
+    @Test
+    fun mimeTypeIsParsedCorrectlyFromContentType() {
+        val fetcher = newFetcher()
+
+        val url1 = "https://example.com/image.jpg"
+        val type1 = "image/svg+xml"
+        assertEquals(type1, fetcher.getMimeType(url1, type1))
+
+        val url2 = "https://www.example.com/image.svg"
+        val type2: String? = null
+        assertEquals("image/svg+xml", fetcher.getMimeType(url2, type2))
+
+        val url3 = "https://www.example.com/image"
+        val type3 = "image/svg+xml;charset=utf-8"
+        assertEquals("image/svg+xml", fetcher.getMimeType(url3, type3))
+
+        val url4 = "https://www.example.com/image.svg"
+        val type4 = "text/plain"
+        assertEquals("image/svg+xml", fetcher.getMimeType(url4, type4))
+
+        val url5 = "https://www.example.com/image"
+        val type5: String? = null
+        assertNull(fetcher.getMimeType(url5, type5))
+    }
+
 //    @Test
 //    fun `request on main thread throws NetworkOnMainThreadException`() = runTest {
 //        server.enqueueImage(IMAGE)
@@ -86,18 +89,20 @@ class NetworkFetcherTest {
 //
 //        assertFailsWith<NetworkOnMainThreadException> { fetcher.fetch() }
 //    }
-//
-//    @Test
-//    fun `no disk cache - fetcher returns a source result`() = runTestAsync {
-//        val expectedSize = server.enqueueImage(IMAGE)
-//        val url = server.url(IMAGE).toString()
-//        val result = newFetcher(url, diskCache = null).fetch()
-//
-//        assertIs<SourceFetchResult>(result)
-//        assertIs<SourceImageSource>(result.source)
-//        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-//    }
-//
+
+    @Test
+    fun noDiskCache_fetcherReturnsASourceResult() = runTestAsync {
+        val expectedSize = 1_000
+        val engine = MockEngine {
+            respond(ByteArray(expectedSize))
+        }
+        val result = newFetcher(engine = engine, diskCache = null).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+    }
+
 //    @Test
 //    fun `request on main thread with network cache policy disabled executes without throwing`() = runTestAsync {
 //        val expectedSize = server.enqueueImage(IMAGE)
@@ -407,20 +412,22 @@ class NetworkFetcherTest {
 //        assertEquals(DataSource.NETWORK, result.dataSource)
 //        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
 //    }
-//
-//    private fun newFetcher(
-//        url: String,
-//        options: Options = Options(context),
-//        callFactory: Call.Factory = this.callFactory,
-//        diskCache: DiskCache? = this.diskCache,
-//        clock: Clock = this.clock,
-//        respectCacheHeaders: Boolean = true,
-//    ): Fetcher {
-//        val factory = NetworkFetcher.Factory(lazyOf(callFactory), lazyOf(diskCache), clock, respectCacheHeaders)
-//        return checkNotNull(factory.create(url.toUri(), options, imageLoader)) { "fetcher == null" }
-//    }
-//
-//    companion object {
-//        private const val IMAGE = "normal.jpg"
-//    }
+
+    private fun newFetcher(
+        url: String = "https://example.com/image.jpg",
+        engine: MockEngine = MockEngine { respondOk() },
+        cacheStrategy: CacheStrategy = CacheStrategy(),
+        options: Options = Options(context),
+        diskCache: DiskCache? = this.diskCache,
+    ): NetworkFetcher {
+        val factory = NetworkFetcher.Factory(
+            httpClient = lazyOf(HttpClient(engine)),
+            cacheStrategy = lazyOf(cacheStrategy),
+        )
+        val imageLoader = ImageLoader.Builder(context)
+            .diskCache(diskCache)
+            .apply { diskCache?.fileSystem?.let(::fileSystem) }
+            .build()
+        return assertIs(factory.create(url.toUri(), options, imageLoader))
+    }
 }

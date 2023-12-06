@@ -21,6 +21,7 @@ class DiskCacheTest {
         diskCache = DiskCache.Builder()
             .directory(fileSystem.workingDirectory)
             .fileSystem(fileSystem)
+            .maxSizeBytes(Long.MAX_VALUE)
             .build()
     }
 
