@@ -10,6 +10,7 @@ import coil3.decode.DataSource
 import coil3.drawable
 import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.key.Keyer
+import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.transformations
@@ -19,7 +20,6 @@ import coil3.test.context
 import coil3.test.size
 import coil3.transform.CircleCropTransformation
 import coil3.util.SystemCallbacks
-import coil3.util.createRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertSame
@@ -39,9 +39,10 @@ class EngineInterceptorTest : RobolectricTest() {
                 dataSource = DataSource.MEMORY,
                 diskCacheKey = null
             ),
-            request = createRequest(context) {
-                transformations(CircleCropTransformation())
-            },
+            request = ImageRequest.Builder(context)
+                .data(Unit)
+                .transformations(CircleCropTransformation())
+                .build(),
             options = Options(context, size = size),
             eventListener = EventListener.NONE,
             logger = null,
@@ -62,9 +63,10 @@ class EngineInterceptorTest : RobolectricTest() {
                 dataSource = DataSource.MEMORY,
                 diskCacheKey = null,
             ),
-            request = createRequest(context) {
-                transformations(emptyList())
-            },
+            request = ImageRequest.Builder(context)
+                .data(Unit)
+                .transformations(emptyList())
+                .build(),
             options = Options(context, size = Size(100, 100)),
             eventListener = EventListener.NONE,
             logger = null,
