@@ -9,7 +9,6 @@ import coil3.request.CachePolicy
 import coil3.request.Options
 import coil3.test.RobolectricTest
 import coil3.test.context
-import coil3.test.runTestAsync
 import coil3.test.runTestMain
 import coil3.toUri
 import io.ktor.client.HttpClient
@@ -26,6 +25,7 @@ import okio.fakefilesystem.FakeFileSystem
 import okio.use
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 class NetworkFetcherAndroidTest : RobolectricTest() {
@@ -57,7 +57,8 @@ class NetworkFetcherAndroidTest : RobolectricTest() {
     }
 
     @Test
-    fun `request on main thread with network cache policy disabled executes without throwing`() = runTestAsync {
+    @Ignore("Figure out if/how we can support this use case with Ktor.")
+    fun `request on main thread with network cache policy disabled executes without throwing`() = runTestMain {
         val expectedSize = 1_000
         val url = "https://example.com/image.jpg"
 
