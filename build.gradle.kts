@@ -8,6 +8,8 @@ import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
@@ -120,5 +122,35 @@ allprojects {
         extensions.configure<SpotlessExtensionPredeclare>(configureSpotless)
     } else {
         extensions.configure(configureSpotless)
+    }
+
+    applyOkioJsTestWorkaround()
+}
+
+// https://github.com/square/okio/issues/1163
+fun Project.applyOkioJsTestWorkaround() {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        val webpackConfigDir = projectDir.resolve("webpack.config.d").apply { mkdirs() }
+        val applyPluginFile = webpackConfigDir.resolve("applyNodePolyfillPlugin.js")
+        applyPluginFile.writeText(
+            """
+            const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+            config.plugins.push(new NodePolyfillPlugin())
+            """.trimIndent(),
+        )
+        extensions.configure<KotlinMultiplatformExtension> {
+            sourceSets {
+                val configure: KotlinSourceSet.() -> Unit = {
+                    dependencies {
+                        implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
+                    }
+                }
+                if (name.startsWith("coil-sample")) {
+                    jsMain(configure)
+                } else {
+                    jsTest(configure)
+                }
+            }
+        }
     }
 }
