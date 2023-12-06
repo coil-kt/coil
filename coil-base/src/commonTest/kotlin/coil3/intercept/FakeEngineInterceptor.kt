@@ -1,18 +1,17 @@
 package coil3.intercept
 
-import android.graphics.drawable.ColorDrawable
-import coil3.asCoilImage
 import coil3.decode.DataSource
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
+import coil3.test.FakeImage
 
-class FakeInterceptor : Interceptor {
+class FakeEngineInterceptor : Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         return SuccessResult(
-            image = ColorDrawable().asCoilImage(),
+            image = FakeImage(),
             request = chain.request,
-            dataSource = DataSource.MEMORY
+            dataSource = DataSource.MEMORY,
         )
     }
 }

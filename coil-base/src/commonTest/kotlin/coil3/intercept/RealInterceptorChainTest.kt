@@ -1,33 +1,28 @@
 package coil3.intercept
 
-import android.graphics.Bitmap
-import android.widget.ImageView
 import coil3.EventListener
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
-import coil3.request.bitmapConfig
-import coil3.request.target
-import coil3.request.transformations
 import coil3.size.Size
+import coil3.target.Target
 import coil3.test.RobolectricTest
 import coil3.test.context
-import coil3.transform.CircleCropTransformation
-import coil3.util.createRequest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
 
-class RealInterceptorChainTest : RobolectricTest() {
+class RealInterceptorChainTests : RobolectricTest() {
 
     @Test
-    fun `interceptor cannot set data to null`() = runTest {
-        val initialRequest = createRequest(context) {
-            data("https://example.com/image.jpg")
-        }
+    fun interceptorCannotSetDataToNull() = runTest {
+        val initialRequest = ImageRequest.Builder(context)
+            .data("https://example.com/image.jpg")
+            .build()
         var request: ImageRequest
         val interceptor = Interceptor { chain ->
             request = chain.request.newBuilder()
@@ -41,14 +36,15 @@ class RealInterceptorChainTest : RobolectricTest() {
     }
 
     @Test
-    fun `interceptor cannot modify target`() = runTest {
-        val initialRequest = createRequest(context) {
-            target(ImageView(context))
-        }
+    fun interceptorCannotModifyTarget() = runTest {
+        val initialRequest = ImageRequest.Builder(context)
+            .data("https://example.com/image.jpg")
+            .target(object : Target {})
+            .build()
         var request: ImageRequest
         val interceptor = Interceptor { chain ->
             request = chain.request.newBuilder()
-                .target(ImageView(context))
+                .target(object : Target {})
                 .build()
             chain.withRequest(request).proceed()
         }
@@ -58,8 +54,10 @@ class RealInterceptorChainTest : RobolectricTest() {
     }
 
     @Test
-    fun `interceptor cannot modify sizeResolver`() = runTest {
-        val initialRequest = createRequest(context)
+    fun interceptorCannotModifySizeResolver() = runTest {
+        val initialRequest = ImageRequest.Builder(context)
+            .data("https://example.com/image.jpg")
+            .build()
         var request: ImageRequest
         val interceptor = Interceptor { chain ->
             request = chain.request.newBuilder()
@@ -73,8 +71,10 @@ class RealInterceptorChainTest : RobolectricTest() {
     }
 
     @Test
-    fun `request modifications are passed to subsequent interceptors`() = runTest {
-        val initialRequest = createRequest(context)
+    fun requestModificationsArePassedToSubsequentInterceptors() = runTest {
+        val initialRequest = ImageRequest.Builder(context)
+            .data("https://example.com/image.jpg")
+            .build()
         var request = initialRequest
         val interceptor1 = Interceptor { chain ->
             assertSame(request, chain.request)
@@ -86,14 +86,14 @@ class RealInterceptorChainTest : RobolectricTest() {
         val interceptor2 = Interceptor { chain ->
             assertSame(request, chain.request)
             request = chain.request.newBuilder()
-                .bitmapConfig(Bitmap.Config.RGB_565)
+                .listener(object : ImageRequest.Listener {})
                 .build()
             chain.withRequest(request).proceed()
         }
         val interceptor3 = Interceptor { chain ->
             assertSame(request, chain.request)
             request = chain.request.newBuilder()
-                .transformations(CircleCropTransformation())
+                .fetcherDispatcher(Dispatchers.Default)
                 .build()
             chain.withRequest(request).proceed()
         }
@@ -104,11 +104,12 @@ class RealInterceptorChainTest : RobolectricTest() {
     }
 
     @Test
-    fun `withSize is passed to subsequent interceptors`() = runTest {
+    fun withSizeIsPassedToSubsequentInterceptors() = runTest {
         var size = Size(100, 100)
-        val request = createRequest(context) {
-            size(size)
-        }
+        val request = ImageRequest.Builder(context)
+            .data("https://example.com/image.jpg")
+            .size(size)
+            .build()
         val interceptor1 = Interceptor { chain ->
             assertEquals(size, chain.size)
             size = Size(123, 456)
@@ -131,8 +132,10 @@ class RealInterceptorChainTest : RobolectricTest() {
     }
 
     @Test
-    fun `withRequest modifies the chain's request`() = runTest {
-        val initialRequest = createRequest(context)
+    fun withRequestModifiesTheChainsRequest() = runTest {
+        val initialRequest = ImageRequest.Builder(context)
+            .data("https://example.com/image.jpg")
+            .build()
         val interceptor1 = Interceptor { chain ->
             val request = chain.request.newBuilder()
                 .memoryCacheKey(MemoryCache.Key("test"))
@@ -150,7 +153,7 @@ class RealInterceptorChainTest : RobolectricTest() {
     ): ImageResult {
         val chain = RealInterceptorChain(
             initialRequest = request,
-            interceptors = interceptors + FakeInterceptor(),
+            interceptors = interceptors + FakeEngineInterceptor(),
             index = 0,
             request = request,
             size = Size(100, 100),
