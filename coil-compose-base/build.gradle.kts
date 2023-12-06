@@ -1,4 +1,6 @@
 import coil3.addAllMultiplatformTargets
+import coil3.androidInstrumentedTest
+import coil3.androidUnitTest
 import coil3.nonAndroidMain
 import coil3.setupLibraryModule
 
@@ -31,13 +33,13 @@ kotlin {
                 implementation(libs.google.drawablepainter)
             }
         }
-        named("androidUnitTest") {
+        androidUnitTest {
             dependencies {
                 implementation(projects.coilTestInternal)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        named("androidInstrumentedTest") {
+        androidInstrumentedTest {
             dependencies {
                 implementation(projects.coilTestInternal)
                 implementation(libs.bundles.test.android)

@@ -1,4 +1,6 @@
 import coil3.addAllMultiplatformTargets
+import coil3.androidInstrumentedTest
+import coil3.androidUnitTest
 import coil3.jvmCommon
 import coil3.nonAndroidMain
 import coil3.nonJsMain
@@ -58,21 +60,17 @@ kotlin {
                 api(libs.coroutines.android)
             }
         }
-        named("androidUnitTest") {
+        androidUnitTest {
             dependencies {
                 implementation(projects.coilTestInternal)
                 implementation(libs.bundles.test.jvm)
             }
         }
-        named("androidInstrumentedTest") {
+        androidInstrumentedTest {
             dependencies {
                 implementation(projects.coilTestInternal)
                 implementation(libs.bundles.test.android)
             }
         }
     }
-}
-
-rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java) {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().versions.webpackDevServer.version = "4.15.1"
 }

@@ -1,8 +1,13 @@
 package coil3
 
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 
 fun Project.addAllMultiplatformTargets() {
@@ -41,8 +46,16 @@ fun Project.addAllMultiplatformTargets() {
             macosX64()
             macosArm64()
         }
+
+        applyOkioJsTestWorkaround()
     }
 }
+
+val NamedDomainObjectContainer<KotlinSourceSet>.androidUnitTest: NamedDomainObjectProvider<KotlinSourceSet>
+    get() = named("androidUnitTest")
+
+val NamedDomainObjectContainer<KotlinSourceSet>.androidInstrumentedTest: NamedDomainObjectProvider<KotlinSourceSet>
+    get() = named("androidInstrumentedTest")
 
 fun KotlinSourceSetContainer.jvmCommon() = sourceSet(
     name = "jvmCommon",
@@ -80,5 +93,28 @@ fun KotlinSourceSetContainer.sourceSet(
     sourceSet.dependsOn(sourceSets.getByName(commonName))
     for (child in children) {
         sourceSets.getByName(child).dependsOn(sourceSet)
+    }
+}
+
+// https://github.com/square/okio/issues/1163
+fun Project.applyOkioJsTestWorkaround() {
+    val webpackConfigDir = projectDir.resolve("webpack.config.d").apply { mkdirs() }
+    val applyPluginFile = webpackConfigDir.resolve("applyNodePolyfillPlugin.js")
+    applyPluginFile.writeText(
+        """
+        const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+        config.plugins.push(new NodePolyfillPlugin())
+        """.trimIndent(),
+    )
+    extensions.configure<KotlinMultiplatformExtension> {
+        sourceSets {
+            configureEach {
+                if (name == "jsTest") {
+                    dependencies {
+                        implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
+                    }
+                }
+            }
+        }
     }
 }
