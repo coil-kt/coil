@@ -42,7 +42,6 @@ import okio.use
  */
 class DiskLruCacheTest {
 
-    private lateinit var fakeFileSystem: FakeFileSystem
     private lateinit var fileSystem: FaultyFileSystem
     private lateinit var dispatcher: SimpleTestDispatcher
     private lateinit var caches: MutableSet<DiskLruCache>
@@ -54,8 +53,9 @@ class DiskLruCacheTest {
 
     @BeforeTest
     fun before() {
-        fakeFileSystem = FakeFileSystem().apply { emulateUnix() }
-        fileSystem = FaultyFileSystem(fakeFileSystem)
+        val delegateFileSystem = FakeFileSystem()
+        delegateFileSystem.emulateUnix()
+        fileSystem = FaultyFileSystem(delegateFileSystem)
         if (fileSystem.exists(cacheDir)) {
             fileSystem.deleteRecursively(cacheDir)
         }
@@ -67,7 +67,7 @@ class DiskLruCacheTest {
     @AfterTest
     fun after() {
         for (cache in caches) cache.close()
-        fakeFileSystem.checkNoOpenFiles()
+        (fileSystem.delegate as FakeFileSystem).checkNoOpenFiles()
     }
 
     private fun createNewCache(maxSize: Long = Long.MAX_VALUE) {
