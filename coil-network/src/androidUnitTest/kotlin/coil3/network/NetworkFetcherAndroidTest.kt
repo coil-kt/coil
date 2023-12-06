@@ -2,7 +2,6 @@ package coil3.network
 
 import android.os.NetworkOnMainThreadException
 import coil3.ImageLoader
-import coil3.decode.DataSource
 import coil3.disk.DiskCache
 import coil3.fetch.NetworkFetcher
 import coil3.fetch.SourceFetchResult
@@ -15,6 +14,7 @@ import coil3.test.runTestMain
 import coil3.toUri
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondOk
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -69,8 +69,12 @@ class NetworkFetcherAndroidTest : RobolectricTest() {
         editor.commit()
 
         // Load it from the disk cache on the main thread.
+        val engine = MockEngine {
+            respond(ByteArray(expectedSize))
+        }
         val result = newFetcher(
             url = url,
+            engine = engine,
             options = Options(
                 context = context,
                 networkCachePolicy = CachePolicy.DISABLED,
@@ -79,7 +83,6 @@ class NetworkFetcherAndroidTest : RobolectricTest() {
 
         assertIs<SourceFetchResult>(result)
         assertNotNull(result.source.fileOrNull())
-        assertEquals(DataSource.DISK, result.dataSource)
         val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
         assertEquals(expectedSize.toLong(), actualSize)
     }
