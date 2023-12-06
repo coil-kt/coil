@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.base.test.R
 import coil3.decode.DecodeUtils
+import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
@@ -52,6 +53,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import okio.buffer
+import okio.fakefilesystem.FakeFileSystem
 import okio.sink
 import okio.source
 import org.junit.After
@@ -61,7 +63,9 @@ import org.junit.Test
 
 class RealImageLoaderAndroidTest {
 
+    private lateinit var fileSystem: FakeFileSystem
     private lateinit var memoryCache: MemoryCache
+    private lateinit var diskCache: DiskCache
     private lateinit var imageLoader: ImageLoader
 
     @get:Rule
@@ -69,12 +73,17 @@ class RealImageLoaderAndroidTest {
 
     @Before
     fun before() {
+        fileSystem = FakeFileSystem()
         memoryCache = MemoryCache.Builder()
             .maxSizeBytes(Long.MAX_VALUE)
             .build()
+        diskCache = DiskCache.Builder()
+            .directory(fileSystem.workingDirectory)
+            .build()
         imageLoader = ImageLoader.Builder(context)
             .memoryCache(memoryCache)
-            .diskCache(null)
+            .diskCache(diskCache)
+            .fileSystem(fileSystem)
             .build()
         activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
     }
@@ -82,6 +91,8 @@ class RealImageLoaderAndroidTest {
     @After
     fun after() {
         imageLoader.shutdown()
+        diskCache.shutdown()
+        fileSystem.checkNoOpenFiles()
     }
 
     // region Test all the supported data types.
