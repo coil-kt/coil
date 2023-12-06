@@ -15,8 +15,10 @@ import io.ktor.client.engine.mock.respondOk
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import okio.blackholeSink
 import okio.fakefilesystem.FakeFileSystem
@@ -81,15 +83,6 @@ class NetworkFetcherTest : RobolectricTest() {
         assertNull(fetcher.getMimeType(url5, type5))
     }
 
-//    @Test
-//    fun `request on main thread throws NetworkOnMainThreadException`() = runTest {
-//        server.enqueueImage(IMAGE)
-//        val url = server.url(IMAGE).toString()
-//        val fetcher = newFetcher(url)
-//
-//        assertFailsWith<NetworkOnMainThreadException> { fetcher.fetch() }
-//    }
-
     @Test
     fun noDiskCache_fetcherReturnsASourceResult() = runTestAsync {
         val expectedSize = 1_000
@@ -103,74 +96,58 @@ class NetworkFetcherTest : RobolectricTest() {
         assertEquals(expectedSize.toLong(), actualSize)
     }
 
-//    @Test
-//    fun `request on main thread with network cache policy disabled executes without throwing`() = runTestAsync {
-//        val expectedSize = server.enqueueImage(IMAGE)
-//        val url = server.url(IMAGE).toString()
-//
-//        // Write the image in the disk cache.
-//        val editor = diskCache.openEditor(url)!!
-//        fileSystem.write(editor.data) {
-//            writeAll(context.assets.open(IMAGE).source())
-//        }
-//        editor.commit()
-//
-//        // Load it from the disk cache on the main thread.
-//        val result = newFetcher(
-//            url = url,
-//            options = Options(context, networkCachePolicy = CachePolicy.DISABLED)
-//        ).fetch()
-//
-//        assertIs<SourceFetchResult>(result)
-//        assertNotNull(result.source.fileOrNull())
-//        assertEquals(DataSource.DISK, result.dataSource)
-//        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-//    }
-//
-//    @Test
-//    fun `no cached file - fetcher returns the file`() = runTestAsync {
-//        val expectedSize = server.enqueueImage(IMAGE)
-//        val url = server.url(IMAGE).toString()
-//        val result = newFetcher(url).fetch()
-//
-//        assertIs<SourceFetchResult>(result)
-//        val source = result.source
-//        assertTrue(source is FileImageSource)
-//
-//        // Ensure we can read the source.
-//        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-//
-//        // Ensure the result file is present.
-//        diskCache.openSnapshot(url)!!.use { snapshot ->
-//            assertTrue(snapshot.data in fileSystem.list(diskCache.directory))
-//            assertEquals(snapshot.data, source.file)
-//        }
-//    }
-//
-//    @Test
-//    fun `existing cached file - fetcher returns the file`() = runTestAsync {
-//        val url = server.url(IMAGE).toString()
-//
-//        // Run the fetcher once to create the disk cache file.
-//        var expectedSize = server.enqueueImage(IMAGE)
-//        var result = newFetcher(url).fetch()
-//        assertIs<SourceFetchResult>(result)
-//        assertTrue(result.source is FileImageSource)
-//        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-//
-//        // Run the fetcher a second time.
-//        expectedSize = server.enqueueImage(IMAGE)
-//        result = newFetcher(url).fetch()
-//        assertIs<SourceFetchResult>(result)
-//        assertTrue(result.source is FileImageSource)
-//        assertEquals(expectedSize, result.source.use { it.source().readAll(blackholeSink()) })
-//
-//        // Ensure the result file is present.
-//        val expected = diskCache.openSnapshot(url)?.data
-//        assertTrue(expected in fileSystem.list(diskCache.directory))
-//        assertEquals(expected, (result.source as FileImageSource).file)
-//    }
-//
+    @Test
+    fun noCachedFile_fetcherReturnsTheFile() = runTestAsync {
+        val expectedSize = 1_000
+        val url = "https://example.com/image.jpg"
+        val engine = MockEngine {
+            respond(ByteArray(expectedSize))
+        }
+        val result = newFetcher(url, engine = engine).fetch()
+
+        assertIs<SourceFetchResult>(result)
+        val file = assertNotNull(result.source.fileOrNull())
+
+        // Ensure we can read the source.
+        val actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+
+        // Ensure the result file is present.
+        diskCache.openSnapshot(url)!!.use { snapshot ->
+            assertContains(fileSystem.list(diskCache.directory), snapshot.data)
+            assertEquals(snapshot.data, file)
+        }
+    }
+
+    @Test
+    fun existingCachedFile_fetcherReturnsTheFile() = runTestAsync {
+        val expectedSize = 1_000
+        val url = "https://example.com/image.jpg"
+        val engine = MockEngine {
+            respond(ByteArray(expectedSize))
+        }
+
+        // Run the fetcher once to create the disk cache file.
+        var result = newFetcher(url, engine = engine).fetch()
+        assertIs<SourceFetchResult>(result)
+        assertNotNull(result.source.fileOrNull())
+        var actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+
+        // Run the fetcher a second time.
+        result = newFetcher(url, engine = engine).fetch()
+        assertIs<SourceFetchResult>(result)
+        val file = assertNotNull(result.source.fileOrNull())
+        actualSize = result.source.use { it.source().readAll(blackholeSink()) }
+        assertEquals(expectedSize.toLong(), actualSize)
+
+        // Ensure the result file is present.
+        diskCache.openSnapshot(url)!!.use { snapshot ->
+            assertContains(fileSystem.list(diskCache.directory), snapshot.data)
+            assertEquals(snapshot.data, file)
+        }
+    }
+
 //    @Test
 //    fun `cache control - empty metadata is always returned`() = runTestAsync {
 //        val url = server.url(IMAGE).toString()
