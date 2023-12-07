@@ -8,7 +8,7 @@ plugins {
 setupLibraryModule(name = "coil3.video")
 
 dependencies {
-    api(projects.coilBase)
+    api(projects.coilCore)
 
     implementation(libs.androidx.core)
 

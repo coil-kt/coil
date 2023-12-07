@@ -17,7 +17,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.coilBase)
+                api(projects.coilCore)
                 api(libs.coroutines.test)
                 api(libs.okio.fakefilesystem)
             }

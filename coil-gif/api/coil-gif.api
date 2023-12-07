@@ -26,10 +26,7 @@ public final class coil3/decode/GifDecoder$Factory : coil3/decode/Decoder$Factor
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEnforceMinimumFrameDelay ()Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil3/decode/ImageDecoderDecoder : coil3/decode/Decoder {
@@ -44,10 +41,7 @@ public final class coil3/decode/ImageDecoderDecoder$Factory : coil3/decode/Decod
 	public fun <init> (Z)V
 	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEnforceMinimumFrameDelay ()Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil3/drawable/MovieDrawable : android/graphics/drawable/Drawable, androidx/vectordrawable/graphics/drawable/Animatable2Compat {

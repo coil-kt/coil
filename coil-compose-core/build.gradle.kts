@@ -8,10 +8,15 @@ plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
     id("kotlinx-atomicfu")
+    id("org.jetbrains.compose")
 }
 
 addAllMultiplatformTargets()
-setupLibraryModule(name = "coil3.singleton")
+setupLibraryModule(name = "coil3.compose.core")
+
+compose {
+    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+}
 
 kotlin {
     nonAndroidMain()
@@ -20,12 +25,12 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coilCore)
+                api(compose.foundation)
             }
         }
-        commonTest {
+        androidMain {
             dependencies {
-                implementation(projects.coilTestInternal)
-                implementation(libs.bundles.test.common)
+                implementation(libs.google.drawablepainter)
             }
         }
         androidUnitTest {
@@ -38,6 +43,7 @@ kotlin {
             dependencies {
                 implementation(projects.coilTestInternal)
                 implementation(libs.bundles.test.android)
+                implementation(libs.androidx.compose.ui.test)
             }
         }
     }

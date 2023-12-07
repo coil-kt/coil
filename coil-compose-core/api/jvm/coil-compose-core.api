@@ -1,0 +1,105 @@
+public final class coil3/compose/AsyncImageKt {
+	public static final fun AsyncImage-MvsnxeU (Ljava/lang/Object;Ljava/lang/String;Lcoil3/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+	public static final fun AsyncImage-Q4Kwu38 (Ljava/lang/Object;Ljava/lang/String;Lcoil3/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+}
+
+public final class coil3/compose/AsyncImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
+	public static final field $stable I
+	public static final field Companion Lcoil3/compose/AsyncImagePainter$Companion;
+	public final fun getImageLoader ()Lcoil3/ImageLoader;
+	public fun getIntrinsicSize-NH-jbRc ()J
+	public final fun getRequest ()Lcoil3/request/ImageRequest;
+	public final fun getState ()Lcoil3/compose/AsyncImagePainter$State;
+	public fun onAbandoned ()V
+	public fun onForgotten ()V
+	public fun onRemembered ()V
+}
+
+public final class coil3/compose/AsyncImagePainter$Companion {
+	public final fun getDefaultTransform ()Lkotlin/jvm/functions/Function1;
+}
+
+public abstract interface class coil3/compose/AsyncImagePainter$State {
+	public abstract fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+}
+
+public final class coil3/compose/AsyncImagePainter$State$Empty : coil3/compose/AsyncImagePainter$State {
+	public static final field $stable I
+	public static final field INSTANCE Lcoil3/compose/AsyncImagePainter$State$Empty;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil3/compose/AsyncImagePainter$State$Error : coil3/compose/AsyncImagePainter$State {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Lcoil3/request/ErrorResult;)V
+	public final fun component1 ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun component2 ()Lcoil3/request/ErrorResult;
+	public final fun copy (Landroidx/compose/ui/graphics/painter/Painter;Lcoil3/request/ErrorResult;)Lcoil3/compose/AsyncImagePainter$State$Error;
+	public static synthetic fun copy$default (Lcoil3/compose/AsyncImagePainter$State$Error;Landroidx/compose/ui/graphics/painter/Painter;Lcoil3/request/ErrorResult;ILjava/lang/Object;)Lcoil3/compose/AsyncImagePainter$State$Error;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun getResult ()Lcoil3/request/ErrorResult;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil3/compose/AsyncImagePainter$State$Loading : coil3/compose/AsyncImagePainter$State {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/ui/graphics/painter/Painter;)V
+	public final fun component1 ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun copy (Landroidx/compose/ui/graphics/painter/Painter;)Lcoil3/compose/AsyncImagePainter$State$Loading;
+	public static synthetic fun copy$default (Lcoil3/compose/AsyncImagePainter$State$Loading;Landroidx/compose/ui/graphics/painter/Painter;ILjava/lang/Object;)Lcoil3/compose/AsyncImagePainter$State$Loading;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil3/compose/AsyncImagePainter$State$Success : coil3/compose/AsyncImagePainter$State {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/ui/graphics/painter/Painter;Lcoil3/request/SuccessResult;)V
+	public final fun component1 ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun component2 ()Lcoil3/request/SuccessResult;
+	public final fun copy (Landroidx/compose/ui/graphics/painter/Painter;Lcoil3/request/SuccessResult;)Lcoil3/compose/AsyncImagePainter$State$Success;
+	public static synthetic fun copy$default (Lcoil3/compose/AsyncImagePainter$State$Success;Landroidx/compose/ui/graphics/painter/Painter;Lcoil3/request/SuccessResult;ILjava/lang/Object;)Lcoil3/compose/AsyncImagePainter$State$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getPainter ()Landroidx/compose/ui/graphics/painter/Painter;
+	public final fun getResult ()Lcoil3/request/SuccessResult;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class coil3/compose/AsyncImagePainter_commonKt {
+	public static final fun rememberAsyncImagePainter-3HmZ8SU (Ljava/lang/Object;Lcoil3/ImageLoader;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILandroidx/compose/runtime/Composer;II)Lcoil3/compose/AsyncImagePainter;
+	public static final fun rememberAsyncImagePainter-5jETZwI (Ljava/lang/Object;Lcoil3/ImageLoader;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILandroidx/compose/runtime/Composer;II)Lcoil3/compose/AsyncImagePainter;
+}
+
+public final class coil3/compose/ComposableSingletons$SubcomposeAsyncImageKt {
+	public static final field INSTANCE Lcoil3/compose/ComposableSingletons$SubcomposeAsyncImageKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function3;
+	public fun <init> ()V
+	public final fun getLambda-1$coil_compose_core ()Lkotlin/jvm/functions/Function3;
+}
+
+public final class coil3/compose/LocalPlatformContextKt {
+	public static final fun getLocalPlatformContext ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class coil3/compose/SubcomposeAsyncImageKt {
+	public static final fun SubcomposeAsyncImage-Q4Kwu38 (Ljava/lang/Object;Ljava/lang/String;Lcoil3/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+	public static final fun SubcomposeAsyncImage-sKDTAoQ (Ljava/lang/Object;Ljava/lang/String;Lcoil3/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;III)V
+	public static final fun SubcomposeAsyncImageContent (Lcoil3/compose/SubcomposeAsyncImageScope;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Ljava/lang/String;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;Landroidx/compose/runtime/Composer;II)V
+}
+
+public abstract interface class coil3/compose/SubcomposeAsyncImageScope : androidx/compose/foundation/layout/BoxScope {
+	public abstract fun getAlignment ()Landroidx/compose/ui/Alignment;
+	public abstract fun getAlpha ()F
+	public abstract fun getColorFilter ()Landroidx/compose/ui/graphics/ColorFilter;
+	public abstract fun getContentDescription ()Ljava/lang/String;
+	public abstract fun getContentScale ()Landroidx/compose/ui/layout/ContentScale;
+	public abstract fun getPainter ()Lcoil3/compose/AsyncImagePainter;
+}
+

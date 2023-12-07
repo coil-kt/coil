@@ -5,9 +5,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 // Public modules
 include(
-    "coil-base",
+    "coil-core",
     "coil-singleton",
-    "coil-compose-base",
+    "coil-compose-core",
     "coil-compose-singleton",
     "coil-network",
     "coil-gif",

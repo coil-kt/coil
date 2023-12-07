@@ -9,9 +9,6 @@ public final class coil3/fetch/NetworkFetcher$Factory : coil3/fetch/Fetcher$Fact
 	public synthetic fun <init> (Lkotlin/Lazy;Lkotlin/Lazy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/Uri;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
 	public synthetic fun create (Ljava/lang/Object;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/fetch/Fetcher;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class coil3/network/CacheResponse {

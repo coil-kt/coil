@@ -6,8 +6,6 @@ public final class coil3/decode/VideoFrameDecoder : coil3/decode/Decoder {
 public final class coil3/decode/VideoFrameDecoder$Factory : coil3/decode/Decoder$Factory {
 	public fun <init> ()V
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
 }
 
 public final class coil3/fetch/MediaDataSourceFetcher : coil3/fetch/Fetcher {

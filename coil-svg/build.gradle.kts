@@ -8,7 +8,7 @@ plugins {
 setupLibraryModule(name = "coil3.svg")
 
 dependencies {
-    api(projects.coilBase)
+    api(projects.coilCore)
 
     implementation(libs.androidx.core)
     implementation(libs.svg)

@@ -14,9 +14,9 @@ compose {
 }
 
 dependencies {
-    api(projects.coilBase)
+    api(projects.coilCore)
 
-    implementation(projects.coilComposeBase)
+    implementation(projects.coilComposeCore)
     implementation(projects.coilTest)
 
     testImplementation(projects.coilTestInternal)
