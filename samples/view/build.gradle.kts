@@ -11,8 +11,8 @@ androidApplication(name = "sample.view") {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                "../coil-sample-common/shrinker-rules.pro",
-                "../coil-sample-common/shrinker-rules-android.pro",
+                "../shared/shrinker-rules.pro",
+                "../shared/shrinker-rules-android.pro",
             )
             signingConfig = signingConfigs["debug"]
         }
