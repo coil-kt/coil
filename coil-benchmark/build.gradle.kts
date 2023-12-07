@@ -31,7 +31,7 @@ androidTest(name = "coil3.benchmark", config = true) {
             }
         }
     }
-    targetProjectPath = ":coil-sample-$targetProject"
+    targetProjectPath = ":samples:$targetProject"
     experimentalProperties["android.experimental.self-instrumenting"] = true
 }
 

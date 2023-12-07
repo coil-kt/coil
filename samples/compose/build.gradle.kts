@@ -90,7 +90,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(projects.coilSampleCommon)
+                implementation(projects.samples.shared)
                 implementation(projects.coilCompose)
                 implementation(compose.material)
                 @OptIn(ExperimentalComposeLibrary::class)

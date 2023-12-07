@@ -42,12 +42,12 @@ val publicModules = listOf(
 )
 
 val privateModules = listOf(
-    "coil-sample-common",
-    "coil-sample-compose",
-    "coil-sample-view",
     "coil-test-internal",
     "coil-test-paparazzi",
     "coil-test-roborazzi",
+    "compose", // samples:compose
+    "shared", // samples:shared
+    "view", // samples:view
 )
 
 private fun Project.intProperty(name: String): Int {

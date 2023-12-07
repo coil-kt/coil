@@ -30,7 +30,7 @@ androidApplication(name = "sample.view") {
 }
 
 dependencies {
-    implementation(projects.coilSampleCommon)
+    implementation(projects.samples.shared)
 
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
