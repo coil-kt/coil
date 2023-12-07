@@ -3,6 +3,7 @@ package coil3
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -99,21 +100,15 @@ fun KotlinSourceSetContainer.sourceSet(
 // https://youtrack.jetbrains.com/issue/KT-56025
 fun Project.applyKotlinJsImplicitDependencyWorkaround() {
     tasks {
-        named("jsBrowserProductionWebpack").configure {
+        val configure: Task.() -> Unit = {
+            dependsOn(named("jsDevelopmentLibraryCompileSync"))
+            dependsOn(named("jsDevelopmentExecutableCompileSync"))
             dependsOn(named("jsProductionLibraryCompileSync"))
-            dependsOn(named("jsDevelopmentLibraryCompileSync"))
-        }
-        named("jsNodeProductionLibraryPrepare").configure {
-            dependsOn(named("jsProductionLibraryCompileSync"))
-            dependsOn(named("jsDevelopmentLibraryCompileSync"))
-        }
-        named("jsBrowserProductionLibraryPrepare").configure {
             dependsOn(named("jsProductionExecutableCompileSync"))
-            dependsOn(named("jsDevelopmentLibraryCompileSync"))
+            dependsOn(named("jsTestTestDevelopmentExecutableCompileSync"))
         }
-        named("jsNodeProductionLibraryPrepare").configure {
-            dependsOn(named("jsProductionExecutableCompileSync"))
-            dependsOn(named("jsDevelopmentLibraryCompileSync"))
-        }
+        named("jsBrowserProductionWebpack").configure(configure)
+        named("jsBrowserProductionLibraryPrepare").configure(configure)
+        named("jsNodeProductionLibraryPrepare").configure(configure)
     }
 }
