@@ -9,7 +9,7 @@ class AndroidResources(
 ) : Resources {
 
     override val root: String
-        get() = "/android_asset"
+        get() = "file:///android_asset"
 
     override suspend fun open(path: String): Source {
         return context.assets.open(path).source()
