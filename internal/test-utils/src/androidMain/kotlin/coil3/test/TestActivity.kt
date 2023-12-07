@@ -2,7 +2,7 @@ package coil3.test
 
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
-import coil3.test.internal.R
+import coil3.test.utils.R
 
 class ComposeTestActivity : ComponentActivity()
 
