@@ -53,7 +53,11 @@ fun App(resources: Resources) {
     LaunchedEffect(viewModel) {
         viewModel.start()
     }
+    App(viewModel)
+}
 
+@Composable
+fun App(viewModel: MainViewModel) {
     MaterialTheme(
         colors = lightColors(
             primary = Color.White,
