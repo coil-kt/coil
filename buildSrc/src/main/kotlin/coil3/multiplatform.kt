@@ -106,6 +106,12 @@ fun Project.applyKotlinJsImplicitDependencyWorkaround() {
             dependsOn(named("jsProductionLibraryCompileSync"))
             dependsOn(named("jsProductionExecutableCompileSync"))
             dependsOn(named("jsTestTestDevelopmentExecutableCompileSync"))
+
+            dependsOn(getByPath(":coil:jsDevelopmentLibraryCompileSync"))
+            dependsOn(getByPath(":coil:jsDevelopmentExecutableCompileSync"))
+            dependsOn(getByPath(":coil:jsProductionLibraryCompileSync"))
+            dependsOn(getByPath(":coil:jsProductionExecutableCompileSync"))
+            dependsOn(getByPath(":coil:jsTestTestDevelopmentExecutableCompileSync"))
         }
         named("jsBrowserProductionWebpack").configure(configure)
         named("jsBrowserProductionLibraryPrepare").configure(configure)
