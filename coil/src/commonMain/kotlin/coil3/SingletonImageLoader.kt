@@ -1,6 +1,7 @@
 package coil3
 
 import kotlin.jvm.JvmStatic
+import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 
@@ -8,9 +9,9 @@ import kotlinx.atomicfu.locks.synchronized
  * A class that holds the singleton [ImageLoader] instance.
  */
 object SingletonImageLoader {
-    private val lock = SynchronizedObject()
-    private var imageLoader: ImageLoader? = null
-    private var imageLoaderFactory: Factory? = null
+    private val writeLock = SynchronizedObject()
+    private var imageLoader: ImageLoader? by atomic(null)
+    private var imageLoaderFactory: Factory? by atomic(null)
 
     /**
      * Get the singleton [ImageLoader].
@@ -25,7 +26,7 @@ object SingletonImageLoader {
      * [ImageLoader] lazily.
      */
     @JvmStatic
-    fun set(imageLoader: ImageLoader) = synchronized(lock) {
+    fun set(imageLoader: ImageLoader) = synchronized(writeLock) {
         this.imageLoaderFactory = null
         this.imageLoader = imageLoader
     }
@@ -35,9 +36,9 @@ object SingletonImageLoader {
      * [ImageLoader]. The [factory] is guaranteed to be called at most once.
      */
     @JvmStatic
-    fun set(factory: Factory) = synchronized(lock) {
-        imageLoaderFactory = factory
-        imageLoader = null
+    fun set(factory: Factory) = synchronized(writeLock) {
+        this.imageLoaderFactory = factory
+        this.imageLoader = null
     }
 
     /**
@@ -46,20 +47,20 @@ object SingletonImageLoader {
      * This method is useful for testing and its use is discouraged in production code.
      */
     @JvmStatic
-    fun reset() = synchronized(lock) {
-        imageLoader = null
-        imageLoaderFactory = null
+    fun reset() = synchronized(writeLock) {
+        this.imageLoader = null
+        this.imageLoaderFactory = null
     }
 
     /** Create and set the new singleton [ImageLoader]. */
-    private fun newImageLoader(context: PlatformContext): ImageLoader = synchronized(lock) {
+    private fun newImageLoader(context: PlatformContext): ImageLoader = synchronized(writeLock) {
         // Check again in case imageLoader was just set.
         imageLoader?.let { return it }
 
         // Create a new ImageLoader.
         val newImageLoader = imageLoaderFactory?.newImageLoader()
             ?: context.applicationImageLoaderFactory()?.newImageLoader()
-            ?: ImageLoader.Builder(context).build()
+            ?: ImageLoader(context)
         imageLoaderFactory = null
         imageLoader = newImageLoader
         return newImageLoader
