@@ -30,10 +30,10 @@ val Project.versionCode: Int
         }
 
 val publicModules = listOf(
-    "coil-base",
-    "coil-singleton",
-    "coil-compose-base",
-    "coil-compose-singleton",
+    "coil",
+    "coil-core",
+    "coil-compose",
+    "coil-compose-core",
     "coil-network",
     "coil-gif",
     "coil-svg",

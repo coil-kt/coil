@@ -31,10 +31,6 @@ setupAppModule(name = "sample.view") {
 
 dependencies {
     implementation(projects.coilSampleCommon)
-    implementation(projects.coilSingleton)
-    implementation(projects.coilGif)
-    implementation(projects.coilSvg)
-    implementation(projects.coilVideo)
 
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)

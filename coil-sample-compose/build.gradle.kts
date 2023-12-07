@@ -88,7 +88,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(projects.coilSampleCommon)
-                implementation(projects.coilComposeSingleton)
+                implementation(projects.coilCompose)
                 implementation(compose.material)
                 @OptIn(ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)

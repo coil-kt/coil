@@ -1,14 +1,14 @@
-rootProject.name = "coil"
+rootProject.name = "coil-root"
 
 // https://docs.gradle.org/7.4/userguide/declaring_dependencies.html#sec:type-safe-project-accessors
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 // Public modules
 include(
+    "coil",
     "coil-core",
-    "coil-singleton",
+    "coil-compose",
     "coil-compose-core",
-    "coil-compose-singleton",
     "coil-network",
     "coil-gif",
     "coil-svg",

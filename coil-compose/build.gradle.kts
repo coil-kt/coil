@@ -19,8 +19,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                api(projects.coil)
                 api(projects.coilComposeCore)
-                api(projects.coilSingleton)
             }
         }
     }

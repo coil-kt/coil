@@ -16,7 +16,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.coilSingleton)
+                api(projects.coil)
                 api(projects.coilNetwork)
 
                 api(libs.kotlinx.serialization.json)
