@@ -44,12 +44,5 @@ fun interface Interceptor {
          * Continue executing the chain.
          */
         suspend fun proceed(): ImageResult
-
-        @Deprecated(
-            message = "Use 'withRequest' to create a new chain with the updated request before " +
-                "calling 'proceed'.",
-            replaceWith = ReplaceWith("withRequest(request).proceed()"),
-        )
-        suspend fun proceed(request: ImageRequest): ImageResult = withRequest(request).proceed()
     }
 }
