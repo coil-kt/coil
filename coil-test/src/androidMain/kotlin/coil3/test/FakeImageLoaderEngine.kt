@@ -12,7 +12,7 @@ import coil3.transition.Transition
 @JvmName("create")
 fun FakeImageLoaderEngine(drawable: Drawable): FakeImageLoaderEngine {
     return FakeImageLoaderEngine.Builder()
-        .default(drawable.asCoilImage())
+        .default(drawable)
         .build()
 }
 
