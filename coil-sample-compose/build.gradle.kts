@@ -1,4 +1,4 @@
-import coil3.androidApp
+import coil3.androidApplication
 import coil3.sourceSet
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
@@ -10,7 +10,7 @@ plugins {
     id("org.jetbrains.compose")
 }
 
-androidApp(name = "sample.compose") {
+androidApplication(name = "sample.compose") {
     buildTypes {
         release {
             isMinifyEnabled = true

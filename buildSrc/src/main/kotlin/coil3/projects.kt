@@ -57,7 +57,7 @@ fun Project.setupPublishing(
     }
 }
 
-fun Project.androidApp(
+fun Project.androidApplication(
     name: String,
     action: BaseAppModuleExtension.() -> Unit = {},
 ) = androidBase<BaseAppModuleExtension>(name) {
