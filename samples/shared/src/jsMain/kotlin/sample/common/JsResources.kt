@@ -8,10 +8,13 @@ import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Int8Array
 
 class JsResources : Resources {
+
+    override val root: String
+        get() = ""
+
     override suspend fun open(path: String): Source {
-        val resPath = "./$path"
-        val response = window.fetch(resPath).await()
-        check(response.ok) { "unknown path: $resPath" }
+        val response = window.fetch("./$path").await()
+        check(response.ok) { "unknown path: $path" }
         val byteArray = response.arrayBuffer().await().toByteArray()
         return Buffer().apply { write(byteArray) }
     }

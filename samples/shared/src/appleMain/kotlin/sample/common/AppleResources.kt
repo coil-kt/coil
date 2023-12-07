@@ -6,8 +6,12 @@ import okio.Source
 import platform.Foundation.NSBundle
 
 class AppleResources : Resources {
+
+    override val root: String
+        get() = NSBundle.mainBundle.resourcePath!!
+
     override suspend fun open(path: String): Source {
-        val file = NSBundle.mainBundle.resourcePath!!.toPath() / "compose-resources" / path
+        val file = root.toPath() / "compose-resources" / path
         return FileSystem.SYSTEM.openReadOnly(file).source()
     }
 }

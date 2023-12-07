@@ -62,7 +62,7 @@ private class RealMainViewModel(
                 .build()
 
             Image(
-                uri = "file:///android_asset/${AssetType.MP4.fileName}",
+                uri = "${resources.root}/${AssetType.MP4.fileName}",
                 color = randomColor(),
                 width = 1280,
                 height = 720,
