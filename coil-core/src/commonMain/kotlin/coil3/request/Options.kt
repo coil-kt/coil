@@ -45,7 +45,7 @@ data class Options(
     val diskCacheKey: String? = null,
 
     /**
-     * TODO
+     * The [FileSystem] that will be used to perform any disk read/write operations.
      */
     val fileSystem: FileSystem = defaultFileSystem(),
 
@@ -65,7 +65,7 @@ data class Options(
     val networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
 
     /**
-     * TODO
+     * Extras that are used to configure/extend an image loader's base functionality.
      */
     val extras: Extras = Extras.EMPTY,
 )

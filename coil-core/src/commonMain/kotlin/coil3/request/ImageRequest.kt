@@ -353,7 +353,7 @@ class ImageRequest private constructor(
         }
 
         /**
-         * TODO
+         * Set extra values to be added to this image request's memory cache key.
          */
         fun memoryCacheKeyExtras(extras: Map<String, String>) = apply {
             this.lazyMemoryCacheKeyExtras = if (extras.isEmpty()) {
@@ -364,7 +364,7 @@ class ImageRequest private constructor(
         }
 
         /**
-         * TODO
+         * Set extra values to be added to this image request's memory cache key.
          */
         fun memoryCacheKeyExtra(key: String, value: String?) = apply {
             if (value != null) {
@@ -384,7 +384,7 @@ class ImageRequest private constructor(
         }
 
         /**
-         * TODO
+         * The [FileSystem] that will be used to perform any disk read/write operations.
          */
         fun fileSystem(fileSystem: FileSystem) = apply {
             this.fileSystem = fileSystem
