@@ -4,6 +4,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
@@ -35,6 +36,7 @@ fun Project.addAllMultiplatformTargets() {
                     }
                 }
                 binaries.executable()
+                binaries.library()
             }
 
             iosX64()
@@ -44,6 +46,8 @@ fun Project.addAllMultiplatformTargets() {
             macosX64()
             macosArm64()
         }
+
+        applyKotlinJsImplicitDependencyWorkaround()
     }
 }
 
@@ -89,5 +93,27 @@ fun KotlinSourceSetContainer.sourceSet(
     sourceSet.dependsOn(sourceSets.getByName(commonName))
     for (child in children) {
         sourceSets.getByName(child).dependsOn(sourceSet)
+    }
+}
+
+// https://youtrack.jetbrains.com/issue/KT-56025
+fun Project.applyKotlinJsImplicitDependencyWorkaround() {
+    tasks {
+        named("jsBrowserProductionWebpack").configure {
+            dependsOn(named("jsProductionLibraryCompileSync"))
+            dependsOn(named("jsDevelopmentLibraryCompileSync"))
+        }
+        named("jsNodeProductionLibraryPrepare").configure {
+            dependsOn(named("jsProductionLibraryCompileSync"))
+            dependsOn(named("jsDevelopmentLibraryCompileSync"))
+        }
+        named("jsBrowserProductionLibraryPrepare").configure {
+            dependsOn(named("jsProductionExecutableCompileSync"))
+            dependsOn(named("jsDevelopmentLibraryCompileSync"))
+        }
+        named("jsNodeProductionLibraryPrepare").configure {
+            dependsOn(named("jsProductionExecutableCompileSync"))
+            dependsOn(named("jsDevelopmentLibraryCompileSync"))
+        }
     }
 }
