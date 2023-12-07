@@ -94,6 +94,7 @@ kotlin {
                 @OptIn(ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
             }
+            resources.srcDir("../shared/src/commonMain/resources")
         }
         androidMain {
             dependencies {
