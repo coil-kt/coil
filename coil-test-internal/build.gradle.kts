@@ -1,6 +1,6 @@
 import coil3.addAllMultiplatformTargets
-import coil3.nonAndroidMain
 import coil3.androidLibrary
+import coil3.nonAndroidMain
 
 plugins {
     id("com.android.library")

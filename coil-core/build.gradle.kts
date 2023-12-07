@@ -1,12 +1,12 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidInstrumentedTest
+import coil3.androidLibrary
 import coil3.androidUnitTest
 import coil3.jvmCommon
 import coil3.nonAndroidMain
 import coil3.nonJsMain
 import coil3.nonJsTest
 import coil3.nonJvmCommon
-import coil3.androidLibrary
 
 plugins {
     id("com.android.library")
