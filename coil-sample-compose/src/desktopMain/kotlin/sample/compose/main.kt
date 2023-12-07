@@ -10,22 +10,22 @@ import sample.common.JvmResources
 import sample.common.MainViewModel
 import sample.common.newImageLoader
 
-fun main() = application {
-    LaunchedEffect(Unit) {
-        SingletonImageLoader.set {
-            newImageLoader(PlatformContext.INSTANCE)
+fun main() {
+    SingletonImageLoader.set {
+        newImageLoader(PlatformContext.INSTANCE)
+    }
+
+    application {
+        val viewModel = remember { MainViewModel(JvmResources()) }
+        LaunchedEffect(viewModel) {
+            viewModel.start()
         }
-    }
 
-    val viewModel = remember { MainViewModel(JvmResources()) }
-    LaunchedEffect(viewModel) {
-        viewModel.start()
-    }
-
-    Window(
-        title = "Coil",
-        onCloseRequest = ::exitApplication,
-    ) {
-        App(viewModel)
+        Window(
+            title = "Coil",
+            onCloseRequest = ::exitApplication,
+        ) {
+            App(viewModel)
+        }
     }
 }
