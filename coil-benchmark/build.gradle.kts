@@ -1,4 +1,4 @@
-import coil3.setupTestModule
+import coil3.androidTest
 import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
@@ -6,7 +6,7 @@ plugins {
     id("kotlin-android")
 }
 
-setupTestModule(name = "coil3.benchmark", config = true) {
+androidTest(name = "coil3.benchmark", config = true) {
     val targetProject = System.getProperty("project", "view")
     defaultConfig {
         minSdk = 28

@@ -16,11 +16,11 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-fun Project.setupLibraryModule(
+fun Project.androidLibrary(
     name: String,
     config: Boolean = false,
     action: LibraryExtension.() -> Unit = {},
-) = setupBaseModule<LibraryExtension>(name) {
+) = androidBase<LibraryExtension>(name) {
     buildFeatures {
         buildConfig = config
     }
@@ -57,10 +57,10 @@ fun Project.setupPublishing(
     }
 }
 
-fun Project.setupAppModule(
+fun Project.androidApp(
     name: String,
     action: BaseAppModuleExtension.() -> Unit = {},
-) = setupBaseModule<BaseAppModuleExtension>(name) {
+) = androidBase<BaseAppModuleExtension>(name) {
     defaultConfig {
         applicationId = name
         versionCode = project.versionCode
@@ -71,11 +71,11 @@ fun Project.setupAppModule(
     action()
 }
 
-fun Project.setupTestModule(
+fun Project.androidTest(
     name: String,
     config: Boolean = false,
     action: TestExtension.() -> Unit = {},
-) = setupBaseModule<TestExtension>(name) {
+) = androidBase<TestExtension>(name) {
     buildFeatures {
         buildConfig = config
     }
@@ -86,7 +86,7 @@ fun Project.setupTestModule(
     action()
 }
 
-private fun <T : BaseExtension> Project.setupBaseModule(
+private fun <T : BaseExtension> Project.androidBase(
     name: String,
     action: T.() -> Unit,
 ) {

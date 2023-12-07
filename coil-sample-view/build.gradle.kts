@@ -1,11 +1,11 @@
-import coil3.setupAppModule
+import coil3.androidApp
 
 plugins {
     id("com.android.application")
     id("kotlin-android")
 }
 
-setupAppModule(name = "sample.view") {
+androidApp(name = "sample.view") {
     buildTypes {
         release {
             isMinifyEnabled = true

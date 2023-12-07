@@ -6,7 +6,7 @@ import coil3.nonAndroidMain
 import coil3.nonJsMain
 import coil3.nonJsTest
 import coil3.nonJvmCommon
-import coil3.setupLibraryModule
+import coil3.androidLibrary
 
 plugins {
     id("com.android.library")
@@ -16,7 +16,7 @@ plugins {
 }
 
 addAllMultiplatformTargets()
-setupLibraryModule(name = "coil3.core")
+androidLibrary(name = "coil3.core")
 
 kotlin {
     jvmCommon()

@@ -2,7 +2,7 @@ import coil3.addAllMultiplatformTargets
 import coil3.androidInstrumentedTest
 import coil3.androidUnitTest
 import coil3.nonAndroidMain
-import coil3.setupLibraryModule
+import coil3.androidLibrary
 
 plugins {
     id("com.android.library")
@@ -12,7 +12,7 @@ plugins {
 }
 
 addAllMultiplatformTargets()
-setupLibraryModule(name = "coil3.compose.core")
+androidLibrary(name = "coil3.compose.core")
 
 compose {
     kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()

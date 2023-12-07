@@ -1,4 +1,4 @@
-import coil3.setupLibraryModule
+import coil3.androidLibrary
 
 plugins {
     id("com.android.library")
@@ -7,7 +7,7 @@ plugins {
     id("org.jetbrains.compose")
 }
 
-setupLibraryModule(name = "coil3.test.roborazzi")
+androidLibrary(name = "coil3.test.roborazzi")
 
 compose {
     kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()

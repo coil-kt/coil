@@ -1,8 +1,8 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidInstrumentedTest
+import coil3.androidLibrary
 import coil3.androidUnitTest
 import coil3.nonAndroidMain
-import coil3.setupLibraryModule
 
 plugins {
     id("com.android.library")
@@ -11,7 +11,7 @@ plugins {
 }
 
 addAllMultiplatformTargets()
-setupLibraryModule(name = "coil3.singleton")
+androidLibrary(name = "coil3.singleton")
 
 kotlin {
     nonAndroidMain()

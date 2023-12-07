@@ -1,5 +1,5 @@
 import coil3.addAllMultiplatformTargets
-import coil3.setupLibraryModule
+import coil3.androidLibrary
 
 plugins {
     id("com.android.library")
@@ -9,7 +9,7 @@ plugins {
 }
 
 addAllMultiplatformTargets()
-setupLibraryModule(name = "coil3.compose.singleton")
+androidLibrary(name = "coil3.compose.singleton")
 
 compose {
     kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
