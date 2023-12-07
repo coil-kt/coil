@@ -3,6 +3,18 @@ package coil3
 import kotlin.math.pow
 import org.gradle.api.Project
 
+val publicModules = setOf(
+    "coil",
+    "coil-core",
+    "coil-compose",
+    "coil-compose-core",
+    "coil-network",
+    "coil-gif",
+    "coil-svg",
+    "coil-video",
+    "coil-test",
+)
+
 val Project.minSdk: Int
     get() = intProperty("minSdk")
 
@@ -28,27 +40,6 @@ val Project.versionCode: Int
             // 1.2.3 -> 102030
             (unit * 10.0.pow(2 * index + 1)).toInt()
         }
-
-val publicModules = listOf(
-    "coil",
-    "coil-core",
-    "coil-compose",
-    "coil-compose-core",
-    "coil-network",
-    "coil-gif",
-    "coil-svg",
-    "coil-video",
-    "coil-test",
-)
-
-val privateModules = listOf(
-    "coil-test-internal",
-    "coil-test-paparazzi",
-    "coil-test-roborazzi",
-    "compose", // samples:compose
-    "shared", // samples:shared
-    "view", // samples:view
-)
 
 private fun Project.intProperty(name: String): Int {
     return (property(name) as String).toInt()

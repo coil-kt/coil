@@ -1,5 +1,5 @@
 import coil3.groupId
-import coil3.privateModules
+import coil3.publicModules
 import coil3.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
@@ -37,7 +37,8 @@ plugins {
 }
 
 extensions.configure<ApiValidationExtension> {
-    ignoredProjects += privateModules
+    ignoredProjects += project.subprojects
+        .mapNotNull { if (it.name in publicModules) null else it.name }
 }
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
