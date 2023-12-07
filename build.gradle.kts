@@ -9,7 +9,6 @@ import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
@@ -141,15 +140,10 @@ fun Project.applyOkioJsTestWorkaround() {
         )
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets {
-                val configure: KotlinSourceSet.() -> Unit = {
+                jsTest {
                     dependencies {
                         implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
                     }
-                }
-                if (name.startsWith("coil-sample")) {
-                    jsMain(configure)
-                } else {
-                    jsTest(configure)
                 }
             }
         }
