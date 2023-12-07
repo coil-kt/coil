@@ -9,10 +9,7 @@ import sample.common.JsResources
 fun main() {
     initializeSingletonImageLoader()
 
-    CanvasBasedWindow(
-        title = Title,
-        canvasElementId = "ComposeTarget",
-    ) {
+    CanvasBasedWindow(Title) {
         App(remember { JsResources() })
     }
 }

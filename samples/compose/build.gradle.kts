@@ -2,7 +2,6 @@ import coil3.androidApplication
 import coil3.sourceSet
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     id("com.android.application")
@@ -64,7 +63,6 @@ kotlin {
         moduleName = "coilSample"
         browser {
             commonWebpackConfig {
-                devServer = KotlinWebpackConfig.DevServer()
                 outputFileName = "coilSample.js"
             }
         }
@@ -106,11 +104,6 @@ kotlin {
         named("desktopMain") {
             dependencies {
                 implementation(compose.desktop.currentOs)
-            }
-        }
-        jsMain {
-            dependencies {
-                implementation(compose.html.core)
             }
         }
     }
