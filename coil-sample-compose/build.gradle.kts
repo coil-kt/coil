@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     id("com.android.application")
     id("kotlin-multiplatform")
+    id("kotlinx-atomicfu")
     id("org.jetbrains.compose")
 }
 
@@ -47,6 +48,9 @@ compose {
             }
         }
     }
+    experimental {
+        web.application {}
+    }
 }
 
 kotlin {
@@ -57,9 +61,11 @@ kotlin {
     jvm("desktop")
 
     js {
+        moduleName = "coilSample"
         browser {
             commonWebpackConfig {
                 devServer = KotlinWebpackConfig.DevServer()
+                outputFileName = "coilSample.js"
             }
         }
         binaries.executable()
@@ -100,6 +106,11 @@ kotlin {
         named("desktopMain") {
             dependencies {
                 implementation(compose.desktop.currentOs)
+            }
+        }
+        jsMain {
+            dependencies {
+                implementation(compose.html.core)
             }
         }
     }
