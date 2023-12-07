@@ -35,13 +35,13 @@ kotlin {
         }
         androidUnitTest {
             dependencies {
-                implementation(projects.coilTestInternal)
+                implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }
         androidInstrumentedTest {
             dependencies {
-                implementation(projects.coilTestInternal)
+                implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
                 implementation(libs.androidx.compose.ui.test)
             }

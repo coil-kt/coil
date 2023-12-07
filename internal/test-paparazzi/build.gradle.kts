@@ -19,7 +19,7 @@ dependencies {
     implementation(projects.coilComposeCore)
     implementation(projects.coilTest)
 
-    testImplementation(projects.coilTestInternal)
+    testImplementation(projects.internal.testUtils)
     testImplementation(libs.bundles.test.jvm)
 }
 

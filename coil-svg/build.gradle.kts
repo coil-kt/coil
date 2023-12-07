@@ -13,9 +13,9 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.svg)
 
-    testImplementation(projects.coilTestInternal)
+    testImplementation(projects.internal.testUtils)
     testImplementation(libs.bundles.test.jvm)
 
-    androidTestImplementation(projects.coilTestInternal)
+    androidTestImplementation(projects.internal.testUtils)
     androidTestImplementation(libs.bundles.test.android)
 }

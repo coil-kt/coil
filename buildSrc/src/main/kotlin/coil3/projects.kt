@@ -157,7 +157,7 @@ private fun <T : BaseExtension> Project.androidBase(
                 "-Xno-param-assertions",
                 "-Xno-receiver-assertions",
             )
-            if (project.name != "coil-benchmark") {
+            if (project.name != "benchmark") {
                 arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
                 arguments += "-opt-in=coil3.annotation.InternalCoilApi"
             }

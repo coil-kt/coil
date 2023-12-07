@@ -24,14 +24,14 @@ kotlin {
         }
         commonTest {
             dependencies {
-                implementation(projects.coilTestInternal)
+                implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.common)
                 implementation(libs.ktor.mock)
             }
         }
         androidUnitTest {
             dependencies {
-                implementation(projects.coilTestInternal)
+                implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }

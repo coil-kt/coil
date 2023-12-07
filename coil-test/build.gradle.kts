@@ -23,13 +23,13 @@ kotlin {
         }
         commonTest {
             dependencies {
-                implementation(projects.coilTestInternal)
+                implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.common)
             }
         }
         androidUnitTest {
             dependencies {
-                implementation(projects.coilTestInternal)
+                implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.jvm)
             }
         }

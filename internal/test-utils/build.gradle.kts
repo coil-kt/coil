@@ -9,7 +9,7 @@ plugins {
 }
 
 addAllMultiplatformTargets()
-androidLibrary(name = "coil3.test.internal")
+androidLibrary(name = "coil3.test.utils")
 
 kotlin {
     nonAndroidMain()
