@@ -1,13 +1,11 @@
 package sample.compose
 
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import sample.common.JvmResources
-import sample.common.MainViewModel
 import sample.common.newImageLoader
 
 fun main() {
@@ -16,16 +14,11 @@ fun main() {
     }
 
     application {
-        val viewModel = remember { MainViewModel(JvmResources()) }
-        LaunchedEffect(viewModel) {
-            viewModel.start()
-        }
-
         Window(
-            title = "Coil",
+            title = Title,
             onCloseRequest = ::exitApplication,
         ) {
-            App(viewModel)
+            App(remember { JvmResources() })
         }
     }
 }

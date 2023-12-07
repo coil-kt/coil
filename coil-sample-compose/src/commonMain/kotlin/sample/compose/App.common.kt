@@ -20,9 +20,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,12 +42,18 @@ import sample.common.AssetType
 import sample.common.Image
 import sample.common.MainViewModel
 import sample.common.NUM_COLUMNS
+import sample.common.Resources
 import sample.common.Screen
 import sample.common.calculateScaledSize
 import sample.common.next
 
 @Composable
-fun App(viewModel: MainViewModel) {
+fun App(resources: Resources) {
+    val viewModel = remember { MainViewModel(resources) }
+    LaunchedEffect(viewModel) {
+        viewModel.start()
+    }
+
     MaterialTheme(
         colors = lightColors(
             primary = Color.White,
@@ -90,7 +98,7 @@ private fun Toolbar(
     onBackPressed: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text("Coil") },
+        title = { Text(Title) },
         navigationIcon = if (backEnabled) {
             { BackIconButton(onBackPressed) }
         } else {
@@ -211,6 +219,8 @@ private fun ListScreen(
         }
     }
 }
+
+const val Title = "Coil"
 
 @Stable
 expect fun Modifier.testTagsAsResourceId(enable: Boolean): Modifier
