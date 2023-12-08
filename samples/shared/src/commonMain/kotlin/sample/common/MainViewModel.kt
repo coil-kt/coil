@@ -38,7 +38,13 @@ private class RealMainViewModel(
     override val screen: MutableStateFlow<Screen> = MutableStateFlow(Screen.List)
 
     override suspend fun start() {
-        assetType.collect { _images.value = loadImagesAsync(it) }
+        assetType.collect { assetType ->
+            try {
+                _images.value = loadImagesAsync(assetType)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun onBackPressed() {
