@@ -49,6 +49,8 @@ internal suspend fun ByteReadChannel.writeTo(sink: BufferedSink) {
         packet.readFully(buffer, 0, bytesRead)
         sink.write(buffer, 0, bytesRead)
     }
+
+    closedCause?.let { throw it }
 }
 
 // Okio uses 8 KB internally.
