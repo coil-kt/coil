@@ -55,7 +55,7 @@ internal suspend fun ByteReadChannel.writeTo(sink: BufferedSink) {
 }
 
 // Okio uses 8 KB internally.
-private const val OKIO_BUFFER_SIZE: Int = 8 * 1024
+private const val OKIO_BUFFER_SIZE = 8 * 1024
 
 internal fun String.toNonNegativeInt(defaultValue: Int): Int {
     val value = toLongOrNull() ?: return defaultValue
