@@ -303,11 +303,11 @@ class RealImageLoaderAndroidTest {
                 .target(
                     onStart = {
                         // The drawable in the memory cache should be returned here.
-                        assertEquals(bitmap, (it!!.drawable as BitmapDrawable).bitmap)
+                        assertEquals(bitmap, (it as BitmapImage).bitmap)
                     },
                     onSuccess = {
                         // The same drawable should be returned since the drawable is valid for this request.
-                        assertEquals(bitmap, (it.drawable as BitmapDrawable).bitmap)
+                        assertEquals(bitmap, (it as BitmapImage).bitmap)
                     }
                 )
                 .listener(
@@ -501,7 +501,7 @@ class RealImageLoaderAndroidTest {
         if (result is ErrorResult) throw result.throwable
 
         assertIs<SuccessResult>(result)
-        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
+        val image = assertIs<BitmapImage>(result.image)
         val maxDimension = context.resources.displayMetrics.run { maxOf(widthPixels, heightPixels) }
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
@@ -512,8 +512,8 @@ class RealImageLoaderAndroidTest {
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()
-        assertTrue(drawable.bitmap.width in expectedWidth - 1..expectedWidth + 1)
-        assertTrue(drawable.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+        assertTrue(image.bitmap.width in expectedWidth - 1..expectedWidth + 1)
+        assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
     }
 
     @Test
@@ -537,7 +537,7 @@ class RealImageLoaderAndroidTest {
         if (result is ErrorResult) throw result.throwable
 
         assertIs<SuccessResult>(result)
-        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
+        val image = assertIs<BitmapImage>(result.image)
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
             srcHeight = 4965,
@@ -547,8 +547,8 @@ class RealImageLoaderAndroidTest {
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()
-        assertTrue(drawable.bitmap.width in expectedWidth - 1..expectedWidth + 1)
-        assertTrue(drawable.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+        assertTrue(image.bitmap.width in expectedWidth - 1..expectedWidth + 1)
+        assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
     }
 
     @Test
@@ -572,7 +572,7 @@ class RealImageLoaderAndroidTest {
         if (result is ErrorResult) throw result.throwable
 
         assertIs<SuccessResult>(result)
-        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
+        val image = assertIs<BitmapImage>(result.image)
         val multiplier = DecodeUtils.computeSizeMultiplier(
             srcWidth = 9052,
             srcHeight = 4965,
@@ -582,8 +582,8 @@ class RealImageLoaderAndroidTest {
         )
         val expectedWidth = (multiplier * 9052).roundToInt()
         val expectedHeight = (multiplier * 4965).roundToInt()
-        assertTrue(drawable.bitmap.width in expectedWidth - 1..expectedWidth + 1)
-        assertTrue(drawable.bitmap.height in expectedHeight - 1..expectedHeight + 1)
+        assertTrue(image.bitmap.width in expectedWidth - 1..expectedWidth + 1)
+        assertTrue(image.bitmap.height in expectedHeight - 1..expectedHeight + 1)
     }
 
     private suspend fun testEnqueue(data: Any, expectedSize: Size = Size(80, 100)) {
@@ -622,8 +622,8 @@ class RealImageLoaderAndroidTest {
         }
 
         assertIs<SuccessResult>(result)
-        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
-        assertEquals(expectedSize, drawable.bitmap.size)
+        val image = assertIs<BitmapImage>(result.image)
+        assertEquals(expectedSize, image.bitmap.size)
     }
 
     private fun copyNormalImageAssetToCacheDir(): File {
