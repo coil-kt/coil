@@ -7,7 +7,6 @@ import coil3.EventListener
 import coil3.ImageLoader
 import coil3.asCoilImage
 import coil3.decode.DataSource
-import coil3.drawable
 import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.key.Keyer
 import coil3.request.ImageRequest
@@ -48,7 +47,7 @@ class EngineInterceptorTest : RobolectricTest() {
             logger = null,
         )
 
-        val resultDrawable = result.image.drawable
+        val resultDrawable = result.image.asDrawable(context)
         assertIs<BitmapDrawable>(resultDrawable)
         assertEquals(resultDrawable.bitmap.size, size)
     }

@@ -5,9 +5,9 @@ package coil3
  * image representation.
  *
  * To draw the image it must be converted into its platform-specific graphics system representation.
- * Use `image.drawable` on Android and `image.bitmap` on non-Android platforms.
+ * See `DrawableImage` on Android and `BitmapImage` on non-Android platforms.
  */
-interface Image {
+expect interface Image {
 
     /** The size of the image in memory in bytes. */
     val size: Long
@@ -21,9 +21,9 @@ interface Image {
     /**
      * True if the image can be shared between multiple [Target]s at the same time.
      *
-     * For example, a bitmap can be shared between multiple targets if it's not mutated.
+     * For example, a bitmap can be shared between multiple targets if it's immutable.
      * Conversely, an animated image cannot be shared as its internal state is being mutated while
-     * being played.
+     * its animation is running.
      */
     val shareable: Boolean
 }

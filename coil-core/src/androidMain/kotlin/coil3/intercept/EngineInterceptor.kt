@@ -3,10 +3,10 @@ package coil3.intercept
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import coil3.BitmapImage
 import coil3.EventListener
 import coil3.Image
 import coil3.asCoilImage
-import coil3.drawable
 import coil3.intercept.EngineInterceptor.Companion.TAG
 import coil3.intercept.EngineInterceptor.ExecuteResult
 import coil3.request.ImageRequest
@@ -36,7 +36,7 @@ internal actual suspend fun transform(
     if (transformations.isEmpty()) return result
 
     // Skip the transformations as converting to a bitmap is disabled.
-    val drawable = result.image.drawable
+    val drawable = result.image.asDrawable(request.context)
     if (drawable !is BitmapDrawable && !request.allowConversionToBitmap) {
         logger?.log(TAG, Logger.Level.Info) {
             val type = result.image::class.qualifiedName
@@ -92,5 +92,5 @@ private fun convertDrawableToBitmap(
 }
 
 internal actual fun prepareToDraw(image: Image) {
-    (image.drawable as? BitmapDrawable)?.bitmap?.prepareToDraw()
+    (image as? BitmapImage)?.bitmap?.prepareToDraw()
 }

@@ -4,16 +4,15 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.ActivityAction
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import coil3.BitmapImage
 import coil3.Image
 import coil3.PlatformContext
-import coil3.drawable
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -90,4 +89,4 @@ fun Context.copyAssetToFile(fileName: String): File {
 }
 
 val Image.bitmap: Bitmap
-    get() = (drawable as BitmapDrawable).bitmap
+    get() = (this as BitmapImage).bitmap

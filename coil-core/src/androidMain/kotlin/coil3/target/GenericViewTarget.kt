@@ -7,7 +7,6 @@ import android.widget.ImageView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import coil3.Image
-import coil3.drawable
 import coil3.transition.TransitionTarget
 
 /**
@@ -44,7 +43,7 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
 
     /** Replace the [ImageView]'s current image with [image]. */
     protected fun updateImage(image: Image?) {
-        val drawable = image?.drawable
+        val drawable = image?.asDrawable(view.context)
         (this.drawable as? Animatable)?.stop()
         this.drawable = drawable
         updateAnimation()

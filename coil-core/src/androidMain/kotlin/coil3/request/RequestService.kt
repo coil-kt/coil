@@ -1,11 +1,10 @@
 package coil3.request
 
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import androidx.lifecycle.Lifecycle
+import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
-import coil3.drawable
 import coil3.memory.MemoryCache
 import coil3.size.Dimension
 import coil3.size.Scale
@@ -145,8 +144,8 @@ internal class AndroidRequestService(
         request: ImageRequest,
         cacheValue: MemoryCache.Value,
     ): Boolean {
-        val drawable = cacheValue.image.drawable as? BitmapDrawable ?: return true
-        val requestedConfig = drawable.bitmap.safeConfig
+        val image = cacheValue.image as? BitmapImage ?: return true
+        val requestedConfig = image.bitmap.safeConfig
         return isConfigValidForHardware(request, requestedConfig)
     }
 

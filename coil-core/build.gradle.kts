@@ -72,5 +72,11 @@ kotlin {
                 implementation(libs.bundles.test.android)
             }
         }
+        jsTest {
+            dependencies {
+                // https://github.com/square/okio/issues/1163
+                implementation(devNpm("node-polyfill-webpack-plugin", "2.0.1"))
+            }
+        }
     }
 }

@@ -38,5 +38,10 @@ kotlin {
                 compileOnly(libs.robolectric)
             }
         }
+        named("nonAndroidMain") {
+            dependencies {
+                api(libs.skiko)
+            }
+        }
     }
 }

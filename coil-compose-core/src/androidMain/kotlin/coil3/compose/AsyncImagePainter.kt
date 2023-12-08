@@ -1,14 +1,14 @@
 package coil3.compose
 
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import coil3.BitmapImage
 import coil3.Image
-import coil3.drawable
+import coil3.PlatformContext
 import coil3.request.SuccessResult
 import coil3.request.transitionFactory
 import coil3.transition.CrossfadeTransition
@@ -16,14 +16,15 @@ import coil3.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
 
 internal actual fun Image.toPainter(
+    context: PlatformContext,
     filterQuality: FilterQuality,
 ): Painter {
-    return when (val drawable = drawable) {
-        is BitmapDrawable -> BitmapPainter(
-            image = drawable.bitmap.asImageBitmap(),
+    return when (this) {
+        is BitmapImage -> BitmapPainter(
+            image = bitmap.asImageBitmap(),
             filterQuality = filterQuality,
         )
-        else -> DrawablePainter(drawable.mutate())
+        else -> DrawablePainter(asDrawable(context).mutate())
     }
 }
 

@@ -6,15 +6,16 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil3.Image
-import coil3.bitmap
+import coil3.PlatformContext
 import coil3.decode.DataSource
 import coil3.request.SuccessResult
 import coil3.request.crossfadeMillis
 
 internal actual fun Image.toPainter(
+    context: PlatformContext,
     filterQuality: FilterQuality,
 ): Painter = BitmapPainter(
-    image = bitmap.asComposeImageBitmap(),
+    image = asBitmap().asComposeImageBitmap(),
     filterQuality = filterQuality,
 )
 

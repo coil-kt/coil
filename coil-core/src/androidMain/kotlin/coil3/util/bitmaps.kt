@@ -34,6 +34,9 @@ internal val Bitmap.allocationByteCountCompat: Int
         }
     }
 
+internal val Bitmap.isImmutable: Boolean
+    get() = !isMutable
+
 internal val Bitmap.Config.isHardware: Boolean
     get() = SDK_INT >= 26 && this == Bitmap.Config.HARDWARE
 

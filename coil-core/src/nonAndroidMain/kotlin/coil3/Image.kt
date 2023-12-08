@@ -2,10 +2,28 @@ package coil3
 
 import coil3.annotation.ExperimentalCoilApi
 import dev.drewhamilton.poko.Poko
+import kotlin.jvm.JvmOverloads
 import org.jetbrains.skia.Bitmap
 
+@ExperimentalCoilApi
+@JvmOverloads
+fun Bitmap.asCoilImage(
+    shareable: Boolean = isImmutable,
+): Image = BitmapImage(this, shareable)
+
+@ExperimentalCoilApi
+actual interface Image {
+    actual val size: Long
+    actual val width: Int
+    actual val height: Int
+    actual val shareable: Boolean
+
+    fun asBitmap(): Bitmap
+}
+
+@ExperimentalCoilApi
 @Poko
-private class BitmapImage(
+class BitmapImage internal constructor(
     val bitmap: Bitmap,
     override val shareable: Boolean,
 ) : Image {
@@ -25,13 +43,8 @@ private class BitmapImage(
 
     override val height: Int
         get() = bitmap.height
+
+    override fun asBitmap(): Bitmap {
+        return bitmap
+    }
 }
-
-@ExperimentalCoilApi
-fun Bitmap.asCoilImage(
-    shareable: Boolean = isImmutable,
-): Image = BitmapImage(this, shareable)
-
-@ExperimentalCoilApi
-val Image.bitmap: Bitmap
-    get() = (this as BitmapImage).bitmap

@@ -130,6 +130,7 @@ allprojects {
 // https://github.com/square/okio/issues/1163
 fun Project.applyOkioJsTestWorkaround() {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        // TODO: Wrap this in a task.
         val webpackConfigDir = projectDir.resolve("webpack.config.d").apply { mkdirs() }
         val applyPluginFile = webpackConfigDir.resolve("applyNodePolyfillPlugin.js")
         applyPluginFile.writeText(

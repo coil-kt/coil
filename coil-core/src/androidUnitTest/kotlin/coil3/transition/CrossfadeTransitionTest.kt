@@ -6,7 +6,6 @@ import android.widget.ImageView
 import coil3.Image
 import coil3.asCoilImage
 import coil3.decode.DataSource
-import coil3.drawable
 import coil3.request.ErrorResult
 import coil3.request.SuccessResult
 import coil3.test.RobolectricTest
@@ -40,7 +39,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
             onSuccess = { result ->
                 assertFalse(onSuccessCalled)
                 onSuccessCalled = true
-                assertEquals(drawable, result.drawable)
+                assertEquals(drawable, result.asDrawable(context))
             }
         )
         val result = SuccessResult(
@@ -63,7 +62,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
                 assertFalse(onSuccessCalled)
                 onSuccessCalled = true
 
-                val crossfadeDrawable = assertIs<CrossfadeDrawable>(result.drawable)
+                val crossfadeDrawable = assertIs<CrossfadeDrawable>(result.asDrawable(context))
 
                 // Stop the transition early to simulate the end of the animation.
                 crossfadeDrawable.stop()
@@ -88,7 +87,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
             target = createTransitionTarget(
                 onError = { error ->
                     assertFalse(onSuccessCalled)
-                    assertIsNot<CrossfadeDrawable>(error?.drawable)
+                    assertIsNot<CrossfadeDrawable>(error?.asDrawable(context))
                     onSuccessCalled = true
                 }
             ),

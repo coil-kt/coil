@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Constraints
 import coil3.Image
 import coil3.ImageLoader
+import coil3.PlatformContext
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.request.ErrorResult
@@ -229,7 +230,8 @@ class AsyncImagePainter internal constructor(
         // If we're in inspection mode skip the image request and set the state to loading.
         if (isPreview) {
             val request = request.newBuilder().defaults(imageLoader.defaults).build()
-            updateState(State.Loading(request.placeholderFactory()?.toPainter(filterQuality)))
+            val painter = request.placeholderFactory()?.toPainter(request.context, filterQuality)
+            updateState(State.Loading(painter))
             return
         }
 
@@ -261,7 +263,8 @@ class AsyncImagePainter internal constructor(
         return request.newBuilder()
             .target(
                 onStart = { placeholder ->
-                    updateState(State.Loading(placeholder?.toPainter(filterQuality)))
+                    val painter = placeholder?.toPainter(request.context, filterQuality)
+                    updateState(State.Loading(painter))
                 },
             )
             .apply {
@@ -298,8 +301,8 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun ImageResult.toState() = when (this) {
-        is SuccessResult -> State.Success(image.toPainter(filterQuality), this)
-        is ErrorResult -> State.Error(image?.toPainter(filterQuality), this)
+        is SuccessResult -> State.Success(image.toPainter(request.context, filterQuality), this)
+        is ErrorResult -> State.Error(image?.toPainter(request.context, filterQuality), this)
     }
 
     /**
@@ -370,6 +373,7 @@ private fun Size.toSizeOrNull() = when {
 
 /** Convert this [Image] into a [Painter] using Compose primitives if possible. */
 internal expect fun Image.toPainter(
+    context: PlatformContext,
     filterQuality: FilterQuality,
 ): Painter
 

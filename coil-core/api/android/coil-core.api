@@ -1,3 +1,15 @@
+public final class coil3/BitmapImage : coil3/Image {
+	public fun asDrawable (Landroid/content/Context;)Landroid/graphics/drawable/Drawable;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBitmap ()Landroid/graphics/Bitmap;
+	public fun getHeight ()I
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public fun getWidth ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class coil3/ComponentRegistry {
 	public fun <init> ()V
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -26,6 +38,22 @@ public final class coil3/ComponentRegistry$Builder {
 	public final fun add (Lcoil3/key/Keyer;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
 	public final fun add (Lcoil3/map/Mapper;Lkotlin/reflect/KClass;)Lcoil3/ComponentRegistry$Builder;
 	public final fun build ()Lcoil3/ComponentRegistry;
+}
+
+public final class coil3/DrawableImage : coil3/Image {
+	public fun asDrawable (Landroid/content/Context;)Landroid/graphics/drawable/Drawable;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
+	public fun getHeight ()I
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public fun getWidth ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class coil3/DrawableImage$SizeProvider {
+	public abstract fun getSize ()J
 }
 
 public abstract class coil3/EventListener : coil3/request/ImageRequest$Listener {
@@ -104,6 +132,7 @@ public final class coil3/ExtrasKt {
 }
 
 public abstract interface class coil3/Image {
+	public abstract fun asDrawable (Landroid/content/Context;)Landroid/graphics/drawable/Drawable;
 	public abstract fun getHeight ()I
 	public abstract fun getShareable ()Z
 	public abstract fun getSize ()J
@@ -111,10 +140,11 @@ public abstract interface class coil3/Image {
 }
 
 public final class coil3/ImageKt {
+	public static final fun asCoilImage (Landroid/graphics/Bitmap;)Lcoil3/Image;
+	public static final fun asCoilImage (Landroid/graphics/Bitmap;Z)Lcoil3/Image;
 	public static final fun asCoilImage (Landroid/graphics/drawable/Drawable;)Lcoil3/Image;
 	public static final fun asCoilImage (Landroid/graphics/drawable/Drawable;Z)Lcoil3/Image;
-	public static synthetic fun asCoilImage$default (Landroid/graphics/drawable/Drawable;ZILjava/lang/Object;)Lcoil3/Image;
-	public static final fun getDrawable (Lcoil3/Image;)Landroid/graphics/drawable/Drawable;
+	public static synthetic fun asCoilImage$default (Landroid/graphics/Bitmap;ZILjava/lang/Object;)Lcoil3/Image;
 }
 
 public abstract interface class coil3/ImageLoader {

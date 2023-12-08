@@ -2,7 +2,6 @@ package coil3.transition
 
 import coil3.asCoilImage
 import coil3.decode.DataSource
-import coil3.drawable
 import coil3.request.DEFAULT_CROSSFADE_MILLIS
 import coil3.request.ErrorResult
 import coil3.request.ImageResult
@@ -29,7 +28,7 @@ class CrossfadeTransition @JvmOverloads constructor(
     override fun transition() {
         val drawable = CrossfadeDrawable(
             start = target.drawable,
-            end = result.image?.drawable,
+            end = result.image?.asDrawable(target.view.context),
             scale = result.request.scale,
             durationMillis = durationMillis,
             fadeStart = result !is SuccessResult || !result.isPlaceholderCached,
