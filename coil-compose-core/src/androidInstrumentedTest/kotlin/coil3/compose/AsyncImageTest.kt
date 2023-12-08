@@ -34,14 +34,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
+import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.asCoilImage
 import coil3.compose.AsyncImagePainter.State
 import coil3.compose.core.test.R
 import coil3.decode.DecodeUtils
-import coil3.drawable
 import coil3.fetch.FetchResult
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache
@@ -722,7 +721,7 @@ class AsyncImageTest {
     private fun assertLoadedBitmapSize(width: Int, height: Int, requestNumber: Int = 0) {
         val result = requestTracker.results[requestNumber]
         assertIs<SuccessResult>(result)
-        val bitmap = result.image.drawable.toBitmap()
+        val bitmap = (result.image as BitmapImage).bitmap
         assertContains((width - 1)..(width + 1), bitmap.width)
         assertContains((height - 1)..(height + 1), bitmap.height)
     }

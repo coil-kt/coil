@@ -12,11 +12,10 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.graphics.drawable.Animatable
 import android.os.Build.VERSION.SDK_INT
-import androidx.core.graphics.drawable.toBitmap
+import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.decode.GifDecoder
 import coil3.decode.ImageDecoderDecoder
-import coil3.drawable
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
@@ -69,7 +68,7 @@ class AnimatedAndNormalTransformationTest {
         assertIs<SuccessResult>(actual)
         // Make sure this is still an animated result (has not been flattened to
         // apply CircleCropTransformation).
-        assertIs<Animatable>(actual.image.drawable)
+        assertIs<Animatable>(actual.image.asDrawable(context.resources))
     }
 
     @Test
@@ -81,8 +80,8 @@ class AnimatedAndNormalTransformationTest {
         val actual = imageLoader.execute(imageRequest)
         assertIs<SuccessResult>(actual)
         // Make sure this is not an animated result.
-        assertIsNot<Animatable>(actual.image.drawable)
-        actual.image.drawable.toBitmap().assertIsSimilarTo(expected)
+        assertIsNot<Animatable>(actual.image.asDrawable(context.resources))
+        (actual.image as BitmapImage).bitmap.assertIsSimilarTo(expected)
     }
 
     class AnimatedCircleTransformation : AnimatedTransformation {

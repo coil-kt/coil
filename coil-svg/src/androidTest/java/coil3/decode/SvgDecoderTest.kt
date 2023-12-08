@@ -1,8 +1,7 @@
 package coil3.decode
 
-import android.graphics.drawable.BitmapDrawable
+import coil3.BitmapImage
 import coil3.ImageLoader
-import coil3.drawable
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.size.Dimension
@@ -101,10 +100,10 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
+        val image = assertIs<BitmapImage>(result.image)
 
         val expected = context.decodeBitmapAsset("coil_logo.png")
-        drawable.bitmap.assertIsSimilarTo(expected)
+        image.bitmap.assertIsSimilarTo(expected)
     }
 
     @Test
@@ -124,10 +123,10 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
+        val image = assertIs<BitmapImage>(result.image)
 
         val expected = context.decodeBitmapAsset("instacart_logo.png")
-        drawable.bitmap.assertIsSimilarTo(expected)
+        image.bitmap.assertIsSimilarTo(expected)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/1246 */
@@ -149,10 +148,10 @@ class SvgDecoderTest {
         )
 
         assertTrue(result.isSampled)
-        val drawable = assertIs<BitmapDrawable>(result.image.drawable)
+        val image = assertIs<BitmapImage>(result.image)
 
         val expected = context.decodeBitmapAsset("coil_logo.png")
-        drawable.bitmap.assertIsSimilarTo(expected)
+        image.bitmap.assertIsSimilarTo(expected)
     }
 
     private fun BufferedSource.asSourceResult(

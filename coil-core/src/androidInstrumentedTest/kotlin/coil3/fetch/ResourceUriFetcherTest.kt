@@ -1,12 +1,11 @@
 package coil3.fetch
 
 import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import androidx.core.graphics.drawable.toBitmap
+import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.core.test.R
-import coil3.drawable
 import coil3.map.ResourceIntMapper
 import coil3.map.ResourceUriMapper
 import coil3.request.Options
@@ -49,7 +48,7 @@ class ResourceUriFetcherTest {
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
         assertIs<ImageFetchResult>(result)
-        assertIs<BitmapDrawable>(result.image.drawable)
+        assertIs<BitmapImage>(result.image)
         assertTrue(result.isSampled)
     }
 
@@ -79,7 +78,7 @@ class ResourceUriFetcherTest {
         val result = fetcherFactory.create(uri, options, ImageLoader(context))?.fetch()
 
         assertIs<ImageFetchResult>(result)
-        assertIs<BitmapDrawable>(result.image.drawable)
+        assertIs<BitmapImage>(result.image)
         assertTrue(result.isSampled)
     }
 
@@ -94,7 +93,7 @@ class ResourceUriFetcherTest {
             fetcherFactory.create(uri, options, imageLoader)?.fetch()
         }
         val expected = activity.getDrawableCompat(R.drawable.ic_tinted_vector).toBitmap()
-        val actual = (result as ImageFetchResult).image.drawable.toBitmap()
+        val actual = ((result as ImageFetchResult).image as BitmapImage).bitmap
         actual.assertIsSimilarTo(expected)
     }
 }
