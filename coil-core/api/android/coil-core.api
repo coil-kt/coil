@@ -1,5 +1,5 @@
 public final class coil3/BitmapImage : coil3/Image {
-	public fun asDrawable (Landroid/content/Context;)Landroid/graphics/drawable/Drawable;
+	public fun asDrawable (Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBitmap ()Landroid/graphics/Bitmap;
 	public fun getHeight ()I
@@ -41,7 +41,7 @@ public final class coil3/ComponentRegistry$Builder {
 }
 
 public final class coil3/DrawableImage : coil3/Image {
-	public fun asDrawable (Landroid/content/Context;)Landroid/graphics/drawable/Drawable;
+	public fun asDrawable (Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDrawable ()Landroid/graphics/drawable/Drawable;
 	public fun getHeight ()I
@@ -132,7 +132,7 @@ public final class coil3/ExtrasKt {
 }
 
 public abstract interface class coil3/Image {
-	public abstract fun asDrawable (Landroid/content/Context;)Landroid/graphics/drawable/Drawable;
+	public abstract fun asDrawable (Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
 	public abstract fun getHeight ()I
 	public abstract fun getShareable ()Z
 	public abstract fun getSize ()J

@@ -39,7 +39,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
             onSuccess = { result ->
                 assertFalse(onSuccessCalled)
                 onSuccessCalled = true
-                assertEquals(drawable, result.asDrawable(context))
+                assertEquals(drawable, result.asDrawable(context.resources))
             }
         )
         val result = SuccessResult(
@@ -62,7 +62,8 @@ class CrossfadeTransitionTest : RobolectricTest() {
                 assertFalse(onSuccessCalled)
                 onSuccessCalled = true
 
-                val crossfadeDrawable = assertIs<CrossfadeDrawable>(result.asDrawable(context))
+                val resultDrawable = result.asDrawable(context.resources)
+                val crossfadeDrawable = assertIs<CrossfadeDrawable>(resultDrawable)
 
                 // Stop the transition early to simulate the end of the animation.
                 crossfadeDrawable.stop()
@@ -87,7 +88,7 @@ class CrossfadeTransitionTest : RobolectricTest() {
             target = createTransitionTarget(
                 onError = { error ->
                     assertFalse(onSuccessCalled)
-                    assertIsNot<CrossfadeDrawable>(error?.asDrawable(context))
+                    assertIsNot<CrossfadeDrawable>(error?.asDrawable(context.resources))
                     onSuccessCalled = true
                 }
             ),

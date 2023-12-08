@@ -36,7 +36,7 @@ internal actual suspend fun transform(
     if (transformations.isEmpty()) return result
 
     // Skip the transformations as converting to a bitmap is disabled.
-    val drawable = result.image.asDrawable(request.context)
+    val drawable = result.image.asDrawable(request.context.resources)
     if (drawable !is BitmapDrawable && !request.allowConversionToBitmap) {
         logger?.log(TAG, Logger.Level.Info) {
             val type = result.image::class.qualifiedName

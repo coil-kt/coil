@@ -47,7 +47,7 @@ class EngineInterceptorTest : RobolectricTest() {
             logger = null,
         )
 
-        val resultDrawable = result.image.asDrawable(context)
+        val resultDrawable = result.image.asDrawable(context.resources)
         assertIs<BitmapDrawable>(resultDrawable)
         assertEquals(resultDrawable.bitmap.size, size)
     }

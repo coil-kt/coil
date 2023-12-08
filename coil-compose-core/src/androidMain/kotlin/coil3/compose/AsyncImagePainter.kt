@@ -24,7 +24,7 @@ internal actual fun Image.toPainter(
             image = bitmap.asImageBitmap(),
             filterQuality = filterQuality,
         )
-        else -> DrawablePainter(asDrawable(context).mutate())
+        else -> DrawablePainter(asDrawable(context.resources).mutate())
     }
 }
 

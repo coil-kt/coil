@@ -1,6 +1,6 @@
 package coil3
 
-import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -42,7 +42,7 @@ actual interface Image {
     actual val height: Int
     actual val shareable: Boolean
 
-    fun asDrawable(context: Context): Drawable
+    fun asDrawable(resources: Resources): Drawable
 }
 
 @ExperimentalCoilApi
@@ -66,7 +66,7 @@ class DrawableImage internal constructor(
     override val height: Int
         get() = drawable.height
 
-    override fun asDrawable(context: Context): Drawable {
+    override fun asDrawable(resources: Resources): Drawable {
         return drawable
     }
 
@@ -91,7 +91,7 @@ class BitmapImage internal constructor(
     override val height: Int
         get() = bitmap.height
 
-    override fun asDrawable(context: Context): Drawable {
-        return BitmapDrawable(context.resources, bitmap)
+    override fun asDrawable(resources: Resources): Drawable {
+        return BitmapDrawable(resources, bitmap)
     }
 }

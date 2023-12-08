@@ -43,7 +43,7 @@ abstract class GenericViewTarget<T : View> : ViewTarget<T>, TransitionTarget, De
 
     /** Replace the [ImageView]'s current image with [image]. */
     protected fun updateImage(image: Image?) {
-        val drawable = image?.asDrawable(view.context)
+        val drawable = image?.asDrawable(view.resources)
         (this.drawable as? Animatable)?.stop()
         this.drawable = drawable
         updateAnimation()

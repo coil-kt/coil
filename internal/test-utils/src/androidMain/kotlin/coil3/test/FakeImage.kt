@@ -1,6 +1,6 @@
 package coil3.test
 
-import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import coil3.Image
 
@@ -10,7 +10,7 @@ actual class FakeImage actual constructor(
     override val size: Long,
     override val shareable: Boolean,
 ) : Image {
-    override fun asDrawable(context: Context): Drawable {
+    override fun asDrawable(resources: Resources): Drawable {
         throw UnsupportedOperationException()
     }
 }
