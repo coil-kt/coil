@@ -5,7 +5,6 @@ on:
             - main
     pull_request:
 env:
-    CACHE_VERSION: 1 # Increment this to invalidate the cache.
     CI: true
     JAVA_VERSION: 17
 jobs:
@@ -111,7 +110,7 @@ jobs:
                   path: |
                       ~/.android/avd/*
                       ~/.android/adb*
-                  key: ${{ runner.os }}-avd-${{ env.CACHE_VERSION }}-${{ matrix.api-level }}
+                  key: ${{ runner.os }}-avd-${{ matrix.api-level }}
 
             # Create a new emulator snapshot if it isn't present in the cache.
             - name: Create AVD snapshot
