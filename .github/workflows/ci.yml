@@ -4,6 +4,8 @@ on:
         branches:
             - main
     pull_request:
+concurrency:
+    cancel-in-progress: true
 env:
     CACHE_VERSION: 1 # Increment this to invalidate the cache.
     CI: true
