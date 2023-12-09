@@ -142,7 +142,7 @@ jobs:
               run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug
 
             - name: Build iOS app
-              run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme CoilSample -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'
+              run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'
 
     deploy-snapshot:
         name: Deploy snapshot
