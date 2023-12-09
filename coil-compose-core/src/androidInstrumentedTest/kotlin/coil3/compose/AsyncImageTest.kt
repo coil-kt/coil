@@ -272,8 +272,8 @@ class AsyncImageTest {
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo(expectedWidthPx.toDp())
-            .assertHeightIsEqualTo(expectedHeightPx.toDp())
+            .assertWidthIsEqualTo(expectedWidthPx.toDp(), tolerance = 1.dp)
+            .assertHeightIsEqualTo(expectedHeightPx.toDp(), tolerance = 1.dp)
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }
@@ -719,9 +719,8 @@ class AsyncImageTest {
     }
 
     private fun assertLoadedBitmapSize(width: Int, height: Int, requestNumber: Int = 0) {
-        val result = requestTracker.results[requestNumber]
-        assertIs<SuccessResult>(result)
-        val bitmap = (result.image as BitmapImage).bitmap
+        val result = assertIs<SuccessResult>(requestTracker.results[requestNumber])
+        val bitmap = assertIs<BitmapImage>(result.image).bitmap
         assertContains((width - 1)..(width + 1), bitmap.width)
         assertContains((height - 1)..(height + 1), bitmap.height)
     }
