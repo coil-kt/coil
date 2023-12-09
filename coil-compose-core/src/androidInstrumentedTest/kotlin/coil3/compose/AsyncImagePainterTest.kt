@@ -698,8 +698,8 @@ class AsyncImagePainterTest {
     private fun assertLoadedBitmapSize(width: Dp, height: Dp, requestNumber: Int = 0) {
         val result = assertIs<SuccessResult>(requestTracker.results[requestNumber])
         val bitmap = assertIs<BitmapImage>(result.image).bitmap
-        assertContains((width.toPx() - 1) .. (width.toPx() + 1), bitmap.width)
-        assertContains((height.toPx() - 1) .. (height.toPx() + 1), bitmap.height)
+        assertContains((width.toPx() - 1)..(width.toPx() + 1), bitmap.width)
+        assertContains((height.toPx() - 1)..(height.toPx() + 1), bitmap.height)
     }
 
     private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }
