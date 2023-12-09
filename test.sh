@@ -1,2 +1,2 @@
 #!/bin/bash
-./gradlew apiCheck spotlessCheck allTests connectedDebugAndroidTest
+./gradlew apiCheck spotlessCheck allTests testDebugUnitTest connectedDebugAndroidTest
