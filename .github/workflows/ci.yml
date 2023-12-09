@@ -134,7 +134,7 @@ jobs:
         name: Deploy snapshot
         runs-on: ubuntu-latest
         timeout-minutes: 20
-        if: github.repository == 'coil-kt/coil' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/3.x')
+        if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/3.x'
         needs: [checks, unit-tests, instrumentation-tests]
         steps:
             - uses: actions/checkout@v3
