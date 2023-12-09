@@ -23,9 +23,9 @@ import kotlinx.coroutines.flow.asSharedFlow
  *
  * ```
  * val engine = FakeImageLoaderEngine.Builder()
- *     .intercept("https://www.example.com/image.jpg", ColorDrawable(Color.RED))
- *     .intercept({ it is String && it.endsWith("test.png") }, ColorDrawable(Color.GREEN))
- *     .default(ColorDrawable(Color.BLUE))
+ *     .intercept("https://www.example.com/image.jpg", FakeImage())
+ *     .intercept({ it is String && it.endsWith("test.png") }, FakeImage())
+ *     .default(FakeImage(color = 0x0000FF))
  *     .build()
  * val imageLoader = ImageLoader.Builder(context)
  *     .components { add(engine) }

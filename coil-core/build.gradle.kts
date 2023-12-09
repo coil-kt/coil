@@ -46,7 +46,7 @@ kotlin {
         }
         named("nonAndroidMain") {
             dependencies {
-                implementation(libs.skiko)
+                api(libs.skiko)
             }
         }
         androidMain {

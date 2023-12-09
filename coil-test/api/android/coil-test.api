@@ -1,3 +1,18 @@
+public final class coil3/test/FakeImage : coil3/Image {
+	public fun <init> ()V
+	public fun <init> (IIJZI)V
+	public synthetic fun <init> (IIJZIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun asDrawable (Landroid/content/res/Resources;)Landroid/graphics/drawable/Drawable;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColor ()I
+	public fun getHeight ()I
+	public fun getShareable ()Z
+	public fun getSize ()J
+	public fun getWidth ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class coil3/test/FakeImageLoaderEngine : coil3/intercept/Interceptor {
 	public synthetic fun <init> (Ljava/util/List;Lcoil3/intercept/Interceptor;Lcoil3/test/FakeImageLoaderEngine$RequestTransformer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDefaultInterceptor ()Lcoil3/intercept/Interceptor;

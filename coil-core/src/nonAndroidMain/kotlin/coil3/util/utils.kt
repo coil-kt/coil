@@ -51,18 +51,14 @@ internal fun Bitmap.Companion.makeFromImage(
 
     val bitmap = Bitmap()
     bitmap.allocN32Pixels(dstWidth, dstHeight)
-    bitmap.applyCanvas {
-        drawImageRect(
+    Canvas(bitmap).use { canvas ->
+        canvas.drawImageRect(
             image = image,
             src = Rect.makeWH(srcWidth.toFloat(), srcHeight.toFloat()),
             dst = Rect.makeWH(dstWidth.toFloat(), dstHeight.toFloat()),
         )
     }
     return bitmap
-}
-
-internal inline fun Bitmap.applyCanvas(block: Canvas.() -> Unit) {
-    Canvas(this).use(block)
 }
 
 internal actual fun isAssetUri(uri: Uri): Boolean {

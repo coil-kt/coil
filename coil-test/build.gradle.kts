@@ -7,6 +7,7 @@ plugins {
     id("com.android.library")
     id("kotlin-multiplatform")
     id("kotlinx-atomicfu")
+    id("dev.drewhamilton.poko")
 }
 
 addAllMultiplatformTargets()
@@ -19,6 +20,11 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.coilCore)
+            }
+        }
+        androidMain {
+            dependencies {
+                api(libs.androidx.core)
             }
         }
         commonTest {
