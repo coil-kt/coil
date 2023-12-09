@@ -30,9 +30,8 @@ class CacheResponseTest {
             body = "",
             callContext = Job(),
         )
-        val config = MockEngineConfig()
-        config.addHandler { response }
-        val httpClient = HttpClient(MockEngine(config))
+        val engine = MockEngine { response }
+        val httpClient = HttpClient(engine)
         val expected = CacheResponse(httpClient.request())
 
         val buffer = Buffer()
