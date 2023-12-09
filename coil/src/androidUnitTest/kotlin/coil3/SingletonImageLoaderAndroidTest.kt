@@ -12,7 +12,7 @@ import org.junit.After
 import org.junit.Test
 import org.robolectric.annotation.Config
 
-class SingletonImageLoaderTestAndroid : RobolectricTest() {
+class SingletonImageLoaderAndroidTest : RobolectricTest() {
 
     @After
     fun after() {
