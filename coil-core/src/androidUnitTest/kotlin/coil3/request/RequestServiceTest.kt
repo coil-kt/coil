@@ -9,8 +9,8 @@ import coil3.size.Precision
 import coil3.size.Size
 import coil3.size.ViewSizeResolver
 import coil3.target.ViewTarget
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import coil3.util.SystemCallbacks
 import coil3.util.allowInexactSize
 import coil3.util.createRequest

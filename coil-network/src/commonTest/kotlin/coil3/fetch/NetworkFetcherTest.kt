@@ -4,9 +4,9 @@ import coil3.ImageLoader
 import coil3.disk.DiskCache
 import coil3.network.CacheStrategy
 import coil3.request.Options
-import coil3.test.RobolectricTest
-import coil3.test.context
-import coil3.test.runTestAsync
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
+import coil3.test.utils.runTestAsync
 import coil3.toUri
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine

@@ -3,9 +3,9 @@ package coil3.decode
 import android.os.Build.VERSION.SDK_INT
 import coil3.FileMediaDataSource
 import coil3.fetch.MediaDataSourceFetcher
-import coil3.test.assumeTrue
-import coil3.test.context
-import coil3.test.copyAssetToFile
+import coil3.test.utils.assumeTrue
+import coil3.test.utils.context
+import coil3.test.utils.copyAssetToFile
 import kotlinx.coroutines.test.runTest
 import okio.buffer
 import org.junit.Assert.assertArrayEquals

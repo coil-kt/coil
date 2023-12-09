@@ -3,8 +3,8 @@ package coil3.size
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.setPadding
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope

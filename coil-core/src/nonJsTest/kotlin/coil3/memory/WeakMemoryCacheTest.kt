@@ -2,7 +2,7 @@ package coil3.memory
 
 import coil3.Image
 import coil3.memory.MemoryCache.Key
-import coil3.test.FakeImage
+import coil3.test.utils.FakeImage
 import coil3.util.forEachIndices
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.Test

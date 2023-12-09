@@ -6,6 +6,9 @@ import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.test.FakeImageLoaderEngine.OptionalInterceptor
+import coil3.test.utils.FakeImage
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import kotlin.test.Test
 import kotlin.test.assertIs
 import kotlin.test.assertSame

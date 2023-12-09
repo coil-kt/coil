@@ -17,9 +17,9 @@ import coil3.request.target
 import coil3.request.transformations
 import coil3.request.transitionFactory
 import coil3.size.Size
-import coil3.test.ViewTestActivity
-import coil3.test.activity
-import coil3.test.context
+import coil3.test.utils.ViewTestActivity
+import coil3.test.utils.activity
+import coil3.test.utils.context
 import coil3.transform.Transformation
 import coil3.transition.Transition
 import java.util.concurrent.atomic.AtomicInteger

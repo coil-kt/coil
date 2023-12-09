@@ -15,9 +15,9 @@ import coil3.request.onAnimationEnd
 import coil3.request.onAnimationStart
 import coil3.request.repeatCount
 import coil3.request.target
-import coil3.test.ViewTestActivity
-import coil3.test.activity
-import coil3.test.context
+import coil3.test.utils.ViewTestActivity
+import coil3.test.utils.activity
+import coil3.test.utils.context
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first

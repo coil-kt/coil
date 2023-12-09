@@ -2,7 +2,7 @@ package coil3.lifecycle
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import coil3.test.RobolectricTest
+import coil3.test.utils.RobolectricTest
 import coil3.util.awaitStarted
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

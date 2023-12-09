@@ -19,8 +19,8 @@ import androidx.core.net.toUri as toAndroidUri
 import androidx.test.rule.GrantPermissionRule
 import coil3.ImageLoader
 import coil3.request.Options
-import coil3.test.assumeTrue
-import coil3.test.context
+import coil3.test.utils.assumeTrue
+import coil3.test.utils.context
 import coil3.toCoilUri
 import coil3.toUri
 import kotlin.test.assertEquals

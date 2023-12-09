@@ -8,8 +8,8 @@ import coil3.asCoilImage
 import coil3.decode.DataSource
 import coil3.request.ErrorResult
 import coil3.request.SuccessResult
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import coil3.util.createRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

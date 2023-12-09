@@ -17,8 +17,8 @@ import coil3.size.Dimension
 import coil3.size.Precision
 import coil3.size.Scale
 import coil3.size.Size
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import coil3.transform.CircleCropTransformation
 import coil3.transform.Transformation
 import coil3.util.SystemCallbacks

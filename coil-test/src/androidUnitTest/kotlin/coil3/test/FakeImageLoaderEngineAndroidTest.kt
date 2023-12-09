@@ -7,6 +7,8 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.crossfade
 import coil3.request.transitionFactory
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import coil3.transition.Transition
 import kotlin.test.Test
 import kotlin.test.assertIs

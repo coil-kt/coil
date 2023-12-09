@@ -1,9 +1,9 @@
 package coil3.key
 
 import coil3.request.Options
-import coil3.test.FakeClock
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.FakeClock
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import coil3.toUri
 import coil3.util.createFile
 import kotlin.test.BeforeTest

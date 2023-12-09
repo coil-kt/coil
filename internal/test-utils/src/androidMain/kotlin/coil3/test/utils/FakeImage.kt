@@ -1,7 +1,8 @@
-package coil3.test
+package coil3.test.utils
 
+import android.content.res.Resources
+import android.graphics.drawable.Drawable
 import coil3.Image
-import org.jetbrains.skia.Bitmap
 
 actual class FakeImage actual constructor(
     override val width: Int,
@@ -9,7 +10,7 @@ actual class FakeImage actual constructor(
     override val size: Long,
     override val shareable: Boolean,
 ) : Image {
-    override fun asBitmap(): Bitmap {
+    override fun asDrawable(resources: Resources): Drawable {
         throw UnsupportedOperationException()
     }
 }

@@ -3,7 +3,7 @@ package coil3.intercept
 import coil3.decode.DataSource
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
-import coil3.test.FakeImage
+import coil3.test.utils.FakeImage
 
 class FakeEngineInterceptor : Interceptor {
 

@@ -1,4 +1,4 @@
-package coil3.test
+package coil3.paparazzi
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -16,6 +16,8 @@ import coil3.decode.ImageSource
 import coil3.request.ImageRequest
 import coil3.request.target
 import coil3.size.Size
+import coil3.test.FakeImageLoaderEngine
+import coil3.test.intercept
 import kotlin.test.assertTrue
 import okio.Buffer
 import okio.FileSystem

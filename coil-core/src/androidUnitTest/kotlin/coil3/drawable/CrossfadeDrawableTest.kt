@@ -5,8 +5,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import androidx.core.graphics.createBitmap
 import coil3.size.Scale
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import coil3.transition.CrossfadeDrawable
 import coil3.util.toDrawable
 import kotlin.test.assertEquals

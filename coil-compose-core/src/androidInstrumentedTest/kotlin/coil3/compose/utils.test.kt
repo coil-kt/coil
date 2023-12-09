@@ -24,8 +24,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import coil3.Uri
 import coil3.decode.DecodeUtils
 import coil3.size.Scale
-import coil3.test.assertIsSimilarTo
-import coil3.test.assumeTrue
+import coil3.test.utils.assertIsSimilarTo
+import coil3.test.utils.assumeTrue
 import coil3.toUri
 import kotlin.math.abs
 

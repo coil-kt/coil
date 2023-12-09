@@ -10,11 +10,11 @@ import androidx.core.graphics.component3
 import androidx.core.graphics.component4
 import coil3.size.Scale
 import coil3.size.Size
-import coil3.test.RobolectricTest
-import coil3.test.assertIsSimilarTo
-import coil3.test.context
-import coil3.test.size
 import coil3.test.utils.R
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.assertIsSimilarTo
+import coil3.test.utils.context
+import coil3.test.utils.size
 import kotlin.test.assertEquals
 import org.junit.Test
 

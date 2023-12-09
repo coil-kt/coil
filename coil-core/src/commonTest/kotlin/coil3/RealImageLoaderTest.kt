@@ -2,8 +2,8 @@ package coil3
 
 import coil3.fetch.Fetcher
 import coil3.request.ImageRequest
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

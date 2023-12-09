@@ -6,8 +6,8 @@ import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.size.Size
 import coil3.target.Target
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

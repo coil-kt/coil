@@ -1,4 +1,4 @@
-package coil3.test
+package coil3.roborazzi
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -10,6 +10,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.target
+import coil3.test.FakeImageLoaderEngine
+import coil3.test.intercept
+import coil3.test.utils.ViewTestActivity
+import coil3.test.utils.activity
 import com.github.takahirom.roborazzi.RoborazziRule
 import org.junit.Rule
 import org.junit.Test

@@ -1,7 +1,7 @@
 package coil3
 
-import coil3.test.RobolectricTest
-import coil3.test.context
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertSame

@@ -1,6 +1,6 @@
 package coil3.network
 
-import coil3.test.runTestAsync
+import coil3.test.utils.runTestAsync
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockEngineConfig

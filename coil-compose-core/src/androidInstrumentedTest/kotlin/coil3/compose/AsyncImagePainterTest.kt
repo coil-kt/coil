@@ -48,7 +48,7 @@ import coil3.request.SuccessResult
 import coil3.request.crossfade
 import coil3.request.error
 import coil3.request.placeholder
-import coil3.test.ComposeTestActivity
+import coil3.test.utils.ComposeTestActivity
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

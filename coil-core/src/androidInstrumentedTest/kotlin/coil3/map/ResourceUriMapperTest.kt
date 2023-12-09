@@ -4,7 +4,7 @@ import android.content.ContentResolver.SCHEME_ANDROID_RESOURCE
 import coil3.core.test.R
 import coil3.pathSegments
 import coil3.request.Options
-import coil3.test.context
+import coil3.test.utils.context
 import coil3.toUri
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

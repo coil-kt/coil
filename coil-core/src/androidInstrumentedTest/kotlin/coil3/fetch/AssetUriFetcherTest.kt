@@ -4,7 +4,7 @@ import android.content.ContentResolver.SCHEME_FILE
 import coil3.ImageLoader
 import coil3.Uri
 import coil3.request.Options
-import coil3.test.context
+import coil3.test.utils.context
 import coil3.toUri
 import coil3.util.ASSET_FILE_PATH_ROOT
 import kotlin.test.assertEquals

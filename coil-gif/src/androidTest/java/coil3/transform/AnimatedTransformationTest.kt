@@ -11,10 +11,10 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.animatedTransformation
 import coil3.request.bitmapConfig
-import coil3.test.assertIsSimilarTo
-import coil3.test.assumeTrue
-import coil3.test.context
-import coil3.test.decodeBitmapAsset
+import coil3.test.utils.assertIsSimilarTo
+import coil3.test.utils.assumeTrue
+import coil3.test.utils.context
+import coil3.test.utils.decodeBitmapAsset
 import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
 import org.junit.After

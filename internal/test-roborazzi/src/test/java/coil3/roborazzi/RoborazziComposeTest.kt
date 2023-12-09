@@ -1,4 +1,4 @@
-package coil3.test
+package coil3.roborazzi
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -14,6 +14,9 @@ import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.size.Size
+import coil3.test.FakeImageLoaderEngine
+import coil3.test.intercept
+import coil3.test.utils.ComposeTestActivity
 import com.github.takahirom.roborazzi.RoborazziRule
 import org.junit.Rule
 import org.junit.Test

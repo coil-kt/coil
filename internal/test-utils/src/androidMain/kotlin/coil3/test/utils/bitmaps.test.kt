@@ -1,4 +1,4 @@
-package coil3.test
+package coil3.test.utils
 
 import android.graphics.Bitmap
 import androidx.annotation.DrawableRes

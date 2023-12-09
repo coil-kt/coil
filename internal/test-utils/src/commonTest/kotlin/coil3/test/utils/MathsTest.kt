@@ -1,4 +1,4 @@
-package coil3.test
+package coil3.test.utils
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -7,9 +7,9 @@ import coil3.fetch.NetworkFetcher
 import coil3.fetch.SourceFetchResult
 import coil3.request.CachePolicy
 import coil3.request.Options
-import coil3.test.RobolectricTest
-import coil3.test.context
-import coil3.test.runTestMain
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
+import coil3.test.utils.runTestMain
 import coil3.toUri
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine

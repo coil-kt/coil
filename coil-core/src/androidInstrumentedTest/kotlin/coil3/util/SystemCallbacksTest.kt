@@ -8,7 +8,7 @@ import coil3.ImageLoader
 import coil3.RealImageLoader
 import coil3.asCoilImage
 import coil3.memory.MemoryCache
-import coil3.test.context
+import coil3.test.utils.context
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.Test

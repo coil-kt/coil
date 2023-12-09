@@ -3,8 +3,8 @@ package coil3.memory
 import coil3.Image
 import coil3.memory.MemoryCache.Key
 import coil3.memory.MemoryCache.Value
-import coil3.test.DEFAULT_FAKE_IMAGE_SIZE
-import coil3.test.FakeImage
+import coil3.test.utils.DEFAULT_FAKE_IMAGE_SIZE
+import coil3.test.utils.FakeImage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

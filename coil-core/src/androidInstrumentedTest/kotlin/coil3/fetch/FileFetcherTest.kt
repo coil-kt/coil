@@ -3,8 +3,8 @@ package coil3.fetch
 import coil3.ImageLoader
 import coil3.request.Options
 import coil3.size.Size
-import coil3.test.context
-import coil3.test.copyAssetToFile
+import coil3.test.utils.context
+import coil3.test.utils.copyAssetToFile
 import coil3.toUri
 import coil3.util.SCHEME_FILE
 import kotlin.test.assertEquals

@@ -14,9 +14,9 @@ import coil3.request.Options
 import coil3.request.RequestService
 import coil3.request.transformations
 import coil3.size.Size
-import coil3.test.RobolectricTest
-import coil3.test.context
-import coil3.test.size
+import coil3.test.utils.RobolectricTest
+import coil3.test.utils.context
+import coil3.test.utils.size
 import coil3.transform.CircleCropTransformation
 import coil3.util.SystemCallbacks
 import kotlin.test.assertEquals

@@ -3,10 +3,10 @@ package coil3.transform
 import coil3.core.test.R
 import coil3.size.Dimension
 import coil3.size.Size
-import coil3.test.assertIsSimilarTo
-import coil3.test.context
-import coil3.test.decodeBitmapAsset
-import coil3.test.size
+import coil3.test.utils.assertIsSimilarTo
+import coil3.test.utils.context
+import coil3.test.utils.decodeBitmapAsset
+import coil3.test.utils.size
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
