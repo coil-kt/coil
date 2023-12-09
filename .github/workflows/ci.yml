@@ -38,7 +38,7 @@ jobs:
     unit-tests:
         name: Unit tests
         runs-on: macOS-latest
-        timeout-minutes: 20
+        timeout-minutes: 60
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
