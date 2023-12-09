@@ -272,8 +272,8 @@ class AsyncImageTest {
 
         composeTestRule.onNodeWithTag(Image)
             .assertIsDisplayed()
-            .assertWidthIsEqualTo(expectedWidthPx.toDp(), tolerance = 1.dp)
-            .assertHeightIsEqualTo(expectedHeightPx.toDp(), tolerance = 1.dp)
+            .assertWidthIsEqualTo(expectedWidthPx.toDp())
+            .assertHeightIsEqualTo(expectedHeightPx.toDp())
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
     }

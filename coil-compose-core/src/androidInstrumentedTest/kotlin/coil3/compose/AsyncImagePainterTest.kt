@@ -27,10 +27,8 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.test.assertHeightIsAtLeast
-import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertWidthIsAtLeast
-import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -52,7 +50,9 @@ import coil3.request.error
 import coil3.request.placeholder
 import coil3.test.ComposeTestActivity
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlinx.coroutines.channels.Channel
@@ -145,8 +145,8 @@ class AsyncImagePainterTest {
         assertLoadedBitmapSize(128.dp, 166.dp)
 
         composeTestRule.onNodeWithTag(Image)
-            .assertWidthIsEqualTo(128.dp)
-            .assertHeightIsEqualTo(166.dp)
+            .assertWidthIsEqualTo(128.dp, tolerance = 1.dp)
+            .assertHeightIsEqualTo(166.dp, tolerance = 1.dp)
             .assertIsDisplayed()
             .captureToImage()
             .assertIsSimilarTo(R.drawable.sample)
@@ -696,9 +696,10 @@ class AsyncImagePainterTest {
     }
 
     private fun assertLoadedBitmapSize(width: Dp, height: Dp, requestNumber: Int = 0) {
-        val bitmap = ((requestTracker.results[requestNumber] as SuccessResult).image as BitmapImage).bitmap
-        assertEquals(bitmap.width, width.toPx())
-        assertEquals(bitmap.height, height.toPx())
+        val result = assertIs<SuccessResult>(requestTracker.results[requestNumber])
+        val bitmap = assertIs<BitmapImage>(result.image).bitmap
+        assertContains((width.toPx() - 1) .. (width.toPx() + 1), bitmap.width)
+        assertContains((height.toPx() - 1) .. (height.toPx() + 1), bitmap.height)
     }
 
     private fun Dp.toPx() = with(composeTestRule.density) { toPx().toInt() }

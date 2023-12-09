@@ -12,6 +12,7 @@ import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.isUnspecified
 import androidx.compose.ui.unit.toSize
@@ -79,14 +80,14 @@ private fun Bitmap.scale(width: Int, height: Int, scale: Scale = Scale.FIT): Bit
 
 fun SemanticsNodeInteraction.assertWidthIsEqualTo(
     expectedWidth: Dp,
-    tolerance: Dp = Dp(0.5f)
+    tolerance: Dp = 0.5.dp,
 ) = withUnclippedBoundsInRoot {
     it.width.assertIsEqualTo(expectedWidth, "width", tolerance)
 }
 
 fun SemanticsNodeInteraction.assertHeightIsEqualTo(
     expectedHeight: Dp,
-    tolerance: Dp = Dp(0.5f)
+    tolerance: Dp = 0.5.dp,
 ) = withUnclippedBoundsInRoot {
     it.height.assertIsEqualTo(expectedHeight, "height", tolerance)
 }
