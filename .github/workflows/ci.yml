@@ -44,8 +44,8 @@ jobs:
 
     unit-tests:
         name: Unit tests
-        runs-on: ubuntu-latest
-        timeout-minutes: 10
+        runs-on: macOS-latest
+        timeout-minutes: 20
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
@@ -61,7 +61,7 @@ jobs:
                   key: ${{ runner.os }}-gradle-${{ env.CACHE_VERSION }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/libs.versions.toml') }}
 
             - name: Unit tests
-              run: ./gradlew testDebugUnitTest verifyPaparazziDebug verifyRoborazziDebug
+              run: ./gradlew allTests testDebugUnitTest verifyPaparazziDebug verifyRoborazziDebug
 
     instrumentation-tests:
         name: Instrumentation tests
@@ -70,7 +70,6 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                # API 21 is flaky and times out.
                 api-level: [22, 26, 31]
         steps:
             - uses: actions/checkout@v4
@@ -132,7 +131,7 @@ jobs:
 
     deploy-snapshot:
         name: Deploy snapshot
-        runs-on: ubuntu-latest
+        runs-on: macOS-latest
         timeout-minutes: 20
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/3.x'
         needs: [checks, unit-tests, instrumentation-tests]
