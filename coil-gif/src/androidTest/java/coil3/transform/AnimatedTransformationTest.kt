@@ -3,7 +3,7 @@ package coil3.transform
 import android.content.ContentResolver.SCHEME_FILE
 import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
-import coil3.BitmapImage
+import androidx.core.graphics.drawable.toBitmap
 import coil3.ImageLoader
 import coil3.decode.GifDecoder
 import coil3.decode.ImageDecoderDecoder
@@ -51,7 +51,8 @@ class AnimatedTransformationTest {
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_gif_rounded.png")
         assertIs<SuccessResult>(actual)
-        (actual.image as BitmapImage).bitmap.assertIsSimilarTo(expected, threshold = 0.98)
+        actual.image.asDrawable(context.resources).toBitmap()
+            .assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
@@ -71,7 +72,8 @@ class AnimatedTransformationTest {
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_heif_rounded.png")
         assertIs<SuccessResult>(actual)
-        (actual.image as BitmapImage).bitmap.assertIsSimilarTo(expected, threshold = 0.98)
+        actual.image.asDrawable(context.resources).toBitmap()
+            .assertIsSimilarTo(expected, threshold = 0.98)
     }
 
     @Test
@@ -88,6 +90,7 @@ class AnimatedTransformationTest {
         val actual = imageLoader.execute(imageRequest)
         val expected = context.decodeBitmapAsset("animated_webp_rounded.png")
         assertIs<SuccessResult>(actual)
-        (actual.image as BitmapImage).bitmap.assertIsSimilarTo(expected, threshold = 0.98)
+        actual.image.asDrawable(context.resources).toBitmap()
+            .assertIsSimilarTo(expected, threshold = 0.98)
     }
 }
