@@ -67,6 +67,7 @@ fun AsyncImage(
     contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
+    requestHandle: AsyncImageRequestHandle? = null,
     placeholder: Painter? = null,
     error: Painter? = null,
     fallback: Painter? = error,
@@ -82,6 +83,7 @@ fun AsyncImage(
     model = model,
     contentDescription = contentDescription,
     imageLoader = imageLoader,
+    requestHandle = requestHandle,
     modifier = modifier,
     transform = transformOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
@@ -120,6 +122,7 @@ fun AsyncImage(
     model: Any?,
     contentDescription: String?,
     imageLoader: ImageLoader,
+    requestHandle: AsyncImageRequestHandle?,
     modifier: Modifier = Modifier,
     transform: (State) -> State = DefaultTransform,
     onState: ((State) -> Unit)? = null,
@@ -130,7 +133,12 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(requestOf(model), contentScale)
+    var request = updateRequest(requestOf(model), contentScale)
+
+    if (requestHandle != null) {
+        request = request.newBuilder().requestHandle(requestHandle).build()
+    }
+
     val painter = rememberAsyncImagePainter(
         request, imageLoader, transform, onState, contentScale, filterQuality
     )
