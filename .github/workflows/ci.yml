@@ -5,7 +5,8 @@ on:
             - main
     pull_request:
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
+    # Limit concurrency to 1 for PRs. 'main' concurrency isn't limited.
+    group: ${{ github.head_ref || github.run_id }}
     cancel-in-progress: true
 env:
     CI: true
