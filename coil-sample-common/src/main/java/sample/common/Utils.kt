@@ -20,7 +20,7 @@ fun randomColor(): Int {
 }
 
 fun AssetType.next(): AssetType {
-    val values = AssetType.values()
+    val values = AssetType.entries
     return values[(values.indexOf(this) + 1) % values.size]
 }
 
