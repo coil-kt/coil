@@ -10,6 +10,7 @@ import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -148,6 +149,26 @@ fun rememberAsyncImagePainter(
     painter.request = request // Update request last so all other properties are up to date.
     painter.onRemembered() // Invoke this manually so `painter.state` is set to `Loading` immediately.
     return painter
+}
+
+@Stable
+class AsyncImageRequestHandle internal constructor() {
+    var retryHash by mutableIntStateOf(0)
+        internal set
+    fun retry() {
+        retryHash += 1
+    }
+}
+
+@Composable
+fun rememberAsyncImageRequestHandle(): AsyncImageRequestHandle {
+    return remember { AsyncImageRequestHandle() }
+}
+
+fun ImageRequest.Builder.requestHandle(
+    requestHandle: AsyncImageRequestHandle
+): ImageRequest.Builder {
+    return setParameter("retry_hash", requestHandle.retryHash, memoryCacheKey = null)
 }
 
 /**
