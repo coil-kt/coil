@@ -6,7 +6,7 @@ on:
     pull_request:
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: github.repository != 'coil-kt/coil' || github.ref != 'refs/heads/main'
+    cancel-in-progress: true
 env:
     CI: true
     JAVA_VERSION: 17
