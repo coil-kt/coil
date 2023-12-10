@@ -21,10 +21,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,8 +44,14 @@ import androidx.compose.ui.unit.DpSize
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter.State
+import coil.compose.AsyncImagePainter.State.Empty
+import coil.compose.rememberAsyncImageRequestHandle
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import sample.common.AssetType
 import sample.common.Image
 import sample.common.MainViewModel
@@ -184,21 +194,43 @@ private fun ListScreen(
 
             // Intentionally not a state object to avoid recomposition.
             var placeholder: MemoryCache.Key? = null
-
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(image.uri)
-                    .parameters(image.parameters)
-                    .build(),
-                placeholder = ColorPainter(Color(image.color)),
-                error = ColorPainter(Color.Red),
-                onSuccess = { placeholder = it.result.memoryCacheKey },
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(size)
-                    .clickable { onImageClick(image, placeholder) }
-            )
+            val requestHandle = rememberAsyncImageRequestHandle()
+            Box {
+                var loadState by remember { mutableStateOf<State>(Empty) }
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(image.uri)
+                        .parameters(image.parameters)
+                        .build(),
+                    requestHandle = requestHandle,
+                    placeholder = ColorPainter(Color(image.color)),
+                    error = ColorPainter(Color.Red),
+                    onSuccess = {
+                        loadState = it
+                        placeholder = it.result.memoryCacheKey
+                    },
+                    onError = {
+                        loadState = it
+                    },
+                    onLoading = {
+                        loadState = it
+                    },
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(size)
+                        .clickable { onImageClick(image, placeholder) }
+                )
+                LaunchedEffect(Unit) {
+                    snapshotFlow { loadState }
+                        .distinctUntilChanged()
+                        .filter { it is State.Error }
+                        .collect {
+                            requestHandle.retry()
+                            delay(3000)
+                        }
+                }
+            }
         }
     }
 }
