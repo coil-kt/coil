@@ -70,13 +70,6 @@ jobs:
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: gradle/gradle-build-action@v2
-              continue-on-error: true
-              timeout-minutes: 5
-              with:
-                  cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/3.x' }}
-                  cache-overwrite-existing: true
-                  gradle-home-cache-cleanup: true
 
             # API 30+ emulators only have x86_64 system images.
             - name: Get AVD info
