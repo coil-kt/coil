@@ -50,7 +50,6 @@ jobs:
               continue-on-error: true
               timeout-minutes: 5
               with:
-                  cache-read-only: false
                   gradle-home-cache-cleanup: true
 
             - name: Unit tests
@@ -75,7 +74,6 @@ jobs:
               continue-on-error: true
               timeout-minutes: 5
               with:
-                  cache-read-only: true
                   gradle-home-cache-cleanup: true
 
             # API 30+ emulators only have x86_64 system images.
@@ -137,7 +135,6 @@ jobs:
               continue-on-error: true
               timeout-minutes: 5
               with:
-                  cache-read-only: true
                   gradle-home-cache-cleanup: true
 
             - name: Build samples
