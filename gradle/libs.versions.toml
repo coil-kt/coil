@@ -84,7 +84,7 @@ roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.r
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 
-skiko = "org.jetbrains.skiko:skiko:0.7.89.1"
+skiko = "org.jetbrains.skiko:skiko:0.7.90"
 
 svg = "com.caverock:androidsvg-aar:1.4"
 
