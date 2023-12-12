@@ -15,29 +15,38 @@ import okio.Buffer
 import okio.BufferedSource
 
 class FakeNetworkFetcher(
-    private val url: String,
+    private val url: Uri,
     private val options: Options,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult {
-        return when {
-            url.endsWith("/image") -> SourceFetchResult(
-                source = ImageSource(rawResourceAsSource(R.drawable.sample)),
+        return when (url.path) {
+            "/image" -> SourceFetchResult(
+                source = ImageSource(
+                    source = rawResourceAsSource(R.drawable.sample),
+                    fileSystem = options.fileSystem,
+                ),
                 mimeType = "image/jpeg",
                 dataSource = DataSource.NETWORK,
             )
-            url.endsWith("/blue") -> SourceFetchResult(
-                source = ImageSource(rawResourceAsSource(R.drawable.blue_rectangle)),
+            "/blue" -> SourceFetchResult(
+                source = ImageSource(
+                    source = rawResourceAsSource(R.drawable.blue_rectangle),
+                    fileSystem = options.fileSystem,
+                ),
                 mimeType = "image/png",
                 dataSource = DataSource.NETWORK,
             )
-            url.endsWith("/red") -> SourceFetchResult(
-                source = ImageSource(rawResourceAsSource(R.drawable.red_rectangle)),
+            "/red" -> SourceFetchResult(
+                source = ImageSource(
+                    source = rawResourceAsSource(R.drawable.red_rectangle),
+                    fileSystem = options.fileSystem,
+                ),
                 mimeType = "image/png",
                 dataSource = DataSource.NETWORK,
             )
             else -> {
-                error("404 unknown resource: $url")
+                error("404 unknown url: $url")
             }
         }
     }
@@ -58,7 +67,7 @@ class FakeNetworkFetcher(
         ): Fetcher? {
             if (!isApplicable(data)) return null
             return FakeNetworkFetcher(
-                url = data.toString(),
+                url = data,
                 options = options,
             )
         }

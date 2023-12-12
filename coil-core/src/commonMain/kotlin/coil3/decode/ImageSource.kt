@@ -4,7 +4,6 @@ import coil3.decode.ImageSource.Metadata
 import coil3.fetch.Fetcher
 import coil3.util.closeQuietly
 import coil3.util.createTempFile
-import coil3.util.defaultFileSystem
 import kotlin.jvm.JvmName
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
@@ -26,7 +25,7 @@ import okio.buffer
 @JvmName("create")
 fun ImageSource(
     file: Path,
-    fileSystem: FileSystem = defaultFileSystem(),
+    fileSystem: FileSystem,
     diskCacheKey: String? = null,
     closeable: Closeable? = null,
     metadata: Metadata? = null,
@@ -42,7 +41,7 @@ fun ImageSource(
 @JvmName("create")
 fun ImageSource(
     source: BufferedSource,
-    fileSystem: FileSystem = defaultFileSystem(),
+    fileSystem: FileSystem,
     metadata: Metadata? = null,
 ): ImageSource = SourceImageSource(source, fileSystem, metadata)
 
