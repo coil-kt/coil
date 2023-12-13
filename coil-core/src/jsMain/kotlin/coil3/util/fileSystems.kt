@@ -2,101 +2,72 @@ package coil3.util
 
 import okio.FileHandle
 import okio.FileMetadata
-import okio.FileNotFoundException
 import okio.FileSystem
 import okio.Path
 import okio.Sink
 import okio.Source
 
-internal actual fun defaultFileSystem(): FileSystem = EmptyReadOnlyFileSystem
+internal actual fun defaultFileSystem(): FileSystem = ThrowingFileSystem
 
-/** An empty, read-only file system that throws if any write methods are called. */
-private object EmptyReadOnlyFileSystem : FileSystem() {
+/** A file system that throws if any of its methods are called. */
+private object ThrowingFileSystem : FileSystem() {
 
     override fun atomicMove(source: Path, target: Path) {
-        throwWriteIsUnsupported()
+        throwReadWriteIsUnsupported()
     }
 
     override fun canonicalize(path: Path): Path {
-        throwFileNotFound(path)
+        throwReadWriteIsUnsupported()
     }
 
     override fun createDirectory(dir: Path, mustCreate: Boolean) {
-        throwWriteIsUnsupported()
+        throwReadWriteIsUnsupported()
     }
 
     override fun createSymlink(source: Path, target: Path) {
-        throwWriteIsUnsupported()
+        throwReadWriteIsUnsupported()
     }
 
     override fun delete(path: Path, mustExist: Boolean) {
-        throwWriteIsUnsupported()
+        throwReadWriteIsUnsupported()
     }
 
     override fun list(dir: Path): List<Path> {
-        throwFileNotFound(dir)
+        throwReadWriteIsUnsupported()
     }
 
     override fun listOrNull(dir: Path): List<Path>? {
-        return null
+        throwReadWriteIsUnsupported()
     }
 
     override fun metadataOrNull(path: Path): FileMetadata? {
-        return null
+        throwReadWriteIsUnsupported()
     }
 
     override fun openReadOnly(file: Path): FileHandle {
-        return EmptyFileHandle
+        throwReadWriteIsUnsupported()
     }
 
     override fun openReadWrite(file: Path, mustCreate: Boolean, mustExist: Boolean): FileHandle {
-        if (mustCreate) throwWriteIsUnsupported()
-        if (mustExist) throwFileNotFound(file)
-        return EmptyFileHandle
+        throwReadWriteIsUnsupported()
     }
 
     override fun sink(file: Path, mustCreate: Boolean): Sink {
-        throwWriteIsUnsupported()
+        throwReadWriteIsUnsupported()
     }
 
     override fun appendingSink(file: Path, mustExist: Boolean): Sink {
-        throwWriteIsUnsupported()
+        throwReadWriteIsUnsupported()
     }
 
     override fun source(file: Path): Source {
-        throwFileNotFound(file)
+        throwReadWriteIsUnsupported()
     }
 
-    private fun throwWriteIsUnsupported(): Nothing {
-        throw UnsupportedOperationException("FileSystem write methods are unsupported on Kotlin JS.")
-    }
-
-    private fun throwFileNotFound(path: Path): Nothing {
-        throw FileNotFoundException("No such file: $path")
-    }
-
-    private object EmptyFileHandle : FileHandle(readWrite = false) {
-
-        override fun protectedSize() = 0L
-
-        override fun protectedResize(size: Long) {}
-
-        override fun protectedRead(
-            fileOffset: Long,
-            array: ByteArray,
-            arrayOffset: Int,
-            byteCount: Int,
-        ) = -1
-
-        override fun protectedWrite(
-            fileOffset: Long,
-            array: ByteArray,
-            arrayOffset: Int,
-            byteCount: Int,
-        ) {}
-
-        override fun protectedClose() {}
-
-        override fun protectedFlush() {}
+    private fun throwReadWriteIsUnsupported(): Nothing {
+        throw UnsupportedOperationException(
+            "Javascript does not have access to the device's file system and cannot read from or " +
+                "write to it. If you are running on Node.js use 'NodeJsFileSystem' instead."
+        )
     }
 }
