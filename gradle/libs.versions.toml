@@ -26,7 +26,7 @@ accompanist-drawablepainter = "com.google.accompanist:accompanist-drawablepainte
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat-resources = "androidx.appcompat:appcompat-resources:1.6.1"
-androidx-annotation = "androidx.annotation:annotation:1.7.0"
+androidx-annotation = "androidx.annotation:annotation:1.7.1"
 androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4:1.2.2"
 androidx-collection = "androidx.collection:collection:1.3.0"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
