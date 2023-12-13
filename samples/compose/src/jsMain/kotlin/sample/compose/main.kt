@@ -20,9 +20,7 @@ private fun onReady(callback: () -> Unit) {
     window.addEventListener(
         type = "load",
         callback = {
-            onWasmReady {
-                callback()
-            }
+            onWasmReady(callback)
         },
     )
 }
