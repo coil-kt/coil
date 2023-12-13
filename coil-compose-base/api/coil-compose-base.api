@@ -1,6 +1,6 @@
 public final class coil/compose/AsyncImageKt {
-	public static final fun AsyncImage-MvsnxeU (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
-	public static final fun AsyncImage-Q4Kwu38 (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+	public static final fun AsyncImage-cG9VCmI (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Landroidx/compose/ui/Modifier;Lcoil/compose/AsyncImageRequestHandle;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
+	public static final fun AsyncImage-h7wOGxc (Ljava/lang/Object;Ljava/lang/String;Lcoil/ImageLoader;Lcoil/compose/AsyncImageRequestHandle;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;FLandroidx/compose/ui/graphics/ColorFilter;ILandroidx/compose/runtime/Composer;III)V
 }
 
 public final class coil/compose/AsyncImagePainter : androidx/compose/ui/graphics/painter/Painter, androidx/compose/runtime/RememberObserver {
@@ -76,6 +76,14 @@ public final class coil/compose/AsyncImagePainter$State$Success : coil/compose/A
 public final class coil/compose/AsyncImagePainterKt {
 	public static final fun rememberAsyncImagePainter-3HmZ8SU (Ljava/lang/Object;Lcoil/ImageLoader;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Landroidx/compose/ui/graphics/painter/Painter;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
 	public static final fun rememberAsyncImagePainter-5jETZwI (Ljava/lang/Object;Lcoil/ImageLoader;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/layout/ContentScale;ILandroidx/compose/runtime/Composer;II)Lcoil/compose/AsyncImagePainter;
+	public static final fun rememberAsyncImageRequestHandle (Landroidx/compose/runtime/Composer;I)Lcoil/compose/AsyncImageRequestHandle;
+	public static final fun requestHandle (Lcoil/request/ImageRequest$Builder;Lcoil/compose/AsyncImageRequestHandle;)Lcoil/request/ImageRequest$Builder;
+}
+
+public final class coil/compose/AsyncImageRequestHandle {
+	public static final field $stable I
+	public final fun getRetryHash ()I
+	public final fun retry ()V
 }
 
 public final class coil/compose/ComposableSingletons$SubcomposeAsyncImageKt {
