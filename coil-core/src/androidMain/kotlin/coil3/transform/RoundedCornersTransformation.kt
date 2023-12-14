@@ -12,7 +12,6 @@ import android.graphics.Shader
 import androidx.annotation.Px
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
-import coil3.annotation.Data
 import coil3.decode.DecodeUtils
 import coil3.size.Dimension
 import coil3.size.Scale
@@ -34,7 +33,6 @@ import kotlin.math.roundToInt
  * @param bottomLeft The radius for the bottom left corner.
  * @param bottomRight The radius for the bottom right corner.
  */
-@Data
 class RoundedCornersTransformation(
     @Px private val topLeft: Float = 0f,
     @Px private val topRight: Float = 0f,
@@ -50,7 +48,7 @@ class RoundedCornersTransformation(
         }
     }
 
-    override val cacheKey = "${javaClass.name}-$topLeft,$topRight,$bottomLeft,$bottomRight"
+    override val cacheKey = "${this::class.qualifiedName}-$topLeft,$topRight,$bottomLeft,$bottomRight"
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)

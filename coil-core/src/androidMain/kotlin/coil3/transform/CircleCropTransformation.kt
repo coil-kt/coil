@@ -17,7 +17,7 @@ import coil3.util.safeConfig
  */
 class CircleCropTransformation : Transformation {
 
-    override val cacheKey: String = javaClass.name
+    override val cacheKey = "${this::class.qualifiedName}"
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -33,8 +33,4 @@ class CircleCropTransformation : Transformation {
 
         return output
     }
-
-    override fun equals(other: Any?) = other is CircleCropTransformation
-
-    override fun hashCode() = this::class.hashCode()
 }

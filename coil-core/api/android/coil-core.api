@@ -951,9 +951,7 @@ public abstract interface class coil3/target/ViewTarget : coil3/target/Target {
 
 public final class coil3/transform/CircleCropTransformation : coil3/transform/Transformation {
 	public fun <init> ()V
-	public fun equals (Ljava/lang/Object;)Z
 	public fun getCacheKey ()Ljava/lang/String;
-	public fun hashCode ()I
 	public fun transform (Landroid/graphics/Bitmap;Lcoil3/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -962,10 +960,7 @@ public final class coil3/transform/RoundedCornersTransformation : coil3/transfor
 	public fun <init> (F)V
 	public fun <init> (FFFF)V
 	public synthetic fun <init> (FFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun equals (Ljava/lang/Object;)Z
 	public fun getCacheKey ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 	public fun transform (Landroid/graphics/Bitmap;Lcoil3/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
