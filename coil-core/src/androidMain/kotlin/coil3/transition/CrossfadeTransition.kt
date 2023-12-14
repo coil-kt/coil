@@ -40,7 +40,6 @@ class CrossfadeTransition @JvmOverloads constructor(
         }
     }
 
-    @Poko
     class Factory @JvmOverloads constructor(
         val durationMillis: Int = DEFAULT_CROSSFADE_MILLIS,
         val preferExactIntrinsicSize: Boolean = false,

@@ -8,7 +8,6 @@ import dev.drewhamilton.poko.Poko
 /**
  * A transition that applies the [ImageResult] on the [TransitionTarget] without animating.
  */
-@Poko
 internal class NoneTransition(
     private val target: TransitionTarget,
     private val result: ImageResult
