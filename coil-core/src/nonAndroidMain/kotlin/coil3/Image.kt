@@ -1,7 +1,7 @@
 package coil3
 
+import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
-import dev.drewhamilton.poko.Poko
 import kotlin.jvm.JvmOverloads
 import org.jetbrains.skia.Bitmap
 
@@ -22,7 +22,7 @@ actual interface Image {
 }
 
 @ExperimentalCoilApi
-@Poko
+@Data
 class BitmapImage internal constructor(
     val bitmap: Bitmap,
     override val shareable: Boolean,

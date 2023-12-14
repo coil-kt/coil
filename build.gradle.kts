@@ -3,6 +3,7 @@ import coil3.publicModules
 import coil3.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
+import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import java.net.URL
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
@@ -122,6 +123,12 @@ allprojects {
         extensions.configure<SpotlessExtensionPredeclare>(configureSpotless)
     } else {
         extensions.configure(configureSpotless)
+    }
+
+    plugins.withId("dev.drewhamilton.poko") {
+        extensions.configure<PokoPluginExtension> {
+            pokoAnnotation = "coil3.annotation.Data"
+        }
     }
 
     applyOkioJsTestWorkaround()

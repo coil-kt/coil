@@ -1,8 +1,8 @@
 package coil3.test
 
 import coil3.Image
+import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
-import dev.drewhamilton.poko.Poko
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.ColorAlphaType
@@ -13,7 +13,7 @@ import org.jetbrains.skia.Paint
 import org.jetbrains.skia.impl.use
 
 @ExperimentalCoilApi
-@Poko
+@Data
 actual class FakeImage actual constructor(
     override val width: Int,
     override val height: Int,

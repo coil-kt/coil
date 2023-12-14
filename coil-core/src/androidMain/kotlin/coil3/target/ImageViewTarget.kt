@@ -2,12 +2,12 @@ package coil3.target
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import dev.drewhamilton.poko.Poko
+import coil3.annotation.Data
 
 /**
  * A [Target] that handles setting images on an [ImageView].
  */
-@Poko
+@Data
 open class ImageViewTarget(override val view: ImageView) : GenericViewTarget<ImageView>() {
 
     override var drawable: Drawable?

@@ -1,9 +1,9 @@
 package coil3.size
 
 import android.view.View
-import dev.drewhamilton.poko.Poko
+import coil3.annotation.Data
 
-@Poko
+@Data
 internal class RealViewSizeResolver<T : View>(
     override val view: T,
     override val subtractPadding: Boolean,

@@ -6,7 +6,6 @@ import coil3.request.DEFAULT_CROSSFADE_MILLIS
 import coil3.request.ErrorResult
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
-import dev.drewhamilton.poko.Poko
 
 /**
  * A [Transition] that crossfades from the current drawable to a new one.

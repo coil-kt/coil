@@ -5,6 +5,7 @@ import coil3.Extras
 import coil3.Image
 import coil3.ImageLoader
 import coil3.PlatformContext
+import coil3.annotation.Data
 import coil3.annotation.MainThread
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
@@ -21,7 +22,6 @@ import coil3.util.EMPTY_IMAGE_FACTORY
 import coil3.util.allowInexactSize
 import coil3.util.defaultFileSystem
 import coil3.util.ioCoroutineDispatcher
-import dev.drewhamilton.poko.Poko
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.reflect.KClass
@@ -35,7 +35,7 @@ import okio.FileSystem
  * @see ImageLoader.enqueue
  * @see ImageLoader.execute
  */
-@Poko
+@Data
 class ImageRequest private constructor(
     val context: PlatformContext,
 

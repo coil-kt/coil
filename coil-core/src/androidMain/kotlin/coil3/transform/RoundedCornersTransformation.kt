@@ -12,6 +12,7 @@ import android.graphics.Shader
 import androidx.annotation.Px
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
+import coil3.annotation.Data
 import coil3.decode.DecodeUtils
 import coil3.size.Dimension
 import coil3.size.Scale
@@ -19,7 +20,6 @@ import coil3.size.Size
 import coil3.size.isOriginal
 import coil3.size.pxOrElse
 import coil3.util.safeConfig
-import dev.drewhamilton.poko.Poko
 import kotlin.math.roundToInt
 
 /**
@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
  * @param bottomLeft The radius for the bottom left corner.
  * @param bottomRight The radius for the bottom right corner.
  */
-@Poko
+@Data
 class RoundedCornersTransformation(
     @Px private val topLeft: Float = 0f,
     @Px private val topRight: Float = 0f,

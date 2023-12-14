@@ -1,7 +1,7 @@
 package coil3.size
 
+import coil3.annotation.Data
 import coil3.request.Options
-import dev.drewhamilton.poko.Poko
 import kotlin.jvm.JvmField
 
 /**
@@ -12,7 +12,7 @@ sealed interface Dimension {
     /**
      * Represents a fixed, positive number of pixels.
      */
-    @Poko
+    @Data
     class Pixels(@JvmField val px: Int) : Dimension {
 
         init {

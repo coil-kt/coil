@@ -1,8 +1,8 @@
 package coil3.size
 
-import dev.drewhamilton.poko.Poko
+import coil3.annotation.Data
 
-@Poko
+@Data
 internal class RealSizeResolver(private val size: Size) : SizeResolver {
     override suspend fun size() = size
 }

@@ -6,11 +6,11 @@ import android.graphics.drawable.Drawable
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import coil3.Image
+import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
-import dev.drewhamilton.poko.Poko
 
 @ExperimentalCoilApi
-@Poko
+@Data
 actual class FakeImage actual constructor(
     override val width: Int,
     override val height: Int,

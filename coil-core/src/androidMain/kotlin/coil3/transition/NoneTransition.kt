@@ -3,7 +3,6 @@ package coil3.transition
 import coil3.request.ErrorResult
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
-import dev.drewhamilton.poko.Poko
 
 /**
  * A transition that applies the [ImageResult] on the [TransitionTarget] without animating.
