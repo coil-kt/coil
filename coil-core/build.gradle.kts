@@ -39,11 +39,6 @@ kotlin {
                 implementation(libs.bundles.test.common)
             }
         }
-        named("nonJvmCommon") {
-            dependencies {
-                implementation(libs.kotlinx.immutable.collections)
-            }
-        }
         named("nonAndroidMain") {
             dependencies {
                 api(libs.skiko)

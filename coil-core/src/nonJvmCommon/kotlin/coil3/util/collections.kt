@@ -1,7 +1,6 @@
 package coil3.util
 
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableMap
+import dev.drewhamilton.poko.Poko
 
 internal actual fun <K : Any, V : Any> LruMutableMap(
     initialCapacity: Int,
@@ -9,7 +8,7 @@ internal actual fun <K : Any, V : Any> LruMutableMap(
 ): MutableMap<K, V> = LruMutableMap(LinkedHashMap(initialCapacity, loadFactor))
 
 private class LruMutableMap<K : Any, V : Any>(
-    private val delegate: MutableMap<K, V>
+    private val delegate: MutableMap<K, V>,
 ) : MutableMap<K, V> by delegate {
 
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
@@ -38,7 +37,7 @@ private class LruMutableMap<K : Any, V : Any>(
     }
 
     private inner class MutableEntry(
-        private val delegate: MutableMap.MutableEntry<K, V>
+        private val delegate: MutableMap.MutableEntry<K, V>,
     ) : MutableMap.MutableEntry<K, V> by delegate {
 
         override fun setValue(newValue: V): V {
@@ -49,6 +48,48 @@ private class LruMutableMap<K : Any, V : Any>(
     }
 }
 
-internal actual fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> = toImmutableMap()
+internal actual fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> = ImmutableMap(toMap())
 
-internal actual fun <T> List<T>.toImmutableList(): List<T> = toImmutableList()
+@Poko
+private class ImmutableMap<K, V>(
+    private val delegate: Map<K, V>,
+) : Map<K, V> by delegate {
+
+    override val entries: Set<Map.Entry<K, V>>
+        get() = delegate.entries.mapTo(mutableSetOf(), ::ImmutableEntry)
+
+    @Poko
+    private class ImmutableEntry<K, V>(
+        private val delegate: Map.Entry<K, V>,
+    ) : Map.Entry<K, V> by delegate
+}
+
+internal actual fun <T> List<T>.toImmutableList(): List<T> = ImmutableList(toList())
+
+@Poko
+private class ImmutableList<T>(
+    private val delegate: List<T>,
+) : List<T> by delegate {
+
+    override fun iterator(): Iterator<T> {
+        return ImmutableIterator(delegate.iterator())
+    }
+
+    override fun listIterator(): ListIterator<T> {
+        return ImmutableListIterator(delegate.listIterator())
+    }
+
+    override fun listIterator(index: Int): ListIterator<T> {
+        return ImmutableListIterator(delegate.listIterator(index))
+    }
+
+    @Poko
+    private class ImmutableIterator<T>(
+        private val delegate: Iterator<T>,
+    ) : Iterator<T> by delegate
+
+    @Poko
+    private class ImmutableListIterator<T>(
+        private val delegate: ListIterator<T>,
+    ) : ListIterator<T> by delegate
+}

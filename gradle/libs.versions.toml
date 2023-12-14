@@ -65,7 +65,6 @@ junit = "junit:junit:4.13.2"
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
 
-kotlinx-immutable-collections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6"
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2"
 
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
