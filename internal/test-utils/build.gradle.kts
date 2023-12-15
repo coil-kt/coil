@@ -16,6 +16,7 @@ kotlin {
             dependencies {
                 api(projects.coilCore)
                 api(libs.coroutines.test)
+                api(libs.kotlinx.datetime)
             }
         }
         commonTest {
