@@ -10,6 +10,7 @@ import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
@@ -137,17 +138,36 @@ allprojects {
 // https://github.com/square/okio/issues/1163
 fun Project.applyOkioJsTestWorkaround() {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        // TODO: Wrap this in a task.
-        val webpackConfigDir = projectDir.resolve("webpack.config.d").apply { mkdirs() }
-        val applyPluginFile = webpackConfigDir.resolve("applyNodePolyfillPlugin.js")
-        applyPluginFile.writeText(
-            """
-            const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
-            config.plugins.push(new NodePolyfillPlugin())
-            """.trimIndent(),
-        )
+        val applyNodePolyfillPlugin by lazy {
+            tasks.register("applyNodePolyfillPlugin") {
+                val applyPluginFile = projectDir
+                    .resolve("webpack.config.d/applyNodePolyfillPlugin.js")
+                onlyIf {
+                    !applyPluginFile.exists()
+                }
+                doLast {
+                    applyPluginFile.parentFile.mkdirs()
+                    applyPluginFile.writeText(
+                        """
+                        const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+                        config.plugins.push(new NodePolyfillPlugin());
+                        """.trimIndent(),
+                    )
+                }
+            }
+        }
+
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets {
+                targets.configureEach {
+                    compilations.configureEach {
+                        if (platformType == KotlinPlatformType.js && name == "test") {
+                            tasks
+                                .getByName(compileKotlinTaskName)
+                                .dependsOn(applyNodePolyfillPlugin)
+                        }
+                    }
+                }
                 jsTest {
                     dependencies {
                         implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
