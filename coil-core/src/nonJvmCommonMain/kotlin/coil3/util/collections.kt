@@ -1,7 +1,5 @@
 package coil3.util
 
-import coil3.annotation.Data
-
 internal actual fun <K : Any, V : Any> LruMutableMap(
     initialCapacity: Int,
     loadFactor: Float,
@@ -50,7 +48,6 @@ private class LruMutableMap<K : Any, V : Any>(
 
 internal actual fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> = ImmutableMap(toMap())
 
-@Data
 private class ImmutableMap<K, V>(
     private val delegate: Map<K, V>,
 ) : Map<K, V> by delegate {
@@ -58,15 +55,21 @@ private class ImmutableMap<K, V>(
     override val entries: Set<Map.Entry<K, V>>
         get() = delegate.entries.mapTo(mutableSetOf(), ::ImmutableEntry)
 
-    @Data
+    override fun equals(other: Any?) = delegate == other
+    override fun hashCode() = delegate.hashCode()
+    override fun toString() = delegate.toString()
+
     private class ImmutableEntry<K, V>(
         private val delegate: Map.Entry<K, V>,
-    ) : Map.Entry<K, V> by delegate
+    ) : Map.Entry<K, V> by delegate {
+        override fun equals(other: Any?) = delegate == other
+        override fun hashCode() = delegate.hashCode()
+        override fun toString() = delegate.toString()
+    }
 }
 
 internal actual fun <T> List<T>.toImmutableList(): List<T> = ImmutableList(toList())
 
-@Data
 private class ImmutableList<T>(
     private val delegate: List<T>,
 ) : List<T> by delegate {
@@ -83,13 +86,23 @@ private class ImmutableList<T>(
         return ImmutableListIterator(delegate.listIterator(index))
     }
 
-    @Data
+    override fun equals(other: Any?) = delegate == other
+    override fun hashCode() = delegate.hashCode()
+    override fun toString() = delegate.toString()
+
     private class ImmutableIterator<T>(
         private val delegate: Iterator<T>,
-    ) : Iterator<T> by delegate
+    ) : Iterator<T> by delegate {
+        override fun equals(other: Any?) = delegate == other
+        override fun hashCode() = delegate.hashCode()
+        override fun toString() = delegate.toString()
+    }
 
-    @Data
     private class ImmutableListIterator<T>(
         private val delegate: ListIterator<T>,
-    ) : ListIterator<T> by delegate
+    ) : ListIterator<T> by delegate {
+        override fun equals(other: Any?) = delegate == other
+        override fun hashCode() = delegate.hashCode()
+        override fun toString() = delegate.toString()
+    }
 }

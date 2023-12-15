@@ -3,7 +3,6 @@ package coil3.memory
 import coil3.memory.MemoryCache.Key
 import coil3.memory.MemoryCache.Value
 import coil3.test.utils.FakeImage
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -12,16 +11,9 @@ import kotlin.test.assertTrue
 
 class RealMemoryCacheTest {
 
-    private lateinit var weakCache: WeakMemoryCache
-    private lateinit var strongCache: RealStrongMemoryCache
-    private lateinit var cache: MemoryCache
-
-    @BeforeTest
-    fun before() {
-        weakCache = RealWeakMemoryCache()
-        strongCache = RealStrongMemoryCache(Long.MAX_VALUE, weakCache)
-        cache = RealMemoryCache(strongCache, weakCache)
-    }
+    private val weakCache = RealWeakMemoryCache()
+    private val strongCache = RealStrongMemoryCache(Long.MAX_VALUE, weakCache)
+    private val cache = RealMemoryCache(strongCache, weakCache)
 
     @Test
     fun `can retrieve strong cached value`() {
