@@ -46,7 +46,11 @@ private class LruMutableMap<K : Any, V : Any>(
     }
 }
 
-internal actual fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> = ImmutableMap(toMap())
+internal actual fun <K, V> Map<K, V>.toImmutableMap() = when {
+    isEmpty() -> emptyMap()
+    this is ImmutableMap -> this
+    else -> ImmutableMap(LinkedHashMap(this))
+}
 
 private class ImmutableMap<K, V>(
     private val delegate: Map<K, V>,
@@ -68,7 +72,11 @@ private class ImmutableMap<K, V>(
     }
 }
 
-internal actual fun <T> List<T>.toImmutableList(): List<T> = ImmutableList(toList())
+internal actual fun <T> List<T>.toImmutableList() = when {
+    isEmpty() -> emptyList()
+    this is ImmutableList -> this
+    else -> ImmutableList(ArrayList(this))
+}
 
 private class ImmutableList<T>(
     private val delegate: List<T>,

@@ -13,6 +13,7 @@ class Uri internal constructor(
 ) {
 
     override fun equals(other: Any?): Boolean {
+        if (this === other) return true
         return other is Uri && other.data == data
     }
 
