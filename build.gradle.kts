@@ -68,8 +68,6 @@ allprojects {
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
-        // https://github.com/Kotlin/dokka/issues/2993
-        @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
         dokkaSourceSets.configureEach {
             jdkVersion = 8
             failOnWarning = true
