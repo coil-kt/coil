@@ -10,7 +10,7 @@ ktlint = "1.0.1"
 ktor = "2.3.7"
 okio = "3.6.0"
 paparazzi = "1.3.1"
-roborazzi = "1.6.0"
+roborazzi = "1.7.0"
 
 [plugins]
 binaryCompatibility = "org.jetbrains.kotlinx.binary-compatibility-validator:0.13.2"
