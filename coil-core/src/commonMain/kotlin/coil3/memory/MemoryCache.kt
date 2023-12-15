@@ -4,7 +4,9 @@ import coil3.Image
 import coil3.PlatformContext
 import coil3.key.Keyer
 import coil3.util.defaultMemoryCacheSizePercent
+import coil3.util.toImmutableMap
 import coil3.util.totalAvailableMemoryBytes
+import kotlin.jvm.JvmOverloads
 
 /**
  * An LRU cache of [Image]s.
@@ -44,25 +46,71 @@ interface MemoryCache {
      *
      * @param key The value returned by [Keyer.key] (or a custom value).
      * @param extras Extra values that differentiate the associated
-     *  cached value from other values with the same [key]. This map
-     *  **must be** treated as immutable and should not be modified.
+     *  cached value from other values with the same [key].
      */
-    data class Key(
+    class Key @JvmOverloads constructor(
         val key: String,
-        val extras: Map<String, String> = emptyMap(),
-    )
+        extras: Map<String, String> = emptyMap(),
+    ) {
+        val extras = extras.toImmutableMap()
+
+        fun copy(
+            key: String = this.key,
+            extras: Map<String, String> = this.extras,
+        ) = Key(key, extras)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Key &&
+                key == other.key &&
+                extras == other.extras
+        }
+
+        override fun hashCode(): Int {
+            var result = key.hashCode()
+            result = 31 * result + extras.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "Key(key=$key, extras=$extras)"
+        }
+    }
 
     /**
      * The value for an [Image] in the memory cache.
      *
      * @param image The cached [Image].
-     * @param extras Metadata for the [image]. This map **must be**
-     *  treated as immutable and should not be modified.
+     * @param extras Metadata for the [image].
      */
-    data class Value(
+    class Value @JvmOverloads constructor(
         val image: Image,
-        val extras: Map<String, Any> = emptyMap(),
-    )
+        extras: Map<String, Any> = emptyMap(),
+    ) {
+        val extras = extras.toImmutableMap()
+
+        fun copy(
+            image: Image = this.image,
+            extras: Map<String, Any> = this.extras,
+        ) = Value(image, extras)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Value &&
+                image == other.image &&
+                extras == other.extras
+        }
+
+        override fun hashCode(): Int {
+            var result = image.hashCode()
+            result = 31 * result + extras.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "Value(image=$image, extras=$extras)"
+        }
+    }
 
     class Builder {
 
