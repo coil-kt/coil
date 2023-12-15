@@ -8,7 +8,9 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
+@OptIn(ExperimentalWasmDsl::class)
 fun Project.addAllMultiplatformTargets() {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinMultiplatformExtension> {
@@ -27,6 +29,18 @@ fun Project.addAllMultiplatformTargets() {
             jvm()
 
             js {
+                browser()
+                nodejs {
+                    testTask {
+                        useMocha {
+                            timeout = "60s"
+                        }
+                    }
+                }
+                binaries.executable()
+                binaries.library()
+            }
+            wasmJs {
                 browser()
                 nodejs {
                     testTask {
