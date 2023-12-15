@@ -165,12 +165,10 @@ fun Project.applyOkioJsTestWorkaround() {
                             tasks
                                 .getByName(compileKotlinTaskName)
                                 .dependsOn(applyNodePolyfillPlugin)
+                            dependencies {
+                                implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
+                            }
                         }
-                    }
-                }
-                jsTest {
-                    dependencies {
-                        implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
                     }
                 }
             }
