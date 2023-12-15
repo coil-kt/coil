@@ -101,7 +101,7 @@ test-android = [
 test-common = [
     "coroutines-test",
     "kotlin-test",
-#    "okio-fakefilesystem",
+    "okio-fakefilesystem",
 ]
 test-jvm = [
     "androidx-test-core",
@@ -111,6 +111,6 @@ test-jvm = [
     "coroutines-test",
     "junit",
     "kotlin-test",
-#    "okio-fakefilesystem",
+    "okio-fakefilesystem",
     "robolectric",
 ]
