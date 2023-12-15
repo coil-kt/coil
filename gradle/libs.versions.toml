@@ -97,6 +97,7 @@ test-android = [
     "coroutines-test",
     "junit",
     "kotlin-test",
+    "okio-fakefilesystem",
 ]
 test-common = [
     "coroutines-test",
