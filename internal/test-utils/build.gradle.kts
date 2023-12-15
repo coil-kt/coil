@@ -16,7 +16,6 @@ kotlin {
             dependencies {
                 api(projects.coilCore)
                 api(libs.coroutines.test)
-                api(libs.okio.fakefilesystem)
             }
         }
         commonTest {
