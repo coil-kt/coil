@@ -2,11 +2,6 @@ import coil3.addAllMultiplatformTargets
 import coil3.androidInstrumentedTest
 import coil3.androidLibrary
 import coil3.androidUnitTest
-import coil3.jvmCommon
-import coil3.nonAndroidMain
-import coil3.nonJsMain
-import coil3.nonJsTest
-import coil3.nonJvmCommon
 
 plugins {
     id("com.android.library")
@@ -19,12 +14,6 @@ addAllMultiplatformTargets()
 androidLibrary(name = "coil3.core")
 
 kotlin {
-    jvmCommon()
-    nonAndroidMain()
-    nonJsMain()
-    nonJsTest()
-    nonJvmCommon()
-
     sourceSets {
         commonMain {
             dependencies {

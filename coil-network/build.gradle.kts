@@ -1,7 +1,6 @@
 import coil3.addAllMultiplatformTargets
 import coil3.androidLibrary
 import coil3.androidUnitTest
-import coil3.nonAndroidMain
 
 plugins {
     id("com.android.library")
@@ -13,8 +12,6 @@ addAllMultiplatformTargets()
 androidLibrary(name = "coil3.network")
 
 kotlin {
-    nonAndroidMain()
-
     sourceSets {
         commonMain {
             dependencies {

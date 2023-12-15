@@ -1,5 +1,5 @@
 import coil3.androidApplication
-import coil3.sourceSet
+import coil3.applyCoilHierarchyTemplate
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
@@ -53,7 +53,7 @@ compose {
 }
 
 kotlin {
-    applyDefaultHierarchyTemplate()
+    applyCoilHierarchyTemplate()
 
     androidTarget()
 
@@ -79,11 +79,6 @@ kotlin {
             isStatic = true
         }
     }
-
-    sourceSet(
-        name = "nonAndroidMain",
-        children = listOf("desktopMain", "iosMain", "jsMain"),
-    )
 
     sourceSets {
         commonMain {
