@@ -13,6 +13,9 @@ build
 *.iws
 .idea
 
+# Kotlin
+.kotlin
+
 # Docs
 docs/api
 site
