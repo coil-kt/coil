@@ -1,11 +1,13 @@
 package coil.compose
 
+import coil.size.Size as CoilSize
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -38,7 +40,6 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Dimension
 import coil.size.Precision
-import coil.size.Size as CoilSize
 import coil.transition.CrossfadeTransition
 import coil.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
@@ -82,6 +83,7 @@ import kotlinx.coroutines.launch
  *  destination.
  */
 @Composable
+@NonRestartableComposable
 fun rememberAsyncImagePainter(
     model: Any?,
     imageLoader: ImageLoader,
