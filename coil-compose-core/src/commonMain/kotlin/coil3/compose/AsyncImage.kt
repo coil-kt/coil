@@ -18,10 +18,6 @@ import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
@@ -159,9 +155,10 @@ fun AsyncImage(
 
 /** Draws the current image content. */
 @Composable
-internal fun Content(
+private fun Content(
     modifier: Modifier,
-    painter: Painter,
+    // Require AsyncImagePainter so Content is skippable.
+    painter: AsyncImagePainter,
     contentDescription: String?,
     alignment: Alignment,
     contentScale: ContentScale,
@@ -225,18 +222,6 @@ internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     fun setConstraints(constraints: Constraints) {
         _constraints.value = constraints
-    }
-}
-
-@Stable
-private fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    if (contentDescription != null) {
-        return semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        return this
     }
 }
 
