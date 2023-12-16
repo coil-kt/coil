@@ -8,6 +8,8 @@ import androidx.compose.ui.unit.Constraints
 import coil.size.Size
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 
 /**
  * A [SizeResolver] that computes the size from the constraints passed during the layout phase.
@@ -18,12 +20,13 @@ internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     override suspend fun size(): Size {
         return currentConstraints
-            .firstNotNullOf(Constraints::toSizeOrNull)
+            .mapNotNull(Constraints::toSizeOrNull)
+            .first()
     }
 
     override fun MeasureScope.measure(
         measurable: Measurable,
-        constraints: Constraints
+        constraints: Constraints,
     ): MeasureResult {
         // Cache the current constraints.
         currentConstraints.value = constraints

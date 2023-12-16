@@ -22,11 +22,7 @@ import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size as CoilSize
 import coil.size.SizeResolver
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.first
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
@@ -144,39 +140,11 @@ internal fun Constraints.toSizeOrNull(): CoilSize? {
     if (isZero) {
         return null
     } else {
-        return CoilSize(
-            width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
-            height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
-        )
+        val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined
+        val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
+        return CoilSize(width, height)
     }
 }
-
-/** Similar to [Flow.first], but returns the first item that [transform] returns not-null for. */
-internal suspend inline fun <T, R : Any> Flow<T>.firstNotNullOf(
-    crossinline transform: suspend (value: T) -> R?,
-): R {
-    var result: R? = null
-
-    val collector = object : FlowCollector<T> {
-        override suspend fun emit(value: T) {
-            result = transform(value)
-            if (result != null) {
-                throw AbortFlowException(this)
-            }
-        }
-    }
-    try {
-        collect(collector)
-    } catch (e: AbortFlowException) {
-        if (e.owner !== collector) {
-            throw e
-        }
-    }
-
-    return result ?: throw NoSuchElementException()
-}
-
-internal class AbortFlowException(val owner: FlowCollector<*>) : CancellationException()
 
 internal fun Constraints.constrainWidth(width: Float) =
     width.coerceIn(minWidth.toFloat(), maxWidth.toFloat())
