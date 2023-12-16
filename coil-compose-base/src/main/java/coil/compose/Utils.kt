@@ -3,10 +3,15 @@ package coil.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
@@ -69,6 +74,18 @@ internal fun onStateOf(
         }
     } else {
         null
+    }
+}
+
+@Stable
+internal fun Modifier.contentDescription(contentDescription: String?): Modifier {
+    if (contentDescription != null) {
+        return semantics {
+            this.contentDescription = contentDescription
+            this.role = Role.Image
+        }
+    } else {
+        return this
     }
 }
 

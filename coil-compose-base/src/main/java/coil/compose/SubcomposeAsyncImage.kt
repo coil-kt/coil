@@ -9,12 +9,14 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
@@ -208,14 +210,22 @@ fun SubcomposeAsyncImageScope.SubcomposeAsyncImageContent(
     contentScale: ContentScale = this.contentScale,
     alpha: Float = this.alpha,
     colorFilter: ColorFilter? = this.colorFilter,
-) = Content(
-    modifier = modifier,
-    painter = painter,
-    contentDescription = contentDescription,
-    alignment = alignment,
-    contentScale = contentScale,
-    alpha = alpha,
-    colorFilter = colorFilter
+) = Layout(
+    modifier = modifier
+        .contentDescription(contentDescription)
+        .clipToBounds()
+        .then(
+            ContentPainterModifier(
+                painter = painter,
+                alignment = alignment,
+                contentScale = contentScale,
+                alpha = alpha,
+                colorFilter = colorFilter
+            )
+        ),
+    measurePolicy = { _, constraints ->
+        layout(constraints.minWidth, constraints.minHeight) {}
+    }
 )
 
 @Stable
