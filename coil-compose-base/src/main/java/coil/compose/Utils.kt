@@ -26,6 +26,7 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.first
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
@@ -150,6 +151,7 @@ internal fun Constraints.toSizeOrNull(): CoilSize? {
     }
 }
 
+/** Similar to [Flow.first], but returns the first item that [transform] returns not-null for. */
 internal suspend inline fun <T, R : Any> Flow<T>.firstNotNullOf(
     crossinline transform: suspend (value: T) -> R?,
 ): R {
