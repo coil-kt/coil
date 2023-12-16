@@ -9,6 +9,7 @@ import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
 @OptIn(ExperimentalWasmDsl::class)
 fun Project.addAllMultiplatformTargets() {
@@ -28,7 +29,7 @@ fun Project.addAllMultiplatformTargets() {
 
             jvm()
 
-            js {
+            val configureJs: KotlinJsTargetDsl.() -> Unit = {
                 browser()
                 nodejs {
                     testTask {
@@ -40,18 +41,8 @@ fun Project.addAllMultiplatformTargets() {
                 binaries.executable()
                 binaries.library()
             }
-            wasmJs {
-                browser()
-                nodejs {
-                    testTask {
-                        useMocha {
-                            timeout = "60s"
-                        }
-                    }
-                }
-                binaries.executable()
-                binaries.library()
-            }
+            js(configureJs)
+            wasmJs(configureJs)
 
             iosX64()
             iosArm64()
