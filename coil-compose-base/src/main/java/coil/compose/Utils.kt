@@ -140,10 +140,9 @@ internal fun Constraints.toSizeOrNull(): CoilSize? {
     if (isZero) {
         return null
     } else {
-        return CoilSize(
-            width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
-            height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
-        )
+        val width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined
+        val height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
+        return CoilSize(width, height)
     }
 }
 
