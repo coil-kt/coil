@@ -1,6 +1,5 @@
 package coil.compose
 
-import coil.size.Size as CoilSize
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
@@ -40,6 +39,7 @@ import coil.request.ImageResult
 import coil.request.SuccessResult
 import coil.size.Dimension
 import coil.size.Precision
+import coil.size.Size as CoilSize
 import coil.transition.CrossfadeTransition
 import coil.transition.TransitionTarget
 import com.google.accompanist.drawablepainter.DrawablePainter
