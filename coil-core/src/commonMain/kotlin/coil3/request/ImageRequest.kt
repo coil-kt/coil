@@ -615,7 +615,7 @@ class ImageRequest private constructor(
                 target = target,
                 listener = listener,
                 memoryCacheKey = memoryCacheKey,
-                memoryCacheKeyExtras = lazyMemoryCacheKeyExtras.orEmpty(),
+                memoryCacheKeyExtras = lazyMemoryCacheKeyExtras?.toMap().orEmpty(),
                 diskCacheKey = diskCacheKey,
                 fileSystem = fileSystem ?: defaults.fileSystem,
                 fetcherFactory = fetcherFactory,
