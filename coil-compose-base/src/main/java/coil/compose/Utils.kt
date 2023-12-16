@@ -18,6 +18,7 @@ import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
+import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size as CoilSize
 import coil.size.SizeResolver
@@ -25,7 +26,6 @@ import kotlin.math.roundToInt
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
-@Stable
 internal fun requestOf(model: Any?): ImageRequest {
     if (model is ImageRequest) {
         return model
@@ -39,38 +39,27 @@ internal fun requestOf(model: Any?): ImageRequest {
     }
 }
 
-/** Create an [ImageRequest] with a defined [SizeResolver] from the [model]. */
+/** Create an [ImageRequest] with a not-null [SizeResolver] from the [model]. */
 @Composable
-@Stable
 internal fun requestOfWithSizeResolver(
     model: Any?,
     contentScale: ContentScale,
 ): ImageRequest {
-    var sizeResolver = if (model is ImageRequest) {
-        model.defined.sizeResolver
-    } else {
-        null
+    if (model is ImageRequest && model.defined.sizeResolver != null) {
+        return model
     }
 
-    // Can't inline or it breaks smart cast.
-    val updated = sizeResolver == null
-    if (sizeResolver == null) {
-        sizeResolver = if (contentScale == ContentScale.None) {
-            OriginalSizeResolver
-        } else {
-            remember { ConstraintsSizeResolver() }
-        }
+    val sizeResolver = if (contentScale == ContentScale.None) {
+        OriginalSizeResolver
+    } else {
+        remember { ConstraintsSizeResolver() }
     }
 
     if (model is ImageRequest) {
-        if (updated) {
-            return remember(model, sizeResolver) {
-                model.newBuilder()
-                    .size(sizeResolver)
-                    .build()
-            }
-        } else {
-            return model
+        return remember(model, sizeResolver) {
+            model.newBuilder()
+                .size(sizeResolver)
+                .build()
         }
     } else {
         val context = LocalContext.current
@@ -144,6 +133,18 @@ internal fun Modifier.contentDescription(contentDescription: String?): Modifier 
 internal fun ContentScale.toScale() = when (this) {
     ContentScale.Fit, ContentScale.Inside -> Scale.FIT
     else -> Scale.FILL
+}
+
+@Stable
+internal fun Constraints.toSizeOrNull(): CoilSize? {
+    if (isZero) {
+        return null
+    } else {
+        return CoilSize(
+            width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
+            height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
+        )
+    }
 }
 
 internal fun Constraints.constrainWidth(width: Float) =

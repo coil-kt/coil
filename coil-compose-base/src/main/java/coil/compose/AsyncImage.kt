@@ -2,7 +2,6 @@ package coil.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -22,8 +21,6 @@ import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
-import coil.size.Dimension
-import coil.size.Size as CoilSize
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -205,13 +202,4 @@ internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
     fun setConstraints(constraints: Constraints) {
         _constraints.value = constraints
     }
-}
-
-@Stable
-private fun Constraints.toSizeOrNull() = when {
-    isZero -> null
-    else -> CoilSize(
-        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
-        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
-    )
 }
