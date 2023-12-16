@@ -18,10 +18,6 @@ import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
@@ -132,7 +128,12 @@ fun AsyncImage(
     // Create and execute the image request.
     val request = updateRequest(requestOf(model), contentScale)
     val painter = rememberAsyncImagePainter(
-        request, imageLoader, transform, onState, contentScale, filterQuality
+        model = request,
+        imageLoader = imageLoader,
+        transform = transform,
+        onState = onState,
+        contentScale = contentScale,
+        filterQuality = filterQuality,
     )
 
     // Draw the content without a parent composable or subcomposition.
@@ -154,9 +155,10 @@ fun AsyncImage(
 
 /** Draws the current image content. */
 @Composable
-internal fun Content(
+private fun Content(
     modifier: Modifier,
-    painter: Painter,
+    // Require AsyncImagePainter so Content is skippable.
+    painter: AsyncImagePainter,
     contentDescription: String?,
     alignment: Alignment,
     contentScale: ContentScale,
@@ -181,7 +183,10 @@ internal fun Content(
 )
 
 @Composable
-internal fun updateRequest(request: ImageRequest, contentScale: ContentScale): ImageRequest {
+internal fun updateRequest(
+    request: ImageRequest,
+    contentScale: ContentScale,
+): ImageRequest {
     return if (request.defined.sizeResolver == null) {
         val sizeResolver = if (contentScale == ContentScale.None) {
             SizeResolver(CoilSize.ORIGINAL)
@@ -217,18 +222,6 @@ internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
     fun setConstraints(constraints: Constraints) {
         _constraints.value = constraints
-    }
-}
-
-@Stable
-private fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    if (contentDescription != null) {
-        return semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        return this
     }
 }
 
