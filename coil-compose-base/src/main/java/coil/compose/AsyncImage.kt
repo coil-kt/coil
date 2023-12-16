@@ -2,8 +2,6 @@ package coil.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -23,8 +21,6 @@ import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
-import coil.size.Dimension
-import coil.size.Size as CoilSize
 import coil.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -126,7 +122,7 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(requestOf(model), contentScale)
+    val request = requestOfWithSizeResolver(model, contentScale)
     val painter = rememberAsyncImagePainter(
         model = request,
         imageLoader = imageLoader,
@@ -182,23 +178,6 @@ private fun Content(
     }
 )
 
-@Composable
-internal fun updateRequest(
-    request: ImageRequest,
-    contentScale: ContentScale,
-): ImageRequest {
-    return if (request.defined.sizeResolver == null) {
-        val sizeResolver = if (contentScale == ContentScale.None) {
-            SizeResolver(CoilSize.ORIGINAL)
-        } else {
-            remember { ConstraintsSizeResolver() }
-        }
-        request.newBuilder().size(sizeResolver).build()
-    } else {
-        request
-    }
-}
-
 /** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
 internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
 
@@ -223,13 +202,4 @@ internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
     fun setConstraints(constraints: Constraints) {
         _constraints.value = constraints
     }
-}
-
-@Stable
-private fun Constraints.toSizeOrNull() = when {
-    isZero -> null
-    else -> CoilSize(
-        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
-        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined
-    )
 }
