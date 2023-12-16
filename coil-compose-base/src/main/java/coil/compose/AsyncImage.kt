@@ -3,7 +3,6 @@ package coil.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -126,7 +125,7 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(requestOf(model), contentScale)
+    val request = requestOfWithSizeResolver(model, contentScale)
     val painter = rememberAsyncImagePainter(
         model = request,
         imageLoader = imageLoader,
@@ -181,23 +180,6 @@ private fun Content(
         layout(constraints.minWidth, constraints.minHeight) {}
     }
 )
-
-@Composable
-internal fun updateRequest(
-    request: ImageRequest,
-    contentScale: ContentScale,
-): ImageRequest {
-    return if (request.defined.sizeResolver == null) {
-        val sizeResolver = if (contentScale == ContentScale.None) {
-            SizeResolver(CoilSize.ORIGINAL)
-        } else {
-            remember { ConstraintsSizeResolver() }
-        }
-        request.newBuilder().size(sizeResolver).build()
-    } else {
-        request
-    }
-}
 
 /** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
 internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {

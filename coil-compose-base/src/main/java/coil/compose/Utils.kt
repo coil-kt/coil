@@ -1,8 +1,8 @@
 package coil.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.Painter
@@ -19,16 +19,67 @@ import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import coil.size.Scale
+import coil.size.Size as CoilSize
+import coil.size.SizeResolver
 import kotlin.math.roundToInt
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
-@ReadOnlyComposable
+@Stable
 internal fun requestOf(model: Any?): ImageRequest {
     if (model is ImageRequest) {
         return model
     } else {
-        return ImageRequest.Builder(LocalContext.current).data(model).build()
+        val context = LocalContext.current
+        return remember(context, model) {
+            ImageRequest.Builder(context)
+                .data(model)
+                .build()
+        }
+    }
+}
+
+/** Create an [ImageRequest] with a defined [SizeResolver] from the [model]. */
+@Composable
+@Stable
+internal fun requestOfWithSizeResolver(
+    model: Any?,
+    contentScale: ContentScale,
+): ImageRequest {
+    var sizeResolver = if (model is ImageRequest) {
+        model.defined.sizeResolver
+    } else {
+        null
+    }
+
+    // Can't inline or it breaks smart cast.
+    val updated = sizeResolver == null
+    if (sizeResolver == null) {
+        sizeResolver = if (contentScale == ContentScale.None) {
+            OriginalSizeResolver
+        } else {
+            remember { ConstraintsSizeResolver() }
+        }
+    }
+
+    if (model is ImageRequest) {
+        if (updated) {
+            return remember(model, sizeResolver) {
+                model.newBuilder()
+                    .size(sizeResolver)
+                    .build()
+            }
+        } else {
+            return model
+        }
+    } else {
+        val context = LocalContext.current
+        return remember(context, model, sizeResolver) {
+            ImageRequest.Builder(context)
+                .data(model)
+                .size(sizeResolver)
+                .build()
+        }
     }
 }
 
@@ -106,3 +157,5 @@ internal inline fun Float.takeOrElse(block: () -> Float) = if (isFinite()) this 
 internal fun Size.toIntSize() = IntSize(width.roundToInt(), height.roundToInt())
 
 internal val ZeroConstraints = Constraints.fixed(0, 0)
+
+internal val OriginalSizeResolver = SizeResolver(CoilSize.ORIGINAL)

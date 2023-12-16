@@ -121,9 +121,14 @@ fun SubcomposeAsyncImage(
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(requestOf(model), contentScale)
+    val request = requestOfWithSizeResolver(model, contentScale)
     val painter = rememberAsyncImagePainter(
-        request, imageLoader, transform, onState, contentScale, filterQuality
+        model = request,
+        imageLoader = imageLoader,
+        transform = transform,
+        onState = onState,
+        contentScale = contentScale,
+        filterQuality = filterQuality,
     )
 
     val sizeResolver = request.sizeResolver
