@@ -23,12 +23,14 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
+import coil3.annotation.Data
 import kotlin.math.roundToInt
 
 /**
  * A custom [paint] modifier used by [Content].
  */
-internal data class ContentPainterModifier(
+@Data
+internal class ContentPainterModifier(
     private val painter: Painter,
     private val alignment: Alignment,
     private val contentScale: ContentScale,

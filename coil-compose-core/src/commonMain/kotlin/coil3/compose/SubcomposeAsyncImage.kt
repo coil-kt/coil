@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import coil3.ImageLoader
+import coil3.annotation.Data
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.request.ImageRequest
@@ -260,7 +261,8 @@ private fun contentOf(
     }
 }
 
-private data class RealSubcomposeAsyncImageScope(
+@Data
+private class RealSubcomposeAsyncImageScope(
     private val parentScope: BoxScope,
     override val painter: AsyncImagePainter,
     override val contentDescription: String?,
