@@ -1,12 +1,12 @@
-package coil.compose
+package coil3.compose
 
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
-import coil.size.Size
-import coil.size.SizeResolver
+import coil3.size.Size
+import coil3.size.SizeResolver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull

@@ -29,7 +29,7 @@ internal fun requestOf(model: Any?): ImageRequest {
     if (model is ImageRequest) {
         return model
     } else {
-        val context = LocalContext.current
+        val context = LocalPlatformContext.current
         return remember(context, model) {
             ImageRequest.Builder(context)
                 .data(model)
@@ -61,7 +61,7 @@ internal fun requestOfWithSizeResolver(
                 .build()
         }
     } else {
-        val context = LocalContext.current
+        val context = LocalPlatformContext.current
         return remember(context, model, sizeResolver) {
             ImageRequest.Builder(context)
                 .data(model)
