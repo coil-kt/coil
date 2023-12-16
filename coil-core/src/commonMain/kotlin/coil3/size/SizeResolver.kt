@@ -5,12 +5,10 @@ package coil3.size
 
 import coil3.annotation.MainThread
 import coil3.request.ImageRequest
-import kotlin.jvm.JvmName
 
 /**
  * Create a [SizeResolver] with a fixed [size].
  */
-@JvmName("create")
 fun SizeResolver(size: Size): SizeResolver = RealSizeResolver(size)
 
 /**

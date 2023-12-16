@@ -4,7 +4,6 @@ import coil3.decode.ImageSource.Metadata
 import coil3.fetch.Fetcher
 import coil3.util.closeQuietly
 import coil3.util.createTempFile
-import kotlin.jvm.JvmName
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import okio.BufferedSource
@@ -22,7 +21,6 @@ import okio.buffer
  * @param closeable An optional closeable reference that will be closed when the image source is closed.
  * @param metadata Metadata for this image source.
  */
-@JvmName("create")
 fun ImageSource(
     file: Path,
     fileSystem: FileSystem,
@@ -38,7 +36,6 @@ fun ImageSource(
  * @param fileSystem The file system which will be used to create a temporary file if necessary.
  * @param metadata Metadata for this image source.
  */
-@JvmName("create")
 fun ImageSource(
     source: BufferedSource,
     fileSystem: FileSystem,
