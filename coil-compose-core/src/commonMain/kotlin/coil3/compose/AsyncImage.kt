@@ -186,7 +186,10 @@ internal fun Content(
 )
 
 @Composable
-internal fun updateRequest(request: ImageRequest, contentScale: ContentScale): ImageRequest {
+internal fun updateRequest(
+    request: ImageRequest,
+    contentScale: ContentScale,
+): ImageRequest {
     return if (request.defined.sizeResolver == null) {
         val sizeResolver = if (contentScale == ContentScale.None) {
             SizeResolver(CoilSize.ORIGINAL)

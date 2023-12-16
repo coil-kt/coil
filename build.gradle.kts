@@ -1,3 +1,4 @@
+import coil3.enableComposeMetrics
 import coil3.groupId
 import coil3.publicModules
 import coil3.versionName
@@ -14,6 +15,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
@@ -146,6 +148,19 @@ allprojects {
     plugins.withId("dev.drewhamilton.poko") {
         extensions.configure<PokoPluginExtension> {
             pokoAnnotation = "coil3.annotation.Data"
+        }
+    }
+
+    if (enableComposeMetrics && name in publicModules) {
+        plugins.withId("org.jetbrains.compose") {
+            tasks.withType<KotlinCompile> {
+                val plugin = "plugin:androidx.compose.compiler.plugins.kotlin"
+                val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile.path
+                compilerOptions.freeCompilerArgs.addAll(
+                    "-P", "$plugin:metricsDestination=$outputDir",
+                    "-P", "$plugin:reportsDestination=$outputDir",
+                )
+            }
         }
     }
 

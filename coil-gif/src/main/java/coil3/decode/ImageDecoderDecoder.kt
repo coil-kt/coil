@@ -47,7 +47,7 @@ import okio.buffer
 class ImageDecoderDecoder @JvmOverloads constructor(
     private val source: ImageSource,
     private val options: Options,
-    private val enforceMinimumFrameDelay: Boolean = true
+    private val enforceMinimumFrameDelay: Boolean = true,
 ) : Decoder {
 
     override suspend fun decode(): DecodeResult {
@@ -71,7 +71,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
                             srcHeight = srcHeight,
                             dstWidth = dstWidth,
                             dstHeight = dstHeight,
-                            scale = options.scale
+                            scale = options.scale,
                         )
 
                         // Set the target size if the image is larger than the requested dimensions

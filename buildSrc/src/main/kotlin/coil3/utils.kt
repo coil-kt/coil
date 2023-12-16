@@ -41,13 +41,24 @@ val Project.versionCode: Int
             (unit * 10.0.pow(2 * index + 1)).toInt()
         }
 
-private fun Project.intProperty(name: String): Int {
-    return (property(name) as String).toInt()
-}
+// ./gradlew -PenableComposeMetrics=true coil-compose:assemble
+val Project.enableComposeMetrics: Boolean
+    get() = booleanProperty("enableComposeMetrics") { false }
 
-private fun Project.stringProperty(name: String): String {
-    return property(name) as String
-}
+private fun Project.intProperty(
+    name: String,
+    default: () -> Int = { error("unknown property: $name") },
+): Int = (properties[name] as String?)?.toInt() ?: default()
+
+private fun Project.stringProperty(
+    name: String,
+    default: () -> String = { error("unknown property: $name") },
+): String = (properties[name] as String?) ?: default()
+
+private fun Project.booleanProperty(
+    name: String,
+    default: () -> Boolean = { error("unknown property: $name") },
+): Boolean = (properties[name] as String?)?.toBooleanStrict() ?: default()
 
 private inline fun <T> List<T>.sumByIndexed(selector: (Int, T) -> Int): Int {
     var index = 0
