@@ -12,19 +12,10 @@ import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQ
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.LayoutModifier
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.MeasureResult
-import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.unit.Constraints
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil.compose.AsyncImagePainter.State
 import coil.request.ImageRequest
-import coil.size.SizeResolver
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
@@ -122,7 +113,10 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) {
     // Create and execute the image request.
-    val request = requestOfWithSizeResolver(model, contentScale)
+    val request = requestOfWithSizeResolver(
+        model = model,
+        contentScale = contentScale,
+    )
     val painter = rememberAsyncImagePainter(
         model = request,
         imageLoader = imageLoader,
@@ -132,7 +126,7 @@ fun AsyncImage(
         filterQuality = filterQuality,
     )
 
-    // Draw the content without a parent composable or subcomposition.
+    // Draw the content.
     val sizeResolver = request.sizeResolver
     Content(
         modifier = if (sizeResolver is ConstraintsSizeResolver) {
@@ -177,29 +171,3 @@ private fun Content(
         layout(constraints.minWidth, constraints.minHeight) {}
     }
 )
-
-/** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
-internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
-
-    private val _constraints = MutableStateFlow(ZeroConstraints)
-
-    override suspend fun size() = _constraints.mapNotNull(Constraints::toSizeOrNull).first()
-
-    override fun MeasureScope.measure(
-        measurable: Measurable,
-        constraints: Constraints
-    ): MeasureResult {
-        // Cache the current constraints.
-        _constraints.value = constraints
-
-        // Measure and layout the content.
-        val placeable = measurable.measure(constraints)
-        return layout(placeable.width, placeable.height) {
-            placeable.place(0, 0)
-        }
-    }
-
-    fun setConstraints(constraints: Constraints) {
-        _constraints.value = constraints
-    }
-}

@@ -22,7 +22,10 @@ import coil.size.Dimension
 import coil.size.Scale
 import coil.size.Size as CoilSize
 import coil.size.SizeResolver
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
@@ -146,6 +149,32 @@ internal fun Constraints.toSizeOrNull(): CoilSize? {
         )
     }
 }
+
+internal suspend inline fun <T, R : Any> Flow<T>.firstNotNullOf(
+    crossinline transform: suspend (value: T) -> R?,
+): R {
+    var result: R? = null
+
+    val collector = object : FlowCollector<T> {
+        override suspend fun emit(value: T) {
+            result = transform(value)
+            if (result != null) {
+                throw AbortFlowException(this)
+            }
+        }
+    }
+    try {
+        collect(collector)
+    } catch (e: AbortFlowException) {
+        if (e.owner !== collector) {
+            throw e
+        }
+    }
+
+    return result ?: throw NoSuchElementException()
+}
+
+internal class AbortFlowException(val owner: FlowCollector<*>) : CancellationException()
 
 internal fun Constraints.constrainWidth(width: Float) =
     width.coerceIn(minWidth.toFloat(), maxWidth.toFloat())
