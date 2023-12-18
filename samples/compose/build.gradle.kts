@@ -3,7 +3,6 @@ import coil3.applyCoilHierarchyTemplate
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
 plugins {
     id("com.android.application")
@@ -35,6 +34,7 @@ androidApplication(name = "sample.compose") {
 
 compose {
     kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+    experimental.web.application {}
     desktop {
         application {
             mainClass = "sample.compose.MainKt"
@@ -49,9 +49,6 @@ compose {
             }
         }
     }
-    experimental {
-        web.application {}
-    }
 }
 
 kotlin {
@@ -61,7 +58,7 @@ kotlin {
 
     jvm("desktop")
 
-    val configureJs: KotlinJsTargetDsl.() -> Unit = {
+    js {
         moduleName = "coilSample"
         browser {
             commonWebpackConfig {
@@ -70,9 +67,13 @@ kotlin {
         }
         binaries.executable()
     }
-    js(configureJs)
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs(configureJs)
+    wasmJs {
+        moduleName = "coilSample"
+        browser()
+        binaries.executable()
+        applyBinaryen()
+    }
 
     arrayOf(
         iosX64(),

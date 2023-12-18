@@ -11,6 +11,7 @@ androidLibrary(name = "coil3.test.roborazzi")
 
 compose {
     kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+    experimental.web.application {}
 }
 
 dependencies {
