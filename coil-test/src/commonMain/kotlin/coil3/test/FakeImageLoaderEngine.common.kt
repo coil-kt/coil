@@ -11,10 +11,18 @@ import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.size.Size
 import coil3.test.FakeImageLoaderEngine.RequestTransformer
-import kotlin.jvm.JvmName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+
+/**
+ * Create a new [FakeImageLoaderEngine] that returns [image] for all requests.
+ */
+fun FakeImageLoaderEngine(image: Image): FakeImageLoaderEngine {
+    return FakeImageLoaderEngine.Builder()
+        .default(image)
+        .build()
+}
 
 /**
  * An [ImageLoader] interceptor that intercepts all incoming requests before they're fetched
@@ -223,13 +231,3 @@ class FakeImageLoaderEngine private constructor(
 }
 
 internal expect fun defaultRequestTransformer(): RequestTransformer
-
-/**
- * Create a new [FakeImageLoaderEngine] that returns [image] for all requests.
- */
-@JvmName("create")
-fun FakeImageLoaderEngine(image: Image): FakeImageLoaderEngine {
-    return FakeImageLoaderEngine.Builder()
-        .default(image)
-        .build()
-}

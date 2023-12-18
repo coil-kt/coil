@@ -319,10 +319,10 @@ public abstract class coil3/decode/ImageSource$Metadata {
 }
 
 public final class coil3/decode/ImageSourceKt {
-	public static final fun create (Lokio/BufferedSource;Lokio/FileSystem;Lcoil3/decode/ImageSource$Metadata;)Lcoil3/decode/ImageSource;
-	public static final fun create (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil3/decode/ImageSource$Metadata;)Lcoil3/decode/ImageSource;
-	public static synthetic fun create$default (Lokio/BufferedSource;Lokio/FileSystem;Lcoil3/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil3/decode/ImageSource;
-	public static synthetic fun create$default (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil3/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil3/decode/ImageSource;
+	public static final fun ImageSource (Lokio/BufferedSource;Lokio/FileSystem;Lcoil3/decode/ImageSource$Metadata;)Lcoil3/decode/ImageSource;
+	public static final fun ImageSource (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil3/decode/ImageSource$Metadata;)Lcoil3/decode/ImageSource;
+	public static synthetic fun ImageSource$default (Lokio/BufferedSource;Lokio/FileSystem;Lcoil3/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil3/decode/ImageSource;
+	public static synthetic fun ImageSource$default (Lokio/Path;Lokio/FileSystem;Ljava/lang/String;Ljava/io/Closeable;Lcoil3/decode/ImageSource$Metadata;ILjava/lang/Object;)Lcoil3/decode/ImageSource;
 }
 
 public final class coil3/decode/ResourceMetadata : coil3/decode/ImageSource$Metadata {
@@ -897,7 +897,7 @@ public abstract interface class coil3/size/SizeResolver {
 }
 
 public final class coil3/size/SizeResolverKt {
-	public static final fun create (Lcoil3/size/Size;)Lcoil3/size/SizeResolver;
+	public static final fun SizeResolver (Lcoil3/size/Size;)Lcoil3/size/SizeResolver;
 }
 
 public abstract interface class coil3/size/ViewSizeResolver : coil3/size/SizeResolver {
@@ -908,9 +908,9 @@ public abstract interface class coil3/size/ViewSizeResolver : coil3/size/SizeRes
 }
 
 public final class coil3/size/ViewSizeResolverKt {
-	public static final fun create (Landroid/view/View;)Lcoil3/size/ViewSizeResolver;
-	public static final fun create (Landroid/view/View;Z)Lcoil3/size/ViewSizeResolver;
-	public static synthetic fun create$default (Landroid/view/View;ZILjava/lang/Object;)Lcoil3/size/ViewSizeResolver;
+	public static final fun ViewSizeResolver (Landroid/view/View;)Lcoil3/size/ViewSizeResolver;
+	public static final fun ViewSizeResolver (Landroid/view/View;Z)Lcoil3/size/ViewSizeResolver;
+	public static synthetic fun ViewSizeResolver$default (Landroid/view/View;ZILjava/lang/Object;)Lcoil3/size/ViewSizeResolver;
 }
 
 public abstract class coil3/target/GenericViewTarget : androidx/lifecycle/DefaultLifecycleObserver, coil3/target/ViewTarget, coil3/transition/TransitionTarget {

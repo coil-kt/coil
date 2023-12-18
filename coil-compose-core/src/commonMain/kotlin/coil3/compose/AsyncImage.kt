@@ -2,8 +2,6 @@ package coil3.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -14,25 +12,10 @@ import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQ
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.LayoutModifier
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.MeasureResult
-import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Constraints
 import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.request.ImageRequest
-import coil3.size.Dimension
-import coil3.size.Size as CoilSize
-import coil3.size.SizeResolver
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
 
 /**
  * A composable that executes an [ImageRequest] asynchronously and renders the result.
@@ -130,7 +113,10 @@ fun AsyncImage(
     filterQuality: FilterQuality = DefaultFilterQuality,
 ) {
     // Create and execute the image request.
-    val request = updateRequest(requestOf(model), contentScale)
+    val request = requestOfWithSizeResolver(
+        model = model,
+        contentScale = contentScale,
+    )
     val painter = rememberAsyncImagePainter(
         model = request,
         imageLoader = imageLoader,
@@ -140,7 +126,7 @@ fun AsyncImage(
         filterQuality = filterQuality,
     )
 
-    // Draw the content without a parent composable or subcomposition.
+    // Draw the content.
     val sizeResolver = request.sizeResolver
     Content(
         modifier = if (sizeResolver is ConstraintsSizeResolver) {
@@ -159,9 +145,10 @@ fun AsyncImage(
 
 /** Draws the current image content. */
 @Composable
-internal fun Content(
+private fun Content(
     modifier: Modifier,
-    painter: Painter,
+    // Require AsyncImagePainter so Content is skippable.
+    painter: AsyncImagePainter,
     contentDescription: String?,
     alignment: Alignment,
     contentScale: ContentScale,
@@ -184,67 +171,3 @@ internal fun Content(
         layout(constraints.minWidth, constraints.minHeight) {}
     },
 )
-
-@Composable
-internal fun updateRequest(
-    request: ImageRequest,
-    contentScale: ContentScale,
-): ImageRequest {
-    return if (request.defined.sizeResolver == null) {
-        val sizeResolver = if (contentScale == ContentScale.None) {
-            SizeResolver(CoilSize.ORIGINAL)
-        } else {
-            remember { ConstraintsSizeResolver() }
-        }
-        request.newBuilder().size(sizeResolver).build()
-    } else {
-        request
-    }
-}
-
-/** A [SizeResolver] that computes the size from the constrains passed during the layout phase. */
-internal class ConstraintsSizeResolver : SizeResolver, LayoutModifier {
-
-    private val _constraints = MutableStateFlow(ZeroConstraints)
-
-    override suspend fun size() = _constraints.mapNotNull(Constraints::toSizeOrNull).first()
-
-    override fun MeasureScope.measure(
-        measurable: Measurable,
-        constraints: Constraints,
-    ): MeasureResult {
-        // Cache the current constraints.
-        _constraints.value = constraints
-
-        // Measure and layout the content.
-        val placeable = measurable.measure(constraints)
-        return layout(placeable.width, placeable.height) {
-            placeable.place(0, 0)
-        }
-    }
-
-    fun setConstraints(constraints: Constraints) {
-        _constraints.value = constraints
-    }
-}
-
-@Stable
-private fun Modifier.contentDescription(contentDescription: String?): Modifier {
-    if (contentDescription != null) {
-        return semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        return this
-    }
-}
-
-@Stable
-private fun Constraints.toSizeOrNull() = when {
-    isZero -> null
-    else -> CoilSize(
-        width = if (hasBoundedWidth) Dimension(maxWidth) else Dimension.Undefined,
-        height = if (hasBoundedHeight) Dimension(maxHeight) else Dimension.Undefined,
-    )
-}

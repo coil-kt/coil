@@ -12,6 +12,7 @@ import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.size.Size
+import kotlin.jvm.JvmField
 
 actual abstract class EventListener : ImageRequest.Listener {
 
@@ -80,11 +81,11 @@ actual abstract class EventListener : ImageRequest.Listener {
         actual fun create(request: ImageRequest): EventListener
 
         actual companion object {
-            actual val NONE = Factory { EventListener.NONE }
+            @JvmField actual val NONE = Factory { EventListener.NONE }
         }
     }
 
     actual companion object {
-        actual val NONE = object : EventListener() {}
+        @JvmField actual val NONE = object : EventListener() {}
     }
 }

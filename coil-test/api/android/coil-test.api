@@ -74,13 +74,13 @@ public final class coil3/test/FakeImageLoaderEngine$ResultValue {
 }
 
 public final class coil3/test/FakeImageLoaderEngineKt {
-	public static final fun create (Landroid/graphics/drawable/Drawable;)Lcoil3/test/FakeImageLoaderEngine;
+	public static final fun FakeImageLoaderEngine (Landroid/graphics/drawable/Drawable;)Lcoil3/test/FakeImageLoaderEngine;
 	public static final fun default (Lcoil3/test/FakeImageLoaderEngine$Builder;Landroid/graphics/drawable/Drawable;)Lcoil3/test/FakeImageLoaderEngine$Builder;
 	public static final fun intercept (Lcoil3/test/FakeImageLoaderEngine$Builder;Ljava/lang/Object;Landroid/graphics/drawable/Drawable;)Lcoil3/test/FakeImageLoaderEngine$Builder;
 	public static final fun intercept (Lcoil3/test/FakeImageLoaderEngine$Builder;Lkotlin/jvm/functions/Function1;Landroid/graphics/drawable/Drawable;)Lcoil3/test/FakeImageLoaderEngine$Builder;
 }
 
 public final class coil3/test/FakeImageLoaderEngine_commonKt {
-	public static final fun create (Lcoil3/Image;)Lcoil3/test/FakeImageLoaderEngine;
+	public static final fun FakeImageLoaderEngine (Lcoil3/Image;)Lcoil3/test/FakeImageLoaderEngine;
 }
 

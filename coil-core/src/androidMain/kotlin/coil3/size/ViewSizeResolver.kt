@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnPreDrawListener
 import kotlin.coroutines.resume
-import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlinx.coroutines.suspendCancellableCoroutine
 
@@ -16,7 +15,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  * @param subtractPadding If true, the view's padding will be subtracted from its size.
  */
 @JvmOverloads
-@JvmName("create")
 fun <T : View> ViewSizeResolver(
     view: T,
     subtractPadding: Boolean = true

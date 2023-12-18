@@ -9,7 +9,6 @@ import coil3.transition.Transition
 /**
  * Create a new [FakeImageLoaderEngine] that returns [drawable] for all requests.
  */
-@JvmName("create")
 fun FakeImageLoaderEngine(drawable: Drawable): FakeImageLoaderEngine {
     return FakeImageLoaderEngine.Builder()
         .default(drawable)
