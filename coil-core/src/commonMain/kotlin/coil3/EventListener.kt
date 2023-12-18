@@ -15,6 +15,7 @@ import coil3.request.Options
 import coil3.request.SuccessResult
 import coil3.size.Size
 import coil3.size.SizeResolver
+import kotlin.jvm.JvmField
 
 /**
  * A listener for tracking the progress of an image request. This class is useful for
@@ -143,11 +144,11 @@ expect abstract class EventListener : ImageRequest.Listener {
         fun create(request: ImageRequest): EventListener
 
         companion object {
-            val NONE: Factory
+            @JvmField val NONE: Factory
         }
     }
 
     companion object {
-        val NONE: EventListener
+        @JvmField val NONE: EventListener
     }
 }

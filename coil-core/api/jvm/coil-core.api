@@ -42,6 +42,7 @@ public final class coil3/ComponentRegistry$Builder {
 
 public abstract class coil3/EventListener : coil3/request/ImageRequest$Listener {
 	public static final field Companion Lcoil3/EventListener$Companion;
+	public static final field NONE Lcoil3/EventListener;
 	public fun <init> ()V
 	public fun decodeEnd (Lcoil3/request/ImageRequest;Lcoil3/decode/Decoder;Lcoil3/request/Options;Lcoil3/decode/DecodeResult;)V
 	public fun decodeStart (Lcoil3/request/ImageRequest;Lcoil3/decode/Decoder;Lcoil3/request/Options;)V
@@ -60,16 +61,15 @@ public abstract class coil3/EventListener : coil3/request/ImageRequest$Listener 
 }
 
 public final class coil3/EventListener$Companion {
-	public final fun getNONE ()Lcoil3/EventListener;
 }
 
 public abstract interface class coil3/EventListener$Factory {
 	public static final field Companion Lcoil3/EventListener$Factory$Companion;
+	public static final field NONE Lcoil3/EventListener$Factory;
 	public abstract fun create (Lcoil3/request/ImageRequest;)Lcoil3/EventListener;
 }
 
 public final class coil3/EventListener$Factory$Companion {
-	public final fun getNONE ()Lcoil3/EventListener$Factory;
 }
 
 public final class coil3/Extras {
