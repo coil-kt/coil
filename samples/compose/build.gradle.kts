@@ -2,6 +2,8 @@ import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
 plugins {
     id("com.android.application")
@@ -59,7 +61,7 @@ kotlin {
 
     jvm("desktop")
 
-    js {
+    val configureJs: KotlinJsTargetDsl.() -> Unit = {
         moduleName = "coilSample"
         browser {
             commonWebpackConfig {
@@ -68,6 +70,9 @@ kotlin {
         }
         binaries.executable()
     }
+    js(configureJs)
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs(configureJs)
 
     arrayOf(
         iosX64(),

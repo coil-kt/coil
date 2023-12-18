@@ -8,10 +8,16 @@ plugins {
     id("kotlin-multiplatform")
     id("kotlinx-atomicfu")
     id("dev.drewhamilton.poko")
+    id("org.jetbrains.compose")
 }
 
 addAllMultiplatformTargets()
 androidLibrary(name = "coil3.core")
+
+compose {
+    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+    experimental.web.application {}
+}
 
 kotlin {
     sourceSets {
@@ -20,6 +26,7 @@ kotlin {
                 api(libs.coroutines.core)
                 api(libs.kotlin.stdlib)
                 api(libs.okio)
+                api(compose.foundation)
             }
         }
         commonTest {
