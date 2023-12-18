@@ -23,7 +23,6 @@ buildscript {
         google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
     dependencies {
         classpath(libs.gradlePlugin.android)
@@ -32,7 +31,6 @@ buildscript {
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
         classpath(libs.gradlePlugin.paparazzi)
-        classpath(libs.gradlePlugin.poko)
         classpath(libs.gradlePlugin.roborazzi)
     }
 }
@@ -40,6 +38,7 @@ buildscript {
 plugins {
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.poko) apply false
     alias(libs.plugins.spotless)
 }
 
@@ -70,7 +69,6 @@ allprojects {
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
     }
 
