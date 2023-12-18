@@ -40,9 +40,9 @@ internal fun commonErrorResult(
 ): ErrorResult {
     return ErrorResult(
         image = if (throwable is NullRequestDataException) {
-            request.fallbackFactory() ?: request.errorFactory()
+            request.fallback() ?: request.error()
         } else {
-            request.errorFactory()
+            request.error()
         },
         request = request,
         throwable = throwable,
