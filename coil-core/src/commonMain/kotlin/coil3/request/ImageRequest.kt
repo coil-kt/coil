@@ -88,13 +88,13 @@ class ImageRequest private constructor(
     val placeholderMemoryCacheKey: MemoryCache.Key?,
 
     /** @see Builder.placeholder */
-    val placeholderFactory: () -> Image?,
+    val placeholderFactory: (ImageRequest) -> Image?,
 
     /** @see Builder.error */
-    val errorFactory: () -> Image?,
+    val errorFactory: (ImageRequest) -> Image?,
 
     /** @see Builder.fallback */
-    val fallbackFactory: () -> Image?,
+    val fallbackFactory: (ImageRequest) -> Image?,
 
     /** @see Builder.size */
     val sizeResolver: SizeResolver,
@@ -114,6 +114,15 @@ class ImageRequest private constructor(
     /** The defaults used to fill unset values. */
     val defaults: Defaults,
 ) {
+
+    /** Create and return a new placeholder image. */
+    fun placeholder(): Image? = placeholderFactory(this)
+
+    /** Create and return a new error image. */
+    fun error(): Image? = errorFactory(this)
+
+    /** Create and return a new fallback image. */
+    fun fallback(): Image? = fallbackFactory(this)
 
     @JvmOverloads
     fun newBuilder(
@@ -161,9 +170,9 @@ class ImageRequest private constructor(
         val memoryCachePolicy: CachePolicy?,
         val diskCachePolicy: CachePolicy?,
         val networkCachePolicy: CachePolicy?,
-        val placeholderFactory: (() -> Image?)?,
-        val errorFactory: (() -> Image?)?,
-        val fallbackFactory: (() -> Image?)?,
+        val placeholderFactory: ((ImageRequest) -> Image?)?,
+        val errorFactory: ((ImageRequest) -> Image?)?,
+        val fallbackFactory: ((ImageRequest) -> Image?)?,
         val sizeResolver: SizeResolver?,
         val scale: Scale?,
         val precision: Precision?,
@@ -180,9 +189,9 @@ class ImageRequest private constructor(
         val memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
         val diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
         val networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
-        val placeholderFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
-        val errorFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
-        val fallbackFactory: () -> Image? = EMPTY_IMAGE_FACTORY,
+        val placeholderFactory: (ImageRequest) -> Image? = EMPTY_IMAGE_FACTORY,
+        val errorFactory: (ImageRequest) -> Image? = EMPTY_IMAGE_FACTORY,
+        val fallbackFactory: (ImageRequest) -> Image? = EMPTY_IMAGE_FACTORY,
         val precision: Precision = Precision.AUTOMATIC,
         val extras: Extras = Extras.EMPTY,
     ) {
@@ -214,9 +223,9 @@ class ImageRequest private constructor(
         internal var diskCachePolicy: CachePolicy?
         internal var networkCachePolicy: CachePolicy?
         internal var placeholderMemoryCacheKey: MemoryCache.Key?
-        internal var placeholderFactory: (() -> Image?)?
-        internal var errorFactory: (() -> Image?)?
-        internal var fallbackFactory: (() -> Image?)?
+        internal var placeholderFactory: ((ImageRequest) -> Image?)?
+        internal var errorFactory: ((ImageRequest) -> Image?)?
+        internal var fallbackFactory: ((ImageRequest) -> Image?)?
         internal var precision: Precision?
         internal var lazyExtras: Extras.Builder?
         val extras: Extras.Builder
@@ -569,7 +578,7 @@ class ImageRequest private constructor(
         /**
          * Set the placeholder image to use when the request starts.
          */
-        fun placeholder(factory: () -> Image?) = apply {
+        fun placeholder(factory: (ImageRequest) -> Image?) = apply {
             this.placeholderFactory = factory
         }
 
@@ -581,7 +590,7 @@ class ImageRequest private constructor(
         /**
          * Set the error image to use if the request fails.
          */
-        fun error(factory: () -> Image?) = apply {
+        fun error(factory: (ImageRequest) -> Image?) = apply {
             this.errorFactory = factory
         }
 
@@ -593,7 +602,7 @@ class ImageRequest private constructor(
         /**
          * Set the fallback image to use if [data] is null.
          */
-        fun fallback(factory: () -> Image?) = apply {
+        fun fallback(factory: (ImageRequest) -> Image?) = apply {
             this.fallbackFactory = factory
         }
 

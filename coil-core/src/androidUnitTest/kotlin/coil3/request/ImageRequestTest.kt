@@ -6,6 +6,7 @@ import android.widget.ImageView.ScaleType.CENTER
 import android.widget.ImageView.ScaleType.MATRIX
 import coil3.Extras
 import coil3.ImageLoader
+import coil3.intercept.FakeEngineInterceptor
 import coil3.lifecycle.FakeLifecycle
 import coil3.size.Precision
 import coil3.size.Scale
@@ -17,6 +18,7 @@ import coil3.transition.CrossfadeTransition
 import coil3.transition.Transition
 import coil3.util.scale
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
@@ -168,6 +170,22 @@ class ImageRequestTest : RobolectricTest() {
 
         assertNotEquals(request1, request3)
         assertNotEquals(request1.hashCode(), request3.hashCode())
+    }
+
+    @Test
+    fun `request placeholder is not invoked if request target is null`() = runTest {
+        val request = ImageRequest.Builder(context)
+            .data(Unit)
+            .placeholder { error("should not be called") }
+            .build()
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                add(FakeEngineInterceptor())
+            }
+            .build()
+        val result = imageLoader.execute(request)
+
+        assertIs<SuccessResult>(result)
     }
 
     @Test

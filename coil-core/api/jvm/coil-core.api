@@ -147,11 +147,11 @@ public final class coil3/ImageLoader$Builder {
 	public final fun diskCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/ImageLoader$Builder;
 	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/ImageLoader$Builder;
 	public final fun error (Lcoil3/Image;)Lcoil3/ImageLoader$Builder;
-	public final fun error (Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
+	public final fun error (Lkotlin/jvm/functions/Function1;)Lcoil3/ImageLoader$Builder;
 	public final fun eventListener (Lcoil3/EventListener;)Lcoil3/ImageLoader$Builder;
 	public final fun eventListenerFactory (Lcoil3/EventListener$Factory;)Lcoil3/ImageLoader$Builder;
 	public final fun fallback (Lcoil3/Image;)Lcoil3/ImageLoader$Builder;
-	public final fun fallback (Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
+	public final fun fallback (Lkotlin/jvm/functions/Function1;)Lcoil3/ImageLoader$Builder;
 	public final fun fetcherDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/ImageLoader$Builder;
 	public final fun fileSystem (Lokio/FileSystem;)Lcoil3/ImageLoader$Builder;
 	public final fun getExtras ()Lcoil3/Extras$Builder;
@@ -162,7 +162,7 @@ public final class coil3/ImageLoader$Builder {
 	public final fun memoryCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/ImageLoader$Builder;
 	public final fun networkCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/ImageLoader$Builder;
 	public final fun placeholder (Lcoil3/Image;)Lcoil3/ImageLoader$Builder;
-	public final fun placeholder (Lkotlin/jvm/functions/Function0;)Lcoil3/ImageLoader$Builder;
+	public final fun placeholder (Lkotlin/jvm/functions/Function1;)Lcoil3/ImageLoader$Builder;
 	public final fun precision (Lcoil3/size/Precision;)Lcoil3/ImageLoader$Builder;
 }
 
@@ -476,8 +476,10 @@ public final class coil3/request/ErrorResult : coil3/request/ImageResult {
 }
 
 public final class coil3/request/ImageRequest {
-	public synthetic fun <init> (Lcoil3/PlatformContext;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcoil3/PlatformContext;Ljava/lang/Object;Lcoil3/target/Target;Lcoil3/request/ImageRequest$Listener;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Lokio/FileSystem;Lkotlin/Pair;Lcoil3/decode/Decoder$Factory;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/memory/MemoryCache$Key;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;Lcoil3/Extras;Lcoil3/request/ImageRequest$Defined;Lcoil3/request/ImageRequest$Defaults;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun error ()Lcoil3/Image;
+	public final fun fallback ()Lcoil3/Image;
 	public final fun getContext ()Lcoil3/PlatformContext;
 	public final fun getData ()Ljava/lang/Object;
 	public final fun getDecoderDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
@@ -486,9 +488,9 @@ public final class coil3/request/ImageRequest {
 	public final fun getDefined ()Lcoil3/request/ImageRequest$Defined;
 	public final fun getDiskCacheKey ()Ljava/lang/String;
 	public final fun getDiskCachePolicy ()Lcoil3/request/CachePolicy;
-	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function0;
+	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getExtras ()Lcoil3/Extras;
-	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function0;
+	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getFetcherDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public final fun getFetcherFactory ()Lkotlin/Pair;
 	public final fun getFileSystem ()Lokio/FileSystem;
@@ -498,7 +500,7 @@ public final class coil3/request/ImageRequest {
 	public final fun getMemoryCacheKeyExtras ()Ljava/util/Map;
 	public final fun getMemoryCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getNetworkCachePolicy ()Lcoil3/request/CachePolicy;
-	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function0;
+	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getPlaceholderMemoryCacheKey ()Lcoil3/memory/MemoryCache$Key;
 	public final fun getPrecision ()Lcoil3/size/Precision;
 	public final fun getScale ()Lcoil3/size/Scale;
@@ -508,6 +510,7 @@ public final class coil3/request/ImageRequest {
 	public final fun newBuilder ()Lcoil3/request/ImageRequest$Builder;
 	public final fun newBuilder (Lcoil3/PlatformContext;)Lcoil3/request/ImageRequest$Builder;
 	public static synthetic fun newBuilder$default (Lcoil3/request/ImageRequest;Lcoil3/PlatformContext;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Builder;
+	public final fun placeholder ()Lcoil3/Image;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -525,9 +528,9 @@ public final class coil3/request/ImageRequest$Builder {
 	public final fun diskCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/request/ImageRequest$Builder;
 	public final fun dispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/request/ImageRequest$Builder;
 	public final fun error (Lcoil3/Image;)Lcoil3/request/ImageRequest$Builder;
-	public final fun error (Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public final fun error (Lkotlin/jvm/functions/Function1;)Lcoil3/request/ImageRequest$Builder;
 	public final fun fallback (Lcoil3/Image;)Lcoil3/request/ImageRequest$Builder;
-	public final fun fallback (Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public final fun fallback (Lkotlin/jvm/functions/Function1;)Lcoil3/request/ImageRequest$Builder;
 	public final fun fetcherDispatcher (Lkotlinx/coroutines/CoroutineDispatcher;)Lcoil3/request/ImageRequest$Builder;
 	public final fun fetcherFactory (Lcoil3/fetch/Fetcher$Factory;Lkotlin/reflect/KClass;)Lcoil3/request/ImageRequest$Builder;
 	public final fun fileSystem (Lokio/FileSystem;)Lcoil3/request/ImageRequest$Builder;
@@ -543,7 +546,7 @@ public final class coil3/request/ImageRequest$Builder {
 	public final fun memoryCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/request/ImageRequest$Builder;
 	public final fun networkCachePolicy (Lcoil3/request/CachePolicy;)Lcoil3/request/ImageRequest$Builder;
 	public final fun placeholder (Lcoil3/Image;)Lcoil3/request/ImageRequest$Builder;
-	public final fun placeholder (Lkotlin/jvm/functions/Function0;)Lcoil3/request/ImageRequest$Builder;
+	public final fun placeholder (Lkotlin/jvm/functions/Function1;)Lcoil3/request/ImageRequest$Builder;
 	public final fun placeholderMemoryCacheKey (Lcoil3/memory/MemoryCache$Key;)Lcoil3/request/ImageRequest$Builder;
 	public final fun placeholderMemoryCacheKey (Ljava/lang/String;)Lcoil3/request/ImageRequest$Builder;
 	public final fun precision (Lcoil3/size/Precision;)Lcoil3/request/ImageRequest$Builder;
@@ -562,10 +565,10 @@ public final class coil3/request/ImageRequest$Defaults {
 	public static final field Companion Lcoil3/request/ImageRequest$Defaults$Companion;
 	public static final field DEFAULT Lcoil3/request/ImageRequest$Defaults;
 	public fun <init> ()V
-	public fun <init> (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lcoil3/size/Precision;Lcoil3/Extras;)V
-	public synthetic fun <init> (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lcoil3/size/Precision;Lcoil3/Extras;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)V
+	public synthetic fun <init> (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lokio/FileSystem;
-	public final fun component10 ()Lkotlin/jvm/functions/Function0;
+	public final fun component10 ()Lkotlin/jvm/functions/Function1;
 	public final fun component11 ()Lcoil3/size/Precision;
 	public final fun component12 ()Lcoil3/Extras;
 	public final fun component2 ()Lkotlinx/coroutines/CoroutineDispatcher;
@@ -574,22 +577,22 @@ public final class coil3/request/ImageRequest$Defaults {
 	public final fun component5 ()Lcoil3/request/CachePolicy;
 	public final fun component6 ()Lcoil3/request/CachePolicy;
 	public final fun component7 ()Lcoil3/request/CachePolicy;
-	public final fun component8 ()Lkotlin/jvm/functions/Function0;
-	public final fun component9 ()Lkotlin/jvm/functions/Function0;
-	public final fun copy (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
-	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defaults;Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lcoil3/size/Precision;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defaults;
+	public final fun component8 ()Lkotlin/jvm/functions/Function1;
+	public final fun component9 ()Lkotlin/jvm/functions/Function1;
+	public final fun copy (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
+	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defaults;Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defaults;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDecoderDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public final fun getDiskCachePolicy ()Lcoil3/request/CachePolicy;
-	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function0;
+	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getExtras ()Lcoil3/Extras;
-	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function0;
+	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getFetcherDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public final fun getFileSystem ()Lokio/FileSystem;
 	public final fun getInterceptorDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public final fun getMemoryCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getNetworkCachePolicy ()Lcoil3/request/CachePolicy;
-	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function0;
+	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getPrecision ()Lcoil3/size/Precision;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -599,7 +602,7 @@ public final class coil3/request/ImageRequest$Defaults$Companion {
 }
 
 public final class coil3/request/ImageRequest$Defined {
-	public fun <init> (Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)V
+	public fun <init> (Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)V
 	public final fun component1 ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public final fun component10 ()Lcoil3/size/SizeResolver;
 	public final fun component11 ()Lcoil3/size/Scale;
@@ -609,21 +612,21 @@ public final class coil3/request/ImageRequest$Defined {
 	public final fun component4 ()Lcoil3/request/CachePolicy;
 	public final fun component5 ()Lcoil3/request/CachePolicy;
 	public final fun component6 ()Lcoil3/request/CachePolicy;
-	public final fun component7 ()Lkotlin/jvm/functions/Function0;
-	public final fun component8 ()Lkotlin/jvm/functions/Function0;
-	public final fun component9 ()Lkotlin/jvm/functions/Function0;
-	public final fun copy (Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)Lcoil3/request/ImageRequest$Defined;
-	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defined;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defined;
+	public final fun component7 ()Lkotlin/jvm/functions/Function1;
+	public final fun component8 ()Lkotlin/jvm/functions/Function1;
+	public final fun component9 ()Lkotlin/jvm/functions/Function1;
+	public final fun copy (Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)Lcoil3/request/ImageRequest$Defined;
+	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defined;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defined;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDecoderDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public final fun getDiskCachePolicy ()Lcoil3/request/CachePolicy;
-	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function0;
-	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function0;
+	public final fun getErrorFactory ()Lkotlin/jvm/functions/Function1;
+	public final fun getFallbackFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getFetcherDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public final fun getInterceptorDispatcher ()Lkotlinx/coroutines/CoroutineDispatcher;
 	public final fun getMemoryCachePolicy ()Lcoil3/request/CachePolicy;
 	public final fun getNetworkCachePolicy ()Lcoil3/request/CachePolicy;
-	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function0;
+	public final fun getPlaceholderFactory ()Lkotlin/jvm/functions/Function1;
 	public final fun getPrecision ()Lcoil3/size/Precision;
 	public final fun getScale ()Lcoil3/size/Scale;
 	public final fun getSizeResolver ()Lcoil3/size/SizeResolver;

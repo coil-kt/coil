@@ -55,7 +55,7 @@ internal fun Closeable.closeQuietly() {
  */
 internal expect val ImageRequest.allowInexactSize: Boolean
 
-internal val EMPTY_IMAGE_FACTORY: () -> Image? = { null }
+internal val EMPTY_IMAGE_FACTORY: (ImageRequest) -> Image? = { null }
 
 internal operator fun MemoryCache.get(key: MemoryCache.Key?) = key?.let(::get)
 
