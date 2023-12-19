@@ -9,7 +9,6 @@ import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
 fun Project.addAllMultiplatformTargets() {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
@@ -28,7 +27,7 @@ fun Project.addAllMultiplatformTargets() {
 
             jvm()
 
-            val configureJs: KotlinJsTargetDsl.() -> Unit = {
+            js {
                 browser()
                 nodejs {
                     testTask {
@@ -40,10 +39,24 @@ fun Project.addAllMultiplatformTargets() {
                 binaries.executable()
                 binaries.library()
             }
-            js(configureJs)
+
             if (enableWasm) {
                 @OptIn(ExperimentalWasmDsl::class)
-                wasmJs(configureJs)
+                wasmJs {
+                    // TODO: Fix wasm tests.
+                    browser {
+                        testTask {
+                            enabled = false
+                        }
+                    }
+                    nodejs {
+                        testTask {
+                            enabled = false
+                        }
+                    }
+                    binaries.executable()
+                    binaries.library()
+                }
             }
 
             iosX64()

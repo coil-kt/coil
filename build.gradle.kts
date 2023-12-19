@@ -146,12 +146,6 @@ allprojects {
     }
 
     if (enableWasm) {
-        // TODO: Fix wasm tests.
-        afterEvaluate {
-            tasks.findByName("wasmJsBrowserTest")?.enabled = false
-            tasks.findByName("wasmJsNodeTest")?.enabled = false
-        }
-
         // Use ktor's experimental wasm artifact.
         repositories {
             maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
