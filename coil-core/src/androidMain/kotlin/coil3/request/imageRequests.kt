@@ -26,19 +26,19 @@ fun ImageRequest.Builder.target(imageView: ImageView) =
     target(ImageViewTarget(imageView))
 
 fun ImageRequest.Builder.placeholder(@DrawableRes drawableResId: Int) =
-    placeholder { context.getDrawableCompat(drawableResId).asCoilImage() }
+    placeholder { it.context.getDrawableCompat(drawableResId).asCoilImage() }
 
 fun ImageRequest.Builder.placeholder(drawable: Drawable?) =
     placeholder(drawable?.asCoilImage())
 
 fun ImageRequest.Builder.error(@DrawableRes drawableResId: Int) =
-    error { context.getDrawableCompat(drawableResId).asCoilImage() }
+    error { it.context.getDrawableCompat(drawableResId).asCoilImage() }
 
 fun ImageRequest.Builder.error(drawable: Drawable?) =
     error(drawable?.asCoilImage())
 
 fun ImageRequest.Builder.fallback(@DrawableRes drawableResId: Int) =
-    fallback { context.getDrawableCompat(drawableResId).asCoilImage() }
+    fallback { it.context.getDrawableCompat(drawableResId).asCoilImage() }
 
 fun ImageRequest.Builder.fallback(drawable: Drawable?) =
     fallback(drawable?.asCoilImage())
