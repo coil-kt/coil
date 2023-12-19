@@ -1,5 +1,6 @@
 package coil3.transition
 
+import coil3.annotation.Data
 import coil3.asCoilImage
 import coil3.decode.DataSource
 import coil3.request.DEFAULT_CROSSFADE_MILLIS
@@ -39,6 +40,7 @@ class CrossfadeTransition @JvmOverloads constructor(
         }
     }
 
+    @Data
     class Factory @JvmOverloads constructor(
         val durationMillis: Int = DEFAULT_CROSSFADE_MILLIS,
         val preferExactIntrinsicSize: Boolean = false,
