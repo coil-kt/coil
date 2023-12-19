@@ -67,6 +67,7 @@ kotlin {
         }
         binaries.executable()
     }
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "coilSample"
@@ -108,5 +109,22 @@ kotlin {
                 implementation(compose.desktop.currentOs)
             }
         }
+    }
+}
+
+// https://youtrack.jetbrains.com/issue/KT-56025
+afterEvaluate {
+    tasks {
+        val configureJs: Task.() -> Unit = {
+            dependsOn(named("jsDevelopmentExecutableCompileSync"))
+            dependsOn(named("jsProductionExecutableCompileSync"))
+            dependsOn(named("jsTestTestDevelopmentExecutableCompileSync"))
+
+            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
+            dependsOn(named("wasmJsProductionExecutableCompileSync"))
+            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+        }
+        named("jsBrowserProductionWebpack").configure(configureJs)
+        named("wasmJsBrowserProductionExecutableDistributeResources").configure(configureJs)
     }
 }

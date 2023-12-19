@@ -53,6 +53,7 @@ fun Project.addAllMultiplatformTargets() {
         }
 
         applyKotlinJsImplicitDependencyWorkaround()
+        createSkikoWasmJsRuntimeDependency()
     }
 }
 
