@@ -136,11 +136,10 @@ allprojects {
     if (enableComposeMetrics && name in publicModules) {
         plugins.withId("org.jetbrains.compose") {
             tasks.withType<KotlinCompile> {
-                val plugin = "plugin:androidx.compose.compiler.plugins.kotlin"
                 val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile.path
                 compilerOptions.freeCompilerArgs.addAll(
-                    "-P", "$plugin:metricsDestination=$outputDir",
-                    "-P", "$plugin:reportsDestination=$outputDir",
+                    "-P", "$composePlugin:metricsDestination=$outputDir",
+                    "-P", "$composePlugin:reportsDestination=$outputDir",
                 )
             }
         }
@@ -195,3 +194,5 @@ fun Project.applyOkioJsTestWorkaround() {
         }
     }
 }
+
+private val composePlugin = "plugin:androidx.compose.compiler.plugins.kotlin"
