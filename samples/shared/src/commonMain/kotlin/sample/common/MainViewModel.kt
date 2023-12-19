@@ -1,7 +1,6 @@
 package sample.common
 
 import coil3.Extras
-import kotlin.js.JsName
 import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +13,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import okio.buffer
 import okio.use
 
-@JsName("newMainViewModel")
 fun MainViewModel(resources: Resources): MainViewModel {
     return RealMainViewModel(resources)
 }
