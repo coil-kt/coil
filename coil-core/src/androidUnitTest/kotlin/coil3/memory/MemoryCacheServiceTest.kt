@@ -494,11 +494,11 @@ class MemoryCacheServiceTest : RobolectricTest() {
 
     private fun createFakeTransformations(): List<Transformation> {
         return listOf(
-            object : Transformation {
+            object : Transformation() {
                 override val cacheKey = "key1"
                 override suspend fun transform(input: Bitmap, size: Size) = fail()
             },
-            object : Transformation {
+            object : Transformation() {
                 override val cacheKey = "key2"
                 override suspend fun transform(input: Bitmap, size: Size) = fail()
             }

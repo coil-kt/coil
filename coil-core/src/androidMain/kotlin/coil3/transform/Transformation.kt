@@ -19,7 +19,7 @@ import coil3.size.Size
  *
  * @see ImageRequest.Builder.transformations
  */
-interface Transformation {
+abstract class Transformation {
 
     /**
      * The unique cache key for this transformation.
@@ -27,7 +27,7 @@ interface Transformation {
      * The key is added to the image request's memory cache key and should contain any params that
      * are part of this transformation (e.g. size, scale, color, radius, etc.).
      */
-    val cacheKey: String
+    abstract val cacheKey: String
 
     /**
      * Apply the transformation to [input] and return the transformed [Bitmap].
@@ -37,5 +37,18 @@ interface Transformation {
      * @param size The size of the image request.
      * @return The transformed [Bitmap].
      */
-    suspend fun transform(input: Bitmap, size: Size): Bitmap
+    abstract suspend fun transform(input: Bitmap, size: Size): Bitmap
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is Transformation && cacheKey == other.cacheKey
+    }
+
+    override fun hashCode(): Int {
+        return cacheKey.hashCode()
+    }
+
+    override fun toString(): String {
+        return "Transformation(cacheKey=$cacheKey)"
+    }
 }

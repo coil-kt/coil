@@ -38,7 +38,7 @@ class RoundedCornersTransformation(
     @Px private val topRight: Float = 0f,
     @Px private val bottomLeft: Float = 0f,
     @Px private val bottomRight: Float = 0f,
-) : Transformation {
+) : Transformation() {
 
     constructor(@Px radius: Float) : this(radius, radius, radius, radius)
 

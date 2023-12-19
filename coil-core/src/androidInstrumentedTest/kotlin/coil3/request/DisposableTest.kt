@@ -215,7 +215,7 @@ class DisposableTest {
      * Prevent completing the [ImageRequest] until [open] is called.
      * This is to avoid our test assertions racing the image request.
      */
-    private class GateTransformation : Transformation {
+    private class GateTransformation : Transformation() {
 
         private val isOpen = MutableStateFlow(false)
 

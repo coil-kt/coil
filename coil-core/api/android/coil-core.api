@@ -965,8 +965,12 @@ public final class coil3/transform/RoundedCornersTransformation : coil3/transfor
 	public fun transform (Landroid/graphics/Bitmap;Lcoil3/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class coil3/transform/Transformation {
+public abstract class coil3/transform/Transformation {
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
 	public abstract fun getCacheKey ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 	public abstract fun transform (Landroid/graphics/Bitmap;Lcoil3/size/Size;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

@@ -15,7 +15,7 @@ import coil3.util.safeConfig
  * If you're using Jetpack Compose, use `Modifier.clip(CircleShape)` instead of this transformation
  * as it's more efficient.
  */
-class CircleCropTransformation : Transformation {
+class CircleCropTransformation : Transformation() {
 
     override val cacheKey = "${this::class.qualifiedName}"
 
