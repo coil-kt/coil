@@ -2,15 +2,15 @@ package sample.compose
 
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
-import kotlinx.atomicfu.atomic
 import sample.common.newImageLoader
 
 fun initializeSingletonImageLoader() {
-    if (isInitialized.getAndSet(true)) return
+    // Set the singleton image loader exactly once.
+    initialize.value
+}
 
+private val initialize = lazy {
     SingletonImageLoader.set {
         newImageLoader(PlatformContext.INSTANCE)
     }
 }
-
-private val isInitialized = atomic(false)

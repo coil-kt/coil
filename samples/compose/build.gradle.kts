@@ -8,7 +8,6 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 plugins {
     id("com.android.application")
     id("kotlin-multiplatform")
-    id("kotlinx-atomicfu")
     id("org.jetbrains.compose")
 }
 
