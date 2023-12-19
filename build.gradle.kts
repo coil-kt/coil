@@ -164,6 +164,15 @@ allprojects {
         }
     }
 
+    plugins.withId("org.jetbrains.compose") {
+        tasks.withType<KotlinCompile> {
+            val outputDir = rootDir.resolve("coil-core/compose_compiler_config.conf").path
+            compilerOptions.freeCompilerArgs.addAll(
+                "-P", "$composePlugin:stabilityConfigurationPath=$outputDir",
+            )
+        }
+    }
+
     if (enableWasm) {
         // Use ktor's experimental wasm artifact.
         repositories {
