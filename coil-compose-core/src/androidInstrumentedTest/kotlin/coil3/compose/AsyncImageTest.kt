@@ -57,6 +57,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.fail
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import org.junit.After
 import org.junit.Before
@@ -570,14 +571,13 @@ class AsyncImageTest {
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://example.com/image")
                     .memoryCachePolicy(CachePolicy.ENABLED)
+                    .dispatcher(Dispatchers.Main.immediate)
                     .build(),
                 contentDescription = null,
                 imageLoader = imageLoader
             ) {
-                when (innerCompositionCount.getAndIncrement()) {
-                    0 -> assertIs<State.Loading>(painter.state)
-                    else -> assertIs<State.Success>(painter.state)
-                }
+                innerCompositionCount.getAndIncrement()
+                assertIs<State.Success>(painter.state)
                 SubcomposeAsyncImageContent()
             }
         }
@@ -585,7 +585,7 @@ class AsyncImageTest {
         waitForRequestComplete()
 
         assertEquals(1, outerCompositionCount.get())
-        assertEquals(2, innerCompositionCount.get())
+        assertEquals(1, innerCompositionCount.get())
     }
 
     @Test
