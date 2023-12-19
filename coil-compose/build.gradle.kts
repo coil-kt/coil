@@ -13,6 +13,7 @@ androidLibrary(name = "coil3.compose.singleton")
 
 compose {
     kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+    experimental.web.application {}
 }
 
 kotlin {

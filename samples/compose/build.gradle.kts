@@ -2,6 +2,7 @@ import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     id("com.android.application")
@@ -33,6 +34,7 @@ androidApplication(name = "sample.compose") {
 
 compose {
     kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+    experimental.web.application {}
     desktop {
         application {
             mainClass = "sample.compose.MainKt"
@@ -46,9 +48,6 @@ compose {
                 packageVersion = "1.0.0"
             }
         }
-    }
-    experimental {
-        web.application {}
     }
 }
 
@@ -67,6 +66,14 @@ kotlin {
             }
         }
         binaries.executable()
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "coilSample"
+        browser()
+        binaries.executable()
+        applyBinaryen()
     }
 
     arrayOf(
@@ -102,5 +109,22 @@ kotlin {
                 implementation(compose.desktop.currentOs)
             }
         }
+    }
+}
+
+// https://youtrack.jetbrains.com/issue/KT-56025
+afterEvaluate {
+    tasks {
+        val configureJs: Task.() -> Unit = {
+            dependsOn(named("jsDevelopmentExecutableCompileSync"))
+            dependsOn(named("jsProductionExecutableCompileSync"))
+            dependsOn(named("jsTestTestDevelopmentExecutableCompileSync"))
+
+            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
+            dependsOn(named("wasmJsProductionExecutableCompileSync"))
+            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+        }
+        named("jsBrowserProductionWebpack").configure(configureJs)
+        named("wasmJsBrowserProductionExecutableDistributeResources").configure(configureJs)
     }
 }

@@ -8,6 +8,8 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 
 fun Project.addAllMultiplatformTargets() {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
@@ -26,7 +28,7 @@ fun Project.addAllMultiplatformTargets() {
 
             jvm()
 
-            js {
+            val configureJs: KotlinJsTargetDsl.() -> Unit = {
                 browser()
                 nodejs {
                     testTask {
@@ -38,6 +40,9 @@ fun Project.addAllMultiplatformTargets() {
                 binaries.executable()
                 binaries.library()
             }
+            js(configureJs)
+            @OptIn(ExperimentalWasmDsl::class)
+            wasmJs(configureJs)
 
             iosX64()
             iosArm64()
@@ -48,6 +53,7 @@ fun Project.addAllMultiplatformTargets() {
         }
 
         applyKotlinJsImplicitDependencyWorkaround()
+        createSkikoWasmJsRuntimeDependency()
     }
 }
 
@@ -60,7 +66,7 @@ val NamedDomainObjectContainer<KotlinSourceSet>.androidInstrumentedTest: NamedDo
 // https://youtrack.jetbrains.com/issue/KT-56025
 fun Project.applyKotlinJsImplicitDependencyWorkaround() {
     tasks {
-        val configure: Task.() -> Unit = {
+        val configureJs: Task.() -> Unit = {
             dependsOn(named("jsDevelopmentLibraryCompileSync"))
             dependsOn(named("jsDevelopmentExecutableCompileSync"))
             dependsOn(named("jsProductionLibraryCompileSync"))
@@ -73,8 +79,32 @@ fun Project.applyKotlinJsImplicitDependencyWorkaround() {
             dependsOn(getByPath(":coil:jsProductionExecutableCompileSync"))
             dependsOn(getByPath(":coil:jsTestTestDevelopmentExecutableCompileSync"))
         }
-        named("jsBrowserProductionWebpack").configure(configure)
-        named("jsBrowserProductionLibraryPrepare").configure(configure)
-        named("jsNodeProductionLibraryPrepare").configure(configure)
+        named("jsBrowserProductionWebpack").configure(configureJs)
+        named("jsBrowserProductionLibraryPrepare").configure(configureJs)
+        named("jsNodeProductionLibraryPrepare").configure(configureJs)
+
+        val configureWasmJs: Task.() -> Unit = {
+            dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
+            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
+            dependsOn(named("wasmJsProductionLibraryCompileSync"))
+            dependsOn(named("wasmJsProductionExecutableCompileSync"))
+            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+
+            dependsOn(getByPath(":coil:wasmJsDevelopmentLibraryCompileSync"))
+            dependsOn(getByPath(":coil:wasmJsDevelopmentExecutableCompileSync"))
+            dependsOn(getByPath(":coil:wasmJsProductionLibraryCompileSync"))
+            dependsOn(getByPath(":coil:wasmJsProductionExecutableCompileSync"))
+            dependsOn(getByPath(":coil:wasmJsTestTestDevelopmentExecutableCompileSync"))
+        }
+        named("wasmJsBrowserProductionWebpack").configure(configureWasmJs)
+        named("wasmJsBrowserProductionLibraryPrepare").configure(configureWasmJs)
+        named("wasmJsNodeProductionLibraryPrepare").configure(configureWasmJs)
+        named("wasmJsBrowserProductionExecutableDistributeResources").configure {
+            dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
+            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
+            dependsOn(named("wasmJsProductionLibraryCompileSync"))
+            dependsOn(named("wasmJsProductionExecutableCompileSync"))
+            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+        }
     }
 }
