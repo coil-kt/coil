@@ -6,7 +6,6 @@ import coil3.size.Size
 import coil3.util.Logger
 import coil3.util.SystemCallbacks
 import coil3.util.allowInexactSize
-import coil3.util.defaultFileSystem
 import kotlinx.coroutines.Job
 
 internal actual fun RequestService(
@@ -33,7 +32,7 @@ internal class NonAndroidRequestService : RequestService {
             request.scale,
             request.allowInexactSize,
             request.diskCacheKey,
-            request.fileSystem ?: defaultFileSystem(),
+            request.fileSystem,
             request.memoryCachePolicy,
             request.diskCachePolicy,
             request.networkCachePolicy,

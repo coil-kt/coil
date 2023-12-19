@@ -58,7 +58,7 @@ class ImageRequest private constructor(
     val diskCacheKey: String?,
 
     /** @see Builder.fileSystem */
-    val fileSystem: FileSystem?,
+    val fileSystem: FileSystem,
 
     /** @see Builder.fetcherFactory */
     val fetcherFactory: Pair<Fetcher.Factory<*>, KClass<*>>?,
