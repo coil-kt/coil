@@ -6,14 +6,11 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.Companion.main
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.Companion.test
 
 private val hierarchyTemplate = KotlinHierarchyTemplate {
-    withSourceSetTree(
-        KotlinSourceSetTree.main,
-        KotlinSourceSetTree.test,
-    )
-
+    withSourceSetTree(main, test)
     common {
         withCompilations { true }
 
@@ -23,6 +20,7 @@ private val hierarchyTemplate = KotlinHierarchyTemplate {
         groupJvmCommon()
         groupNonJvmCommon()
         groupNative()
+        groupNonWasmJs()
     }
 }
 
@@ -77,6 +75,15 @@ private fun KotlinHierarchyBuilder.groupNative() {
                 withMacos()
             }
         }
+    }
+}
+
+// TODO: Remove when wasm tests are fixed.
+private fun KotlinHierarchyBuilder.groupNonWasmJs() {
+    group("nonWasmJs") {
+        withJvm()
+        withJs()
+        groupNative()
     }
 }
 
