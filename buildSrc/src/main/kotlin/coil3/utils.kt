@@ -41,9 +41,12 @@ val Project.versionCode: Int
             (unit * 10.0.pow(2 * index + 1)).toInt()
         }
 
-// ./gradlew -PenableComposeMetrics=true coil-compose:assemble
+// ./gradlew coil-compose:assemble -PenableComposeMetrics=true
 val Project.enableComposeMetrics: Boolean
     get() = booleanProperty("enableComposeMetrics") { false }
+
+val Project.enableWasm: Boolean
+    get() = booleanProperty("enableWasm") { false }
 
 private fun Project.intProperty(
     name: String,

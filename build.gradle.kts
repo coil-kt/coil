@@ -1,4 +1,5 @@
 import coil3.enableComposeMetrics
+import coil3.enableWasm
 import coil3.groupId
 import coil3.publicModules
 import coil3.versionName
@@ -53,7 +54,6 @@ allprojects {
         google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
     }
 
     // Necessary to publish to Maven.
@@ -145,10 +145,24 @@ allprojects {
         }
     }
 
-    // TODO: Fix wasm tests.
-    afterEvaluate {
-        tasks.findByName("wasmJsBrowserTest")?.enabled = false
-        tasks.findByName("wasmJsNodeTest")?.enabled = false
+    if (enableWasm) {
+        // TODO: Fix wasm tests.
+        afterEvaluate {
+            tasks.findByName("wasmJsBrowserTest")?.enabled = false
+            tasks.findByName("wasmJsNodeTest")?.enabled = false
+        }
+
+        // Use ktor's experimental wasm artifact.
+        repositories {
+            maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
+        }
+        configurations.all {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "io.ktor") {
+                    useVersion("3.0.0-wasm2")
+                }
+            }
+        }
     }
 
     applyOkioJsTestWorkaround()

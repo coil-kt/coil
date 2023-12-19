@@ -1,5 +1,6 @@
 import coil3.androidApplication
 import coil3.applyCoilHierarchyTemplate
+import coil3.enableWasm
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
@@ -68,12 +69,14 @@ kotlin {
         binaries.executable()
     }
 
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "coilSample"
-        browser()
-        binaries.executable()
-        applyBinaryen()
+    if (enableWasm) {
+        @OptIn(ExperimentalWasmDsl::class)
+        wasmJs {
+            moduleName = "coilSample"
+            browser()
+            binaries.executable()
+            applyBinaryen()
+        }
     }
 
     arrayOf(
@@ -113,18 +116,20 @@ kotlin {
 }
 
 // https://youtrack.jetbrains.com/issue/KT-56025
-afterEvaluate {
-    tasks {
-        val configureJs: Task.() -> Unit = {
-            dependsOn(named("jsDevelopmentExecutableCompileSync"))
-            dependsOn(named("jsProductionExecutableCompileSync"))
-            dependsOn(named("jsTestTestDevelopmentExecutableCompileSync"))
+if (enableWasm) {
+    afterEvaluate {
+        tasks {
+            val configureJs: Task.() -> Unit = {
+                dependsOn(named("jsDevelopmentExecutableCompileSync"))
+                dependsOn(named("jsProductionExecutableCompileSync"))
+                dependsOn(named("jsTestTestDevelopmentExecutableCompileSync"))
 
-            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
-            dependsOn(named("wasmJsProductionExecutableCompileSync"))
-            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+                dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
+                dependsOn(named("wasmJsProductionExecutableCompileSync"))
+                dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+            }
+            named("jsBrowserProductionWebpack").configure(configureJs)
+            named("wasmJsBrowserProductionExecutableDistributeResources").configure(configureJs)
         }
-        named("jsBrowserProductionWebpack").configure(configureJs)
-        named("wasmJsBrowserProductionExecutableDistributeResources").configure(configureJs)
     }
 }

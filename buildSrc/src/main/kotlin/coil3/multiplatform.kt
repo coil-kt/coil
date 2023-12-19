@@ -41,8 +41,10 @@ fun Project.addAllMultiplatformTargets() {
                 binaries.library()
             }
             js(configureJs)
-            @OptIn(ExperimentalWasmDsl::class)
-            wasmJs(configureJs)
+            if (enableWasm) {
+                @OptIn(ExperimentalWasmDsl::class)
+                wasmJs(configureJs)
+            }
 
             iosX64()
             iosArm64()
@@ -83,28 +85,30 @@ fun Project.applyKotlinJsImplicitDependencyWorkaround() {
         named("jsBrowserProductionLibraryPrepare").configure(configureJs)
         named("jsNodeProductionLibraryPrepare").configure(configureJs)
 
-        val configureWasmJs: Task.() -> Unit = {
-            dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
-            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
-            dependsOn(named("wasmJsProductionLibraryCompileSync"))
-            dependsOn(named("wasmJsProductionExecutableCompileSync"))
-            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+        if (enableWasm) {
+            val configureWasmJs: Task.() -> Unit = {
+                dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
+                dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
+                dependsOn(named("wasmJsProductionLibraryCompileSync"))
+                dependsOn(named("wasmJsProductionExecutableCompileSync"))
+                dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
 
-            dependsOn(getByPath(":coil:wasmJsDevelopmentLibraryCompileSync"))
-            dependsOn(getByPath(":coil:wasmJsDevelopmentExecutableCompileSync"))
-            dependsOn(getByPath(":coil:wasmJsProductionLibraryCompileSync"))
-            dependsOn(getByPath(":coil:wasmJsProductionExecutableCompileSync"))
-            dependsOn(getByPath(":coil:wasmJsTestTestDevelopmentExecutableCompileSync"))
-        }
-        named("wasmJsBrowserProductionWebpack").configure(configureWasmJs)
-        named("wasmJsBrowserProductionLibraryPrepare").configure(configureWasmJs)
-        named("wasmJsNodeProductionLibraryPrepare").configure(configureWasmJs)
-        named("wasmJsBrowserProductionExecutableDistributeResources").configure {
-            dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
-            dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
-            dependsOn(named("wasmJsProductionLibraryCompileSync"))
-            dependsOn(named("wasmJsProductionExecutableCompileSync"))
-            dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsDevelopmentLibraryCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsDevelopmentExecutableCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsProductionLibraryCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsProductionExecutableCompileSync"))
+                dependsOn(getByPath(":coil:wasmJsTestTestDevelopmentExecutableCompileSync"))
+            }
+            named("wasmJsBrowserProductionWebpack").configure(configureWasmJs)
+            named("wasmJsBrowserProductionLibraryPrepare").configure(configureWasmJs)
+            named("wasmJsNodeProductionLibraryPrepare").configure(configureWasmJs)
+            named("wasmJsBrowserProductionExecutableDistributeResources").configure {
+                dependsOn(named("wasmJsDevelopmentLibraryCompileSync"))
+                dependsOn(named("wasmJsDevelopmentExecutableCompileSync"))
+                dependsOn(named("wasmJsProductionLibraryCompileSync"))
+                dependsOn(named("wasmJsProductionExecutableCompileSync"))
+                dependsOn(named("wasmJsTestTestDevelopmentExecutableCompileSync"))
+            }
         }
     }
 }
