@@ -196,7 +196,10 @@ private fun ListScreen(
         state = gridState,
         modifier = Modifier.testTag("list"),
     ) {
-        items(images) { image ->
+        items(
+            items = images,
+            key = { it.uri },
+        ) { image ->
             // Scale the image to fit the width of a column.
             val size = with(LocalDensity.current) {
                 val (width, height) = image.calculateScaledSize(containerSize().width)
