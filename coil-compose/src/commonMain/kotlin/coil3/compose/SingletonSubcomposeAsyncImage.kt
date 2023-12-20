@@ -104,7 +104,7 @@ fun SubcomposeAsyncImage(
  *  destination.
  * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
  *  composable is redrawn and a new image request is launched when the outer composable recomposes.
- * @param content A callback to draw the content inside an [SubcomposeAsyncImageScope].
+ * @param content A callback to draw the content inside a [SubcomposeAsyncImageScope].
  */
 @Composable
 @NonRestartableComposable
