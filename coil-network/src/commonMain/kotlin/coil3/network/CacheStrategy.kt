@@ -1,9 +1,13 @@
+// https://youtrack.jetbrains.com/issue/KTIJ-7642
+@file:Suppress("FUN_INTERFACE_WITH_SUSPEND_FUNCTION")
+
 package coil3.network
 
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.CacheStrategy.Output
 import coil3.request.Options
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.http.HttpStatusCode.Companion.NotModified
 import kotlin.js.JsName
 
 /**
@@ -19,7 +23,7 @@ fun CacheStrategy() = CacheStrategy { Output(it.cacheResponse) }
 @ExperimentalCoilApi
 fun interface CacheStrategy {
 
-    fun compute(input: Input): Output
+    suspend fun compute(input: Input): Output
 
     class Input(
         val cacheResponse: CacheResponse,
@@ -31,16 +35,28 @@ fun interface CacheStrategy {
         val cacheResponse: CacheResponse?
         val networkRequest: HttpRequestBuilder?
 
+        /**
+         * Create an output that will use [cacheResponse] as the image source.
+         */
         constructor(cacheResponse: CacheResponse) {
             this.cacheResponse = cacheResponse
             this.networkRequest = null
         }
 
+        /**
+         * Create an output that will execute [networkRequest] and use the response body as the
+         * image source.
+         */
         constructor(networkRequest: HttpRequestBuilder) {
             this.cacheResponse = null
             this.networkRequest = networkRequest
         }
 
+        /**
+         * Create an output that will execute [networkRequest] and use [cacheResponse] as the image
+         * source if the response code is [NotModified]. Else, the network request's response body
+         * will be used as the image source.
+         */
         constructor(
             cacheResponse: CacheResponse,
             networkRequest: HttpRequestBuilder,
