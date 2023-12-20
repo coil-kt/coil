@@ -191,6 +191,9 @@ private fun ListScreen(
     images: List<Image>,
     onImageClick: (Image, MemoryCache.Key?) -> Unit,
 ) {
+    val density = LocalDensity.current
+    val screenWidth = containerSize().width
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(NUM_COLUMNS),
         state = gridState,
@@ -201,13 +204,14 @@ private fun ListScreen(
             key = { it.uri },
         ) { image ->
             // Scale the image to fit the width of a column.
-            val size = with(LocalDensity.current) {
-                val (width, height) = image.calculateScaledSize(containerSize().width)
-                DpSize(width.toDp(), height.toDp())
+            val size = remember(density, screenWidth) {
+                val (width, height) = image.calculateScaledSize(screenWidth)
+                with(density) { DpSize(width.toDp(), height.toDp()) }
             }
 
-            // Intentionally not a state object to avoid recomposition.
-            var placeholder: MemoryCache.Key? = null
+            // Keep track of the image's memory cache key so it can be used as a placeholder
+            // for the detail screen.
+            var placeholder: MemoryCache.Key? = remember { null }
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
