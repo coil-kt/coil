@@ -25,6 +25,7 @@ As part of decoupling from the Android SDK, a number of API changes were made. N
     - The `Image` API is experimental (especially on non-Android platforms) and is likely to change.
 - Android's `android.net.Uri` class was replaced a multiplatform `coil3.Uri` class. Any instances of `android.net.Uri` that are used as `ImageRequest.data` will be mapped to `coil3.Uri` before being fetched/decoded.
 - Usages of `Context` were replaced with `PlatformContext`. `PlatformContext` is a type alias for `Context` on Android and can be accessed using `PlatformContext.INSTANCE` on non-Android platforms.
+- The `Coil` class was renamed to `SingletonImageLoader`.
 
 The `coil-gif`, `coil-svg`, and `coil-video` artifacts continue to be Android-only as they rely on specific Android decoders and libraries.
 
@@ -92,3 +93,7 @@ Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compo
 ## Compose Multiplatform
 
 Coil's Compose API is largely unchanged, however it includes changes to ensure `AsyncImage`, `SubcomposeAsyncImage`, and `rememberAsyncImagePainter` are [restartable and skippable](https://developer.android.com/jetpack/compose/performance/stability). This should provide a performance benefit as those composable functions will often be entirely skipped when their parent composable recomposes.
+
+## Extras
+
+Coil 2's `Parameters` API was replaced by `Extras`. `Extras` don't require a string key and instead rely on identity equality. `Extras` don't support modifying the memory cache key. Instead, use `ImageRequest.memoryCacheKeyExtra` if your extra affects the memory cache key.
