@@ -37,7 +37,7 @@ Coil's network image fetcher was extracted into a separate artifact, `coil-netwo
 ```kotlin
 // Import coil-network and an HTTP client engine.
 implementation("io.coil-kt.coil3:coil-network:3.0.0-alpha01")
-implementation("io.ktor:ktor-client-okhttp:[latest-ktor-version]")
+implementation("io.ktor:ktor-client-okhttp:[ktor-version]")
 ```
 
 If you use the singleton `ImageLoader` on Android, create a custom `ImageLoader` in your Application's `SingletonImageLoader.Factory`:
