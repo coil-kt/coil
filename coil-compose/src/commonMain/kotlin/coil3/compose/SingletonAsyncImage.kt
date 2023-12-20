@@ -39,6 +39,8 @@ import coil3.request.ImageRequest
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -57,6 +59,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
@@ -73,6 +76,7 @@ fun AsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    modelEqualityDelegate = modelEqualityDelegate,
 )
 
 /**
@@ -96,6 +100,8 @@ fun AsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -110,6 +116,7 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
     model = model,
     contentDescription = contentDescription,
@@ -122,4 +129,5 @@ fun AsyncImage(
     alpha = alpha,
     colorFilter = colorFilter,
     filterQuality = filterQuality,
+    modelEqualityDelegate = modelEqualityDelegate,
 )
