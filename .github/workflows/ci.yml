@@ -49,7 +49,6 @@ jobs:
               continue-on-error: true
               timeout-minutes: 5
               with:
-                  cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/3.x' }}
                   cache-overwrite-existing: true
                   gradle-home-cache-cleanup: true
 
@@ -74,7 +73,6 @@ jobs:
               continue-on-error: true
               timeout-minutes: 5
               with:
-                  cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/3.x' }}
                   cache-overwrite-existing: true
                   gradle-home-cache-cleanup: true
 
@@ -107,7 +105,6 @@ jobs:
               continue-on-error: true
               timeout-minutes: 5
               with:
-                  cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/3.x' }}
                   cache-overwrite-existing: true
                   gradle-home-cache-cleanup: true
 
