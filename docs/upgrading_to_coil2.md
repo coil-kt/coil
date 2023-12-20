@@ -1,4 +1,4 @@
-# Upgrading from Coil 1.x to 2.x
+# Upgrading to Coil 2.x
 
 This is a short guide to highlight the main changes when upgrading from Coil 1.x to 2.x and how to handle them. This upgrade guide doesn't cover every binary or source incompatible change, but it does cover the most important changes.
 

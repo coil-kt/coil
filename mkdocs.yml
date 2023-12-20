@@ -51,7 +51,8 @@ nav:
   - 'Recipes': recipes.md
   - 'FAQ': faq.md
   - 'Migrating from Glide/Picasso': migrating.md
-  - 'Upgrading from Coil 1.x to 2.x': upgrading.md
+  - 'Upgrading to Coil 2.x': upgrading_to_coil2.md
+  - 'Upgrading to Coil 3.x': upgrading_to_coil3.md
   - 'API ⏏': api/index.html
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md

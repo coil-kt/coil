@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.0-alpha01] - December 99, 2023
+
+- **New**: [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) support. Coil is now a Kotlin Multiplatform library that supports Android, JVM, iOS, macOS, and Javascript. WASM JS is also supported via a separate `3.0.0-alpha01-wasm` artifact.
+- Coil's Maven coordinates were updated to `io.coil-kt.coil3` and its imports were updated to `coil3`. This allows Coil 3 to run side by side with Coil 2 without binary compatibility issues. For example, `io.coil-kt:coil:2.5.0` is now `io.coil-kt.coil3:coil:3.0.0-alpha03`.
+- The `coil-base` and `coil-compose-base` artifacts were renamed to `coil-core` and `coil-compose-core` respectively to align with the naming conventions used by Coroutines, Ktor, and AndroidX.
+- [For the full list of important changes, check out the upgrade guide.](https://coil-kt.github.io/coil/upgrading_to_coil3/).
+
 ## [2.5.0] - October 30, 2023
 
 - **New**: Add `MediaDataSourceFetcher.Factory` to support decoding `MediaDataSource` implementations in `coil-video`. ([#1795](https://github.com/coil-kt/coil/pull/1795))
