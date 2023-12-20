@@ -756,6 +756,45 @@ class AsyncImageTest {
         assertEquals(1, onStartCount.get())
     }
 
+    @Test
+    fun newRequestStartsWhenDataChanges() {
+        val tickerFlow = flow {
+            var count = 0
+            while (true) {
+                emit(count++)
+                delay(100.milliseconds)
+            }
+        }
+        val compositionCount = AtomicInteger()
+        val onStartCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            val count by tickerFlow.collectAsState(0)
+
+            compositionCount.getAndIncrement()
+
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data("https://example.com/image${count.coerceAtMost(1)}")
+                    .listener(
+                        onStart = {
+                            onStartCount.getAndIncrement()
+                        },
+                    )
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader,
+            )
+
+            BasicText("Count: $count")
+        }
+
+        waitUntil { compositionCount.get() >= 3 }
+
+        assertEquals(2, onStartCount.get())
+    }
+
     private fun waitForRequestComplete(finishedRequests: Int = 1) = waitUntil {
         requestTracker.finishedRequests >= finishedRequests
     }
