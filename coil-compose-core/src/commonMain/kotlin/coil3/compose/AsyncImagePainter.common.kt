@@ -76,6 +76,8 @@ import kotlinx.coroutines.launch
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -90,9 +92,9 @@ fun rememberAsyncImagePainter(
     onError: ((State.Error) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = rememberAsyncImagePainter(
-    model = model,
-    imageLoader = imageLoader,
+    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
     transform = transformOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
     contentScale = contentScale,
@@ -122,8 +124,11 @@ fun rememberAsyncImagePainter(
  *  to the same value that's passed to [Image].
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
+@NonRestartableComposable
 fun rememberAsyncImagePainter(
     model: Any?,
     imageLoader: ImageLoader,
@@ -131,17 +136,33 @@ fun rememberAsyncImagePainter(
     onState: ((State) -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
+) = rememberAsyncImagePainter(
+    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    transform = transform,
+    onState = onState,
+    contentScale = contentScale,
+    filterQuality = filterQuality,
+)
+
+@Composable
+private fun rememberAsyncImagePainter(
+    state: AsyncImageState,
+    transform: (State) -> State,
+    onState: ((State) -> Unit)?,
+    contentScale: ContentScale,
+    filterQuality: FilterQuality,
 ): AsyncImagePainter {
-    val request = requestOf(model)
+    val request = requestOf(state.model)
     validateRequest(request)
 
-    val painter = remember { AsyncImagePainter(request, imageLoader) }
+    val painter = remember { AsyncImagePainter(request, state.imageLoader) }
     painter.transform = transform
     painter.onState = onState
     painter.contentScale = contentScale
     painter.filterQuality = filterQuality
     painter.isPreview = LocalInspectionMode.current
-    painter.imageLoader = imageLoader
+    painter.imageLoader = state.imageLoader
     painter.request = request // Update request last so all other properties are up to date.
     painter.onRemembered() // Invoke this manually so `painter.state` is set to `Loading` immediately.
     return painter
@@ -301,8 +322,14 @@ class AsyncImagePainter internal constructor(
     }
 
     private fun ImageResult.toState() = when (this) {
-        is SuccessResult -> State.Success(image.toPainter(request.context, filterQuality), this)
-        is ErrorResult -> State.Error(image?.toPainter(request.context, filterQuality), this)
+        is SuccessResult -> State.Success(
+            painter = image.toPainter(request.context, filterQuality),
+            result = this,
+        )
+        is ErrorResult -> State.Error(
+            painter = image?.toPainter(request.context, filterQuality),
+            result = this,
+        )
     }
 
     /**

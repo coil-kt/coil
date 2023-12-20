@@ -16,8 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -49,16 +52,20 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.SuccessResult
+import coil3.request.crossfade
 import coil3.size.Scale
 import coil3.test.utils.ComposeTestActivity
+import coil3.test.utils.context
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.fail
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -710,11 +717,52 @@ class AsyncImageTest {
             .assertIsSimilarTo(R.drawable.vertical_gradient)
     }
 
-    private fun waitForRequestComplete(finishedRequests: Int = 1) {
-        composeTestRule.waitForIdle()
-        composeTestRule.waitUntil(10_000) {
-            requestTracker.finishedRequests >= finishedRequests
+    @Test
+    fun requestWithUnstableParamsComposesAtMostOnce() {
+        val tickerFlow = flow {
+            var count = 0
+            while (true) {
+                emit(count++)
+                delay(50.milliseconds)
+            }
         }
+        val compositionCount = AtomicInteger()
+        val onStartCount = AtomicInteger()
+
+        composeTestRule.setContent {
+            val count by tickerFlow.collectAsState(0)
+
+            compositionCount.getAndIncrement()
+
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data("https://example.com/image")
+                    .listener(
+                        onStart = {
+                            onStartCount.getAndIncrement()
+                        },
+                    )
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                imageLoader = imageLoader,
+            )
+
+            BasicText("Count: $count")
+        }
+
+        waitUntil { compositionCount.get() >= 10 }
+
+        assertEquals(1, onStartCount.get())
+    }
+
+    private fun waitForRequestComplete(finishedRequests: Int = 1) = waitUntil {
+        requestTracker.finishedRequests >= finishedRequests
+    }
+
+    private fun waitUntil(condition: () -> Boolean) {
+        composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(10_000, condition)
         composeTestRule.waitForIdle()
     }
 

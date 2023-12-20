@@ -1,6 +1,7 @@
 package coil3.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -13,6 +14,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
+import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter.Companion.DefaultTransform
 import coil3.compose.AsyncImagePainter.State
 import coil3.request.ImageRequest
@@ -25,6 +27,7 @@ import kotlin.math.roundToInt
 
 /** Create an [ImageRequest] from the [model]. */
 @Composable
+@NonRestartableComposable
 internal fun requestOf(model: Any?): ImageRequest {
     if (model is ImageRequest) {
         return model
@@ -40,6 +43,7 @@ internal fun requestOf(model: Any?): ImageRequest {
 
 /** Create an [ImageRequest] with a not-null [SizeResolver] from the [model]. */
 @Composable
+@NonRestartableComposable
 internal fun requestOfWithSizeResolver(
     model: Any?,
     contentScale: ContentScale,
@@ -113,6 +117,28 @@ internal fun onStateOf(
         }
     } else {
         null
+    }
+}
+
+/** Wrap [AsyncImage]'s unstable arguments to make them stable. */
+@Stable
+internal class AsyncImageState(
+    val model: Any?,
+    val modelEqualityDelegate: EqualityDelegate,
+    val imageLoader: ImageLoader,
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is AsyncImageState &&
+            modelEqualityDelegate.equals(model, other.model) &&
+            imageLoader == other.imageLoader
+    }
+
+    override fun hashCode(): Int {
+        var result = modelEqualityDelegate.hashCode(model)
+        result = 31 * result + imageLoader.hashCode()
+        return result
     }
 }
 

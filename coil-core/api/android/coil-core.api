@@ -1031,11 +1031,8 @@ public final class coil3/transition/CrossfadeTransition$Factory : coil3/transiti
 	public fun <init> (IZ)V
 	public synthetic fun <init> (IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun create (Lcoil3/transition/TransitionTarget;Lcoil3/request/ImageResult;)Lcoil3/transition/Transition;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDurationMillis ()I
 	public final fun getPreferExactIntrinsicSize ()Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class coil3/transition/Transition {
