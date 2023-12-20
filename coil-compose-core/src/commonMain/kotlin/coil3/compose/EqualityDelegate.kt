@@ -25,7 +25,6 @@ val DefaultModelEqualityDelegate = object : EqualityDelegate {
 
         return self.context == other.context &&
             self.data == other.data &&
-            self.target == other.target &&
             self.memoryCacheKey == other.memoryCacheKey &&
             self.memoryCacheKeyExtras == other.memoryCacheKeyExtras &&
             self.diskCacheKey == other.diskCacheKey &&
@@ -42,7 +41,6 @@ val DefaultModelEqualityDelegate = object : EqualityDelegate {
 
         var result = self.context.hashCode()
         result = 31 * result + self.data.hashCode()
-        result = 31 * result + self.target.hashCode()
         result = 31 * result + self.memoryCacheKey.hashCode()
         result = 31 * result + self.memoryCacheKeyExtras.hashCode()
         result = 31 * result + self.diskCacheKey.hashCode()
