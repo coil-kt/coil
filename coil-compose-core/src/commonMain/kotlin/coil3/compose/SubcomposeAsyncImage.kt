@@ -49,6 +49,8 @@ import coil3.request.ImageRequest
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -57,6 +59,7 @@ fun SubcomposeAsyncImage(
     contentDescription: String?,
     imageLoader: ImageLoader,
     modifier: Modifier = Modifier,
+    transform: (State) -> State = DefaultTransform,
     loading: @Composable (SubcomposeAsyncImageScope.(State.Loading) -> Unit)? = null,
     success: @Composable (SubcomposeAsyncImageScope.(State.Success) -> Unit)? = null,
     error: @Composable (SubcomposeAsyncImageScope.(State.Error) -> Unit)? = null,
@@ -68,11 +71,12 @@ fun SubcomposeAsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = SubcomposeAsyncImage(
-    model = model,
+    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
     contentDescription = contentDescription,
-    imageLoader = imageLoader,
     modifier = modifier,
+    transform = transform,
     onState = onStateOf(onLoading, onSuccess, onError),
     alignment = alignment,
     contentScale = contentScale,
@@ -104,9 +108,12 @@ fun SubcomposeAsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  * @param content A callback to draw the content inside an [SubcomposeAsyncImageScope].
  */
 @Composable
+@NonRestartableComposable
 fun SubcomposeAsyncImage(
     model: Any?,
     contentDescription: String?,
@@ -119,16 +126,44 @@ fun SubcomposeAsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
+    content: @Composable SubcomposeAsyncImageScope.() -> Unit,
+) = SubcomposeAsyncImage(
+    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    contentDescription = contentDescription,
+    modifier = modifier,
+    transform = transform,
+    onState = onState,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+    content = content,
+)
+
+@Composable
+private fun SubcomposeAsyncImage(
+    state: AsyncImageState,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    transform: (State) -> State,
+    onState: ((State) -> Unit)?,
+    alignment: Alignment,
+    contentScale: ContentScale,
+    alpha: Float,
+    colorFilter: ColorFilter?,
+    filterQuality: FilterQuality,
     content: @Composable SubcomposeAsyncImageScope.() -> Unit,
 ) {
     // Create and execute the image request.
     val request = requestOfWithSizeResolver(
-        model = model,
+        model = state.model,
         contentScale = contentScale,
     )
     val painter = rememberAsyncImagePainter(
         model = request,
-        imageLoader = imageLoader,
+        imageLoader = state.imageLoader,
         transform = transform,
         onState = onState,
         contentScale = contentScale,

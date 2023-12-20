@@ -42,6 +42,8 @@ import coil3.request.ImageRequest
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
 @NonRestartableComposable
@@ -61,10 +63,10 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
 ) = AsyncImage(
-    model = model,
+    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
     contentDescription = contentDescription,
-    imageLoader = imageLoader,
     modifier = modifier,
     transform = transformOf(placeholder, error, fallback),
     onState = onStateOf(onLoading, onSuccess, onError),
@@ -97,8 +99,11 @@ fun AsyncImage(
  *  rendered onscreen.
  * @param filterQuality Sampling algorithm applied to a bitmap when it is scaled and drawn into the
  *  destination.
+ * @param modelEqualityDelegate Determines the equality of [model]. This controls whether this
+ *  composable is redrawn and a new image request is launched when the outer composable recomposes.
  */
 @Composable
+@NonRestartableComposable
 fun AsyncImage(
     model: Any?,
     contentDescription: String?,
@@ -111,19 +116,46 @@ fun AsyncImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    modelEqualityDelegate: EqualityDelegate = DefaultModelEqualityDelegate,
+) = AsyncImage(
+    state = AsyncImageState(model, modelEqualityDelegate, imageLoader),
+    contentDescription = contentDescription,
+    modifier = modifier,
+    transform = transform,
+    onState = onState,
+    alignment = alignment,
+    contentScale = contentScale,
+    alpha = alpha,
+    colorFilter = colorFilter,
+    filterQuality = filterQuality,
+)
+
+@Composable
+private fun AsyncImage(
+    state: AsyncImageState,
+    contentDescription: String?,
+    modifier: Modifier,
+    transform: (State) -> State,
+    onState: ((State) -> Unit)?,
+    alignment: Alignment,
+    contentScale: ContentScale,
+    alpha: Float,
+    colorFilter: ColorFilter?,
+    filterQuality: FilterQuality,
 ) {
     // Create and execute the image request.
     val request = requestOfWithSizeResolver(
-        model = model,
+        model = state.model,
         contentScale = contentScale,
     )
     val painter = rememberAsyncImagePainter(
         model = request,
-        imageLoader = imageLoader,
+        imageLoader = state.imageLoader,
         transform = transform,
         onState = onState,
         contentScale = contentScale,
         filterQuality = filterQuality,
+        modelEqualityDelegate = state.modelEqualityDelegate,
     )
 
     // Draw the content.
