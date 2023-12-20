@@ -82,7 +82,7 @@ class EventListenerTest {
 
         imageLoader.testEnqueue {
             data("$SCHEME_ANDROID_RESOURCE://${context.packageName}/${R.drawable.normal}")
-            transformations(object : Transformation {
+            transformations(object : Transformation() {
                 override val cacheKey = "test_transformation"
 
                 override suspend fun transform(input: Bitmap, size: Size): Bitmap {
