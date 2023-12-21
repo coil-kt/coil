@@ -2,7 +2,7 @@
 androidx-activity = "1.8.2"
 androidx-lifecycle = "2.6.2"
 androidx-compose = "1.5.4"
-coroutines = "1.8.0-RC"
+coroutines = "1.8.0-RC2"
 jetbrains-compose = "1.6.0-alpha01"
 jetbrains-compose-compiler = "1.5.4"
 kotlin = "1.9.21"
