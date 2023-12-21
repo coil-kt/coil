@@ -1,7 +1,8 @@
-package coil3.decode
+package decode
 
 import coil3.BitmapImage
 import coil3.ImageLoader
+import coil3.decode.*
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.size.Dimension
