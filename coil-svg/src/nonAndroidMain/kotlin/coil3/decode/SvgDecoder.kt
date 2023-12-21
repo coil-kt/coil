@@ -7,8 +7,6 @@ import coil3.request.Options
 import coil3.size.Scale
 import coil3.size.isOriginal
 import coil3.util.toPx
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 import org.jetbrains.skia.*
 import org.jetbrains.skia.svg.SVGDOM
@@ -95,53 +93,6 @@ class SvgDecoder(
             return dstWidth.toPx(scale) to dstHeight.toPx(scale)
         }
     }
-
-//    private fun calculateViewBoxTransform(
-//        viewPort: com.caverock.androidsvg.SVG.Box,
-//        viewBox: com.caverock.androidsvg.SVG.Box,
-//        positioning: PreserveAspectRatio?,
-//    ): android.graphics.Matrix {
-//        val m: android.graphics.Matrix = android.graphics.Matrix()
-//        if (positioning == null || positioning.getAlignment() == null) return m
-//        val xScale: Float = viewPort.width / viewBox.width
-//        val yScale: Float = viewPort.height / viewBox.height
-//        var xOffset: Float = -viewBox.minX
-//        var yOffset: Float = -viewBox.minY
-//
-//        // 'none' means scale both dimensions to fit the viewport
-//        if (positioning == PreserveAspectRatio.STRETCH) {
-//            m.preTranslate(viewPort.minX, viewPort.minY)
-//            m.preScale(xScale, yScale)
-//            m.preTranslate(xOffset, yOffset)
-//            return m
-//        }
-//
-//        // Otherwise, the aspect ratio of the image is kept.
-//        // What scale are we going to use?
-//        val scale = if (positioning.getScale() == PreserveAspectRatio.Scale.slice) max(
-//            xScale.toDouble(),
-//            yScale.toDouble(),
-//        )
-//            .toFloat() else min(xScale.toDouble(), yScale.toDouble()).toFloat()
-//        // What size will the image end up being?
-//        val imageW: Float = viewPort.width / scale
-//        val imageH: Float = viewPort.height / scale
-//        when (positioning.getAlignment()) {
-//            PreserveAspectRatio.Alignment.xMidYMin, PreserveAspectRatio.Alignment.xMidYMid, PreserveAspectRatio.Alignment.xMidYMax -> xOffset -= (viewBox.width - imageW) / 2
-//            PreserveAspectRatio.Alignment.xMaxYMin, PreserveAspectRatio.Alignment.xMaxYMid, PreserveAspectRatio.Alignment.xMaxYMax -> xOffset -= viewBox.width - imageW
-//            else -> {}
-//        }
-//        when (positioning.getAlignment()) {
-//            PreserveAspectRatio.Alignment.xMinYMid, PreserveAspectRatio.Alignment.xMidYMid, PreserveAspectRatio.Alignment.xMaxYMid -> yOffset -= (viewBox.height - imageH) / 2
-//            PreserveAspectRatio.Alignment.xMinYMax, PreserveAspectRatio.Alignment.xMidYMax, PreserveAspectRatio.Alignment.xMaxYMax -> yOffset -= viewBox.height - imageH
-//            else -> {}
-//        }
-//        m.preTranslate(viewPort.minX, viewPort.minY)
-//        m.preScale(scale, scale)
-//        m.preTranslate(xOffset, yOffset)
-//        return m
-//    }
-
     class Factory(
         val useViewBoundsAsIntrinsicSize: Boolean = true,
     ) : Decoder.Factory {
