@@ -33,8 +33,6 @@ androidApplication(name = "sample.compose") {
 }
 
 compose {
-    kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
-    experimental.web.application {}
     desktop {
         application {
             mainClass = "sample.compose.MainKt"

@@ -8,6 +8,8 @@ import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import java.net.URL
 import kotlinx.validation.ApiValidationExtension
+import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.compose.experimental.dsl.ExperimentalExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -125,6 +127,16 @@ allprojects {
         extensions.configure<SpotlessExtensionPredeclare>(configureSpotless)
     } else {
         extensions.configure(configureSpotless)
+    }
+
+    plugins.withId("org.jetbrains.compose") {
+        extensions.configure<ComposeExtension> {
+            kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+            kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=${libs.versions.kotlin.get()}")
+            extensions.configure<ExperimentalExtension> {
+                web.application {}
+            }
+        }
     }
 
     plugins.withId("dev.drewhamilton.poko") {
