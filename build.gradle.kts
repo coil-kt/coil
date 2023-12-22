@@ -165,7 +165,7 @@ allprojects {
         configurations.all {
             resolutionStrategy.eachDependency {
                 if (requested.group == "io.ktor") {
-                    useVersion("3.0.0-wasm2")
+                    useVersion(libs.versions.ktor.wasm.get())
                 }
             }
         }
