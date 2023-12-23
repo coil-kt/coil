@@ -92,7 +92,9 @@ class FastImageDecoderDecoder(
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
-        allocator = if (options.bitmapConfig.isHardware) {
+        // https://github.com/element-hq/element-android/pull/7184
+        val ignoreHardware = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+        allocator = if (options.bitmapConfig.isHardware || ignoreHardware) {
             ImageDecoder.ALLOCATOR_HARDWARE
         } else {
             ImageDecoder.ALLOCATOR_SOFTWARE
@@ -131,6 +133,7 @@ class FastImageDecoderDecoder(
     }
 }
 
+@RequiresApi(28)
 class FastImageDecoderFactory @JvmOverloads constructor(
     maxParallelism: Int = DEFAULT_MAX_PARALLELISM,
 ) : Decoder.Factory {
