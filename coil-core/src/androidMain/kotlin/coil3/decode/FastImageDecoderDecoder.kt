@@ -172,5 +172,6 @@ fun ImageSource.fastImageDecoderSourceOrNull(options: Options): ImageDecoder.Sou
     return null
 }
 
+// https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
 private val NeedRewriteGifSource = Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 private const val DEFAULT_MAX_PARALLELISM = 4
