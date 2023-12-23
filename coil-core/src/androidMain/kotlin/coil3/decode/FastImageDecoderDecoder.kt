@@ -30,12 +30,14 @@ import coil3.util.widthPx
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
 
 @RequiresApi(28)
 class FastImageDecoderDecoder(
     private val source: ImageDecoder.Source,
     private val options: Options,
+    private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
 ) : Decoder {
 
     override suspend fun decode(): DecodeResult {
@@ -124,7 +126,11 @@ class FastImageDecoderDecoder(
     }
 }
 
-class FastImageDecoderFactory : Decoder.Factory {
+class FastImageDecoderFactory @JvmOverloads constructor(
+    maxParallelism: Int = DEFAULT_MAX_PARALLELISM,
+) : Decoder.Factory {
+    private val parallelismLock = Semaphore(maxParallelism)
+
     override fun create(
         result: SourceFetchResult,
         options: Options,
@@ -133,7 +139,7 @@ class FastImageDecoderFactory : Decoder.Factory {
         val mimeType = result.mimeType
         if (mimeType == "image/gif" && NeedRewriteGifSource) return null
         val source = result.source.fastImageDecoderSourceOrNull(options) ?: return null
-        return FastImageDecoderDecoder(source, options)
+        return FastImageDecoderDecoder(source, options, parallelismLock)
     }
 }
 
@@ -159,3 +165,4 @@ fun ImageSource.fastImageDecoderSourceOrNull(options: Options): ImageDecoder.Sou
 }
 
 private val NeedRewriteGifSource = Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+private const val DEFAULT_MAX_PARALLELISM = 4

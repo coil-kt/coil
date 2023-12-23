@@ -1,6 +1,8 @@
 package coil3
 
+import android.os.Build
 import coil3.decode.BitmapFactoryDecoder
+import coil3.decode.FastImageDecoderFactory
 import coil3.fetch.AssetUriFetcher
 import coil3.fetch.BitmapFetcher
 import coil3.fetch.ContentUriFetcher
@@ -80,6 +82,15 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         .add(DrawableFetcher.Factory())
         .add(BitmapFetcher.Factory())
         // Decoders
+        .apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                add(
+                    FastImageDecoderFactory(
+                        maxParallelism = options.bitmapFactoryMaxParallelism,
+                    )
+                )
+            }
+        }
         .add(
             BitmapFactoryDecoder.Factory(
                 maxParallelism = options.bitmapFactoryMaxParallelism,
