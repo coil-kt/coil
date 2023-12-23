@@ -31,6 +31,7 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 
 @RequiresApi(28)
@@ -40,7 +41,11 @@ class FastImageDecoderDecoder(
     private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
 ) : Decoder {
 
-    override suspend fun decode(): DecodeResult {
+    override suspend fun decode() = parallelismLock.withPermit {
+        decodeInternal()
+    }
+
+    private suspend fun decodeInternal(): DecodeResult {
         var isSampled = false
         val drawable = runInterruptible {
             var imageDecoder: ImageDecoder? = null
