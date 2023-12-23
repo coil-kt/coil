@@ -162,7 +162,7 @@ allprojects {
         repositories {
             maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
         }
-        configurations.all {
+        configurations.configureEach {
             resolutionStrategy.eachDependency {
                 if (requested.group == "io.ktor") {
                     useVersion(libs.versions.ktor.wasm.get())
