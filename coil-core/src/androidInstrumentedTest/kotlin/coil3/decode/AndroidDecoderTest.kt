@@ -425,12 +425,9 @@ class AndroidDecoderTest {
         checkNotNull(decoder)
         val result = checkNotNull(decoder.decode())
 
-        // [FastImageDecoderDecoder] will not consume this source
-        if (decoder is BitmapFactoryDecoder) {
-            // Assert that the source has been closed.
-            val exception = assertFailsWith<IllegalStateException> { source.exhausted() }
-            assertEquals("closed", exception.message)
-        }
+        // Assert that the source has been closed.
+        val exception = assertFailsWith<IllegalStateException> { source.exhausted() }
+        assertEquals("closed", exception.message)
 
         return result
     }
