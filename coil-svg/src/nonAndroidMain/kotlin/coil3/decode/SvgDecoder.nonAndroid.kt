@@ -14,20 +14,17 @@ import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.svg.SVGDOM
 
-internal actual fun SvgDecoderFactory(useViewBoundsAsIntrinsicSize: Boolean): Decoder.Factory =
-    SkiaSvgDecoder.Factory(useViewBoundsAsIntrinsicSize)
-
 /**
- * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG
+ * A [Decoder] that uses [SVGDOM](https://api.skia.org/classSkSVGDOM.html/) to decode SVG
  * files.
  *
  * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
  *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
  */
-private class SkiaSvgDecoder(
+actual class SvgDecoder actual constructor(
     private val source: ImageSource,
     private val options: Options,
-    val useViewBoundsAsIntrinsicSize: Boolean = true,
+    val useViewBoundsAsIntrinsicSize: Boolean,
 ) : Decoder {
 
     override suspend fun decode(): DecodeResult {
@@ -99,8 +96,8 @@ private class SkiaSvgDecoder(
             return dstWidth.toPx(scale) to dstHeight.toPx(scale)
         }
     }
-    class Factory(
-        val useViewBoundsAsIntrinsicSize: Boolean = true,
+    actual class Factory actual constructor(
+        val useViewBoundsAsIntrinsicSize: Boolean,
     ) : Decoder.Factory {
 
         override fun create(
@@ -109,7 +106,7 @@ private class SkiaSvgDecoder(
             imageLoader: ImageLoader,
         ): Decoder? {
             if (!isApplicable(result)) return null
-            return SkiaSvgDecoder(result.source, options, useViewBoundsAsIntrinsicSize)
+            return SvgDecoder(result.source, options, useViewBoundsAsIntrinsicSize)
         }
 
         private fun isApplicable(result: SourceFetchResult): Boolean {
@@ -117,8 +114,4 @@ private class SkiaSvgDecoder(
         }
     }
 
-    companion object {
-        private const val MIME_TYPE_SVG = "image/svg+xml"
-        private const val DEFAULT_SIZE = 512f
-    }
 }

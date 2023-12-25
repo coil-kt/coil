@@ -19,20 +19,18 @@ import com.caverock.androidsvg.SVG
 import kotlin.math.roundToInt
 import kotlinx.coroutines.runInterruptible
 
-internal actual fun SvgDecoderFactory(useViewBoundsAsIntrinsicSize: Boolean): Decoder.Factory =
-    AndroidSvgDecoder.Factory(useViewBoundsAsIntrinsicSize)
-
 /**
- * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG
+ * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/)
+ * and [SVGDOM](https://api.skia.org/classSkSVGDOM.html/) to decode SVG
  * files.
  *
  * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
  *  the SVG. If false, uses the SVG's width/height as the intrinsic size for the SVG.
  */
-private class AndroidSvgDecoder @JvmOverloads constructor(
+actual class SvgDecoder @JvmOverloads actual constructor(
     private val source: ImageSource,
     private val options: Options,
-    val useViewBoundsAsIntrinsicSize: Boolean = true,
+    val useViewBoundsAsIntrinsicSize: Boolean,
 ) : Decoder {
 
     override suspend fun decode() = runInterruptible {
@@ -96,8 +94,8 @@ private class AndroidSvgDecoder @JvmOverloads constructor(
         }
     }
 
-    class Factory @JvmOverloads constructor(
-        val useViewBoundsAsIntrinsicSize: Boolean = true,
+    actual class Factory @JvmOverloads actual constructor(
+        val useViewBoundsAsIntrinsicSize: Boolean,
     ) : Decoder.Factory {
 
         override fun create(
@@ -106,7 +104,7 @@ private class AndroidSvgDecoder @JvmOverloads constructor(
             imageLoader: ImageLoader,
         ): Decoder? {
             if (!isApplicable(result)) return null
-            return AndroidSvgDecoder(result.source, options, useViewBoundsAsIntrinsicSize)
+            return SvgDecoder(result.source, options, useViewBoundsAsIntrinsicSize)
         }
 
         private fun isApplicable(result: SourceFetchResult): Boolean {
@@ -114,8 +112,4 @@ private class AndroidSvgDecoder @JvmOverloads constructor(
         }
     }
 
-    companion object {
-        private const val MIME_TYPE_SVG = "image/svg+xml"
-        private const val DEFAULT_SIZE = 512f
-    }
 }
