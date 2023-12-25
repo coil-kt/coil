@@ -29,7 +29,6 @@ import coil3.util.isHardware
 import coil3.util.widthPx
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
@@ -47,7 +46,7 @@ class FastImageDecoderDecoder(
 
     private suspend fun decodeInternal(): DecodeResult {
         var isSampled = false
-        val drawable = runInterruptible {
+        val drawable = run {
             var imageDecoder: ImageDecoder? = null
             try {
                 source.decodeDrawable { info, _ ->
