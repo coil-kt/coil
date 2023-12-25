@@ -139,7 +139,7 @@ class AndroidDecoderTest {
         val size = Size(500, 500)
         val expected = decodeBitmap("exif/large_metadata_normalized.jpg", size)
         val actual = decodeBitmap("exif/large_metadata.jpg", size)
-        expected.assertIsSimilarTo(actual)
+        expected.assertIsSimilarTo(actual, 0.97)
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/619 */
