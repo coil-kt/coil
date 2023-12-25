@@ -5,9 +5,9 @@ import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.core.graphics.decodeDrawable
 import androidx.core.util.component1
 import androidx.core.util.component2
+import coil3.Image
 import coil3.ImageLoader
 import coil3.asCoilImage
 import coil3.drawable.ScaleDrawable
@@ -41,16 +41,32 @@ class FastImageDecoderDecoder(
     private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
 ) : Decoder {
 
+    private suspend inline fun ImageDecoder.Source.decodeToCoilImage(
+        premultipliedAlpha: Boolean,
+        crossinline action: ImageDecoder.(info: ImageDecoder.ImageInfo, source: ImageDecoder.Source) -> Unit
+    ): Image {
+        return if (premultipliedAlpha) {
+            val drawable = ImageDecoder.decodeDrawable(this) { decoder, info, source ->
+                decoder.action(info, source)
+            }
+            wrapDrawable(drawable).asCoilImage()
+        } else {
+            ImageDecoder.decodeBitmap(this) { decoder, info, source ->
+                decoder.action(info, source)
+            }.asCoilImage()
+        }
+    }
+
     override suspend fun decode() = parallelismLock.withPermit {
         decodeInternal()
     }
 
     private suspend fun decodeInternal(): DecodeResult {
         var isSampled = false
-        val drawable = run {
+        val image = run {
             var imageDecoder: ImageDecoder? = null
             try {
-                source.decodeDrawable { info, _ ->
+                source.decodeToCoilImage(options.premultipliedAlpha) { info, _ ->
                     // Capture the image decoder to manually close it later.
                     imageDecoder = this
 
@@ -87,7 +103,7 @@ class FastImageDecoderDecoder(
             }
         }
         return DecodeResult(
-            image = wrapDrawable(drawable).asCoilImage(),
+            image = image,
             isSampled = isSampled,
         )
     }
