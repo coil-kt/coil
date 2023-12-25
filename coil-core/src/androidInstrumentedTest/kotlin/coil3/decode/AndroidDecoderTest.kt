@@ -56,8 +56,14 @@ class AndroidDecoderTest {
         }
     }
 
-    private fun runTestPerDecoder(timeout: Duration, testBody: suspend DecoderTestScope.() -> TestResult) {
-        runTest(timeout = timeout) { testBody { bitmapFactoryDecoderFactory } }
+    private fun runTestPerDecoder(
+        timeout: Duration,
+        exifOrientationPolicy: ExifOrientationPolicy,
+        testBody: suspend DecoderTestScope.() -> TestResult,
+    ) {
+        runTest(timeout = timeout) {
+            testBody { BitmapFactoryDecoder.Factory(exifOrientationPolicy = exifOrientationPolicy) }
+        }
         runTest(timeout = timeout) {
             assumeTrue(SDK_INT >= 28)
             testBody { fastImageDecoderFactory }
@@ -262,16 +268,16 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_ignore() = runTestPerDecoder(timeout = 1.minutes) {
-        val factory = BitmapFactoryDecoder.Factory(
-            exifOrientationPolicy = ExifOrientationPolicy.IGNORE,
-        )
+    fun exifOrientationPolicy_ignore() = runTestPerDecoder(timeout = 1.minutes, ExifOrientationPolicy.IGNORE) {
+        // Android ImageDecoder handle exif internally so we cannot tune it
+        // Test BitmapFactoryDecoder only
+        assumeTrue(factory() is BitmapFactoryDecoder.Factory)
 
         // Test JPG
         for (index in 1..8) {
             val assetName = "exif/$index.jpg"
             val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
-            val actual = decodeBitmap(assetName, Size.ORIGINAL, factory = factory)
+            val actual = decodeBitmap(assetName, Size.ORIGINAL)
             assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
 
@@ -279,24 +285,17 @@ class AndroidDecoderTest {
         for (index in 1..8) {
             val assetName = "exif/$index.png"
             val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
-            val actual = decodeBitmap(assetName, Size.ORIGINAL, factory = factory)
+            val actual = decodeBitmap(assetName, Size.ORIGINAL)
             assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
     }
 
-    // Android ImageDecoder handle exif internally so we cannot tune it
-    // Test BitmapFactoryDecoder only
-
     @Test
-    fun exifOrientationPolicy_respectPerformance() = runTestPerDecoder(timeout = 1.minutes) {
-        val factory = BitmapFactoryDecoder.Factory(
-            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE,
-        )
-
+    fun exifOrientationPolicy_respectPerformance() = runTestPerDecoder(timeout = 1.minutes, exifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE) {
         // Test JPG
-        val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL, factory = factory)
+        val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL)
         for (index in 1..8) {
-            val actual = decodeBitmap("exif/$index.jpg", Size.ORIGINAL, factory = factory)
+            val actual = decodeBitmap("exif/$index.jpg", Size.ORIGINAL)
             assertTrue(normalJpg.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
 
@@ -304,28 +303,28 @@ class AndroidDecoderTest {
         for (index in 1..8) {
             val assetName = "exif/$index.png"
             val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
-            val actual = decodeBitmap(assetName, Size.ORIGINAL, factory = factory)
+            val actual = decodeBitmap(assetName, Size.ORIGINAL)
             assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
     }
 
     @Test
-    fun exifOrientationPolicy_respectAll() = runTestPerDecoder(timeout = 1.minutes) {
-        val factory = BitmapFactoryDecoder.Factory(
-            exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL,
-        )
+    fun exifOrientationPolicy_respectAll() = runTestPerDecoder(timeout = 1.minutes, exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL) {
+        // Android ImageDecoder handle exif internally so we cannot tune it
+        // Test BitmapFactoryDecoder only
+        assumeTrue(factory() is BitmapFactoryDecoder.Factory)
 
         // Test JPG
-        val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL, factory = factory)
+        val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL)
         for (index in 1..8) {
-            val actual = decodeBitmap("exif/$index.jpg", Size.ORIGINAL, factory = factory)
+            val actual = decodeBitmap("exif/$index.jpg", Size.ORIGINAL)
             assertTrue(normalJpg.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
 
         // Test PNG
-        val normalPng = decodeBitmap("normal.png", Size.ORIGINAL, factory = factory)
+        val normalPng = decodeBitmap("normal.png", Size.ORIGINAL)
         for (index in 1..8) {
-            val actual = decodeBitmap("exif/$index.png", Size.ORIGINAL, factory = factory)
+            val actual = decodeBitmap("exif/$index.png", Size.ORIGINAL)
             assertTrue(normalPng.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
     }
