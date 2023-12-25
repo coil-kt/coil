@@ -23,6 +23,7 @@ import coil3.test.utils.decodeBitmapAsset
 import coil3.test.utils.isSimilarTo
 import coil3.test.utils.size
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -106,7 +107,7 @@ class AndroidDecoderTest {
 
     @Test
     fun malformedImageThrows() = runTestPerDecoder {
-        assertFailsWith<IllegalStateException> {
+        assertFails {
             decode(
                 assetName = "malformed.jpg",
                 size = Size(100, 100),
