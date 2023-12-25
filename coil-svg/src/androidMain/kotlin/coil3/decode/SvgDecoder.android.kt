@@ -111,5 +111,4 @@ actual class SvgDecoder @JvmOverloads actual constructor(
             return result.mimeType == MIME_TYPE_SVG || DecodeUtils.isSvg(result.source.source())
         }
     }
-
 }
