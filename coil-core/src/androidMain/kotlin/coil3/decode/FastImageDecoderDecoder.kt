@@ -36,6 +36,7 @@ import kotlinx.coroutines.withContext
 @RequiresApi(28)
 class FastImageDecoderDecoder(
     private val source: ImageDecoder.Source,
+    private val toClose: ImageSource,
     private val options: Options,
     private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
 ) : Decoder {
@@ -82,6 +83,7 @@ class FastImageDecoderDecoder(
                 }
             } finally {
                 imageDecoder?.close()
+                toClose.close()
             }
         }
         return DecodeResult(
@@ -146,7 +148,7 @@ class FastImageDecoderFactory @JvmOverloads constructor(
         val mimeType = result.mimeType
         if (mimeType == "image/gif" && NeedRewriteGifSource) return null
         val source = result.source.fastImageDecoderSourceOrNull(options) ?: return null
-        return FastImageDecoderDecoder(source, options, parallelismLock)
+        return FastImageDecoderDecoder(source, result.source, options, parallelismLock)
     }
 }
 

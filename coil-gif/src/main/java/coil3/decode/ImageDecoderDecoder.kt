@@ -27,7 +27,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
 
     override suspend fun decode(): DecodeResult {
         return wrapImageSource(source).use { wrappedSource ->
-            FastImageDecoderDecoder(wrappedSource.toImageDecoderSource(), options).decode()
+            FastImageDecoderDecoder(wrappedSource.toImageDecoderSource(), source, options).decode()
         }
     }
 

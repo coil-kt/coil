@@ -309,8 +309,8 @@ public final class coil3/decode/ExifOrientationPolicy : java/lang/Enum {
 }
 
 public final class coil3/decode/FastImageDecoderDecoder : coil3/decode/Decoder {
-	public fun <init> (Landroid/graphics/ImageDecoder$Source;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;)V
-	public synthetic fun <init> (Landroid/graphics/ImageDecoder$Source;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/graphics/ImageDecoder$Source;Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;)V
+	public synthetic fun <init> (Landroid/graphics/ImageDecoder$Source;Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
