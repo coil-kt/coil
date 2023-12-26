@@ -11,13 +11,18 @@ import coil3.test.utils.assertIsSimilarTo
 import coil3.test.utils.context
 import coil3.test.utils.decodeBitmapAsset
 import java.io.File
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import okio.BufferedSource
 import okio.FileSystem
 import okio.buffer
 import okio.source
-import org.junit.Test
 
 class SvgDecoderTestJvm {
 
