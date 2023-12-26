@@ -1,6 +1,6 @@
 package coil3
 
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.StaticImageDecoderDecoder
 import coil3.fetch.AssetUriFetcher
@@ -83,7 +83,7 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         .add(BitmapFetcher.Factory())
         // Decoders
         .apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (SDK_INT >= 28) {
                 add(
                     StaticImageDecoderDecoder.Factory(
                         maxParallelism = options.bitmapFactoryMaxParallelism,
