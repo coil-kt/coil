@@ -23,7 +23,7 @@ import okio.buffer
 /**
  * A [Decoder] that uses [Movie] to decode GIFs.
  *
- * NOTE: Prefer using [ImageDecoderDecoder] on API 28 and above.
+ * NOTE: Prefer using [AnimatedImageDecoderDecoder] on API 28 and above.
  *
  * @param enforceMinimumFrameDelay If true, rewrite a GIF's frame delay to a default value if
  *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
