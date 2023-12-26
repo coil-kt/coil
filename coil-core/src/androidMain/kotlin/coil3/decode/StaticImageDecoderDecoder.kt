@@ -106,8 +106,6 @@ class StaticImageDecoderDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            val mimeType = result.mimeType
-            if (mimeType == "image/gif" && NeedRewriteGifSource) return null
             val source = result.source.fastImageDecoderSourceOrNull(options) ?: return null
             return StaticImageDecoderDecoder(source, result.source, options, parallelismLock)
         }
@@ -135,6 +133,4 @@ private fun ImageSource.fastImageDecoderSourceOrNull(options: Options): ImageDec
     return null
 }
 
-// https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
-private val NeedRewriteGifSource = Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 private const val DEFAULT_MAX_PARALLELISM = 4

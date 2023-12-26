@@ -99,7 +99,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
     }
 
     private fun wrapImageSource(source: ImageSource): ImageSource {
-        return if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
+        return if (NeedRewriteGifSource && enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
             // Wrap the source to rewrite its frame delay as it's read.
             ImageSource(
                 source = FrameDelayRewritingSource(source.source()).buffer(),
@@ -194,3 +194,6 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         }
     }
 }
+
+// https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
+private val NeedRewriteGifSource = SDK_INT < 34
