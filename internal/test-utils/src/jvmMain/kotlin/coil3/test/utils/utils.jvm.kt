@@ -1,7 +1,9 @@
 package coil3.test.utils
 
 import coil3.PlatformContext
-import java.io.File
+import okio.FileSystem
+import okio.Path.Companion.toPath
+import okio.buffer
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.Image
@@ -15,8 +17,8 @@ fun PlatformContext.decodeBitmapAsset(
     var failures = 0
     while (true) {
         try {
-            val file = File(path)
-            val image = Image.makeFromEncoded(file.readBytes())
+            val source = FileSystem.RESOURCES.source(path.toPath())
+            val image = Image.makeFromEncoded(source.buffer().readByteArray())
             val bitmap = Bitmap()
             bitmap.allocN32Pixels(image.width, image.height)
             Canvas(bitmap).use { canvas ->

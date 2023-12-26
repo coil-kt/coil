@@ -61,7 +61,7 @@ fun Bitmap.isSimilarTo(
  */
 fun Bitmap.assertIsSimilarTo(
     expected: Bitmap,
-    threshold: Double = 0.98
+    threshold: Double = 0.987
 ) {
     require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
     require(width == expected.width && height == expected.height) {
