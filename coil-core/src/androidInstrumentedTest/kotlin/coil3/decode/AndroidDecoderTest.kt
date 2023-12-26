@@ -2,6 +2,7 @@ package coil3.decode
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
 import coil3.BitmapImage
@@ -251,24 +252,44 @@ class AndroidDecoderTest {
 
     @Test
     fun exifOrientationPolicy_ignore() = runTest(timeout = 1.minutes) {
-        // Android ImageDecoder handle exif internally so we cannot tune it
-        // Test BitmapFactoryDecoder only
-        assumeTrue(decoderFactory is BitmapFactoryDecoder.Factory)
+        if (decoderFactory is BitmapFactoryDecoder.Factory) {
+            val new = BitmapFactoryDecoder.Factory(exifOrientationPolicy = ExifOrientationPolicy.IGNORE)
+            // Test JPG
+            for (index in 1..8) {
+                val assetName = "exif/$index.jpg"
+                val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
+                val actual = decodeBitmap(assetName, Size.ORIGINAL, factory = new)
+                assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
+            }
 
-        // Test JPG
-        for (index in 1..8) {
-            val assetName = "exif/$index.jpg"
-            val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
-            val actual = decodeBitmap(assetName, Size.ORIGINAL)
-            assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
+            // Test PNG
+            for (index in 1..8) {
+                val assetName = "exif/$index.png"
+                val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
+                val actual = decodeBitmap(assetName, Size.ORIGINAL, factory = new)
+                assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
+            }
         }
+        if (decoderFactory is StaticImageDecoderDecoder.Factory) {
+            // Test JPG
+            for (index in 1..8) {
+                val assetName = "exif/$index.jpg"
+                val expected = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.assets, assetName)) { decoder, _, _ ->
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                }
+                val actual = decodeBitmap(assetName, Size.ORIGINAL)
+                assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
+            }
 
-        // Test PNG
-        for (index in 1..8) {
-            val assetName = "exif/$index.png"
-            val expected = BitmapFactory.decodeStream(context.assets.open(assetName))
-            val actual = decodeBitmap(assetName, Size.ORIGINAL)
-            assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
+            // Test PNG
+            for (index in 1..8) {
+                val assetName = "exif/$index.png"
+                val expected = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.assets, assetName)) { decoder, _, _ ->
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                }
+                val actual = decodeBitmap(assetName, Size.ORIGINAL)
+                assertTrue(expected.isSimilarTo(actual), "Image with index $index is incorrect.")
+            }
         }
     }
 
