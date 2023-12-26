@@ -13,6 +13,8 @@ import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.svg.SVGDOM
+import org.jetbrains.skia.svg.SVGLength
+import org.jetbrains.skia.svg.SVGLengthUnit
 
 /**
  * A [Decoder] that uses [SVGDOM](https://api.skia.org/classSkSVGDOM.html/) to decode SVG
@@ -66,19 +68,23 @@ actual class SvgDecoder actual constructor(
             svg.root?.viewBox = Rect.makeWH(svgWidth, svgHeight)
         }
 
+        svg.root?.width = SVGLength(
+            value = 100f,
+            unit = SVGLengthUnit.PERCENTAGE,
+        )
+
+        svg.root?.height = SVGLength(
+            value = 100f,
+            unit = SVGLengthUnit.PERCENTAGE,
+        )
+
+        svg.setContainerSize(bitmapWidth.toFloat(), bitmapHeight.toFloat())
+
         val bitmap = Bitmap().apply {
             allocN32Pixels(bitmapWidth, bitmapHeight)
         }
 
-        val svgRootWidth = svg.root?.width?.value ?: svgWidth
-        val svgRootHeight = svg.root?.height?.value ?: svgHeight
-
-        val xScale: Float = bitmapWidth / svgRootWidth
-        val yScale: Float = bitmapHeight / svgRootHeight
-
-        val canvas = Canvas(bitmap)
-        canvas.scale(xScale, yScale)
-        svg.render(canvas)
+        svg.render(Canvas(bitmap))
 
         return DecodeResult(
             image = bitmap.asCoilImage(),

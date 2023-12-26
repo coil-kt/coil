@@ -2,6 +2,7 @@ import coil3.addAllMultiplatformTargets
 import coil3.androidInstrumentedTest
 import coil3.androidLibrary
 import coil3.androidUnitTest
+import coil3.skikoAwtRuntimeDependency
 
 plugins {
     id("com.android.library")
@@ -47,6 +48,11 @@ kotlin {
             dependencies {
                 implementation(projects.internal.testUtils)
                 implementation(libs.bundles.test.android)
+            }
+        }
+        jvmTest {
+            dependencies {
+                implementation(skikoAwtRuntimeDependency(libs.versions.skiko.get()))
             }
         }
     }
