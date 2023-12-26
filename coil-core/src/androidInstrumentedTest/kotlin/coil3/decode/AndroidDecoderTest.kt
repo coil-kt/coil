@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build.VERSION.SDK_INT
-import androidx.annotation.RequiresApi
 import coil3.BitmapImage
 import coil3.Extras
 import coil3.ImageLoader
@@ -28,50 +27,33 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 import okio.source
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameter
+import org.junit.runners.Parameterized.Parameters
 
-private fun interface DecoderTestScope {
-    fun factory(): Decoder.Factory
-}
-
+@RunWith(Parameterized::class)
 class AndroidDecoderTest {
-
-    private val bitmapFactoryDecoderFactory = BitmapFactoryDecoder.Factory()
-
-    @RequiresApi(28)
-    private val fastImageDecoderFactory = StaticImageDecoderDecoder.Factory()
-
-    private fun runTestPerDecoder(testBody: suspend DecoderTestScope.() -> TestResult) {
-        runTest { testBody { bitmapFactoryDecoderFactory } }
-        runTest {
-            assumeTrue(SDK_INT >= 28)
-            testBody { fastImageDecoderFactory }
-        }
+    companion object {
+        @JvmStatic
+        @Parameters
+        fun data() = listOf(
+            BitmapFactoryDecoder.Factory(),
+            StaticImageDecoderDecoder.Factory(),
+        )
     }
 
-    private fun runTestPerDecoder(
-        timeout: Duration,
-        exifOrientationPolicy: ExifOrientationPolicy,
-        testBody: suspend DecoderTestScope.() -> TestResult,
-    ) {
-        runTest(timeout = timeout) {
-            testBody { BitmapFactoryDecoder.Factory(exifOrientationPolicy = exifOrientationPolicy) }
-        }
-        runTest(timeout = timeout) {
-            assumeTrue(SDK_INT >= 28)
-            testBody { fastImageDecoderFactory }
-        }
-    }
+    @Parameter
+    lateinit var decoderFactory: Decoder.Factory
 
     @Test
-    fun basic() = runTestPerDecoder {
+    fun basic() = runTest {
         val result = decode(
             assetName = "normal.jpg",
             size = Size(100, 100),
@@ -84,7 +66,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun undefinedWidth() = runTestPerDecoder {
+    fun undefinedWidth() = runTest {
         val result = decode(
             assetName = "normal.jpg",
             size = Size(Dimension.Undefined, 100),
@@ -98,7 +80,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun undefinedHeight() = runTestPerDecoder {
+    fun undefinedHeight() = runTest {
         val result = decode(
             assetName = "normal.jpg",
             size = Size(100, Dimension.Undefined),
@@ -112,7 +94,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun malformedImageThrows() = runTestPerDecoder {
+    fun malformedImageThrows() = runTest {
         assertFails {
             decode(
                 assetName = "malformed.jpg",
@@ -122,7 +104,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun resultIsSampledIfGreaterThanHalfSize() = runTestPerDecoder {
+    fun resultIsSampledIfGreaterThanHalfSize() = runTest {
         val result = decode(
             assetName = "normal.jpg",
             size = Size(600, 600),
@@ -134,14 +116,14 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun originalSizeDimensionsAreResolvedCorrectly() = runTestPerDecoder {
+    fun originalSizeDimensionsAreResolvedCorrectly() = runTest {
         val size = Size.ORIGINAL
         val normal = decodeBitmap("normal.jpg", size)
         assertEquals(Size(1080, 1350), normal.size)
     }
 
     @Test
-    fun largeExifMetadata() = runTestPerDecoder {
+    fun largeExifMetadata() = runTest {
         val size = Size(500, 500)
         val expected = decodeBitmap("exif/large_metadata_normalized.jpg", size)
         val actual = decodeBitmap("exif/large_metadata.jpg", size)
@@ -150,7 +132,7 @@ class AndroidDecoderTest {
 
     /** Regression test: https://github.com/coil-kt/coil/issues/619 */
     @Test
-    fun heifExifMetadata() = runTestPerDecoder {
+    fun heifExifMetadata() = runTest {
         // HEIF files are not supported before API 30.
         assumeTrue(SDK_INT >= 30)
 
@@ -161,7 +143,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun avif() = runTestPerDecoder {
+    fun avif() = runTest {
         // AVIF files are not supported before API 31.
         assumeTrue(SDK_INT >= 31)
 
@@ -172,7 +154,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun allowInexactSize_true() = runTestPerDecoder {
+    fun allowInexactSize_true() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
@@ -186,7 +168,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun allowInexactSize_false() = runTestPerDecoder {
+    fun allowInexactSize_false() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
@@ -200,7 +182,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun allowRgb565_true() = runTestPerDecoder {
+    fun allowRgb565_true() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
@@ -217,7 +199,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun allowRgb565_false() = runTestPerDecoder {
+    fun allowRgb565_false() = runTest {
         val result = decodeBitmap(
             assetName = "normal.jpg",
             options = Options(
@@ -234,7 +216,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun premultipliedAlpha_true() = runTestPerDecoder {
+    fun premultipliedAlpha_true() = runTest {
         val result = decodeBitmap(
             assetName = "normal_alpha.png",
             options = Options(
@@ -251,7 +233,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun premultipliedAlpha_false() = runTestPerDecoder {
+    fun premultipliedAlpha_false() = runTest {
         val result = decodeBitmap(
             assetName = "normal_alpha.png",
             options = Options(
@@ -268,10 +250,10 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_ignore() = runTestPerDecoder(timeout = 1.minutes, ExifOrientationPolicy.IGNORE) {
+    fun exifOrientationPolicy_ignore() = runTest(timeout = 1.minutes) {
         // Android ImageDecoder handle exif internally so we cannot tune it
         // Test BitmapFactoryDecoder only
-        assumeTrue(factory() is BitmapFactoryDecoder.Factory)
+        assumeTrue(decoderFactory is BitmapFactoryDecoder.Factory)
 
         // Test JPG
         for (index in 1..8) {
@@ -291,7 +273,7 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_respectPerformance() = runTestPerDecoder(timeout = 1.minutes, exifOrientationPolicy = ExifOrientationPolicy.RESPECT_PERFORMANCE) {
+    fun exifOrientationPolicy_respectPerformance() = runTest(timeout = 1.minutes) {
         // Test JPG
         val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL)
         for (index in 1..8) {
@@ -309,10 +291,10 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun exifOrientationPolicy_respectAll() = runTestPerDecoder(timeout = 1.minutes, exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL) {
+    fun exifOrientationPolicy_respectAll() = runTest(timeout = 1.minutes) {
         // Android ImageDecoder handle exif internally so we cannot tune it
         // Test BitmapFactoryDecoder only
-        assumeTrue(factory() is BitmapFactoryDecoder.Factory)
+        assumeTrue(decoderFactory is BitmapFactoryDecoder.Factory)
 
         // Test JPG
         val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL)
@@ -330,13 +312,13 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun lossyWebP() = runTestPerDecoder {
+    fun lossyWebP() = runTest {
         val expected = decodeBitmap("normal.jpg", Size(450, 675))
         decodeBitmap("lossy.webp", Size(450, 675)).assertIsSimilarTo(expected)
     }
 
     @Test
-    fun png_16bit() = runTestPerDecoder {
+    fun png_16bit() = runTest {
         // The emulator runs out of memory on pre-23.
         assumeTrue(SDK_INT >= 23)
 
@@ -351,24 +333,24 @@ class AndroidDecoderTest {
     }
 
     @Test
-    fun largeJpeg() = runTestPerDecoder {
+    fun largeJpeg() = runTest {
         decodeBitmap("large.jpg", Size(1080, 1920))
     }
 
     /** Regression test: https://github.com/coil-kt/coil/issues/368 */
     @Test
-    fun largePng() = runTestPerDecoder {
+    fun largePng() = runTest {
         // Ensure that this doesn't cause an OOM exception - particularly on API 23 and below.
         decodeBitmap("large.png", Size(1080, 1920))
     }
 
     @Test
-    fun largeWebP() = runTestPerDecoder {
+    fun largeWebP() = runTest {
         decodeBitmap("large.webp", Size(1080, 1920))
     }
 
     @Test
-    fun largeHeif() = runTestPerDecoder {
+    fun largeHeif() = runTest {
         // HEIF files are only supported on API 29+.
         assumeTrue(SDK_INT >= 29)
 
@@ -378,24 +360,24 @@ class AndroidDecoderTest {
         decodeBitmap("large.heic", Size(1080, 1920))
     }
 
-    private suspend fun DecoderTestScope.decodeBitmap(
+    private suspend fun decodeBitmap(
         assetName: String,
         size: Size,
         scale: Scale = Scale.FILL,
-        factory: Decoder.Factory = factory(),
+        factory: Decoder.Factory = decoderFactory,
     ): Bitmap = assertIs<BitmapImage>(decode(assetName, size, scale, factory).image).bitmap
 
-    private suspend fun DecoderTestScope.decodeBitmap(
+    private suspend fun decodeBitmap(
         assetName: String,
         options: Options,
-        factory: Decoder.Factory = factory(),
+        factory: Decoder.Factory = decoderFactory,
     ): Bitmap = assertIs<BitmapImage>(decode(assetName, options, factory).image).bitmap
 
-    private suspend fun DecoderTestScope.decode(
+    private suspend fun decode(
         assetName: String,
         size: Size,
         scale: Scale = Scale.FILL,
-        factory: Decoder.Factory = factory(),
+        factory: Decoder.Factory = decoderFactory,
     ): DecodeResult = decode(assetName, Options(context, size = size, scale = scale), factory)
 
     private suspend fun decode(
