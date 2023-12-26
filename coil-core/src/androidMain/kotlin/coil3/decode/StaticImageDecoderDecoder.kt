@@ -115,7 +115,7 @@ class StaticImageDecoderDecoder(
 }
 
 @RequiresApi(28)
-fun ImageSource.fastImageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
+private fun ImageSource.fastImageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
     val file = fileOrNull()
     if (file != null) {
         return ImageDecoder.createSource(file.toFile())

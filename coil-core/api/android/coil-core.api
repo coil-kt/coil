@@ -348,10 +348,6 @@ public final class coil3/decode/StaticImageDecoderDecoder$Factory : coil3/decode
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
-public final class coil3/decode/StaticImageDecoderDecoderKt {
-	public static final fun fastImageDecoderSourceOrNull (Lcoil3/decode/ImageSource;Lcoil3/request/Options;)Landroid/graphics/ImageDecoder$Source;
-}
-
 public abstract interface class coil3/disk/DiskCache {
 	public abstract fun clear ()V
 	public abstract fun getDirectory ()Lokio/Path;
