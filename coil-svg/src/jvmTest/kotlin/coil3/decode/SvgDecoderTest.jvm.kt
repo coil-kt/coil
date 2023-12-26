@@ -86,7 +86,7 @@ class SvgDecoderTestJvm {
         assertTrue(result.isSampled)
         val image = assertIs<Image>(result.image)
 
-        val expected = context.decodeBitmapAsset("coil_logo.png")
+        val expected = decodeBitmapAsset("coil_logo.png")
         image.asBitmap().assertIsSimilarTo(expected)
     }
 
@@ -109,7 +109,7 @@ class SvgDecoderTestJvm {
         assertTrue(result.isSampled)
         val image = assertIs<Image>(result.image)
 
-        val expected = context.decodeBitmapAsset("instacart_logo.png")
+        val expected = decodeBitmapAsset("instacart_logo.png")
         image.asBitmap().assertIsSimilarTo(expected)
     }
 
@@ -134,7 +134,7 @@ class SvgDecoderTestJvm {
         assertTrue(result.isSampled)
         val image = assertIs<Image>(result.image)
 
-        val expected = context.decodeBitmapAsset("coil_logo.png")
+        val expected = decodeBitmapAsset("coil_logo.png")
         image.asBitmap().assertIsSimilarTo(expected)
     }
 

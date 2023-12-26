@@ -23,7 +23,7 @@ import okio.buffer
 import okio.source
 import org.junit.Test
 
-class SvgDecoderTest {
+class SvgDecoderTestAndroid {
 
     private val decoderFactory = SvgDecoder.Factory()
 

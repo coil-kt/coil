@@ -1,6 +1,5 @@
 package coil3.test.utils
 
-import coil3.PlatformContext
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -10,7 +9,7 @@ import org.jetbrains.skia.Image
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.impl.use
 
-fun PlatformContext.decodeBitmapAsset(
+fun decodeBitmapAsset(
     path: String,
 ): Bitmap {
     // Retry multiple times as the emulator can be flaky.
