@@ -317,17 +317,19 @@ class AndroidDecoderTest {
         // Test BitmapFactoryDecoder only
         assumeTrue(decoderFactory is BitmapFactoryDecoder.Factory)
 
+        val new = BitmapFactoryDecoder.Factory(exifOrientationPolicy = ExifOrientationPolicy.RESPECT_ALL)
+
         // Test JPG
-        val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL)
+        val normalJpg = decodeBitmap("normal.jpg", Size.ORIGINAL, factory = new)
         for (index in 1..8) {
-            val actual = decodeBitmap("exif/$index.jpg", Size.ORIGINAL)
+            val actual = decodeBitmap("exif/$index.jpg", Size.ORIGINAL, factory = new)
             assertTrue(normalJpg.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
 
         // Test PNG
-        val normalPng = decodeBitmap("normal.png", Size.ORIGINAL)
+        val normalPng = decodeBitmap("normal.png", Size.ORIGINAL, factory = new)
         for (index in 1..8) {
-            val actual = decodeBitmap("exif/$index.png", Size.ORIGINAL)
+            val actual = decodeBitmap("exif/$index.png", Size.ORIGINAL, factory = new)
             assertTrue(normalPng.isSimilarTo(actual), "Image with index $index is incorrect.")
         }
     }
