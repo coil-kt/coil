@@ -46,7 +46,7 @@ class AndroidDecoderTest {
     private val bitmapFactoryDecoderFactory = BitmapFactoryDecoder.Factory()
 
     @RequiresApi(28)
-    private val fastImageDecoderFactory = FastImageDecoderFactory()
+    private val fastImageDecoderFactory = StaticImageDecoderDecoder.Factory()
 
     private fun runTestPerDecoder(testBody: suspend DecoderTestScope.() -> TestResult) {
         runTest { testBody { bitmapFactoryDecoderFactory } }

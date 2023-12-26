@@ -22,8 +22,6 @@ internal class AssetUriFetcher(
 
         return SourceFetchResult(
             source = ImageSource(
-                // ImageDecoder may not use this source and we pay for an extra overhead for opening a file descriptor
-                // Consider a ImageSource with Path and okio AssetFileSystem
                 source = options.context.assets.open(path).source().buffer(),
                 fileSystem = options.fileSystem,
                 metadata = AssetMetadata(path),
