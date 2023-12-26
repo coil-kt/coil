@@ -43,10 +43,10 @@ class AndroidDecoderTest {
     companion object {
         @JvmStatic
         @Parameters
-        fun data() = listOf(
-            BitmapFactoryDecoder.Factory(),
-            StaticImageDecoderDecoder.Factory(),
-        )
+        fun data() = buildList {
+            add(BitmapFactoryDecoder.Factory())
+            if (SDK_INT >= 28) add(StaticImageDecoderDecoder.Factory())
+        }
     }
 
     @Parameter
