@@ -4,6 +4,8 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.isEmpty
 import io.ktor.utils.io.core.readFully
 import okio.BufferedSink
+import okio.FileSystem
+import okio.Path
 
 internal actual suspend fun ByteReadChannel.writeTo(sink: BufferedSink) {
     val buffer = ByteArray(OKIO_BUFFER_SIZE)
@@ -19,6 +21,12 @@ internal actual suspend fun ByteReadChannel.writeTo(sink: BufferedSink) {
     }
 
     closedCause?.let { throw it }
+}
+
+internal actual suspend fun ByteReadChannel.writeTo(fileSystem: FileSystem, path: Path) {
+    fileSystem.write(path) {
+        writeTo(this)
+    }
 }
 
 // Okio uses 8 KB internally.

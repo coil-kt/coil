@@ -6,6 +6,8 @@ import io.ktor.util.StringValues
 import io.ktor.utils.io.ByteReadChannel
 import okio.BufferedSink
 import okio.Closeable
+import okio.FileSystem
+import okio.Path
 
 internal fun HeadersBuilder.append(line: String) = apply {
     val index = line.indexOf(':')
@@ -37,6 +39,9 @@ internal fun DiskCache.Editor.abortQuietly() {
 
 /** Write a [ByteReadChannel] to [sink] using streaming. */
 internal expect suspend fun ByteReadChannel.writeTo(sink: BufferedSink)
+
+/** Write a [ByteReadChannel] to [path] natively. */
+internal expect suspend fun ByteReadChannel.writeTo(fileSystem: FileSystem, path: Path)
 
 internal fun String.toNonNegativeInt(defaultValue: Int): Int {
     val value = toLongOrNull() ?: return defaultValue
