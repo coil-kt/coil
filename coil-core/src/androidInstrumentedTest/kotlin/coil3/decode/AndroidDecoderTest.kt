@@ -46,7 +46,9 @@ class AndroidDecoderTest {
         @Parameters
         fun data() = buildList {
             add(BitmapFactoryDecoder.Factory())
-            if (SDK_INT >= 28) add(StaticImageDecoderDecoder.Factory())
+            if (SDK_INT >= 29) {
+                add(StaticImageDecoderDecoder.Factory())
+            }
         }
     }
 
