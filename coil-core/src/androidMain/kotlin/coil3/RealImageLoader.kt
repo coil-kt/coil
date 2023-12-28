@@ -83,6 +83,8 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         .add(BitmapFetcher.Factory())
         // Decoders
         .apply {
+            // ImageDecoder cannot properly decode a hardware bitmap on API 28
+            // https://github.com/element-hq/element-android/pull/7184
             if (SDK_INT >= 29) {
                 add(
                     StaticImageDecoderDecoder.Factory(
