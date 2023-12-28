@@ -159,9 +159,7 @@ class NetworkFetcher(
                 fileSystem.write(editor.metadata) {
                     CacheResponse(networkResponse).writeTo(this)
                 }
-                fileSystem.write(editor.data) {
-                    networkResponseBody.writeTo(this)
-                }
+                networkResponseBody.writeTo(fileSystem, editor.data)
             }
             return editor.commitAndOpenSnapshot()
         } catch (e: Exception) {
