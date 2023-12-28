@@ -2,7 +2,6 @@ package coil3
 
 import android.os.Build.VERSION.SDK_INT
 import coil3.decode.BitmapFactoryDecoder
-import coil3.decode.ExifOrientationPolicy
 import coil3.decode.StaticImageDecoderDecoder
 import coil3.fetch.AssetUriFetcher
 import coil3.fetch.BitmapFetcher
@@ -84,8 +83,7 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         .add(BitmapFetcher.Factory())
         // Decoders
         .apply {
-            val canUseImageDecoder = options.bitmapFactoryExifOrientationPolicy == ExifOrientationPolicy.RESPECT_PERFORMANCE
-            if (canUseImageDecoder && SDK_INT >= 29) {
+            if (SDK_INT >= 29) {
                 add(
                     StaticImageDecoderDecoder.Factory(
                         maxParallelism = options.bitmapFactoryMaxParallelism,
