@@ -1,7 +1,6 @@
 package coil3.decode
 
 import android.graphics.ImageDecoder
-import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeBitmap
 import androidx.core.util.component1
@@ -78,9 +77,7 @@ class StaticImageDecoderDecoder(
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
-        // https://github.com/element-hq/element-android/pull/7184
-        val ignoreHardware = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-        allocator = if (options.bitmapConfig.isHardware && !ignoreHardware) {
+        allocator = if (options.bitmapConfig.isHardware) {
             ImageDecoder.ALLOCATOR_HARDWARE
         } else {
             ImageDecoder.ALLOCATOR_SOFTWARE

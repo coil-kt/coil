@@ -85,7 +85,7 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         // Decoders
         .apply {
             val canUseImageDecoder = options.bitmapFactoryExifOrientationPolicy == ExifOrientationPolicy.RESPECT_PERFORMANCE
-            if (canUseImageDecoder && SDK_INT >= 28) {
+            if (canUseImageDecoder && SDK_INT >= 29) {
                 add(
                     StaticImageDecoderDecoder.Factory(
                         maxParallelism = options.bitmapFactoryMaxParallelism,
