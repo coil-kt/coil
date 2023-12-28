@@ -13,12 +13,12 @@ internal actual suspend fun ByteReadChannel.writeTo(sink: BufferedSink) {
 
 internal actual suspend fun ByteReadChannel.writeTo(fileSystem: FileSystem, path: Path) {
     if (fileSystem === FileSystem.SYSTEM) {
-        // Fast path: normal jvm File, write to FileChannel directly
+        // Fast path: normal jvm File, write to FileChannel directly.
         RandomAccessFile(path.toFile(), "rw").use {
             copyTo(it.channel)
         }
     } else {
-        // Slow path: cannot guarantee a "real" file
+        // Slow path: cannot guarantee a "real" file.
         fileSystem.write(path) {
             copyTo(this)
         }
