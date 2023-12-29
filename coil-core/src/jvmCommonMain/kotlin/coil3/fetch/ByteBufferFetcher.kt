@@ -17,7 +17,11 @@ internal class ByteBufferFetcher(
 
     override suspend fun fetch(): FetchResult {
         return SourceFetchResult(
-            source = ImageSource(data.asSource().buffer(), options.fileSystem),
+            source = ImageSource(
+                source = data.asSource().buffer(),
+                fileSystem = options.fileSystem,
+                metadata = ByteBufferMetadata(data),
+            ),
             mimeType = null,
             dataSource = DataSource.MEMORY,
         )
@@ -33,6 +37,8 @@ internal class ByteBufferFetcher(
             return ByteBufferFetcher(data, options)
         }
     }
+
+    class ByteBufferMetadata(val byteBuffer: ByteBuffer) : ImageSource.Metadata()
 }
 
 internal fun ByteBuffer.asSource() = object : Source {
