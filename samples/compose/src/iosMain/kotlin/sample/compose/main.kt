@@ -6,8 +6,6 @@ import platform.UIKit.UIViewController
 import sample.common.AppleResources
 
 fun MainViewController(): UIViewController {
-    initializeSingletonImageLoader()
-
     return ComposeUIViewController {
         App(remember { AppleResources() })
     }
