@@ -1,14 +1,15 @@
-rootProject.name = "coil"
+rootProject.name = "coil-root"
 
 // https://docs.gradle.org/7.4/userguide/declaring_dependencies.html#sec:type-safe-project-accessors
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 // Public modules
 include(
-    "coil-base",
-    "coil-singleton",
-    "coil-compose-base",
-    "coil-compose-singleton",
+    "coil",
+    "coil-core",
+    "coil-compose",
+    "coil-compose-core",
+    "coil-network",
     "coil-gif",
     "coil-svg",
     "coil-video",
@@ -18,11 +19,11 @@ include(
 
 // Private modules
 include(
-    "coil-benchmark",
-    "coil-sample-common",
-    "coil-sample-compose",
-    "coil-sample-view",
-    "coil-test-internal",
-    "coil-test-paparazzi",
-    "coil-test-roborazzi",
+    "internal:benchmark",
+    "internal:test-utils",
+    "internal:test-paparazzi",
+    "internal:test-roborazzi",
+    "samples:compose",
+    "samples:shared",
+    "samples:view",
 )

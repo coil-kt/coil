@@ -1,5 +1,5 @@
-import coil.publicModules
-import coil.setupPublishing
+import coil3.publicModules
+import coil3.setupPublishing
 import com.vanniktech.maven.publish.JavaPlatform
 
 plugins {

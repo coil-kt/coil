@@ -1,23 +1,33 @@
-import coil.by
-import coil.groupId
-import coil.privateModules
-import coil.versionName
+import coil3.enableComposeMetrics
+import coil3.enableWasm
+import coil3.groupId
+import coil3.publicModules
+import coil3.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
+import dev.drewhamilton.poko.gradle.PokoPluginExtension
 import java.net.URL
 import kotlinx.validation.ApiValidationExtension
+import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.compose.experimental.dsl.ExperimentalExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 buildscript {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
     dependencies {
         classpath(libs.gradlePlugin.android)
+        classpath(libs.gradlePlugin.atomicFu)
+        classpath(libs.gradlePlugin.jetbrainsCompose)
         classpath(libs.gradlePlugin.kotlin)
         classpath(libs.gradlePlugin.mavenPublish)
         classpath(libs.gradlePlugin.paparazzi)
@@ -28,21 +38,24 @@ buildscript {
 plugins {
     alias(libs.plugins.binaryCompatibility)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.poko) apply false
     alias(libs.plugins.spotless)
 }
 
 extensions.configure<ApiValidationExtension> {
-    ignoredProjects += privateModules
+    ignoredProjects += project.subprojects
+        .mapNotNull { if (it.name in publicModules) null else it.name }
 }
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
-    outputDirectory by layout.projectDirectory.dir("docs/api")
+    outputDirectory = layout.projectDirectory.dir("docs/api")
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 
     // Necessary to publish to Maven.
@@ -56,31 +69,25 @@ allprojects {
         options.compilerArgs = options.compilerArgs + "-Xlint:-options"
     }
     tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions.jvmTarget by JvmTarget.JVM_1_8
+        compilerOptions.jvmTarget = JvmTarget.JVM_1_8
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
-        // https://github.com/Kotlin/dokka/issues/2993
-        @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
         dokkaSourceSets.configureEach {
-            jdkVersion by 8
-            failOnWarning by true
-            skipDeprecated by true
-            suppressInheritedMembers by true
+            jdkVersion = 8
+            failOnWarning = true
+            skipDeprecated = true
+            suppressInheritedMembers = true
 
             externalDocumentationLink {
-                url by URL("https://developer.android.com/reference/")
+                url = URL("https://developer.android.com/reference/")
             }
             externalDocumentationLink {
-                url by URL("https://kotlinlang.org/api/kotlinx.coroutines/")
+                url = URL("https://kotlinlang.org/api/kotlinx.coroutines/")
             }
             externalDocumentationLink {
-                url by URL("https://square.github.io/okhttp/4.x/")
-                packageListUrl by URL("https://colinwhite.me/okhttp3-package-list") // https://github.com/square/okhttp/issues/7338
-            }
-            externalDocumentationLink {
-                url by URL("https://square.github.io/okio/3.x/okio/")
-                packageListUrl by URL("https://square.github.io/okio/3.x/okio/okio/package-list")
+                url = URL("https://square.github.io/okio/3.x/okio/")
+                packageListUrl = URL("https://square.github.io/okio/3.x/okio/okio/package-list")
             }
         }
     }
@@ -108,7 +115,7 @@ allprojects {
     val configureSpotless: SpotlessExtension.() -> Unit = {
         kotlin {
             target("**/*.kt", "**/*.kts")
-            ktlint(libs.ktlint.get().version)
+            ktlint(libs.versions.ktlint.get())
             endWithNewline()
             indentWithSpaces()
             trimTrailingWhitespace()
@@ -121,4 +128,91 @@ allprojects {
     } else {
         extensions.configure(configureSpotless)
     }
+
+    plugins.withId("org.jetbrains.compose") {
+        extensions.configure<ComposeExtension> {
+            kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
+            kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=${libs.versions.kotlin.get()}")
+            extensions.configure<ExperimentalExtension> {
+                web.application {}
+            }
+        }
+    }
+
+    plugins.withId("dev.drewhamilton.poko") {
+        extensions.configure<PokoPluginExtension> {
+            pokoAnnotation = "coil3.annotation.Data"
+        }
+    }
+
+    if (enableComposeMetrics && name in publicModules) {
+        plugins.withId("org.jetbrains.compose") {
+            tasks.withType<KotlinCompile> {
+                val outputDir = layout.buildDirectory.dir("composeMetrics").get().asFile.path
+                compilerOptions.freeCompilerArgs.addAll(
+                    "-P", "$composePlugin:metricsDestination=$outputDir",
+                    "-P", "$composePlugin:reportsDestination=$outputDir",
+                )
+            }
+        }
+    }
+
+    if (enableWasm) {
+        // Use ktor's experimental wasm artifact.
+        repositories {
+            maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
+        }
+        configurations.configureEach {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "io.ktor") {
+                    useVersion(libs.versions.ktor.wasm.get())
+                }
+            }
+        }
+    }
+
+    applyOkioJsTestWorkaround()
 }
+
+// https://github.com/square/okio/issues/1163
+fun Project.applyOkioJsTestWorkaround() {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        val applyNodePolyfillPlugin by lazy {
+            tasks.register("applyNodePolyfillPlugin") {
+                val applyPluginFile = projectDir
+                    .resolve("webpack.config.d/applyNodePolyfillPlugin.js")
+                onlyIf {
+                    !applyPluginFile.exists()
+                }
+                doLast {
+                    applyPluginFile.parentFile.mkdirs()
+                    applyPluginFile.writeText(
+                        """
+                        const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+                        config.plugins.push(new NodePolyfillPlugin());
+                        """.trimIndent(),
+                    )
+                }
+            }
+        }
+
+        extensions.configure<KotlinMultiplatformExtension> {
+            sourceSets {
+                targets.configureEach {
+                    compilations.configureEach {
+                        if (platformType == KotlinPlatformType.js && name == "test") {
+                            tasks
+                                .getByName(compileKotlinTaskName)
+                                .dependsOn(applyNodePolyfillPlugin)
+                            dependencies {
+                                implementation(devNpm("node-polyfill-webpack-plugin", "^2.0.1"))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private val composePlugin = "plugin:androidx.compose.compiler.plugins.kotlin"

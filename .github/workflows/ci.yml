@@ -4,28 +4,24 @@ on:
         branches:
             - main
     pull_request:
+concurrency:
+    # Limit concurrency to 1 for PRs. 'main' concurrency isn't limited.
+    group: ${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
 env:
-    CACHE_VERSION: 1 # Increment this to invalidate the cache.
     CI: true
-    JAVA_VERSION: 20
+    JAVA_VERSION: 17
 jobs:
     checks:
         name: Checks
         runs-on: ubuntu-latest
         timeout-minutes: 20
         steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-java@v3
+            - uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v3
-              with:
-                  path: |
-                      ~/.gradle/caches
-                      ~/.gradle/wrapper
-                  key: ${{ runner.os }}-gradle-${{ env.CACHE_VERSION }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/libs.versions.toml') }}
 
             - name: Check Gradle wrapper
               uses: gradle/wrapper-validation-action@v1
@@ -39,52 +35,46 @@ jobs:
             - name: Check binary compatibility
               run: ./gradlew apiCheck || { exit_code=$?; printf "*** This PR changes Coil's public API. If this change is intentional, run './gradlew apiDump' and commit the new API files. ***"; exit $exit_code; }
 
-            - name: Check assemble
-              run: ./gradlew assembleDebug
-
     unit-tests:
         name: Unit tests
-        runs-on: ubuntu-latest
-        timeout-minutes: 10
+        runs-on: macos-13
+        timeout-minutes: 60
         steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-java@v3
+            - uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v3
+            - uses: gradle/gradle-build-action@v2
+              continue-on-error: true
+              timeout-minutes: 5
               with:
-                  path: |
-                      ~/.gradle/caches
-                      ~/.gradle/wrapper
-                  key: ${{ runner.os }}-gradle-${{ env.CACHE_VERSION }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/libs.versions.toml') }}
+                  cache-overwrite-existing: true
+                  gradle-home-cache-cleanup: true
 
             - name: Unit tests
-              run: ./gradlew testDebugUnitTest verifyPaparazziDebug verifyRoborazziDebug
+              run: ./gradlew allTests testDebugUnitTest verifyPaparazziDebug verifyRoborazziDebug
 
     instrumentation-tests:
         name: Instrumentation tests
-        runs-on: macOS-latest
-        timeout-minutes: 45
+        runs-on: macos-13
+        timeout-minutes: 60
         strategy:
             fail-fast: true
             matrix:
-                # API 21 is flaky and times out.
                 api-level: [22, 26, 31]
         steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-java@v3
+            - uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - run: ./ci_clear_gradle_cache.sh
-            - uses: actions/cache@v3
+            - uses: gradle/gradle-build-action@v2
+              continue-on-error: true
+              timeout-minutes: 5
               with:
-                  path: |
-                      ~/.gradle/caches
-                      ~/.gradle/wrapper
-                  key: ${{ runner.os }}-gradle-${{ env.CACHE_VERSION }}-${{ hashFiles('**/**.gradle.kts', '**/gradle/wrapper/gradle-wrapper.properties', '**/libs.versions.toml') }}
+                  cache-overwrite-existing: true
+                  gradle-home-cache-cleanup: true
 
             # API 30+ emulators only have x86_64 system images.
             - name: Get AVD info
@@ -93,82 +83,73 @@ jobs:
               with:
                   api-level: ${{ matrix.api-level }}
 
-            # Retrieve the cached emulator snapshot.
-            - uses: actions/cache@v3
-              id: avd-cache
-              with:
-                  path: |
-                      ~/.android/avd/*
-                      ~/.android/adb*
-                  key: ${{ runner.os }}-avd-${{ env.CACHE_VERSION }}-${{ steps.avd-info.outputs.arch }}-${{ steps.avd-info.outputs.target }}-${{ matrix.api-level }}
-
-            # Create a new emulator snapshot if it isn't present in the cache.
-            - name: Create AVD snapshot
-              if: steps.avd-cache.outputs.cache-hit != 'true'
-              uses: reactivecircus/android-emulator-runner@v2
-              with:
-                  api-level: ${{ matrix.api-level }}
-                  arch: ${{ steps.avd-info.outputs.arch }}
-                  target: ${{ steps.avd-info.outputs.target }}
-                  disable-animations: false
-                  force-avd-creation: false
-                  ram-size: 4096M
-                  emulator-boot-timeout: 12000
-                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                  script: echo "Generated AVD snapshot."
-
             - name: Instrumentation tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
                   api-level: ${{ matrix.api-level }}
                   arch: ${{ steps.avd-info.outputs.arch }}
                   target: ${{ steps.avd-info.outputs.target }}
-                  disable-animations: true
-                  force-avd-creation: false
-                  ram-size: 4096M
-                  emulator-boot-timeout: 12000
-                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
                   script: mv .github/debug.keystore ~/.android; ./gradlew connectedDebugAndroidTest
+
+    build-samples:
+        name: Build samples
+        runs-on: macos-13
+        timeout-minutes: 30
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: 'zulu'
+                  java-version: ${{ env.JAVA_VERSION }}
+            - uses: gradle/gradle-build-action@v2
+              continue-on-error: true
+              timeout-minutes: 5
+              with:
+                  cache-overwrite-existing: true
+                  gradle-home-cache-cleanup: true
+
+            - name: Build samples
+              run: ./gradlew samples:compose:assembleDebug samples:view:assembleDebug -PenableWasm=true
+
+            - name: Build iOS app
+              run: xcodebuild -project samples/compose/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
 
     deploy-snapshot:
         name: Deploy snapshot
-        runs-on: ubuntu-latest
-        timeout-minutes: 20
+        runs-on: macos-13
+        timeout-minutes: 30
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
-        needs: [checks, unit-tests, instrumentation-tests]
+        needs: [checks, unit-tests, instrumentation-tests, build-samples]
         steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-java@v3
+            - uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
 
-            - name: Deploy Snapshot
+            - name: Deploy snapshot
               env:
                   ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
                   ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-              run: ./publish_remote.sh
+              run: ./gradlew publish -PenableWasm=true
 
     deploy-docs:
         name: Deploy docs
         runs-on: ubuntu-latest
         timeout-minutes: 20
         if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
-        needs: [checks, unit-tests, instrumentation-tests]
+        needs: [checks, unit-tests, instrumentation-tests, build-samples]
         steps:
-            - uses: actions/checkout@v3
-              with:
-                  fetch-depth: 0
-                  lfs: 'true'
-            - uses: actions/setup-java@v3
+            - uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
               with:
                   distribution: 'zulu'
                   java-version: ${{ env.JAVA_VERSION }}
-            - uses: actions/setup-python@v4
+            - uses: actions/setup-python@v5
               with:
                   python-version: '3.x'
 
-            - name: Deploy Docs
+            - name: Deploy docs
               run: |
                   git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
                   pip3 install --upgrade pip && pip3 install mkdocs-material mkdocs-material-extensions mkdocs-minify-plugin

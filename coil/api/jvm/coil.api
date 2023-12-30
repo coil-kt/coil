@@ -1,0 +1,15 @@
+public final class coil3/SingletonImageLoader {
+	public static final field INSTANCE Lcoil3/SingletonImageLoader;
+	public static final fun get (Lcoil3/PlatformContext;)Lcoil3/ImageLoader;
+	public static final fun reset ()V
+	public static final fun set (Lcoil3/ImageLoader;)V
+	public static final fun set (Lcoil3/SingletonImageLoader$Factory;)V
+	public static final fun setSafe (Lcoil3/SingletonImageLoader$Factory;)V
+	public static final fun setUnsafe (Lcoil3/ImageLoader;)V
+	public static final fun setUnsafe (Lcoil3/SingletonImageLoader$Factory;)V
+}
+
+public abstract interface class coil3/SingletonImageLoader$Factory {
+	public abstract fun newImageLoader (Lcoil3/PlatformContext;)Lcoil3/ImageLoader;
+}
+

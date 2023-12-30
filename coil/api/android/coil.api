@@ -1,0 +1,23 @@
+public final class coil3/SingletonExtensionsKt {
+	public static final fun dispose (Landroid/widget/ImageView;)V
+	public static final fun getImageLoader (Landroid/content/Context;)Lcoil3/ImageLoader;
+	public static final fun getResult (Landroid/widget/ImageView;)Lcoil3/request/ImageResult;
+	public static final fun load (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil3/ImageLoader;Lkotlin/jvm/functions/Function1;)Lcoil3/request/Disposable;
+	public static synthetic fun load$default (Landroid/widget/ImageView;Ljava/lang/Object;Lcoil3/ImageLoader;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcoil3/request/Disposable;
+}
+
+public final class coil3/SingletonImageLoader {
+	public static final field INSTANCE Lcoil3/SingletonImageLoader;
+	public static final fun get (Landroid/content/Context;)Lcoil3/ImageLoader;
+	public static final fun reset ()V
+	public static final fun set (Lcoil3/ImageLoader;)V
+	public static final fun set (Lcoil3/SingletonImageLoader$Factory;)V
+	public static final fun setSafe (Lcoil3/SingletonImageLoader$Factory;)V
+	public static final fun setUnsafe (Lcoil3/ImageLoader;)V
+	public static final fun setUnsafe (Lcoil3/SingletonImageLoader$Factory;)V
+}
+
+public abstract interface class coil3/SingletonImageLoader$Factory {
+	public abstract fun newImageLoader (Landroid/content/Context;)Lcoil3/ImageLoader;
+}
+

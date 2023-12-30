@@ -1,17 +1,45 @@
-import coil.setupLibraryModule
+import coil3.addAllMultiplatformTargets
+import coil3.androidLibrary
+import coil3.androidUnitTest
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    id("kotlin-multiplatform")
+    id("kotlinx-atomicfu")
+    id("dev.drewhamilton.poko")
 }
 
-setupLibraryModule(name = "coil.test")
+addAllMultiplatformTargets()
+androidLibrary(name = "coil3.test")
 
-dependencies {
-    api(projects.coilBase)
-
-    implementation(libs.androidx.core)
-
-    testImplementation(projects.coilTestInternal)
-    testImplementation(libs.bundles.test.jvm)
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.coilCore)
+            }
+        }
+        androidMain {
+            dependencies {
+                api(libs.androidx.core)
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation(projects.internal.testUtils)
+                implementation(libs.bundles.test.common)
+            }
+        }
+        jvmTest {
+            dependencies {
+                implementation(libs.coroutines.swing)
+            }
+        }
+        androidUnitTest {
+            dependencies {
+                implementation(projects.internal.testUtils)
+                implementation(libs.bundles.test.jvm)
+            }
+        }
+    }
 }

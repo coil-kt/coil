@@ -12,15 +12,16 @@ repositories {
 
 dependencies {
     implementation(libs.gradlePlugin.android)
+    implementation(libs.gradlePlugin.jetbrainsCompose)
     implementation(libs.gradlePlugin.kotlin)
     implementation(libs.gradlePlugin.mavenPublish)
 }
 
-// Target JVM 11.
+// Target JVM 17.
 tasks.withType<JavaCompile>().configureEach {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
+    sourceCompatibility = JavaVersion.VERSION_17.toString()
+    targetCompatibility = JavaVersion.VERSION_17.toString()
 }
 tasks.withType<KotlinJvmCompile>().configureEach {
-    compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+    compilerOptions.jvmTarget = JvmTarget.JVM_17
 }
