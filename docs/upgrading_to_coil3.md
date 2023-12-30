@@ -45,7 +45,7 @@ If you use the singleton `ImageLoader` on Android, create a custom `ImageLoader`
 
 ```kotlin
 class Application : Application(), SingletonImageLoader.Factory {
-    override fun newImageLoader(): ImageLoader {
+    override fun newImageLoader(context: Context): ImageLoader {
         return ImageLoader.Builder(context)
             .components {
                 add(NetworkFetcher.Factory())
@@ -55,16 +55,12 @@ class Application : Application(), SingletonImageLoader.Factory {
 }
 ```
 
-On non-Android platforms, you can create a function that initializes the singleton `ImageLoader` and call it at the entrypoint to your app:
+With Compose, you can call `setSingletonImageLoaderFactory` at the entrypoint to your app:
 
 ```kotlin
-fun initializeSingletonImageLoader() {
-    // Call the `initialize` variable to set the singleton image loader exactly once.
-    initialize
-}
-
-private val initialize by lazy {
-    SingletonImageLoader.set {
+@Composable
+fun App() {
+    setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
             .components {
                 add(NetworkFetcher.Factory())
@@ -73,6 +69,9 @@ private val initialize by lazy {
     }
 }
 ```
+
+!!! Note
+    This approach should be avoided on Android if your app uses multiple activities. Instead, prefer implementing `SingletonImageLoader.Factory` on your `Application` like above.
 
 Here's an example for initializing the singleton `ImageLoader` inside a Compose Multiplatform iOS app:
 

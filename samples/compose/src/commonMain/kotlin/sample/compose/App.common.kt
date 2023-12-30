@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
+import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import sample.common.AssetType
@@ -45,11 +46,14 @@ import sample.common.NUM_COLUMNS
 import sample.common.Resources
 import sample.common.Screen
 import sample.common.calculateScaledSize
+import sample.common.newImageLoader
 import sample.common.next
 
 @Composable
 fun App(resources: Resources) {
-    val viewModel = remember { MainViewModel(resources) }
+    val viewModel = remember(resources) {
+        MainViewModel(resources)
+    }
     LaunchedEffect(viewModel) {
         viewModel.start()
     }
@@ -57,7 +61,14 @@ fun App(resources: Resources) {
 }
 
 @Composable
-fun App(viewModel: MainViewModel) {
+fun App(
+    viewModel: MainViewModel,
+    debug: Boolean = false,
+) {
+    setSingletonImageLoaderFactory { context ->
+        newImageLoader(context, debug)
+    }
+
     MaterialTheme(
         colors = lightColors(
             primary = Color.White,

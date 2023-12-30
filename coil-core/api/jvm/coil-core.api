@@ -203,6 +203,9 @@ public final class coil3/Uri_commonKt {
 public abstract interface annotation class coil3/annotation/Data : java/lang/annotation/Annotation {
 }
 
+public abstract interface annotation class coil3/annotation/DelicateCoilApi : java/lang/annotation/Annotation {
+}
+
 public abstract interface annotation class coil3/annotation/ExperimentalCoilApi : java/lang/annotation/Annotation {
 }
 
