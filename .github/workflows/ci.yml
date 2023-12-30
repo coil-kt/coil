@@ -118,8 +118,7 @@ jobs:
         name: Deploy snapshot
         runs-on: macos-13
         timeout-minutes: 30
-        # TODO: Re-enable before merging.
-        # if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
+        if: github.repository == 'coil-kt/coil' && github.ref == 'refs/heads/main'
         needs: [checks, unit-tests, instrumentation-tests, build-samples]
         steps:
             - uses: actions/checkout@v4
