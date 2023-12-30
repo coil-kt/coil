@@ -124,6 +124,7 @@ private fun <T : BaseExtension> Project.androidBase(
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets.configureEach {
                 languageSettings {
+                    optIn("coil3.annotation.DelicateCoilApi")
                     optIn("coil3.annotation.ExperimentalCoilApi")
                     optIn("coil3.annotation.InternalCoilApi")
                 }
@@ -158,6 +159,7 @@ private fun <T : BaseExtension> Project.androidBase(
                 "-Xno-receiver-assertions",
             )
             if (project.name != "benchmark") {
+                arguments += "-opt-in=coil3.annotation.DelicateCoilApi"
                 arguments += "-opt-in=coil3.annotation.ExperimentalCoilApi"
                 arguments += "-opt-in=coil3.annotation.InternalCoilApi"
             }

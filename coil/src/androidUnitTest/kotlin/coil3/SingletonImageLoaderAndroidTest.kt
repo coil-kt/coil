@@ -41,7 +41,7 @@ class SingletonImageLoaderAndroidTest : RobolectricTest() {
         assertFalse(factory.isInitialized)
         assertFalse((context.applicationContext as TestApplication).isInitialized)
 
-        SingletonImageLoader.set(factory)
+        SingletonImageLoader.setSafe(factory)
 
         SingletonImageLoader.get(context)
 

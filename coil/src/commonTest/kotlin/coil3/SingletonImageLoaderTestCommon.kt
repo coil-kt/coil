@@ -2,7 +2,9 @@ package coil3
 
 import coil3.test.utils.RobolectricTest
 import coil3.test.utils.context
+import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -10,12 +12,17 @@ import kotlinx.atomicfu.atomic
 
 class SingletonImageLoaderTestCommon : RobolectricTest() {
 
+    @AfterTest
+    fun after() {
+        SingletonImageLoader.reset()
+    }
+
     @Test
     fun setImageLoaderFactoryIsInvokedExactlyOnce() {
         val imageLoader1 = ImageLoader(context)
 
         val factory = TestSingletonImageLoaderFactory(lazyOf(imageLoader1))
-        SingletonImageLoader.set(factory)
+        SingletonImageLoader.setUnsafe(factory)
 
         assertFalse(factory.isInitialized)
 
@@ -28,6 +35,15 @@ class SingletonImageLoaderTestCommon : RobolectricTest() {
         val imageLoader3 = SingletonImageLoader.get(context)
 
         assertSame(imageLoader1, imageLoader3)
+    }
+
+    @Test
+    fun setImageLoaderSafeThrowsIfDefaultIsAlreadyCreated() {
+        SingletonImageLoader.get(context)
+
+        assertFails {
+            SingletonImageLoader.setSafe(::ImageLoader)
+        }
     }
 
     class TestSingletonImageLoaderFactory(

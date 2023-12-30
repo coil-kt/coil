@@ -8,7 +8,7 @@ import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
 
 /**
- * Alias for [SingletonImageLoader.set] that's optimized for calling from Compose.
+ * Alias for [SingletonImageLoader.setSafe] that's optimized for calling from Compose.
  */
 @ExperimentalCoilApi
 @Composable
@@ -16,5 +16,5 @@ import coil3.annotation.ExperimentalCoilApi
 fun setSingletonImageLoaderFactory(factory: (context: PlatformContext) -> ImageLoader) {
     // This can't be invoked inside a LaunchedEffect as it needs to run immediately before
     // SingletonImageLoader.get is called by any composables.
-    SingletonImageLoader.set(factory)
+    SingletonImageLoader.setSafe(factory)
 }
