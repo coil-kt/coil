@@ -73,18 +73,6 @@ fun App() {
 !!! Note
     This approach should be avoided on Android if your app uses multiple activities. Instead, prefer implementing `SingletonImageLoader.Factory` on your `Application` like above.
 
-Here's an example for initializing the singleton `ImageLoader` inside a Compose Multiplatform iOS app:
-
-```kotlin
-fun MainViewController(): UIViewController {
-    initializeSingletonImageLoader()
-
-    return ComposeUIViewController {
-        App()
-    }
-}
-```
-
 Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compose) repository for examples.
 
 **IMPORTANT**: `Cache-Control` header support is no longer enabled by default. In subsequent alphas, it will be possible to re-enable it, but it will be opt-in. `NetworkFetcher.Factory` now also supports custom `CacheStrategy` implementations to allow custom cache resolution behaviour.

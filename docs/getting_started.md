@@ -11,7 +11,7 @@ Coil has 9 artifacts published to `mavenCentral()`:
 * `io.coil-kt:coil-gif`: Includes two [decoders](../api/coil-core/coil3.decode/-decoder) to support decoding GIFs. See [GIFs](gifs.md) for more details.
 * `io.coil-kt:coil-svg`: Includes a [decoder](../api/coil-core/coil3.decode/-decoder) to support decoding SVGs. See [SVGs](svgs.md) for more details.
 * `io.coil-kt:coil-video`: Includes a [decoder](../api/coil-core/coil3.decode/-decoder) to support decoding frames from [any of Android's supported video formats](https://developer.android.com/guide/topics/media/media-formats#video-codecs). See [videos](videos.md) for more details.
-* `io.coil-kt:coil-test`: Includes classes to support testing with `ImageLoader`s. See [Testing](test.md) for more details.
+* `io.coil-kt:coil-test`: Includes classes to support testing with `ImageLoader`s. See [Testing](testing.md) for more details.
 * `io.coil-kt:coil-bom`: Includes a [bill of materials](https://docs.gradle.org/7.2/userguide/platforms.html#sub:bom_import). Importing `coil-bom` allows you to depend on other Coil artifacts without specifying a version.
 
 ## Image Loaders
