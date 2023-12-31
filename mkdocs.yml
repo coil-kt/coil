@@ -101,4 +101,10 @@ plugins:
   - minify:
       minify_html: true
 
+validation:
+  links:
+    absolute_links: ignore
+  nav:
+    omitted_files: ignore
+
 # Built with https://github.com/squidfunk/mkdocs-material

@@ -2,9 +2,9 @@
 
 Android supports many [image formats](https://developer.android.com/guide/topics/media/media-formats#image-formats) out of the box, however there are also plenty of formats it does not (e.g. GIF, SVG, MP4, etc.)
 
-Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of five main parts that are executed in the following order: [Interceptors](../api/coil-core/coil3.intercept/-interceptor), [Mappers](../api/coil-core/coil3.map/-mapper), [Keyers](../api/coil-core/coil3.key/-keyer), [Fetchers](../api/coil-core/coil3.fetch/-fetcher), and [Decoders](../api/coil-core/coil3.decode/-decoder).
+Fortunately, [ImageLoader](image_loaders.md)s support pluggable components to add new cache layers, new data types, new fetching behavior, new image encodings, or otherwise overwrite the base image loading behavior. Coil's image pipeline consists of five main parts that are executed in the following order: [Interceptors](/coil/api/coil-core/coil3.intercept/-interceptor), [Mappers](/coil/api/coil-core/coil3.map/-mapper), [Keyers](/coil/api/coil-core/coil3.key/-keyer), [Fetchers](/coil/api/coil-core/coil3.fetch/-fetcher), and [Decoders](/coil/api/coil-core/coil3.decode/-decoder).
 
-Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](../api/coil-core/coil3/-component-registry):
+Custom components must be added to the `ImageLoader` when constructing it through its [ComponentRegistry](/coil/api/coil-core/coil3/-component-registry):
 
 ```kotlin
 val imageLoader = ImageLoader.Builder(context)
@@ -44,7 +44,7 @@ class CustomCacheInterceptor(
 
 Interceptors are an advanced feature that let you wrap an `ImageLoader`'s image pipeline with custom logic. Their design is heavily based on [OkHttp's `Interceptor` interface](https://square.github.io/okhttp/interceptors/#interceptors).
 
-See [Interceptor](../api/coil-core/coil3.intercept/-interceptor) for more information.
+See [Interceptor](/coil/api/coil-core/coil3.intercept/-interceptor) for more information.
 
 ## Mappers
 
@@ -77,22 +77,22 @@ val request = ImageRequest.Builder(context)
 imageLoader.enqueue(request)
 ```
 
-See [Mapper](../api/coil-core/coil3.map/-mapper) for more information.
+See [Mapper](/coil/api/coil-core/coil3.map/-mapper) for more information.
 
 ## Keyers
 
 Keyers convert data into a portion of a cache key. This value is used as `MemoryCache.Key.key` when/if this request's output is written to the `MemoryCache`.
 
-See [Keyers](../api/coil-core/coil3.key/-keyer) for more information.
+See [Keyers](/coil/api/coil-core/coil3.key/-keyer) for more information.
 
 ## Fetchers
 
 Fetchers translate data (e.g. URL, URI, File, etc.) into either an `ImageSource` or a `Drawable`. They typically convert the input data into a format that can then be consumed by a `Decoder`. Use this interface to add support for custom fetching mechanisms (e.g. Cronet, custom URI schemes, etc.)
 
-See [Fetcher](../api/coil-core/coil3.fetch/-fetcher) for more information.
+See [Fetcher](/coil/api/coil-core/coil3.fetch/-fetcher) for more information.
 
 ## Decoders
 
 Decoders read an `ImageSource` and return a `Drawable`. Use this interface to add support for custom file formats (e.g. GIF, SVG, TIFF, etc.).
 
-See [Decoder](../api/coil-core/coil3.decode/-decoder) for more information.
+See [Decoder](/coil/api/coil-core/coil3.decode/-decoder) for more information.
