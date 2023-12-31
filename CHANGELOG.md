@@ -147,7 +147,7 @@ AsyncImage(
 - `Size` is now composed of two `Dimension` values for its width and height. `Dimension` can either be a positive pixel value or `Dimension.Undefined`. See [here](https://coil-kt.github.io/coil/upgrading/#size-refactor) for more info.
 - `BitmapPool` and `PoolableViewTarget` have been removed from the library.
 - `VideoFrameFileFetcher` and `VideoFrameUriFetcher` have been removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
-- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
+- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-core/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-core/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
 - Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
 - Add support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
 - Add support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
@@ -212,7 +212,7 @@ Significant changes since `1.4.0`:
 - `Size` is now composed of two `Dimension` values for its width and height. `Dimension` can either be a positive pixel value or `Dimension.Original`.
 - `BitmapPool` and `PoolableViewTarget` have been removed from the library.
 - `VideoFrameFileFetcher` and `VideoFrameUriFetcher` are removed from the library. Use `VideoFrameDecoder` instead, which supports all data sources.
-- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
+- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-core/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-core/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library. If you use them, you can copy their code into your project.
 - Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
 - Add support for `bitmapFactoryMaxParallelism`, which restricts the maximum number of in-progress `BitmapFactory` operations. This value is 4 by default, which improves UI performance.
 - Add support for `interceptorDispatcher`, `fetcherDispatcher`, `decoderDispatcher`, and `transformationDispatcher`.
@@ -421,7 +421,7 @@ Coil 2.0.0 is the next major iteration of the library and has new features, perf
 - `Disposable` has been refactored and exposes the underlying `ImageRequest`'s job.
 - Change `Transition.transition` to be a non-suspending function as it's no longer needed to suspend the transition until it completes.
 - Add `GenericViewTarget`, which handles common `ViewTarget` logic.
-- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-base/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library.
+- [`BlurTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-core/src/main/java/coil/transform/BlurTransformation.kt) and [`GrayscaleTransformation`](https://github.com/coil-kt/coil/blob/845f39383f332428077c666e3567b954675ce248/coil-core/src/main/java/coil/transform/GrayscaleTransformation.kt) are removed from the library.
     - If you use them, you can copy their code into your project.
 - `ImageRequest.error` is now set on the `Target` if `ImageRequest.fallback` is null.
 - `Transformation.key` is replaced with `Transformation.cacheKey`.
@@ -581,7 +581,7 @@ Changes since `1.0.0-rc3`:
 - **Important**: Launch the Interceptor chain on the main thread by default. ([#513](https://github.com/coil-kt/coil/pull/513))
     - This largely restores the behaviour from `0.11.0` and below where the memory cache would be checked synchronously on the main thread.
     - To revert to using the same behaviour as `0.12.0` where the memory cache is checked on `ImageRequest.dispatcher`, set `ImageLoader.Builder.launchInterceptorChainOnMainThread(false)`.
-    - See [`launchInterceptorChainOnMainThread`](https://coil-kt.github.io/coil/api/coil-base/coil/-image-loader/-builder/launch-interceptor-chain-on-main-thread/) for more information.
+    - See [`launchInterceptorChainOnMainThread`](https://coil-kt.github.io/coil/api/coil-core/coil3/-image-loader/-builder/launch-interceptor-chain-on-main-thread/) for more information.
 
 ---
 
@@ -621,7 +621,7 @@ Changes since `1.0.0-rc3`:
     - `coil.request.RequestDisposable` -> `coil.request.Disposable`
     - `coil.bitmappool.BitmapPool` -> `coil.bitmap.BitmapPool`
     - `coil.DefaultRequestOptions` -> `coil.request.DefaultRequestOptions`
-- **Breaking**: [`SparseIntArraySet`](https://github.com/coil-kt/coil/blob/f52addd039f0195b66f93cb0f1cad59b0832f784/coil-base/src/main/java/coil/collection/SparseIntArraySet.kt) has been removed from the public API.
+- **Breaking**: [`SparseIntArraySet`](https://github.com/coil-kt/coil/blob/f52addd039f0195b66f93cb0f1cad59b0832f784/coil-core/src/main/java/coil/collection/SparseIntArraySet.kt) has been removed from the public API.
 - **Breaking**: `TransitionTarget` no longer implements `ViewTarget`.
 - **Breaking**: `ImageRequest.Listener.onSuccess`'s signature has changed to return an `ImageResult.Metadata` instead of just a `DataSource`.
 - **Breaking**: Remove support for `LoadRequest.aliasKeys`. This API is better handled with direct read/write access to the memory cache.
@@ -749,9 +749,9 @@ Changes since `1.0.0-rc3`:
 
 - Add a new artifact, **`io.coil-kt:coil-video`**, to decode specific frames from a video file. [Read more here](https://coil-kt.github.io/coil/videos/).
 
-- Add a new [EventListener](https://github.com/coil-kt/coil/blob/main/coil-base/src/main/java/coil/EventListener.kt) API for tracking metrics.
+- Add a new [EventListener](https://github.com/coil-kt/coil/blob/main/coil-core/src/main/java/coil/EventListener.kt) API for tracking metrics.
 
-- Add [ImageLoaderFactory](https://github.com/coil-kt/coil/blob/main/coil-singleton/src/main/java/coil/ImageLoaderFactory.kt) which can be implemented by your `Application` to simplify singleton initialization.
+- Add [ImageLoaderFactory](https://github.com/coil-kt/coil/blob/main/coil/src/main/java/coil/ImageLoaderFactory.kt) which can be implemented by your `Application` to simplify singleton initialization.
 
 ---
 
@@ -774,8 +774,8 @@ Changes since `1.0.0-rc3`:
 
 - **New**: Add `WeakMemoryCache` implementation. ([#295](https://github.com/coil-kt/coil/pull/295))
 - **New**: Add `coil-video` to support decoding video frames. ([#122](https://github.com/coil-kt/coil/pull/122))
-- **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/main/coil-base/src/main/java/coil/EventListener.kt). ([#314](https://github.com/coil-kt/coil/pull/314))
-- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/main/coil-singleton/src/main/java/coil/ImageLoaderFactory.kt). ([#311](https://github.com/coil-kt/coil/pull/311))
+- **New**: Introduce [`EventListener`](https://github.com/coil-kt/coil/blob/main/coil-core/src/main/java/coil/EventListener.kt). ([#314](https://github.com/coil-kt/coil/pull/314))
+- **New**: Introduce [`ImageLoaderFactory`](https://github.com/coil-kt/coil/blob/main/coil/src/main/java/coil/ImageLoaderFactory.kt). ([#311](https://github.com/coil-kt/coil/pull/311))
 - **New**: Support animated HEIF image sequences on Android 11. ([#297](https://github.com/coil-kt/coil/pull/297))
 - **New**: Improve Java compatibility. ([#262](https://github.com/coil-kt/coil/pull/262))
 - **New**: Support setting a default `CachePolicy`. ([#307](https://github.com/coil-kt/coil/pull/307))
@@ -885,7 +885,7 @@ Changes since `1.0.0-rc3`:
 - **New**: Support for custom transitions. [See here for more info](https://coil-kt.github.io/coil/transitions/). Transitions are marked as experimental as the API is incubating.
 - **New**: Add `RequestDisposable.await` to support suspending while a `LoadRequest` is in progress.
 - **New**: Support setting a `fallback` drawable when request data is null.
-- **New**: Add `Precision`. This makes the size of the output `Drawable` exact while enabling scaling optimizations for targets that support scaling (e.g. `ImageViewTarget`). See [its documentation](https://github.com/coil-kt/coil/blob/main/coil-base/src/main/java/coil/size/Precision.kt) for more information.
+- **New**: Add `Precision`. This makes the size of the output `Drawable` exact while enabling scaling optimizations for targets that support scaling (e.g. `ImageViewTarget`). See [its documentation](https://github.com/coil-kt/coil/blob/main/coil-core/src/main/java/coil/size/Precision.kt) for more information.
 - **New**: Add `RequestBuilder.aliasKeys` to support matching multiple cache keys.
 
 ---
@@ -893,7 +893,7 @@ Changes since `1.0.0-rc3`:
 - Fix: Make RequestDisposable thread safe.
 - Fix: `RoundedCornersTransformation` now crops to the size of the target then rounds the corners.
 - Fix: `CircleCropTransformation` now crops from the center.
-- Fix: Add several devices to the [hardware bitmap blacklist](https://github.com/coil-kt/coil/blob/main/coil-base/src/main/java/coil/memory/HardwareBitmapService.kt).
+- Fix: Add several devices to the [hardware bitmap blacklist](https://github.com/coil-kt/coil/blob/main/coil-core/src/main/java/coil/memory/HardwareBitmapService.kt).
 - Fix: Preserve aspect ratio when converting a Drawable to a Bitmap.
 - Fix: Fix possible memory cache miss with `Scale.FIT`.
 - Fix: Ensure Parameters iteration order is deterministic.

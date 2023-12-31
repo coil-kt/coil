@@ -6,7 +6,6 @@ import coil3.versionName
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import dev.drewhamilton.poko.gradle.PokoPluginExtension
-import java.net.URL
 import kotlinx.validation.ApiValidationExtension
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.experimental.dsl.ExperimentalExtension
@@ -43,8 +42,9 @@ plugins {
 }
 
 extensions.configure<ApiValidationExtension> {
-    ignoredProjects += project.subprojects
-        .mapNotNull { if (it.name in publicModules) null else it.name }
+    ignoredProjects += project.subprojects.mapNotNull { project ->
+        if (project.name in publicModules) null else project.name
+    }
 }
 
 tasks.withType<DokkaMultiModuleTask>().configureEach {
@@ -73,22 +73,32 @@ allprojects {
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
+        // https://github.com/Kotlin/dokka/issues/3403
+//        enabled = project.name != "coil-core"
+
         dokkaSourceSets.configureEach {
             jdkVersion = 8
             failOnWarning = true
             skipDeprecated = true
             suppressInheritedMembers = true
 
-            externalDocumentationLink {
-                url = URL("https://developer.android.com/reference/")
-            }
-            externalDocumentationLink {
-                url = URL("https://kotlinlang.org/api/kotlinx.coroutines/")
-            }
-            externalDocumentationLink {
-                url = URL("https://square.github.io/okio/3.x/okio/")
-                packageListUrl = URL("https://square.github.io/okio/3.x/okio/okio/package-list")
-            }
+            externalDocumentationLink(
+                url = "https://developer.android.com/reference/",
+            )
+            externalDocumentationLink(
+                url = "https://kotlinlang.org/api/kotlinx.coroutines/",
+            )
+            externalDocumentationLink(
+                url = "https://square.github.io/okio/3.x/okio/",
+                packageListUrl = "https://square.github.io/okio/3.x/okio/okio/package-list",
+            )
+            externalDocumentationLink(
+                url = "https://jetbrains.github.io/skiko/",
+                packageListUrl = "https://jetbrains.github.io/skiko/skiko/package-list",
+            )
+            externalDocumentationLink(
+                url = "https://api.ktor.io/",
+            )
         }
     }
 

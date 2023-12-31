@@ -7,6 +7,7 @@ import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.TestExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Project
@@ -29,8 +30,7 @@ fun Project.androidLibrary(
         apply(plugin = "com.vanniktech.maven.publish.base")
         setupPublishing {
             val platform = if (project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
-                // TODO: Re-enable dokkaHtml when https://github.com/Kotlin/dokka/issues/3403 is fixed.
-                KotlinMultiplatform()
+                KotlinMultiplatform(Dokka("dokkaHtml"))
             } else {
                 AndroidSingleVariantLibrary()
             }
