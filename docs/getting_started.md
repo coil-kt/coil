@@ -24,7 +24,7 @@ The singleton `ImageLoader` can be configured by implementing `ImageLoaderFactor
 
 ```kotlin
 class MyApplication : Application(), ImageLoaderFactory {
-    override fun newImageLoader(context: Context): ImageLoader {
+    override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .crossfade(true)
             .build()
