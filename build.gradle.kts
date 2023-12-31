@@ -73,9 +73,6 @@ allprojects {
     }
 
     tasks.withType<DokkaTaskPartial>().configureEach {
-        // https://github.com/Kotlin/dokka/issues/3403
-//        enabled = project.name != "coil-core"
-
         dokkaSourceSets.configureEach {
             jdkVersion = 8
             failOnWarning = true
