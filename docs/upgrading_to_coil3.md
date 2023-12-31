@@ -1,6 +1,6 @@
 # Upgrading to Coil 3.x
 
-!!! Heads up!
+!!! Note
     Coil 3 is currently in alpha and its API and behaviour may change between releases. Coil 3 alphas are not guaranteed to be binary or source compatible with each other.
 
 Coil 3 is the next major version of Coil that supports [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) and includes performance and API improvements. This document provides a high-level overview of the main changes from Coil 2 to Coil 3 and highlights any breaking or important changes. It does not cover every binary incompatible change or small behaviour change.
@@ -72,18 +72,6 @@ fun App() {
 
 !!! Note
     This approach should be avoided on Android if your app uses multiple activities. Instead, prefer implementing `SingletonImageLoader.Factory` on your `Application` like above.
-
-Here's an example for initializing the singleton `ImageLoader` inside a Compose Multiplatform iOS app:
-
-```kotlin
-fun MainViewController(): UIViewController {
-    initializeSingletonImageLoader()
-
-    return ComposeUIViewController {
-        App()
-    }
-}
-```
 
 Check out the [`samples`](https://github.com/coil-kt/coil/tree/3.x/samples/compose) repository for examples.
 

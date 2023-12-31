@@ -20,8 +20,29 @@ theme:
   favicon: 'images/coil_logo_black.ico'
   logo: 'images/coil_logo_black.svg'
   palette:
-    primary: 'white'
-    accent: 'white'
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: white
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: black
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
   font:
     text: 'Roboto'
     code: 'Roboto Mono'
@@ -79,5 +100,11 @@ plugins:
   - search
   - minify:
       minify_html: true
+
+validation:
+  links:
+    absolute_links: ignore
+  nav:
+    omitted_files: ignore
 
 # Built with https://github.com/squidfunk/mkdocs-material
