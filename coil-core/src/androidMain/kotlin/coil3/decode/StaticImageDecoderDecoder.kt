@@ -7,6 +7,7 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import coil3.ImageLoader
 import coil3.asCoilImage
+import coil3.fetch.ByteBufferFetcher.ByteBufferMetadata
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.allowRgb565
@@ -125,6 +126,9 @@ private fun ImageSource.fastImageDecoderSourceOrNull(options: Options): ImageDec
     }
     if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
         return ImageDecoder.createSource(options.context.resources, metadata.resId)
+    }
+    if (metadata is ByteBufferMetadata) {
+        return ImageDecoder.createSource(metadata.byteBuffer)
     }
 
     return null
