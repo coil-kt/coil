@@ -14,8 +14,8 @@ import android.graphics.drawable.Animatable
 import android.os.Build.VERSION.SDK_INT
 import coil3.BitmapImage
 import coil3.ImageLoader
+import coil3.decode.AnimatedImageDecoderDecoder
 import coil3.decode.GifDecoder
-import coil3.decode.ImageDecoderDecoder
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
@@ -44,7 +44,7 @@ class AnimatedAndNormalTransformationTest {
             .crossfade(false)
             .components {
                 if (SDK_INT >= 28) {
-                    add(ImageDecoderDecoder.Factory())
+                    add(AnimatedImageDecoderDecoder.Factory())
                 } else {
                     add(GifDecoder.Factory())
                 }

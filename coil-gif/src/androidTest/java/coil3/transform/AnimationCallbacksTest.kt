@@ -5,8 +5,8 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.rules.activityScenarioRule
 import coil3.ImageLoader
+import coil3.decode.AnimatedImageDecoderDecoder
 import coil3.decode.GifDecoder
-import coil3.decode.ImageDecoderDecoder
 import coil3.request.CachePolicy
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
@@ -55,7 +55,7 @@ class AnimationCallbacksTest {
         val isStartCalled = MutableStateFlow(false)
         val isEndCalled = MutableStateFlow(false)
         val decoderFactory = if (SDK_INT >= 28) {
-            ImageDecoderDecoder.Factory()
+            AnimatedImageDecoderDecoder.Factory()
         } else {
             GifDecoder.Factory()
         }

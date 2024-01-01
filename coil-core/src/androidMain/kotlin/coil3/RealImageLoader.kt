@@ -1,6 +1,8 @@
 package coil3
 
+import android.os.Build.VERSION.SDK_INT
 import coil3.decode.BitmapFactoryDecoder
+import coil3.decode.StaticImageDecoderDecoder
 import coil3.fetch.AssetUriFetcher
 import coil3.fetch.BitmapFetcher
 import coil3.fetch.ContentUriFetcher
@@ -80,6 +82,17 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         .add(DrawableFetcher.Factory())
         .add(BitmapFetcher.Factory())
         // Decoders
+        .apply {
+            // ImageDecoder cannot properly decode a hardware bitmap on API 28
+            // https://github.com/element-hq/element-android/pull/7184
+            if (SDK_INT >= 29) {
+                add(
+                    StaticImageDecoderDecoder.Factory(
+                        maxParallelism = options.bitmapFactoryMaxParallelism,
+                    )
+                )
+            }
+        }
         .add(
             BitmapFactoryDecoder.Factory(
                 maxParallelism = options.bitmapFactoryMaxParallelism,

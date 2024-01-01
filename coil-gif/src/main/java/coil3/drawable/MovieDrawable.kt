@@ -18,8 +18,8 @@ import android.os.SystemClock
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
+import coil3.decode.AnimatedImageDecoderDecoder
 import coil3.decode.DecodeUtils
-import coil3.decode.ImageDecoderDecoder
 import coil3.size.Scale
 import coil3.transform.AnimatedTransformation
 import coil3.transform.PixelOpacity.OPAQUE
@@ -30,7 +30,7 @@ import coil3.util.isHardware
 /**
  * A [Drawable] that supports rendering [Movie]s (i.e. GIFs).
  *
- * NOTE: Prefer using [ImageDecoderDecoder] and [AnimatedImageDrawable] on API 28 and above.
+ * NOTE: Prefer using [AnimatedImageDecoderDecoder] and [AnimatedImageDrawable] on API 28 and above.
  */
 class MovieDrawable @JvmOverloads constructor(
     private val movie: Movie,

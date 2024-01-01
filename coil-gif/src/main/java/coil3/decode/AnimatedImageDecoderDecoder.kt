@@ -44,7 +44,7 @@ import okio.buffer
  *  it is below a threshold. See https://github.com/coil-kt/coil/issues/540 for more info.
  */
 @RequiresApi(28)
-class ImageDecoderDecoder @JvmOverloads constructor(
+class AnimatedImageDecoderDecoder @JvmOverloads constructor(
     private val source: ImageSource,
     private val options: Options,
     private val enforceMinimumFrameDelay: Boolean = true,
@@ -99,7 +99,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
     }
 
     private fun wrapImageSource(source: ImageSource): ImageSource {
-        return if (enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
+        return if (NeedRewriteGifSource && enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
             // Wrap the source to rewrite its frame delay as it's read.
             ImageSource(
                 source = FrameDelayRewritingSource(source.source()).buffer(),
@@ -184,7 +184,7 @@ class ImageDecoderDecoder @JvmOverloads constructor(
             imageLoader: ImageLoader,
         ): Decoder? {
             if (!isApplicable(result.source.source())) return null
-            return ImageDecoderDecoder(result.source, options, enforceMinimumFrameDelay)
+            return AnimatedImageDecoderDecoder(result.source, options, enforceMinimumFrameDelay)
         }
 
         private fun isApplicable(source: BufferedSource): Boolean {
@@ -194,3 +194,6 @@ class ImageDecoderDecoder @JvmOverloads constructor(
         }
     }
 }
+
+// https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
+private val NeedRewriteGifSource = SDK_INT < 34
