@@ -1,6 +1,7 @@
 package coil3
 
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import coil3.decode.BitmapFactoryDecoder
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil3.decode.ExifOrientationPolicy
@@ -9,10 +10,10 @@ import coil3.decode.ExifOrientationPolicy.RESPECT_PERFORMANCE
 // region bitmapFactoryMaxParallelism
 
 /**
- * Sets the maximum number of parallel [BitmapFactory] decode operations at once.
+ * Sets the maximum number of parallel [BitmapFactory] or [ImageDecoder] decode operations at once.
  *
- * Increasing this number will allow more parallel [BitmapFactory] decode operations,
- * however it can result in worse UI performance.
+ * Increasing this number will allow more parallel decode operations, however it can result in
+ * worse UI performance.
  */
 fun ImageLoader.Builder.bitmapFactoryMaxParallelism(maxParallelism: Int) = apply {
     require(maxParallelism > 0) { "maxParallelism must be > 0." }

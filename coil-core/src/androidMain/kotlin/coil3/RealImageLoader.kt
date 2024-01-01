@@ -83,7 +83,7 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         .add(BitmapFetcher.Factory())
         // Decoders
         .apply {
-            // ImageDecoder cannot properly decode a hardware bitmap on API 28
+            // Require API 29 for ImageDecoder support as API 28 has framework bugs:
             // https://github.com/element-hq/element-android/pull/7184
             if (SDK_INT >= 29) {
                 add(
@@ -97,6 +97,6 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
             BitmapFactoryDecoder.Factory(
                 maxParallelism = options.bitmapFactoryMaxParallelism,
                 exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy,
-            ),
+            )
         )
 }
