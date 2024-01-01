@@ -1,5 +1,5 @@
 package coil3.test.utils
 
-expect fun decodeBitmapAsset(
+expect fun decodeBitmapResource(
     path: String,
 ): CoilBitmap

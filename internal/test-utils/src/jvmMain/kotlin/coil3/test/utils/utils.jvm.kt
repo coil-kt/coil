@@ -9,7 +9,7 @@ import org.jetbrains.skia.Image
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.impl.use
 
-actual fun decodeBitmapAsset(
+actual fun decodeBitmapResource(
     path: String,
 ): CoilBitmap {
     // Retry multiple times as the emulator can be flaky.

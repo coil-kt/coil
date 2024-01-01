@@ -80,7 +80,7 @@ abstract class AbstractSvgDecoderTest(
         assertTrue(result.isSampled)
         val image = assertIs<Image>(result.image)
 
-        val expected = decodeBitmapAsset("coil_logo.png")
+        val expected = decodeBitmapResource("coil_logo.png")
         image.asCoilBitmap().assertIsSimilarTo(expected)
     }
 
@@ -102,7 +102,7 @@ abstract class AbstractSvgDecoderTest(
         assertTrue(result.isSampled)
         val image = assertIs<Image>(result.image)
 
-        val expected = decodeBitmapAsset("instacart_logo.png")
+        val expected = decodeBitmapResource("instacart_logo.png")
         image.asCoilBitmap().assertIsSimilarTo(expected)
     }
 
@@ -126,7 +126,7 @@ abstract class AbstractSvgDecoderTest(
         assertTrue(result.isSampled)
         val image = assertIs<Image>(result.image)
 
-        val expected = decodeBitmapAsset("coil_logo.png")
+        val expected = decodeBitmapResource("coil_logo.png")
         image.asCoilBitmap().assertIsSimilarTo(expected)
     }
 

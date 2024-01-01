@@ -31,7 +31,7 @@ actual abstract class RobolectricTest
 actual val context: PlatformContext
     get() = ApplicationProvider.getApplicationContext()
 
-actual fun decodeBitmapAsset(
+actual fun decodeBitmapResource(
     path: String,
 ): CoilBitmap {
     val options: BitmapFactory.Options = BitmapFactory.Options().apply {
