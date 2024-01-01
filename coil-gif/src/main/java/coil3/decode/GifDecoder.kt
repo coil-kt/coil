@@ -18,7 +18,6 @@ import coil3.request.repeatCount
 import coil3.util.animatable2CompatCallbackOf
 import coil3.util.isHardware
 import kotlinx.coroutines.runInterruptible
-import okio.buffer
 
 /**
  * A [Decoder] that uses [Movie] to decode GIFs.
@@ -31,16 +30,12 @@ import okio.buffer
 class GifDecoder @JvmOverloads constructor(
     private val source: ImageSource,
     private val options: Options,
-    private val enforceMinimumFrameDelay: Boolean = true
+    private val enforceMinimumFrameDelay: Boolean = true,
 ) : Decoder {
 
     override suspend fun decode() = runInterruptible {
-        val bufferedSource = if (enforceMinimumFrameDelay) {
-            FrameDelayRewritingSource(source.source()).buffer()
-        } else {
-            source.source()
-        }
-        val movie: Movie? = bufferedSource.use { Movie.decodeStream(it.inputStream()) }
+        val source = maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay)
+        val movie: Movie? = source.use { Movie.decodeStream(it.source().inputStream()) }
 
         check(movie != null && movie.width() > 0 && movie.height() > 0) { "Failed to decode GIF." }
 
@@ -51,7 +46,7 @@ class GifDecoder @JvmOverloads constructor(
                 options.bitmapConfig.isHardware -> Bitmap.Config.ARGB_8888
                 else -> options.bitmapConfig
             },
-            scale = options.scale
+            scale = options.scale,
         )
 
         drawable.setRepeatCount(options.repeatCount)
@@ -68,7 +63,7 @@ class GifDecoder @JvmOverloads constructor(
 
         DecodeResult(
             image = drawable.asCoilImage(),
-            isSampled = false
+            isSampled = false,
         )
     }
 
