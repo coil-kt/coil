@@ -139,7 +139,6 @@ allprojects {
     plugins.withId("org.jetbrains.compose") {
         extensions.configure<ComposeExtension> {
             kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
-            kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=${libs.versions.kotlin.get()}")
             extensions.configure<ExperimentalExtension> {
                 web.application {}
             }
