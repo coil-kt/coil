@@ -2,6 +2,7 @@ package coil3.request
 
 import coil3.Image
 import coil3.ImageLoader
+import coil3.annotation.Data
 import coil3.decode.DataSource
 import coil3.memory.MemoryCache
 
@@ -19,7 +20,8 @@ sealed interface ImageResult {
 /**
  * Indicates that the request completed successfully.
  */
-data class SuccessResult(
+@Data
+class SuccessResult(
     /**
      * The success drawable.
      */
@@ -56,12 +58,32 @@ data class SuccessResult(
      * 'true' if [ImageRequest.placeholderMemoryCacheKey] was present in the memory cache.
      */
     val isPlaceholderCached: Boolean = false,
-) : ImageResult
+) : ImageResult {
+
+    fun copy(
+        image: Image,
+        request: ImageRequest,
+        dataSource: DataSource,
+        memoryCacheKey: MemoryCache.Key? = null,
+        diskCacheKey: String? = null,
+        isSampled: Boolean = false,
+        isPlaceholderCached: Boolean = false,
+    ) = SuccessResult(
+        image = image,
+        request = request,
+        dataSource = dataSource,
+        memoryCacheKey = memoryCacheKey,
+        diskCacheKey = diskCacheKey,
+        isSampled = isSampled,
+        isPlaceholderCached = isPlaceholderCached,
+    )
+}
 
 /**
  * Indicates that an error occurred while executing the request.
  */
-data class ErrorResult(
+@Data
+class ErrorResult(
     /**
      * The error drawable.
      */
@@ -76,4 +98,15 @@ data class ErrorResult(
      * The error that failed the request.
      */
     val throwable: Throwable,
-) : ImageResult
+) : ImageResult {
+
+    fun copy(
+        image: Image? = this.image,
+        request: ImageRequest = this.request,
+        throwable: Throwable = this.throwable,
+    ) = ErrorResult(
+        image = image,
+        request = request,
+        throwable = throwable,
+    )
+}

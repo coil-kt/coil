@@ -5,6 +5,7 @@ package coil3.test
 
 import coil3.Image
 import coil3.ImageLoader
+import coil3.annotation.Data
 import coil3.annotation.ExperimentalCoilApi
 import coil3.intercept.Interceptor
 import coil3.request.ImageRequest
@@ -80,12 +81,14 @@ class FakeImageLoaderEngine private constructor(
      */
     fun newBuilder() = Builder(this)
 
-    data class RequestValue(
+    @Data
+    class RequestValue(
         val request: ImageRequest,
         val size: Size,
     )
 
-    data class ResultValue(
+    @Data
+    class ResultValue(
         val request: RequestValue,
         val result: ImageResult,
     )

@@ -163,7 +163,8 @@ class ImageRequest private constructor(
      * Tracks which values have been set (instead of computed automatically using a default)
      * when building an [ImageRequest].
      */
-    data class Defined(
+    @Data
+    class Defined(
         val interceptorDispatcher: CoroutineDispatcher?,
         val fetcherDispatcher: CoroutineDispatcher?,
         val decoderDispatcher: CoroutineDispatcher?,
@@ -176,12 +177,42 @@ class ImageRequest private constructor(
         val sizeResolver: SizeResolver?,
         val scale: Scale?,
         val precision: Precision?,
-    )
+    ) {
+
+        fun copy(
+            interceptorDispatcher: CoroutineDispatcher? = this.interceptorDispatcher,
+            fetcherDispatcher: CoroutineDispatcher? = this.fetcherDispatcher,
+            decoderDispatcher: CoroutineDispatcher? = this.decoderDispatcher,
+            memoryCachePolicy: CachePolicy? = this.memoryCachePolicy,
+            diskCachePolicy: CachePolicy? = this.diskCachePolicy,
+            networkCachePolicy: CachePolicy? = this.networkCachePolicy,
+            placeholderFactory: ((ImageRequest) -> Image?)? = this.placeholderFactory,
+            errorFactory: ((ImageRequest) -> Image?)? = this.errorFactory,
+            fallbackFactory: ((ImageRequest) -> Image?)? = this.fallbackFactory,
+            sizeResolver: SizeResolver? = this.sizeResolver,
+            scale: Scale? = this.scale,
+            precision: Precision? = this.precision,
+        ) = Defined(
+            interceptorDispatcher = interceptorDispatcher,
+            fetcherDispatcher = fetcherDispatcher,
+            decoderDispatcher = decoderDispatcher,
+            memoryCachePolicy = memoryCachePolicy,
+            diskCachePolicy = diskCachePolicy,
+            networkCachePolicy = networkCachePolicy,
+            placeholderFactory = placeholderFactory,
+            errorFactory = errorFactory,
+            fallbackFactory = fallbackFactory,
+            sizeResolver = sizeResolver,
+            scale = scale,
+            precision = precision,
+        )
+    }
 
     /**
      * A set of default options that are used to fill in unset [ImageRequest] values.
      */
-    data class Defaults(
+    @Data
+    class Defaults(
         val fileSystem: FileSystem = defaultFileSystem(),
         val interceptorDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         val fetcherDispatcher: CoroutineDispatcher = ioCoroutineDispatcher(),
@@ -195,6 +226,35 @@ class ImageRequest private constructor(
         val precision: Precision = Precision.AUTOMATIC,
         val extras: Extras = Extras.EMPTY,
     ) {
+
+        fun copy(
+            fileSystem: FileSystem = this.fileSystem,
+            interceptorDispatcher: CoroutineDispatcher = this.interceptorDispatcher,
+            fetcherDispatcher: CoroutineDispatcher = this.fetcherDispatcher,
+            decoderDispatcher: CoroutineDispatcher = this.decoderDispatcher,
+            memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+            diskCachePolicy: CachePolicy = this.diskCachePolicy,
+            networkCachePolicy: CachePolicy = this.networkCachePolicy,
+            placeholderFactory: (ImageRequest) -> Image? = this.placeholderFactory,
+            errorFactory: (ImageRequest) -> Image? = this.errorFactory,
+            fallbackFactory: (ImageRequest) -> Image? = this.fallbackFactory,
+            precision: Precision = this.precision,
+            extras: Extras = this.extras,
+        ) = Defaults(
+            fileSystem = fileSystem,
+            interceptorDispatcher = interceptorDispatcher,
+            fetcherDispatcher = fetcherDispatcher,
+            decoderDispatcher = decoderDispatcher,
+            memoryCachePolicy = memoryCachePolicy,
+            diskCachePolicy = diskCachePolicy,
+            networkCachePolicy = networkCachePolicy,
+            placeholderFactory = placeholderFactory,
+            errorFactory = errorFactory,
+            fallbackFactory = fallbackFactory,
+            precision = precision,
+            extras = extras,
+        )
+
         companion object {
             @JvmField val DEFAULT = Defaults()
         }
