@@ -14,7 +14,6 @@ import coil3.size.Size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 actual interface CoilBitmap {
     actual val width: Int
@@ -70,9 +69,9 @@ fun Bitmap.getPixels(): Array<IntArray> {
     return arrayOf(alpha, red, green, blue)
 }
 
-suspend fun Bitmap.computeSimilarity(
+fun Bitmap.computeSimilarity(
     other: Bitmap,
-): Double = withContext(Dispatchers.Default) {
+): Double = runBlocking(Dispatchers.Default) {
     val pixels1 = async { getPixels() }
     val pixels2 = async { other.getPixels() }
 
@@ -108,15 +107,50 @@ suspend fun Bitmap.computeSimilarity(
 }
 
 /**
+ * Compares two [Bitmap]s by ensuring that they are the same size and that
+ * the cross correlation of their ARGB channels is >= [threshold].
+ */
+fun Bitmap.isSimilarTo(
+    expected: Bitmap,
+    threshold: Double = 0.99
+): Boolean {
+    require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
+    require(width == expected.width && height == expected.height) {
+        "The actual image ($width, $height) is not the same size as the " +
+            "expected image (${expected.width}, ${expected.height})."
+    }
+
+    return computeSimilarity(expected) >= threshold
+}
+
+/**
+ * Asserts that [this] and [expected] are the same size and that
+ * the cross correlation of their ARGB channels is >= [threshold].
+ */
+fun Bitmap.assertIsSimilarTo(
+    expected: Bitmap,
+    threshold: Double = 0.987
+) {
+    require(threshold in -1.0..1.0) { "Invalid threshold: $threshold" }
+    require(width == expected.width && height == expected.height) {
+        "The actual image ($width, $height) is not the same size as the " +
+            "expected image (${expected.width}, ${expected.height})."
+    }
+
+    val similarity = computeSimilarity(expected)
+    check(similarity >= threshold) {
+        "The images are not visually similar. Expected: $threshold; Actual: $similarity."
+    }
+}
+
+/**
  * Asserts that [this] and [expected] are the same size and that
  * the cross correlation of their ARGB channels is >= [threshold].
  */
 fun Bitmap.assertIsSimilarTo(
     @DrawableRes expected: Int,
     threshold: Double = 0.99
-): Unit = runBlocking {
+) {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
-    with(this@assertIsSimilarTo.toCoilBitmap()) {
-        assertIsSimilarTo(AppCompatResources.getDrawable(context, expected)!!.toBitmap().toCoilBitmap(), threshold)
-    }
+    assertIsSimilarTo(AppCompatResources.getDrawable(context, expected)!!.toBitmap(), threshold)
 }
