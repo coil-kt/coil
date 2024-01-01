@@ -139,7 +139,6 @@ allprojects {
     plugins.withId("org.jetbrains.compose") {
         extensions.configure<ComposeExtension> {
             kotlinCompilerPlugin = libs.jetbrains.compose.compiler.get().toString()
-            kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=${libs.versions.kotlin.get()}")
             extensions.configure<ExperimentalExtension> {
                 web.application {}
             }
@@ -161,6 +160,15 @@ allprojects {
                     "-P", "$composePlugin:reportsDestination=$outputDir",
                 )
             }
+        }
+    }
+
+    plugins.withId("org.jetbrains.compose") {
+        tasks.withType<KotlinCompile> {
+            val outputDir = rootDir.resolve("coil-core/compose_compiler_config.conf").path
+            compilerOptions.freeCompilerArgs.addAll(
+                "-P", "$composePlugin:stabilityConfigurationPath=$outputDir",
+            )
         }
     }
 
