@@ -19,7 +19,7 @@ cp README-tr.md docs/README-tr.md
 cp README-zh.md docs/README-zh.md
 
 # Deploy to Github pages.
-python3 -m mkdocs gh-deploy
+python3 -m mkdocs gh-deploy --force
 
 # Clean up.
 rm docs/index.md \
