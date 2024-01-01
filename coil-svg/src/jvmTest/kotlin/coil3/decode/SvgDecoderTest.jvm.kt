@@ -3,7 +3,7 @@ package coil3.decode
 import coil3.test.utils.AbstractSvgDecoderTest
 import kotlin.test.Test
 
-class SvgDecoderTestJvm: AbstractSvgDecoderTest(SvgDecoder.Factory()) {
+class SvgDecoderTestJvm : AbstractSvgDecoderTest(SvgDecoder.Factory()) {
     @Test
     override fun handlesSvgMimeType() =
         super.handlesSvgMimeType()

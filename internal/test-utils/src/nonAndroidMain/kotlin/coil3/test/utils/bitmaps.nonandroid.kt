@@ -19,7 +19,7 @@ actual fun Image.asCoilBitmap(): CoilBitmap = this.asBitmap().toCoilBitmap()
 
 class CoilBitmapImpl(
     override val bitmap: Bitmap
-): CoilBitmap {
+) : CoilBitmap {
     override val width: Int = bitmap.width
 
     override val height: Int = bitmap.height
