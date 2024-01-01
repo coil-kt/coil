@@ -9,9 +9,9 @@ import org.jetbrains.skia.Image
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.impl.use
 
-fun decodeBitmapAsset(
+actual fun decodeBitmapAsset(
     path: String,
-): Bitmap {
+): CoilBitmap {
     // Retry multiple times as the emulator can be flaky.
     var failures = 0
     while (true) {
@@ -27,7 +27,7 @@ fun decodeBitmapAsset(
                     dst = Rect.makeWH(image.width.toFloat(), image.height.toFloat()),
                 )
             }
-            return bitmap
+            return bitmap.toCoilBitmap()
         } catch (e: Exception) {
             if (failures++ > 5) throw e
         }

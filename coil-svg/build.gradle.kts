@@ -52,6 +52,7 @@ kotlin {
         }
         jvmTest {
             dependencies {
+                implementation(projects.internal.testUtils)
                 implementation(skikoAwtRuntimeDependency(libs.versions.skiko.get()))
             }
         }

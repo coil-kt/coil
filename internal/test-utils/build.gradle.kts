@@ -35,5 +35,10 @@ kotlin {
                 compileOnly(libs.robolectric)
             }
         }
+        named("jvmCommonMain") {
+            dependencies {
+                implementation(libs.bundles.test.jvm)
+            }
+        }
     }
 }
