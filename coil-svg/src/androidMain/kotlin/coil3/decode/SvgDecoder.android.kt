@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.runInterruptible
 
 /**
- * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) and  to decode SVG
+ * A [Decoder] that uses [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to decode SVG
  * files.
  *
  * @param useViewBoundsAsIntrinsicSize If true, uses the SVG's view bounds as the intrinsic size for
