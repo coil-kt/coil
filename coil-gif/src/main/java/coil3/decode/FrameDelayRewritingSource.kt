@@ -2,11 +2,13 @@
 
 package coil3.decode
 
+import android.os.Build.VERSION.SDK_INT
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import okio.ForwardingSource
 import okio.Source
+import okio.buffer
 
 /**
  * A [ForwardingSource] that rewrites the GIF frame delay in every graphics control block if it's
@@ -84,5 +86,22 @@ internal class FrameDelayRewritingSource(delegate: Source) : ForwardingSource(de
         private const val FRAME_DELAY_START_MARKER_SIZE_BYTES = 4
         private const val MINIMUM_FRAME_DELAY = 2
         private const val DEFAULT_FRAME_DELAY = 10
+    }
+}
+
+internal fun maybeWrapImageSourceToRewriteFrameDelay(
+    source: ImageSource,
+    enforceMinimumFrameDelay: Boolean,
+): ImageSource {
+    // https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
+    if (enforceMinimumFrameDelay && SDK_INT < 34 && DecodeUtils.isGif(source.source())) {
+        // Wrap the source to rewrite its frame delay as it's read.
+        return ImageSource(
+            source = FrameDelayRewritingSource(source.source()).buffer(),
+            fileSystem = source.fileSystem,
+            // Intentionally don't copy any metadata.
+        )
+    } else {
+        return source
     }
 }

@@ -6,7 +6,6 @@ import androidx.core.graphics.decodeBitmap
 import androidx.core.util.component1
 import androidx.core.util.component2
 import coil3.ImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.asCoilImage
 import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil3.fetch.SourceFetchResult
@@ -22,61 +21,60 @@ import coil3.util.widthPx
 import kotlin.math.roundToInt
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import okio.Closeable
+import okio.FileSystem
 
-@ExperimentalCoilApi
 @RequiresApi(28)
-class StaticImageDecoderDecoder(
+internal class StaticImageDecoderDecoder(
     private val source: ImageDecoder.Source,
-    private val toClose: ImageSource,
+    private val closeable: Closeable,
     private val options: Options,
     private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
 ) : Decoder {
 
     override suspend fun decode() = parallelismLock.withPermit {
         var isSampled = false
-        val image = run {
-            var imageDecoder: ImageDecoder? = null
-            try {
-                source.decodeBitmap { info, _ ->
-                    // Capture the image decoder to manually close it later.
-                    imageDecoder = this
+        var imageDecoder: ImageDecoder? = null
+        try {
+            val bitmap = source.decodeBitmap { info, _ ->
+                // Capture the image decoder to manually close it later.
+                imageDecoder = this
 
-                    // Configure the output image's size.
-                    val (srcWidth, srcHeight) = info.size
-                    val dstWidth = options.size.widthPx(options.scale) { srcWidth }
-                    val dstHeight = options.size.heightPx(options.scale) { srcHeight }
-                    if (srcWidth > 0 && srcHeight > 0 &&
-                        (srcWidth != dstWidth || srcHeight != dstHeight)) {
-                        val multiplier = DecodeUtils.computeSizeMultiplier(
-                            srcWidth = srcWidth,
-                            srcHeight = srcHeight,
-                            dstWidth = dstWidth,
-                            dstHeight = dstHeight,
-                            scale = options.scale,
-                        )
+                // Configure the output image's size.
+                val (srcWidth, srcHeight) = info.size
+                val dstWidth = options.size.widthPx(options.scale) { srcWidth }
+                val dstHeight = options.size.heightPx(options.scale) { srcHeight }
+                if (srcWidth > 0 && srcHeight > 0 &&
+                    (srcWidth != dstWidth || srcHeight != dstHeight)) {
+                    val multiplier = DecodeUtils.computeSizeMultiplier(
+                        srcWidth = srcWidth,
+                        srcHeight = srcHeight,
+                        dstWidth = dstWidth,
+                        dstHeight = dstHeight,
+                        scale = options.scale,
+                    )
 
-                        // Set the target size if the image is larger than the requested dimensions
-                        // or the request requires exact dimensions.
-                        isSampled = multiplier < 1
-                        if (isSampled || !options.allowInexactSize) {
-                            val targetWidth = (multiplier * srcWidth).roundToInt()
-                            val targetHeight = (multiplier * srcHeight).roundToInt()
-                            setTargetSize(targetWidth, targetHeight)
-                        }
+                    // Set the target size if the image is larger than the requested dimensions
+                    // or the request requires exact dimensions.
+                    isSampled = multiplier < 1
+                    if (isSampled || !options.allowInexactSize) {
+                        val targetWidth = (multiplier * srcWidth).roundToInt()
+                        val targetHeight = (multiplier * srcHeight).roundToInt()
+                        setTargetSize(targetWidth, targetHeight)
                     }
-
-                    // Configure any other attributes.
-                    configureImageDecoderProperties()
                 }
-            } finally {
-                imageDecoder?.close()
-                toClose.close()
+
+                // Configure any other attributes.
+                configureImageDecoderProperties()
             }
+            DecodeResult(
+                image = bitmap.asCoilImage(),
+                isSampled = isSampled,
+            )
+        } finally {
+            imageDecoder?.close()
+            closeable.close()
         }
-        DecodeResult(
-            image = image.asCoilImage(),
-            isSampled = isSampled,
-        )
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
@@ -114,9 +112,11 @@ class StaticImageDecoderDecoder(
 
 @RequiresApi(28)
 private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
-    val file = fileOrNull()
-    if (file != null) {
-        return ImageDecoder.createSource(file.toFile())
+    if (fileSystem == FileSystem.SYSTEM) {
+        val file = fileOrNull()
+        if (file != null && fileSystem == FileSystem.SYSTEM) {
+            return ImageDecoder.createSource(file.toFile())
+        }
     }
 
     val metadata = metadata

@@ -335,19 +335,6 @@ public final class coil3/decode/ResourceMetadata : coil3/decode/ImageSource$Meta
 	public final fun getResId ()I
 }
 
-public final class coil3/decode/StaticImageDecoderDecoder : coil3/decode/Decoder {
-	public fun <init> (Landroid/graphics/ImageDecoder$Source;Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;)V
-	public synthetic fun <init> (Landroid/graphics/ImageDecoder$Source;Lcoil3/decode/ImageSource;Lcoil3/request/Options;Lkotlinx/coroutines/sync/Semaphore;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun decode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class coil3/decode/StaticImageDecoderDecoder$Factory : coil3/decode/Decoder$Factory {
-	public fun <init> ()V
-	public fun <init> (I)V
-	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
-}
-
 public abstract interface class coil3/disk/DiskCache {
 	public abstract fun clear ()V
 	public abstract fun getDirectory ()Lokio/Path;

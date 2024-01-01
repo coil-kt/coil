@@ -33,7 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okio.BufferedSource
-import okio.buffer
+import okio.FileSystem
 
 /**
  * A [Decoder] that uses [ImageDecoder] to decode GIFs, animated WebPs, and animated HEIFs.
@@ -54,9 +54,9 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
         var isSampled = false
         val drawable = runInterruptible {
             var imageDecoder: ImageDecoder? = null
-            val wrappedSource = wrapImageSource(source)
+            val source = maybeWrapImageSourceToRewriteFrameDelay(source, enforceMinimumFrameDelay)
             try {
-                wrappedSource.toImageDecoderSource().decodeDrawable { info, _ ->
+                source.toImageDecoderSource().decodeDrawable { info, _ ->
                     // Capture the image decoder to manually close it later.
                     imageDecoder = this
 
@@ -89,7 +89,7 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
                 }
             } finally {
                 imageDecoder?.close()
-                wrappedSource.close()
+                source.close()
             }
         }
         return DecodeResult(
@@ -98,22 +98,12 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
         )
     }
 
-    private fun wrapImageSource(source: ImageSource): ImageSource {
-        return if (NeedRewriteGifSource && enforceMinimumFrameDelay && DecodeUtils.isGif(source.source())) {
-            // Wrap the source to rewrite its frame delay as it's read.
-            ImageSource(
-                source = FrameDelayRewritingSource(source.source()).buffer(),
-                fileSystem = options.fileSystem,
-            )
-        } else {
-            source
-        }
-    }
-
     private fun ImageSource.toImageDecoderSource(): ImageDecoder.Source {
-        val file = fileOrNull()
-        if (file != null) {
-            return ImageDecoder.createSource(file.toFile())
+        if (fileSystem == FileSystem.SYSTEM) {
+            val file = fileOrNull()
+            if (file != null && fileSystem == FileSystem.SYSTEM) {
+                return ImageDecoder.createSource(file.toFile())
+            }
         }
 
         val metadata = metadata
@@ -194,6 +184,3 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
         }
     }
 }
-
-// https://android.googlesource.com/platform/frameworks/base/+/2be87bb707e2c6d75f668c4aff6697b85fbf5b15
-private val NeedRewriteGifSource = SDK_INT < 34
