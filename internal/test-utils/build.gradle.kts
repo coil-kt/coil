@@ -37,7 +37,7 @@ kotlin {
         }
         named("jvmCommonMain") {
             dependencies {
-                implementation(libs.bundles.test.jvm)
+                implementation(libs.bundles.test.common)
             }
         }
     }
