@@ -255,6 +255,11 @@ public final class coil3/decode/BitmapFactoryDecoder$Factory : coil3/decode/Deco
 	public fun create (Lcoil3/fetch/SourceFetchResult;Lcoil3/request/Options;Lcoil3/ImageLoader;)Lcoil3/decode/Decoder;
 }
 
+public final class coil3/decode/ByteBufferMetadata : coil3/decode/ImageSource$Metadata {
+	public fun <init> (Ljava/nio/ByteBuffer;)V
+	public final fun getByteBuffer ()Ljava/nio/ByteBuffer;
+}
+
 public final class coil3/decode/ContentMetadata : coil3/decode/ImageSource$Metadata {
 	public fun <init> (Lcoil3/Uri;)V
 	public final fun getUri ()Lcoil3/Uri;

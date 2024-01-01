@@ -129,6 +129,9 @@ private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder
     if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
         return ImageDecoder.createSource(options.context.resources, metadata.resId)
     }
+    if (metadata is ByteBufferMetadata) {
+        return ImageDecoder.createSource(metadata.byteBuffer)
+    }
 
     return null
 }

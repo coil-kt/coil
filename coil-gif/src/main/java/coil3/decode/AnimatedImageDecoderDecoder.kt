@@ -116,6 +116,10 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
         if (metadata is ResourceMetadata && metadata.packageName == options.context.packageName) {
             return ImageDecoder.createSource(options.context.resources, metadata.resId)
         }
+        if (metadata is ByteBufferMetadata) {
+            val isDirect = metadata.byteBuffer.isDirect
+            if (isDirect || SDK_INT >= 30) return ImageDecoder.createSource(metadata.byteBuffer)
+        }
 
         return when {
             SDK_INT >= 31 -> ImageDecoder.createSource(source().readByteArray())
