@@ -2,6 +2,7 @@ package coil3.request
 
 import coil3.Extras
 import coil3.PlatformContext
+import coil3.annotation.Data
 import coil3.decode.Decoder
 import coil3.fetch.Fetcher
 import coil3.size.Scale
@@ -14,7 +15,8 @@ import okio.FileSystem
  *
  * [Fetcher]s and [Decoder]s should respect these options as best as possible.
  */
-data class Options(
+@Data
+class Options(
     /**
      * The [PlatformContext] used to execute this request.
      */
@@ -68,4 +70,29 @@ data class Options(
      * Extras that are used to configure/extend an image loader's base functionality.
      */
     val extras: Extras = Extras.EMPTY,
-)
+) {
+
+    fun copy(
+        context: PlatformContext = this.context,
+        size: Size = this.size,
+        scale: Scale = this.scale,
+        allowInexactSize: Boolean = this.allowInexactSize,
+        diskCacheKey: String? = this.diskCacheKey,
+        fileSystem: FileSystem = this.fileSystem,
+        memoryCachePolicy: CachePolicy = this.memoryCachePolicy,
+        diskCachePolicy: CachePolicy = this.diskCachePolicy,
+        networkCachePolicy: CachePolicy = this.networkCachePolicy,
+        extras: Extras = this.extras,
+    ) = Options(
+        context = context,
+        size = size,
+        scale = scale,
+        allowInexactSize = allowInexactSize,
+        diskCacheKey = diskCacheKey,
+        fileSystem = fileSystem,
+        memoryCachePolicy = memoryCachePolicy,
+        diskCachePolicy = diskCachePolicy,
+        networkCachePolicy = networkCachePolicy,
+        extras = extras,
+    )
+}

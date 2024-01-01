@@ -49,10 +49,6 @@ public abstract interface class coil3/test/FakeImageLoaderEngine$RequestTransfor
 
 public final class coil3/test/FakeImageLoaderEngine$RequestValue {
 	public fun <init> (Lcoil3/request/ImageRequest;Lcoil3/size/Size;)V
-	public final fun component1 ()Lcoil3/request/ImageRequest;
-	public final fun component2 ()Lcoil3/size/Size;
-	public final fun copy (Lcoil3/request/ImageRequest;Lcoil3/size/Size;)Lcoil3/test/FakeImageLoaderEngine$RequestValue;
-	public static synthetic fun copy$default (Lcoil3/test/FakeImageLoaderEngine$RequestValue;Lcoil3/request/ImageRequest;Lcoil3/size/Size;ILjava/lang/Object;)Lcoil3/test/FakeImageLoaderEngine$RequestValue;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getRequest ()Lcoil3/request/ImageRequest;
 	public final fun getSize ()Lcoil3/size/Size;
@@ -62,10 +58,6 @@ public final class coil3/test/FakeImageLoaderEngine$RequestValue {
 
 public final class coil3/test/FakeImageLoaderEngine$ResultValue {
 	public fun <init> (Lcoil3/test/FakeImageLoaderEngine$RequestValue;Lcoil3/request/ImageResult;)V
-	public final fun component1 ()Lcoil3/test/FakeImageLoaderEngine$RequestValue;
-	public final fun component2 ()Lcoil3/request/ImageResult;
-	public final fun copy (Lcoil3/test/FakeImageLoaderEngine$RequestValue;Lcoil3/request/ImageResult;)Lcoil3/test/FakeImageLoaderEngine$ResultValue;
-	public static synthetic fun copy$default (Lcoil3/test/FakeImageLoaderEngine$ResultValue;Lcoil3/test/FakeImageLoaderEngine$RequestValue;Lcoil3/request/ImageResult;ILjava/lang/Object;)Lcoil3/test/FakeImageLoaderEngine$ResultValue;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getRequest ()Lcoil3/test/FakeImageLoaderEngine$RequestValue;
 	public final fun getResult ()Lcoil3/request/ImageResult;

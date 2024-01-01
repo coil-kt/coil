@@ -224,10 +224,6 @@ public final class coil3/decode/DataSource : java/lang/Enum {
 
 public final class coil3/decode/DecodeResult {
 	public fun <init> (Lcoil3/Image;Z)V
-	public final fun component1 ()Lcoil3/Image;
-	public final fun component2 ()Z
-	public final fun copy (Lcoil3/Image;Z)Lcoil3/decode/DecodeResult;
-	public static synthetic fun copy$default (Lcoil3/decode/DecodeResult;Lcoil3/Image;ZILjava/lang/Object;)Lcoil3/decode/DecodeResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getImage ()Lcoil3/Image;
 	public fun hashCode ()I
@@ -337,11 +333,6 @@ public abstract interface class coil3/fetch/Fetcher$Factory {
 
 public final class coil3/fetch/ImageFetchResult : coil3/fetch/FetchResult {
 	public fun <init> (Lcoil3/Image;ZLcoil3/decode/DataSource;)V
-	public final fun component1 ()Lcoil3/Image;
-	public final fun component2 ()Z
-	public final fun component3 ()Lcoil3/decode/DataSource;
-	public final fun copy (Lcoil3/Image;ZLcoil3/decode/DataSource;)Lcoil3/fetch/ImageFetchResult;
-	public static synthetic fun copy$default (Lcoil3/fetch/ImageFetchResult;Lcoil3/Image;ZLcoil3/decode/DataSource;ILjava/lang/Object;)Lcoil3/fetch/ImageFetchResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDataSource ()Lcoil3/decode/DataSource;
 	public final fun getImage ()Lcoil3/Image;
@@ -352,11 +343,6 @@ public final class coil3/fetch/ImageFetchResult : coil3/fetch/FetchResult {
 
 public final class coil3/fetch/SourceFetchResult : coil3/fetch/FetchResult {
 	public fun <init> (Lcoil3/decode/ImageSource;Ljava/lang/String;Lcoil3/decode/DataSource;)V
-	public final fun component1 ()Lcoil3/decode/ImageSource;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Lcoil3/decode/DataSource;
-	public final fun copy (Lcoil3/decode/ImageSource;Ljava/lang/String;Lcoil3/decode/DataSource;)Lcoil3/fetch/SourceFetchResult;
-	public static synthetic fun copy$default (Lcoil3/fetch/SourceFetchResult;Lcoil3/decode/ImageSource;Ljava/lang/String;Lcoil3/decode/DataSource;ILjava/lang/Object;)Lcoil3/fetch/SourceFetchResult;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDataSource ()Lcoil3/decode/DataSource;
 	public final fun getMimeType ()Ljava/lang/String;
@@ -465,9 +451,6 @@ public abstract interface class coil3/request/Disposable {
 
 public final class coil3/request/ErrorResult : coil3/request/ImageResult {
 	public fun <init> (Lcoil3/Image;Lcoil3/request/ImageRequest;Ljava/lang/Throwable;)V
-	public final fun component1 ()Lcoil3/Image;
-	public final fun component2 ()Lcoil3/request/ImageRequest;
-	public final fun component3 ()Ljava/lang/Throwable;
 	public final fun copy (Lcoil3/Image;Lcoil3/request/ImageRequest;Ljava/lang/Throwable;)Lcoil3/request/ErrorResult;
 	public static synthetic fun copy$default (Lcoil3/request/ErrorResult;Lcoil3/Image;Lcoil3/request/ImageRequest;Ljava/lang/Throwable;ILjava/lang/Object;)Lcoil3/request/ErrorResult;
 	public fun equals (Ljava/lang/Object;)Z
@@ -570,18 +553,6 @@ public final class coil3/request/ImageRequest$Defaults {
 	public fun <init> ()V
 	public fun <init> (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)V
 	public synthetic fun <init> (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Lokio/FileSystem;
-	public final fun component10 ()Lkotlin/jvm/functions/Function1;
-	public final fun component11 ()Lcoil3/size/Precision;
-	public final fun component12 ()Lcoil3/Extras;
-	public final fun component2 ()Lkotlinx/coroutines/CoroutineDispatcher;
-	public final fun component3 ()Lkotlinx/coroutines/CoroutineDispatcher;
-	public final fun component4 ()Lkotlinx/coroutines/CoroutineDispatcher;
-	public final fun component5 ()Lcoil3/request/CachePolicy;
-	public final fun component6 ()Lcoil3/request/CachePolicy;
-	public final fun component7 ()Lcoil3/request/CachePolicy;
-	public final fun component8 ()Lkotlin/jvm/functions/Function1;
-	public final fun component9 ()Lkotlin/jvm/functions/Function1;
 	public final fun copy (Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;)Lcoil3/request/ImageRequest$Defaults;
 	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defaults;Lokio/FileSystem;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/Precision;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defaults;
 	public fun equals (Ljava/lang/Object;)Z
@@ -606,18 +577,6 @@ public final class coil3/request/ImageRequest$Defaults$Companion {
 
 public final class coil3/request/ImageRequest$Defined {
 	public fun <init> (Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)V
-	public final fun component1 ()Lkotlinx/coroutines/CoroutineDispatcher;
-	public final fun component10 ()Lcoil3/size/SizeResolver;
-	public final fun component11 ()Lcoil3/size/Scale;
-	public final fun component12 ()Lcoil3/size/Precision;
-	public final fun component2 ()Lkotlinx/coroutines/CoroutineDispatcher;
-	public final fun component3 ()Lkotlinx/coroutines/CoroutineDispatcher;
-	public final fun component4 ()Lcoil3/request/CachePolicy;
-	public final fun component5 ()Lcoil3/request/CachePolicy;
-	public final fun component6 ()Lcoil3/request/CachePolicy;
-	public final fun component7 ()Lkotlin/jvm/functions/Function1;
-	public final fun component8 ()Lkotlin/jvm/functions/Function1;
-	public final fun component9 ()Lkotlin/jvm/functions/Function1;
 	public final fun copy (Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;)Lcoil3/request/ImageRequest$Defined;
 	public static synthetic fun copy$default (Lcoil3/request/ImageRequest$Defined;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcoil3/size/SizeResolver;Lcoil3/size/Scale;Lcoil3/size/Precision;ILjava/lang/Object;)Lcoil3/request/ImageRequest$Defined;
 	public fun equals (Ljava/lang/Object;)Z
@@ -671,16 +630,6 @@ public final class coil3/request/NullRequestDataException : java/lang/RuntimeExc
 public final class coil3/request/Options {
 	public fun <init> (Lcoil3/PlatformContext;Lcoil3/size/Size;Lcoil3/size/Scale;ZLjava/lang/String;Lokio/FileSystem;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/Extras;)V
 	public synthetic fun <init> (Lcoil3/PlatformContext;Lcoil3/size/Size;Lcoil3/size/Scale;ZLjava/lang/String;Lokio/FileSystem;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/Extras;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Lcoil3/PlatformContext;
-	public final fun component10 ()Lcoil3/Extras;
-	public final fun component2 ()Lcoil3/size/Size;
-	public final fun component3 ()Lcoil3/size/Scale;
-	public final fun component4 ()Z
-	public final fun component5 ()Ljava/lang/String;
-	public final fun component6 ()Lokio/FileSystem;
-	public final fun component7 ()Lcoil3/request/CachePolicy;
-	public final fun component8 ()Lcoil3/request/CachePolicy;
-	public final fun component9 ()Lcoil3/request/CachePolicy;
 	public final fun copy (Lcoil3/PlatformContext;Lcoil3/size/Size;Lcoil3/size/Scale;ZLjava/lang/String;Lokio/FileSystem;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/Extras;)Lcoil3/request/Options;
 	public static synthetic fun copy$default (Lcoil3/request/Options;Lcoil3/PlatformContext;Lcoil3/size/Size;Lcoil3/size/Scale;ZLjava/lang/String;Lokio/FileSystem;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/request/CachePolicy;Lcoil3/Extras;ILjava/lang/Object;)Lcoil3/request/Options;
 	public fun equals (Ljava/lang/Object;)Z
@@ -701,13 +650,6 @@ public final class coil3/request/Options {
 public final class coil3/request/SuccessResult : coil3/request/ImageResult {
 	public fun <init> (Lcoil3/Image;Lcoil3/request/ImageRequest;Lcoil3/decode/DataSource;Lcoil3/memory/MemoryCache$Key;Ljava/lang/String;ZZ)V
 	public synthetic fun <init> (Lcoil3/Image;Lcoil3/request/ImageRequest;Lcoil3/decode/DataSource;Lcoil3/memory/MemoryCache$Key;Ljava/lang/String;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Lcoil3/Image;
-	public final fun component2 ()Lcoil3/request/ImageRequest;
-	public final fun component3 ()Lcoil3/decode/DataSource;
-	public final fun component4 ()Lcoil3/memory/MemoryCache$Key;
-	public final fun component5 ()Ljava/lang/String;
-	public final fun component6 ()Z
-	public final fun component7 ()Z
 	public final fun copy (Lcoil3/Image;Lcoil3/request/ImageRequest;Lcoil3/decode/DataSource;Lcoil3/memory/MemoryCache$Key;Ljava/lang/String;ZZ)Lcoil3/request/SuccessResult;
 	public static synthetic fun copy$default (Lcoil3/request/SuccessResult;Lcoil3/Image;Lcoil3/request/ImageRequest;Lcoil3/decode/DataSource;Lcoil3/memory/MemoryCache$Key;Ljava/lang/String;ZZILjava/lang/Object;)Lcoil3/request/SuccessResult;
 	public fun equals (Ljava/lang/Object;)Z

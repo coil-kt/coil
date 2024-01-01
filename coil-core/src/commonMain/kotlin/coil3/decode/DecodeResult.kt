@@ -1,6 +1,7 @@
 package coil3.decode
 
 import coil3.Image
+import coil3.annotation.Data
 
 /**
  * The result of [Decoder.decode].
@@ -11,7 +12,8 @@ import coil3.Image
  *
  * @see Decoder
  */
-data class DecodeResult(
+@Data
+class DecodeResult(
     val image: Image,
     val isSampled: Boolean,
 )
