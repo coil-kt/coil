@@ -6,7 +6,9 @@ import androidx.core.graphics.decodeBitmap
 import androidx.core.util.component1
 import androidx.core.util.component2
 import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
 import coil3.asCoilImage
+import coil3.decode.BitmapFactoryDecoder.Companion.DEFAULT_MAX_PARALLELISM
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.request.allowRgb565
@@ -21,6 +23,7 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 
+@ExperimentalCoilApi
 @RequiresApi(28)
 class StaticImageDecoderDecoder(
     private val source: ImageDecoder.Source,
@@ -103,14 +106,14 @@ class StaticImageDecoderDecoder(
             options: Options,
             imageLoader: ImageLoader,
         ): Decoder? {
-            val source = result.source.fastImageDecoderSourceOrNull(options) ?: return null
+            val source = result.source.imageDecoderSourceOrNull(options) ?: return null
             return StaticImageDecoderDecoder(source, result.source, options, parallelismLock)
         }
     }
 }
 
 @RequiresApi(28)
-private fun ImageSource.fastImageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
+private fun ImageSource.imageDecoderSourceOrNull(options: Options): ImageDecoder.Source? {
     val file = fileOrNull()
     if (file != null) {
         return ImageDecoder.createSource(file.toFile())
@@ -129,5 +132,3 @@ private fun ImageSource.fastImageDecoderSourceOrNull(options: Options): ImageDec
 
     return null
 }
-
-private const val DEFAULT_MAX_PARALLELISM = 4

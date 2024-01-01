@@ -85,16 +85,18 @@ internal actual fun ComponentRegistry.Builder.addAndroidComponents(
         .apply {
             // Require API 29 for ImageDecoder support as API 28 has framework bugs:
             // https://github.com/element-hq/element-android/pull/7184
-            val decoderFactory = if (SDK_INT >= 29) {
-                StaticImageDecoderDecoder.Factory(
-                    maxParallelism = options.bitmapFactoryMaxParallelism,
-                )
-            } else {
-                BitmapFactoryDecoder.Factory(
-                    maxParallelism = options.bitmapFactoryMaxParallelism,
-                    exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy,
+            if (SDK_INT >= 29) {
+                add(
+                    StaticImageDecoderDecoder.Factory(
+                        maxParallelism = options.bitmapFactoryMaxParallelism,
+                    )
                 )
             }
-            add(decoderFactory)
         }
+        .add(
+            BitmapFactoryDecoder.Factory(
+                maxParallelism = options.bitmapFactoryMaxParallelism,
+                exifOrientationPolicy = options.bitmapFactoryExifOrientationPolicy,
+            )
+        )
 }
