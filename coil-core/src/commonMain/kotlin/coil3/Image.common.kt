@@ -1,5 +1,7 @@
 package coil3
 
+import coil3.annotation.ExperimentalCoilApi
+
 /**
  * A platform-agnostic image class that exposes basic metadata about the underlying native
  * image representation.
@@ -7,6 +9,7 @@ package coil3
  * To draw the image it must be converted into its platform-specific graphics system representation.
  * See `DrawableImage` on Android and `BitmapImage` on non-Android platforms.
  */
+@ExperimentalCoilApi
 expect interface Image {
 
     /** The size of the image in memory in bytes. */
