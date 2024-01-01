@@ -126,12 +126,8 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
             if (isDirect || SDK_INT >= 30) return ImageDecoder.createSource(metadata.byteBuffer)
         }
 
-        return when {
-            SDK_INT >= 31 -> ImageDecoder.createSource(source().readByteArray())
-            SDK_INT == 30 -> ImageDecoder.createSource(ByteBuffer.wrap(source().readByteArray()))
-            // https://issuetracker.google.com/issues/139371066
-            else -> ImageDecoder.createSource(file().toFile())
-        }
+        val bytebuffer = source.source().use { it.squashToDirectByteBuffer() }
+        return ImageDecoder.createSource(bytebuffer)
     }
 
     private fun ImageDecoder.configureImageDecoderProperties() {
@@ -191,5 +187,14 @@ class AnimatedImageDecoderDecoder @JvmOverloads constructor(
                 DecodeUtils.isAnimatedWebP(source) ||
                 (SDK_INT >= 30 && DecodeUtils.isAnimatedHeif(source))
         }
+    }
+}
+
+internal fun BufferedSource.squashToDirectByteBuffer(): ByteBuffer {
+    // TODO: How can we know BufferedSource's length, avoid allocating that bytearray?
+    val bytes = readByteArray()
+    return ByteBuffer.allocateDirect(bytes.size).apply {
+        put(bytes)
+        flip()
     }
 }
